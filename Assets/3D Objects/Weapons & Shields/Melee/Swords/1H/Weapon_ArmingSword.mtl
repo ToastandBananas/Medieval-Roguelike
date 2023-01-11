@@ -1,0 +1,7 @@
+newmtl Weapon_ArmingSword
+	Ka 1 1 1
+	Kd 1 1 1
+	Ks 1 1 1
+	Ns 500
+	map_Ka Textures\Weapon_ArmingSword.png
+	map_Kd Textures\Weapon_ArmingSword.png

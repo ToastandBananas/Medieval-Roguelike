@@ -1,0 +1,7 @@
+newmtl ShortRecurveBow-1-Middle-Bottom
+	Ka 1 1 1
+	Kd 1 1 1
+	Ks 1 1 1
+	Ns 500
+	map_Ka Textures\ShortRecurveBow-1-Middle-Bottom.png
+	map_Kd Textures\ShortRecurveBow-1-Middle-Bottom.png

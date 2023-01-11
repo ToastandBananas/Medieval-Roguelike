@@ -1,0 +1,7 @@
+newmtl Shield_WoodenTower
+	Ka 1 1 1
+	Kd 1 1 1
+	Ks 1 1 1
+	Ns 500
+	map_Ka Textures\Shield_WoodenTower.png
+	map_Kd Textures\Shield_WoodenTower.png

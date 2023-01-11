@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6bdc4838d4512d47a13d0e77b116ade, type: 3}
+  m_Name: Default Biome
+  m_EditorClassIdentifier: 
+  shallowWaterTiles: {fileID: 11400000, guid: f1712da5f145a294a8be44b93fa16563, type: 2}
+  deepWaterTiles: {fileID: 11400000, guid: 6cca59d870f22c0429e28ec92307532b, type: 2}
+  sandTiles: {fileID: 11400000, guid: 19205a558307d5a468745db491060ba4, type: 2}
+  shortGrassRuleTile: {fileID: 11400000, guid: 560a8305b54c343498144ac6d30b010a, type: 2}
+  tallGrassTiles: {fileID: 11400000, guid: eec95b288b281b4449584064c451b53a, type: 2}
+  dirtTiles: {fileID: 0}
+  rockyGroundTiles: {fileID: 11400000, guid: 268ff3b2b483aeb4a9d6c3b965db91a0, type: 2}
+  rockyMountainTiles: {fileID: 11400000, guid: 751ae51aec367f342b45acff27c0a0db, type: 2}
+  dirtRoadTiles: {fileID: 0}

@@ -1,0 +1,5747 @@
+fileFormatVersion: 2
+guid: 12163c57068954747a02869a723044ce
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8700711737130716083
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_0
+  - first:
+      213: 3576130330064795363
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_1
+  - first:
+      213: 4384985778358683011
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_2
+  - first:
+      213: 4040740743895659713
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_3
+  - first:
+      213: 6058025837805541272
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_4
+  - first:
+      213: 2935998254035398908
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_5
+  - first:
+      213: -6465975533146737453
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_6
+  - first:
+      213: 1901485204233648814
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_7
+  - first:
+      213: -3946078562764364922
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_8
+  - first:
+      213: 5523409166973270913
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_9
+  - first:
+      213: -2260105782354018600
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_10
+  - first:
+      213: -2668549828767609358
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_11
+  - first:
+      213: 8084142916982719027
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_12
+  - first:
+      213: -5465293315103840204
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_13
+  - first:
+      213: 8631957026714702991
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_14
+  - first:
+      213: -8100724842855746014
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_15
+  - first:
+      213: 4375028367530334074
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_16
+  - first:
+      213: 376069312686347312
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_17
+  - first:
+      213: -4872450411318946512
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_18
+  - first:
+      213: 9044384343108077852
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_19
+  - first:
+      213: 5885771096296829127
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_20
+  - first:
+      213: 854564660057338115
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_21
+  - first:
+      213: -4305231316602687449
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_22
+  - first:
+      213: 796275970262594655
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_23
+  - first:
+      213: -4344135796493977430
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_24
+  - first:
+      213: 4259749753210538440
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_25
+  - first:
+      213: -4259691028166657476
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_26
+  - first:
+      213: -2235675379949360157
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_27
+  - first:
+      213: -4451703963060030287
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_28
+  - first:
+      213: -7286837380597116499
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_29
+  - first:
+      213: -8124747969446656141
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_30
+  - first:
+      213: -8841854921359385800
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_31
+  - first:
+      213: -294774275302979933
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_32
+  - first:
+      213: 1504402846229711843
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_33
+  - first:
+      213: -5806886200911213587
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_34
+  - first:
+      213: 2576368704098353780
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_35
+  - first:
+      213: 7154927636409151594
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_36
+  - first:
+      213: -6079118858907237367
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_37
+  - first:
+      213: -8999031311163628734
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_38
+  - first:
+      213: 849558977069877371
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_39
+  - first:
+      213: -543585979751878772
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_40
+  - first:
+      213: 6581884257456177021
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_41
+  - first:
+      213: 7971272232552704727
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_42
+  - first:
+      213: 1939003484168980763
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_43
+  - first:
+      213: 7731408733220786594
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_44
+  - first:
+      213: 8081171884664392810
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_45
+  - first:
+      213: 7285510390331388708
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_46
+  - first:
+      213: 6158295934135505947
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_47
+  - first:
+      213: 9094550147261136833
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_48
+  - first:
+      213: 1005997870838022688
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_49
+  - first:
+      213: -752814258502031329
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_50
+  - first:
+      213: 2450347207334345745
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_51
+  - first:
+      213: 4001811994149054227
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_52
+  - first:
+      213: -3360523877280049317
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_53
+  - first:
+      213: -1882364636920515683
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_54
+  - first:
+      213: -6528775593286321172
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_55
+  - first:
+      213: 47599170228976065
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_56
+  - first:
+      213: -1030907140474093076
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_57
+  - first:
+      213: -6856180229337722047
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_58
+  - first:
+      213: -8430913647519251603
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_59
+  - first:
+      213: 3512154023156570927
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_60
+  - first:
+      213: -3094843363588428052
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_61
+  - first:
+      213: 3964211108569519061
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_62
+  - first:
+      213: 6114325251288181909
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_63
+  - first:
+      213: 8840108027445895405
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_64
+  - first:
+      213: -2374025066570231668
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_65
+  - first:
+      213: 662265637716961661
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_66
+  - first:
+      213: 6631893063158276011
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_67
+  - first:
+      213: 6336691119144085059
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_68
+  - first:
+      213: -3207720820488841981
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_69
+  - first:
+      213: -6981479166971866193
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_70
+  - first:
+      213: -4724523769030447012
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_71
+  - first:
+      213: 3230580957040116671
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_72
+  - first:
+      213: 7829015370164269917
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_73
+  - first:
+      213: -3142843850301352743
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_74
+  - first:
+      213: 2347783084646830810
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_75
+  - first:
+      213: -4476238362869287688
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_76
+  - first:
+      213: 2720586093154294333
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_77
+  - first:
+      213: -2484609004086750284
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_78
+  - first:
+      213: -2714004745620181600
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_79
+  - first:
+      213: -1481224777478039669
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_80
+  - first:
+      213: 4723562041505718134
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_81
+  - first:
+      213: -3823798184592880435
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_82
+  - first:
+      213: -2042509636833415742
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_83
+  - first:
+      213: -2561229616497008096
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_84
+  - first:
+      213: 6645942621007272211
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_85
+  - first:
+      213: 3959220563214585075
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_86
+  - first:
+      213: 8264224758765065435
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_87
+  - first:
+      213: 6058851603475836904
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_88
+  - first:
+      213: 1263890539200593688
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_89
+  - first:
+      213: -7284659354138432578
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_90
+  - first:
+      213: -1096615691157112777
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_91
+  - first:
+      213: 5484290638215096383
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_92
+  - first:
+      213: 666602500782530386
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_93
+  - first:
+      213: 2136330932063590026
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_94
+  - first:
+      213: 8626441027265338295
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_95
+  - first:
+      213: 6999610305085579564
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_96
+  - first:
+      213: 3816946304968407002
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_97
+  - first:
+      213: 134484993377981729
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_98
+  - first:
+      213: -6696522181619336328
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_99
+  - first:
+      213: -7355718147314101350
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_100
+  - first:
+      213: 6485134586315043622
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_101
+  - first:
+      213: 2073419381144834596
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_102
+  - first:
+      213: -4921160140133225858
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_103
+  - first:
+      213: 7210840247470269507
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_104
+  - first:
+      213: -7390480128675473480
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_105
+  - first:
+      213: 8387994091589522802
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_106
+  - first:
+      213: 4761074199965055928
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_107
+  - first:
+      213: -502794949683419074
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_108
+  - first:
+      213: -8063422199539299272
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_109
+  - first:
+      213: 3019185530840409463
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_110
+  - first:
+      213: -4762673108729262758
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_111
+  - first:
+      213: 4868446410036526766
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_112
+  - first:
+      213: -7793128196394930949
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_113
+  - first:
+      213: 5065390261629336347
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_114
+  - first:
+      213: 3690181323713040505
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_115
+  - first:
+      213: 1481123950234411592
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_116
+  - first:
+      213: 5610153134717389380
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_117
+  - first:
+      213: 9473971958269738
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_118
+  - first:
+      213: -2982568887227102707
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_119
+  - first:
+      213: -732896116615069493
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_120
+  - first:
+      213: 6048632671588546690
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_121
+  - first:
+      213: -4401534347218828078
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_122
+  - first:
+      213: 3739857125904114674
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_123
+  - first:
+      213: -7153144734279158954
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_124
+  - first:
+      213: 7749780588116900235
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_125
+  - first:
+      213: -5226334642580302299
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_126
+  - first:
+      213: 848930802051223542
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_127
+  - first:
+      213: 2215930480669086168
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_128
+  - first:
+      213: 8465502193038311902
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_129
+  - first:
+      213: 872631825531497032
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_130
+  - first:
+      213: 7534859735179563233
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_131
+  - first:
+      213: 6888618819268566579
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_132
+  - first:
+      213: -7893570273375667353
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_133
+  - first:
+      213: -3823778952537636855
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_134
+  - first:
+      213: 5304865075642612361
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_135
+  - first:
+      213: 3166002178420962348
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_136
+  - first:
+      213: 4358061634808698620
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_137
+  - first:
+      213: 3766274363280869294
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_138
+  - first:
+      213: -1830841127642847158
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_139
+  - first:
+      213: -5262621036411837220
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_140
+  - first:
+      213: -349462402073217871
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_141
+  - first:
+      213: -8170612590051858999
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_142
+  - first:
+      213: 2321060635456847862
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_143
+  - first:
+      213: 3788113604180832898
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_144
+  - first:
+      213: 5937970054058876858
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_145
+  - first:
+      213: -25107928960005621
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_146
+  - first:
+      213: -2020472073083907464
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_147
+  - first:
+      213: -1459877320951882396
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_148
+  - first:
+      213: 3366010304254628944
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_149
+  - first:
+      213: -5150159064113262309
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_150
+  - first:
+      213: -549308936040249888
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_151
+  - first:
+      213: -7148354745351032731
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_152
+  - first:
+      213: -1832379943106503136
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_153
+  - first:
+      213: -4394058122917146290
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_154
+  - first:
+      213: 582400194815445026
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_155
+  - first:
+      213: -9145306162696119842
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_156
+  - first:
+      213: -2740228248985451273
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_157
+  - first:
+      213: -6541619330339925761
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_158
+  - first:
+      213: -398509225303346313
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_159
+  - first:
+      213: -1691379836425831954
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_160
+  - first:
+      213: 3014508215029404657
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_161
+  - first:
+      213: -3000438890473489901
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_162
+  - first:
+      213: 6583333035197786664
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_163
+  - first:
+      213: 5044423063501931847
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_164
+  - first:
+      213: 3468058070644007516
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_165
+  - first:
+      213: -6853090296527419089
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_166
+  - first:
+      213: 1443939261787879442
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_167
+  - first:
+      213: 501358809727554967
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_168
+  - first:
+      213: 3886833584594580341
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_169
+  - first:
+      213: -4967015181908506789
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_170
+  - first:
+      213: 3196796502338757708
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_171
+  - first:
+      213: 2817113863337253357
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_172
+  - first:
+      213: 992360904517744513
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_173
+  - first:
+      213: 1909246274859342271
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_174
+  - first:
+      213: 6400354602757430830
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_175
+  - first:
+      213: 7659006179722418085
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_176
+  - first:
+      213: 6958807933695832017
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_177
+  - first:
+      213: -8533523291259618292
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_178
+  - first:
+      213: 4608910627453460104
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_179
+  - first:
+      213: 7455133852053920550
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_180
+  - first:
+      213: 7078065899889484825
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_181
+  - first:
+      213: -8065741963492537544
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_182
+  - first:
+      213: 692844487219589327
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_183
+  - first:
+      213: 7194090319569825283
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_184
+  - first:
+      213: 240537519677091628
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_185
+  - first:
+      213: 4585464285609151317
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_186
+  - first:
+      213: 4538173801499498981
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_187
+  - first:
+      213: -5874425466723244877
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_188
+  - first:
+      213: 3847000661136941580
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_189
+  - first:
+      213: 8777122370842224191
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_190
+  - first:
+      213: -572610680633812571
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_191
+  - first:
+      213: 3420439453743816036
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_192
+  - first:
+      213: 304318982851010285
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_193
+  - first:
+      213: -1682844782640272215
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_194
+  - first:
+      213: -8829244710259851103
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_195
+  - first:
+      213: 4216344899000306415
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_196
+  - first:
+      213: -5578360385975758586
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_197
+  - first:
+      213: -1082471321289081118
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_198
+  - first:
+      213: -3049466930634472496
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_199
+  - first:
+      213: -3925839175537670019
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_200
+  - first:
+      213: 2275725416228795163
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_201
+  - first:
+      213: -2571475085090449426
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_202
+  - first:
+      213: -5217562578426777379
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_203
+  - first:
+      213: 5644122054077650578
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_204
+  - first:
+      213: -4811346937186799789
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_205
+  - first:
+      213: 8551723145432343523
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_206
+  - first:
+      213: 4180416450017464982
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_207
+  - first:
+      213: -4620840224506776028
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_208
+  - first:
+      213: -4297186627018462231
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_209
+  - first:
+      213: -3317982675385254240
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_210
+  - first:
+      213: -6788074587445452497
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_211
+  - first:
+      213: -4048544965652859367
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_212
+  - first:
+      213: 6601451742220756126
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_213
+  - first:
+      213: -1441319761101699352
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_214
+  - first:
+      213: -414620157283318329
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_215
+  - first:
+      213: -6209303502541323360
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_216
+  - first:
+      213: 456750486153109809
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_217
+  - first:
+      213: 9034671983867987691
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_218
+  - first:
+      213: 4131025760337156266
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_219
+  - first:
+      213: -4148306463971277900
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_220
+  - first:
+      213: 8276362258732680397
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_221
+  - first:
+      213: 9197126581511228152
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_222
+  - first:
+      213: -4720626162912318614
+    second: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_223
+  externalObjects: {}
+  serializedVersion: 12
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
+  cookieLightType: 1
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1444bf36bf77a744b8ef8af379d970b3
+      internalID: -8700711737130716083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f70bbb8e09aa86d49b34475b76f4d041
+      internalID: 3576130330064795363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbd445d143206e445a85a2d55cb4b548
+      internalID: 4384985778358683011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d2b19f224928b143847691736496b51
+      internalID: 4040740743895659713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_4
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbdff4c1af3ce464eae79ba8b0eb9a2e
+      internalID: 6058025837805541272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_5
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43c9dff1b1934524682fdd4a3e49f852
+      internalID: 2935998254035398908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_6
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 362b5716ef6310447a000eb43b01872e
+      internalID: -6465975533146737453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_7
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c2c27b5d65016f4ba643f166547fec3
+      internalID: 1901485204233648814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_8
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 911e1899839382c40bb26ca8a41f0fd7
+      internalID: -3946078562764364922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_9
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5185c9ab796c3a64180c916a301ac5b0
+      internalID: 5523409166973270913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_10
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52d4a75deaed8b047aca78f909f41595
+      internalID: -2260105782354018600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_11
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 608
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c847d9c1cc0b4346a0616f7c0b91172
+      internalID: -2668549828767609358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2051644569c97044689d549f07507970
+      internalID: 8084142916982719027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_13
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4f84a59d513a81429eeca2966b5f50c
+      internalID: -5465293315103840204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_14
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39d5358a369d9e448878740a648648de
+      internalID: 8631957026714702991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_15
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fccbbf7c6ea965f42aba65c5dff3adca
+      internalID: -8100724842855746014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_16
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9e16454bfaa31f47b786454dfc9a462
+      internalID: 4375028367530334074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_17
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 674055dbd189bf340be6a26fd05395f3
+      internalID: 376069312686347312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_18
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d84dba6d40ef894584f43f492cb555e
+      internalID: -4872450411318946512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_19
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0546962a8b364e4398140323572afea
+      internalID: 9044384343108077852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_20
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0234b848be0d4a4eac9dabed2d56298
+      internalID: 5885771096296829127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_21
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b4e7d36f8887c545a8acd0db221644d
+      internalID: 854564660057338115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_22
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17bfed9a35849b14f895c2ea96819153
+      internalID: -4305231316602687449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_23
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7766437f5d40c8942a936ce8cff8f8d2
+      internalID: 796275970262594655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_24
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 991c6344b44925e4583e2496ed53b456
+      internalID: -4344135796493977430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_25
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59ca96b45515f1d49adc31e64b847f3a
+      internalID: 4259749753210538440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_26
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 576
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d0bcccd9aae2d34c88a11dbcc5f27fa
+      internalID: -4259691028166657476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_27
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b29ad63ae482ca40af94a0654b16ed4
+      internalID: -2235675379949360157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_28
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd0b2b96fc134594a8773b1d7044a1c3
+      internalID: -4451703963060030287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_29
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e01229af4862e24cb7179277dfd773c
+      internalID: -7286837380597116499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_30
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 667d8cdfbecb0d74398f8b5698b0ef0c
+      internalID: -8124747969446656141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_31
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5419434f469b9e5489f57a6c4629fc7b
+      internalID: -8841854921359385800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_32
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b57eecbbcbb857e40a3b7a7a385034f9
+      internalID: -294774275302979933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_33
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f809514776c18344af75ea516b53dce
+      internalID: 1504402846229711843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_34
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1299e804c88b29a41b61c0667220e0a6
+      internalID: -5806886200911213587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_35
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6594201488d20d4fa97262056658d34
+      internalID: 2576368704098353780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_36
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f224dffdc9b18848899ef45e7c8d978
+      internalID: 7154927636409151594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_37
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c5db39aad6ca8647b1cb647d8914e1f
+      internalID: -6079118858907237367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_38
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12f2aaabf3abff442b2f863204b05fae
+      internalID: -8999031311163628734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_39
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 544
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acb96da2936b4cd44a4811caa49d4b5e
+      internalID: 849558977069877371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7576a1f0f704214eaade63aa44ffd68
+      internalID: -543585979751878772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_41
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6800b517055044468e8448079b01838
+      internalID: 6581884257456177021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_42
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 778886f042cbf6847a74539d688d06b3
+      internalID: 7971272232552704727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_43
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b85ba0198fdc7e441b6510cc5e7f25dc
+      internalID: 1939003484168980763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_44
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ea141d9c0c00dc41b2257c26d97c5e3
+      internalID: 7731408733220786594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_45
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd81eb437aaee4d45aa393ba69054a3d
+      internalID: 8081171884664392810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_46
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2180d720b8ca7ae40b2f5e09529efdef
+      internalID: 7285510390331388708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_47
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54ac122273da17d4a9741fa20167260e
+      internalID: 6158295934135505947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_48
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59630dd49d51e5841bf838f19f3c91f8
+      internalID: 9094550147261136833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_49
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cf39fa5371e05044b98d2867a335ece
+      internalID: 1005997870838022688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_50
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6759de3cd11a0841bbfdaf2d40f1684
+      internalID: -752814258502031329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_51
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e0997aa674e43841b4ed131535dca41
+      internalID: 2450347207334345745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_52
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba562fa58a84448478844ab612c3567c
+      internalID: 4001811994149054227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_53
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ea337ea02bf4394ea1fa60eaf4ae2d5
+      internalID: -3360523877280049317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_54
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 512
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f13ab3df4d9747429ab69d44699375d
+      internalID: -1882364636920515683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_55
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 480
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92151e4c9ecbc294a9f0679744b67250
+      internalID: -6528775593286321172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85ea6a5f80f2dc5429f61d245e11f7d2
+      internalID: 47599170228976065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_57
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92dd3bbc1ea9f94478fb40879d4ac652
+      internalID: -1030907140474093076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_58
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56c95fd87e4ab7e47aab41cfdd6d5785
+      internalID: -6856180229337722047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_59
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b04a220655d25f4993869bc00b5cbf0
+      internalID: -8430913647519251603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_60
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43d7547848d45ad4db906d8aab95a16e
+      internalID: 3512154023156570927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_61
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a4c5389aeb0f40439bfde9750164879
+      internalID: -3094843363588428052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_62
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8320a6b925ffba14e824419a1c7d4006
+      internalID: 3964211108569519061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_63
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a2f3b7b45a791a4fb7fce870b571fc4
+      internalID: 6114325251288181909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_64
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c62337b637489584e8aa453a023d7308
+      internalID: 8840108027445895405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_65
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25f685537af392049a29162445d30901
+      internalID: -2374025066570231668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_66
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97f1d67a634ea704fba1d3ad1da65c92
+      internalID: 662265637716961661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_67
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 448
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a64b8cefdb16a44ca04e39f966d9488
+      internalID: 6631893063158276011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_68
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2038a08c64c1984eb811d7b1312a20a
+      internalID: 6336691119144085059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_69
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c5bad2d6120d2641a4df580659f3e3f
+      internalID: -3207720820488841981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_70
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59e384a35878c5e468bfa8753c573fa5
+      internalID: -6981479166971866193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_71
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e94bf8648ba43fa4995efb66311a56de
+      internalID: -4724523769030447012
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_72
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c032a484e08df1b46b8976538c1286ec
+      internalID: 3230580957040116671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_73
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ec578d50d683b64c935a56ebe37f05d
+      internalID: 7829015370164269917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_74
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4949deb59dfc1934ba1982a3c58da348
+      internalID: -3142843850301352743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_75
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 536d1f193607daf44a2b27ca5edb68e6
+      internalID: 2347783084646830810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_76
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 857429acc5c85194c8d287658a135638
+      internalID: -4476238362869287688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_77
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 87415ffaf1e1164469e93b4fc1fdca09
+      internalID: 2720586093154294333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_78
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9335f856daaeb974a84b861ff2f3bdd5
+      internalID: -2484609004086750284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_79
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95df243a87ee1a743ade57bef9280b2a
+      internalID: -2714004745620181600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_80
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58f4c94e330b3bb4ba769e80d0ff4d4c
+      internalID: -1481224777478039669
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_81
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8236b11bfb502f34c88bae8979f2a18f
+      internalID: 4723562041505718134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_82
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 416
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce5de09ea97d69a4e9f81536580f6108
+      internalID: -3823798184592880435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_83
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9792f5ba14f98814c976aa4f3cb8f2ea
+      internalID: -2042509636833415742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_84
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ad5ad90bccea374c940cf1d1f3dacb4
+      internalID: -2561229616497008096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_85
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ac00f6c14f60b74280656095464e98b
+      internalID: 6645942621007272211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_86
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cf666dedc3f63e4f8547e0d855d050d
+      internalID: 3959220563214585075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_87
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00b7b2ab8a6faf441a18216dc963f9ae
+      internalID: 8264224758765065435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_88
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c5d5a86f9deca84d96bfff71244e020
+      internalID: 6058851603475836904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_89
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a56b421ccaaf34745afeeb837b62d48d
+      internalID: 1263890539200593688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_90
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd34b40b89dba9a42beff2f63a40300c
+      internalID: -7284659354138432578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_91
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 558381737c3598642b6be945e8f48014
+      internalID: -1096615691157112777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_92
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3a2857a65f64974484bf46b7623cd7c
+      internalID: 5484290638215096383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_93
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20c380d695710a54391f46ca89a9d79d
+      internalID: 666602500782530386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_94
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd8b669e6c5c70a439f9b23cdc33cdeb
+      internalID: 2136330932063590026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_95
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 384
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c635f2da38551c43888ba81a29554dd
+      internalID: 8626441027265338295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_96
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e67089296e58d354da48df0dbd2ac184
+      internalID: 6999610305085579564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_97
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d782fc32a8b66014580a1e72e813cabe
+      internalID: 3816946304968407002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_98
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45659b3ed3e639d44beee050cb0b51cf
+      internalID: 134484993377981729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_99
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ce201ae736e872408037fdd87678294
+      internalID: -6696522181619336328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_100
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c07173d1d41aed4b82cf063a04255f2
+      internalID: -7355718147314101350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_101
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9c72aec7b494dd45a51501bbf1c0168
+      internalID: 6485134586315043622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_102
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d1a28c4ec7962b4cb200b1ad94397d9
+      internalID: 2073419381144834596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_103
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de0530bb70a43cd499b1d1e3ce738fa2
+      internalID: -4921160140133225858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_104
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fa671698fbabe446869a8977e263f4e
+      internalID: 7210840247470269507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_105
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 945e5ffe1ac19624c908761515ffd739
+      internalID: -7390480128675473480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_106
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5aebec9e5289fb4459da63c99f4676a4
+      internalID: 8387994091589522802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_107
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 371c6270be080d447b90560c76423052
+      internalID: 4761074199965055928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_108
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 390c7238ec11cc747afe3c9fa45d7e04
+      internalID: -502794949683419074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_109
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2664089496eb9b44f9927f6e9c05dc9c
+      internalID: -8063422199539299272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_110
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 352
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 579531183098d414f84e361ad3499a00
+      internalID: 3019185530840409463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_111
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d69c645823ac4b24890baf7c4f068ec8
+      internalID: -4762673108729262758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_112
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7316133c72f43be4aa445577fa4d2334
+      internalID: 4868446410036526766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_113
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 356f2609d2489d24cb014816f137f1ac
+      internalID: -7793128196394930949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_114
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9746712168dae6c4c875e3b8a7052699
+      internalID: 5065390261629336347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_115
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fe34904433b1ed40b6cb0b9a7fb04d0
+      internalID: 3690181323713040505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_116
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed5bddad0e005c048a21c5d8bc0bd5d7
+      internalID: 1481123950234411592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_117
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a3ea9a5d53fda04fbfec732dc2307d8
+      internalID: 5610153134717389380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_118
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee9c08b5152f6ff419f255f9f613d225
+      internalID: 9473971958269738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_119
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9619139cb5c4aea459f5ad013bbbf11e
+      internalID: -2982568887227102707
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_120
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 387a7b38c68816d4a9f779ad87630cff
+      internalID: -732896116615069493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_121
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31e81ad0a77b0af418b311ff7a6c13ef
+      internalID: 6048632671588546690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_122
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20278c48765cd394abd91666d7e08eb6
+      internalID: -4401534347218828078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_123
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 288
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a56fa2891a5e4648a09986487733908
+      internalID: 3739857125904114674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_124
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0c7609e0f2a3e242a9b718c00bdae7e
+      internalID: -7153144734279158954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_125
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55f5dfcd417ddfc4581f8294db9ce018
+      internalID: 7749780588116900235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_126
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed2e27dd29daca745a1c6d3224746957
+      internalID: -5226334642580302299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_127
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f634593e3ae5f184086f79c9d1389f1c
+      internalID: 848930802051223542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_128
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b8f6f5c844e72a4c8f6e80ee1c20556
+      internalID: 2215930480669086168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_129
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c025114f9a137e4459b3ff8ad860dd19
+      internalID: 8465502193038311902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_130
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71db200c82596834c8ffd83772464300
+      internalID: 872631825531497032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_131
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92f636ce4fa14cc419769a888ec6d051
+      internalID: 7534859735179563233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_132
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b78c96fe96772d438af24836dc6ccfd
+      internalID: 6888618819268566579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_133
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dd8a196fe3895c4a8078ef54cb140c3
+      internalID: -7893570273375667353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_134
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5fdb05d658b03748a496f77ac443053
+      internalID: -3823778952537636855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_135
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 795942fa41e4a4d418e79b4545d03dcd
+      internalID: 5304865075642612361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_136
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01a4a91b642d2984e90790b01b347481
+      internalID: 3166002178420962348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_137
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf6524b5789c1b947993205fa10bbaf7
+      internalID: 4358061634808698620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_138
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 256
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55b0d9137c05fea4eabcb7fc9250c8e2
+      internalID: 3766274363280869294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_139
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 788d4226abeba5845acf4934b8ededba
+      internalID: -1830841127642847158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_140
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36724f4d7b4c65b47a0e2023e3658b5a
+      internalID: -5262621036411837220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_141
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 903bcb39af1345d4b9548b802f52d5cc
+      internalID: -349462402073217871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_142
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d6b219081ecc434da9c4e7e84ff1665
+      internalID: -8170612590051858999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_143
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38fc719b74d3c304aaea1cf3c224dabd
+      internalID: 2321060635456847862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_144
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56125c773fe061b448df40380abf1fa7
+      internalID: 3788113604180832898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_145
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf486542350594e4ba0458708ac551df
+      internalID: 5937970054058876858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_146
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13595a5a60841364c863bb258a5caedd
+      internalID: -25107928960005621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_147
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 990e03ed7f92e0145947eb48636e1670
+      internalID: -2020472073083907464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_148
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4eb21c4d0feec654887f14a365363920
+      internalID: -1459877320951882396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_149
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b581ea18c0741a4a9e17c5d1c20a2de
+      internalID: 3366010304254628944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_150
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00fe9228d3c37ee46b38497e246894fe
+      internalID: -5150159064113262309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_151
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 224
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 684218ac9c3855f4287597ff30565ce3
+      internalID: -549308936040249888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_152
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d8e3b6976d15694aaf8282551dbb1df
+      internalID: -7148354745351032731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_153
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0f76b88c1ab6784ea56a7f76ca0293f
+      internalID: -1832379943106503136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_154
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d0d05a39d3983e4d888e64fbb17763d
+      internalID: -4394058122917146290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_155
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0969b92cfc8d57541ba8a28e06c48a11
+      internalID: 582400194815445026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_156
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d86bf0f208eb0f44be33e61fa1cded3
+      internalID: -9145306162696119842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_157
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5fdd9027ac9be04ea01b3b363f0e4db
+      internalID: -2740228248985451273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_158
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c715afe5ac628b41873167f33ba0dbc
+      internalID: -6541619330339925761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_159
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4e6e663f7fd56a4b838a64c416eaf16
+      internalID: -398509225303346313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_160
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c786d8c61b6aa0c429d526180c0f1429
+      internalID: -1691379836425831954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_161
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08bf9d32ff075f9408ee36702ae1998b
+      internalID: 3014508215029404657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_162
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ca8a493f4584f5468481cc647a29d3c
+      internalID: -3000438890473489901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_163
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1276c4d5050c0c7418037a7524163af9
+      internalID: 6583333035197786664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_164
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19aeb131e9c5178419ac1e2a31e96244
+      internalID: 5044423063501931847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_165
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b1d331c10c2bb94e9f282c5823f7518
+      internalID: 3468058070644007516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_166
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 192
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d175666ab6cf58c45a172a951771ea3d
+      internalID: -6853090296527419089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_167
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81e97d760c9f9a14bac5f0a0c20b86ee
+      internalID: 1443939261787879442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_168
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09dbffb741e2a3d46958300262a003d9
+      internalID: 501358809727554967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_169
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c417cc2b0a1d10d4a850ff5550b901ff
+      internalID: 3886833584594580341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_170
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ccfdf25cc112c24fa491acd53f43c83
+      internalID: -4967015181908506789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_171
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f58c3e40c7f4fca439de268b4c7c967f
+      internalID: 3196796502338757708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_172
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3de2c42c1d78f6f4488dd2fbfb39000c
+      internalID: 2817113863337253357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_173
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfb1b18b19696ed428b3b33a233956aa
+      internalID: 992360904517744513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_174
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4edeb1e15e1c47d4b80ddffcfc6f7f7e
+      internalID: 1909246274859342271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_175
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd29a59b7a630a848965275e8fe47795
+      internalID: 6400354602757430830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_176
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39a1193c438facc40a1a459ced59cada
+      internalID: 7659006179722418085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_177
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e5c69d0a2db1004cb6f29830d77db38
+      internalID: 6958807933695832017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_178
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 528035e051713c649a1523c70354b042
+      internalID: -8533523291259618292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_179
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 128
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9f759a53ce62de47bdefddd8dc7bfad
+      internalID: 4608910627453460104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_180
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d76c2a747a3dcb54387d3b68ba097516
+      internalID: 7455133852053920550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_181
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b691c623e5a028e4a938b3ff6885793a
+      internalID: 7078065899889484825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_182
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc2b59d7763c4c044bf285bf2347a82b
+      internalID: -8065741963492537544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_183
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a2e9bfe603d9bf4a8eb028f55711720
+      internalID: 692844487219589327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_184
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98932df58a0583046b5d1d2a5acfea2d
+      internalID: 7194090319569825283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_185
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7213316bbd021df4b9d49bb5783414fb
+      internalID: 240537519677091628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_186
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfa4c73e36506694e868276a5426719e
+      internalID: 4585464285609151317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_187
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7693c01e9b4fb25498a8b1b43b5876ed
+      internalID: 4538173801499498981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_188
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d00c7a2b519ea864f88d88d5a2c58897
+      internalID: -5874425466723244877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_189
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d105d9d8413ae4547adddce5e908ea2d
+      internalID: 3847000661136941580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_190
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03e51775ae91aa944b6cba9b9eb7f7e7
+      internalID: 8777122370842224191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_191
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15d900bb180a55b4d8caf42f9357e69b
+      internalID: -572610680633812571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_192
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb00b83d32f910c4d87fd9ae5f28f307
+      internalID: 3420439453743816036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_193
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4087d1bfcb9e724e8dbc6a7c2265817
+      internalID: 304318982851010285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_194
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 96
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7728b42a7d03f0b46af8d87ba99907d9
+      internalID: -1682844782640272215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_195
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb5c4ee1015a979418a948d1cfcfc397
+      internalID: -8829244710259851103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_196
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f958004d7ba8a34fb3561761958ec75
+      internalID: 4216344899000306415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_197
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57987e01a14bb5c43ba5242b1b219f03
+      internalID: -5578360385975758586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_198
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 898c11dbde204d34fb9d9c208aa33e76
+      internalID: -1082471321289081118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_199
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d22c7dc003f788c44b0dba5c3c73b20d
+      internalID: -3049466930634472496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_200
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfb60364c1a38884c8ad232978847851
+      internalID: -3925839175537670019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_201
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 879c1eb6e16d11144ba4d37c628db374
+      internalID: 2275725416228795163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_202
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b86e78015503ce4cac0268c85b2da0c
+      internalID: -2571475085090449426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_203
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a605f428d1313bc488e789b40a43cbc5
+      internalID: -5217562578426777379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_204
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95e0e4c5bbfd59341a42774b7e992e25
+      internalID: 5644122054077650578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_205
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 740a41fe58ef40a4e9e2d5ae0588a770
+      internalID: -4811346937186799789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_206
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bf2bfe735a43214fa0f3e808a985848
+      internalID: 8551723145432343523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_207
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 64
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f44b8e83cb0d9044bed4a21ba66b540
+      internalID: 4180416450017464982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_208
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 411ec357ca2fd0e4187dc544882efa9f
+      internalID: -4620840224506776028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_209
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d676c43d7209a443812cde577a18577
+      internalID: -4297186627018462231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_210
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bed64649216c6d49adf9c538ee521ee
+      internalID: -3317982675385254240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_211
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 743814b6afd91a94eb36a2126bf2fae1
+      internalID: -6788074587445452497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_212
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d138694c1b45e4345a628d1ab03f2818
+      internalID: -4048544965652859367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_213
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11c6f6409531dd842ad35d25113e8672
+      internalID: 6601451742220756126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_214
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23eb61375d7792f4183d68a938d66434
+      internalID: -1441319761101699352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_215
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6adc519fa4836b4d90f53fe666fa67e
+      internalID: -414620157283318329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_216
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88f3629cfdf33f449b0683820921fa23
+      internalID: -6209303502541323360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_217
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8e961fd894bc7e43b46c1f3fa2f669f
+      internalID: 456750486153109809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_218
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef198dd4c8e2df842b92ecf5b5a1a192
+      internalID: 9034671983867987691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_219
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bee48a3e6436637488bb3549e6829cab
+      internalID: 4131025760337156266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_220
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88ef52542ec4a0040921296daf8431e2
+      internalID: -4148306463971277900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_221
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f416d841773a4234fafe95a0f9f31fa9
+      internalID: 8276362258732680397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_222
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fdd70b62f884ed4baf861d80c9acd4f
+      internalID: 9197126581511228152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_223
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 163be6622e82b3743b7a8e45eda3988c
+      internalID: -4720626162912318614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_41: 6581884257456177021
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_180: 7455133852053920550
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_121: 6048632671588546690
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_19: 9044384343108077852
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_140: -5262621036411837220
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_55: -6528775593286321172
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_161: 3014508215029404657
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_212: -4048544965652859367
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_143: 2321060635456847862
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_85: 6645942621007272211
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_106: 8387994091589522802
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_2: 4384985778358683011
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_186: 4585464285609151317
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_115: 3690181323713040505
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_138: 3766274363280869294
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_142: -8170612590051858999
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_154: -4394058122917146290
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_218: 9034671983867987691
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_210: -3317982675385254240
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_101: 6485134586315043622
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_59: -8430913647519251603
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_43: 1939003484168980763
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_181: 7078065899889484825
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_183: 692844487219589327
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_33: 1504402846229711843
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_158: -6541619330339925761
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_124: -7153144734279158954
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_60: 3512154023156570927
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_198: -1082471321289081118
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_219: 4131025760337156266
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_39: 849558977069877371
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_34: -5806886200911213587
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_196: 4216344899000306415
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_16: 4375028367530334074
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_75: 2347783084646830810
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_162: -3000438890473489901
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_185: 240537519677091628
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_128: 2215930480669086168
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_188: -5874425466723244877
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_36: 7154927636409151594
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_172: 2817113863337253357
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_40: -543585979751878772
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_51: 2450347207334345745
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_207: 4180416450017464982
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_58: -6856180229337722047
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_76: -4476238362869287688
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_213: 6601451742220756126
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_0: -8700711737130716083
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_21: 854564660057338115
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_9: 5523409166973270913
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_211: -6788074587445452497
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_52: 4001811994149054227
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_90: -7284659354138432578
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_35: 2576368704098353780
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_134: -3823778952537636855
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_47: 6158295934135505947
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_149: 3366010304254628944
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_166: -6853090296527419089
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_146: -25107928960005621
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_64: 8840108027445895405
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_1: 3576130330064795363
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_38: -8999031311163628734
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_109: -8063422199539299272
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_120: -732896116615069493
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_148: -1459877320951882396
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_114: 5065390261629336347
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_191: -572610680633812571
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_66: 662265637716961661
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_4: 6058025837805541272
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_139: -1830841127642847158
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_69: -3207720820488841981
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_77: 2720586093154294333
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_200: -3925839175537670019
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_12: 8084142916982719027
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_44: 7731408733220786594
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_103: -4921160140133225858
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_110: 3019185530840409463
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_135: 5304865075642612361
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_57: -1030907140474093076
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_91: -1096615691157112777
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_20: 5885771096296829127
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_169: 3886833584594580341
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_174: 1909246274859342271
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_155: 582400194815445026
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_107: 4761074199965055928
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_79: -2714004745620181600
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_78: -2484609004086750284
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_104: 7210840247470269507
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_71: -4724523769030447012
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_100: -7355718147314101350
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_182: -8065741963492537544
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_223: -4720626162912318614
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_160: -1691379836425831954
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_222: 9197126581511228152
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_27: -2235675379949360157
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_83: -2042509636833415742
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_68: 6336691119144085059
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_214: -1441319761101699352
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_5: 2935998254035398908
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_73: 7829015370164269917
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_15: -8100724842855746014
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_171: 3196796502338757708
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_63: 6114325251288181909
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_95: 8626441027265338295
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_144: 3788113604180832898
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_13: -5465293315103840204
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_217: 456750486153109809
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_175: 6400354602757430830
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_199: -3049466930634472496
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_125: 7749780588116900235
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_48: 9094550147261136833
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_159: -398509225303346313
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_179: 4608910627453460104
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_24: -4344135796493977430
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_29: -7286837380597116499
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_45: 8081171884664392810
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_123: 3739857125904114674
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_221: 8276362258732680397
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_122: -4401534347218828078
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_116: 1481123950234411592
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_61: -3094843363588428052
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_26: -4259691028166657476
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_131: 7534859735179563233
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_157: -2740228248985451273
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_82: -3823798184592880435
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_108: -502794949683419074
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_53: -3360523877280049317
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_10: -2260105782354018600
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_65: -2374025066570231668
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_145: 5937970054058876858
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_42: 7971272232552704727
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_37: -6079118858907237367
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_94: 2136330932063590026
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_23: 796275970262594655
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_202: -2571475085090449426
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_129: 8465502193038311902
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_119: -2982568887227102707
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_46: 7285510390331388708
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_80: -1481224777478039669
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_118: 9473971958269738
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_25: 4259749753210538440
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_111: -4762673108729262758
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_133: -7893570273375667353
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_93: 666602500782530386
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_195: -8829244710259851103
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_8: -3946078562764364922
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_215: -414620157283318329
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_204: 5644122054077650578
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_22: -4305231316602687449
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_201: 2275725416228795163
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_30: -8124747969446656141
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_205: -4811346937186799789
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_137: 4358061634808698620
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_11: -2668549828767609358
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_18: -4872450411318946512
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_192: 3420439453743816036
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_170: -4967015181908506789
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_178: -8533523291259618292
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_88: 6058851603475836904
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_153: -1832379943106503136
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_70: -6981479166971866193
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_62: 3964211108569519061
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_113: -7793128196394930949
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_151: -549308936040249888
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_206: 8551723145432343523
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_165: 3468058070644007516
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_209: -4297186627018462231
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_54: -1882364636920515683
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_208: -4620840224506776028
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_32: -294774275302979933
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_87: 8264224758765065435
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_102: 2073419381144834596
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_72: 3230580957040116671
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_193: 304318982851010285
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_127: 848930802051223542
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_189: 3847000661136941580
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_126: -5226334642580302299
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_220: -4148306463971277900
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_7: 1901485204233648814
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_184: 7194090319569825283
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_6: -6465975533146737453
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_97: 3816946304968407002
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_14: 8631957026714702991
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_156: -9145306162696119842
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_89: 1263890539200593688
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_197: -5578360385975758586
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_31: -8841854921359385800
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_132: 6888618819268566579
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_173: 992360904517744513
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_96: 6999610305085579564
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_28: -4451703963060030287
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_164: 5044423063501931847
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_130: 872631825531497032
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_3: 4040740743895659713
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_177: 6958807933695832017
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_50: -752814258502031329
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_167: 1443939261787879442
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_49: 1005997870838022688
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_84: -2561229616497008096
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_150: -5150159064113262309
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_67: 6631893063158276011
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_147: -2020472073083907464
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_117: 5610153134717389380
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_92: 5484290638215096383
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_112: 4868446410036526766
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_187: 4538173801499498981
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_141: -349462402073217871
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_17: 376069312686347312
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_74: -3142843850301352743
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_163: 6583333035197786664
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_152: -7148354745351032731
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_203: -5217562578426777379
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_81: 4723562041505718134
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_98: 134484993377981729
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_168: 501358809727554967
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_105: -7390480128675473480
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_86: 3959220563214585075
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_136: 3166002178420962348
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_194: -1682844782640272215
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_176: 7659006179722418085
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_216: -6209303502541323360
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_56: 47599170228976065
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_190: 8777122370842224191
+      rpg_maker_xp_auto_tiles_sheet___grass_by_spritemight_d9f3o4h_99: -6696522181619336328
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
