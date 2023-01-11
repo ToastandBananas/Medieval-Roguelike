@@ -7,8 +7,8 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager Instance { get; private set; }
 
+    Unit player;
     List<Unit> units = new List<Unit>();
-    List<Unit> playerUnits = new List<Unit>();
     List<Unit> friendlyUnits = new List<Unit>();
     List<Unit> enemyUnits = new List<Unit>();
 
@@ -16,19 +16,24 @@ public class UnitManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            Debug.LogError("There's more than one UnitManager! " + transform + " - " + Instance);
-            Destroy(gameObject);
-            return;
+            if (Instance != this)
+            {
+                Debug.LogWarning("More than one Instance of UnitManager. Fix me!");
+                Destroy(gameObject);
+                return;
+            }
         }
-        Instance = this;
+        else
+            Instance = this;
+
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
 
         units = FindObjectsOfType<Unit>().ToList();
     }
 
     void Start()
     {
-        Unit.OnAnyUnitSpawned += Unit_OnAnyUnitSpawned;
-        Unit.OnAnyUnitDead += Unit_OnAnyUnitDead;
+        
     }
 
     public void AddUnitToUnitsList(Unit unit)
@@ -41,35 +46,11 @@ public class UnitManager : MonoBehaviour
         units.Remove(unit);
     }
 
-    public List<Unit> UnitsList() => units;
+    public Unit Player() => player;
 
-    public List<Unit> PlayerUnitsList() => playerUnits;
+    public List<Unit> UnitsList() => units;
 
     public List<Unit> FriendlyUnitsList() => friendlyUnits;
 
     public List<Unit> EnemyUnitsList() => enemyUnits;
-
-    void Unit_OnAnyUnitSpawned(object sender, EventArgs e)
-    {
-        Unit unit = (Unit)sender;
-        units.Add(unit);
-        if (unit.IsEnemy(Faction.Player))
-            enemyUnits.Add(unit);
-        else if (unit.IsPlayer())
-            playerUnits.Add(unit);
-        else
-            friendlyUnits.Add(unit);
-    }
-
-    void Unit_OnAnyUnitDead(object sender, EventArgs e)
-    {
-        Unit unit = (Unit)sender;
-        units.Remove(unit);
-        if (unit.IsEnemy(Faction.Player))
-            enemyUnits.Remove(unit);
-        else if (unit.IsPlayer())
-            playerUnits.Remove(unit);
-        else
-            friendlyUnits.Remove(unit);
-    }
 }

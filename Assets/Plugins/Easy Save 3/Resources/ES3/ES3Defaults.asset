@@ -32,9 +32,9 @@ MonoBehaviour:
     - InControl
     - AstarPathfindingProject
     - Assembly-CSharp-firstpass
-    - Assembly-CSharp
     - Cinemachine
     - PackageTools
+    - Assembly-CSharp
     - Drawing
     - AstarPathfindingProjectEditor
     - PPv2URPConverters

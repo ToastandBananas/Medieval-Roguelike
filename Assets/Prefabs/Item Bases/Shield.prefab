@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1460794979494802722}
   - component: {fileID: 1460794979494802749}
-  - component: {fileID: 1460794979494802748}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -36,7 +35,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: -30, z: 0}
 --- !u!95 &1460794979494802749
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -53,23 +52,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &1460794979494802748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1460794979494802751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea434756f08320f4fbcdbb8922e11323, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  idlePosition: {x: 0.23, y: -0.3, z: -0.23}
-  idleRotation: {x: 0, y: -30, z: 0}
-  anim: {fileID: 1460794979494802749}
-  damage: 5
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &9067393067128502702
 GameObject:
   m_ObjectHideFlags: 0

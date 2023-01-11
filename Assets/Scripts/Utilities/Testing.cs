@@ -14,7 +14,7 @@ public class Testing : MonoBehaviour
 
     void ShowDebugPathToMousePosition()
     {
-        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
+        /*GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
         GridPosition startGridPosition = UnitActionSystem.Instance.SelectedUnit().GridPosition();
         ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(startGridPosition), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
         path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
@@ -32,6 +32,6 @@ public class Testing : MonoBehaviour
         for (int i = 0; i < gridPositionList.Count - 1; i++)
         {
             Debug.DrawLine(LevelGrid.Instance.GetWorldPosition(gridPositionList[i]), LevelGrid.Instance.GetWorldPosition(gridPositionList[i + 1]), Color.white, 4f);
-        }
+        }*/
     }
 }

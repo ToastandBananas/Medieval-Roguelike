@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: m_VersionIndex
       value: 139
       objectReference: {fileID: 0}
+    - target: {fileID: 5502785375640885196, guid: 2ba3233deb15ad042a16a8a9526156ab,
+        type: 3}
+      propertyPath: unit
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7223484227263100194, guid: 2ba3233deb15ad042a16a8a9526156ab,
         type: 3}
       propertyPath: currentFaction
@@ -127,5 +132,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bandit - Female
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8566402766796371355, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 6993929555361105634, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 6555476939009754541, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 2964713173541226796, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 5507596399507743228, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 6549413449968785315, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 6873028246332739934, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 3125600608791990576, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 1069963618564324763, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
+    - {fileID: 6466647692791611072, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}

@@ -5,7 +5,7 @@ public class ScreenShakeActions : MonoBehaviour
 {
     void Start()
     {
-        Projectile.OnExplosion += Projectile_OnExplosion;
+        //Projectile.OnExplosion += Projectile_OnExplosion;
     }
 
     void Projectile_OnExplosion(object sender, EventArgs e)

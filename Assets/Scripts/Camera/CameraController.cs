@@ -52,10 +52,10 @@ public class CameraController : MonoBehaviour
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         targetFollowOffset = cinemachineTransposer.m_FollowOffset;
 
-        UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
+        /*UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
         UnitActionSystem.Instance.OnActiveAIUnitChanged += UnitActionSystem_OnActiveAIUnitChanged;
         BaseAction.OnAnyActionStarted += BaseAction_OnAnyActionStarted;
-        BaseAction.OnAnyActionCompleted += BaseAction_OnAnyActionCompleted;
+        BaseAction.OnAnyActionCompleted += BaseAction_OnAnyActionCompleted;*/
     }
 
     void Update()
@@ -327,11 +327,11 @@ public class CameraController : MonoBehaviour
         cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, targetFollowOffset, Time.deltaTime * zoomSpeed);
     }
 
-    void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) => StartCoroutine(MoveCameraToTarget(UnitActionSystem.Instance.SelectedUnit().transform, false));
+    //void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) => StartCoroutine(MoveCameraToTarget(UnitActionSystem.Instance.SelectedUnit().transform, false));
 
-    void UnitActionSystem_OnActiveAIUnitChanged(object sender, EventArgs e) => StartCoroutine(MoveCameraToTarget(UnitActionSystem.Instance.ActiveAIUnit().transform, false));
+    //void UnitActionSystem_OnActiveAIUnitChanged(object sender, EventArgs e) => StartCoroutine(MoveCameraToTarget(UnitActionSystem.Instance.ActiveAIUnit().transform, false));
 
-    public void BaseAction_OnAnyActionStarted(object sender, EventArgs e)
+    /*public void BaseAction_OnAnyActionStarted(object sender, EventArgs e)
     {
         Unit unitToFocusOn;
         if (TurnSystem.Instance.IsPlayerTurn())
@@ -369,5 +369,5 @@ public class CameraController : MonoBehaviour
             default:
                 break;
         }
-    }
+    }*/
 }

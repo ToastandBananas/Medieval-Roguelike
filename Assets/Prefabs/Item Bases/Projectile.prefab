@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7363001299197497195}
   - component: {fileID: 2964047115981917315}
   - component: {fileID: 2135768502737961380}
-  - component: {fileID: 3531711276661518602}
   m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
@@ -66,25 +65,6 @@ CapsuleCollider:
   m_Height: 0.39999998
   m_Direction: 2
   m_Center: {x: 0.0020000003, y: -0.0019999999, z: 0.3}
---- !u!114 &3531711276661518602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1724797660021967355}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e16ff9198cce1c419ba6f3cc70ce355, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  meshFilter: {fileID: 5543258945124015132}
-  meshRenderer: {fileID: 7988317198904808471}
-  projectileCollider: {fileID: 2135768502737961380}
-  obstaclesMask:
-    serializedVersion: 2
-    m_Bits: 320
-  trailRenderer: {fileID: 8035050159209521831}
 --- !u!1 &4438465932938341583
 GameObject:
   m_ObjectHideFlags: 0

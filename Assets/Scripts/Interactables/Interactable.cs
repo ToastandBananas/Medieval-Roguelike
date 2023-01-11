@@ -1,31 +1,18 @@
-using Pathfinding;
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Interactable : MonoBehaviour
+public class Interactable : MonoBehaviour
 {
-    protected GridPosition gridPosition;
-
-    [SerializeField] protected SingleNodeBlocker singleNodeBlocker;
-    [SerializeField] float actionPointCostMultiplier = 1f;
-
+    // Start is called before the first frame update
     void Start()
     {
-        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
-        LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
-
-        singleNodeBlocker.manager = LevelGrid.Instance.GetBlockManager();
-        LevelGrid.Instance.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.Instance.GetUnitSingleNodeBlockerList());
-        BlockCurrentPosition();
+        
     }
 
-    public GridPosition GridPosition() => gridPosition;
-
-    public float ActionPointCostMultiplier() => actionPointCostMultiplier;
-
-    protected void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
-
-    protected void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
-
-    public abstract void Interact(Action onInteractableBehaviourComplete);
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
 }
