@@ -4,17 +4,27 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public bool isMyTurn;
+    [Header("Unit Info")]
+    [SerializeField] float shoulderHeight = 0.25f;
+    [SerializeField] LayerMask actionObstaclesMask;
 
-    // Start is called before the first frame update
+    bool isMyTurn;
+
+    GridPosition gridPosition;
+
     void Start()
     {
-        
+        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public bool IsMyTurn() => isMyTurn;
+
+    public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn; 
+    
+    public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
+
+    public float ShoulderHeight() => shoulderHeight;
+
+    public LayerMask ActionObstaclesMask() => actionObstaclesMask;
 }

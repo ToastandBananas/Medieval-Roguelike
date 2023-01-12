@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     UnitManager playerManager;
+    Unit player;
 
     void Awake()
     {
@@ -20,5 +21,12 @@ public class GameManager : MonoBehaviour
             Instance = this;
     }
 
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
+    }
+
     public UnitManager PlayerManager() => playerManager;
+
+    public Unit Player() => player;
 }

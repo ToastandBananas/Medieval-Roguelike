@@ -7,28 +7,36 @@ public class TurnManager : MonoBehaviour
     [HideInInspector] public List<Unit> npcs = new List<Unit>();
     [HideInInspector] public int npcsFinishedTakingTurnCount;
 
+    Unit activeUnit;
+
     GameManager gm;
 
     #region Singleton
-    public static TurnManager instance;
+    public static TurnManager Instance;
 
     void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
-            if (instance != this)
+            if (Instance != this)
             {
-                Debug.LogWarning("More than one instance of TurnManager. Fix me!");
+                Debug.LogWarning("More than one Instance of TurnManager. Fix me!");
                 Destroy(gameObject);
             }
         }
         else
-            instance = this;
+            Instance = this;
     }
     #endregion
 
     void Start()
     {
         gm = GameManager.Instance;
+
+        activeUnit = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
     }
+
+    public Unit ActiveUnit() => activeUnit;
+
+    public bool IsPlayerTurn() => activeUnit == gm.Player();
 }

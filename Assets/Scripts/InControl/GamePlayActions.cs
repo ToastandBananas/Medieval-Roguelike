@@ -2,25 +2,25 @@
 
 public class GamePlayActions : PlayerActionSet
 {
-    public PlayerAction select, context;
+    public InControl.PlayerAction select, context;
 
     // Mouse Buttons
-    public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
+    public InControl.PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
 
     // Move Camera
-    public PlayerAction moveUp, moveDown, moveLeft, moveRight;
+    public InControl.PlayerAction moveUp, moveDown, moveLeft, moveRight;
     public PlayerTwoAxisAction movementAxis;
 
     // Rotate Camera
-    public PlayerAction cameraRotateLeft, cameraRotateRight;
+    public InControl.PlayerAction cameraRotateLeft, cameraRotateRight;
     public PlayerOneAxisAction cameraRotateAxis;
 
     // Zoom Camera
-    public PlayerAction cameraZoomIn, cameraZoomOut;
+    public InControl.PlayerAction cameraZoomIn, cameraZoomOut;
 
     // UI Actions
-    public PlayerAction menuPause, menuSelect;
-    public PlayerAction menuLeft, menuRight, menuUp, menuDown;
+    public InControl.PlayerAction menuPause, menuSelect;
+    public InControl.PlayerAction menuLeft, menuRight, menuUp, menuDown;
 
     public GamePlayActions()
     {
