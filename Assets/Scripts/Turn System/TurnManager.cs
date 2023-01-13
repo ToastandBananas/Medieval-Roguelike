@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
@@ -34,6 +35,11 @@ public class TurnManager : MonoBehaviour
         gm = GameManager.Instance;
 
         activeUnit = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
+    }
+
+    public IEnumerator FinishTurn(Unit unit)
+    {
+        yield return null;
     }
 
     public Unit ActiveUnit() => activeUnit;

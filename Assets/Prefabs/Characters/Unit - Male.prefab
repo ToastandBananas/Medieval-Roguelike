@@ -129,6 +129,7 @@ GameObject:
   - component: {fileID: 5863758878478513190}
   - component: {fileID: 8186792645671146690}
   - component: {fileID: 126505681558484576}
+  - component: {fileID: 1716772551159210589}
   m_Layer: 3
   m_Name: Unit - Male
   m_TagString: Untagged
@@ -222,6 +223,18 @@ MonoBehaviour:
   currentFaction: 0
   alliedFactions: 0a000000
   enemyFactions: 140000001e000000280000003200000033000000
+--- !u!114 &1716772551159210589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3945c63d399bb904a8e8e95ef2116a47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2147645918628440969
 GameObject:
   m_ObjectHideFlags: 0
