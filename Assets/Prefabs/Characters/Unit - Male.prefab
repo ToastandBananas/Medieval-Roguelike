@@ -130,6 +130,10 @@ GameObject:
   - component: {fileID: 8186792645671146690}
   - component: {fileID: 126505681558484576}
   - component: {fileID: 1716772551159210589}
+  - component: {fileID: 4471245059765168945}
+  - component: {fileID: 1918958863613582635}
+  - component: {fileID: 6121981607456776970}
+  - component: {fileID: 751464884551525251}
   m_Layer: 3
   m_Name: Unit - Male
   m_TagString: Untagged
@@ -235,6 +239,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3945c63d399bb904a8e8e95ef2116a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed:
+    baseValue: 20
+    modifiers: 
+--- !u!114 &4471245059765168945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c9d1716ce9c529438c79b913443c156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shoulderHeight: 0.25
+  actionObstaclesMask:
+    serializedVersion: 2
+    m_Bits: 0
+  leader: {fileID: 0}
+--- !u!114 &1918958863613582635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecdc00288b3da124f88440c2e31054ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6121981607456776970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultState: 0
+  currentState: 0
+--- !u!114 &751464884551525251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8f117d204a5d64f9064b851a6da5c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fleeObstacleMask:
+    serializedVersion: 2
+    m_Bits: 0
+  fleeDistance: 20
+  shouldAlwaysFleeCombat: 0
+  startFollowingDistance: 3
+  slowDownDistance: 4
+  shouldFollowLeader: 0
+  patrolPoints: []
+  maxChaseDistance: 15
+  defaultPosition: {x: 0, y: 0}
+  minRoamDistance: 5
+  maxRoamDistance: 20
 --- !u!1 &2147645918628440969
 GameObject:
   m_ObjectHideFlags: 0

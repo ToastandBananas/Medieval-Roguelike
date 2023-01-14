@@ -22,6 +22,8 @@ public class PlayerActionInput : MonoBehaviour
             if (GameControls.gamePlayActions.leftMouseClick.WasPressed)
             {
                 GridPosition mouseGridPosition = GetMouseGridPosition();
+
+                //unit.QueueAction();
             }
         }
     }
