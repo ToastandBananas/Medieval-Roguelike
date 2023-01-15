@@ -42,7 +42,7 @@ public class TurnManager : MonoBehaviour
     {
         yield return null;
 
-        if (unit.IsMyTurn())
+        if (unit.isMyTurn)
         {
             // Debug.Log(characterManager.name + " is finishing their turn");
             if (unit.IsNPC() == false)
@@ -63,7 +63,7 @@ public class TurnManager : MonoBehaviour
 
     public void ReadyPlayersTurn()
     {
-        gm.Player().Stats().ReplenishAP();
+        gm.Player().stats.ReplenishAP();
         gm.Player().SetIsMyTurn(true);
         gm.Player().UnblockCurrentPosition();
 
@@ -83,9 +83,9 @@ public class TurnManager : MonoBehaviour
 
         //gm.playerManager.vision.CheckEnemyVisibility();
 
-        gm.Player().Stats().ApplyAPLossBuildup();
-        if (gm.Player().Stats().CurrentAP() > 0 && gm.Player().UnitActionHandler().QueuedActions().Count > 0)
-            gm.Player().StartCoroutine(gm.Player().UnitActionHandler().GetNextQueuedAction());
+        gm.Player().stats.ApplyAPLossBuildup();
+        if (gm.Player().stats.CurrentAP() > 0 && gm.Player().unitActionHandler.queuedActions.Count > 0)
+            gm.Player().StartCoroutine(gm.Player().unitActionHandler.GetNextQueuedAction());
     }
 
     void FinishNPCsTurn(Unit npc)
@@ -100,9 +100,9 @@ public class TurnManager : MonoBehaviour
 
     public void TakeNPCTurn(Unit npc)
     {
-        if (gm.Player().IsDead() == false)
+        if (gm.Player().isDead == false)
         {
-            npc.Stats().ReplenishAP();
+            npc.stats.ReplenishAP();
             npc.SetIsMyTurn(true);
             npc.UnblockCurrentPosition();
 
@@ -120,8 +120,8 @@ public class TurnManager : MonoBehaviour
 
             //npc.characterStats.ApplyAPLossBuildup();
 
-            if (npc.Stats().CurrentAP() > 0)
-                npc.UnitActionHandler().TakeTurn();
+            if (npc.stats.CurrentAP() > 0)
+                npc.unitActionHandler.TakeTurn();
         }
     }
 

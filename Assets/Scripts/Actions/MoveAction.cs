@@ -7,40 +7,40 @@ using UnityEngine;
 public class MoveAction : BaseAction
 {
     [Header("Flee State Variables")]
-    public LayerMask fleeObstacleMask;
-    public float fleeDistance = 20f;
-    public bool shouldAlwaysFleeCombat;
+    [SerializeField] LayerMask fleeObstacleMask;
+    [SerializeField] float fleeDistance = 20f;
+    [SerializeField] bool shouldAlwaysFleeCombat;
+    Vector3 fleeDestination;
+    float distToFleeDestination = 0;
+    bool needsFleeDestination = true;
 
     [Header("Follow State Variables")]
-    public float startFollowingDistance = 3f;
-    public float slowDownDistance = 4f;
-    public bool shouldFollowLeader;
+    [SerializeField] float startFollowingDistance = 3f;
+    [SerializeField] float slowDownDistance = 4f;
+    [SerializeField] public bool shouldFollowLeader { get; private set; }
 
     [Header("Patrol State Variables")]
-    public Vector2[] patrolPoints;
-
-    [Header("Pursue State Variables")]
-    public float maxChaseDistance = 15f;
-
-    [Header("Wandering State Variables")]
-    public Vector2 defaultPosition;
-    public float minRoamDistance = 5f;
-    public float maxRoamDistance = 20f;
-
-    Unit unit;
-    Seeker seeker;
-    
+    [SerializeField] Vector2[] patrolPoints;
     int currentPatrolPointIndex;
     bool initialPatrolPointSet;
 
-    GridPosition targetGridPosition;
-    Vector2 roamPosition;
-    Vector3 fleeDestination;
-    float distToFleeDestination = 0;
+    [Header("Pursue State Variables")]
+    [SerializeField] float maxChaseDistance = 15f;
 
-    bool isMoving, moveQueued;
+    [Header("Wandering State Variables")]
+    [SerializeField] Vector2 defaultPosition;
+    [SerializeField] public float minRoamDistance = 5f;
+    [SerializeField] public float maxRoamDistance = 20f;
+    Vector2 roamPosition;
     bool roamPositionSet;
-    bool needsFleeDestination = true;
+
+    Unit unit;
+
+    public Seeker seeker { get; private set; }
+    public GridPosition targetGridPosition { get; private set; }
+
+    public bool isMoving { get; private set; }
+    bool moveQueued;
 
     Quaternion targetRotation;
 
@@ -87,7 +87,6 @@ public class MoveAction : BaseAction
 
     IEnumerator Move()
     {
-        Vector3 finalTargetPosition = positionList[positionList.Count - 1];
         Vector3 firstPointOnPath = positionList[1];
         Vector3 nextPosition = unit.transform.localPosition;
         bool increaseCurrentPositionIndex = false;
@@ -95,7 +94,7 @@ public class MoveAction : BaseAction
         int currentPositionIndex = 0;
 
         Debug.Log("First Point on Path: " + firstPointOnPath);
-        Debug.Log("Unit Position: " + unit.transform.localPosition);
+        
         if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
             nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
 
@@ -120,8 +119,6 @@ public class MoveAction : BaseAction
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
             nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
 
-        Debug.Log("Next Position: " + nextPosition);
-
         while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
         {
             isMoving = true;
@@ -130,28 +127,40 @@ public class MoveAction : BaseAction
             Vector3 unitPosition = unit.transform.localPosition;
             Vector3 targetPosition = unitPosition;
 
-            if (Mathf.Abs(positionList[currentPositionIndex].y) - Mathf.Abs(unitPosition.y) > stoppingDistance)
+            if (Mathf.Abs(Mathf.Abs(firstPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
             {
-                if (positionList[currentPositionIndex].y - unitPosition.y > 0f) // If the next path position is above the unit's current position
+                Debug.Log("Next Position: " + nextPosition);
+                Debug.Log("Unit Position: " + unitPosition);
+                // If the next path position is above the unit's current position
+                if (firstPointOnPath.y - unitPosition.y > 0f)
                 {
-                    targetPosition = new Vector3(unitPosition.x, positionList[currentPositionIndex].y, unitPosition.z);
-                    nextPosition = new Vector3(nextPosition.x, nextPosition.y + 1, nextPosition.z);
+                    targetPosition = new Vector3(unitPosition.x, firstPointOnPath.y, unitPosition.z);
+                    nextPosition = new Vector3(nextPosition.x, firstPointOnPath.y, nextPosition.z);
                 }
-                else if (positionList[currentPositionIndex].y - unitPosition.y < 0f && positionList[currentPositionIndex].x != unitPosition.x && positionList[currentPositionIndex].z != unitPosition.z) // If the next path position is below the unit's current position
+                else if (firstPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPosition.z - unitPosition.z) < stoppingDistance)
                 {
-                    targetPosition = new Vector3(positionList[currentPositionIndex].x, unitPosition.y, positionList[currentPositionIndex].z);
-                    nextPosition = new Vector3(nextPosition.x, nextPosition.y - 1, nextPosition.z);
+                    targetPosition = nextPosition;
                 }
+                // If the next path position is below the unit's current position
+                else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPosition.z, unitPosition.z) == false))
+                {
+                    Debug.Log("And then Here");
+                    targetPosition = new Vector3(firstPointOnPath.x, unitPosition.y, firstPointOnPath.z);
+                    nextPosition = new Vector3(nextPosition.x, firstPointOnPath.y, nextPosition.z);
+                }
+                //else
+                    //targetPosition = nextPosition;
             }
             else
             {
+                Debug.Log("And Finally Here");
                 targetPosition = nextPosition;
                 increaseCurrentPositionIndex = true;
             }
 
             Vector3 moveDirection = (targetPosition - unitPosition).normalized;
 
-            RotateTowardsTargetPosition(nextPosition);
+            RotateTowardsTargetPosition(firstPointOnPath);
 
             float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
             if (distanceToTargetPosition > stoppingDistance)
@@ -178,13 +187,13 @@ public class MoveAction : BaseAction
 
         isMoving = false;
         CompleteAction();
-        unit.UnitActionHandler().FinishAction();
+        unit.unitActionHandler.FinishAction();
 
         if (unit.IsPlayer())
             GridSystemVisual.Instance.UpdateGridVisual();
 
-        if (unit.GridPosition() != targetGridPosition)
-            unit.UnitActionHandler().QueueAction(this, 25);
+        if (unit.gridPosition != targetGridPosition)
+            unit.unitActionHandler.QueueAction(this, 25);
     }
 
     void RotateTowardsTargetPosition(Vector3 targetPosition)
@@ -222,16 +231,14 @@ public class MoveAction : BaseAction
 
         transform.rotation = targetRotation;
 
-        //unit.GetAction<TurnAction>().SetCurrentDirection();
+        unit.unitActionHandler.GetAction<TurnAction>().SetCurrentDirection();
     }
-
-    public bool IsMoving() => isMoving;
 
     public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
-    public GridPosition TargetGridPosition() => targetGridPosition;
+    public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 
-    public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition; 
+    public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
     
     public void ResetToDefaults()
     {
@@ -242,6 +249,4 @@ public class MoveAction : BaseAction
         fleeDestination = Vector3.zero;
         distToFleeDestination = 0;
     }
-
-    public Seeker Seeker() => seeker;
 }

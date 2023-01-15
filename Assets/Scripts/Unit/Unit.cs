@@ -1,26 +1,24 @@
 using Pathfinding;
-using System.Buffers.Text;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
     [Header("Unit Info")]
     [SerializeField] float shoulderHeight = 0.25f;
-    [SerializeField] LayerMask actionObstaclesMask;
-    [SerializeField] Unit leader;
+    [SerializeField] public LayerMask actionObstaclesMask { get; private set; }
+    [SerializeField] public Unit leader { get; private set; }
 
-    bool isMyTurn, isDead;
+    public bool isMyTurn { get; private set; }
+    public bool isDead { get; private set; }
 
-    GridPosition gridPosition;
+public GridPosition gridPosition { get; private set; }
 
     GameManager gm;
 
     SingleNodeBlocker singleNodeBlocker;
-    StateController stateController;
-    Stats stats;
-    UnitActionHandler unitActionHandler;
+    public StateController stateController { get; private set; }
+    public Stats stats { get; private set; }
+    public UnitActionHandler unitActionHandler { get; private set; }
 
     void Awake()
     {
@@ -64,29 +62,13 @@ public class Unit : MonoBehaviour
 
     public bool IsPlayer() => gameObject.CompareTag("Player");
 
-    public bool IsMyTurn() => isMyTurn;
-
     public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
-
-    public bool IsDead() => isDead;
 
     public bool SetIsDead(bool isDead) => this.isDead = isDead;
 
-    public Unit Leader() => leader;
-
     public void SetLeader(Unit newLeader) => leader = newLeader;
-
-    public StateController StateController() => stateController;
-
-    public Stats Stats() => stats;
-
-    public UnitActionHandler UnitActionHandler() => unitActionHandler;
 
     public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
 
-    public GridPosition GridPosition() => gridPosition;
-
     public float ShoulderHeight() => shoulderHeight;
-
-    public LayerMask ActionObstaclesMask() => actionObstaclesMask;
 }

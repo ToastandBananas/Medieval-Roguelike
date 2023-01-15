@@ -14,22 +14,22 @@ public class StateController : MonoBehaviour
         unit = GetComponent<Unit>();
 
         if (currentState == State.Idle)
-            SetToDefaultState(unit.UnitActionHandler().GetAction<MoveAction>().shouldFollowLeader);
+            SetToDefaultState(unit.unitActionHandler.GetAction<MoveAction>().shouldFollowLeader);
     }
 
     public State CurrentState() => currentState;
 
     public void SetCurrentState(State state)
     {
-        unit.UnitActionHandler().GetAction<MoveAction>().ResetToDefaults();
+        unit.unitActionHandler.GetAction<MoveAction>().ResetToDefaults();
         currentState = state;
     }
 
     public void SetToDefaultState(bool shouldFollowLeader)
     {
-        unit.UnitActionHandler().GetAction<MoveAction>().ResetToDefaults();
+        unit.unitActionHandler.GetAction<MoveAction>().ResetToDefaults();
 
-        if (shouldFollowLeader && unit.Leader() != null)
+        if (shouldFollowLeader && unit.leader != null)
             currentState = State.Follow;
         else
             currentState = defaultState;

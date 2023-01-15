@@ -1,14 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast }
 
 public class PlayerActionInput : MonoBehaviour
 {
     Unit unit;
-
-    Direction directionFacing = Direction.North;
 
     void Start()
     {
@@ -18,9 +12,9 @@ public class PlayerActionInput : MonoBehaviour
 
     void Update()
     {
-        if (unit.IsMyTurn())
+        if (unit.isMyTurn)
         {
-            if (unit.UnitActionHandler().GetAction<MoveAction>().IsMoving() == false /*&& selectedAction != null && selectedAction is MoveAction*/)
+            if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false /*&& selectedAction != null && selectedAction is MoveAction*/)
                 StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
             //else if (selectedAction != null && selectedAction is TurnAction)
                 //ActionLineRenderer.Instance.DrawTurnArrow(unit.UnitActionHandler().GetAction<TurnAction>().targetPosition);
@@ -31,15 +25,15 @@ public class PlayerActionInput : MonoBehaviour
             {
                 GridPosition mouseGridPosition = GetMouseGridPosition();
 
-                unit.UnitActionHandler().SetTargetGridPosition(mouseGridPosition);
-                unit.UnitActionHandler().QueueAction(unit.UnitActionHandler().GetAction<MoveAction>(), 25);
+                unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
+                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), 25);
             }
         }
     }
 
     GridPosition GetMouseGridPosition()
     {
-        Debug.Log("Mouse Grid Position: " + LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
+        // Debug.Log("Mouse Grid Position: " + LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
         return LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
     }
 }

@@ -6,10 +6,11 @@ public class UnitActionHandler : MonoBehaviour
 {
     GridPosition targetGridPosition;
 
-    List<BaseAction> queuedActions = new List<BaseAction>();
-    List<int> queuedAP = new List<int>();
+    public List<BaseAction> queuedActions { get; private set; }
+    public List<int> queuedAP { get; private set; }
 
     BaseAction[] baseActionArray;
+    public BaseAction selectedAction { get; private set; }
 
     Unit unit;
 
@@ -17,6 +18,9 @@ public class UnitActionHandler : MonoBehaviour
 
     void Awake()
     {
+        queuedActions = new List<BaseAction>();
+        queuedAP = new List<int>();
+
         unit = GetComponent<Unit>(); 
         baseActionArray = GetComponents<BaseAction>();
     }
@@ -24,9 +28,9 @@ public class UnitActionHandler : MonoBehaviour
     #region Action Queue
     public void TakeTurn()
     {
-        if (unit.IsMyTurn() && unit.IsDead() == false)
+        if (unit.isMyTurn && unit.isDead == false)
         {
-            if (unit.Stats().CurrentAP() <= 0)
+            if (unit.stats.CurrentAP() <= 0)
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
             else
             {
@@ -46,7 +50,7 @@ public class UnitActionHandler : MonoBehaviour
         queuedActions.Add(action);
         queuedAP.Add(APCost);
 
-        if (unit.IsMyTurn() && unit.Stats().CurrentAP() > 0)
+        if (unit.isMyTurn && unit.stats.CurrentAP() > 0)
             StartCoroutine(GetNextQueuedAction());
 
         // Update AP text
@@ -56,12 +60,12 @@ public class UnitActionHandler : MonoBehaviour
 
     public IEnumerator GetNextQueuedAction()
     {
-        if (unit.IsDead())
+        if (unit.isDead)
             yield break;
 
         if (queuedActions.Count > 0 && isPerformingAction == false)
         {
-            int APRemainder = unit.Stats().UseAPAndGetRemainder(queuedAP[0]);
+            int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP[0]);
             if (APRemainder <= 0)
             {
                 isPerformingAction = true;
@@ -89,12 +93,12 @@ public class UnitActionHandler : MonoBehaviour
         isPerformingAction = false;
 
         // If the character has no AP remaining, end their turn
-        if (unit.Stats().CurrentAP() <= 0)
+        if (unit.stats.CurrentAP() <= 0)
         {
-            if (unit.IsMyTurn())
+            if (unit.isMyTurn)
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
         }
-        else if (unit.IsNPC() && GetAction<MoveAction>().IsMoving() == false) // Take another action
+        else if (unit.IsNPC() && GetAction<MoveAction>().isMoving == false) // Take another action
             TakeTurn();
     }
 
@@ -107,7 +111,7 @@ public class UnitActionHandler : MonoBehaviour
     // NPC Only
     public void DetermineAction()
     {
-        switch (unit.StateController().CurrentState())
+        switch (unit.stateController.CurrentState())
         {
             case State.Idle:
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
@@ -143,8 +147,6 @@ public class UnitActionHandler : MonoBehaviour
         }
         return null;
     }
-
-    public List<BaseAction> QueuedActions() => queuedActions;
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 }

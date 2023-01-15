@@ -77,5 +77,5 @@ public class Stats : MonoBehaviour
         return remainingAmount;
     }
 
-    public IntStat Speed() => speed;
+    public int Speed() => speed.GetValue();
 }

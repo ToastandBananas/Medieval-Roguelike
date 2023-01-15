@@ -38,16 +38,16 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
 
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
-        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || gm.Player().GridPosition() != currentPlayerPosition))
+        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || gm.Player().gridPosition != currentPlayerPosition))
         {
             currentMouseGridPosition = mouseGridPosition;
-            currentPlayerPosition = gm.Player().GridPosition();
+            currentPlayerPosition = gm.Player().gridPosition;
 
-            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(gm.Player().GridPosition()), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
+            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(gm.Player().gridPosition), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
-            gm.Player().UnitActionHandler().GetAction<MoveAction>().Seeker().StartPath(path);
+            gm.Player().unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
 
             // Wait for the path calculation to complete
             yield return StartCoroutine(path.WaitForPath());
@@ -61,7 +61,7 @@ public class ActionLineRenderer : MonoBehaviour
                 yield break;
 
             // Don't draw a path if the mouse grid position is unwalkable
-            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, gm.Player().ActionObstaclesMask());
+            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, gm.Player().actionObstaclesMask);
             if (collisions.Length > 0)
                 yield break;
 
@@ -142,7 +142,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = gm.Player().UnitActionHandler().GetAction<TurnAction>().DetermineTurnDirection();
+        Direction turnDirection = gm.Player().unitActionHandler.GetAction<TurnAction>().DetermineTurnDirection();
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 

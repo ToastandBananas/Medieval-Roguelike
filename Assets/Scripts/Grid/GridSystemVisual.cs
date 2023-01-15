@@ -120,7 +120,7 @@ public class GridSystemVisual : MonoBehaviour
 
             float sphereCastRadius = 0.1f;
             Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()) - ((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()))).normalized;
-            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(activeUnit.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()), (Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight())), activeUnit.ActionObstaclesMask()))
+            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(activeUnit.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()), (Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight())), activeUnit.actionObstaclesMask))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);
