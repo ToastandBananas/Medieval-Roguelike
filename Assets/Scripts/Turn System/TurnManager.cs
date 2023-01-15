@@ -55,6 +55,7 @@ public class TurnManager : MonoBehaviour
     void FinishPlayersTurn()
     {
         gm.Player().SetIsMyTurn(false);
+        gm.Player().BlockCurrentPosition();
         npcsFinishedTakingTurnCount = 0;
 
         DoAllNPCsTurns();
@@ -64,6 +65,7 @@ public class TurnManager : MonoBehaviour
     {
         gm.Player().Stats().ReplenishAP();
         gm.Player().SetIsMyTurn(true);
+        gm.Player().UnblockCurrentPosition();
 
         //gm.tileInfoDisplay.DisplayTileInfo();
 
@@ -89,6 +91,7 @@ public class TurnManager : MonoBehaviour
     void FinishNPCsTurn(Unit npc)
     {
         npc.SetIsMyTurn(false);
+        npc.BlockCurrentPosition();
         npcsFinishedTakingTurnCount++;
 
         if (npcsFinishedTakingTurnCount >= npcs.Count)
@@ -101,6 +104,7 @@ public class TurnManager : MonoBehaviour
         {
             npc.Stats().ReplenishAP();
             npc.SetIsMyTurn(true);
+            npc.UnblockCurrentPosition();
 
             //npc.status.UpdateBuffs();
             //npc.status.UpdateInjuries();

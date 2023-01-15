@@ -13,16 +13,13 @@ public class GameManager : MonoBehaviour
         {
             if (Instance != this)
             {
-                Debug.LogWarning("More than one Instance of TurnManager. Fix me!");
+                Debug.LogWarning("More than one Instance of GameManager. Fix me!");
                 Destroy(gameObject);
             }
         }
         else
             Instance = this;
-    }
 
-    void Start()
-    {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
     }
 

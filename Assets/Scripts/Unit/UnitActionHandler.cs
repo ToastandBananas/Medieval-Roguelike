@@ -90,8 +90,11 @@ public class UnitActionHandler : MonoBehaviour
 
         // If the character has no AP remaining, end their turn
         if (unit.Stats().CurrentAP() <= 0)
-            StartCoroutine(TurnManager.Instance.FinishTurn(unit));
-        else if (GetAction<MoveAction>().IsMoving() == false) // Take another action
+        {
+            if (unit.IsMyTurn())
+                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+        }
+        else if (unit.IsNPC() && GetAction<MoveAction>().IsMoving() == false) // Take another action
             TakeTurn();
     }
 
@@ -142,4 +145,6 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     public List<BaseAction> QueuedActions() => queuedActions;
+
+    public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 }
