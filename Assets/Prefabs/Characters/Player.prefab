@@ -633,8 +633,9 @@ GameObject:
   - component: {fileID: 6974571770984074728}
   - component: {fileID: 3713523194178401732}
   - component: {fileID: 6440773195933579921}
-  - component: {fileID: 2371494321970509754}
+  - component: {fileID: 8610993750160888402}
   - component: {fileID: 7077269047116504926}
+  - component: {fileID: 2371494321970509754}
   - component: {fileID: 4910889609817399986}
   - component: {fileID: 6094857115427304514}
   m_Layer: 3
@@ -758,11 +759,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shoulderHeight: 0.25
-  actionObstaclesMask:
-    serializedVersion: 2
-    m_Bits: 0
-  leader: {fileID: 0}
---- !u!114 &2371494321970509754
+--- !u!114 &8610993750160888402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -771,9 +768,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d83bd39489cdfe4c869c805272702b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  headTransform: {fileID: 7142527425681057192}
+  unitAnim: {fileID: 2531134404685777071}
 --- !u!114 &7077269047116504926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -786,7 +785,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unit: {fileID: 6440773195933579921}
+--- !u!114 &2371494321970509754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4910889609817399986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -806,7 +816,6 @@ MonoBehaviour:
   shouldAlwaysFleeCombat: 0
   startFollowingDistance: 3
   slowDownDistance: 4
-  shouldFollowLeader: 0
   patrolPoints: []
   maxChaseDistance: 15
   defaultPosition: {x: 0, y: 0}

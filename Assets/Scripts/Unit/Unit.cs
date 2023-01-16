@@ -8,10 +8,12 @@ public class Unit : MonoBehaviour
     [SerializeField] public LayerMask actionObstaclesMask { get; private set; }
     [SerializeField] public Unit leader { get; private set; }
 
+    public UnitAnimator unitAnimator { get; private set; }
+
     public bool isMyTurn { get; private set; }
     public bool isDead { get; private set; }
 
-public GridPosition gridPosition { get; private set; }
+    public GridPosition gridPosition { get; private set; }
 
     GameManager gm;
 
@@ -26,6 +28,7 @@ public GridPosition gridPosition { get; private set; }
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
+        unitAnimator = GetComponent<UnitAnimator>();
     }
 
     void Start()

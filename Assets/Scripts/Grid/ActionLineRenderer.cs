@@ -142,7 +142,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = gm.Player().unitActionHandler.GetAction<TurnAction>().DetermineTurnDirection();
+        Direction turnDirection = gm.Player().unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection();
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 
@@ -208,4 +208,6 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.positionCount = 0;
         arrowHeadLineRenderer.positionCount = 0;
     }
+
+    public void ResetCurrentMouseGridPosition() => currentMouseGridPosition = new GridPosition(10000, 10000, 10000);
 }

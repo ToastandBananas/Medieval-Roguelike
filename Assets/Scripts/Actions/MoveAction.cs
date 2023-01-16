@@ -89,11 +89,7 @@ public class MoveAction : BaseAction
     {
         Vector3 firstPointOnPath = positionList[1];
         Vector3 nextPosition = unit.transform.localPosition;
-        bool increaseCurrentPositionIndex = false;
         float stoppingDistance = 0.0125f;
-        int currentPositionIndex = 0;
-
-        Debug.Log("First Point on Path: " + firstPointOnPath);
         
         if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
             nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
@@ -122,6 +118,7 @@ public class MoveAction : BaseAction
         while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
         {
             isMoving = true;
+            unit.unitAnimator.StartMovingForward();
             ActionLineRenderer.Instance.HideLineRenderers();
 
             Vector3 unitPosition = unit.transform.localPosition;
@@ -129,8 +126,6 @@ public class MoveAction : BaseAction
 
             if (Mathf.Abs(Mathf.Abs(firstPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
             {
-                Debug.Log("Next Position: " + nextPosition);
-                Debug.Log("Unit Position: " + unitPosition);
                 // If the next path position is above the unit's current position
                 if (firstPointOnPath.y - unitPosition.y > 0f)
                 {
@@ -144,19 +139,12 @@ public class MoveAction : BaseAction
                 // If the next path position is below the unit's current position
                 else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPosition.z, unitPosition.z) == false))
                 {
-                    Debug.Log("And then Here");
                     targetPosition = new Vector3(firstPointOnPath.x, unitPosition.y, firstPointOnPath.z);
                     nextPosition = new Vector3(nextPosition.x, firstPointOnPath.y, nextPosition.z);
                 }
-                //else
-                    //targetPosition = nextPosition;
             }
             else
-            {
-                Debug.Log("And Finally Here");
                 targetPosition = nextPosition;
-                increaseCurrentPositionIndex = true;
-            }
 
             Vector3 moveDirection = (targetPosition - unitPosition).normalized;
 
@@ -165,16 +153,14 @@ public class MoveAction : BaseAction
             float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
             if (distanceToTargetPosition > stoppingDistance)
             {
-                float distanceToNextPosition = Vector3.Distance(unitPosition, targetPosition);
+                float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
                 float distanceToTriggerStopAnimation = 1f;
-                //if (distanceToNextPosition <= distanceToTriggerStopAnimation)
-                //OnStopMoving?.Invoke(this, EventArgs.Empty);
+                if (distanceToNextPosition <= distanceToTriggerStopAnimation)
+                    unit.unitAnimator.StopMovingForward();
 
                 float moveSpeed = 4f;
                 unit.transform.localPosition += moveDirection * moveSpeed * Time.deltaTime;
             }
-            else if (increaseCurrentPositionIndex && currentPositionIndex < positionList.Count - 1)
-                currentPositionIndex++;
 
             yield return null;
         }
@@ -186,6 +172,7 @@ public class MoveAction : BaseAction
         unit.UpdateGridPosition();
 
         isMoving = false;
+
         CompleteAction();
         unit.unitActionHandler.FinishAction();
 
@@ -249,4 +236,20 @@ public class MoveAction : BaseAction
         fleeDestination = Vector3.zero;
         distToFleeDestination = 0;
     }
+
+    public override string GetActionName() => "Move";
+
+    public override bool IsValidAction()
+    {
+        // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
+        return true;
+    }
+
+    public override int GetActionPointsCost()
+    {
+        // TODO: Cost 25 per square (or more depending on terrain type)
+        return 25;
+    }
+
+    public override bool ActionIsUsedInstantly() => false;
 }

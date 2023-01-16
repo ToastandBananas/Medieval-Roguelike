@@ -966,6 +966,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 422555a80878125439071b46cf2ab13b, type: 2}
+    - target: {fileID: 2831291264733156500, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: unitAnim
+      value: 
+      objectReference: {fileID: 481913388}
     - target: {fileID: 3098208011218999462, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1391,6 +1396,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6474021837775871209, guid: b49c80c211f15ff4285f87c5c8653d6b,
     type: 3}
   m_PrefabInstance: {fileID: 1684441031}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &481913388 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4768112959915651879, guid: b11ee58c5596a834b90b6384fd32c127,
+    type: 3}
+  m_PrefabInstance: {fileID: 344522423}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &484867218 stripped
 Transform:
@@ -4168,11 +4179,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Unit - Male
-      objectReference: {fileID: 0}
-    - target: {fileID: 1377663264827766495, guid: b11ee58c5596a834b90b6384fd32c127,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}

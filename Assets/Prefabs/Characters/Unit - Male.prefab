@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 126505681558484576}
   - component: {fileID: 1716772551159210589}
   - component: {fileID: 4471245059765168945}
+  - component: {fileID: 2831291264733156500}
   - component: {fileID: 1918958863613582635}
   - component: {fileID: 6121981607456776970}
   - component: {fileID: 751464884551525251}
@@ -256,10 +257,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shoulderHeight: 0.25
-  actionObstaclesMask:
-    serializedVersion: 2
-    m_Bits: 0
-  leader: {fileID: 0}
+--- !u!114 &2831291264733156500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d83bd39489cdfe4c869c805272702b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headTransform: {fileID: 149888672908566048}
+  unitAnim: {fileID: 4768112959915651879}
 --- !u!114 &1918958863613582635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -303,7 +314,6 @@ MonoBehaviour:
   shouldAlwaysFleeCombat: 0
   startFollowingDistance: 3
   slowDownDistance: 4
-  shouldFollowLeader: 0
   patrolPoints: []
   maxChaseDistance: 15
   defaultPosition: {x: 0, y: 0}

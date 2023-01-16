@@ -12,21 +12,38 @@ public class PlayerActionInput : MonoBehaviour
 
     void Update()
     {
+        Debug.Log(unit.unitActionHandler.selectedAction);
         if (unit.isMyTurn)
         {
-            if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false /*&& selectedAction != null && selectedAction is MoveAction*/)
+            if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is MoveAction)
                 StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-            //else if (selectedAction != null && selectedAction is TurnAction)
-                //ActionLineRenderer.Instance.DrawTurnArrow(unit.UnitActionHandler().GetAction<TurnAction>().targetPosition);
+            else if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is TurnAction)
+                ActionLineRenderer.Instance.DrawTurnArrow(unit.unitActionHandler.GetAction<TurnAction>().targetPosition);
             else
                 ActionLineRenderer.Instance.HideLineRenderers();
 
-            if (GameControls.gamePlayActions.leftMouseClick.WasPressed)
+            if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
+            {
+                ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
+                unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
+            }
+            else if (GameControls.gamePlayActions.turnMode.IsPressed)
+            {
+                unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<TurnAction>());
+                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection());
+
+                if (GameControls.gamePlayActions.select.WasPressed && unit.unitActionHandler.GetAction<TurnAction>().targetDirection != unit.unitActionHandler.GetAction<TurnAction>().currentDirection)
+                    unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost());
+            }
+            else if (GameControls.gamePlayActions.select.WasPressed)
             {
                 GridPosition mouseGridPosition = GetMouseGridPosition();
 
-                unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), 25);
+                if (LevelGrid.Instance.IsValidGridPosition(mouseGridPosition))
+                {
+                    unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
+                    unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), 25);
+                }
             }
         }
     }

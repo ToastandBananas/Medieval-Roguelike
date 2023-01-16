@@ -23,6 +23,8 @@ public class UnitActionHandler : MonoBehaviour
 
         unit = GetComponent<Unit>(); 
         baseActionArray = GetComponents<BaseAction>();
+
+        SetSelectedAction(GetAction<MoveAction>());
     }
 
     #region Action Queue
@@ -149,4 +151,6 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
+
+    public void SetSelectedAction(BaseAction action) => selectedAction = action;
 }

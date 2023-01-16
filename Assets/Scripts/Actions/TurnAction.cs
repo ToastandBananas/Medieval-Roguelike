@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
@@ -8,6 +7,8 @@ public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWes
 public class TurnAction : BaseAction
 {
     public Direction currentDirection { get; private set; }
+    public Direction targetDirection { get; private set; }
+    public Vector3 targetPosition { get; private set; }
 
     Unit unit;
 
@@ -20,35 +21,65 @@ public class TurnAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        throw new NotImplementedException();
+        if (targetPosition == Vector3.zero)
+            return;
+
+        StartAction(onActionComplete);
+
+        StartCoroutine(RotateTowardsPosition(targetPosition));
     }
 
-    public Direction DetermineTurnDirection()
+    public IEnumerator RotateTowardsPosition(Vector3 targetPosition)
+    {
+        Vector3 forward = transform.forward;
+        forward.y = 0;
+        float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+
+        float rotateSpeed = 10f;
+        Vector3 lookPos = (new Vector3(targetPosition.x, transform.position.y, targetPosition.z) - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(lookPos);
+
+        while (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f)
+        {
+            forward = transform.forward;
+            forward.y = 0;
+            headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        transform.rotation = targetRotation;
+        SetCurrentDirection();
+        CompleteAction();
+        unit.unitActionHandler.FinishAction();
+    }
+
+    public Direction DetermineTargetTurnDirection()
     {
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
         GridPosition unitGridPosition = unit.gridPosition;
-        Direction turnDirection;
 
         if (mouseGridPosition.x == unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
-            turnDirection = Direction.North;
+            targetDirection = Direction.North;
         else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z == unitGridPosition.z)
-            turnDirection = Direction.East;
+            targetDirection = Direction.East;
         else if (mouseGridPosition.x == unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
-            turnDirection = Direction.South;
+            targetDirection = Direction.South;
         else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z == unitGridPosition.z)
-            turnDirection = Direction.West;
+            targetDirection = Direction.West;
         else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
-            turnDirection = Direction.NorthWest;
+            targetDirection = Direction.NorthWest;
         else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
-            turnDirection = Direction.NorthEast;
+            targetDirection = Direction.NorthEast;
         else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
-            turnDirection = Direction.SouthWest;
+            targetDirection = Direction.SouthWest;
         else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
-            turnDirection = Direction.SouthEast;
+            targetDirection = Direction.SouthEast;
         else
-            turnDirection = Direction.Center;
+            targetDirection = Direction.Center;
 
-        return turnDirection;
+        return targetDirection;
     }
 
     public Direction SetCurrentDirection()
@@ -76,4 +107,46 @@ public class TurnAction : BaseAction
 
         return currentDirection;
     }
+
+    public void SetTargetPosition(Direction targetDirection)
+    {
+        switch (targetDirection)
+        {
+            case Direction.North:
+                targetPosition = transform.position + new Vector3(0, 0, 1);
+                break;
+            case Direction.East:
+                targetPosition = transform.position + new Vector3(1, 0, 0);
+                break;
+            case Direction.South:
+                targetPosition = transform.position + new Vector3(0, 0, -1);
+                break;
+            case Direction.West:
+                targetPosition = transform.position + new Vector3(-1, 0, 0);
+                break;
+            case Direction.NorthWest:
+                targetPosition = transform.position + new Vector3(-1, 0, 1);
+                break;
+            case Direction.NorthEast:
+                targetPosition = transform.position + new Vector3(1, 0, 1);
+                break;
+            case Direction.SouthWest:
+                targetPosition = transform.position + new Vector3(-1, 0, -1);
+                break;
+            case Direction.SouthEast:
+                targetPosition = transform.position + new Vector3(1, 0, -1);
+                break;
+            case Direction.Center:
+                targetPosition = Vector3.zero;
+                break;
+        }
+    }
+
+    public override string GetActionName() => "Turn";
+
+    public override bool IsValidAction() => true;
+
+    public override int GetActionPointsCost() => 10;
+
+    public override bool ActionIsUsedInstantly() => false;
 }

@@ -19,6 +19,9 @@ public class GameControls : MonoBehaviour
         gamePlayActions.context.AddDefaultBinding(Mouse.RightButton);
         gamePlayActions.context.AddDefaultBinding(InputControlType.Action3);
 
+        gamePlayActions.turnMode.AddDefaultBinding(Key.LeftShift);
+        //gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftTrigger);
+
         // Mouse Buttons
         gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);
         gamePlayActions.rightMouseClick.AddDefaultBinding(Mouse.RightButton);

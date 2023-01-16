@@ -2,7 +2,7 @@
 
 public class GamePlayActions : PlayerActionSet
 {
-    public InControl.PlayerAction select, context;
+    public InControl.PlayerAction select, context, turnMode;
 
     // Mouse Buttons
     public InControl.PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
@@ -26,6 +26,7 @@ public class GamePlayActions : PlayerActionSet
     {
         select = CreatePlayerAction("Select");
         context = CreatePlayerAction("Context");
+        turnMode = CreatePlayerAction("TurnMode");
 
         leftMouseClick = CreatePlayerAction("LeftMouseClick");
         rightMouseClick = CreatePlayerAction("RightMouseClick");
