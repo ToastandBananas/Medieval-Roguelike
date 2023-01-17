@@ -2,31 +2,32 @@
 
 public class GamePlayActions : PlayerActionSet
 {
-    public InControl.PlayerAction select, context, turnMode;
+    public PlayerAction select, context, turnMode, skipTurn;
 
     // Mouse Buttons
-    public InControl.PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
+    public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
 
     // Move Camera
-    public InControl.PlayerAction moveUp, moveDown, moveLeft, moveRight;
+    public PlayerAction moveUp, moveDown, moveLeft, moveRight;
     public PlayerTwoAxisAction movementAxis;
 
     // Rotate Camera
-    public InControl.PlayerAction cameraRotateLeft, cameraRotateRight;
+    public PlayerAction cameraRotateLeft, cameraRotateRight;
     public PlayerOneAxisAction cameraRotateAxis;
 
     // Zoom Camera
-    public InControl.PlayerAction cameraZoomIn, cameraZoomOut;
+    public PlayerAction cameraZoomIn, cameraZoomOut;
 
     // UI Actions
-    public InControl.PlayerAction menuPause, menuSelect;
-    public InControl.PlayerAction menuLeft, menuRight, menuUp, menuDown;
+    public PlayerAction menuPause, menuSelect;
+    public PlayerAction menuLeft, menuRight, menuUp, menuDown;
 
     public GamePlayActions()
     {
         select = CreatePlayerAction("Select");
         context = CreatePlayerAction("Context");
         turnMode = CreatePlayerAction("TurnMode");
+        skipTurn = CreatePlayerAction("SkipTurn");
 
         leftMouseClick = CreatePlayerAction("LeftMouseClick");
         rightMouseClick = CreatePlayerAction("RightMouseClick");

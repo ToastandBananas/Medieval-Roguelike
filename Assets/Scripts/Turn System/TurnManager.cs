@@ -1,7 +1,5 @@
-using Mono.Cecil;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
@@ -10,8 +8,6 @@ public class TurnManager : MonoBehaviour
     [HideInInspector] public int npcsFinishedTakingTurnCount;
 
     Unit activeUnit;
-
-    GameManager gm;
 
     #region Singleton
     public static TurnManager Instance;
@@ -33,9 +29,13 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        gm = GameManager.Instance;
+        activeUnit = UnitManager.Instance.player;
 
-        activeUnit = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
+        foreach (Unit unit in UnitManager.Instance.units)
+        {
+            if (unit != UnitManager.Instance.player)
+                npcs.Add(unit);
+        }
     }
 
     public IEnumerator FinishTurn(Unit unit)
@@ -54,8 +54,8 @@ public class TurnManager : MonoBehaviour
 
     void FinishPlayersTurn()
     {
-        gm.Player().SetIsMyTurn(false);
-        gm.Player().BlockCurrentPosition();
+        UnitManager.Instance.player.SetIsMyTurn(false);
+        UnitManager.Instance.player.BlockCurrentPosition();
         npcsFinishedTakingTurnCount = 0;
 
         DoAllNPCsTurns();
@@ -63,9 +63,11 @@ public class TurnManager : MonoBehaviour
 
     public void ReadyPlayersTurn()
     {
-        gm.Player().stats.ReplenishAP();
-        gm.Player().SetIsMyTurn(true);
-        gm.Player().UnblockCurrentPosition();
+        activeUnit = UnitManager.Instance.player;
+
+        UnitManager.Instance.player.stats.ReplenishAP();
+        UnitManager.Instance.player.SetIsMyTurn(true);
+        UnitManager.Instance.player.UnblockCurrentPosition();
 
         //gm.tileInfoDisplay.DisplayTileInfo();
 
@@ -83,9 +85,9 @@ public class TurnManager : MonoBehaviour
 
         //gm.playerManager.vision.CheckEnemyVisibility();
 
-        gm.Player().stats.ApplyAPLossBuildup();
-        if (gm.Player().stats.CurrentAP() > 0 && gm.Player().unitActionHandler.queuedActions.Count > 0)
-            gm.Player().StartCoroutine(gm.Player().unitActionHandler.GetNextQueuedAction());
+        UnitManager.Instance.player.stats.ApplyAPLossBuildup();
+        if (UnitManager.Instance.player.stats.CurrentAP() > 0 && UnitManager.Instance.player.unitActionHandler.queuedActions.Count > 0)
+            UnitManager.Instance.player.StartCoroutine(UnitManager.Instance.player.unitActionHandler.GetNextQueuedAction());
     }
 
     void FinishNPCsTurn(Unit npc)
@@ -100,8 +102,10 @@ public class TurnManager : MonoBehaviour
 
     public void TakeNPCTurn(Unit npc)
     {
-        if (gm.Player().isDead == false)
+        if (UnitManager.Instance.player.isDead == false)
         {
+            activeUnit = npc;
+
             npc.stats.ReplenishAP();
             npc.SetIsMyTurn(true);
             npc.UnblockCurrentPosition();
@@ -121,7 +125,10 @@ public class TurnManager : MonoBehaviour
             //npc.characterStats.ApplyAPLossBuildup();
 
             if (npc.stats.CurrentAP() > 0)
-                npc.unitActionHandler.TakeTurn();
+            {
+                NPCActionHandler npcActionHandler = npc.unitActionHandler as NPCActionHandler;
+                npcActionHandler.TakeTurn();
+            }
         }
     }
 
@@ -140,5 +147,5 @@ public class TurnManager : MonoBehaviour
 
     public Unit ActiveUnit() => activeUnit;
 
-    public bool IsPlayerTurn() => activeUnit == gm.Player();
+    public bool IsPlayerTurn() => activeUnit == UnitManager.Instance.player;
 }

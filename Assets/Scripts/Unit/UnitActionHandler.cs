@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
 {
-    GridPosition targetGridPosition;
+    public GridPosition targetGridPosition { get; private set; }
 
     public List<BaseAction> queuedActions { get; private set; }
     public List<int> queuedAP { get; private set; }
@@ -12,9 +12,11 @@ public class UnitActionHandler : MonoBehaviour
     BaseAction[] baseActionArray;
     public BaseAction selectedAction { get; private set; }
 
-    Unit unit;
+    public Unit unit { get; private set; }
 
-    bool isPerformingAction;
+    [SerializeField] public LayerMask actionsObstacleMask { get; private set; }
+
+    public bool isPerformingAction { get; private set; }
 
     void Awake()
     {
@@ -28,24 +30,6 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     #region Action Queue
-    public void TakeTurn()
-    {
-        if (unit.isMyTurn && unit.isDead == false)
-        {
-            if (unit.stats.CurrentAP() <= 0)
-                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
-            else
-            {
-                //vision.CheckEnemyVisibility();
-
-                if (queuedActions.Count > 0)
-                    StartCoroutine(GetNextQueuedAction());
-                else if (unit.IsNPC())
-                    DetermineAction();
-            }
-        }
-    }
-
     public void QueueAction(BaseAction action, int APCost)
     {
         // if (isNPC) Debug.Log(name + " queued " + action);
@@ -77,6 +61,7 @@ public class UnitActionHandler : MonoBehaviour
             else
             {
                 // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
+                isPerformingAction = false;
                 queuedAP[0] = APRemainder;
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
             }
@@ -85,7 +70,7 @@ public class UnitActionHandler : MonoBehaviour
             yield return null;
     }
 
-    public void FinishAction()
+    public virtual void FinishAction()
     {
         if (queuedAP.Count > 0)
             queuedAP.Remove(queuedAP[0]);
@@ -100,43 +85,12 @@ public class UnitActionHandler : MonoBehaviour
             if (unit.isMyTurn)
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
         }
-        else if (unit.IsNPC() && GetAction<MoveAction>().isMoving == false) // Take another action
-            TakeTurn();
     }
 
     public void ResetActionsQueue()
     {
         queuedActions.Clear();
         queuedAP.Clear();
-    }
-
-    // NPC Only
-    public void DetermineAction()
-    {
-        switch (unit.stateController.CurrentState())
-        {
-            case State.Idle:
-                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
-                break;
-            case State.Patrol:
-                break;
-            case State.Wander:
-                break;
-            case State.Follow:
-                break;
-            case State.MoveToTarget:
-                break;
-            case State.Fight:
-                break;
-            case State.Flee:
-                break;
-            case State.Hunt:
-                break;
-            case State.FindFood:
-                break;
-            default:
-                break;
-        }
     }
     #endregion
 

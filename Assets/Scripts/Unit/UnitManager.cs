@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,10 +6,11 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager Instance { get; private set; }
 
-    Unit player;
-    List<Unit> units = new List<Unit>();
-    List<Unit> friendlyUnits = new List<Unit>();
-    List<Unit> enemyUnits = new List<Unit>();
+    public Unit player { get; private set; }
+
+    public List<Unit> units { get; private set; }
+    public List<Unit> friendlyUnits { get; private set; }
+    public List<Unit> enemyUnits { get; private set; }
 
     void Awake()
     {
@@ -28,29 +28,14 @@ public class UnitManager : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
 
+        units = new List<Unit>();
+        friendlyUnits = new List<Unit>();
+        enemyUnits = new List<Unit>();
+
         units = FindObjectsOfType<Unit>().ToList();
     }
 
-    void Start()
-    {
-        
-    }
+    public void AddUnitToUnitsList(Unit unit) => units.Add(unit);
 
-    public void AddUnitToUnitsList(Unit unit)
-    {
-        units.Add(unit);
-    }
-
-    public void RemoveUnitFromUnitsList(Unit unit)
-    {
-        units.Remove(unit);
-    }
-
-    public Unit Player() => player;
-
-    public List<Unit> UnitsList() => units;
-
-    public List<Unit> FriendlyUnitsList() => friendlyUnits;
-
-    public List<Unit> EnemyUnitsList() => enemyUnits;
+    public void RemoveUnitFromUnitsList(Unit unit) => units.Remove(unit);
 }

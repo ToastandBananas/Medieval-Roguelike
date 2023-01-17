@@ -2,38 +2,11 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MoveAction : BaseAction
 {
-    [Header("Flee State Variables")]
-    [SerializeField] LayerMask fleeObstacleMask;
-    [SerializeField] float fleeDistance = 20f;
-    [SerializeField] bool shouldAlwaysFleeCombat;
-    Vector3 fleeDestination;
-    float distToFleeDestination = 0;
-    bool needsFleeDestination = true;
-
-    [Header("Follow State Variables")]
-    [SerializeField] float startFollowingDistance = 3f;
-    [SerializeField] float slowDownDistance = 4f;
-    [SerializeField] public bool shouldFollowLeader { get; private set; }
-
-    [Header("Patrol State Variables")]
-    [SerializeField] Vector2[] patrolPoints;
-    int currentPatrolPointIndex;
-    bool initialPatrolPointSet;
-
-    [Header("Pursue State Variables")]
-    [SerializeField] float maxChaseDistance = 15f;
-
-    [Header("Wandering State Variables")]
-    [SerializeField] Vector2 defaultPosition;
-    [SerializeField] public float minRoamDistance = 5f;
-    [SerializeField] public float maxRoamDistance = 20f;
-    Vector2 roamPosition;
-    bool roamPositionSet;
-
     Unit unit;
 
     public Seeker seeker { get; private set; }
@@ -87,6 +60,13 @@ public class MoveAction : BaseAction
 
     IEnumerator Move()
     {
+        if (positionList.Count == 0)
+        {
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+            yield break;
+        }
+        
         Vector3 firstPointOnPath = positionList[1];
         Vector3 nextPosition = unit.transform.localPosition;
         float stoppingDistance = 0.0125f;
@@ -224,18 +204,6 @@ public class MoveAction : BaseAction
     public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
-
-    public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
-    
-    public void ResetToDefaults()
-    {
-        roamPositionSet = false;
-        needsFleeDestination = true;
-        initialPatrolPointSet = false;
-
-        fleeDestination = Vector3.zero;
-        distToFleeDestination = 0;
-    }
 
     public override string GetActionName() => "Move";
 

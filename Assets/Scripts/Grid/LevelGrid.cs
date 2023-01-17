@@ -121,6 +121,47 @@ public class LevelGrid : MonoBehaviour
                gridPosition.z < (layeredGridGraph.depth / 2) + layeredGridGraph.center.z;
     }
 
+    public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit)
+    {
+        GridPosition newGridPosition = startingGridPosition;
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1001);
+        path.traversalProvider = DefaultTraversalProvider();
+
+        // Schedule the path for calculation
+        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (IsValidGridPosition(gridPosition) == false)
+                continue;
+
+            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.actionsObstacleMask);
+            if (collisions.Length > 0)
+                continue;
+
+            if (HasAnyUnitOnGridPosition(gridPosition)) // Grid Position already occupied by another Unit
+                continue;
+
+            // Debug.Log(gridPosition);
+            validGridPositionList.Add(gridPosition);
+        }
+
+        if (validGridPositionList.Count > 0)
+            newGridPosition = validGridPositionList[0];
+
+        Debug.Log(newGridPosition);
+
+        return newGridPosition;
+    }
+
     public bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
 
     public bool HasAnyDeadUnitOnGridPosition(GridPosition gridPosition) => deadUnits.TryGetValue(gridPosition, out Unit unit);

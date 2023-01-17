@@ -6,7 +6,6 @@ public class Unit : MonoBehaviour
     [Header("Unit Info")]
     [SerializeField] float shoulderHeight = 0.25f;
     [SerializeField] public LayerMask actionObstaclesMask { get; private set; }
-    [SerializeField] public Unit leader { get; private set; }
 
     public UnitAnimator unitAnimator { get; private set; }
 
@@ -68,8 +67,6 @@ public class Unit : MonoBehaviour
     public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
 
     public bool SetIsDead(bool isDead) => this.isDead = isDead;
-
-    public void SetLeader(Unit newLeader) => leader = newLeader;
 
     public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
 

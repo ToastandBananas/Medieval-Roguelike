@@ -14,13 +14,16 @@ public class GameControls : MonoBehaviour
     void BindDefaultControls()
     {
         gamePlayActions.select.AddDefaultBinding(Mouse.LeftButton);
-        gamePlayActions.select.AddDefaultBinding(InputControlType.Action1);
+        gamePlayActions.select.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
 
         gamePlayActions.context.AddDefaultBinding(Mouse.RightButton);
-        gamePlayActions.context.AddDefaultBinding(InputControlType.Action3);
+        gamePlayActions.context.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
 
         gamePlayActions.turnMode.AddDefaultBinding(Key.LeftShift);
-        //gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftTrigger);
+        gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftBumper);
+
+        gamePlayActions.skipTurn.AddDefaultBinding(Key.Space);
+        gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Cirle(PS4) / B(Xbox)
 
         // Mouse Buttons
         gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);

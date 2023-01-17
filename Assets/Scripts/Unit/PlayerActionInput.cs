@@ -12,9 +12,11 @@ public class PlayerActionInput : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(unit.unitActionHandler.selectedAction);
-        if (unit.isMyTurn)
+        if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false)
         {
+            if (GameControls.gamePlayActions.skipTurn.WasPressed)
+                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+
             if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is MoveAction)
                 StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
             else if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is TurnAction)

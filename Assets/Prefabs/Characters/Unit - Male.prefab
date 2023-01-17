@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 4471245059765168945}
   - component: {fileID: 2831291264733156500}
   - component: {fileID: 1918958863613582635}
-  - component: {fileID: 6121981607456776970}
+  - component: {fileID: 3566344150296233335}
   - component: {fileID: 751464884551525251}
   - component: {fileID: 4942221014076060086}
   m_Layer: 3
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdc00288b3da124f88440c2e31054ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6121981607456776970
+--- !u!114 &3566344150296233335
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -292,9 +292,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 1377663264827766495}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
+  m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fleeObstacleMask:
+    serializedVersion: 2
+    m_Bits: 72
+  fleeDistance: 20
+  shouldAlwaysFleeCombat: 0
+  startFollowingDistance: 3
+  slowDownDistance: 4
+  maxChaseDistance: 15
+  defaultPosition: {x: 0, y: 0}
+  minRoamDistance: 5
+  maxRoamDistance: 20
 --- !u!114 &751464884551525251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,18 +318,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8f117d204a5d64f9064b851a6da5c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fleeObstacleMask:
-    serializedVersion: 2
-    m_Bits: 0
-  fleeDistance: 20
-  shouldAlwaysFleeCombat: 0
-  startFollowingDistance: 3
-  slowDownDistance: 4
-  patrolPoints: []
-  maxChaseDistance: 15
-  defaultPosition: {x: 0, y: 0}
-  minRoamDistance: 5
-  maxRoamDistance: 20
 --- !u!114 &4942221014076060086
 MonoBehaviour:
   m_ObjectHideFlags: 0

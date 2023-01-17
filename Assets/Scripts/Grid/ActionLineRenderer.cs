@@ -13,8 +13,6 @@ public class ActionLineRenderer : MonoBehaviour
     GridPosition currentMouseGridPosition;
     GridPosition currentPlayerPosition;
 
-    GameManager gm;
-
     void Awake()
     {
         if (Instance != null)
@@ -28,26 +26,21 @@ public class ActionLineRenderer : MonoBehaviour
         HideLineRenderers();
     }
 
-    void Start()
-    {
-        gm = GameManager.Instance;
-    }
-
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
 
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
-        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || gm.Player().gridPosition != currentPlayerPosition))
+        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || UnitManager.Instance.player.gridPosition != currentPlayerPosition))
         {
             currentMouseGridPosition = mouseGridPosition;
-            currentPlayerPosition = gm.Player().gridPosition;
+            currentPlayerPosition = UnitManager.Instance.player.gridPosition;
 
-            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(gm.Player().gridPosition), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
+            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(UnitManager.Instance.player.gridPosition), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
-            gm.Player().unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
+            UnitManager.Instance.player.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
 
             // Wait for the path calculation to complete
             yield return StartCoroutine(path.WaitForPath());
@@ -61,7 +54,7 @@ public class ActionLineRenderer : MonoBehaviour
                 yield break;
 
             // Don't draw a path if the mouse grid position is unwalkable
-            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, gm.Player().actionObstaclesMask);
+            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, UnitManager.Instance.player.actionObstaclesMask);
             if (collisions.Length > 0)
                 yield break;
 
@@ -138,11 +131,11 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         mainLineRenderer.positionCount = 2;
 
-        mainLineRenderer.SetPosition(0, gm.Player().WorldPosition() + lineRendererOffset);
+        mainLineRenderer.SetPosition(0, UnitManager.Instance.player.WorldPosition() + lineRendererOffset);
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = gm.Player().unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection();
+        Direction turnDirection = UnitManager.Instance.player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection();
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 

@@ -4,32 +4,34 @@ public enum State { Idle, Patrol, Wander, Follow, MoveToTarget, Fight, Flee, Hun
 
 public class StateController : MonoBehaviour
 {
-    State defaultState = State.Idle;
+    [SerializeField] State defaultState = State.Idle;
     State currentState = State.Idle;
 
     Unit unit;
+    NPCActionHandler npcActionHandler;
 
     void Start()
     {
         unit = GetComponent<Unit>();
+        npcActionHandler = unit.unitActionHandler as NPCActionHandler;
 
         if (currentState == State.Idle)
-            SetToDefaultState(unit.unitActionHandler.GetAction<MoveAction>().shouldFollowLeader);
+            SetToDefaultState(npcActionHandler.shouldFollowLeader);
     }
 
     public State CurrentState() => currentState;
 
     public void SetCurrentState(State state)
     {
-        unit.unitActionHandler.GetAction<MoveAction>().ResetToDefaults();
+        npcActionHandler.ResetToDefaults();
         currentState = state;
     }
 
     public void SetToDefaultState(bool shouldFollowLeader)
     {
-        unit.unitActionHandler.GetAction<MoveAction>().ResetToDefaults();
+        npcActionHandler.ResetToDefaults();
 
-        if (shouldFollowLeader && unit.leader != null)
+        if (shouldFollowLeader && npcActionHandler.leader != null)
             currentState = State.Follow;
         else
             currentState = defaultState;
