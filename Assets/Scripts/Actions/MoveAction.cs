@@ -131,12 +131,12 @@ public class MoveAction : BaseAction
         }
         
         unit.BlockAtPosition(LevelGrid.Instance.GetGridPosition(nextPosition + new Vector3(0, firstPointOnPath.y - unit.WorldPosition().y, 0)).WorldPosition());
+        ActionLineRenderer.Instance.HideLineRenderers();
 
         while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
         {
             isMoving = true;
             unit.unitAnimator.StartMovingForward();
-            ActionLineRenderer.Instance.HideLineRenderers();
 
             Vector3 unitPosition = unit.transform.localPosition;
             Vector3 targetPosition = unitPosition;
@@ -163,10 +163,9 @@ public class MoveAction : BaseAction
             else
                 targetPosition = nextPosition;
 
+            RotateTowardsTargetPosition(nextPosition);
+
             Vector3 moveDirection = (targetPosition - unitPosition).normalized;
-
-            RotateTowardsTargetPosition(firstPointOnPath);
-
             float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
             if (distanceToTargetPosition > stoppingDistance)
             {
@@ -185,6 +184,7 @@ public class MoveAction : BaseAction
         StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition));
 
         unit.transform.localPosition = nextPosition;
+        unit.UnblockCurrentPosition();
         unit.UpdateGridPosition();
 
         isMoving = false;

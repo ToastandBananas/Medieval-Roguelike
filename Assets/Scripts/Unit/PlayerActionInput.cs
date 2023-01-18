@@ -18,17 +18,18 @@ public class PlayerActionInput : MonoBehaviour
             unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
         }
 
-        if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false)
+        if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
         {
             if (GameControls.gamePlayActions.skipTurn.WasPressed)
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
 
-            if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is MoveAction)
-                StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-            else if (unit.unitActionHandler.GetAction<MoveAction>().isMoving == false && unit.unitActionHandler.selectedAction != null && unit.unitActionHandler.selectedAction is TurnAction)
-                ActionLineRenderer.Instance.DrawTurnArrow(unit.unitActionHandler.GetAction<TurnAction>().targetPosition);
-            else
-                ActionLineRenderer.Instance.HideLineRenderers();
+            if (unit.unitActionHandler.selectedAction != null)
+            {
+                if (unit.unitActionHandler.selectedAction is MoveAction)
+                    StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                else if (unit.unitActionHandler.selectedAction is TurnAction)
+                    ActionLineRenderer.Instance.DrawTurnArrow(unit.unitActionHandler.GetAction<TurnAction>().targetPosition);
+            }
 
             if (GameControls.gamePlayActions.turnMode.IsPressed)
             {
@@ -48,6 +49,11 @@ public class PlayerActionInput : MonoBehaviour
                     unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), 25);
                 }
             }
+        }
+        else
+        {
+            ActionLineRenderer.Instance.HideLineRenderers();
+            ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
         }
     }
 

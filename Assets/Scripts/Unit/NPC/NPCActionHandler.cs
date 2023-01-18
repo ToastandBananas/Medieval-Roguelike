@@ -113,8 +113,8 @@ public class NPCActionHandler : UnitActionHandler
             GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
             if (LevelGrid.Instance.IsValidGridPosition(patrolPointGridPosition) == false)
             {
+                Debug.LogWarning(patrolPointGridPosition + " is not a valid grid position...");
                 IncreasePatrolPointIndex();
-                Patrol();
                 return;
             }
             else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.HasAnyUnitOnGridPosition(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
@@ -122,11 +122,7 @@ public class NPCActionHandler : UnitActionHandler
             {
                 GridPosition nearestGridPosition = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit);
                 if (patrolPointGridPosition == nearestGridPosition)
-                {
                     IncreasePatrolPointIndex();
-                    Patrol();
-                    return;
-                }
 
                 hasAlternativePatrolPoint = true;
                 SetTargetGridPosition(nearestGridPosition);

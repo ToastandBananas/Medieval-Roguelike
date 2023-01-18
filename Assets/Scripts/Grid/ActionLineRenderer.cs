@@ -1,3 +1,4 @@
+using Mono.Cecil.Cil;
 using Pathfinding;
 using System.Collections;
 using UnityEngine;
@@ -29,7 +30,6 @@ public class ActionLineRenderer : MonoBehaviour
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
-
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
         if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || UnitManager.Instance.player.gridPosition != currentPlayerPosition))
         {

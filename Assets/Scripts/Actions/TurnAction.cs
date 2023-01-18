@@ -23,7 +23,7 @@ public class TurnAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        if (targetPosition == Vector3.zero)
+        if (targetDirection == Direction.Center)
             return;
 
         StartAction(onActionComplete);

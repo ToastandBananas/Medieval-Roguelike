@@ -93,7 +93,7 @@ public class TurnManager : MonoBehaviour
     void FinishNPCsTurn(Unit npc)
     {
         npc.SetIsMyTurn(false);
-        //npc.BlockCurrentPosition();
+        npc.BlockCurrentPosition();
         npcsFinishedTakingTurnCount++;
 
         if (npcsFinishedTakingTurnCount >= npcs.Count)
