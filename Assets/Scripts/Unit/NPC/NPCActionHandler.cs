@@ -45,7 +45,7 @@ public class NPCActionHandler : UnitActionHandler
             {
                 //vision.CheckEnemyVisibility();
 
-                if (queuedActions.Count > 0)
+                if (queuedAction != null)
                     StartCoroutine(GetNextQueuedAction());
                 else
                     DetermineAction();
@@ -126,7 +126,7 @@ public class NPCActionHandler : UnitActionHandler
 
                 hasAlternativePatrolPoint = true;
                 SetTargetGridPosition(nearestGridPosition);
-                GetAction<MoveAction>().SetTargetGridPosition(nearestGridPosition);
+                //GetAction<MoveAction>().SetTargetGridPosition(nearestGridPosition);
             }
 
             if ((hasAlternativePatrolPoint == false && Vector3.Distance(patrolPoints[currentPatrolPointIndex], transform.position) <= 0.1f) || (hasAlternativePatrolPoint && Vector3.Distance(targetGridPosition.WorldPosition(), transform.position) <= 0.1f))
@@ -136,18 +136,18 @@ public class NPCActionHandler : UnitActionHandler
 
                 IncreasePatrolPointIndex();
                 SetTargetGridPosition(patrolPointGridPosition);
-                GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
+                //GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
             }
             else if (hasAlternativePatrolPoint == false && targetGridPosition.WorldPosition() != patrolPoints[currentPatrolPointIndex])
             {
                 SetTargetGridPosition(patrolPointGridPosition);
-                GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
+                //GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
             }
 
             if (GetAction<MoveAction>().isMoving == false)
             {
                 patrolIterationCount = 0;
-                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost());
+                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
             }
         }
         else

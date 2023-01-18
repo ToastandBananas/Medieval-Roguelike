@@ -158,6 +158,22 @@ public class LevelGrid : MonoBehaviour
         return newGridPosition;
     }
 
+    public static bool IsDiagonal(GridPosition startGridPosition, GridPosition endGridPosition)
+    {
+        if (Mathf.RoundToInt(startGridPosition.x) != Mathf.RoundToInt(endGridPosition.x) && Mathf.RoundToInt(startGridPosition.z) != Mathf.RoundToInt(endGridPosition.z))
+            return true;
+        return false;
+    }
+
+    public static bool IsDiagonal(Vector3 startPosition, Vector3 endPosition)
+    {
+        //if (TurnManager.Instance.IsPlayerTurn())
+            //Debug.Log("Start: " + startPosition + " / " + "End: " + endPosition);
+        if (Mathf.RoundToInt(startPosition.x) != Mathf.RoundToInt(endPosition.x) && Mathf.RoundToInt(startPosition.z) != Mathf.RoundToInt(endPosition.z))
+            return true;
+        return false;
+    }
+
     public bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
 
     public bool HasAnyDeadUnitOnGridPosition(GridPosition gridPosition) => deadUnits.TryGetValue(gridPosition, out Unit unit);

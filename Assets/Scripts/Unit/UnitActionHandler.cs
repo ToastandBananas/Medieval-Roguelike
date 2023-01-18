@@ -6,8 +6,8 @@ public class UnitActionHandler : MonoBehaviour
 {
     public GridPosition targetGridPosition { get; private set; }
 
-    public List<BaseAction> queuedActions { get; private set; }
-    public List<int> queuedAP { get; private set; }
+    public BaseAction queuedAction { get; private set; }
+    public int queuedAP { get; private set; }
 
     BaseAction[] baseActionArray;
     public BaseAction selectedAction { get; private set; }
@@ -20,9 +20,6 @@ public class UnitActionHandler : MonoBehaviour
 
     void Awake()
     {
-        queuedActions = new List<BaseAction>();
-        queuedAP = new List<int>();
-
         unit = GetComponent<Unit>(); 
         baseActionArray = GetComponents<BaseAction>();
 
@@ -33,8 +30,8 @@ public class UnitActionHandler : MonoBehaviour
     public void QueueAction(BaseAction action, int APCost)
     {
         // if (isNPC) Debug.Log(name + " queued " + action);
-        queuedActions.Add(action);
-        queuedAP.Add(APCost);
+        queuedAction = action;
+        queuedAP = APCost;
 
         if (unit.isMyTurn && unit.stats.CurrentAP() > 0)
             StartCoroutine(GetNextQueuedAction());
@@ -47,22 +44,25 @@ public class UnitActionHandler : MonoBehaviour
     public IEnumerator GetNextQueuedAction()
     {
         if (unit.isDead)
-            yield break;
-
-        if (queuedActions.Count > 0 && isPerformingAction == false)
         {
-            int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP[0]);
+            ClearActionQueue();
+            yield break;
+        }
+
+        if (queuedAction != null && isPerformingAction == false)
+        {
+            int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP);
             if (APRemainder <= 0)
             {
                 isPerformingAction = true;
-                queuedActions[0].TakeAction(targetGridPosition, null);
+                queuedAction.TakeAction(targetGridPosition, null);
                 // if (isNPC == false) Debug.Log("Got next queued action. Actions still queued: " + actions.Count);
             }
             else
             {
                 // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
                 isPerformingAction = false;
-                queuedAP[0] = APRemainder;
+                queuedAP = APRemainder;
                 StartCoroutine(TurnManager.Instance.FinishTurn(unit));
             }
         }
@@ -72,12 +72,12 @@ public class UnitActionHandler : MonoBehaviour
 
     public virtual void FinishAction()
     {
-        if (queuedAP.Count > 0)
-            queuedAP.Remove(queuedAP[0]);
-        if (queuedActions.Count > 0)
-            queuedActions.Remove(queuedActions[0]);
+        /*if (queuedAP != 0)
+            queuedAP = 0;
+        if (queuedAction != null)
+            queuedAction = null;*/
 
-        isPerformingAction = false;
+        ClearActionQueue();
 
         // If the character has no AP remaining, end their turn
         if (unit.stats.CurrentAP() <= 0)
@@ -87,10 +87,11 @@ public class UnitActionHandler : MonoBehaviour
         }
     }
 
-    public void ResetActionsQueue()
+    public void ClearActionQueue()
     {
-        queuedActions.Clear();
-        queuedAP.Clear();
+        queuedAction = null;
+        queuedAP = 0;
+        isPerformingAction = false;
     }
     #endregion
 

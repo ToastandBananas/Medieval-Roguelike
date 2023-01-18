@@ -6,7 +6,7 @@ public class TimeSystem : MonoBehaviour
     public static int currentMinute;
     public static int currentSecond;
 
-    public const int defaultTimeTickInSeconds = 6;
+    public const int defaultTimeTickInSeconds = 1;
 
     #region Singleton
     public static TimeSystem Instance;

@@ -17,8 +17,6 @@ public class MoveAction : BaseAction
 
     [SerializeField] LayerMask moveObstaclesMask;
 
-    Quaternion targetRotation;
-
     List<Vector3> positionList;
 
     void Awake()
@@ -29,41 +27,11 @@ public class MoveAction : BaseAction
 
     public override void TakeAction(GridPosition targetGridPosition, Action onActionComplete)
     {
-        this.targetGridPosition = targetGridPosition;
-
-        unit.UnblockCurrentPosition();
+          ///////////////////////////////////////////////////////////
+         // Path is calculated in the GetActionsPointsCost method //
+        ///////////////////////////////////////////////////////////
         
-        ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
-        path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
-        
-        // Schedule the path for calculation
-        seeker.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        if (unit.IsNPC() && path.vectorPath.Count == 0)
-        {
-            NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-            if (unit.stateController.CurrentState() == State.Patrol)
-            {
-                GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
-                npcActionHandler.IncreasePatrolPointIndex(); 
-                npcActionHandler.SetTargetGridPosition(patrolPointGridPosition);
-                SetTargetGridPosition(patrolPointGridPosition);
-            }
-
-            unit.unitActionHandler.FinishAction();
-            return;
-        }
-
-        positionList = new List<Vector3>();
-
-        for (int i = 0; i < path.vectorPath.Count; i++)
-        {
-            positionList.Add(path.vectorPath[i]);
-        }
+        GetPathToTargetPosition(targetGridPosition);
 
         //OnStartMoving?.Invoke(this, EventArgs.Empty);
 
@@ -181,13 +149,9 @@ public class MoveAction : BaseAction
             yield return null;
         }
 
-        StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition));
+        unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition);
 
         unit.transform.localPosition = nextPosition;
-        unit.UnblockCurrentPosition();
-        unit.UpdateGridPosition();
-
-        isMoving = false;
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -196,7 +160,47 @@ public class MoveAction : BaseAction
             GridSystemVisual.Instance.UpdateGridVisual();
 
         if (unit.gridPosition != targetGridPosition)
-            unit.unitActionHandler.QueueAction(this, 25);
+            unit.unitActionHandler.QueueAction(this, GetActionPointsCost(targetGridPosition));
+    }
+
+    void GetPathToTargetPosition(GridPosition targetGridPosition)
+    {
+        this.targetGridPosition = targetGridPosition;
+
+        unit.UnblockCurrentPosition();
+
+        ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+        path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
+
+        // Schedule the path for calculation
+        seeker.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+        // yield return StartCoroutine(path.WaitForPath());
+
+        if (unit.IsNPC() && path.vectorPath.Count == 0)
+        {
+            NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+            if (unit.stateController.CurrentState() == State.Patrol)
+            {
+                GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
+                npcActionHandler.IncreasePatrolPointIndex();
+                npcActionHandler.SetTargetGridPosition(patrolPointGridPosition);
+                SetTargetGridPosition(patrolPointGridPosition);
+            }
+
+            unit.unitActionHandler.FinishAction();
+            return;
+        }
+
+        positionList = new List<Vector3>();
+
+        for (int i = 0; i < path.vectorPath.Count; i++)
+        {
+            positionList.Add(path.vectorPath[i]);
+        }
     }
 
     void RotateTowardsTargetPosition(Vector3 targetPosition)
@@ -205,36 +209,6 @@ public class MoveAction : BaseAction
         Vector3 lookPos = (new Vector3(targetPosition.x, transform.position.y, targetPosition.z) - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
-    }
-
-    void SetTargetRotation(Vector3 finalTargetPosition)
-    {
-        Vector3 lookPos = (new Vector3(finalTargetPosition.x, transform.position.y, finalTargetPosition.z) - transform.position).normalized;
-        targetRotation = Quaternion.LookRotation(lookPos);
-    }
-
-    IEnumerator RotateTowardsFinalPosition()
-    {
-        Vector3 forward = transform.forward;
-        forward.y = 0;
-        float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
-
-        float rotateSpeed = 10f;
-        Quaternion currentTargetRotation = targetRotation;
-
-        while (currentTargetRotation == targetRotation && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
-        {
-            forward = transform.forward;
-            forward.y = 0;
-            headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        transform.rotation = targetRotation;
-
-        unit.unitActionHandler.GetAction<TurnAction>().SetCurrentDirection();
     }
 
     public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
@@ -249,10 +223,88 @@ public class MoveAction : BaseAction
         return true;
     }
 
-    public override int GetActionPointsCost()
+    public override int GetActionPointsCost(GridPosition targetGridPosition)
     {
-        // TODO: Cost 25 per square (or more depending on terrain type)
-        return 25;
+        // TODO: Cost 600 (6 seconds) per square (or more depending on terrain type)
+        int defaultTileMoveCost = 600;
+        int cost = defaultTileMoveCost;
+
+        GetPathToTargetPosition(targetGridPosition);
+
+        if (positionList.Count == 0)
+            return 0;
+
+        Vector3 nextPosition;
+        Vector3 firstPointOnPath = positionList[1];
+        if (firstPointOnPath.y != unit.transform.position.y)
+        {
+            nextPosition = firstPointOnPath;
+        }
+        else if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
+            // North
+            nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+        }
+        else if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
+            // South
+            nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+        }
+        else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
+        {
+            // East
+            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+        }
+        else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
+        {
+            // West
+            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+        }
+        else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
+            // NorthEast
+            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+        }
+        else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
+            // SouthWest
+            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+        }
+        else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
+            // SouthEast
+            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+        }
+        else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
+            // NorthWest
+            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+        }
+        else
+        {
+            Debug.LogWarning("Next Position is " + unit.name + "'s current position...");
+            nextPosition = transform.position;
+        }
+
+        if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextPosition))
+            cost = Mathf.RoundToInt(cost * 1.4f);
+
+        unit.BlockCurrentPosition();
+        if (unit.IsPlayer())
+            Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+        return cost;
+    }
+
+    public override void CompleteAction()
+    {
+        base.CompleteAction();
+
+        // Unblock the Unit's postion, in case it's still their turn after this action. If not, it will be blocked again in the TurnManager's finish turn methods
+        unit.UnblockCurrentPosition();
+        unit.UpdateGridPosition();
+
+        isMoving = false;
+        positionList.Clear();
     }
 
     public override bool ActionIsUsedInstantly() => false;

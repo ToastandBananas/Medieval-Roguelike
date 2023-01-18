@@ -4215,6 +4215,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Unit - Male
       objectReference: {fileID: 0}
+    - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: speed.baseValue
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState

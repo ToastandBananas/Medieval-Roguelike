@@ -4,7 +4,7 @@ public class Stats : MonoBehaviour
 {
     [Header("AP")]
     int currentAP;
-    readonly int baseAP = 25; 
+    readonly int baseAP = 60; 
     int APLossBuildup;
 
     [Header("Attributes")]
@@ -21,13 +21,7 @@ public class Stats : MonoBehaviour
 
     public int CurrentAP() => currentAP;
 
-    public int MaxAP()
-    {
-        if (speed.GetValue() > 0)
-            return Mathf.RoundToInt(baseAP + (speed.GetValue() * 1.5f));
-        else
-            return baseAP;
-    }
+    public int MaxAP() => Mathf.RoundToInt(baseAP + (speed.GetValue() * 1.5f));
 
     public void UseAP(int amount)
     {
@@ -61,7 +55,7 @@ public class Stats : MonoBehaviour
     public int UseAPAndGetRemainder(int amount)
     {
         // Debug.Log("Current AP: " + currentAP);
-        int remainingAmount = amount;
+        int remainingAmount;
         if (currentAP >= amount)
         {
             UseAP(amount);

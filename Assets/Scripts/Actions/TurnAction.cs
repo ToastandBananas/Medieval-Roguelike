@@ -57,7 +57,7 @@ public class TurnAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public IEnumerator RotateTowardsDirection(Direction direction)
+    public void RotateTowardsDirection(Direction direction)
     {
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition;
@@ -88,7 +88,7 @@ public class TurnAction : BaseAction
                 targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z - 1);
                 break;
             case Direction.Center:
-                yield break;
+                break;
         }
 
         Vector3 dir = (targetPosition - startPosition).normalized;
@@ -187,11 +187,13 @@ public class TurnAction : BaseAction
         }
     }
 
+    public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition); 
+
     public override string GetActionName() => "Turn";
 
     public override bool IsValidAction() => true;
 
-    public override int GetActionPointsCost() => 10;
+    public override int GetActionPointsCost(GridPosition targetGridPosition) => 10;
 
     public override bool ActionIsUsedInstantly() => false;
 }

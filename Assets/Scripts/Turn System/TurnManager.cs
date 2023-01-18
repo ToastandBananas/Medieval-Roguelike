@@ -86,7 +86,7 @@ public class TurnManager : MonoBehaviour
         //gm.playerManager.vision.CheckEnemyVisibility();
 
         UnitManager.Instance.player.stats.ApplyAPLossBuildup();
-        if (UnitManager.Instance.player.stats.CurrentAP() > 0 && UnitManager.Instance.player.unitActionHandler.queuedActions.Count > 0)
+        if (UnitManager.Instance.player.stats.CurrentAP() > 0 && UnitManager.Instance.player.unitActionHandler.queuedAction != null)
             UnitManager.Instance.player.StartCoroutine(UnitManager.Instance.player.unitActionHandler.GetNextQueuedAction());
     }
 
