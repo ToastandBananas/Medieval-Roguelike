@@ -143,7 +143,7 @@ public class LevelGrid : MonoBehaviour
             if (IsValidGridPosition(gridPosition) == false)
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.actionsObstacleMask);
+            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
             if (collisions.Length > 0)
                 continue;
 
@@ -151,13 +151,9 @@ public class LevelGrid : MonoBehaviour
                 continue;
 
             // Debug.Log(gridPosition);
-            validGridPositionList.Add(gridPosition);
+            newGridPosition = gridPosition;
+            break;
         }
-
-        if (validGridPositionList.Count > 0)
-            newGridPosition = validGridPositionList[0];
-
-        Debug.Log(newGridPosition);
 
         return newGridPosition;
     }

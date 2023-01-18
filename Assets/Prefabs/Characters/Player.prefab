@@ -797,6 +797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionsObstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &4910889609817399986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -809,18 +812,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c8f117d204a5d64f9064b851a6da5c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fleeObstacleMask:
+  moveObstaclesMask:
     serializedVersion: 2
-    m_Bits: 0
-  fleeDistance: 20
-  shouldAlwaysFleeCombat: 0
-  startFollowingDistance: 3
-  slowDownDistance: 4
-  patrolPoints: []
-  maxChaseDistance: 15
-  defaultPosition: {x: 0, y: 0}
-  minRoamDistance: 5
-  maxRoamDistance: 20
+    m_Bits: 72
 --- !u!114 &6094857115427304514
 MonoBehaviour:
   m_ObjectHideFlags: 0

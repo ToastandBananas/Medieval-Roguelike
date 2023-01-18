@@ -65,8 +65,8 @@ public class CameraController : MonoBehaviour
 
         if (animatingCameraMovement == false && animatingCameraZoom == false)
         {
-            if (doingMouseDragRotation == false && doingMouseDragMovement == false)
-                HandleEdgeOfScreenMovement();
+            //if (doingMouseDragRotation == false && doingMouseDragMovement == false)
+                //HandleEdgeOfScreenMovement();
 
             if (doingEdgeMovement == false)
             {

@@ -6,7 +6,6 @@ using UnityEngine;
 public class NPCActionHandler : UnitActionHandler
 {
     [Header("Flee State Variables")]
-    [SerializeField] LayerMask fleeObstacleMask;
     [SerializeField] float fleeDistance = 20f;
     [SerializeField] bool shouldAlwaysFleeCombat;
     Vector3 fleeDestination;
@@ -21,8 +20,10 @@ public class NPCActionHandler : UnitActionHandler
 
     [Header("Patrol State Variables")]
     [SerializeField] Vector3[] patrolPoints;
-    int currentPatrolPointIndex;
+    public int currentPatrolPointIndex { get; private set; }
     bool initialPatrolPointSet, hasAlternativePatrolPoint;
+    int patrolIterationCount;
+    int maxPatrolIterations = 5;
 
     [Header("Pursue State Variables")]
     [SerializeField] float maxChaseDistance = 15f;
@@ -92,8 +93,17 @@ public class NPCActionHandler : UnitActionHandler
     #region Patrol
     public void Patrol()
     {
-        if (patrolPoints.Length > 0)
+        if (patrolIterationCount > maxPatrolIterations)
         {
+            Debug.Log("Max patrol iterations reached...");
+            patrolIterationCount = 0;
+            StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+            return;
+        }
+        else if (patrolPoints.Length > 0)
+        {
+            patrolIterationCount++;
+
             if (initialPatrolPointSet == false)
             {
                 currentPatrolPointIndex = GetNearestPatrolPointIndex();
@@ -123,10 +133,8 @@ public class NPCActionHandler : UnitActionHandler
                 GetAction<MoveAction>().SetTargetGridPosition(nearestGridPosition);
             }
 
-            Debug.Log(targetGridPosition);
             if ((hasAlternativePatrolPoint == false && Vector3.Distance(patrolPoints[currentPatrolPointIndex], transform.position) <= 0.1f) || (hasAlternativePatrolPoint && Vector3.Distance(targetGridPosition.WorldPosition(), transform.position) <= 0.1f))
             {
-                Debug.Log(hasAlternativePatrolPoint);
                 if (hasAlternativePatrolPoint)
                     hasAlternativePatrolPoint = false;
 
@@ -141,17 +149,21 @@ public class NPCActionHandler : UnitActionHandler
             }
 
             if (GetAction<MoveAction>().isMoving == false)
+            {
+                patrolIterationCount = 0;
                 QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost());
+            }
         }
         else
         {
             Debug.LogWarning("No patrol points set for " + name);
+            patrolIterationCount = 0;
             unit.stateController.SetToDefaultState(shouldFollowLeader);
             DetermineAction();
         }
     }
 
-    void IncreasePatrolPointIndex()
+    public void IncreasePatrolPointIndex()
     {
         if (currentPatrolPointIndex == patrolPoints.Length - 1)
             currentPatrolPointIndex = 0;
@@ -181,6 +193,8 @@ public class NPCActionHandler : UnitActionHandler
 
         return nearestPatrolPointIndex;
     }
+
+    public void SetHasAlternativePatrolPoint(bool hasAlternativePatrolPoint) => this.hasAlternativePatrolPoint = hasAlternativePatrolPoint;
     #endregion
 
     public void SetLeader(Unit newLeader) => leader = newLeader;
@@ -193,8 +207,11 @@ public class NPCActionHandler : UnitActionHandler
         roamPositionSet = false;
         needsFleeDestination = true;
         initialPatrolPointSet = false;
+        patrolIterationCount = 0;
 
         fleeDestination = Vector3.zero;
         distToFleeDestination = 0;
     }
+
+    public Vector3[] PatrolPoints() => patrolPoints;
 }

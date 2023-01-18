@@ -12,6 +12,12 @@ public class PlayerActionInput : MonoBehaviour
 
     void Update()
     {
+        if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
+        {
+            ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
+            unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
+        }
+
         if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false)
         {
             if (GameControls.gamePlayActions.skipTurn.WasPressed)
@@ -24,15 +30,10 @@ public class PlayerActionInput : MonoBehaviour
             else
                 ActionLineRenderer.Instance.HideLineRenderers();
 
-            if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
-            {
-                ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
-                unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
-            }
-            else if (GameControls.gamePlayActions.turnMode.IsPressed)
+            if (GameControls.gamePlayActions.turnMode.IsPressed)
             {
                 unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<TurnAction>());
-                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection());
+                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
 
                 if (GameControls.gamePlayActions.select.WasPressed && unit.unitActionHandler.GetAction<TurnAction>().targetDirection != unit.unitActionHandler.GetAction<TurnAction>().currentDirection)
                     unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost());

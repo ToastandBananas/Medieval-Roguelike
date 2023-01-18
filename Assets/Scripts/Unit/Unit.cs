@@ -60,6 +60,8 @@ public class Unit : MonoBehaviour
 
     public void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
 
+    public void BlockAtPosition(Vector3 position) => singleNodeBlocker.BlockAt(position);
+
     public bool IsNPC() => gameObject.CompareTag("Player") == false;
 
     public bool IsPlayer() => gameObject.CompareTag("Player");

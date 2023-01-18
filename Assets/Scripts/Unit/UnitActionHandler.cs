@@ -14,7 +14,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public Unit unit { get; private set; }
 
-    [SerializeField] public LayerMask actionsObstacleMask { get; private set; }
+    [SerializeField] LayerMask actionsObstacleMask;
 
     public bool isPerformingAction { get; private set; }
 
@@ -107,4 +107,6 @@ public class UnitActionHandler : MonoBehaviour
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 
     public void SetSelectedAction(BaseAction action) => selectedAction = action;
+
+    public LayerMask ActionsObstacleMask() => actionsObstacleMask;
 }

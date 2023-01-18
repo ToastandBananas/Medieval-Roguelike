@@ -10,6 +10,8 @@ public class TurnAction : BaseAction
     public Direction targetDirection { get; private set; }
     public Vector3 targetPosition { get; private set; }
 
+    readonly float defaultRotateSpeed = 10f;
+
     Unit unit;
 
     void Start()
@@ -55,26 +57,69 @@ public class TurnAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public Direction DetermineTargetTurnDirection()
+    public IEnumerator RotateTowardsDirection(Direction direction)
     {
-        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
+        Vector3 startPosition = transform.position;
+        Vector3 targetPosition = startPosition;
+        switch (direction)
+        {
+            case Direction.North:
+                targetPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z + 1);
+                break;
+            case Direction.East:
+                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z);
+                break;
+            case Direction.South:
+                targetPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z - 1);
+                break;
+            case Direction.West:
+                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z);
+                break;
+            case Direction.NorthWest:
+                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z + 1);
+                break;
+            case Direction.NorthEast:
+                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z + 1);
+                break;
+            case Direction.SouthWest:
+                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z - 1);
+                break;
+            case Direction.SouthEast:
+                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z - 1);
+                break;
+            case Direction.Center:
+                yield break;
+        }
+
+        Vector3 dir = (targetPosition - startPosition).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(dir);
+        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f) 
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+        }
+
+        transform.rotation = targetRotation;
+    }
+
+    public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
+    {
         GridPosition unitGridPosition = unit.gridPosition;
 
-        if (mouseGridPosition.x == unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
+        if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
             targetDirection = Direction.North;
-        else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z == unitGridPosition.z)
+        else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z == unitGridPosition.z)
             targetDirection = Direction.East;
-        else if (mouseGridPosition.x == unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
+        else if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
             targetDirection = Direction.South;
-        else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z == unitGridPosition.z)
+        else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z == unitGridPosition.z)
             targetDirection = Direction.West;
-        else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
+        else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
             targetDirection = Direction.NorthWest;
-        else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z > unitGridPosition.z)
+        else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
             targetDirection = Direction.NorthEast;
-        else if (mouseGridPosition.x < unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
+        else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
             targetDirection = Direction.SouthWest;
-        else if (mouseGridPosition.x > unitGridPosition.x && mouseGridPosition.z < unitGridPosition.z)
+        else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
             targetDirection = Direction.SouthEast;
         else
             targetDirection = Direction.Center;

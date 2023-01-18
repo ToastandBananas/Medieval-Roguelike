@@ -135,7 +135,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = UnitManager.Instance.player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection();
+        Direction turnDirection = UnitManager.Instance.player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 

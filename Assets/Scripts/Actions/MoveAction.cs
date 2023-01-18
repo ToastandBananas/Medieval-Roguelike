@@ -15,6 +15,8 @@ public class MoveAction : BaseAction
     public bool isMoving { get; private set; }
     bool moveQueued;
 
+    [SerializeField] LayerMask moveObstaclesMask;
+
     Quaternion targetRotation;
 
     List<Vector3> positionList;
@@ -40,6 +42,21 @@ public class MoveAction : BaseAction
         // Force the path request to complete immediately
         // This assumes the graph is small enough that this will not cause any lag
         path.BlockUntilCalculated();
+
+        if (unit.IsNPC() && path.vectorPath.Count == 0)
+        {
+            NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+            if (unit.stateController.CurrentState() == State.Patrol)
+            {
+                GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
+                npcActionHandler.IncreasePatrolPointIndex(); 
+                npcActionHandler.SetTargetGridPosition(patrolPointGridPosition);
+                SetTargetGridPosition(patrolPointGridPosition);
+            }
+
+            unit.unitActionHandler.FinishAction();
+            return;
+        }
 
         positionList = new List<Vector3>();
 
@@ -70,30 +87,50 @@ public class MoveAction : BaseAction
         Vector3 firstPointOnPath = positionList[1];
         Vector3 nextPosition = unit.transform.localPosition;
         float stoppingDistance = 0.0125f;
-        
+        Direction directionToNextPosition = Direction.Center;
+
         if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
-
+            directionToNextPosition = Direction.North;
+        }
         else if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-
+            directionToNextPosition = Direction.South;
+        }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
-
+            directionToNextPosition = Direction.East;
+        }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
-
+            directionToNextPosition = Direction.West;
+        }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
-
+            directionToNextPosition = Direction.NorthEast;
+        }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-
+            directionToNextPosition = Direction.SouthWest;
+        }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-
+            directionToNextPosition = Direction.SouthEast;
+        }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
+        {
             nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+            directionToNextPosition = Direction.NorthWest;
+        }
+        
+        unit.BlockAtPosition(LevelGrid.Instance.GetGridPosition(nextPosition + new Vector3(0, firstPointOnPath.y - unit.WorldPosition().y, 0)).WorldPosition());
 
         while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
         {
@@ -145,8 +182,7 @@ public class MoveAction : BaseAction
             yield return null;
         }
 
-        SetTargetRotation(nextPosition);
-        StartCoroutine(RotateTowardsFinalPosition());
+        StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition));
 
         unit.transform.localPosition = nextPosition;
         unit.UpdateGridPosition();
@@ -220,4 +256,6 @@ public class MoveAction : BaseAction
     }
 
     public override bool ActionIsUsedInstantly() => false;
+
+    public LayerMask MoveObstaclesMask() => moveObstaclesMask;
 }
