@@ -49,7 +49,7 @@ public class ActionLineRenderer : MonoBehaviour
             if (path.error || path == null)
                 yield break;
 
-            if (LevelGrid.Instance.IsValidGridPosition(currentMouseGridPosition) == false)
+            if (LevelGrid.Instance.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
                 yield break;
 
             // Don't draw a path if the mouse grid position is unwalkable

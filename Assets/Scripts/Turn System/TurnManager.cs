@@ -108,7 +108,7 @@ public class TurnManager : MonoBehaviour
 
             npc.stats.ReplenishAP();
             npc.SetIsMyTurn(true);
-            npc.UnblockCurrentPosition();
+            //npc.UnblockCurrentPosition();
 
             //npc.status.UpdateBuffs();
             //npc.status.UpdateInjuries();

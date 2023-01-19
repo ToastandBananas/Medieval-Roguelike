@@ -19,6 +19,7 @@ public class MoveAction : BaseAction
     List<Vector3> positionList;
 
     readonly int defaultTileMoveCost = 200;
+    int lastMoveCost;
 
     void Awake()
     {
@@ -48,8 +49,7 @@ public class MoveAction : BaseAction
     {
         if (positionList.Count == 0)
         {
-            if (unit.IsPlayer())
-                Debug.Log("Position List length is 0");
+            if (unit.IsPlayer()) Debug.Log("Position List length is 0");
 
             CompleteAction();
             unit.unitActionHandler.FinishAction();
@@ -57,60 +57,72 @@ public class MoveAction : BaseAction
         }
         
         Vector3 firstPointOnPath = positionList[1];
-        Vector3 nextPosition = unit.transform.localPosition;
+        Vector3 nextPathPosition = unit.transform.localPosition;
         float stoppingDistance = 0.0125f;
         Direction directionToNextPosition = Direction.Center;
 
         if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
             directionToNextPosition = Direction.North;
         }
         else if ((int)firstPointOnPath.x == (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
             directionToNextPosition = Direction.South;
         }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
             directionToNextPosition = Direction.East;
         }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z == (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
             directionToNextPosition = Direction.West;
         }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
             directionToNextPosition = Direction.NorthEast;
         }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
             directionToNextPosition = Direction.SouthWest;
         }
         else if ((int)firstPointOnPath.x > (int)unit.transform.localPosition.x && (int)firstPointOnPath.z < (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
             directionToNextPosition = Direction.SouthEast;
         }
         else if ((int)firstPointOnPath.x < (int)unit.transform.localPosition.x && (int)firstPointOnPath.z > (int)unit.transform.localPosition.z)
         {
-            nextPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
             directionToNextPosition = Direction.NorthWest;
+        }
+
+        // Check if the next position is now blocked, before moving the Unit there
+        Vector3 nextTargetPosition = GetNextTargetPosition();
+        if (AstarPath.active.GetNearest(nextTargetPosition).node.Walkable == false)
+        {
+            if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable...");
+
+            unit.stats.AddToCurrentAP(lastMoveCost);
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+            yield break;
         }
         
         // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
-        unit.BlockAtPosition(LevelGrid.Instance.GetGridPosition(nextPosition + new Vector3(0, firstPointOnPath.y - unit.WorldPosition().y, 0)).WorldPosition());
+        unit.BlockAtPosition(LevelGrid.Instance.GetGridPosition(nextPathPosition + new Vector3(0, firstPointOnPath.y - unit.WorldPosition().y, 0)).WorldPosition());
 
         // Remove the Unit from the Units list
         LevelGrid.Instance.RemoveUnitAtGridPosition(unit.gridPosition);
 
         ActionLineRenderer.Instance.HideLineRenderers();
 
-        while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
+        while (Vector3.Distance(unit.transform.localPosition, nextPathPosition) > stoppingDistance)
         {
             isMoving = true;
             unit.unitAnimator.StartMovingForward();
@@ -124,23 +136,23 @@ public class MoveAction : BaseAction
                 if (firstPointOnPath.y - unitPosition.y > 0f)
                 {
                     targetPosition = new Vector3(unitPosition.x, firstPointOnPath.y, unitPosition.z);
-                    nextPosition = new Vector3(nextPosition.x, firstPointOnPath.y, nextPosition.z);
+                    nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
                 }
-                else if (firstPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPosition.z - unitPosition.z) < stoppingDistance)
+                else if (firstPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
                 {
-                    targetPosition = nextPosition;
+                    targetPosition = nextPathPosition;
                 }
                 // If the next path position is below the unit's current position
-                else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPosition.z, unitPosition.z) == false))
+                else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
                 {
                     targetPosition = new Vector3(firstPointOnPath.x, unitPosition.y, firstPointOnPath.z);
-                    nextPosition = new Vector3(nextPosition.x, firstPointOnPath.y, nextPosition.z);
+                    nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
                 }
             }
             else
-                targetPosition = nextPosition;
+                targetPosition = nextPathPosition;
 
-            RotateTowardsTargetPosition(nextPosition);
+            RotateTowardsTargetPosition(nextPathPosition);
 
             Vector3 moveDirection = (targetPosition - unitPosition).normalized;
             float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
@@ -160,7 +172,7 @@ public class MoveAction : BaseAction
 
         unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition);
 
-        unit.transform.localPosition = nextPosition;
+        unit.transform.localPosition = nextPathPosition;
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -243,6 +255,46 @@ public class MoveAction : BaseAction
         if (positionList.Count == 0)
             return 0;
 
+        Vector3 nextTargetPosition = GetNextTargetPosition();
+
+        float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
+        // if (unit.IsPlayer()) Debug.Log(tileCostMultiplier);
+
+        floatCost += floatCost * tileCostMultiplier;
+
+        if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextTargetPosition))
+            floatCost *= 1.4f;
+
+        cost = Mathf.RoundToInt(floatCost);
+
+        if (nextTargetPosition == transform.position)
+        {
+            unit.unitActionHandler.SetTargetGridPosition(unit.gridPosition);
+
+            if (unit.IsNPC())
+            {
+                if (unit.stateController.CurrentState() == State.Patrol)
+                {
+                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                    npcActionHandler.AssignNextPatrolTargetPosition();
+                }
+            }
+
+            unit.stats.AddToCurrentAP(cost);
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+        }
+
+        unit.BlockCurrentPosition();
+
+        // if (unit.IsPlayer()) Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+
+        lastMoveCost = cost;
+        return cost;
+    }
+
+    Vector3 GetNextTargetPosition()
+    {
         Vector3 nextPosition;
         Vector3 firstPointOnPath = positionList[1];
         if (firstPointOnPath.y != unit.transform.position.y)
@@ -295,39 +347,7 @@ public class MoveAction : BaseAction
             nextPosition = transform.position;
         }
 
-        float tileCostMultiplier = GetTileMoveCostMultiplier(nextPosition);
-        // if (unit.IsPlayer()) Debug.Log(tileCostMultiplier);
-
-        floatCost += floatCost * tileCostMultiplier;
-
-        if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextPosition))
-            floatCost *= 1.4f;
-
-        cost = Mathf.RoundToInt(floatCost);
-
-        if (nextPosition == transform.position)
-        {
-            unit.unitActionHandler.SetTargetGridPosition(unit.gridPosition);
-
-            if (unit.IsNPC())
-            {
-                if (unit.stateController.CurrentState() == State.Patrol)
-                {
-                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-                    npcActionHandler.AssignNextPatrolTargetPosition();
-                }
-            }
-
-            unit.stats.AddToCurrentAP(cost);
-            CompleteAction();
-            unit.unitActionHandler.FinishAction();
-        }
-
-        unit.BlockCurrentPosition();
-
-        // if (unit.IsPlayer()) Debug.Log("Move Cost (" + nextPosition + "): " + cost);
-
-        return cost;
+        return nextPosition;
     }
 
     float GetTileMoveCostMultiplier(Vector3 tilePosition)

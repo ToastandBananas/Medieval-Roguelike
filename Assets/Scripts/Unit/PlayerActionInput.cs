@@ -42,8 +42,7 @@ public class PlayerActionInput : MonoBehaviour
             else if (GameControls.gamePlayActions.select.WasPressed)
             {
                 GridPosition mouseGridPosition = GetMouseGridPosition();
-
-                if (LevelGrid.Instance.IsValidGridPosition(mouseGridPosition))
+                if (LevelGrid.Instance.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                 {
                     unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
                     unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), unit.unitActionHandler.GetAction<MoveAction>().GetActionPointsCost(mouseGridPosition));
