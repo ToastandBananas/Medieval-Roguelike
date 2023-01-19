@@ -102,55 +102,61 @@ public class NPCActionHandler : UnitActionHandler
         }
         else if (patrolPoints.Length > 0)
         {
+            // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
             patrolIterationCount++;
 
             if (initialPatrolPointSet == false)
             {
+                // Get the closest Patrol Point to the Unit as the first Patrol Point to move to
                 currentPatrolPointIndex = GetNearestPatrolPointIndex();
                 initialPatrolPointSet = true;
             }
 
             GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
+
+            // If the Patrol Point is set to an invalid Grid Position
             if (LevelGrid.Instance.IsValidGridPosition(patrolPointGridPosition) == false)
             {
                 Debug.LogWarning(patrolPointGridPosition + " is not a valid grid position...");
                 IncreasePatrolPointIndex();
                 return;
             }
+            // If there's another Unit currently on the Patrol Point or Alternative Patrol Point
             else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.HasAnyUnitOnGridPosition(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
                 || (hasAlternativePatrolPoint && LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition) != unit))
             {
-                GridPosition nearestGridPosition = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit);
-                if (patrolPointGridPosition == nearestGridPosition)
+                // Find the nearest Grid Position to the Patrol Point
+                GridPosition nearestGridPositionToPatrolPoint = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit);
+                if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
                     IncreasePatrolPointIndex();
 
                 hasAlternativePatrolPoint = true;
-                SetTargetGridPosition(nearestGridPosition);
-                //GetAction<MoveAction>().SetTargetGridPosition(nearestGridPosition);
+                SetTargetGridPosition(nearestGridPositionToPatrolPoint);
             }
 
-            if ((hasAlternativePatrolPoint == false && Vector3.Distance(patrolPoints[currentPatrolPointIndex], transform.position) <= 0.1f) || (hasAlternativePatrolPoint && Vector3.Distance(targetGridPosition.WorldPosition(), transform.position) <= 0.1f))
+            // If the Unit has arrived at their current Patrol Point or Alternative Patrol Point position
+            if (Vector3.Distance(targetGridPosition.WorldPosition(), transform.position) <= 0.1f)
             {
                 if (hasAlternativePatrolPoint)
                     hasAlternativePatrolPoint = false;
 
-                IncreasePatrolPointIndex();
-                SetTargetGridPosition(patrolPointGridPosition);
-                //GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
-            }
-            else if (hasAlternativePatrolPoint == false && targetGridPosition.WorldPosition() != patrolPoints[currentPatrolPointIndex])
-            {
-                SetTargetGridPosition(patrolPointGridPosition);
-                //GetAction<MoveAction>().SetTargetGridPosition(targetGridPosition);
-            }
-
-            if (GetAction<MoveAction>().isMoving == false)
-            {
+                // Reset the iteration count since we will have a new Target Grid Position
                 patrolIterationCount = 0;
-                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+
+                // Set the Unit's Target Grid Position as the next Patrol Point
+                IncreasePatrolPointIndex();
+                patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
+                SetTargetGridPosition(patrolPointGridPosition);
             }
+            // Otherwise, assign their target position to the Patrol Point if it's not already set
+            else if (hasAlternativePatrolPoint == false && targetGridPosition.WorldPosition() != patrolPoints[currentPatrolPointIndex])
+                SetTargetGridPosition(patrolPointGridPosition);
+
+            // Queue the Move Action if the Unit isn't already moving
+            if (GetAction<MoveAction>().isMoving == false)
+                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
         }
-        else
+        else // If no Patrol Points set
         {
             Debug.LogWarning("No patrol points set for " + name);
             patrolIterationCount = 0;
@@ -165,6 +171,13 @@ public class NPCActionHandler : UnitActionHandler
             currentPatrolPointIndex = 0;
         else
             currentPatrolPointIndex++;
+    }
+
+    public void AssignNextPatrolTargetPosition()
+    {
+        IncreasePatrolPointIndex();
+        GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
+        SetTargetGridPosition(patrolPointGridPosition);
     }
 
     int GetNearestPatrolPointIndex()

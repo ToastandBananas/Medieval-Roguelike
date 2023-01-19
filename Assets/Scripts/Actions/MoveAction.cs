@@ -18,6 +18,8 @@ public class MoveAction : BaseAction
 
     List<Vector3> positionList;
 
+    readonly int defaultTileMoveCost = 200;
+
     void Awake()
     {
         unit = GetComponent<Unit>();
@@ -48,6 +50,7 @@ public class MoveAction : BaseAction
         {
             if (unit.IsPlayer())
                 Debug.Log("Position List length is 0");
+
             CompleteAction();
             unit.unitActionHandler.FinishAction();
             yield break;
@@ -99,7 +102,12 @@ public class MoveAction : BaseAction
             directionToNextPosition = Direction.NorthWest;
         }
         
+        // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
         unit.BlockAtPosition(LevelGrid.Instance.GetGridPosition(nextPosition + new Vector3(0, firstPointOnPath.y - unit.WorldPosition().y, 0)).WorldPosition());
+
+        // Remove the Unit from the Units list
+        LevelGrid.Instance.RemoveUnitAtGridPosition(unit.gridPosition);
+
         ActionLineRenderer.Instance.HideLineRenderers();
 
         while (Vector3.Distance(unit.transform.localPosition, nextPosition) > stoppingDistance)
@@ -227,8 +235,8 @@ public class MoveAction : BaseAction
     public override int GetActionPointsCost(GridPosition targetGridPosition)
     {
         // TODO: Cost 600 (6 seconds) per square (or more depending on terrain type)
-        int defaultTileMoveCost = 600;
         int cost = defaultTileMoveCost;
+        float floatCost = cost;
 
         GetPathToTargetPosition(targetGridPosition);
 
@@ -287,26 +295,65 @@ public class MoveAction : BaseAction
             nextPosition = transform.position;
         }
 
-        GraphNode node = AstarPath.active.GetNearest(nextPosition).node;
-        if (unit.IsPlayer())
-            Debug.Log(node.Tag);
+        float tileCostMultiplier = GetTileMoveCostMultiplier(nextPosition);
+        // if (unit.IsPlayer()) Debug.Log(tileCostMultiplier);
+
+        floatCost += floatCost * tileCostMultiplier;
 
         if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextPosition))
-            cost = Mathf.RoundToInt(cost * 1.4f);
+            floatCost *= 1.4f;
+
+        cost = Mathf.RoundToInt(floatCost);
+
+        if (nextPosition == transform.position)
+        {
+            unit.unitActionHandler.SetTargetGridPosition(unit.gridPosition);
+
+            if (unit.IsNPC())
+            {
+                if (unit.stateController.CurrentState() == State.Patrol)
+                {
+                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                    npcActionHandler.AssignNextPatrolTargetPosition();
+                }
+            }
+
+            unit.stats.AddToCurrentAP(cost);
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+        }
 
         unit.BlockCurrentPosition();
 
-        //if (unit.IsPlayer())
-            //Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+        // if (unit.IsPlayer()) Debug.Log("Move Cost (" + nextPosition + "): " + cost);
 
         return cost;
+    }
+
+    float GetTileMoveCostMultiplier(Vector3 tilePosition)
+    {
+        GraphNode node = AstarPath.active.GetNearest(tilePosition).node;
+        // if (unit.IsPlayer()) Debug.Log("Tag #" + node.Tag + " penalty is: ");
+
+        for (int i = 0; i < seeker.tagPenalties.Length; i++)
+        {
+            if (node.Tag == i)
+            {
+                if (seeker.tagPenalties[i] == 0)
+                    return 0f;
+                else
+                    return seeker.tagPenalties[i] / 1000f;
+            }
+        }
+
+        return 1f;
     }
 
     public override void CompleteAction()
     {
         base.CompleteAction();
 
-        // Unblock the Unit's postion, in case it's still their turn after this action. If not, it will be blocked again in the TurnManager's finish turn methods
+        // Unblock the Unit's postion, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
         if (unit.IsPlayer())
             unit.UnblockCurrentPosition();
         else

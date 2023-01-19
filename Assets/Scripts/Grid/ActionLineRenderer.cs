@@ -1,4 +1,3 @@
-using Mono.Cecil.Cil;
 using Pathfinding;
 using System.Collections;
 using UnityEngine;
@@ -54,9 +53,12 @@ public class ActionLineRenderer : MonoBehaviour
                 yield break;
 
             // Don't draw a path if the mouse grid position is unwalkable
-            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, UnitManager.Instance.player.actionObstaclesMask);
+            Collider[] collisions = Physics.OverlapSphere(currentMouseGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.05f, UnitManager.Instance.player.actionObstaclesMask);
             if (collisions.Length > 0)
+            {
+                Debug.Log(collisions[0].name);
                 yield break;
+            }
 
             int verticeIndex = 0;
             for (int i = 0; i < path.vectorPath.Count - 1; i++)

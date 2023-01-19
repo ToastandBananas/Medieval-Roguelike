@@ -2,24 +2,24 @@ using UnityEngine;
 
 public class WorldMouse : MonoBehaviour
 {
-    private static WorldMouse instance;
+    private static WorldMouse Instance;
     [SerializeField] LayerMask mousePlaneLayerMask;
 
     void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
-            Debug.LogError("There's more than one WorldMouse! " + transform + " - " + instance);
+            Debug.LogError("There's more than one WorldMouse! " + transform + " - " + Instance);
             Destroy(gameObject);
             return;
         }
-        instance = this;
+        Instance = this;
     }
 
     public static Vector3 GetPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, instance.mousePlaneLayerMask);
+        Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, Instance.mousePlaneLayerMask);
         return hit.point;
     }
 }
