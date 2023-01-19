@@ -345,7 +345,7 @@ GameObject:
   - component: {fileID: 203727234}
   - component: {fileID: 203727233}
   - component: {fileID: 203727232}
-  m_Layer: 7
+  m_Layer: 17
   m_Name: Tall Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -590,7 +590,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -804,7 +804,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2206,7 +2206,7 @@ GameObject:
   - component: {fileID: 856581963}
   - component: {fileID: 856581962}
   - component: {fileID: 856581961}
-  m_Layer: 7
+  m_Layer: 18
   m_Name: Tall Platform (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2912,7 +2912,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACAn+tw6R6vMQMAANYGAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFtVG1v4kYQ/ivWfqaRjXJ3pFKkXkku15ckVrj2PpR8WOwx3rLsWvsSIBH/vTNjYztcBcLmmfeZZ+ZNaHkAN7fRBPFzMp0koqilk0UA9xXUuiY0Q1QZ30ARrLtzqry3JSAu6F2MhV9hL9fWLNQrnHS+qzLUpCRZ50kGZU8+vd1CcKr4bNaalFMEo1GVddvbcg1z64NHuJLaA4qcDWRtEHpLxL4zOHTPV3omR6oADKY/aGXpxYczRYJYN5pCy20DJeU8mExPnqetS4PVdBqUeWG1Vr5LRYRDw6XOZeMjFoIKpZJYGieRXswQqPtmci69g8eq8hC6zJw83CiHXWo9i19t27qt9Js2txepI8X6eMlptV7vfxBn0xnLK2e3wxhTihFqVWye5KGQPox6O4ZvhuQzbtFO6o1cafheg3mwdw7ZUqIwuEim0cP0ZuSqr21eQ7EZ9Npkz8DY/DjNbJjmkavfLwI07+jYYX958Attuf2dQ5J0yBU5BIej+w2rYer4LgyilCHaf5PrMcc6wRflfEBRF85Q7JWNjlTFLSdClcYwt84Aw138BozU4ZCjm3A+3zPZKOyZ5IukbeqCd7LTkpyZMDzop+mZKLe7fpIO2emZsqe3f97ELyf65jLUlTKlMuuLJ5Tn4P6k44CbrCpVtP2bJJ99kG6kmzv7L1J2kvyNfUCV6/SCP5NkHnWIDq4NxOCkniR5XGlV/AGHb3YD5tpEramNfIKehoz4P75+oqvRL8MCeCDEVZ5LenymeRki5omNx+djS8jf47bJrTJhAdIV9ahtvra7e/D1YwxamRFxSPCAXJlbY9oV9P9jtoiuksXILMCeiryRQXJnh4R6U+QNW1C9tJQ8LK4Vm0Tf5/bsYlzNsHiwhs/IuyfXto6qfL/rYjWbZR+y2Upmq+oSruCnj5fTdJVdZVUpyyqFT4JvgTJILanzlhsdI3FRzFCLwb0njzx2KBO67/gjG75CpZO7O/W6tSO2K1PZReEAzGPrqS8aHAbDi1nelgrLxekFJAvvz9tSaFtsoFz2jpbc4Ns98mQ5eFmKRr3YQMhSzPmqLwXB/YnJHbwo2FHwk7OjOP4HUEsDBBQAAAgIAACAn+scZXSgcQAAAH0AAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz1jM11FFQSi9KLMgoBoqAOaWZKSB2tFKShYWhqaFFUqJhUppJqmWqrpmJkUGSoaVhWkpiSppBqrlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nk9iZWqRe1FmijvIfKXYWgBQSwECLQAUAAAICAAAgJ/rcOkerzEDAADWBgAACwAkAAAAAAAAAAAAAAAAAAAAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwECLQAUAAAICAAAgJ/rHGV0oHEAAAB9AAAACQAkAAAAAAAAAAAAAAB+AwAAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsFBgAAAAACAAIAuAAAADoEAAAAAA==
+    dataString: UEsDBBQAAAgIAACAn+sUPeyNeQMAAJ8IAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVdtu4kgQ/RXkZzayPQyBlSLtLMlk9pLECrMzD0seGruMe2m6rb4ESMS/b1Xb+MKsvAJhc+p03av6PRDsCHqhnLTBz6N4PArSgmmWWtBfgG8KQiNEuTQlpFbpe82zB5UB4gG9B13hFziwjZJL/gZnznee2YJIzHOemeXqrNOoHVjN009yI4gcIugkz5Xe3WUbWChjDcI5EwZQpJWl0xKh91FwqA8c6+cbPUcnigAkut+yovDq4wWRIM91MhVsV0JGPrdH4rPmuFIpMZqaQZ6nSghualcCeyx9qAtWGoeBICHjDEPzToRXMwSKJpnel0bBU54bsLVnmh1vucYsVZqDX1WVuh0z28q3VyYc2ZpOvFuV1ocfxJNwOp1PKk6u1a4tZUh2bMHT7TM7pszYTn678G0bQOTTtGdiy9YCvhcgH9W9xo7JUGi1o6POQHzbUdXEtygg3ba8yuEL0JU/VjRqK3ryGTgsLZS9lqyxvwyYpVC+BLVCktTInBSCxvL9htH49jG1GUTJQzz/lW26fVYLPnNtLIpqc5Jsr5XTRA3uvCMUqbMLpSV4uLZfgmTCHhNUYy9rfCHrmL2QfGY0UbXxWnYelIsjHm75YXghStS+qaTGDjW+bc9vf78Hv5xbOGG2yLnMuNxcPaM8Af0nLQicZp7ztMrfePTJWKY73ESrf7Btx6NvmAek3IRX/jMeLZywTsONBGc1E+NR4taCp3/A8avagryRTghKo19Dz61H/j++0uywZiCW4AtCverrEmJvtNzrQW7U484HuXGPG4WD5A99cjRInvTJ/+PydZ89nIxo1mcPhxjNe+x4OMa4n+l4OMi4n+vpcPqi0wsNnaTtcl4pp5dTtVV+d7syUVzaJTCdFp3eN4XaP4ApnpwVXHamnwSPOPALJWW1S81/HFs6nbO0c8zCgTr1llnmx6N1qDmKw+9PUNPSZvUT5xsWs0ffl+r+RLvCw8Gjkv4+6D19bBvHs/7SDtazWfQxmq1ZtM4nMIefppM4XEfzKM9YlodwHfiFziXuByaSasDrtYLbTraxSFzepNHPLmQjuqjxh5X+Osk029/zt53qrCwuc7VMNYB8qjQ1QYNGY3j1ZXcZx3CxfBYn3i/B91UgVLqFbNUoWvkE3x1w2FetllVQ8ldlCVkFC389rwKCm3si0fDKYU/Gz8pOwelfUEsDBBQAAAgIAACAn+scZXSgcQAAAH0AAAAJACQAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0Bq1YqSy0qzszPU7JSMNEz1jM11FFQSi9KLMgoBoqAOaWZKSB2tFKShYWhqaFFUqJhUppJqmWqrpmJkUGSoaVhWkpiSppBqrlSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nk9iZWqRe1FmijvIfKXYWgBQSwECLQAUAAAICAAAgJ/rFD3sjXkDAACfCAAACwAkAAAAAAAAAAAAAAAAAAAAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwECLQAUAAAICAAAgJ/rHGV0oHEAAAB9AAAACQAkAAAAAAAAAAAAAADGAwAAbWV0YS5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsFBgAAAAACAAIAuAAAAIIEAAAAAA==
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -2941,11 +2941,11 @@ MonoBehaviour:
     _AreaColors:
     - {r: 0, g: 0, b: 0, a: 0}
   tagNames:
+  - Path
   - Basic Ground
-  - 1
-  - 2
-  - 3
-  - 4
+  - Tall Grass
+  - Sand
+  - Rocky Ground
   - 5
   - 6
   - 7
@@ -2958,11 +2958,11 @@ MonoBehaviour:
   - 14
   - 15
   - 16
-  - 17
-  - 18
-  - 19
-  - 20
-  - 21
+  - Shallow Snow
+  - Deep Snow
+  - Mud
+  - Shallow Water
+  - Deep Water
   - 22
   - 23
   - 24
@@ -2972,7 +2972,7 @@ MonoBehaviour:
   - 28
   - 29
   - 30
-  - 31
+  - Obstacle
   heuristic: 2
   heuristicScale: 1
   threadCount: -2
@@ -4215,11 +4215,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Unit - Male
       objectReference: {fileID: 0}
-    - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
-        type: 3}
-      propertyPath: speed.baseValue
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
@@ -4239,6 +4234,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 543484252}
     m_Modifications:
+    - target: {fileID: 1195297390364979018, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: traversableTags
+      value: 2147483646
+      objectReference: {fileID: 0}
     - target: {fileID: 3489051163152912302, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: manager

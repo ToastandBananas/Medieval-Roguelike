@@ -2,7 +2,6 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MoveAction : BaseAction
@@ -47,6 +46,8 @@ public class MoveAction : BaseAction
     {
         if (positionList.Count == 0)
         {
+            if (unit.IsPlayer())
+                Debug.Log("Position List length is 0");
             CompleteAction();
             unit.unitActionHandler.FinishAction();
             yield break;
@@ -286,12 +287,18 @@ public class MoveAction : BaseAction
             nextPosition = transform.position;
         }
 
+        GraphNode node = AstarPath.active.GetNearest(nextPosition).node;
+        if (unit.IsPlayer())
+            Debug.Log(node.Tag);
+
         if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextPosition))
             cost = Mathf.RoundToInt(cost * 1.4f);
 
         unit.BlockCurrentPosition();
-        if (unit.IsPlayer())
-            Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+
+        //if (unit.IsPlayer())
+            //Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+
         return cost;
     }
 
@@ -300,7 +307,11 @@ public class MoveAction : BaseAction
         base.CompleteAction();
 
         // Unblock the Unit's postion, in case it's still their turn after this action. If not, it will be blocked again in the TurnManager's finish turn methods
-        unit.UnblockCurrentPosition();
+        if (unit.IsPlayer())
+            unit.UnblockCurrentPosition();
+        else
+            unit.BlockCurrentPosition();
+
         unit.UpdateGridPosition();
 
         isMoving = false;

@@ -11,6 +11,7 @@ public class TurnAction : BaseAction
     public Vector3 targetPosition { get; private set; }
 
     readonly float defaultRotateSpeed = 10f;
+    readonly int singleTurnSegmentAPCost = 25;
 
     Unit unit;
 
@@ -53,12 +54,16 @@ public class TurnAction : BaseAction
 
         transform.rotation = targetRotation;
         SetCurrentDirection();
+
         CompleteAction();
         unit.unitActionHandler.FinishAction();
     }
 
     public void RotateTowardsDirection(Direction direction)
     {
+        if (direction == currentDirection)
+            return;
+
         Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition;
         switch (direction)
@@ -99,6 +104,7 @@ public class TurnAction : BaseAction
         }
 
         transform.rotation = targetRotation;
+        SetCurrentDirection();
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -187,13 +193,186 @@ public class TurnAction : BaseAction
         }
     }
 
+    int GetRotationsSegmentCount()
+    {
+        switch (currentDirection)
+        {
+            case Direction.North:
+                switch (targetDirection)
+                {
+                    case Direction.South:
+                        return 4;
+                    case Direction.West:
+                        return 2;
+                    case Direction.East:
+                        return 2;
+                    case Direction.NorthWest:
+                        return 1;
+                    case Direction.NorthEast:
+                        return 1;
+                    case Direction.SouthWest:
+                        return 3;
+                    case Direction.SouthEast:
+                        return 3;
+                    default:
+                        return 0;
+                }
+            case Direction.South:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 4;
+                    case Direction.West:
+                        return 2;
+                    case Direction.East:
+                        return 2;
+                    case Direction.NorthWest:
+                        return 3;
+                    case Direction.NorthEast:
+                        return 3;
+                    case Direction.SouthWest:
+                        return 1;
+                    case Direction.SouthEast:
+                        return 1;
+                    default:
+                        return 0;
+                }
+            case Direction.West:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 2;
+                    case Direction.South:
+                        return 2;
+                    case Direction.East:
+                        return 4;
+                    case Direction.NorthWest:
+                        return 1;
+                    case Direction.NorthEast:
+                        return 3;
+                    case Direction.SouthWest:
+                        return 1;
+                    case Direction.SouthEast:
+                        return 3;
+                    default:
+                        return 0;
+                }
+            case Direction.East:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 2;
+                    case Direction.South:
+                        return 2;
+                    case Direction.West:
+                        return 4;
+                    case Direction.NorthWest:
+                        return 3;
+                    case Direction.NorthEast:
+                        return 1;
+                    case Direction.SouthWest:
+                        return 3;
+                    case Direction.SouthEast:
+                        return 1;
+                    default:
+                        return 0;
+                }
+            case Direction.NorthWest:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 1;
+                    case Direction.South:
+                        return 3;
+                    case Direction.West:
+                        return 1;
+                    case Direction.East:
+                        return 3;
+                    case Direction.NorthEast:
+                        return 2;
+                    case Direction.SouthWest:
+                        return 2;
+                    case Direction.SouthEast:
+                        return 4;
+                    default:
+                        return 0;
+                }
+            case Direction.NorthEast:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 1;
+                    case Direction.South:
+                        return 3;
+                    case Direction.West:
+                        return 3;
+                    case Direction.East:
+                        return 1;
+                    case Direction.NorthWest:
+                        return 2;
+                    case Direction.SouthWest:
+                        return 4;
+                    case Direction.SouthEast:
+                        return 2;
+                    default:
+                        return 0;
+                }
+            case Direction.SouthWest:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 3;
+                    case Direction.South:
+                        return 1;
+                    case Direction.West:
+                        return 1;
+                    case Direction.East:
+                        return 3;
+                    case Direction.NorthWest:
+                        return 2;
+                    case Direction.NorthEast:
+                        return 4;
+                    case Direction.SouthEast:
+                        return 2;
+                    default:
+                        return 0;
+                }
+            case Direction.SouthEast:
+                switch (targetDirection)
+                {
+                    case Direction.North:
+                        return 3;
+                    case Direction.South:
+                        return 1;
+                    case Direction.West:
+                        return 3;
+                    case Direction.East:
+                        return 1;
+                    case Direction.NorthWest:
+                        return 4;
+                    case Direction.NorthEast:
+                        return 2;
+                    case Direction.SouthWest:
+                        return 2;
+                    default:
+                        return 0;
+                }
+            default:
+                return 0;
+        }
+    }
+
     public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition); 
 
     public override string GetActionName() => "Turn";
 
     public override bool IsValidAction() => true;
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition) => 10;
+    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    {
+        // Debug.Log(singleTurnSegmentAPCost * GetRotationsSegmentCount());
+        return singleTurnSegmentAPCost * GetRotationsSegmentCount();
+    }
 
     public override bool ActionIsUsedInstantly() => false;
 }
