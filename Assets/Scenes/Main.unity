@@ -1043,7 +1043,7 @@ PrefabInstance:
     - target: {fileID: 1377663264827766495, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1377663265393167212, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4444,9 +4444,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e9ceee35dc70244f958868bd39e29f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcs_HaventFinishedTurn: []
-  npcs_FinishedTurn: []
-  pathBeingCalculated: 0
 --- !u!1 &2120450490
 GameObject:
   m_ObjectHideFlags: 0
@@ -4609,6 +4606,21 @@ PrefabInstance:
         type: 3}
       propertyPath: defaultState
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: patrolPoints.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: patrolPoints.Array.data[1].x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: patrolPoints.Array.data[1].z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4787,7 +4799,7 @@ PrefabInstance:
     - target: {fileID: 8566402766796371357, guid: 2ba3233deb15ad042a16a8a9526156ab,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ba3233deb15ad042a16a8a9526156ab, type: 3}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using UnityEngine.Rendering.UI;
 
 public class LevelGrid : MonoBehaviour
 {
@@ -130,7 +131,7 @@ public class LevelGrid : MonoBehaviour
         GridPosition newGridPosition = startingGridPosition;
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1001);
+        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 10001);
         path.traversalProvider = DefaultTraversalProvider();
 
         // Schedule the path for calculation
@@ -155,7 +156,9 @@ public class LevelGrid : MonoBehaviour
                 continue;
 
             // Debug.Log(gridPosition);
-            newGridPosition = gridPosition;
+            if (gridPosition != startingGridPosition)
+                newGridPosition = gridPosition;
+
             break;
         }
 

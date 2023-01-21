@@ -91,7 +91,7 @@ public class NPCActionHandler : UnitActionHandler
     #region Patrol
     public void Patrol()
     {
-        if (patrolIterationCount > maxPatrolIterations)
+        if (patrolIterationCount >= maxPatrolIterations)
         {
             Debug.Log("Max patrol iterations reached...");
             patrolIterationCount = 0;
@@ -130,6 +130,9 @@ public class NPCActionHandler : UnitActionHandler
 
                 hasAlternativePatrolPoint = true;
                 SetTargetGridPosition(nearestGridPositionToPatrolPoint);
+
+                if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.Instance.HasAnyUnitOnGridPosition(nearestGridPositionToPatrolPoint) == false)
+                    patrolIterationCount = 0;
             }
 
             // If the Unit has arrived at their current Patrol Point or Alternative Patrol Point position

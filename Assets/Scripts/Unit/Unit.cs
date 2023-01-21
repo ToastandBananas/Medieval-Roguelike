@@ -7,19 +7,18 @@ public class Unit : MonoBehaviour
     [SerializeField] float shoulderHeight = 0.25f;
     [SerializeField] public LayerMask actionObstaclesMask { get; private set; }
 
-    public UnitAnimator unitAnimator { get; private set; }
-
     public bool isMyTurn { get; private set; }
     public bool isDead { get; private set; }
 
     public GridPosition gridPosition { get; private set; }
 
-    GameManager gm;
-
     SingleNodeBlocker singleNodeBlocker;
     public StateController stateController { get; private set; }
     public Stats stats { get; private set; }
     public UnitActionHandler unitActionHandler { get; private set; }
+    public UnitAnimator unitAnimator { get; private set; }
+
+    public MeshRenderer unitBaseMeshRenderer { get; private set; }
 
     void Awake()
     {
@@ -28,12 +27,12 @@ public class Unit : MonoBehaviour
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
         unitAnimator = GetComponent<UnitAnimator>();
+
+        unitBaseMeshRenderer = transform.GetChild(0).GetComponent<MeshRenderer>();
     }
 
     void Start()
     {
-        gm = GameManager.Instance;
-
         singleNodeBlocker.manager = LevelGrid.Instance.GetBlockManager();
         LevelGrid.Instance.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.Instance.GetUnitSingleNodeBlockerList());
 

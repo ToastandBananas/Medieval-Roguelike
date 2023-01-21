@@ -17,6 +17,7 @@ public class MoveAction : BaseAction
 
     List<Vector3> positionList;
 
+    readonly float defaultMoveSpeed = 5f;
     readonly int defaultTileMoveCost = 200;
     int lastMoveCost;
 
@@ -52,58 +53,12 @@ public class MoveAction : BaseAction
     {
         if (positionList.Count == 0)
         {
-            if (unit.IsPlayer()) Debug.Log("Position List length is 0");
+            if (unit.IsPlayer()) Debug.Log("Player's position List length is 0");
 
             CompleteAction();
             unit.unitActionHandler.FinishAction();
 
             yield break;
-        }
-        
-        Vector3 firstPointOnPath = positionList[1];
-        Vector3 nextPathPosition = unit.transform.localPosition;
-        float stoppingDistance = 0.0125f;
-        Direction directionToNextPosition = Direction.Center;
-
-        if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
-            directionToNextPosition = Direction.North;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-            directionToNextPosition = Direction.South;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
-            directionToNextPosition = Direction.East;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
-            directionToNextPosition = Direction.West;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
-            directionToNextPosition = Direction.NorthEast;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-            directionToNextPosition = Direction.SouthWest;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
-            directionToNextPosition = Direction.SouthEast;
-        }
-        else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
-        {
-            nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
-            directionToNextPosition = Direction.NorthWest;
         }
 
         // Check if the next position is now blocked, before moving the Unit there
@@ -125,7 +80,7 @@ public class MoveAction : BaseAction
         // Remove the Unit from the Units list
         LevelGrid.Instance.RemoveUnitAtGridPosition(unit.gridPosition);
 
-        // Add the Unit to it's next position
+        // Add the Unit to its next position
         LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(nextTargetPosition), unit);
 
         if (unit.IsNPC())
@@ -133,60 +88,117 @@ public class MoveAction : BaseAction
 
         ActionLineRenderer.Instance.HideLineRenderers();
 
-        while (Vector3.Distance(unit.transform.localPosition, nextPathPosition) > stoppingDistance)
+        Vector3 firstPointOnPath = positionList[1];
+        Vector3 nextPathPosition = unit.transform.localPosition;
+        Direction directionToNextPosition = Direction.Center;
+
+        if (unit.IsPlayer() || unit.unitBaseMeshRenderer.isVisible)
         {
-            isMoving = true;
-            unit.unitAnimator.StartMovingForward();
-
-            Vector3 unitPosition = unit.transform.localPosition;
-            Vector3 targetPosition = unitPosition;
-
-            if (Mathf.Abs(Mathf.Abs(firstPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
+            if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
             {
-                // If the next path position is above the unit's current position
-                if (firstPointOnPath.y - unitPosition.y > 0f)
+                nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+                directionToNextPosition = Direction.North;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+                directionToNextPosition = Direction.South;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+                directionToNextPosition = Direction.East;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z);
+                directionToNextPosition = Direction.West;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+                directionToNextPosition = Direction.NorthEast;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+                directionToNextPosition = Direction.SouthWest;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x + 1, unit.transform.localPosition.y, unit.transform.localPosition.z - 1);
+                directionToNextPosition = Direction.SouthEast;
+            }
+            else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.localPosition.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.localPosition.z))
+            {
+                nextPathPosition = new Vector3(unit.transform.localPosition.x - 1, unit.transform.localPosition.y, unit.transform.localPosition.z + 1);
+                directionToNextPosition = Direction.NorthWest;
+            }
+
+            float stoppingDistance = 0.0125f;
+            while (Vector3.Distance(unit.transform.localPosition, nextPathPosition) > stoppingDistance)
+            {
+                isMoving = true;
+                unit.unitAnimator.StartMovingForward();
+
+                Vector3 unitPosition = unit.transform.localPosition;
+                Vector3 targetPosition = unitPosition;
+
+                if (Mathf.Abs(Mathf.Abs(firstPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
                 {
-                    targetPosition = new Vector3(unitPosition.x, firstPointOnPath.y, unitPosition.z);
-                    nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
+                    // If the next path position is above the unit's current position
+                    if (firstPointOnPath.y - unitPosition.y > 0f)
+                    {
+                        targetPosition = new Vector3(unitPosition.x, firstPointOnPath.y, unitPosition.z);
+                        nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
+                    }
+                    else if (firstPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
+                    {
+                        targetPosition = nextPathPosition;
+                    }
+                    // If the next path position is below the unit's current position
+                    else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
+                    {
+                        targetPosition = new Vector3(firstPointOnPath.x, unitPosition.y, firstPointOnPath.z);
+                        nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
+                    }
                 }
-                else if (firstPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
-                {
+                else
                     targetPosition = nextPathPosition;
-                }
-                // If the next path position is below the unit's current position
-                else if (firstPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
+
+                RotateTowardsTargetPosition(nextPathPosition);
+
+                Vector3 moveDirection = (targetPosition - unitPosition).normalized;
+                float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
+                if (distanceToTargetPosition > stoppingDistance)
                 {
-                    targetPosition = new Vector3(firstPointOnPath.x, unitPosition.y, firstPointOnPath.z);
-                    nextPathPosition = new Vector3(nextPathPosition.x, firstPointOnPath.y, nextPathPosition.z);
+                    float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+                    float distanceToTriggerStopAnimation = 1f;
+                    if (distanceToNextPosition <= distanceToTriggerStopAnimation)
+                        unit.unitAnimator.StopMovingForward();
+
+                    unit.transform.localPosition += moveDirection * defaultMoveSpeed * Time.deltaTime;
                 }
+
+                yield return null;
             }
-            else
-                targetPosition = nextPathPosition;
+        }
+        else
+        {
+            nextPathPosition = nextTargetPosition;
 
-            RotateTowardsTargetPosition(nextPathPosition);
+            unit.UpdateGridPosition();
 
-            Vector3 moveDirection = (targetPosition - unitPosition).normalized;
-            float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
-            if (distanceToTargetPosition > stoppingDistance)
-            {
-                float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
-                float distanceToTriggerStopAnimation = 1f;
-                if (distanceToNextPosition <= distanceToTriggerStopAnimation)
-                    unit.unitAnimator.StopMovingForward();
-
-                float moveSpeed = 4f;
-                unit.transform.localPosition += moveDirection * moveSpeed * Time.deltaTime;
-            }
-
-            yield return null;
+            if (unit.IsNPC())
+                StartCoroutine(TurnManager.Instance.StartNextNPCsAction(unit));
         }
 
-        unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition);
+        unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition, unit.transform.localPosition);
 
         unit.transform.localPosition = nextPathPosition;
 
         if (nextPathPosition != nextTargetPosition && unit.IsNPC())
-            Debug.Log("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
+            Debug.LogWarning("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -302,7 +314,7 @@ public class MoveAction : BaseAction
 
         unit.BlockCurrentPosition();
 
-        // if (unit.IsPlayer()) Debug.Log("Move Cost (" + nextPosition + "): " + cost);
+        // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
 
         lastMoveCost = cost;
         return cost;

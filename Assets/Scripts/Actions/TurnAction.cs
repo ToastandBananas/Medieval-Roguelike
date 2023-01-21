@@ -58,12 +58,11 @@ public class TurnAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public void RotateTowardsDirection(Direction direction)
+    public void RotateTowardsDirection(Direction direction, Vector3 startPosition)
     {
         if (direction == currentDirection)
             return;
 
-        Vector3 startPosition = transform.position;
         Vector3 targetPosition = startPosition;
         switch (direction)
         {
@@ -94,6 +93,8 @@ public class TurnAction : BaseAction
             case Direction.Center:
                 break;
         }
+
+        Debug.Log(startPosition + " / " + targetPosition + " / " + direction);
 
         Vector3 dir = (targetPosition - startPosition).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(dir);

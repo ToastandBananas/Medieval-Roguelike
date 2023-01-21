@@ -35,8 +35,6 @@ public class TurnManager : MonoBehaviour
 
         npcs_HaventFinishedTurn = new List<Unit>();
         npcs_FinishedTurn = new List<Unit>();
-
-        //SortNPCsBySpeed();
     }
 
     public IEnumerator FinishTurn(Unit unit)
@@ -89,6 +87,7 @@ public class TurnManager : MonoBehaviour
         //gm.playerManager.vision.CheckEnemyVisibility();
 
         UnitManager.Instance.player.stats.ApplyAPLossBuildup();
+
         if (UnitManager.Instance.player.stats.CurrentAP() > 0 && UnitManager.Instance.player.unitActionHandler.queuedAction != null)
             UnitManager.Instance.player.StartCoroutine(UnitManager.Instance.player.unitActionHandler.GetNextQueuedAction());
     }
@@ -114,8 +113,6 @@ public class TurnManager : MonoBehaviour
             activeUnit = npc;
 
             npc.stats.ReplenishAP();
-            //npc.SetIsMyTurn(true);
-            //npc.UnblockCurrentPosition();
 
             //npc.status.UpdateBuffs();
             //npc.status.UpdateInjuries();
@@ -129,7 +126,7 @@ public class TurnManager : MonoBehaviour
                 npc.nutrition.DrainNausea();
             }*/
 
-            //npc.characterStats.ApplyAPLossBuildup();
+            npc.stats.ApplyAPLossBuildup();
 
             if (npc.stats.CurrentAP() > 0)
             {
@@ -153,7 +150,7 @@ public class TurnManager : MonoBehaviour
 
     public IEnumerator StartNextNPCsAction(Unit unitFinishingAction)
     {
-        yield return null;
+        //yield return null;
 
         if (activeUnit != unitFinishingAction)
             yield break;
