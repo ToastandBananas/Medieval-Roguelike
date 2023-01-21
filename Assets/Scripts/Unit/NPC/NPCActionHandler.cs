@@ -55,7 +55,7 @@ public class NPCActionHandler : UnitActionHandler
         base.FinishAction();
 
         if (unit.stats.CurrentAP() > 0 && unit.isMyTurn && GetAction<MoveAction>().isMoving == false) // Take another action
-            StartCoroutine(TurnManager.Instance.StartNextNPCsAction(unit));
+            TurnManager.Instance.StartNextNPCsAction(unit);
             //TakeTurn();
     }
 

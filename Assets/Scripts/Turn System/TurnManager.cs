@@ -103,7 +103,7 @@ public class TurnManager : MonoBehaviour
         if (npcs_HaventFinishedTurn.Count == 0)
             ReadyPlayersTurn();
         else
-            StartCoroutine(StartNextNPCsAction(npc)); // TODO: Make sure this isn't being ran somewhere else at the same time
+            StartNextNPCsAction(npc); // TODO: Make sure this isn't being ran somewhere else at the same time
     }
 
     public void TakeNPCsTurn(Unit npc)
@@ -148,17 +148,17 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    public IEnumerator StartNextNPCsAction(Unit unitFinishingAction)
+    public void StartNextNPCsAction(Unit unitFinishingAction)
     {
         //yield return null;
 
         if (activeUnit != unitFinishingAction)
-            yield break;
+            return;
 
         if (npcs_HaventFinishedTurn.Count == 0)
         {
             ReadyPlayersTurn();
-            yield break;
+            return;
         }
 
         if (npcTurnIndex >= npcs_HaventFinishedTurn.Count - 1)
@@ -180,7 +180,7 @@ public class TurnManager : MonoBehaviour
         npcTurnIndex = UnitManager.Instance.livingNPCs.Count - 1;
         if (UnitManager.Instance.livingNPCs.Count > 0)
         {
-            StartCoroutine(StartNextNPCsAction(UnitManager.Instance.player));
+            StartNextNPCsAction(UnitManager.Instance.player);
             /*for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
             {
                 TakeNPCsTurn(UnitManager.Instance.livingNPCs[i]);

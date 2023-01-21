@@ -28,7 +28,7 @@ public class TurnAction : BaseAction
         StartCoroutine(RotateTowardsPosition(targetPosition));
 
         if (unit.IsNPC())
-            StartCoroutine(TurnManager.Instance.StartNextNPCsAction(unit));
+            TurnManager.Instance.StartNextNPCsAction(unit);
     }
 
     public IEnumerator RotateTowardsPosition(Vector3 targetPosition)
@@ -58,7 +58,7 @@ public class TurnAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public void RotateTowardsDirection(Direction direction, Vector3 startPosition)
+    public void RotateTowardsDirection(Direction direction, Vector3 startPosition, bool rotateInstantly)
     {
         if (direction == currentDirection)
             return;
@@ -98,9 +98,12 @@ public class TurnAction : BaseAction
 
         Vector3 dir = (targetPosition - startPosition).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(dir);
-        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f) 
+        if (rotateInstantly == false)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+            while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+            }
         }
 
         transform.rotation = targetRotation;
