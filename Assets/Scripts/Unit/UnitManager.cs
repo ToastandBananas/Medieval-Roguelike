@@ -8,9 +8,10 @@ public class UnitManager : MonoBehaviour
 
     public Unit player { get; private set; }
 
-    public List<Unit> units { get; private set; }
-    public List<Unit> friendlyUnits { get; private set; }
-    public List<Unit> enemyUnits { get; private set; }
+    public List<Unit> livingNPCs { get; private set; }
+    public List<Unit> deadNPCs { get; private set; }
+    //public List<Unit> friendlyNPCs { get; private set; }
+    //public List<Unit> enemyNPCs { get; private set; }
 
     void Awake()
     {
@@ -28,14 +29,26 @@ public class UnitManager : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Unit>();
 
-        units = new List<Unit>();
-        friendlyUnits = new List<Unit>();
-        enemyUnits = new List<Unit>();
+        livingNPCs = new List<Unit>();
+        deadNPCs = new List<Unit>();
+        //friendlyNPCs = new List<Unit>();
+        //enemyNPCs = new List<Unit>();
 
-        units = FindObjectsOfType<Unit>().ToList();
+        livingNPCs = FindObjectsOfType<Unit>().ToList();
+        for (int i = 0; i < livingNPCs.Count; i++)
+        {
+            if (livingNPCs[i].IsPlayer())
+                livingNPCs.Remove(livingNPCs[i]);
+
+            if (livingNPCs[i].isDead)
+            {
+                deadNPCs.Add(livingNPCs[i]);
+                livingNPCs.Remove(livingNPCs[i]);
+            }
+        }
     }
 
-    public void AddUnitToUnitsList(Unit unit) => units.Add(unit);
+    public void AddUnitToUnitsList(Unit unit) => livingNPCs.Add(unit);
 
-    public void RemoveUnitFromUnitsList(Unit unit) => units.Remove(unit);
+    public void RemoveUnitFromUnitsList(Unit unit) => livingNPCs.Remove(unit);
 }

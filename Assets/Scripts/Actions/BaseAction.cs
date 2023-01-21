@@ -3,7 +3,14 @@ using UnityEngine;
 
 public abstract class BaseAction : MonoBehaviour
 {
+    public Unit unit { get; private set; }
+
     protected bool isActive;
+
+    public virtual void Awake()
+    {
+        unit = GetComponent<Unit>();
+    }
 
     public abstract void TakeAction(GridPosition gridPosition, Action onActionComplete); 
     

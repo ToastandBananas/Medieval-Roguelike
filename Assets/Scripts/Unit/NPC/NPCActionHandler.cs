@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
@@ -57,8 +54,9 @@ public class NPCActionHandler : UnitActionHandler
     {
         base.FinishAction();
 
-        if (unit.stats.CurrentAP() > 0 && GetAction<MoveAction>().isMoving == false) // Take another action
-            TakeTurn();
+        if (unit.stats.CurrentAP() > 0 && unit.isMyTurn && GetAction<MoveAction>().isMoving == false) // Take another action
+            StartCoroutine(TurnManager.Instance.StartNextNPCsAction(unit));
+            //TakeTurn();
     }
 
     public void DetermineAction()

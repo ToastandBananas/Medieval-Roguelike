@@ -116,7 +116,7 @@ public class GridSystemVisual : MonoBehaviour
             if (distance > maxRange || distance < minRange)
                 continue;
             
-            Unit activeUnit = TurnManager.Instance.ActiveUnit();
+            Unit activeUnit = TurnManager.Instance.activeUnit;
 
             float sphereCastRadius = 0.1f;
             Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()) - ((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()))).normalized;
@@ -134,7 +134,7 @@ public class GridSystemVisual : MonoBehaviour
     {
         HideAllGridPositions();
 
-        Unit activeUnit = TurnManager.Instance.ActiveUnit();
+        Unit activeUnit = TurnManager.Instance.activeUnit;
         /*
         BaseAction selectedAction = UnitActionSystem.Instance.SelectedAction();
 

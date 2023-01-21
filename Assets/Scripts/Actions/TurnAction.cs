@@ -13,12 +13,8 @@ public class TurnAction : BaseAction
     readonly float defaultRotateSpeed = 10f;
     readonly int singleTurnSegmentAPCost = 25;
 
-    Unit unit;
-
     void Start()
     {
-        unit = GetComponent<Unit>();
-
         SetCurrentDirection();
     }
 
@@ -30,6 +26,9 @@ public class TurnAction : BaseAction
         StartAction(onActionComplete);
 
         StartCoroutine(RotateTowardsPosition(targetPosition));
+
+        if (unit.IsNPC())
+            StartCoroutine(TurnManager.Instance.StartNextNPCsAction(unit));
     }
 
     public IEnumerator RotateTowardsPosition(Vector3 targetPosition)

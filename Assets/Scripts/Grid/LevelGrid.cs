@@ -39,7 +39,10 @@ public class LevelGrid : MonoBehaviour
 
     public void AddUnitAtGridPosition(GridPosition gridPosition, Unit unit)
     {
-        units.Add(gridPosition, unit);
+        if (units.ContainsKey(gridPosition) && units.TryGetValue(gridPosition, out Unit unitValue) == unit)
+            return;
+        else
+            units.Add(gridPosition, unit);
         // Debug.Log(unit.name + " added to position: " + gridPosition.ToString());
     }
 
@@ -53,7 +56,8 @@ public class LevelGrid : MonoBehaviour
     {
         // units.TryGetValue(gridPosition, out Unit unit);
         // Debug.Log(unit.name + " removed from position: " + gridPosition.ToString());
-        units.Remove(gridPosition);
+        if (units.ContainsKey(gridPosition))
+            units.Remove(gridPosition);
     }
     
     public void UnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
