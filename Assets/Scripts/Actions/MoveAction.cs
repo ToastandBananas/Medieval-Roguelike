@@ -7,7 +7,8 @@ using UnityEngine;
 public class MoveAction : BaseAction
 {
     public Seeker seeker { get; private set; }
-    public GridPosition targetGridPosition { get; private set; }
+    public GridPosition finalTargetGridPosition { get; private set; }
+    public GridPosition nextTargetGridPosition { get; private set; }
 
     public bool isMoving { get; private set; }
     // bool moveQueued { get; private set; }
@@ -33,7 +34,7 @@ public class MoveAction : BaseAction
     {
         // Debug.Log(Time.frameCount); // We can use this to make sure multiple moves are never ran in the same frame, to avoid Units trying to go on the same space
 
-        GetPathToTargetPosition(targetGridPosition);
+        GetPathToFinalTargetPosition(targetGridPosition);
 
         //OnStartMoving?.Invoke(this, EventArgs.Empty);
 
@@ -68,6 +69,8 @@ public class MoveAction : BaseAction
 
             yield break;
         }
+
+        nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
 
         // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
         unit.BlockAtPosition(nextTargetPosition);
@@ -147,7 +150,7 @@ public class MoveAction : BaseAction
                 float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
                 if (distanceToTargetPosition > stoppingDistance)
                 {
-                    float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+                    float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(finalTargetGridPosition));
                     float distanceToTriggerStopAnimation = 1f;
                     if (distanceToNextPosition <= distanceToTriggerStopAnimation)
                         unit.unitAnimator.StopMovingForward();
@@ -160,7 +163,7 @@ public class MoveAction : BaseAction
 
             unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition, unit.transform.position, false);
         }
-        else
+        else // Move and rotate instantly while NPC is offscreen
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(firstPointOnPath);
             unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition, unit.transform.position, true);
@@ -183,18 +186,18 @@ public class MoveAction : BaseAction
         {
             GridSystemVisual.Instance.UpdateGridVisual();
 
-            if (unit.gridPosition != targetGridPosition)
-                unit.unitActionHandler.QueueAction(this, GetActionPointsCost(targetGridPosition));
+            if (unit.gridPosition != finalTargetGridPosition)
+                unit.unitActionHandler.QueueAction(this, GetActionPointsCost(finalTargetGridPosition));
         }
     }
 
-    void GetPathToTargetPosition(GridPosition targetGridPosition)
+    void GetPathToFinalTargetPosition(GridPosition finalTargetGridPosition)
     {
-        this.targetGridPosition = targetGridPosition;
+        SetFinalTargetGridPosition(finalTargetGridPosition);
 
         unit.UnblockCurrentPosition();
 
-        ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+        ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.Instance.GetWorldPosition(finalTargetGridPosition));
         path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
         // Schedule the path for calculation
@@ -212,7 +215,7 @@ public class MoveAction : BaseAction
                 GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
                 npcActionHandler.IncreasePatrolPointIndex();
                 npcActionHandler.SetTargetGridPosition(patrolPointGridPosition);
-                SetTargetGridPosition(patrolPointGridPosition);
+                SetFinalTargetGridPosition(patrolPointGridPosition);
             }
 
             unit.unitActionHandler.FinishAction();
@@ -237,7 +240,9 @@ public class MoveAction : BaseAction
 
     public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
-    public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
+    public void SetFinalTargetGridPosition(GridPosition finalTargetGridPosition) => this.finalTargetGridPosition = finalTargetGridPosition;
+
+    public void SetNextTargetGridPosition(GridPosition nextTargetGridPosition) => this.nextTargetGridPosition = nextTargetGridPosition;
 
     public override string GetActionName() => "Move";
 
@@ -253,7 +258,7 @@ public class MoveAction : BaseAction
         int cost = defaultTileMoveCost;
         float floatCost = cost;
 
-        GetPathToTargetPosition(targetGridPosition);
+        GetPathToFinalTargetPosition(targetGridPosition);
 
         if (positionList.Count == 0)
             return cost;
@@ -298,7 +303,6 @@ public class MoveAction : BaseAction
 
     Vector3 GetNextTargetPosition()
     {
-        Vector3 nextPosition;
         Vector3 firstPointOnPath = positionList[1];
         if (Mathf.Approximately(firstPointOnPath.y, unit.transform.position.y) == false) 
             return firstPointOnPath; 

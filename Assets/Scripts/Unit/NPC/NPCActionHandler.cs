@@ -93,7 +93,7 @@ public class NPCActionHandler : UnitActionHandler
     {
         if (patrolIterationCount >= maxPatrolIterations)
         {
-            Debug.Log("Max patrol iterations reached...");
+            // Debug.Log("Max patrol iterations reached...");
             patrolIterationCount = 0;
             StartCoroutine(TurnManager.Instance.FinishTurn(unit));
             return;

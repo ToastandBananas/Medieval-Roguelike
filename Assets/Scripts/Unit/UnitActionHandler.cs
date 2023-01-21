@@ -86,6 +86,19 @@ public class UnitActionHandler : MonoBehaviour
         }
     }
 
+    public void CancelAction()
+    {
+        ClearActionQueue();
+
+        MoveAction moveAction = GetAction<MoveAction>();
+        if (moveAction.finalTargetGridPosition != unit.gridPosition)
+            moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
+
+        // If the Unit isn't moving, they might still be in a move animation, so cancel that
+        if (moveAction.isMoving == false)
+            unit.unitAnimator.StopMovingForward();
+    }
+
     public void ClearActionQueue()
     {
         queuedAction = null;

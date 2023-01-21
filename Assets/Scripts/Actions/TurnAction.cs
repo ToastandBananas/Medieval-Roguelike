@@ -94,8 +94,6 @@ public class TurnAction : BaseAction
                 break;
         }
 
-        Debug.Log(startPosition + " / " + targetPosition + " / " + direction);
-
         Vector3 dir = (targetPosition - startPosition).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(dir);
         if (rotateInstantly == false)
