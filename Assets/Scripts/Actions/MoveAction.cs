@@ -11,6 +11,7 @@ public class MoveAction : BaseAction
     public GridPosition nextTargetGridPosition { get; private set; }
 
     public bool isMoving { get; private set; }
+    bool assignedNewTargetPosition;
     // bool moveQueued { get; private set; }
 
     [SerializeField] LayerMask moveObstaclesMask;
@@ -47,6 +48,9 @@ public class MoveAction : BaseAction
 
     IEnumerator Move()
     {
+        if (isMoving)
+            yield break;
+
         if (positionList.Count == 0)
         {
             if (unit.IsPlayer()) Debug.Log("Player's position List length is 0");
@@ -174,6 +178,7 @@ public class MoveAction : BaseAction
             if (unit.IsNPC()) TurnManager.Instance.StartNextNPCsAction(unit);
         }
 
+        nextPathPosition = new Vector3(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
         unit.transform.position = nextPathPosition;
 
         if (nextPathPosition != nextTargetPosition && unit.IsNPC())
@@ -304,26 +309,29 @@ public class MoveAction : BaseAction
     Vector3 GetNextTargetPosition()
     {
         Vector3 firstPointOnPath = positionList[1];
-        if (Mathf.Approximately(firstPointOnPath.y, unit.transform.position.y) == false) 
-            return firstPointOnPath; 
+        Vector3 nextTargetPosition;
+        if (Mathf.Approximately(firstPointOnPath.y, unit.transform.position.y) == false)
+            nextTargetPosition = firstPointOnPath; 
         else if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // North
-            return new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // South
-            return new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z - 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z - 1); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z)) // East
-            return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z); 
+            nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z)) // West
-            return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z); 
+            nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // NorthEast
-            return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z + 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z + 1); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // SouthWest
-            return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z - 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z - 1); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // SouthEast
-            return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z - 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z - 1); 
         else if (Mathf.RoundToInt(firstPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(firstPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // NorthWest
-            return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1); 
+            nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1); 
         else // Debug.LogWarning("Next Position is " + unit.name + "'s current position...");
-            return transform.position;
+            nextTargetPosition = transform.position;
+        nextTargetPosition = new Vector3(Mathf.RoundToInt(nextTargetPosition.x), nextTargetPosition.y, Mathf.RoundToInt(nextTargetPosition.z));
+        return nextTargetPosition;
     }
 
     Direction GetDirectionToNextTargetPosition(Vector3 targetPosition)

@@ -49,6 +49,7 @@ public class TurnManager : MonoBehaviour
             else
                 FinishNPCsTurn(unit);
         }
+        //yield break;
     }
 
     void FinishPlayersTurn()

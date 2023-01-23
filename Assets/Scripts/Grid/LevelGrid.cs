@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
-using UnityEngine.Rendering.UI;
+using Random = UnityEngine.Random;
 
 public class LevelGrid : MonoBehaviour
 {
@@ -129,7 +129,6 @@ public class LevelGrid : MonoBehaviour
     public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit)
     {
         GridPosition newGridPosition = startingGridPosition;
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
 
         ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 10001);
         path.traversalProvider = DefaultTraversalProvider();
@@ -155,14 +154,47 @@ public class LevelGrid : MonoBehaviour
             if (HasAnyUnitOnGridPosition(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            // Debug.Log(gridPosition);
-            if (gridPosition != startingGridPosition)
-                newGridPosition = gridPosition;
-
+            newGridPosition = gridPosition;
             break;
         }
 
         return newGridPosition;
+    }
+
+    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (maxRange * 1000));
+        path.traversalProvider = DefaultTraversalProvider();
+
+        // Schedule the path for calculation
+        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (IsValidGridPosition(gridPosition) == false)
+                continue;
+
+            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisions.Length > 0)
+                continue;
+
+            if (HasAnyUnitOnGridPosition(gridPosition)) // Grid Position already occupied by another Unit
+                continue;
+
+            validGridPositionList.Add(gridPosition);
+        }
+
+        GridSystemVisual.Instance.ShowGridPositionRange(startingGridPosition, minRange, maxRange, GridSystemVisual.GridVisualType.White);
+
+        return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
     }
 
     public static bool IsDiagonal(GridPosition startGridPosition, GridPosition endGridPosition)

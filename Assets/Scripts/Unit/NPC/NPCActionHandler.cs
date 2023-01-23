@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
@@ -26,11 +27,11 @@ public class NPCActionHandler : UnitActionHandler
     [SerializeField] float maxChaseDistance = 15f;
 
     [Header("Wandering State Variables")]
-    [SerializeField] Vector2 defaultPosition;
-    [SerializeField] public float minRoamDistance = 5f;
-    [SerializeField] public float maxRoamDistance = 20f;
-    Vector2 roamPosition;
-    bool roamPositionSet;
+    [SerializeField] Vector3 defaultPosition;
+    [SerializeField] int minWanderDistance = 5;
+    [SerializeField] int maxWanderDistance = 20;
+    GridPosition wanderGridPosition;
+    bool wanderPositionSet;
 
     public void TakeTurn()
     {
@@ -70,6 +71,7 @@ public class NPCActionHandler : UnitActionHandler
                 Patrol();
                 break;
             case State.Wander:
+                WanderAround();
                 break;
             case State.Follow:
                 break;
@@ -101,7 +103,7 @@ public class NPCActionHandler : UnitActionHandler
         else if (patrolPoints.Length > 0)
         {
             // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
-            patrolIterationCount++;
+            //patrolIterationCount++;
 
             if (initialPatrolPointSet == false)
             {
@@ -123,6 +125,9 @@ public class NPCActionHandler : UnitActionHandler
             else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.HasAnyUnitOnGridPosition(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
                 || (hasAlternativePatrolPoint && LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition) != unit))
             {
+                // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
+                patrolIterationCount++;
+
                 // Find the nearest Grid Position to the Patrol Point
                 GridPosition nearestGridPositionToPatrolPoint = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit);
                 if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
@@ -142,7 +147,7 @@ public class NPCActionHandler : UnitActionHandler
                     hasAlternativePatrolPoint = false;
 
                 // Reset the iteration count since we will have a new Target Grid Position
-                patrolIterationCount = 0;
+                //patrolIterationCount = 0;
 
                 // Set the Unit's Target Grid Position as the next Patrol Point
                 IncreasePatrolPointIndex();
@@ -151,7 +156,14 @@ public class NPCActionHandler : UnitActionHandler
             }
             // Otherwise, assign their target position to the Patrol Point if it's not already set
             else if (hasAlternativePatrolPoint == false && targetGridPosition.WorldPosition() != patrolPoints[currentPatrolPointIndex])
-                SetTargetGridPosition(patrolPointGridPosition);
+            {
+                SetTargetGridPosition(patrolPointGridPosition); 
+                
+                Debug.Log("Unit Grid Position: " + unit.gridPosition + " / " + "Target Grid Position: " + targetGridPosition);
+                // Don't reset the patrol iteration count if the next target position is the Unit's current position, because we'll need to iterate through Patrol again
+                if (targetGridPosition != unit.gridPosition)
+                    patrolIterationCount = 0;
+            }
 
             // Queue the Move Action if the Unit isn't already moving
             if (GetAction<MoveAction>().isMoving == false)
@@ -207,6 +219,42 @@ public class NPCActionHandler : UnitActionHandler
     public void SetHasAlternativePatrolPoint(bool hasAlternativePatrolPoint) => this.hasAlternativePatrolPoint = hasAlternativePatrolPoint;
     #endregion
 
+    #region Wander
+    public void WanderAround()
+    {
+        /*if (wanderPositionSet == false)
+        {
+            wanderGridPosition = GetNewWanderPosition();
+            if (wanderGridPosition == unit.gridPosition)
+                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+            else
+            {
+                wanderPositionSet = true;
+                SetTargetGridPosition(wanderGridPosition);
+            }
+            if (RoamingPositionValid())
+            {
+                SetTargetPosition(wanderGridPosition);
+
+                if (characterManager.movement.isMoving == false)
+                    StartCoroutine(Move());
+            }
+            else
+                StartCoroutine(gm.turnManager.FinishTurn(characterManager));
+        }
+        else if (Vector2.Distance(wanderGridPosition, transform.position) <= 0.1f)
+        {
+            // Get a new roamPosition when the current one is reached
+            wanderPositionSet = false;
+            StartCoroutine(gm.turnManager.FinishTurn(characterManager));
+        }
+        else if (characterManager.movement.isMoving == false)
+            StartCoroutine(Move());*/
+    }
+
+    GridPosition GetNewWanderPosition() => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance); 
+    #endregion
+
     public void SetLeader(Unit newLeader) => leader = newLeader;
 
     public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
@@ -214,7 +262,7 @@ public class NPCActionHandler : UnitActionHandler
     public void ResetToDefaults()
     {
         hasAlternativePatrolPoint = false;
-        roamPositionSet = false;
+        wanderPositionSet = false;
         needsFleeDestination = true;
         initialPatrolPointSet = false;
         patrolIterationCount = 0;
