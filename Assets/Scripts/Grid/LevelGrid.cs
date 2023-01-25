@@ -151,7 +151,7 @@ public class LevelGrid : MonoBehaviour
             if (collisions.Length > 0)
                 continue;
 
-            if (HasAnyUnitOnGridPosition(gridPosition)) // Grid Position already occupied by another Unit
+            if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
             newGridPosition = gridPosition;
@@ -186,7 +186,7 @@ public class LevelGrid : MonoBehaviour
             if (collisions.Length > 0)
                 continue;
 
-            if (HasAnyUnitOnGridPosition(gridPosition)) // Grid Position already occupied by another Unit
+            if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
             validGridPositionList.Add(gridPosition);
@@ -209,6 +209,13 @@ public class LevelGrid : MonoBehaviour
         //if (TurnManager.Instance.IsPlayerTurn())
             //Debug.Log("Start: " + startPosition + " / " + "End: " + endPosition);
         if (Mathf.RoundToInt(startPosition.x) != Mathf.RoundToInt(endPosition.x) && Mathf.RoundToInt(startPosition.z) != Mathf.RoundToInt(endPosition.z))
+            return true;
+        return false;
+    }
+
+    public bool GridPositionObstructed(GridPosition gridPosition)
+    {
+        if (HasAnyUnitOnGridPosition(gridPosition))
             return true;
         return false;
     }

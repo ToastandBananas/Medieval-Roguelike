@@ -26,11 +26,9 @@ public class TurnAction : BaseAction
         StartAction(onActionComplete);
 
         StartCoroutine(RotateTowardsPosition(targetPosition));
-
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
-    public IEnumerator RotateTowardsPosition(Vector3 targetPosition)
+    IEnumerator RotateTowardsPosition(Vector3 targetPosition)
     {
         Vector3 forward = transform.forward;
         forward.y = 0;
@@ -55,6 +53,7 @@ public class TurnAction : BaseAction
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
+        unit.unitActionHandler.TakeTurn();
     }
 
     public void RotateTowardsDirection(Direction direction, Vector3 startPosition, bool rotateInstantly)

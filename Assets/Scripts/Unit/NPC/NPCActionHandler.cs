@@ -117,8 +117,8 @@ public class NPCActionHandler : UnitActionHandler
                 return;
             }
             // If there's another Unit currently on the Patrol Point or Alternative Patrol Point
-            else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.HasAnyUnitOnGridPosition(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
-                || (hasAlternativePatrolPoint && LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition) != unit))
+            else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.GridPositionObstructed(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
+                || (hasAlternativePatrolPoint && LevelGrid.Instance.GridPositionObstructed(targetGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition) != unit))
             {
                 // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
                 patrolIterationCount++;
@@ -131,7 +131,7 @@ public class NPCActionHandler : UnitActionHandler
                 hasAlternativePatrolPoint = true;
                 SetTargetGridPosition(nearestGridPositionToPatrolPoint);
 
-                if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.Instance.HasAnyUnitOnGridPosition(nearestGridPositionToPatrolPoint) == false)
+                if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.Instance.GridPositionObstructed(nearestGridPositionToPatrolPoint) == false)
                     patrolIterationCount = 0;
             }
 
@@ -240,8 +240,8 @@ public class NPCActionHandler : UnitActionHandler
         }
         else if (GetAction<MoveAction>().isMoving == false)
         {
-            // Get a new Wander Position if there's now another Unit there
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(wanderGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(wanderGridPosition) != unit)
+            // Get a new Wander Position if there's now another Unit or obstruction there
+            if (LevelGrid.Instance.GridPositionObstructed(wanderGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(wanderGridPosition) != unit)
             {
                 wanderGridPosition = GetNewWanderPosition();
                 SetTargetGridPosition(wanderGridPosition);

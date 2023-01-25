@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Stats : MonoBehaviour
 {
@@ -27,13 +28,18 @@ public class Stats : MonoBehaviour
     {
         // Debug.Log("AP used: " + amount);
         currentAP -= amount;
-        //if (IsNPC() == false)
-        //gm.healthDisplay.UpdateAPText();
+        //if (unit.IsPlayer())
+            //gm.healthDisplay.UpdateAPText();
     }
 
     public void ReplenishAP() => currentAP = MaxAP();
 
-    public void AddToCurrentAP(int amountToAdd) => currentAP += amountToAdd; 
+    public void AddToCurrentAP(int amountToAdd)
+    {
+        currentAP += amountToAdd;
+        if (currentAP > MaxAP())
+            ReplenishAP();
+    }
 
     public void AddToAPLossBuildup(int amount) => APLossBuildup += amount; 
 
