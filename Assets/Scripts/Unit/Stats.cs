@@ -48,7 +48,7 @@ public class Stats : MonoBehaviour
         {
             APLossBuildup -= currentAP;
             currentAP = 0;
-            StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+            TurnManager.Instance.FinishTurn(unit);
         }
     }
 

@@ -16,7 +16,7 @@ public class PlayerActionInput : MonoBehaviour
         {
             if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
             {
-                ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
+                ActionLineRenderer.Instance.ResetCurrentPositions();
                 unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
             }
 
@@ -26,12 +26,13 @@ public class PlayerActionInput : MonoBehaviour
                 {
                     Debug.Log("Cancelling Action");
                     unit.unitActionHandler.CancelAction();
+                    ActionLineRenderer.Instance.ResetCurrentPositions();
                 }
             }
             else if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
             {
                 if (GameControls.gamePlayActions.skipTurn.WasPressed)
-                    StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+                    TurnManager.Instance.FinishTurn(unit);
 
                 if (unit.unitActionHandler.selectedAction != null)
                 {
@@ -62,7 +63,6 @@ public class PlayerActionInput : MonoBehaviour
             else
             {
                 ActionLineRenderer.Instance.HideLineRenderers();
-                ActionLineRenderer.Instance.ResetCurrentMouseGridPosition();
             }
         }
     }

@@ -377,12 +377,17 @@ PrefabInstance:
     - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: speed.baseValue
-      value: 20
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: maxWanderDistance
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -3353,10 +3358,20 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: speed.baseValue
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: maxWanderDistance
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4067,12 +4082,17 @@ PrefabInstance:
     - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: speed.baseValue
-      value: 20
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: maxWanderDistance
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4156,12 +4176,17 @@ PrefabInstance:
     - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: speed.baseValue
-      value: 20
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: maxWanderDistance
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5863758878478513190, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4602,10 +4627,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: Unit - Male
       objectReference: {fileID: 0}
+    - target: {fileID: 1716772551159210589, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: speed.baseValue
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 1918958863613582635, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: defaultState
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
+        type: 3}
+      propertyPath: maxWanderDistance
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 3566344150296233335, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
@@ -4641,6 +4676,11 @@ PrefabInstance:
       propertyPath: manager
       value: 
       objectReference: {fileID: 671623199}
+    - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: speed.baseValue
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 8220662913183796560, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_RootOrder

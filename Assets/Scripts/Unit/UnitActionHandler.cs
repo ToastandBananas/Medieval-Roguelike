@@ -25,6 +25,24 @@ public class UnitActionHandler : MonoBehaviour
         SetSelectedAction(GetAction<MoveAction>());
     }
 
+    public virtual void TakeTurn()
+    {
+        if (unit.isMyTurn && unit.isDead == false)
+        {
+            if (unit.stats.CurrentAP() <= 0)
+                TurnManager.Instance.FinishTurn(unit);
+            else
+            {
+                // unit.vision.CheckEnemyVisibility();
+
+                if (queuedAction != null)
+                    GetNextQueuedAction();
+                else
+                    unit.UnblockCurrentPosition();
+            }
+        }
+    }
+
     #region Action Queue
     public void QueueAction(BaseAction action, int APCost)
     {
@@ -32,20 +50,20 @@ public class UnitActionHandler : MonoBehaviour
         queuedAction = action;
         queuedAP = APCost;
 
-        if (unit.isMyTurn && unit.stats.CurrentAP() > 0)
-            StartCoroutine(GetNextQueuedAction());
+        if (unit.isMyTurn && GetAction<MoveAction>().isMoving == false && unit.stats.CurrentAP() > 0)
+            GetNextQueuedAction();
 
         // Update AP text
         //if (IsNPC() == false)
         //APManager.Instance.UpdateLastAPUsed(APCost);
     }
 
-    public IEnumerator GetNextQueuedAction()
+    public void GetNextQueuedAction()
     {
         if (unit.isDead)
         {
             ClearActionQueue();
-            yield break;
+            return;
         }
 
         if (queuedAction != null && isPerformingAction == false)
@@ -62,27 +80,20 @@ public class UnitActionHandler : MonoBehaviour
                 // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
                 isPerformingAction = false;
                 queuedAP = APRemainder;
-                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+                TurnManager.Instance.FinishTurn(unit);
             }
         }
-        else
-            yield return null;
     }
 
     public virtual void FinishAction()
     {
-        /*if (queuedAP != 0)
-            queuedAP = 0;
-        if (queuedAction != null)
-            queuedAction = null;*/
-
         ClearActionQueue();
 
         // If the character has no AP remaining, end their turn
         if (unit.stats.CurrentAP() <= 0)
         {
             if (unit.isMyTurn)
-                StartCoroutine(TurnManager.Instance.FinishTurn(unit));
+                TurnManager.Instance.FinishTurn(unit);
         }
     }
 

@@ -192,7 +192,7 @@ public class LevelGrid : MonoBehaviour
             validGridPositionList.Add(gridPosition);
         }
 
-        GridSystemVisual.Instance.ShowGridPositionRange(startingGridPosition, minRange, maxRange, GridSystemVisual.GridVisualType.White);
+        // GridSystemVisual.Instance.ShowGridPositionRange(startingGridPosition, minRange, maxRange, GridSystemVisual.GridVisualType.White);
 
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
     }

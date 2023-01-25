@@ -8,6 +8,7 @@ public class Unit : MonoBehaviour
     [SerializeField] public LayerMask actionObstaclesMask { get; private set; }
 
     public bool isMyTurn { get; private set; }
+    public bool hasStartedTurn { get; private set; }
     public bool isDead { get; private set; }
 
     public GridPosition gridPosition { get; private set; }
@@ -18,7 +19,7 @@ public class Unit : MonoBehaviour
     public UnitActionHandler unitActionHandler { get; private set; }
     public UnitAnimator unitAnimator { get; private set; }
 
-    public MeshRenderer unitBaseMeshRenderer { get; private set; }
+    MeshRenderer unitBaseMeshRenderer;
 
     void Awake()
     {
@@ -65,7 +66,11 @@ public class Unit : MonoBehaviour
 
     public bool IsPlayer() => gameObject.CompareTag("Player");
 
+    public bool IsVisibleOnScreen() => unitBaseMeshRenderer.isVisible;
+
     public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
+
+    public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
 
     public bool SetIsDead(bool isDead) => this.isDead = isDead;
 

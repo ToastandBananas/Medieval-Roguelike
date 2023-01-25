@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    public List<Unit> npcs_HaventFinishedTurn { get; private set; }
-    public List<Unit> npcs_FinishedTurn { get; private set; }
-    int npcTurnIndex;
+    public List<Unit> units_HaventFinishedTurn { get; private set; }
+    public List<Unit> units_FinishedTurn { get; private set; }
+    int unitTurnIndex;
 
     public Unit activeUnit { get; private set; }
 
@@ -33,165 +33,117 @@ public class TurnManager : MonoBehaviour
     {
         activeUnit = UnitManager.Instance.player;
 
-        npcs_HaventFinishedTurn = new List<Unit>();
-        npcs_FinishedTurn = new List<Unit>();
+        units_HaventFinishedTurn = new List<Unit>();
+        units_FinishedTurn = new List<Unit>();
+
+        StartCoroutine(StartNextUnitsTurn(activeUnit));
     }
 
-    public IEnumerator FinishTurn(Unit unit)
+    public void FinishTurn(Unit unit)
     {
-        yield return null;
+        unit.SetIsMyTurn(false);
+        unit.BlockCurrentPosition();
 
-        if (unit.isMyTurn)
+        units_FinishedTurn.Add(unit);
+        units_HaventFinishedTurn.Remove(unit);
+
+        //Debug.Log(unit + " finished their turn.");
+
+        StartCoroutine(StartNextUnitsTurn(unit));
+    }
+
+    void StartUnitsTurn(Unit unit)
+    {
+        if (unit.isDead)
         {
-            // Debug.Log(characterManager.name + " is finishing their turn");
-            if (unit.IsNPC() == false)
-                FinishPlayersTurn();
-            else
-                FinishNPCsTurn(unit);
+            Debug.LogError(unit + " is dead, but they are trying to take their turn...");
+            if (unit.IsNPC())
+            {
+                UnitManager.Instance.deadNPCs.Add(unit);
+                UnitManager.Instance.livingNPCs.Remove(unit);
+            }
+
+            if (units_HaventFinishedTurn.Contains(unit))
+                units_HaventFinishedTurn.Remove(unit);
+
+            if (units_FinishedTurn.Contains(unit))
+                units_FinishedTurn.Remove(unit);
         }
-        //yield break;
+        else
+        {
+            activeUnit = unit;
+            unit.SetIsMyTurn(true);
+
+            if (unit.hasStartedTurn == false)
+            {
+                unit.SetHasStartedTurn(true);
+                unit.stats.ReplenishAP();
+
+                /*
+                unit.status.UpdateBuffs();
+                unit.status.UpdateInjuries();
+                unit.status.RegenerateStamina();
+                unit.nutrition.DrainStaminaBonus();
+                unit.nutrition.DrainNourishment();
+                unit.nutrition.DrainWater();
+                unit.nutrition.DrainNausea();
+                */
+
+                unit.stats.ApplyAPLossBuildup();
+            }
+            
+            unit.unitActionHandler.TakeTurn();
+        }
     }
 
-    void FinishPlayersTurn()
+    public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction)
     {
-        UnitManager.Instance.player.SetIsMyTurn(false);
-        UnitManager.Instance.player.BlockCurrentPosition();
+        if (activeUnit != unitFinishingAction)
+            yield break;
 
-        npcs_FinishedTurn.Clear();
-        SortNPCsBySpeed();
+        // If the final Unit is still performing an action
+        while (units_HaventFinishedTurn.Count == 1 && units_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
+        {
+            yield return null;
+        }
 
-        DoAllNPCsTurns();
+        // If every Unit finished their turn
+        if (units_HaventFinishedTurn.Count == 0)
+            OnCompleteAllTurns();
+
+        // Increase the turn index
+        if (unitTurnIndex >= units_HaventFinishedTurn.Count - 1)
+            unitTurnIndex = 0;
+        else
+            unitTurnIndex++;
+
+        activeUnit.SetIsMyTurn(false);
+
+        // Set new Active Unit
+        activeUnit = units_HaventFinishedTurn[unitTurnIndex];
+
+        StartUnitsTurn(units_HaventFinishedTurn[unitTurnIndex]);
     }
 
-    public void ReadyPlayersTurn()
+    void OnCompleteAllTurns()
     {
-        activeUnit = UnitManager.Instance.player;
-
-        UnitManager.Instance.player.stats.ReplenishAP();
-        UnitManager.Instance.player.SetIsMyTurn(true);
-        UnitManager.Instance.player.UnblockCurrentPosition();
-
         //gm.tileInfoDisplay.DisplayTileInfo();
 
-        /*gm.playerManager.status.UpdateBuffs();
-        gm.playerManager.status.UpdateInjuries();
-        gm.playerManager.status.RegenerateStamina();
-        gm.playerManager.nutrition.DrainStaminaBonus();
-        gm.playerManager.nutrition.DrainNourishment();
-        gm.playerManager.nutrition.DrainWater();
-        gm.playerManager.nutrition.DrainNausea();*/
+        TimeSystem.IncreaseTime(); 
+        
+        units_FinishedTurn.Clear();
+        SortNPCsBySpeed();
+        unitTurnIndex = UnitManager.Instance.livingNPCs.Count - 1;
 
-        TimeSystem.IncreaseTime();
+        for (int i = 0; i < units_HaventFinishedTurn.Count; i++)
+        {
+            units_HaventFinishedTurn[i].SetHasStartedTurn(false);
+        }
 
         //gm.healthDisplay.UpdateTooltip();
-
-        //gm.playerManager.vision.CheckEnemyVisibility();
-
-        UnitManager.Instance.player.stats.ApplyAPLossBuildup();
-
-        if (UnitManager.Instance.player.stats.CurrentAP() > 0 && UnitManager.Instance.player.unitActionHandler.queuedAction != null)
-            UnitManager.Instance.player.StartCoroutine(UnitManager.Instance.player.unitActionHandler.GetNextQueuedAction());
     }
 
-    void FinishNPCsTurn(Unit npc)
-    {
-        npc.SetIsMyTurn(false);
-        npc.BlockCurrentPosition();
-
-        npcs_FinishedTurn.Add(npc);
-        npcs_HaventFinishedTurn.Remove(npc);
-
-        if (npcs_HaventFinishedTurn.Count == 0)
-            ReadyPlayersTurn();
-        else
-            StartNextNPCsAction(npc); // TODO: Make sure this isn't being ran somewhere else at the same time
-    }
-
-    public void TakeNPCsTurn(Unit npc)
-    {
-        if (UnitManager.Instance.player.isDead == false)
-        {
-            activeUnit = npc;
-
-            npc.stats.ReplenishAP();
-
-            //npc.status.UpdateBuffs();
-            //npc.status.UpdateInjuries();
-            //npc.status.RegenerateStamina();
-
-            /*if (npc.nutrition != null)
-            {
-                npc.nutrition.DrainStaminaBonus();
-                npc.nutrition.DrainNourishment();
-                npc.nutrition.DrainWater();
-                npc.nutrition.DrainNausea();
-            }*/
-
-            npc.stats.ApplyAPLossBuildup();
-
-            if (npc.stats.CurrentAP() > 0)
-            {
-                NPCActionHandler npcActionHandler = npc.unitActionHandler as NPCActionHandler;
-                npcActionHandler.TakeTurn();
-            }
-        }
-        else
-        {
-            Debug.LogError(npc + " is dead, but they are trying to take their turn...");
-            UnitManager.Instance.deadNPCs.Add(npc);
-            UnitManager.Instance.livingNPCs.Remove(npc);
-
-            if (npcs_HaventFinishedTurn.Contains(npc))
-                npcs_HaventFinishedTurn.Remove(npc);
-
-            if (npcs_FinishedTurn.Contains(npc))
-                npcs_FinishedTurn.Remove(npc);
-        }
-    }
-
-    public void StartNextNPCsAction(Unit unitFinishingAction)
-    {
-        //yield return null;
-
-        if (activeUnit != unitFinishingAction)
-            return;
-
-        if (npcs_HaventFinishedTurn.Count == 0)
-        {
-            ReadyPlayersTurn();
-            return;
-        }
-
-        if (npcTurnIndex >= npcs_HaventFinishedTurn.Count - 1)
-            npcTurnIndex = 0;
-        else
-            npcTurnIndex++;
-
-        if (activeUnit != null)
-            activeUnit.SetIsMyTurn(false);
-
-        npcs_HaventFinishedTurn[npcTurnIndex].SetIsMyTurn(true);
-        TakeNPCsTurn(npcs_HaventFinishedTurn[npcTurnIndex]);
-    }
-
-    void DoAllNPCsTurns()
-    {
-        SortNPCsBySpeed();
-
-        npcTurnIndex = UnitManager.Instance.livingNPCs.Count - 1;
-        if (UnitManager.Instance.livingNPCs.Count > 0)
-        {
-            StartNextNPCsAction(UnitManager.Instance.player);
-            /*for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
-            {
-                TakeNPCsTurn(UnitManager.Instance.livingNPCs[i]);
-            }*/
-        }
-        else
-            ReadyPlayersTurn();
-    }
-
-    void SortNPCsBySpeed() => npcs_HaventFinishedTurn = UnitManager.Instance.livingNPCs.OrderByDescending(npc => npc.stats.Speed()).ToList();
+    void SortNPCsBySpeed() => units_HaventFinishedTurn = UnitManager.Instance.livingNPCs.OrderByDescending(npc => npc.stats.Speed()).ToList();
 
     public bool IsPlayerTurn() => activeUnit == UnitManager.Instance.player;
 }

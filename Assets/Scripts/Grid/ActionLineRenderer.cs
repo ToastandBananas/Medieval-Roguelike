@@ -196,6 +196,7 @@ public class ActionLineRenderer : MonoBehaviour
     {
         mainLineRenderer.enabled = false;
         arrowHeadLineRenderer.enabled = false;
+        ResetCurrentPositions();
     }
 
     void ResetLineRenderers()
@@ -204,5 +205,9 @@ public class ActionLineRenderer : MonoBehaviour
         arrowHeadLineRenderer.positionCount = 0;
     }
 
-    public void ResetCurrentMouseGridPosition() => currentMouseGridPosition = new GridPosition(10000, 10000, 10000);
+    public void ResetCurrentPositions() 
+    {
+        currentMouseGridPosition = new GridPosition(10000, 10000, 10000);
+        currentPlayerPosition = new GridPosition(10001, 10001, 10001);
+    }
 }

@@ -11,14 +11,14 @@ public class MoveAction : BaseAction
     public GridPosition nextTargetGridPosition { get; private set; }
 
     public bool isMoving { get; private set; }
-    bool assignedNewTargetPosition;
-    // bool moveQueued { get; private set; }
 
     [SerializeField] LayerMask moveObstaclesMask;
 
     List<Vector3> positionList;
 
-    readonly float defaultMoveSpeed = 5f;
+    readonly float defaultMoveSpeed = 3.5f;
+    float moveSpeed;
+
     readonly int defaultTileMoveCost = 200;
     int lastMoveCost;
 
@@ -31,8 +31,12 @@ public class MoveAction : BaseAction
         positionList = new List<Vector3>();
     }
 
+    void Start() => SetMoveSpeed();
+
     public override void TakeAction(GridPosition targetGridPosition, Action onActionComplete)
     {
+        if (isMoving)
+            return;
         // Debug.Log(Time.frameCount); // We can use this to make sure multiple moves are never ran in the same frame, to avoid Units trying to go on the same space
 
         GetPathToFinalTargetPosition(targetGridPosition);
@@ -48,9 +52,6 @@ public class MoveAction : BaseAction
 
     IEnumerator Move()
     {
-        if (isMoving)
-            yield break;
-
         if (positionList.Count == 0)
         {
             if (unit.IsPlayer()) Debug.Log("Player's position List length is 0");
@@ -74,6 +75,8 @@ public class MoveAction : BaseAction
             yield break;
         }
 
+        isMoving = true;
+
         nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
 
         // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
@@ -85,8 +88,8 @@ public class MoveAction : BaseAction
         // Add the Unit to its next position
         LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(nextTargetPosition), unit);
 
-        // Start the next NPCs action before moving, that way their actions play out at the same time as this Unit's
-        if (unit.IsNPC()) TurnManager.Instance.StartNextNPCsAction(unit);
+        // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
+        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
 
         ActionLineRenderer.Instance.HideLineRenderers();
 
@@ -94,7 +97,7 @@ public class MoveAction : BaseAction
         Vector3 nextPathPosition = unit.transform.position;
         Direction directionToNextPosition;
 
-        if (unit.IsPlayer() || unit.unitBaseMeshRenderer.isVisible)
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(firstPointOnPath);
 
@@ -118,7 +121,6 @@ public class MoveAction : BaseAction
             float stoppingDistance = 0.0125f;
             while (Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
             {
-                isMoving = true;
                 unit.unitAnimator.StartMovingForward(); // Move animation
 
                 Vector3 unitPosition = unit.transform.position;
@@ -154,12 +156,12 @@ public class MoveAction : BaseAction
                 float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
                 if (distanceToTargetPosition > stoppingDistance)
                 {
-                    float distanceToNextPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(finalTargetGridPosition));
+                    float distanceToFinalPosition = Vector3.Distance(unitPosition, LevelGrid.Instance.GetWorldPosition(finalTargetGridPosition));
                     float distanceToTriggerStopAnimation = 1f;
-                    if (distanceToNextPosition <= distanceToTriggerStopAnimation)
+                    if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
                         unit.unitAnimator.StopMovingForward();
-
-                    unit.transform.position += moveDirection * defaultMoveSpeed * Time.deltaTime;
+                    
+                    unit.transform.position += moveDirection * moveSpeed * Time.deltaTime;
                 }
 
                 yield return null;
@@ -175,7 +177,7 @@ public class MoveAction : BaseAction
             nextPathPosition = nextTargetPosition;
             unit.UpdateGridPosition();
 
-            if (unit.IsNPC()) TurnManager.Instance.StartNextNPCsAction(unit);
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
         }
 
         nextPathPosition = new Vector3(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
@@ -191,6 +193,7 @@ public class MoveAction : BaseAction
         {
             GridSystemVisual.Instance.UpdateGridVisual();
 
+            // If the Player hasn't reached their destination, add the next move to the queue
             if (unit.gridPosition != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this, GetActionPointsCost(finalTargetGridPosition));
         }
@@ -374,6 +377,24 @@ public class MoveAction : BaseAction
 
         return 1f;
     }
+
+    float GetMoveSpeed()
+    {
+        int unitsMaxAP = unit.stats.MaxAP();
+        int playersMaxAP = UnitManager.Instance.player.stats.MaxAP();
+        float moveSpeed;
+        if (unit.IsPlayer() || unitsMaxAP <= playersMaxAP)
+            return defaultMoveSpeed;
+        else
+            moveSpeed = defaultMoveSpeed + ((unitsMaxAP / playersMaxAP) - 1f); // Example: (150 / 100) = 1.5 | 1.5 - 1 = 0.5 add-on
+
+        if (moveSpeed > 8f)
+            return 8f;
+        else
+            return moveSpeed;
+    }
+
+    public void SetMoveSpeed() => moveSpeed = GetMoveSpeed();
 
     public override void CompleteAction()
     {

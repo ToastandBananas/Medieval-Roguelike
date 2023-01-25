@@ -27,8 +27,7 @@ public class TurnAction : BaseAction
 
         StartCoroutine(RotateTowardsPosition(targetPosition));
 
-        if (unit.IsNPC())
-            TurnManager.Instance.StartNextNPCsAction(unit);
+        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     public IEnumerator RotateTowardsPosition(Vector3 targetPosition)
