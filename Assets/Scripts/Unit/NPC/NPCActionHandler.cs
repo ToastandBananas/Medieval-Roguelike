@@ -3,11 +3,12 @@ using UnityEngine;
 public class NPCActionHandler : UnitActionHandler
 {
     [Header("Flee State Variables")]
-    [SerializeField] float fleeDistance = 20f;
+    [SerializeField] int fleeDistance = 20;
     [SerializeField] bool shouldAlwaysFleeCombat;
-    Vector3 fleeDestination;
-    float distToFleeDestination = 0;
-    bool needsFleeDestination = true;
+    public Unit unitToFleeFrom;
+    GridPosition unitToFleeFrom_PreviousGridPosition;
+    bool needsNewFleeDestination = true;
+    float unitToFleeFrom_PreviousDistance;
 
     [Header("Follow State Variables")]
     [SerializeField] float stopFollowDistance = 3f;
@@ -30,6 +31,11 @@ public class NPCActionHandler : UnitActionHandler
     [SerializeField] int maxWanderDistance = 20;
     GridPosition wanderGridPosition;
     bool wanderPositionSet;
+
+    void Start()
+    {
+        if (defaultPosition == Vector3.zero) defaultPosition = transform.position;
+    }
 
     public override void TakeTurn()
     {
@@ -78,6 +84,7 @@ public class NPCActionHandler : UnitActionHandler
             case State.Fight:
                 break;
             case State.Flee:
+                Flee();
                 break;
             case State.Hunt:
                 break;
@@ -88,8 +95,86 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
+    #region Flee
+    void Flee()
+    {
+        if (unitToFleeFrom == null)
+        {
+            if (unit.stateController.DefaultState() == State.Flee)
+                unit.stateController.ChangeDefaultState(State.Wander);
+            unit.stateController.SetToDefaultState(); // Variables are reset in this method
+            DetermineAction();
+            return;
+        }
+
+        float distanceFromUnitToFleeFrom = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.gridPosition, unit.gridPosition);
+
+        // If the Unit has fled far enough
+        if (distanceFromUnitToFleeFrom >= fleeDistance)
+        {
+            if (unit.stateController.DefaultState() == State.Flee)
+                unit.stateController.ChangeDefaultState(State.Wander);
+            unit.stateController.SetToDefaultState(); // Variables are also reset in this method
+            DetermineAction();
+            return;
+        }
+
+        // The enemy this Unit is fleeing from has moved closer or they have arrived at their flee destination, but are still too close to the enemy, so get a new flee destination
+        if (unit.gridPosition == targetGridPosition || (unitToFleeFrom.gridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom < unitToFleeFrom_PreviousDistance)))
+            needsNewFleeDestination = true;
+
+        if (needsNewFleeDestination)
+        {
+            needsNewFleeDestination = false;
+            unitToFleeFrom_PreviousDistance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.gridPosition, unit.gridPosition);
+            SetTargetGridPosition(GetFleeDestination());
+        }
+
+        // If there was no valid flee position, just grab a random position within range
+        if (targetGridPosition == unit.gridPosition)
+            SetTargetGridPosition(LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.gridPosition, unit, fleeDistance, fleeDistance + 15));
+
+        QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+    }
+
+    GridPosition GetFleeDestination() => LevelGrid.Instance.GetRandomFleeGridPosition(unit, unitToFleeFrom, fleeDistance, fleeDistance + 15);
+
+    public void SetUnitToFleeFrom(Unit unitToFleeFrom) => this.unitToFleeFrom = unitToFleeFrom;
+    #endregion
+
+    #region Follow
+    void Follow()
+    {
+        if (leader == null || leader.isDead)
+        {
+            Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
+            shouldFollowLeader = false;
+            if (unit.stateController.DefaultState() == State.Follow)
+                unit.stateController.ChangeDefaultState(State.Idle);
+
+            unit.stateController.SetToDefaultState();
+            DetermineAction();
+            return;
+        }
+
+        if (Vector3.Distance(transform.position, leader.WorldPosition()) <= stopFollowDistance)
+            TurnManager.Instance.FinishTurn(unit);
+        else if (GetAction<MoveAction>().isMoving == false)
+        {
+            SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
+            QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+        }
+    }
+
+    public Unit Leader() => leader;
+
+    public void SetLeader(Unit newLeader) => leader = newLeader;
+
+    public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
+    #endregion
+
     #region Patrol
-    public void Patrol()
+    void Patrol()
     {
         if (patrolIterationCount >= maxPatrolIterations)
         {
@@ -166,6 +251,10 @@ public class NPCActionHandler : UnitActionHandler
         {
             Debug.LogWarning("No patrol points set for " + name);
             patrolIterationCount = 0;
+
+            if (unit.stateController.DefaultState() == State.Patrol)
+                unit.stateController.ChangeDefaultState(State.Idle);
+
             unit.stateController.SetCurrentState(State.Idle);
             DetermineAction();
         }
@@ -215,7 +304,7 @@ public class NPCActionHandler : UnitActionHandler
     #endregion
 
     #region Wander
-    public void Wander()
+    void Wander()
     {
         if (wanderPositionSet == false)
         {
@@ -256,46 +345,19 @@ public class NPCActionHandler : UnitActionHandler
     GridPosition GetNewWanderPosition() => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance);
     #endregion
 
-    #region Follow
-    public void Follow()
-    {
-        if (leader == null || leader.isDead)
-        {
-            Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
-            shouldFollowLeader = false;
-            if (unit.stateController.DefaultState() == State.Follow)
-                unit.stateController.ChangeDefaultState(State.Idle);
-
-            unit.stateController.SetToDefaultState(shouldFollowLeader);
-            DetermineAction();
-            return;
-        }
-
-        if (Vector3.Distance(transform.position, leader.WorldPosition()) <= stopFollowDistance)
-            TurnManager.Instance.FinishTurn(unit);
-        else if (GetAction<MoveAction>().isMoving == false)
-        {
-            SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
-            QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
-        }
-    }
-
-    public Unit Leader() => leader;
-
-    public void SetLeader(Unit newLeader) => leader = newLeader;
-
-    public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
-    #endregion
-
     public void ResetToDefaults()
     {
+        // Flee
+        needsNewFleeDestination = true;
+        //unitToFleeFrom = null;
+        unitToFleeFrom_PreviousDistance = 0f;
+
+        // Patrol
         hasAlternativePatrolPoint = false;
-        wanderPositionSet = false;
-        needsFleeDestination = true;
         initialPatrolPointSet = false;
         patrolIterationCount = 0;
 
-        fleeDestination = Vector3.zero;
-        distToFleeDestination = 0;
+        // Wander
+        wanderPositionSet = false;
     }
 }

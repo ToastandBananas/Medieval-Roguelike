@@ -57,9 +57,14 @@ public class MoveAction : BaseAction
 
         isMoving = true;
 
-        // Check if the next position is now blocked, before moving the Unit there
-        //nextTargetPosition = GetNextTargetPosition();
-        //nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
+        if (finalTargetGridPosition == unit.gridPosition)
+        {
+            //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is the same as the their current position...");
+
+            unit.stats.AddToCurrentAP(lastMoveCost);
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+        }
 
         if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
         {
@@ -71,7 +76,7 @@ public class MoveAction : BaseAction
 
         if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(nextTargetPosition)))
         {
-            if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable...");
+            //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable or is the same as the their current position...");
 
             unit.stats.AddToCurrentAP(lastMoveCost);
             CompleteAction();

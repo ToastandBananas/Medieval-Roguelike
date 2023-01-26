@@ -177,23 +177,80 @@ public class LevelGrid : MonoBehaviour
 
         for (int i = 0; i < path.allNodes.Count; i++)
         {
-            GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
 
-            if (IsValidGridPosition(gridPosition) == false)
+            if (IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+            
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startingGridPosition, nodeGridPosition);
+            if (distance > maxRange || distance < minRange)
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
+                continue;
+
+            Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
             if (collisions.Length > 0)
                 continue;
 
-            if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
-                continue;
-
-            validGridPositionList.Add(gridPosition);
+            validGridPositionList.Add(nodeGridPosition);
         }
 
-        // GridSystemVisual.Instance.ShowGridPositionRange(startingGridPosition, minRange, maxRange, GridSystemVisual.GridVisualType.White);
+        GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
+        if (validGridPositionList.Count == 0)
+            return unit.gridPosition;
+        return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
+    }
+
+    public GridPosition GetRandomFleeGridPosition(Unit unit, Unit enemyUnit, int fleeDistance, int maxRange)
+    {
+        Vector3 unitWorldPosition = unit.WorldPosition();
+        Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
+
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(enemyWorldPosition, 1 + (maxRange * 1000));
+        path.traversalProvider = DefaultTraversalProvider();
+
+        // Schedule the path for calculation
+        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.gridPosition, nodeGridPosition);
+            if (distanceToEnemy > maxRange || distanceToEnemy < fleeDistance)
+                continue;
+
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
+                continue;
+
+            Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisions.Length > 0)
+                continue;
+
+            Vector3 dirToNode = (nodeGridPosition.WorldPosition() - enemyWorldPosition).normalized;
+            Vector3 dirToUnit = (unitWorldPosition - enemyWorldPosition).normalized;
+
+            if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
+                continue;
+
+            validGridPositionList.Add(nodeGridPosition);
+        }
+        
+        // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
+
+        if (validGridPositionList.Count == 0)
+            return unit.gridPosition;
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
     }
 

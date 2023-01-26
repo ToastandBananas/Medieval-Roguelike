@@ -92,7 +92,7 @@ public class GridSystemVisual : MonoBehaviour
         }
     }
 
-    public void ShowGridPositionRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
+    public void ShowShootGridPositionRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
         List<GridPosition> gridPositionList = new List<GridPosition>(); 
         
