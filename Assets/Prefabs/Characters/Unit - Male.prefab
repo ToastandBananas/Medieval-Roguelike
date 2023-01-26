@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5275304997957336443}
   - component: {fileID: 1942665837762366662}
   - component: {fileID: 634104549060725813}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Helm
   m_TagString: Unit Helm
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1377663264438590629}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Held Items
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,6 +125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1377663264827766488}
+  - component: {fileID: 1187724221168157814}
   - component: {fileID: 4065027757248069912}
   - component: {fileID: 5863758878478513190}
   - component: {fileID: 8186792645671146690}
@@ -159,6 +160,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1187724221168157814
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!135 &4065027757248069912
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -308,9 +325,9 @@ MonoBehaviour:
   - {x: 10, y: 0, z: 2}
   - {x: 3, y: 0, z: 3}
   maxChaseDistance: 15
-  defaultPosition: {x: 0, y: 0}
-  minRoamDistance: 5
-  maxRoamDistance: 20
+  defaultPosition: {x: 0, y: 0, z: 0}
+  minWanderDistance: 5
+  maxWanderDistance: 20
 --- !u!114 &751464884551525251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,7 +366,7 @@ GameObject:
   - component: {fileID: 7550863476501648058}
   - component: {fileID: 3925337025333062152}
   - component: {fileID: 7478689395129057590}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Hair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -432,7 +449,7 @@ GameObject:
   - component: {fileID: 2396268438468461932}
   - component: {fileID: 1045981531652197624}
   - component: {fileID: 7618271491711647782}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Armor
   m_TagString: Unit Armor
   m_Icon: {fileID: 0}
@@ -516,7 +533,7 @@ GameObject:
   - component: {fileID: 1584446299113313779}
   - component: {fileID: 8342178995123814799}
   - component: {fileID: 7422039618462908846}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Head
   m_TagString: Unit Head
   m_Icon: {fileID: 0}
@@ -616,7 +633,7 @@ GameObject:
   - component: {fileID: 4991840999938565732}
   - component: {fileID: 4545412193767863124}
   - component: {fileID: 4768112959915651879}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -718,7 +735,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5537179256271399742}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Right Held Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -749,7 +766,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4255837507901180393}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Left Held Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -784,7 +801,7 @@ GameObject:
   - component: {fileID: 6570099206264903359}
   - component: {fileID: 44195350337855246}
   - component: {fileID: 4191565561229298527}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Body
   m_TagString: Unit Body
   m_Icon: {fileID: 0}
@@ -885,7 +902,7 @@ GameObject:
   - component: {fileID: 4444130867937051052}
   - component: {fileID: 7129099700918780583}
   - component: {fileID: 2465539824919590537}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Tunic
   m_TagString: Unit Body
   m_Icon: {fileID: 0}

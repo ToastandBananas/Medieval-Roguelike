@@ -361,6 +361,49 @@ public class TurnAction : BaseAction
         }
     }
 
+    public GridPosition GetGridPositionBehindUnit()
+    {
+        GridPosition gridPositionBehindUnit;
+        switch (currentDirection)
+        {
+            case Direction.North:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, -1));
+                break;
+            case Direction.East:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 0));
+                break;
+            case Direction.South:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, 1));
+                break;
+            case Direction.West:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 0));
+                break;
+            case Direction.NorthWest:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, -1));
+                break;
+            case Direction.NorthEast:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, -1));
+                break;
+            case Direction.SouthWest:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 1));
+                break;
+            case Direction.SouthEast:
+                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 1));
+                break;
+            default:
+                return unit.gridPosition;
+        }
+
+        Physics.Raycast(gridPositionBehindUnit.WorldPosition() + new Vector3(0, 1, 0), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.Instance.MousePlaneLayerMask());
+        if (hit.collider != null)
+            gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
+
+        if (LevelGrid.Instance.IsValidGridPosition(gridPositionBehindUnit) == false || LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
+            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 10);
+        //Debug.Log(gridPositionBehindUnit.WorldPosition());
+        return gridPositionBehindUnit;
+    }
+
     public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition); 
 
     public override string GetActionName() => "Turn";

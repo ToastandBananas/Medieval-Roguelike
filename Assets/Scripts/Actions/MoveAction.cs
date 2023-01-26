@@ -58,13 +58,12 @@ public class MoveAction : BaseAction
         isMoving = true;
 
         // Check if the next position is now blocked, before moving the Unit there
-        nextTargetPosition = GetNextTargetPosition();
-        nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
+        //nextTargetPosition = GetNextTargetPosition();
+        //nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
 
         if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
         {
-            Debug.Log("Calculating new path because " + unit.name + "'s path was obstructed.");
-            // Get a new path to the target position
+            // Get a new path to the target position because the previous path is obstructed
             GetPathToTargetPosition(finalTargetGridPosition);
             nextTargetPosition = GetNextTargetPosition();
             nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
@@ -188,8 +187,8 @@ public class MoveAction : BaseAction
         if (unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
             positionIndex++;
 
-        if (nextPathPosition != nextTargetPosition && unit.IsNPC())
-            Debug.LogWarning("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
+        //if (nextPathPosition != nextTargetPosition && unit.IsNPC())
+        //    Debug.LogWarning("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -271,6 +270,9 @@ public class MoveAction : BaseAction
         // TODO: Cost 600 (6 seconds) per square (or more depending on terrain type)
         int cost = defaultTileMoveCost;
         float floatCost = cost;
+
+        if (positionIndex >= positionList.Count)
+            positionIndex = positionList.Count - 1;
 
         // Only calculate a new path if the Unit's target position changed or if their path becomes obstructed
         if (targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(positionList[positionIndex]))))

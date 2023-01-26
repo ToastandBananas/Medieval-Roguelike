@@ -15,8 +15,7 @@ public class StateController : MonoBehaviour
         unit = GetComponent<Unit>();
         npcActionHandler = unit.unitActionHandler as NPCActionHandler;
 
-        if (currentState == State.Idle)
-            SetToDefaultState(npcActionHandler.shouldFollowLeader);
+        SetToDefaultState(npcActionHandler.shouldFollowLeader);
     }
 
     public State CurrentState() => currentState;
@@ -27,11 +26,13 @@ public class StateController : MonoBehaviour
         currentState = state;
     }
 
+    public State DefaultState() => defaultState;
+
     public void SetToDefaultState(bool shouldFollowLeader)
     {
         npcActionHandler.ResetToDefaults();
 
-        if (shouldFollowLeader && npcActionHandler.leader != null)
+        if (shouldFollowLeader && npcActionHandler.Leader() != null)
             currentState = State.Follow;
         else
             currentState = defaultState;

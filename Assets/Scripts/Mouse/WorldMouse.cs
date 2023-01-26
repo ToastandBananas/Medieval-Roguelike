@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WorldMouse : MonoBehaviour
 {
-    private static WorldMouse Instance;
+    public static WorldMouse Instance;
     [SerializeField] LayerMask mousePlaneLayerMask;
 
     void Awake()
@@ -22,4 +22,6 @@ public class WorldMouse : MonoBehaviour
         Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, Instance.mousePlaneLayerMask);
         return hit.point;
     }
+
+    public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
 }

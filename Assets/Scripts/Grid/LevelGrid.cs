@@ -126,11 +126,11 @@ public class LevelGrid : MonoBehaviour
                gridPosition.z < (layeredGridGraph.depth / 2) + layeredGridGraph.center.z;
     }
 
-    public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit)
+    public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, int rangeToSearch)
     {
         GridPosition newGridPosition = startingGridPosition;
 
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 10001);
+        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (1000 * rangeToSearch));
         path.traversalProvider = DefaultTraversalProvider();
 
         // Schedule the path for calculation

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6486341831773549153}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Left Held Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 4190166550476188983}
   - component: {fileID: 7032048945693533318}
   - component: {fileID: 6566448945217728727}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Body
   m_TagString: Unit Body
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 6676412001307671076}
   - component: {fileID: 280487915635489071}
   - component: {fileID: 4844891633756179713}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Tunic
   m_TagString: Unit Body
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 4632683800067915492}
   - component: {fileID: 8038866530934077296}
   - component: {fileID: 626653059070622638}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Armor
   m_TagString: Unit Armor
   m_Icon: {fileID: 0}
@@ -311,7 +311,7 @@ GameObject:
   - component: {fileID: 8428149901202910843}
   - component: {fileID: 1355169749607201287}
   - component: {fileID: 435645853370038822}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Head
   m_TagString: Unit Head
   m_Icon: {fileID: 0}
@@ -411,7 +411,7 @@ GameObject:
   - component: {fileID: 2615831470345035244}
   - component: {fileID: 6782232349530032348}
   - component: {fileID: 2531134404685777071}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +513,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3302223880752615606}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Right Held Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -546,7 +546,7 @@ GameObject:
   - component: {fileID: 2899893610087663347}
   - component: {fileID: 8934689093820446542}
   - component: {fileID: 7622081336976406461}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Helm
   m_TagString: Unit Helm
   m_Icon: {fileID: 0}
@@ -627,6 +627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8220662913183796560}
+  - component: {fileID: 1265669891623408967}
   - component: {fileID: 6440773195933579920}
   - component: {fileID: 3489051163152912302}
   - component: {fileID: 1195297390364979018}
@@ -658,9 +659,26 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5473232442869408558}
+  - {fileID: 5297897813893617721}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &1265669891623408967
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!135 &6440773195933579920
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -836,7 +854,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8220662913851074349}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Held Items
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -871,7 +889,7 @@ GameObject:
   - component: {fileID: 703078855765633330}
   - component: {fileID: 6301170399108387200}
   - component: {fileID: 487088377322257086}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Hair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,3 +961,64 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &9221229539346795454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5297897813893617721}
+  - component: {fileID: 6374548418887829567}
+  - component: {fileID: 4562748357936434420}
+  m_Layer: 2
+  m_Name: NPC Distance Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5297897813893617721
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221229539346795454}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8220662913183796560}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &6374548418887829567
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221229539346795454}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 50
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4562748357936434420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9221229539346795454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bd6c1fee0fcd394fab5f65de93ba547, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitsMask:
+    serializedVersion: 2
+    m_Bits: 8

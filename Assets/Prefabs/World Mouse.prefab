@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mousePlaneLayerMask:
     serializedVersion: 2
-    m_Bits: 4067200
+    m_Bits: 4067264
 --- !u!1 &6474021837918164898
 GameObject:
   m_ObjectHideFlags: 0

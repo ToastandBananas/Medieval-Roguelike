@@ -10,9 +10,8 @@ public class NPCActionHandler : UnitActionHandler
     bool needsFleeDestination = true;
 
     [Header("Follow State Variables")]
-    [SerializeField] float startFollowingDistance = 3f;
-    [SerializeField] float slowDownDistance = 4f;
-    [SerializeField] public Unit leader { get; private set; }
+    [SerializeField] float stopFollowDistance = 3f;
+    [SerializeField] Unit leader;
     [SerializeField] public bool shouldFollowLeader { get; private set; }
 
     [Header("Patrol State Variables")]
@@ -36,7 +35,7 @@ public class NPCActionHandler : UnitActionHandler
     {
         if (unit.isMyTurn && unit.isDead == false)
         {
-            if (unit.stats.CurrentAP() <= 0)
+            if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
                 TurnManager.Instance.FinishTurn(unit);
             else
             {
@@ -72,6 +71,7 @@ public class NPCActionHandler : UnitActionHandler
                 Wander();
                 break;
             case State.Follow:
+                Follow();
                 break;
             case State.MoveToTarget:
                 break;
@@ -124,7 +124,7 @@ public class NPCActionHandler : UnitActionHandler
                 patrolIterationCount++;
 
                 // Find the nearest Grid Position to the Patrol Point
-                GridPosition nearestGridPositionToPatrolPoint = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit);
+                GridPosition nearestGridPositionToPatrolPoint = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit, 7);
                 if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
                     IncreasePatrolPointIndex();
 
@@ -210,6 +210,8 @@ public class NPCActionHandler : UnitActionHandler
     }
 
     public void SetHasAlternativePatrolPoint(bool hasAlternativePatrolPoint) => this.hasAlternativePatrolPoint = hasAlternativePatrolPoint;
+
+    public Vector3[] PatrolPoints() => patrolPoints;
     #endregion
 
     #region Wander
@@ -251,12 +253,39 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
-    GridPosition GetNewWanderPosition() => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance); 
+    GridPosition GetNewWanderPosition() => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance);
     #endregion
+
+    #region Follow
+    public void Follow()
+    {
+        if (leader == null || leader.isDead)
+        {
+            Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
+            shouldFollowLeader = false;
+            if (unit.stateController.DefaultState() == State.Follow)
+                unit.stateController.ChangeDefaultState(State.Idle);
+
+            unit.stateController.SetToDefaultState(shouldFollowLeader);
+            DetermineAction();
+            return;
+        }
+
+        if (Vector3.Distance(transform.position, leader.WorldPosition()) <= stopFollowDistance)
+            TurnManager.Instance.FinishTurn(unit);
+        else if (GetAction<MoveAction>().isMoving == false)
+        {
+            SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
+            QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+        }
+    }
+
+    public Unit Leader() => leader;
 
     public void SetLeader(Unit newLeader) => leader = newLeader;
 
     public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
+    #endregion
 
     public void ResetToDefaults()
     {
@@ -269,6 +298,4 @@ public class NPCActionHandler : UnitActionHandler
         fleeDestination = Vector3.zero;
         distToFleeDestination = 0;
     }
-
-    public Vector3[] PatrolPoints() => patrolPoints;
 }

@@ -23,6 +23,9 @@ public class Unit : MonoBehaviour
 
     void Awake()
     {
+        // Center the Unit's position on whatever tile they're on
+        CenterPosition();
+
         singleNodeBlocker = GetComponent<SingleNodeBlocker>();
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
@@ -77,4 +80,6 @@ public class Unit : MonoBehaviour
     public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
 
     public float ShoulderHeight() => shoulderHeight;
+
+    public void CenterPosition() => transform.position = LevelGrid.Instance.GetGridPosition(transform.position).WorldPosition();
 }

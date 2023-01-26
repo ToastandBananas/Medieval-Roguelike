@@ -84,9 +84,13 @@ public class TurnManager : MonoBehaviour
                 unit.status.UpdateInjuries();
                 unit.status.RegenerateStamina();
                 unit.nutrition.DrainStaminaBonus();
-                unit.nutrition.DrainNourishment();
-                unit.nutrition.DrainWater();
-                unit.nutrition.DrainNausea();
+
+                if (unit.unitActionHandler.canPerformActions || unit.IsPlayer())
+                {
+                    unit.nutrition.DrainNourishment();
+                    unit.nutrition.DrainWater();
+                    unit.nutrition.DrainNausea();
+                }
                 */
 
                 unit.stats.ApplyAPLossBuildup();

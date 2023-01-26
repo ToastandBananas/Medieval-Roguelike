@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
@@ -16,11 +15,14 @@ public class UnitActionHandler : MonoBehaviour
     [SerializeField] LayerMask actionsObstacleMask;
 
     public bool isPerformingAction { get; private set; }
+    public bool canPerformActions { get; protected set; }
 
     void Awake()
     {
         unit = GetComponent<Unit>(); 
         baseActionArray = GetComponents<BaseAction>();
+
+        if (unit.IsPlayer()) canPerformActions = true;
 
         SetSelectedAction(GetAction<MoveAction>());
     }
@@ -29,7 +31,7 @@ public class UnitActionHandler : MonoBehaviour
     {
         if (unit.isMyTurn && unit.isDead == false)
         {
-            if (unit.stats.CurrentAP() <= 0)
+            if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
                 TurnManager.Instance.FinishTurn(unit);
             else
             {
@@ -50,8 +52,13 @@ public class UnitActionHandler : MonoBehaviour
         queuedAction = action;
         queuedAP = APCost;
 
-        if (unit.isMyTurn && GetAction<MoveAction>().isMoving == false && unit.stats.CurrentAP() > 0)
-            GetNextQueuedAction();
+        if (unit.isMyTurn)
+        {
+            if (canPerformActions == false)
+                TurnManager.Instance.FinishTurn(unit);
+            else if (GetAction<MoveAction>().isMoving == false && unit.stats.CurrentAP() > 0)
+                GetNextQueuedAction();
+        }
 
         // Update AP text
         //if (IsNPC() == false)
@@ -131,6 +138,8 @@ public class UnitActionHandler : MonoBehaviour
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 
     public void SetSelectedAction(BaseAction action) => selectedAction = action;
+
+    public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
     public LayerMask ActionsObstacleMask() => actionsObstacleMask;
 }
