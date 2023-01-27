@@ -4,6 +4,9 @@ public class PlayerActionInput : MonoBehaviour
 {
     Unit unit;
 
+    float skipTurnCooldown = 0.1f;
+    float skipTurnCooldownTimer;
+
     void Start()
     {
         unit = GetComponent<Unit>();
@@ -12,6 +15,9 @@ public class PlayerActionInput : MonoBehaviour
 
     void Update()
     {
+        if (skipTurnCooldownTimer < skipTurnCooldown)
+            skipTurnCooldownTimer += Time.deltaTime;
+
         if (unit.isDead == false)
         {
             if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
@@ -31,8 +37,11 @@ public class PlayerActionInput : MonoBehaviour
             }
             else if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
             {
-                if (GameControls.gamePlayActions.skipTurn.IsPressed)
+                if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
+                {
+                    skipTurnCooldownTimer = 0f;
                     TurnManager.Instance.FinishTurn(unit);
+                }
 
                 if (unit.unitActionHandler.selectedAction != null)
                 {

@@ -36,7 +36,7 @@ public class TurnManager : MonoBehaviour
         units_HaventFinishedTurn = new List<Unit>();
         units_FinishedTurn = new List<Unit>();
 
-        StartCoroutine(StartNextUnitsTurn(activeUnit));
+        StartCoroutine(DelayStartNextUnitsTurn(activeUnit));
     }
 
     public void FinishTurn(Unit unit)
@@ -101,6 +101,12 @@ public class TurnManager : MonoBehaviour
             
             unit.unitActionHandler.TakeTurn();
         }
+    }
+
+    public IEnumerator DelayStartNextUnitsTurn(Unit unitFinishingAction)
+    {
+        yield return new WaitForSeconds(0.1f);
+        StartCoroutine(StartNextUnitsTurn(unitFinishingAction));
     }
 
     public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction)

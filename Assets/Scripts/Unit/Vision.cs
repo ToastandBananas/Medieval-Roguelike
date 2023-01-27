@@ -10,7 +10,7 @@ public class Vision : MonoBehaviour
     [Header("Field of View")]
     [SerializeField] Transform parentTransform;
     public float viewRadius = 20f;
-    [Range(0, 360)] public float viewAngle = 145f;
+    [Range(0, 360)] public float viewAngle = 160f;
 
     [Header("Layer Masks")]
     public LayerMask unitsMask;
@@ -24,6 +24,13 @@ public class Vision : MonoBehaviour
     void Awake()
     {
         unit = parentTransform.GetComponent<Unit>();
+    }
+
+    public bool IsVisible(Unit unitToCheck)
+    {
+        if (visibleUnits.ContainsKey(unitToCheck))
+            return true;
+        return false;
     }
 
     public void FindVisibleUnits()

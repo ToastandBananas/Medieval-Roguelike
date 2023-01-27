@@ -665,7 +665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentTransform: {fileID: 8220662913183796560}
   viewRadius: 25
-  viewAngle: 145
+  viewAngle: 160
   unitsMask:
     serializedVersion: 2
     m_Bits: 8
@@ -693,6 +693,7 @@ GameObject:
   - component: {fileID: 2371494321970509754}
   - component: {fileID: 4910889609817399986}
   - component: {fileID: 6094857115427304514}
+  - component: {fileID: 2290977517188116833}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -896,7 +897,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveObstaclesMask:
     serializedVersion: 2
-    m_Bits: 72
+    m_Bits: 64
 --- !u!114 &6094857115427304514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -907,6 +908,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9cc9d719c7e9ae438728e606d23a461, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2290977517188116833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7f9f785eba16144286a42972fd12bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8220662913851074348

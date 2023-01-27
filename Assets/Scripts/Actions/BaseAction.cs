@@ -14,7 +14,7 @@ public abstract class BaseAction : MonoBehaviour
 
     public abstract void TakeAction(GridPosition gridPosition, Action onActionComplete); 
     
-    protected void StartAction(Action onActionComplete)
+    protected virtual void StartAction(Action onActionComplete)
     {
         isActive = true;
         //this.onActionComplete = onActionComplete;

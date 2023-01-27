@@ -1,10 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
 {
     [Header("Fight State")]
     [SerializeField] float maxChaseDistance = 15f;
-    Unit targetEnemyUnit;
 
     [Header("Flee State")]
     [SerializeField] int fleeDistance = 20;
@@ -44,6 +44,11 @@ public class NPCActionHandler : UnitActionHandler
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
                 TurnManager.Instance.FinishTurn(unit);
+            else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+            {
+                ClearActionQueue();
+                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+            }
             else
             {
                 unit.vision.FindVisibleUnits();
@@ -66,7 +71,7 @@ public class NPCActionHandler : UnitActionHandler
 
     public void DetermineAction()
     {
-        switch (unit.stateController.CurrentState())
+        switch (unit.stateController.currentState)
         {
             case State.Idle:
                 TurnManager.Instance.FinishTurn(unit);
@@ -100,17 +105,73 @@ public class NPCActionHandler : UnitActionHandler
     #region Fight
     void Fight()
     {
+        // If there's no target enemy Unit, try to find one, else switch States
+        if (targetEnemyUnit == null)
+        {
+            SearchForNewTarget();
+            if (targetEnemyUnit == null)
+            {
+                if (unit.stateController.DefaultState() == State.Fight)
+                    unit.stateController.ChangeDefaultState(State.Idle);
+                unit.stateController.SetToDefaultState();
+                DetermineAction();
+                return;
+            }
+        }
 
+        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+            AttackTargetEnemy();
+        else
+            PursueTargetEnemy();
     }
 
     public void StartFight(Unit enemyUnit)
     {
-        targetEnemyUnit = enemyUnit;
+        SetNewTargetEnemy(enemyUnit);
+        ClearActionQueue();
     }
 
-    void Pursue()
+    void AttackTargetEnemy()
     {
+        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+    }
 
+    void PursueTargetEnemy()
+    {
+        // Move towards the position behind the enemy Unit, as this will always be an ideal position to attack from. If this Unit gets close enough to attack, they'll attack from whatever position they're in anyways.
+        SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
+        QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+    }
+
+    void SearchForNewTarget()
+    {
+        List<Unit> enemiesInRange = LevelGrid.Instance.GetEnemiesInRange(unit.gridPosition, unit, Mathf.FloorToInt(unit.vision.viewRadius));
+        if (enemiesInRange.Count > 0)
+        {
+            List<Unit> enemiesToRemoveFromList = new List<Unit>();
+            for (int i = 0; i < enemiesInRange.Count; i++)
+            {
+                if (unit.vision.IsVisible(enemiesInRange[i]) == false) // Not a valid target since this enemy isn't visible
+                    enemiesToRemoveFromList.Add(enemiesInRange[i]);
+            }
+
+            for (int i = 0; i < enemiesToRemoveFromList.Count; i++)
+            {
+                if (enemiesInRange.Contains(enemiesToRemoveFromList[i]))
+                    enemiesInRange.Remove(enemiesToRemoveFromList[i]);
+            }
+        }
+
+        if (enemiesInRange.Count > 0)
+            targetEnemyUnit = enemiesInRange[Random.Range(0, enemiesInRange.Count)];
+        else
+            targetEnemyUnit = null;
+    }
+
+    public void SetNewTargetEnemy(Unit target)
+    {
+        targetEnemyUnit = target;
+        GetAction<MeleeAction>().SetTargetEnemyUnit(target);
     }
     #endregion
 

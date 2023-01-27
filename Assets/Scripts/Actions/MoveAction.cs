@@ -52,6 +52,8 @@ public class MoveAction : BaseAction
             CompleteAction();
             unit.unitActionHandler.FinishAction();
 
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+
             yield break;
         }
 
@@ -64,6 +66,10 @@ public class MoveAction : BaseAction
             unit.stats.AddToCurrentAP(lastMoveCost);
             CompleteAction();
             unit.unitActionHandler.FinishAction();
+
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+
+            yield break;
         }
 
         if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
@@ -81,6 +87,8 @@ public class MoveAction : BaseAction
             unit.stats.AddToCurrentAP(lastMoveCost);
             CompleteAction();
             unit.unitActionHandler.FinishAction();
+
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
 
             yield break;
         }
@@ -227,7 +235,7 @@ public class MoveAction : BaseAction
         if (unit.IsNPC() && path.vectorPath.Count == 0)
         {
             NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-            if (unit.stateController.CurrentState() == State.Patrol)
+            if (unit.stateController.currentState == State.Patrol)
             {
                 GridPosition patrolPointGridPosition = LevelGrid.Instance.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
                 npcActionHandler.IncreasePatrolPointIndex();
@@ -306,7 +314,7 @@ public class MoveAction : BaseAction
 
             if (unit.IsNPC())
             {
-                if (unit.stateController.CurrentState() == State.Patrol)
+                if (unit.stateController.currentState == State.Patrol)
                 {
                     NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
                     npcActionHandler.AssignNextPatrolTargetPosition();

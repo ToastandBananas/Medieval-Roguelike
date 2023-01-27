@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
 {
-    public GridPosition targetGridPosition { get; private set; }
+    public GridPosition targetGridPosition { get; protected set; }
 
     public BaseAction queuedAction { get; private set; }
     public int queuedAP { get; private set; }
@@ -11,6 +11,7 @@ public class UnitActionHandler : MonoBehaviour
     public BaseAction selectedAction { get; private set; }
 
     public Unit unit { get; private set; }
+    public Unit targetEnemyUnit { get; protected set; }
 
     [SerializeField] LayerMask shootObstacleMask;
 
@@ -33,6 +34,11 @@ public class UnitActionHandler : MonoBehaviour
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
                 TurnManager.Instance.FinishTurn(unit);
+            else if (queuedAction == GetAction<MeleeAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+            {
+                ClearActionQueue();
+                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+            }
             else
             {
                 unit.vision.FindVisibleUnits();

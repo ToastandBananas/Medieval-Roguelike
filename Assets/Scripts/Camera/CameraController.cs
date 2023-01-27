@@ -1,6 +1,5 @@
 using UnityEngine;
 using Cinemachine;
-using System;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
@@ -51,6 +50,8 @@ public class CameraController : MonoBehaviour
 
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         targetFollowOffset = cinemachineTransposer.m_FollowOffset;
+
+        transform.position = UnitManager.Instance.player.transform.position;
 
         /*UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
         UnitActionSystem.Instance.OnActiveAIUnitChanged += UnitActionSystem_OnActiveAIUnitChanged;
@@ -208,10 +209,9 @@ public class CameraController : MonoBehaviour
 
     void HandleMouseDragMovement()
     {
+        newPosition = transform.position;
         if (GameControls.gamePlayActions.mouseScrollWheelClick.WasPressed)
         {
-            newPosition = transform.position;
-
             Plane plane = new Plane(Vector3.up, Vector3.zero);
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
