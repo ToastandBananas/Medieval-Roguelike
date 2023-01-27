@@ -16,11 +16,6 @@ public class Alliance : MonoBehaviour
     [SerializeField] Faction[] alliedFactions;
     [SerializeField] Faction[] enemyFactions;
 
-    public bool IsPlayer()
-    {
-        return currentFaction == Faction.Player;
-    }
-
     public bool IsAlly(Faction factionToCheckAgainst)
     {
         if (factionToCheckAgainst == currentFaction)
@@ -46,18 +41,11 @@ public class Alliance : MonoBehaviour
         return false;
     }
 
-    public Faction GetCurrentFaction()
-    {
-        return currentFaction;
-    }
+    public bool IsPlayer() => currentFaction == Faction.Player;
 
-    public Faction[] GetAlliedFactions()
-    {
-        return alliedFactions;
-    }
+    public Faction CurrentFaction() => currentFaction; 
 
-    public Faction[] GetEnemyFactions()
-    {
-        return enemyFactions;
-    }
+    public Faction[] GetAlliedFactions() => alliedFactions; 
+
+    public Faction[] GetEnemyFactions() => enemyFactions; 
 }

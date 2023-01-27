@@ -12,7 +12,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public Unit unit { get; private set; }
 
-    [SerializeField] LayerMask actionsObstacleMask;
+    [SerializeField] LayerMask shootObstacleMask;
 
     public bool isPerformingAction { get; private set; }
     public bool canPerformActions { get; protected set; }
@@ -35,7 +35,7 @@ public class UnitActionHandler : MonoBehaviour
                 TurnManager.Instance.FinishTurn(unit);
             else
             {
-                // unit.vision.CheckEnemyVisibility();
+                unit.vision.FindVisibleUnits();
 
                 if (queuedAction != null)
                     GetNextQueuedAction();
@@ -141,5 +141,5 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
-    public LayerMask ActionsObstacleMask() => actionsObstacleMask;
+    public LayerMask ShootObstacleMask() => shootObstacleMask;
 }

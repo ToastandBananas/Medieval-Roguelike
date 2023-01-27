@@ -332,6 +332,7 @@ Transform:
   m_Children:
   - {fileID: 703078855765633330}
   - {fileID: 2899893610087663347}
+  - {fileID: 5499396121062417353}
   m_Father: {fileID: 6498372608485508665}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -618,6 +619,59 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8039517263746701573
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5499396121062417353}
+  - component: {fileID: 5684903310377372463}
+  m_Layer: 0
+  m_Name: Vision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5499396121062417353
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8039517263746701573}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.1, y: 0.045, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7142527425681057192}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &5684903310377372463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8039517263746701573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0329c3a3b84001447b1604acbf182abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentTransform: {fileID: 8220662913183796560}
+  viewRadius: 25
+  viewAngle: 145
+  unitsMask:
+    serializedVersion: 2
+    m_Bits: 8
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4067264
 --- !u!1 &8220662913183796567
 GameObject:
   m_ObjectHideFlags: 0
@@ -777,6 +831,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shoulderHeight: 0.25
+  leftHeldItemParent: {fileID: 6486341831773549153}
+  rightHeldItemParent: {fileID: 3302223880752615606}
+  meshRenderers:
+  - {fileID: 6782232349530032348}
+  - {fileID: 7032048945693533318}
+  - {fileID: 1355169749607201287}
+  - {fileID: 487088377322257086}
+  - {fileID: 7622081336976406461}
+  - {fileID: 4844891633756179713}
+  - {fileID: 626653059070622638}
 --- !u!114 &8610993750160888402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -815,9 +879,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionsObstacleMask:
+  shootObstacleMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 4067264
 --- !u!114 &4910889609817399986
 MonoBehaviour:
   m_ObjectHideFlags: 0

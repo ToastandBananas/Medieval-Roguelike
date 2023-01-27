@@ -2,7 +2,11 @@ using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
 {
-    [Header("Flee State Variables")]
+    [Header("Fight State")]
+    [SerializeField] float maxChaseDistance = 15f;
+    Unit targetEnemyUnit;
+
+    [Header("Flee State")]
     [SerializeField] int fleeDistance = 20;
     [SerializeField] bool shouldAlwaysFleeCombat;
     public Unit unitToFleeFrom;
@@ -10,22 +14,19 @@ public class NPCActionHandler : UnitActionHandler
     bool needsNewFleeDestination = true;
     float unitToFleeFrom_PreviousDistance;
 
-    [Header("Follow State Variables")]
+    [Header("Follow State")]
     [SerializeField] float stopFollowDistance = 3f;
     [SerializeField] Unit leader;
     [SerializeField] public bool shouldFollowLeader { get; private set; }
 
-    [Header("Patrol State Variables")]
+    [Header("Patrol State")]
     [SerializeField] Vector3[] patrolPoints;
     public int currentPatrolPointIndex { get; private set; }
     bool initialPatrolPointSet, hasAlternativePatrolPoint;
     int patrolIterationCount;
     readonly int maxPatrolIterations = 5;
 
-    [Header("Pursue State Variables")]
-    [SerializeField] float maxChaseDistance = 15f;
-
-    [Header("Wandering State Variables")]
+    [Header("Wander State")]
     [SerializeField] Vector3 defaultPosition;
     [SerializeField] int minWanderDistance = 5;
     [SerializeField] int maxWanderDistance = 20;
@@ -45,7 +46,7 @@ public class NPCActionHandler : UnitActionHandler
                 TurnManager.Instance.FinishTurn(unit);
             else
             {
-                // unit.vision.CheckEnemyVisibility();
+                unit.vision.FindVisibleUnits();
 
                 if (queuedAction != null)
                     GetNextQueuedAction();
@@ -82,6 +83,7 @@ public class NPCActionHandler : UnitActionHandler
             case State.MoveToTarget:
                 break;
             case State.Fight:
+                Fight();
                 break;
             case State.Flee:
                 Flee();
@@ -95,10 +97,28 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
+    #region Fight
+    void Fight()
+    {
+
+    }
+
+    public void StartFight(Unit enemyUnit)
+    {
+        targetEnemyUnit = enemyUnit;
+    }
+
+    void Pursue()
+    {
+
+    }
+    #endregion
+
     #region Flee
     void Flee()
     {
-        if (unitToFleeFrom == null)
+        // If there's no Unit to flee from or if the Unit to flee from died
+        if (unitToFleeFrom == null || unitToFleeFrom.isDead)
         {
             if (unit.stateController.DefaultState() == State.Flee)
                 unit.stateController.ChangeDefaultState(State.Wander);
@@ -120,7 +140,7 @@ public class NPCActionHandler : UnitActionHandler
         }
 
         // The enemy this Unit is fleeing from has moved closer or they have arrived at their flee destination, but are still too close to the enemy, so get a new flee destination
-        if (unit.gridPosition == targetGridPosition || (unitToFleeFrom.gridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom < unitToFleeFrom_PreviousDistance)))
+        if (unit.gridPosition == targetGridPosition || (unitToFleeFrom.gridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom + 2f <= unitToFleeFrom_PreviousDistance)))
             needsNewFleeDestination = true;
 
         if (needsNewFleeDestination)
@@ -137,9 +157,17 @@ public class NPCActionHandler : UnitActionHandler
         QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
     }
 
+    public void StartFlee(Unit unitToFleeFrom)
+    {
+        this.unitToFleeFrom = unitToFleeFrom;
+        unit.stateController.SetCurrentState(State.Flee);
+    }
+
     GridPosition GetFleeDestination() => LevelGrid.Instance.GetRandomFleeGridPosition(unit, unitToFleeFrom, fleeDistance, fleeDistance + 15);
 
     public void SetUnitToFleeFrom(Unit unitToFleeFrom) => this.unitToFleeFrom = unitToFleeFrom;
+
+    public bool ShouldAlwaysFleeCombat() => shouldAlwaysFleeCombat;
     #endregion
 
     #region Follow

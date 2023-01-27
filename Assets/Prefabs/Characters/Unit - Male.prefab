@@ -274,6 +274,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shoulderHeight: 0.25
+  leftHeldItemParent: {fileID: 4255837507901180393}
+  rightHeldItemParent: {fileID: 5537179256271399742}
+  meshRenderers:
+  - {fileID: 4545412193767863124}
+  - {fileID: 44195350337855246}
+  - {fileID: 8342178995123814799}
+  - {fileID: 7478689395129057590}
+  - {fileID: 634104549060725813}
+  - {fileID: 2465539824919590537}
+  - {fileID: 7618271491711647782}
 --- !u!114 &2831291264733156500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,18 +323,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionsObstacleMask:
+  shootObstacleMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 4067264
+  maxChaseDistance: 15
   fleeDistance: 20
   shouldAlwaysFleeCombat: 0
-  startFollowingDistance: 3
-  slowDownDistance: 4
+  unitToFleeFrom: {fileID: 0}
+  stopFollowDistance: 3
+  leader: {fileID: 0}
   patrolPoints:
   - {x: 8, y: 1.5, z: 8}
   - {x: 10, y: 0, z: 2}
   - {x: 3, y: 0, z: 3}
-  maxChaseDistance: 15
   defaultPosition: {x: 0, y: 0, z: 0}
   minWanderDistance: 5
   maxWanderDistance: 20
@@ -554,6 +565,7 @@ Transform:
   m_Children:
   - {fileID: 7550863476501648058}
   - {fileID: 5275304997957336443}
+  - {fileID: 1608545389226601013}
   m_Father: {fileID: 4261816302161493425}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -621,6 +633,59 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -701845554887318924, guid: f184800b50ee2174094448fceee045bc, type: 3}
+--- !u!1 &6388646203278191039
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1608545389226601013}
+  - component: {fileID: 8913313222971543053}
+  m_Layer: 0
+  m_Name: Vision
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1608545389226601013
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6388646203278191039}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.1, y: 0.045, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 149888672908566048}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &8913313222971543053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6388646203278191039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0329c3a3b84001447b1604acbf182abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentTransform: {fileID: 1377663264827766488}
+  viewRadius: 25
+  viewAngle: 145
+  unitsMask:
+    serializedVersion: 2
+    m_Bits: 8
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4067264
 --- !u!1 &6418375078083463654
 GameObject:
   m_ObjectHideFlags: 0

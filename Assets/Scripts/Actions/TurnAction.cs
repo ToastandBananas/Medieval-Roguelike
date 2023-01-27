@@ -400,7 +400,6 @@ public class TurnAction : BaseAction
 
         if (LevelGrid.Instance.IsValidGridPosition(gridPositionBehindUnit) == false || LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
             gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 10);
-        //Debug.Log(gridPositionBehindUnit.WorldPosition());
         return gridPositionBehindUnit;
     }
 

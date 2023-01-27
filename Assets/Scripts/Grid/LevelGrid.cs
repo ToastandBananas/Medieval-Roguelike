@@ -196,7 +196,7 @@ public class LevelGrid : MonoBehaviour
             validGridPositionList.Add(nodeGridPosition);
         }
 
-        GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
+        // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
         if (validGridPositionList.Count == 0)
             return unit.gridPosition;
