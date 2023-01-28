@@ -5,25 +5,6 @@ public class MeleeAction : BaseAction
 {
     Unit targetEnemyUnit;
 
-    public bool isAttacking { get; private set; }
-
-    public override bool ActionIsUsedInstantly()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override string GetActionName() => "Melee Attack";
-
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
-    {
-        return 300;
-    }
-
-    public override bool IsValidAction()
-    {
-        return true;
-    }
-
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
         if (isAttacking) return;
@@ -73,4 +54,39 @@ public class MeleeAction : BaseAction
     }
 
     public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        int finalActionValue = 0;
+
+        if (IsValidAction())
+        {
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+
+            // Target the Unit with the lowest health and/or the nearest target
+            finalActionValue += 200 + Mathf.RoundToInt((1 - targetUnit.healthSystem.CurrentHealthNormalized()) * 100f);
+        }
+
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = finalActionValue
+        };
+    }
+
+    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    {
+        return 300;
+    }
+
+    public override bool IsValidAction()
+    {
+        return true;
+    }
+
+    public bool isAttacking { get; private set; }
+
+    public override bool ActionIsUsedInstantly() => false;
+
+    public override string GetActionName() => "Melee Attack";
 }

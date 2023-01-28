@@ -89,7 +89,7 @@ public class Vision : MonoBehaviour
                         {
                             Debug.LogWarning(unit.name + " can see themselves. Fix their Vision Transform.");
                             visibleUnits.Remove(unit);
-                            return;
+                            continue;
                         }
 
                         if (unit.IsNPC())

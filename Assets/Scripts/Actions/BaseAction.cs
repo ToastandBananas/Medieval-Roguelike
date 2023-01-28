@@ -32,6 +32,8 @@ public abstract class BaseAction : MonoBehaviour
 
     public bool IsActive() => isActive;
 
+    public abstract EnemyAIAction GetEnemyAIAction(GridPosition gridPosition);
+
     public abstract int GetActionPointsCost(GridPosition targetGridPosition);
 
     public abstract bool IsValidAction();

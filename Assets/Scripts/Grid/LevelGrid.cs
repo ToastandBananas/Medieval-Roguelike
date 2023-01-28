@@ -128,6 +128,8 @@ public class LevelGrid : MonoBehaviour
 
     public List<Unit> GetEnemiesInRange(GridPosition startingGridPosition, Unit unit, int rangeToSearch)
     {
+        unit.UnblockCurrentPosition();
+
         ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (1000 * rangeToSearch));
         path.traversalProvider = DefaultTraversalProvider();
 
@@ -159,12 +161,16 @@ public class LevelGrid : MonoBehaviour
             }
         }
 
+        unit.BlockCurrentPosition();
+
         return enemies;
     }
 
     public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, int rangeToSearch)
     {
         GridPosition newGridPosition = startingGridPosition;
+
+        unit.UnblockCurrentPosition();
 
         ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (1000 * rangeToSearch));
         path.traversalProvider = DefaultTraversalProvider();
@@ -194,12 +200,16 @@ public class LevelGrid : MonoBehaviour
             break;
         }
 
+        unit.BlockCurrentPosition();
+
         return newGridPosition;
     }
 
     public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        unit.UnblockCurrentPosition();
 
         ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (maxRange * 1000));
         path.traversalProvider = DefaultTraversalProvider();
@@ -234,6 +244,8 @@ public class LevelGrid : MonoBehaviour
 
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
+        unit.BlockCurrentPosition();
+
         if (validGridPositionList.Count == 0)
             return unit.gridPosition;
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
@@ -245,6 +257,8 @@ public class LevelGrid : MonoBehaviour
         Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
 
         List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        unit.UnblockCurrentPosition();
 
         ConstantPath path = ConstantPath.Construct(enemyWorldPosition, 1 + (maxRange * 1000));
         path.traversalProvider = DefaultTraversalProvider();
@@ -282,8 +296,10 @@ public class LevelGrid : MonoBehaviour
 
             validGridPositionList.Add(nodeGridPosition);
         }
-        
+
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
+
+        unit.BlockCurrentPosition();
 
         if (validGridPositionList.Count == 0)
             return unit.gridPosition;
@@ -308,7 +324,7 @@ public class LevelGrid : MonoBehaviour
 
     public bool GridPositionObstructed(GridPosition gridPosition)
     {
-        if (HasAnyUnitOnGridPosition(gridPosition))
+        if (HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(AstarPath.active.GetNearest(gridPosition.WorldPosition()).node, unitSingleNodeBlockers))
             return true;
         return false;
     }

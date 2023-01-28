@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 public class NPCActionHandler : UnitActionHandler
 {
@@ -108,7 +109,7 @@ public class NPCActionHandler : UnitActionHandler
         // If there's no target enemy Unit, try to find one, else switch States
         if (targetEnemyUnit == null)
         {
-            SearchForNewTarget();
+            SearchForRandomTarget();
             if (targetEnemyUnit == null)
             {
                 if (unit.stateController.DefaultState() == State.Fight)
@@ -129,21 +130,40 @@ public class NPCActionHandler : UnitActionHandler
     {
         SetNewTargetEnemy(enemyUnit);
         ClearActionQueue();
+        unit.stateController.SetCurrentState(State.Fight);
     }
 
-    void AttackTargetEnemy()
-    {
-        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
-    }
+    void AttackTargetEnemy() => QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition)); 
 
     void PursueTargetEnemy()
     {
         // Move towards the position behind the enemy Unit, as this will always be an ideal position to attack from. If this Unit gets close enough to attack, they'll attack from whatever position they're in anyways.
         SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
+
+        // If there's no space arount the enemy unit, try to find another enemy to attack
+        if (targetGridPosition == unit.gridPosition)
+        {
+            SwitchTargets(out Unit oldEnemy, out Unit newEnemy);
+            if (oldEnemy == newEnemy)
+            {
+                // There were no other enemies in range, so just move to the nearest possible position to the current enemy
+                SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));
+            }
+            else
+            {
+                SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
+            }
+        }
+
         QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
     }
 
-    void SearchForNewTarget()
+    void FindBestTarget()
+    {
+
+    }
+
+    void SearchForRandomTarget()
     {
         List<Unit> enemiesInRange = LevelGrid.Instance.GetEnemiesInRange(unit.gridPosition, unit, Mathf.FloorToInt(unit.vision.viewRadius));
         if (enemiesInRange.Count > 0)
@@ -166,6 +186,31 @@ public class NPCActionHandler : UnitActionHandler
             targetEnemyUnit = enemiesInRange[Random.Range(0, enemiesInRange.Count)];
         else
             targetEnemyUnit = null;
+    }
+
+    Unit SwitchTargets(out Unit oldEnemy, out Unit newEnemy)
+    {
+        List<Unit> enemiesInRange = LevelGrid.Instance.GetEnemiesInRange(unit.gridPosition, unit, Mathf.FloorToInt(unit.vision.viewRadius));
+        oldEnemy = targetEnemyUnit;
+        Unit closestEnemy = null;
+        float closestEnemyDist = 100000;
+        for (int i = 0; i < enemiesInRange.Count; i++)
+        {
+            if (enemiesInRange[i] == targetEnemyUnit)
+                continue;
+
+            float distToEnemy = Vector3.Distance(transform.position, enemiesInRange[i].transform.position);
+            if (distToEnemy < closestEnemyDist)
+                closestEnemy = enemiesInRange[i];
+        }
+
+        if (closestEnemy == null && targetEnemyUnit != null)
+            closestEnemy = targetEnemyUnit;
+
+        SetNewTargetEnemy(closestEnemy);
+
+        newEnemy = closestEnemy;
+        return closestEnemy;
     }
 
     public void SetNewTargetEnemy(Unit target)

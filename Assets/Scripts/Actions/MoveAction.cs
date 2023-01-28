@@ -93,6 +93,8 @@ public class MoveAction : BaseAction
             yield break;
         }
 
+        unit.UnblockCurrentPosition();
+
         // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
         unit.BlockAtPosition(nextTargetPosition);
 
@@ -243,6 +245,8 @@ public class MoveAction : BaseAction
                 SetFinalTargetGridPosition(patrolPointGridPosition);
             }
 
+            Debug.Log(unit.name + ": " + targetGridPosition);
+            TurnManager.Instance.FinishTurn(unit);
             unit.unitActionHandler.FinishAction();
             return;
         }
@@ -254,6 +258,8 @@ public class MoveAction : BaseAction
         {
             positionList.Add(path.vectorPath[i]);
         }
+
+        unit.BlockCurrentPosition();
     }
 
     void RotateTowardsTargetPosition(Vector3 targetPosition)
@@ -439,4 +445,9 @@ public class MoveAction : BaseAction
     public override bool ActionIsUsedInstantly() => false;
 
     public LayerMask MoveObstaclesMask() => moveObstaclesMask;
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        throw new NotImplementedException();
+    }
 }

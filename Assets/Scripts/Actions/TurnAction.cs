@@ -51,6 +51,9 @@ public class TurnAction : BaseAction
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
+        if (unit.IsPlayer())
+            unit.vision.FindVisibleUnits();
+
         CompleteAction();
         unit.unitActionHandler.FinishAction();
         unit.unitActionHandler.TakeTurn();
@@ -104,6 +107,9 @@ public class TurnAction : BaseAction
 
         transform.rotation = targetRotation;
         SetCurrentDirection();
+
+        if (unit.IsPlayer())
+            unit.vision.FindVisibleUnits();
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -399,7 +405,7 @@ public class TurnAction : BaseAction
             gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
         if (LevelGrid.Instance.IsValidGridPosition(gridPositionBehindUnit) == false || LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
-            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 10);
+            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 2);
         return gridPositionBehindUnit;
     }
 
@@ -416,4 +422,9 @@ public class TurnAction : BaseAction
     }
 
     public override bool ActionIsUsedInstantly() => false;
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        throw new NotImplementedException();
+    }
 }

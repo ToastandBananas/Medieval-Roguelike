@@ -41,8 +41,6 @@ public class UnitActionHandler : MonoBehaviour
             }
             else
             {
-                unit.vision.FindVisibleUnits();
-
                 if (queuedAction != null)
                     GetNextQueuedAction();
                 else

@@ -17,9 +17,10 @@ public class Unit : MonoBehaviour
 
     public GridPosition gridPosition { get; private set; }
 
-    SingleNodeBlocker singleNodeBlocker;
+    public SingleNodeBlocker singleNodeBlocker { get; private set; }
 
     public Alliance alliance { get; private set; }
+    public HealthSystem healthSystem { get; private set; }
     public StateController stateController { get; private set; }
     public Stats stats { get; private set; }
     public UnitActionHandler unitActionHandler { get; private set; }
@@ -30,9 +31,10 @@ public class Unit : MonoBehaviour
     {
         // Center the Unit's position on whatever tile they're on
         CenterPosition();
-
+        
         singleNodeBlocker = GetComponent<SingleNodeBlocker>();
         alliance = GetComponent<Alliance>();
+        healthSystem = GetComponent<HealthSystem>();
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
