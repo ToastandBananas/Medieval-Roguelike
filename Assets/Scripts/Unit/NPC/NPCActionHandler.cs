@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.ProBuilder.MeshOperations;
 
 public class NPCActionHandler : UnitActionHandler
 {
@@ -52,8 +53,6 @@ public class NPCActionHandler : UnitActionHandler
             }
             else
             {
-                unit.vision.FindVisibleUnits();
-
                 if (queuedAction != null)
                     GetNextQueuedAction();
                 else
@@ -106,18 +105,17 @@ public class NPCActionHandler : UnitActionHandler
     #region Fight
     void Fight()
     {
+        FindBestTargetEnemy();
+
         // If there's no target enemy Unit, try to find one, else switch States
         if (targetEnemyUnit == null)
         {
-            SearchForRandomTarget();
-            if (targetEnemyUnit == null)
-            {
-                if (unit.stateController.DefaultState() == State.Fight)
-                    unit.stateController.ChangeDefaultState(State.Idle);
-                unit.stateController.SetToDefaultState();
-                DetermineAction();
-                return;
-            }
+            if (unit.stateController.DefaultState() == State.Fight)
+                unit.stateController.ChangeDefaultState(State.Idle);
+            unit.stateController.SetToDefaultState();
+
+            DetermineAction();
+            return;
         }
 
         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
@@ -126,24 +124,33 @@ public class NPCActionHandler : UnitActionHandler
             PursueTargetEnemy();
     }
 
-    public void StartFight(Unit enemyUnit)
+    public void StartFight()
     {
-        SetNewTargetEnemy(enemyUnit);
+        FindBestTargetEnemy();
         ClearActionQueue();
         unit.stateController.SetCurrentState(State.Fight);
     }
 
-    void AttackTargetEnemy() => QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition)); 
+    void AttackTargetEnemy()
+    {
+        if (GetAction<TurnAction>().IsFacingTarget(targetEnemyUnit.gridPosition))
+            QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+        else
+        {
+            GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
+            QueueAction(GetAction<TurnAction>(), GetAction<TurnAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+        }
+    }
 
     void PursueTargetEnemy()
     {
         // Move towards the position behind the enemy Unit, as this will always be an ideal position to attack from. If this Unit gets close enough to attack, they'll attack from whatever position they're in anyways.
         SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
 
-        // If there's no space arount the enemy unit, try to find another enemy to attack
+        // If there's no space around the enemy unit, try to find another enemy to attack
         if (targetGridPosition == unit.gridPosition)
         {
-            SwitchTargets(out Unit oldEnemy, out Unit newEnemy);
+            SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
             if (oldEnemy == newEnemy)
             {
                 // There were no other enemies in range, so just move to the nearest possible position to the current enemy
@@ -158,50 +165,51 @@ public class NPCActionHandler : UnitActionHandler
         QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
     }
 
-    void FindBestTarget()
+    void FindBestTargetEnemy()
     {
+        if (unit.vision.visibleEnemies.Count > 0)
+        {
+            List<EnemyAIAction> enemyAIActions = new List<EnemyAIAction>();
+            MeleeAction meleeAction = GetAction<MeleeAction>();
+            for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+            {
+                enemyAIActions.Add(meleeAction.GetEnemyAIAction(unit.vision.visibleEnemies[i].gridPosition));
+            }
 
+            SetNewTargetEnemy(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+        }
+        else
+        {
+            if (unit.stateController.DefaultState() == State.Fight)
+                unit.stateController.ChangeDefaultState(State.Idle);
+            unit.stateController.SetToDefaultState();
+        }
     }
 
-    void SearchForRandomTarget()
+    void SearchForRandomTargetEnemy()
     {
-        List<Unit> enemiesInRange = LevelGrid.Instance.GetEnemiesInRange(unit.gridPosition, unit, Mathf.FloorToInt(unit.vision.viewRadius));
-        if (enemiesInRange.Count > 0)
-        {
-            List<Unit> enemiesToRemoveFromList = new List<Unit>();
-            for (int i = 0; i < enemiesInRange.Count; i++)
-            {
-                if (unit.vision.IsVisible(enemiesInRange[i]) == false) // Not a valid target since this enemy isn't visible
-                    enemiesToRemoveFromList.Add(enemiesInRange[i]);
-            }
-
-            for (int i = 0; i < enemiesToRemoveFromList.Count; i++)
-            {
-                if (enemiesInRange.Contains(enemiesToRemoveFromList[i]))
-                    enemiesInRange.Remove(enemiesToRemoveFromList[i]);
-            }
-        }
-
-        if (enemiesInRange.Count > 0)
-            targetEnemyUnit = enemiesInRange[Random.Range(0, enemiesInRange.Count)];
+        if (unit.vision.visibleEnemies.Count > 0)
+            targetEnemyUnit = unit.vision.visibleEnemies[Random.Range(0, unit.vision.visibleEnemies.Count)];
         else
             targetEnemyUnit = null;
     }
 
-    Unit SwitchTargets(out Unit oldEnemy, out Unit newEnemy)
+    void SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy)
     {
-        List<Unit> enemiesInRange = LevelGrid.Instance.GetEnemiesInRange(unit.gridPosition, unit, Mathf.FloorToInt(unit.vision.viewRadius));
         oldEnemy = targetEnemyUnit;
         Unit closestEnemy = null;
         float closestEnemyDist = 100000;
-        for (int i = 0; i < enemiesInRange.Count; i++)
+        for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
         {
-            if (enemiesInRange[i] == targetEnemyUnit)
+            if (unit.vision.visibleEnemies[i] == targetEnemyUnit)
                 continue;
 
-            float distToEnemy = Vector3.Distance(transform.position, enemiesInRange[i].transform.position);
+            float distToEnemy = Vector3.Distance(transform.position, unit.vision.visibleEnemies[i].transform.position);
             if (distToEnemy < closestEnemyDist)
-                closestEnemy = enemiesInRange[i];
+            {
+                closestEnemy = unit.vision.visibleEnemies[i];
+                closestEnemyDist = distToEnemy;
+            }
         }
 
         if (closestEnemy == null && targetEnemyUnit != null)
@@ -210,7 +218,6 @@ public class NPCActionHandler : UnitActionHandler
         SetNewTargetEnemy(closestEnemy);
 
         newEnemy = closestEnemy;
-        return closestEnemy;
     }
 
     public void SetNewTargetEnemy(Unit target)

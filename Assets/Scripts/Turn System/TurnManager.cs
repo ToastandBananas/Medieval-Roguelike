@@ -79,6 +79,9 @@ public class TurnManager : MonoBehaviour
 
             if (unit.hasStartedTurn == false)
             {
+                unit.vision.UpdateVisibleUnits();
+                unit.vision.FindVisibleUnits();
+
                 unit.SetHasStartedTurn(true);
                 unit.stats.ReplenishAP();
 

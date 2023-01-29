@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class BaseAction : MonoBehaviour
@@ -28,6 +29,12 @@ public abstract class BaseAction : MonoBehaviour
         //onActionComplete();
 
         //OnAnyActionCompleted?.Invoke(this, EventArgs.Empty);
+    }
+
+    public EnemyAIAction GetBestEnemyAIActionFromList(List<EnemyAIAction> enemyAIActionList)
+    {
+        enemyAIActionList.Sort((EnemyAIAction a, EnemyAIAction b) => b.actionValue - a.actionValue);
+        return enemyAIActionList[0];
     }
 
     public bool IsActive() => isActive;

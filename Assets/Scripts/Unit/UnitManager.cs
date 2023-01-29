@@ -10,8 +10,6 @@ public class UnitManager : MonoBehaviour
 
     public List<Unit> livingNPCs { get; private set; }
     public List<Unit> deadNPCs { get; private set; }
-    //public List<Unit> friendlyNPCs { get; private set; }
-    //public List<Unit> enemyNPCs { get; private set; }
 
     void Awake()
     {
@@ -31,15 +29,10 @@ public class UnitManager : MonoBehaviour
 
         livingNPCs = new List<Unit>();
         deadNPCs = new List<Unit>();
-        //friendlyNPCs = new List<Unit>();
-        //enemyNPCs = new List<Unit>();
 
         livingNPCs = FindObjectsOfType<Unit>().ToList();
         for (int i = 0; i < livingNPCs.Count; i++)
         {
-            //if (livingNPCs[i].IsPlayer())
-                //livingNPCs.Remove(livingNPCs[i]);
-
             if (livingNPCs[i].isDead)
             {
                 deadNPCs.Add(livingNPCs[i]);

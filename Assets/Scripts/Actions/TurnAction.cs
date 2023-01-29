@@ -51,8 +51,7 @@ public class TurnAction : BaseAction
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
-        if (unit.IsPlayer())
-            unit.vision.FindVisibleUnits();
+        unit.vision.FindVisibleUnits();
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -108,8 +107,7 @@ public class TurnAction : BaseAction
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
-        if (unit.IsPlayer())
-            unit.vision.FindVisibleUnits();
+        unit.vision.FindVisibleUnits();
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -405,9 +403,11 @@ public class TurnAction : BaseAction
             gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
         if (LevelGrid.Instance.IsValidGridPosition(gridPositionBehindUnit) == false || LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
-            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 2);
+            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 1);
         return gridPositionBehindUnit;
     }
+
+    public bool IsFacingTarget(GridPosition targetGridPosition) => DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
     public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition); 
 

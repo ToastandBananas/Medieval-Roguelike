@@ -123,6 +123,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public void ClearActionQueue()
     {
+        // Debug.Log("Clearing action queue");
         queuedAction = null;
         queuedAP = 0;
         isPerformingAction = false;

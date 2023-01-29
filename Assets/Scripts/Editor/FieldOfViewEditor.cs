@@ -21,9 +21,9 @@ public class FieldOfViewEditor : Editor
         Handles.color = Color.red;
         if (fov.visibleUnits.Count > 0)
         {
-            foreach (KeyValuePair<Unit, Transform> keyValuePair in fov.visibleUnits)
+            foreach (Unit visibleUnit in fov.visibleUnits)
             {
-                Handles.DrawLine(fov.transform.position, keyValuePair.Value.position + yOffset);
+                Handles.DrawLine(fov.transform.position, visibleUnit.transform.position + yOffset);
             }
         }
     }

@@ -208,7 +208,7 @@ public class MoveAction : BaseAction
         CompleteAction();
         unit.unitActionHandler.FinishAction();
 
-        if (unit.IsPlayer()) 
+        if (unit.IsPlayer())
         {
             GridSystemVisual.Instance.UpdateGridVisual();
 
@@ -216,6 +216,8 @@ public class MoveAction : BaseAction
             if (unit.gridPosition != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this, GetActionPointsCost(finalTargetGridPosition));
         }
+        else
+            UnitManager.Instance.player.vision.FindVisibleUnits();
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
@@ -245,7 +247,6 @@ public class MoveAction : BaseAction
                 SetFinalTargetGridPosition(patrolPointGridPosition);
             }
 
-            Debug.Log(unit.name + ": " + targetGridPosition);
             TurnManager.Instance.FinishTurn(unit);
             unit.unitActionHandler.FinishAction();
             return;

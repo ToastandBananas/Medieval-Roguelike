@@ -53,24 +53,28 @@ public class MeleeAction : BaseAction
         isAttacking = false;
     }
 
-    public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
-
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
     {
-        int finalActionValue = 0;
+        float finalActionValue = 0;
+        Unit targetUnit = null;
 
         if (IsValidAction())
         {
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
 
-            // Target the Unit with the lowest health and/or the nearest target
-            finalActionValue += 200 + Mathf.RoundToInt((1 - targetUnit.healthSystem.CurrentHealthNormalized()) * 100f);
+            if (targetUnit != null)
+            {
+                // Target the Unit with the lowest health and/or the nearest target
+                finalActionValue += targetUnit.healthSystem.CurrentHealthNormalized() * 100f;
+                finalActionValue -= TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            }
         }
 
         return new EnemyAIAction
         {
+            unit = targetUnit,
             gridPosition = gridPosition,
-            actionValue = finalActionValue
+            actionValue = Mathf.RoundToInt(finalActionValue)
         };
     }
 
@@ -83,6 +87,8 @@ public class MeleeAction : BaseAction
     {
         return true;
     }
+
+    public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
 
     public bool isAttacking { get; private set; }
 
