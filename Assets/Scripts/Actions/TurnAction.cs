@@ -398,12 +398,13 @@ public class TurnAction : BaseAction
                 return unit.gridPosition;
         }
 
+        // Get the Y position for the Grid Position using a raycast
         Physics.Raycast(gridPositionBehindUnit.WorldPosition() + new Vector3(0, 1, 0), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.Instance.MousePlaneLayerMask());
         if (hit.collider != null)
             gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
-        if (LevelGrid.Instance.IsValidGridPosition(gridPositionBehindUnit) == false || LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
-            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 1);
+        if (LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
+            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 1.4f);
         return gridPositionBehindUnit;
     }
 

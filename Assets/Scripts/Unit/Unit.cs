@@ -1,4 +1,5 @@
 using Pathfinding;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -125,6 +126,17 @@ public class Unit : MonoBehaviour
 
         if (bowLineRenderer != null)
             bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+    }
+
+    public bool IsCompletelySurrounded()
+    {
+        List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition);
+        for (int i = 0; i < surroundingGridPositions.Count; i++)
+        {
+            if (LevelGrid.Instance.GridPositionObstructed(surroundingGridPositions[i]) == false)
+                return false;
+        }
+        return true;
     }
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();

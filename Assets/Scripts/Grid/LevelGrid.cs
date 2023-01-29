@@ -166,13 +166,19 @@ public class LevelGrid : MonoBehaviour
         return enemies;
     }
 
-    public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, int rangeToSearch)
+    public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, float rangeToSearch)
     {
         GridPosition newGridPosition = startingGridPosition;
 
+        List<GridPosition> gridPositions = new List<GridPosition>();
+
         unit.UnblockCurrentPosition();
 
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (1000 * rangeToSearch));
+        Unit unitAtStartPosition = GetUnitAtGridPosition(startingGridPosition);
+        if (unitAtStartPosition != null)
+            unitAtStartPosition.UnblockCurrentPosition();
+
+        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), Mathf.RoundToInt(1 + (1000 * rangeToSearch)));
         path.traversalProvider = DefaultTraversalProvider();
 
         // Schedule the path for calculation
@@ -186,23 +192,42 @@ public class LevelGrid : MonoBehaviour
         {
             GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
 
-            if (IsValidGridPosition(gridPosition) == false)
+            if (gridPosition == startingGridPosition)
+                continue;
+
+            if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
             Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
             if (collisions.Length > 0)
                 continue;
 
-            if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
-                continue;
-
-            newGridPosition = gridPosition;
-            break;
+            gridPositions.Add(gridPosition);
         }
 
         unit.BlockCurrentPosition();
+        if (unitAtStartPosition != null)
+            unitAtStartPosition.BlockCurrentPosition();
 
+        newGridPosition = GetClosestGridPositionFromList(startingGridPosition, gridPositions);
         return newGridPosition;
+    }
+
+    public GridPosition GetClosestGridPositionFromList(GridPosition startingGridPosition, List<GridPosition> gridPositions)
+    {
+        GridPosition nearestGridPosition = startingGridPosition;
+        float nearestGridPositionDist = 1000000;
+        for (int i = 0; i < gridPositions.Count; i++)
+        {
+            float dist = Vector3.Distance(startingGridPosition.WorldPosition(), gridPositions[i].WorldPosition());
+            if (dist < nearestGridPositionDist)
+            {
+                nearestGridPosition = gridPositions[i];
+                nearestGridPositionDist = dist;
+            }
+        }
+
+        return nearestGridPosition;
     }
 
     public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
@@ -225,14 +250,11 @@ public class LevelGrid : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
 
-            if (IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-            
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startingGridPosition, nodeGridPosition);
-            if (distance > maxRange || distance < minRange)
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startingGridPosition, nodeGridPosition);
+            if (distance > maxRange || distance < minRange)
                 continue;
 
             Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
@@ -274,14 +296,11 @@ public class LevelGrid : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
 
-            if (IsValidGridPosition(nodeGridPosition) == false)
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
             float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.gridPosition, nodeGridPosition);
             if (distanceToEnemy > maxRange || distanceToEnemy < fleeDistance)
-                continue;
-
-            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
             Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
@@ -306,6 +325,20 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
     }
 
+    public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition)
+    {
+        List<GridPosition> surroundingGridPositions = new List<GridPosition>();
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(0, 0, 1)); // North
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(0, 0, -1)); // South
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, 0)); // East
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, 0)); // West
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, 1)); // NorthWest
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, 1)); // NorthEast
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, -1)); // SouthWest
+        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, -1)); // SouthEast
+        return surroundingGridPositions;
+    }
+
     public static bool IsDiagonal(GridPosition startGridPosition, GridPosition endGridPosition)
     {
         if (Mathf.RoundToInt(startGridPosition.x) != Mathf.RoundToInt(endGridPosition.x) && Mathf.RoundToInt(startGridPosition.z) != Mathf.RoundToInt(endGridPosition.z))
@@ -324,7 +357,7 @@ public class LevelGrid : MonoBehaviour
 
     public bool GridPositionObstructed(GridPosition gridPosition)
     {
-        if (HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(AstarPath.active.GetNearest(gridPosition.WorldPosition()).node, unitSingleNodeBlockers))
+        if (IsValidGridPosition(gridPosition) == false || HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(AstarPath.active.GetNearest(gridPosition.WorldPosition()).node, unitSingleNodeBlockers))
             return true;
         return false;
     }

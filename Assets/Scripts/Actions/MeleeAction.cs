@@ -25,7 +25,7 @@ public class MeleeAction : BaseAction
 
     public void Attack()
     {
-        Debug.Log(unit + " attacked " + targetEnemyUnit); 
+        // Debug.Log(unit + " attacked " + targetEnemyUnit); 
         
         CompleteAction();
         unit.unitActionHandler.FinishAction();

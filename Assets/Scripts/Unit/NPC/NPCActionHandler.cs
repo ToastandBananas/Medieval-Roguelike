@@ -148,7 +148,7 @@ public class NPCActionHandler : UnitActionHandler
         SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
 
         // If there's no space around the enemy unit, try to find another enemy to attack
-        if (targetGridPosition == unit.gridPosition)
+        if (targetGridPosition == unit.gridPosition || targetEnemyUnit.IsCompletelySurrounded())
         {
             SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
             if (oldEnemy == newEnemy)
@@ -197,8 +197,8 @@ public class NPCActionHandler : UnitActionHandler
     void SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy)
     {
         oldEnemy = targetEnemyUnit;
-        Unit closestEnemy = null;
-        float closestEnemyDist = 100000;
+        Unit closestEnemy = targetEnemyUnit;
+        float closestEnemyDist = 1000000;
         for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
         {
             if (unit.vision.visibleEnemies[i] == targetEnemyUnit)
@@ -211,13 +211,9 @@ public class NPCActionHandler : UnitActionHandler
                 closestEnemyDist = distToEnemy;
             }
         }
-
-        if (closestEnemy == null && targetEnemyUnit != null)
-            closestEnemy = targetEnemyUnit;
-
-        SetNewTargetEnemy(closestEnemy);
-
+        Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
         newEnemy = closestEnemy;
+        SetNewTargetEnemy(closestEnemy);
     }
 
     public void SetNewTargetEnemy(Unit target)
