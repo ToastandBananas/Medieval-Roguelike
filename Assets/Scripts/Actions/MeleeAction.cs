@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class MeleeAction : BaseAction
 {
-    Unit targetEnemyUnit;
+    public Unit targetEnemyUnit { get; private set; }
 
     public bool isAttacking { get; private set; }
 
@@ -25,20 +26,41 @@ public class MeleeAction : BaseAction
             return;
         }
 
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     public void Attack()
     {
-        // Debug.Log(unit + " attacked " + targetEnemyUnit);
-
-        unit.unitAnimator.StartMeleeAttack();
-
-        if (unit.rightHeldItem != null)
+        if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+        {
+            // Do a dual wield attack
+            unit.unitAnimator.StartDualMeleeAttack();
             unit.rightHeldItem.DoDefaultAttack();
-        
+            StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
+        }
+        else if (unit.rightHeldItem != null)
+        {
+            unit.unitAnimator.StartMeleeAttack();
+            unit.rightHeldItem.DoDefaultAttack();
+        }
+        else if (unit.leftHeldItem != null)
+        {
+            unit.unitAnimator.StartMeleeAttack();
+            unit.leftHeldItem.DoDefaultAttack();
+        }
+
+        StartCoroutine(WaitToFinishAction());
+    }
+
+    IEnumerator WaitToFinishAction()
+    {
+        if (unit.rightHeldItem != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
+        else
+            yield return new WaitForSeconds(0.5f);
+
         CompleteAction();
         unit.unitActionHandler.FinishAction();
+        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     public bool IsInAttackRange(Unit enemyUnit)

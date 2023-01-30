@@ -83,6 +83,20 @@ public abstract class Item : ScriptableObject
         }
     }
 
+    public BasicItem BasicItem() => this as BasicItem;
+
+    public Consumable Consumable() => this as Consumable;
+
+    public Equipment Equipment() => this as Equipment;
+
+    public Projectile_Item ProjectileItem() => this as Projectile_Item;
+
+    public Shield Shield() => this as Shield;
+
+    public Weapon Weapon() => this as Weapon;
+
+    public Wearable Wearable() => this as Wearable;
+
     public abstract bool IsEquipment();
 
     public abstract bool IsWeapon();

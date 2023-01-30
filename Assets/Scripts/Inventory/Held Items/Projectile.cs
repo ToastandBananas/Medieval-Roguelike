@@ -111,7 +111,8 @@ public class Projectile : MonoBehaviour
             yield return null;
         }
 
-        CameraController.Instance.StopFollowingTarget();
+        if (shooter.IsPlayer())
+            CameraController.Instance.StopFollowingTarget();
     }
 
     void ReadyProjectile()
@@ -122,7 +123,9 @@ public class Projectile : MonoBehaviour
         moveProjectile = true;
 
         SetupTrail();
-        StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
+
+        if (shooter.IsPlayer())
+            StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
     }
 
     float CalculateProjectileArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -183,6 +186,8 @@ public class Projectile : MonoBehaviour
 
     void Arrived(Transform collisionTransform)
     {
+        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(shooter));
+
         moveProjectile = false;
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
@@ -284,7 +289,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
-                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.GetDamage());
+                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }
             }
@@ -293,7 +298,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
-                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.GetDamage());
+                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }
             }

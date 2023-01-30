@@ -3,6 +3,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Item/Weapon")]
 public class Weapon : Equipment
 {
+    public int minDamage = 1;
+    public int maxDamage = 5;
+
+    public bool isOneHanded = true;
+
     public override bool IsBag() => false;
 
     public override bool IsConsumable() => false;

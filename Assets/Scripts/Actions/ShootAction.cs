@@ -30,8 +30,6 @@ public class ShootAction : BaseAction
             unit.unitActionHandler.TakeTurn();
             return;
         }
-
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     void Shoot()

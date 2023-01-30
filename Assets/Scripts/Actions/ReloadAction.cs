@@ -18,6 +18,8 @@ public class ReloadAction : BaseAction
 
     IEnumerator StartReloadTimer()
     {
+        stateTimer = timeToReload;
+
         while (stateTimer > 0f)
         {
             stateTimer -= Time.deltaTime;
@@ -35,8 +37,6 @@ public class ReloadAction : BaseAction
     {
         if (isReloading) return;
 
-        stateTimer = timeToReload;
-
         StartAction(onActionComplete);
 
         Reload();
@@ -44,12 +44,12 @@ public class ReloadAction : BaseAction
 
     void Reload()
     {
-        StartCoroutine(StartReloadTimer());
+        // StartCoroutine(StartReloadTimer());
 
         unit.GetEquippedRangedWeapon().LoadProjectile(); 
         
-        //CompleteAction();
-        //unit.unitActionHandler.FinishAction();
+        CompleteAction();
+        unit.unitActionHandler.FinishAction();
 
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }

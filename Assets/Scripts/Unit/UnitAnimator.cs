@@ -31,7 +31,12 @@ public class UnitAnimator : MonoBehaviour
 
     public void StartMeleeAttack()
     {
-        unitAnim.Play("MeleeAttack");
+        unitAnim.Play("Melee Attack");
+    }
+
+    public void StartDualMeleeAttack()
+    {
+        unitAnim.Play("Dual Melee Attack");
     }
 
     public void Die()

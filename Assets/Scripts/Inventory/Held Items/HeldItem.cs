@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // If a class is abstract, this means that the class cannot be placed on a GameObject
@@ -7,8 +8,6 @@ public abstract class HeldItem : MonoBehaviour
     [SerializeField] Vector3 idleRotation = new Vector3(0f, 90f, 0f);
 
     public Animator anim { get; private set; }
-
-    [SerializeField] int damage = 10;
 
     protected Unit unit;
 
@@ -37,9 +36,11 @@ public abstract class HeldItem : MonoBehaviour
 
     public Vector3 IdleRotation() => idleRotation;
 
-    public void SetDamage(int newDamageAmount) => damage = newDamageAmount;
-
-    public int GetDamage() => damage;
-
     public abstract void DoDefaultAttack();
+
+    public IEnumerator DelayDoDefaultAttack()
+    {
+        yield return new WaitForSeconds(0.5f);
+        DoDefaultAttack();
+    }
 }
