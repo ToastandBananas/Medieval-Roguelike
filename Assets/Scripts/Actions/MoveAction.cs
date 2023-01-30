@@ -212,12 +212,27 @@ public class MoveAction : BaseAction
         {
             GridSystemVisual.Instance.UpdateGridVisual();
 
+            // If the Player is trying to attack an enemy
+            if (unit.unitActionHandler.targetEnemyUnit != null && (unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) 
+                && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
+            {
+                unit.unitAnimator.StopMovingForward();
+                unit.unitActionHandler.AttackTargetEnemy();
+            }
             // If the Player hasn't reached their destination, add the next move to the queue
-            if (unit.gridPosition != finalTargetGridPosition)
+            else if (unit.gridPosition != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this, GetActionPointsCost(finalTargetGridPosition));
         }
         else
+        {
+            if (unit.stateController.currentState == State.Fight && unit.unitActionHandler.targetEnemyUnit != null && (unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed()))
+                && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
+            {
+                unit.unitAnimator.StopMovingForward();
+            }
+
             UnitManager.Instance.player.vision.FindVisibleUnits();
+        }
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)

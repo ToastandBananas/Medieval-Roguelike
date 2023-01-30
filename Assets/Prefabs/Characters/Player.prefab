@@ -672,6 +672,8 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
+  visibleUnits: []
+  visibleEnemies: []
 --- !u!1 &8220662913183796567
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,6 +697,8 @@ GameObject:
   - component: {fileID: 4910889609817399986}
   - component: {fileID: 6094857115427304514}
   - component: {fileID: 2290977517188116833}
+  - component: {fileID: 8022252570378685524}
+  - component: {fileID: 233180922898052485}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -820,6 +824,9 @@ MonoBehaviour:
   speed:
     baseValue: 20
     modifiers: 
+  rangedAccuracy:
+    baseValue: 20
+    modifiers: []
 --- !u!114 &809617103822942843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -832,6 +839,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
 --- !u!114 &6440773195933579921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -935,6 +944,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7f9f785eba16144286a42972fd12bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canFightUnarmed: 0
+--- !u!114 &8022252570378685524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8da8435b8db01541ada4dcd133b260b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &233180922898052485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f55ed04e5a326c4a95254ab62271707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeToReload: 1
 --- !u!1 &8220662913851074348
 GameObject:
   m_ObjectHideFlags: 0

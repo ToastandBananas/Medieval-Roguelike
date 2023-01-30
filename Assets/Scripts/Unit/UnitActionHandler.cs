@@ -33,19 +33,36 @@ public class UnitActionHandler : MonoBehaviour
         if (unit.isMyTurn && unit.isDead == false)
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
+            {
                 TurnManager.Instance.FinishTurn(unit);
-            else if (queuedAction == GetAction<MeleeAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
-            {
-                ClearActionQueue();
-                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                return;
             }
+            else if (queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+            {
+                if (unit.RangedWeaponEquipped())
+                {
+                    if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        ClearActionQueue();
+                        QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        return;
+                    }
+                }
+                else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                {
+                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        ClearActionQueue();
+                        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        return;
+                    }
+                }
+            }
+
+            if (queuedAction != null)
+                GetNextQueuedAction();
             else
-            {
-                if (queuedAction != null)
-                    GetNextQueuedAction();
-                else
-                    unit.UnblockCurrentPosition();
-            }
+                unit.UnblockCurrentPosition();
         }
     }
 
@@ -127,6 +144,24 @@ public class UnitActionHandler : MonoBehaviour
         queuedAction = null;
         queuedAP = 0;
         isPerformingAction = false;
+    }
+    #endregion
+
+    #region Combat
+    public void AttackTargetEnemy()
+    {
+        if (GetAction<TurnAction>().IsFacingTarget(targetEnemyUnit.gridPosition))
+        {
+            if (unit.RangedWeaponEquipped())
+                QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+            else
+                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+        }
+        else
+        {
+            GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
+            QueueAction(GetAction<TurnAction>(), GetAction<TurnAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+        }
     }
     #endregion
 

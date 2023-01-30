@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf1544ed0f702bb49bf187dc41863a59, type: 3}
+  m_Name: Arming Sword
+  m_EditorClassIdentifier: 
+  name: Arming Sword
+  pluralName: 
+  itemType: 1
+  mainMaterial: 35
+  itemSize: 4
+  description: 
+  maxStackSize: 1
+  weight: 0.1
+  volume: 0.1
+  isUsable: 1
+  canUsePartial: 0
+  value: {x: 0, y: 0}
+  staticValue: 1
+  pickupSprite: {fileID: 0}

@@ -29,6 +29,11 @@ public class UnitAnimator : MonoBehaviour
         unitAnim.SetBool("isMoving", false);
     }
 
+    public void StartMeleeAttack()
+    {
+        unitAnim.Play("MeleeAttack");
+    }
+
     public void Die()
     {
         int random = UnityEngine.Random.Range(0, 2);

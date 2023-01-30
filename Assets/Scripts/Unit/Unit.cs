@@ -1,5 +1,6 @@
 using Pathfinding;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -11,6 +12,9 @@ public class Unit : MonoBehaviour
     MeshRenderer leftHeldItemMeshRenderer, rightHeldItemMeshRenderer;
     MeshRenderer[] bowMeshRenderers;
     LineRenderer bowLineRenderer;
+    
+    public HeldItem leftHeldItem { get; private set; }
+    public HeldItem rightHeldItem { get; private set; }
 
     public bool isMyTurn { get; private set; }
     public bool hasStartedTurn { get; private set; }
@@ -42,19 +46,22 @@ public class Unit : MonoBehaviour
         unitAnimator = GetComponent<UnitAnimator>();
         vision = GetComponentInChildren<Vision>();
 
-        if (leftHeldItemParent.childCount > 0)
+        SetLeftHeldItem();
+        SetRightHeldItem();
+
+        if (leftHeldItem != null)
         {
-            if (leftHeldItemParent.GetChild(0).childCount > 0) // The item is a Bow
+            if (leftHeldItem.itemData.item.itemType == ItemType.RangedWeapon) // The item is a Bow
             {
-                bowMeshRenderers = leftHeldItemParent.GetComponentsInChildren<MeshRenderer>();
-                bowLineRenderer = leftHeldItemParent.GetComponentInChildren<LineRenderer>();
+                bowMeshRenderers = leftHeldItem.GetComponentsInChildren<MeshRenderer>();
+                bowLineRenderer = leftHeldItem.GetComponentInChildren<LineRenderer>();
             }
             else
-                leftHeldItemMeshRenderer = leftHeldItemParent.GetComponentInChildren<MeshRenderer>();
+                leftHeldItemMeshRenderer = leftHeldItem.GetComponentInChildren<MeshRenderer>();
         }
 
-        if (rightHeldItemParent.childCount > 0)
-            rightHeldItemMeshRenderer = rightHeldItemParent.GetComponentInChildren<MeshRenderer>();
+        if (rightHeldItem != null)
+            rightHeldItemMeshRenderer = rightHeldItem.GetComponentInChildren<MeshRenderer>();
     }
 
     void Start()
@@ -86,9 +93,12 @@ public class Unit : MonoBehaviour
 
     public void ShowMeshRenderers()
     {
-        for (int i = 0; i < meshRenderers.Length; i++)
+        if (meshRenderers != null)
         {
-            meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            for (int i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            }
         }
 
         if (leftHeldItemMeshRenderer != null)
@@ -97,20 +107,26 @@ public class Unit : MonoBehaviour
         if (rightHeldItemMeshRenderer != null)
             rightHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 
-        for (int i = 0; i < bowMeshRenderers.Length; i++)
+        if (bowMeshRenderers != null)
         {
-            bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-        }
+            for (int i = 0; i < bowMeshRenderers.Length; i++)
+            {
+                bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            }
 
-        if (bowLineRenderer != null)
-            bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            if (bowLineRenderer != null)
+                bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
     }
 
     public void HideMeshRenderers()
     {
-        for (int i = 0; i < meshRenderers.Length; i++)
+        if (meshRenderers != null)
         {
-            meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            for (int i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            }
         }
 
         if (leftHeldItemMeshRenderer != null)
@@ -119,13 +135,16 @@ public class Unit : MonoBehaviour
         if (rightHeldItemMeshRenderer != null)
             rightHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
 
-        for (int i = 0; i < bowMeshRenderers.Length; i++)
+        if (bowMeshRenderers != null)
         {
-            bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-        }
+            for (int i = 0; i < bowMeshRenderers.Length; i++)
+            {
+                bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            }
 
-        if (bowLineRenderer != null)
-            bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            if (bowLineRenderer != null)
+                bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        }
     }
 
     public bool IsCompletelySurrounded()
@@ -138,6 +157,30 @@ public class Unit : MonoBehaviour
         }
         return true;
     }
+
+    public void SetLeftHeldItem()
+    {
+        if (leftHeldItemParent.childCount > 0)
+        {
+            leftHeldItem = leftHeldItemParent.GetChild(0).GetComponent<HeldItem>();
+            unitAnimator.SetLeftHeldItemAnim(leftHeldItem.GetComponent<Animator>());
+        }
+    }
+
+    public void SetRightHeldItem()
+    {
+        if (rightHeldItemParent.childCount > 0)
+        {
+            rightHeldItem = rightHeldItemParent.GetChild(0).GetComponent<HeldItem>();
+            unitAnimator.SetRightHeldItemAnim(rightHeldItem.GetComponent<Animator>());
+        }
+    }
+
+    public bool MeleeWeaponEquipped() => (leftHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon()) || (rightHeldItem != null && rightHeldItem.itemData.item.IsMeleeWeapon());
+
+    public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.itemData.item.IsRangedWeapon();
+
+    public HeldRangedWeapon GetEquippedRangedWeapon() => leftHeldItem as HeldRangedWeapon;
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
 

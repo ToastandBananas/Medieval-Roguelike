@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1460794979494802722}
   - component: {fileID: 1460794979494802749}
+  - component: {fileID: 5232058871207089144}
+  - component: {fileID: 2101053235}
   m_Layer: 0
   m_Name: Shield
   m_TagString: Untagged
@@ -53,6 +55,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+--- !u!114 &5232058871207089144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460794979494802751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b83f3fb465c8f654a9bf16f06d7c8182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idlePosition: {x: 0.23, y: -0.3, z: -0.23}
+  idleRotation: {x: 0, y: -30, z: 0}
+  damage: 10
+--- !u!114 &2101053235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460794979494802751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4076fa5db4932043be7f194d6aab5cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  item: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177, type: 2}
 --- !u!1 &9067393067128502702
 GameObject:
   m_ObjectHideFlags: 0

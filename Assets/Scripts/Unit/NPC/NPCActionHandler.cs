@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
@@ -45,19 +43,36 @@ public class NPCActionHandler : UnitActionHandler
         if (unit.isMyTurn && unit.isDead == false)
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
+            {
                 TurnManager.Instance.FinishTurn(unit);
-            else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
-            {
-                ClearActionQueue();
-                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                return;
             }
+            else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
+            {
+                if (unit.RangedWeaponEquipped())
+                {
+                    if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        ClearActionQueue();
+                        QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        return;
+                    }
+                }
+                else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                {
+                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        ClearActionQueue();
+                        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        return;
+                    }
+                }
+            }
+
+            if (queuedAction != null)
+                GetNextQueuedAction();
             else
-            {
-                if (queuedAction != null)
-                    GetNextQueuedAction();
-                else
-                    DetermineAction();
-            }
+                DetermineAction(); 
         }
     }
 
@@ -118,7 +133,7 @@ public class NPCActionHandler : UnitActionHandler
             return;
         }
 
-        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+        if ((unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit)) || ((unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed()) && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit)))
             AttackTargetEnemy();
         else
             PursueTargetEnemy();
@@ -129,17 +144,6 @@ public class NPCActionHandler : UnitActionHandler
         FindBestTargetEnemy();
         ClearActionQueue();
         unit.stateController.SetCurrentState(State.Fight);
-    }
-
-    void AttackTargetEnemy()
-    {
-        if (GetAction<TurnAction>().IsFacingTarget(targetEnemyUnit.gridPosition))
-            QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
-        else
-        {
-            GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
-            QueueAction(GetAction<TurnAction>(), GetAction<TurnAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
-        }
     }
 
     void PursueTargetEnemy()
@@ -220,6 +224,7 @@ public class NPCActionHandler : UnitActionHandler
     {
         targetEnemyUnit = target;
         GetAction<MeleeAction>().SetTargetEnemyUnit(target);
+        GetAction<ShootAction>().SetTargetEnemyUnit(target);
     }
     #endregion
 
@@ -486,7 +491,7 @@ public class NPCActionHandler : UnitActionHandler
     {
         // Flee
         needsNewFleeDestination = true;
-        //unitToFleeFrom = null;
+        unitToFleeFrom = null;
         unitToFleeFrom_PreviousDistance = 0f;
 
         // Patrol

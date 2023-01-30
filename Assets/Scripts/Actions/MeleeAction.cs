@@ -5,6 +5,10 @@ public class MeleeAction : BaseAction
 {
     Unit targetEnemyUnit;
 
+    public bool isAttacking { get; private set; }
+
+    [SerializeField] bool canFightUnarmed;
+
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
         if (isAttacking) return;
@@ -18,6 +22,7 @@ public class MeleeAction : BaseAction
             CompleteAction();
             unit.unitActionHandler.FinishAction();
             unit.unitActionHandler.TakeTurn();
+            return;
         }
 
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -25,7 +30,12 @@ public class MeleeAction : BaseAction
 
     public void Attack()
     {
-        // Debug.Log(unit + " attacked " + targetEnemyUnit); 
+        // Debug.Log(unit + " attacked " + targetEnemyUnit);
+
+        unit.unitAnimator.StartMeleeAttack();
+
+        if (unit.rightHeldItem != null)
+            unit.rightHeldItem.DoDefaultAttack();
         
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -42,14 +52,12 @@ public class MeleeAction : BaseAction
     protected override void StartAction(Action onActionComplete)
     {
         base.StartAction(onActionComplete);
-
         isAttacking = true;
     }
 
     public override void CompleteAction()
     {
         base.CompleteAction();
-
         isAttacking = false;
     }
 
@@ -85,12 +93,14 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidAction()
     {
-        return true;
+        if (unit.MeleeWeaponEquipped() || canFightUnarmed)
+            return true;
+        return false;
     }
 
     public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
 
-    public bool isAttacking { get; private set; }
+    public bool CanFightUnarmed() => canFightUnarmed;
 
     public override bool ActionIsUsedInstantly() => false;
 

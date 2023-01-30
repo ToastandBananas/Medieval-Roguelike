@@ -11,6 +11,9 @@ public class Stats : MonoBehaviour
     [Header("Attributes")]
     [SerializeField] IntStat speed;
 
+    [Header("Other")]
+    [SerializeField] FloatStat rangedAccuracy;
+
     Unit unit;
 
     void Awake()
@@ -78,4 +81,6 @@ public class Stats : MonoBehaviour
     }
 
     public int Speed() => speed.GetValue();
+
+    public float RangedAccuracy() => rangedAccuracy.GetValue();
 }

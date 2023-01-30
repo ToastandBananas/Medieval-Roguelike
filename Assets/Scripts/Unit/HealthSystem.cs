@@ -15,7 +15,7 @@ public class HealthSystem : MonoBehaviour
             currentHealth = maxHealth;
     }
 
-    public void Damage(int damageAmount)
+    public void TakeDamage(int damageAmount)
     {
         currentHealth -= damageAmount;
 

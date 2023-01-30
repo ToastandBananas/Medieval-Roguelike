@@ -9,7 +9,7 @@ public enum ProjectileType
 };
 
 [CreateAssetMenu(fileName = "New Projectile", menuName = "ScriptableObjects/Held Item/Projectile")]
-public class Projectile_SO : ScriptableObject
+public class Projectile_Item : Item
 {
     [SerializeField] Mesh mesh;
     [SerializeField] Material material;
@@ -49,4 +49,28 @@ public class Projectile_SO : ScriptableObject
     public Vector3 ProjectilePositionOffset() => projectilePositionOffset;
     public Vector3 ProjectileRotation() => projectileRotation;
     public Vector3 ProjectileScale() => projectileScale;
+
+    public override bool IsEquipment() => false;
+
+    public override bool IsWeapon() => false;
+
+    public override bool IsMeleeWeapon() => false;
+
+    public override bool IsRangedWeapon() => false;
+
+    public override bool IsWearable() => false;
+
+    public override bool IsShield() => false;
+
+    public override bool IsBag() => false;
+
+    public override bool IsPortableContainer() => false;
+
+    public override bool IsConsumable() => false;
+
+    public override bool IsMedicalSupply() => false;
+
+    public override bool IsKey() => false;
+
+    public override bool IsAmmunition() => true;
 }
