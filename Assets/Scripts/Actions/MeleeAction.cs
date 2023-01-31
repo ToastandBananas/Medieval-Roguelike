@@ -30,25 +30,41 @@ public class MeleeAction : BaseAction
 
     public void Attack()
     {
-        if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            // Do a dual wield attack
-            unit.unitAnimator.StartDualMeleeAttack();
-            unit.rightHeldItem.DoDefaultAttack();
-            StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
-        }
-        else if (unit.rightHeldItem != null)
-        {
-            unit.unitAnimator.StartMeleeAttack();
-            unit.rightHeldItem.DoDefaultAttack();
-        }
-        else if (unit.leftHeldItem != null)
-        {
-            unit.unitAnimator.StartMeleeAttack();
-            unit.leftHeldItem.DoDefaultAttack();
-        }
+            if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+            {
+                // Do a dual wield attack
+                unit.unitAnimator.StartDualMeleeAttack();
+                unit.rightHeldItem.DoDefaultAttack();
+                StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
+            }
+            else if (unit.rightHeldItem != null)
+            {
+                unit.unitAnimator.StartMeleeAttack();
+                unit.rightHeldItem.DoDefaultAttack();
+            }
+            else if (unit.leftHeldItem != null)
+            {
+                unit.unitAnimator.StartMeleeAttack();
+                unit.leftHeldItem.DoDefaultAttack();
+            }
 
-        StartCoroutine(WaitToFinishAction());
+            StartCoroutine(WaitToFinishAction());
+        }
+        else
+        {
+            if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+                targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
+            else if (unit.rightHeldItem != null)
+                targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage);
+            else if (unit.leftHeldItem != null)
+                targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
+
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+        }
     }
 
     IEnumerator WaitToFinishAction()

@@ -57,7 +57,7 @@ public class PlayerActionInput : MonoBehaviour
                     unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
 
                     if (GameControls.gamePlayActions.select.WasPressed && unit.unitActionHandler.GetAction<TurnAction>().targetDirection != unit.unitActionHandler.GetAction<TurnAction>().currentDirection)
-                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost(unit.unitActionHandler.GetAction<TurnAction>().GetTargetGridPosition()));
+                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.GetAction<TurnAction>().GetTargetGridPosition());
                 }
                 else if (GameControls.gamePlayActions.select.WasPressed)
                 {
@@ -65,7 +65,7 @@ public class PlayerActionInput : MonoBehaviour
                     if (mouseGridPosition != unit.gridPosition && LevelGrid.Instance.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                     {
                         unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
-                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), unit.unitActionHandler.GetAction<MoveAction>().GetActionPointsCost(mouseGridPosition));
+                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), mouseGridPosition);
                     }
                 }
             }

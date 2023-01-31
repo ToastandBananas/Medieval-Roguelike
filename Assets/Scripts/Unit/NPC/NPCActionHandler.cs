@@ -53,8 +53,12 @@ public class NPCActionHandler : UnitActionHandler
                 {
                     if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
                     {
-                        ClearActionQueue();
-                        QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        ClearActionQueue(); 
+                        
+                        if (unit.GetEquippedRangedWeapon().isLoaded)
+                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                        else
+                            QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
@@ -63,7 +67,7 @@ public class NPCActionHandler : UnitActionHandler
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                     {
                         ClearActionQueue();
-                        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
@@ -152,7 +156,7 @@ public class NPCActionHandler : UnitActionHandler
         SetTargetGridPosition(targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
 
         // If there's no space around the enemy unit, try to find another enemy to attack
-        if (targetGridPosition == unit.gridPosition || targetEnemyUnit.IsCompletelySurrounded())
+        if (targetEnemyUnit.IsCompletelySurrounded())
         {
             SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
             if (oldEnemy == newEnemy)
@@ -166,7 +170,7 @@ public class NPCActionHandler : UnitActionHandler
             }
         }
 
-        QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+        QueueAction(GetAction<MoveAction>(), targetGridPosition);
     }
 
     void FindBestTargetEnemy()
@@ -268,7 +272,7 @@ public class NPCActionHandler : UnitActionHandler
         if (targetGridPosition == unit.gridPosition)
             SetTargetGridPosition(LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.gridPosition, unit, fleeDistance, fleeDistance + 15));
 
-        QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+        QueueAction(GetAction<MoveAction>(), targetGridPosition);
     }
 
     public void StartFlee(Unit unitToFleeFrom)
@@ -304,7 +308,7 @@ public class NPCActionHandler : UnitActionHandler
         else if (GetAction<MoveAction>().isMoving == false)
         {
             SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
-            QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+            QueueAction(GetAction<MoveAction>(), targetGridPosition);
         }
     }
 
@@ -387,7 +391,7 @@ public class NPCActionHandler : UnitActionHandler
 
             // Queue the Move Action if the Unit isn't already moving
             if (GetAction<MoveAction>().isMoving == false)
-                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+                QueueAction(GetAction<MoveAction>(), targetGridPosition);
         }
         else // If no Patrol Points set
         {
@@ -461,7 +465,7 @@ public class NPCActionHandler : UnitActionHandler
 
             // Queue the Move Action if the Unit isn't already moving
             if (GetAction<MoveAction>().isMoving == false)
-                QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+                QueueAction(GetAction<MoveAction>(), targetGridPosition);
         }
         // If the NPC has arrived at their destination
         else if (Vector3.Distance(wanderGridPosition.WorldPosition(), transform.position) <= 0.1f)
@@ -480,7 +484,7 @@ public class NPCActionHandler : UnitActionHandler
                 SetTargetGridPosition(wanderGridPosition);
             }
 
-            QueueAction(GetAction<MoveAction>(), GetAction<MoveAction>().GetActionPointsCost(targetGridPosition));
+            QueueAction(GetAction<MoveAction>(), targetGridPosition);
         }
     }
 

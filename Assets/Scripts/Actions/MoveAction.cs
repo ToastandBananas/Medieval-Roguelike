@@ -221,7 +221,7 @@ public class MoveAction : BaseAction
             }
             // If the Player hasn't reached their destination, add the next move to the queue
             else if (unit.gridPosition != finalTargetGridPosition)
-                unit.unitActionHandler.QueueAction(this, GetActionPointsCost(finalTargetGridPosition));
+                unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
         }
         else
         {

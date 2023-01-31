@@ -192,7 +192,7 @@ public class Unit : MonoBehaviour
 
     public bool IsPlayer() => gameObject.CompareTag("Player");
 
-    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible;
+    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && UnitManager.Instance.player.vision.visibleUnits.Contains(this);
 
     public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
 

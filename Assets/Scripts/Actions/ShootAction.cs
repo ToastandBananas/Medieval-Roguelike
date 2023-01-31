@@ -18,7 +18,7 @@ public class ShootAction : BaseAction
         {
             CompleteAction();
             unit.unitActionHandler.FinishAction();
-            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>(), unit.unitActionHandler.GetAction<ReloadAction>().GetActionPointsCost(unit.gridPosition));
+            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>(), unit.gridPosition);
             return;
         }
         else if (IsInAttackRange(targetEnemyUnit))
@@ -34,9 +34,28 @@ public class ShootAction : BaseAction
 
     void Shoot()
     {
-        StartCoroutine(RotateTowardsTarget());
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        {
+            StartCoroutine(RotateTowardsTarget());
+            unit.leftHeldItem.DoDefaultAttack();
+            StartCoroutine(WaitToFinishAction());
+        }
+        else
+        {
+            targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
 
-        unit.leftHeldItem.DoDefaultAttack();
+            CompleteAction();
+            unit.unitActionHandler.FinishAction();
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+        }
+    }
+
+    IEnumerator WaitToFinishAction()
+    {
+        if (unit.leftHeldItem != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
+        else
+            yield return new WaitForSeconds(0.5f);
 
         CompleteAction();
         unit.unitActionHandler.FinishAction();
@@ -44,17 +63,16 @@ public class ShootAction : BaseAction
 
     IEnumerator RotateTowardsTarget()
     {
-        float timer = 0;
-        float shootTime = 2f;
-        while (timer < shootTime)
+        while (isShooting)
         {
             float rotateSpeed = 10f;
             Vector3 lookPos = (new Vector3(targetEnemyUnit.WorldPosition().x, transform.position.y, targetEnemyUnit.WorldPosition().z) - unit.WorldPosition()).normalized;
             Quaternion rotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
-            timer += Time.deltaTime;
             yield return null;
         }
+
+        unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, unit.transform.position, false);
     }
 
     public bool IsInAttackRange(Unit enemyUnit)
@@ -84,8 +102,8 @@ public class ShootAction : BaseAction
 
     public override int GetActionPointsCost(GridPosition targetGridPosition)
     {
-        //if (RangedWeaponIsLoaded() == false)
-            //return 0;
+        if (RangedWeaponIsLoaded() == false)
+            return 10;
         return 300;
     }
 

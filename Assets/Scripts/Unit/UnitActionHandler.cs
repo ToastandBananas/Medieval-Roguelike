@@ -37,14 +37,18 @@ public class UnitActionHandler : MonoBehaviour
                 TurnManager.Instance.FinishTurn(unit);
                 return;
             }
-            else if (queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+            else if (queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
             {
                 if (unit.RangedWeaponEquipped())
                 {
                     if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
                     {
-                        ClearActionQueue();
-                        QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        ClearActionQueue(); 
+                        
+                        if (unit.GetEquippedRangedWeapon().isLoaded)
+                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                        else
+                            QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
@@ -53,7 +57,7 @@ public class UnitActionHandler : MonoBehaviour
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                     {
                         ClearActionQueue();
-                        QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
@@ -67,11 +71,11 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     #region Action Queue
-    public void QueueAction(BaseAction action, int APCost)
+    public void QueueAction(BaseAction action, GridPosition targetGridPosition)
     {
         // if (isNPC) Debug.Log(name + " queued " + action);
         queuedAction = action;
-        queuedAP = APCost;
+        queuedAP = action.GetActionPointsCost(targetGridPosition);
 
         if (unit.isMyTurn)
         {
@@ -153,14 +157,19 @@ public class UnitActionHandler : MonoBehaviour
         if (GetAction<TurnAction>().IsFacingTarget(targetEnemyUnit.gridPosition))
         {
             if (unit.RangedWeaponEquipped())
-                QueueAction(GetAction<ShootAction>(), GetAction<ShootAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+            {
+                if (unit.GetEquippedRangedWeapon().isLoaded)
+                    QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                else
+                    QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
+            }
             else
-                QueueAction(GetAction<MeleeAction>(), GetAction<MeleeAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+                QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
         }
         else
         {
             GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
-            QueueAction(GetAction<TurnAction>(), GetAction<TurnAction>().GetActionPointsCost(targetEnemyUnit.gridPosition));
+            QueueAction(GetAction<TurnAction>(), targetEnemyUnit.gridPosition);
         }
     }
     #endregion

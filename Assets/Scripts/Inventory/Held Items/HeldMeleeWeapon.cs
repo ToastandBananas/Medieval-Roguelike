@@ -23,7 +23,7 @@ public class HeldMeleeWeapon : HeldItem
                 unit.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
         }
 
-        StartCoroutine(RotateTowardsTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition));
+        StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition));
     }
 
     void DamageTargetUnit()
@@ -45,7 +45,7 @@ public class HeldMeleeWeapon : HeldItem
         transform.parent.localRotation = idleRotation;
     }
 
-    IEnumerator RotateTowardsTarget(GridPosition targetGridPosition)
+    IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
     {
         Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);

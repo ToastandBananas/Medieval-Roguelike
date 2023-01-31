@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
 
@@ -25,27 +26,32 @@ public class TurnAction : BaseAction
 
         StartAction(onActionComplete);
 
-        StartCoroutine(RotateTowardsPosition(targetPosition));
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+            StartCoroutine(RotateTowardsPosition(targetPosition, false));
+        else
+            StartCoroutine(RotateTowardsPosition(targetPosition, true));
     }
 
-    IEnumerator RotateTowardsPosition(Vector3 targetPosition)
+    IEnumerator RotateTowardsPosition(Vector3 targetPosition, bool rotateInstantly)
     {
         Vector3 forward = transform.forward;
         forward.y = 0;
         float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
-        float rotateSpeed = 10f;
         Vector3 lookPos = (new Vector3(targetPosition.x, transform.position.y, targetPosition.z) - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
 
-        while (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f)
+        if (rotateInstantly == false)
         {
-            forward = transform.forward;
-            forward.y = 0;
-            headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+            while (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f)
+            {
+                forward = transform.forward;
+                forward.y = 0;
+                headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
-            yield return null;
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+                yield return null;
+            }
         }
 
         transform.rotation = targetRotation;

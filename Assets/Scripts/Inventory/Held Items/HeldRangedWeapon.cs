@@ -28,7 +28,8 @@ public class HeldRangedWeapon : HeldItem
     public void ShootProjectile()
     {
         // Something here is Null sometimes. Fix me!
-        Debug.Log("Projectile: " + loadedProjectile.name + " | Target Enemy: " + unit.unitActionHandler.targetEnemyUnit.name);
+        Debug.Log("Projectile: " + loadedProjectile.name);
+        Debug.Log("Target Enemy: " + unit.unitActionHandler.targetEnemyUnit.name);
         StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit));
         loadedProjectile = null;
     }
