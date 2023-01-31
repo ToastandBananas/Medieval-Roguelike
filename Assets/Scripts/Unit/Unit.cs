@@ -180,6 +180,8 @@ public class Unit : MonoBehaviour
 
     public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.itemData.item.IsRangedWeapon();
 
+    public bool IsUnarmed() => leftHeldItem == null && rightHeldItem == null;
+
     public HeldRangedWeapon GetEquippedRangedWeapon() => leftHeldItem as HeldRangedWeapon;
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();

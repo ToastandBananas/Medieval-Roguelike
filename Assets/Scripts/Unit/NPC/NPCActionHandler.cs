@@ -184,7 +184,7 @@ public class NPCActionHandler : UnitActionHandler
                 enemyAIActions.Add(meleeAction.GetEnemyAIAction(unit.vision.visibleEnemies[i].gridPosition));
             }
 
-            SetNewTargetEnemy(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+            SetTargetEnemyUnit(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
         }
         else
         {
@@ -219,16 +219,10 @@ public class NPCActionHandler : UnitActionHandler
                 closestEnemyDist = distToEnemy;
             }
         }
-        Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
-        newEnemy = closestEnemy;
-        SetNewTargetEnemy(closestEnemy);
-    }
 
-    public void SetNewTargetEnemy(Unit target)
-    {
-        targetEnemyUnit = target;
-        GetAction<MeleeAction>().SetTargetEnemyUnit(target);
-        GetAction<ShootAction>().SetTargetEnemyUnit(target);
+        //Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
+        newEnemy = closestEnemy;
+        SetTargetEnemyUnit(closestEnemy);
     }
     #endregion
 

@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class MeleeAction : BaseAction
 {
-    public Unit targetEnemyUnit { get; private set; }
-
     public bool isAttacking { get; private set; }
 
+    [SerializeField] int baseUnarmedDamage = 5;
     [SerializeField] bool canFightUnarmed;
+    public readonly float unarmedAttackRange = 1.4f;
+
+    bool nextAttackFree;
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
@@ -16,8 +18,19 @@ public class MeleeAction : BaseAction
 
         StartAction(onActionComplete);
 
-        if (IsInAttackRange(targetEnemyUnit))
-            Attack();
+        if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
+        {
+            if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition))
+                Attack();
+            else
+            {
+                nextAttackFree = true;
+                CompleteAction();
+                unit.unitActionHandler.FinishAction(); 
+                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
+                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
+            }
+        }
         else
         {
             CompleteAction();
@@ -32,7 +45,12 @@ public class MeleeAction : BaseAction
     {
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+            if (unit.leftHeldItem == null && unit.rightHeldItem == null && canFightUnarmed)
+            {
+                unit.unitAnimator.StartMeleeAttack();
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(baseUnarmedDamage);
+            }
+            else if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
             {
                 // Do a dual wield attack
                 unit.unitAnimator.StartDualMeleeAttack();
@@ -55,11 +73,11 @@ public class MeleeAction : BaseAction
         else
         {
             if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
-                targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
             else if (unit.rightHeldItem != null)
-                targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage);
             else if (unit.leftHeldItem != null)
-                targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
 
             CompleteAction();
             unit.unitActionHandler.FinishAction();
@@ -71,6 +89,8 @@ public class MeleeAction : BaseAction
     {
         if (unit.rightHeldItem != null)
             yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
+        else if (unit.leftHeldItem != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon) / 2f);
         else
             yield return new WaitForSeconds(0.5f);
 
@@ -82,8 +102,16 @@ public class MeleeAction : BaseAction
     public bool IsInAttackRange(Unit enemyUnit)
     {
         float attackRange = 1.4f;
-        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= attackRange)
-            return true;
+        if (unit.IsUnarmed())
+        {
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= unarmedAttackRange)
+                return true;
+        }
+        else
+        {
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= attackRange)
+                return true;
+        }
         return false;
     }
 
@@ -126,6 +154,11 @@ public class MeleeAction : BaseAction
 
     public override int GetActionPointsCost(GridPosition targetGridPosition)
     {
+        if (nextAttackFree)
+        {
+            nextAttackFree = false;
+            return 0;
+        }
         return 300;
     }
 
@@ -135,8 +168,6 @@ public class MeleeAction : BaseAction
             return true;
         return false;
     }
-
-    public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
 
     public bool CanFightUnarmed() => canFightUnarmed;
 

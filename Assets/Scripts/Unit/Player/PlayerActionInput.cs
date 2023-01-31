@@ -28,7 +28,7 @@ public class PlayerActionInput : MonoBehaviour
 
             if (unit.unitActionHandler.queuedAction != null || unit.unitActionHandler.GetAction<MoveAction>().isMoving)
             {
-                if (GameControls.gamePlayActions.skipTurn.WasPressed)
+                if (GameControls.gamePlayActions.cancelAction.WasPressed)
                 {
                     // Debug.Log("Cancelling Action");
                     unit.unitActionHandler.CancelAction();
@@ -64,6 +64,27 @@ public class PlayerActionInput : MonoBehaviour
                     GridPosition mouseGridPosition = GetMouseGridPosition();
                     if (mouseGridPosition != unit.gridPosition && LevelGrid.Instance.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                     {
+                        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(mouseGridPosition))
+                        {
+                            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+                            if (unit.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                            {
+                                unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                                if (((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.IsUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
+                                    || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)))
+                                {
+                                    unit.unitActionHandler.AttackTargetEnemy();
+                                }
+                            }
+                            else
+                            {
+                                unit.unitActionHandler.SetTargetEnemyUnit(null);
+                                return;
+                            }
+                        }
+                        else
+                            unit.unitActionHandler.SetTargetEnemyUnit(null);
+
                         unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
                         unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), mouseGridPosition);
                     }

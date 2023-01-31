@@ -33,10 +33,7 @@ public class HealthSystem : MonoBehaviour
         OnDead?.Invoke(this, EventArgs.Empty);
     }
 
-    public float CurrentHealthNormalized()
-    {
-        return (float)currentHealth / maxHealth;
-    }
+    public float CurrentHealthNormalized() => (float)currentHealth / maxHealth;
 
     public int MaxHealth() => maxHealth;
 

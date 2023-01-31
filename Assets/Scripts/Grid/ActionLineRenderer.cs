@@ -29,13 +29,37 @@ public class ActionLineRenderer : MonoBehaviour
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
+        GridPosition targetGridPosition;
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
+
         if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || UnitManager.Instance.player.gridPosition != currentPlayerPosition))
         {
             currentMouseGridPosition = mouseGridPosition;
             currentPlayerPosition = UnitManager.Instance.player.gridPosition;
+            Unit unitAtMousePosition = null;
 
-            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(UnitManager.Instance.player.gridPosition), LevelGrid.Instance.GetWorldPosition(mouseGridPosition));
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(mouseGridPosition))
+            {
+                unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+                if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
+                {
+                    if ((UnitManager.Instance.player.MeleeWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
+                        || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
+                    {
+                        HideLineRenderers();
+                        yield break;
+                    }
+
+                    unitAtMousePosition.UnblockCurrentPosition();
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition);
+                }
+                else
+                    targetGridPosition = mouseGridPosition;
+            }
+            else
+                targetGridPosition = mouseGridPosition;
+
+            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(UnitManager.Instance.player.gridPosition), LevelGrid.Instance.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
@@ -45,6 +69,9 @@ public class ActionLineRenderer : MonoBehaviour
             yield return StartCoroutine(path.WaitForPath());
 
             ResetLineRenderers();
+
+            if (unitAtMousePosition != null)
+                unitAtMousePosition.BlockCurrentPosition();
 
             if (path.error || path == null)
                 yield break;

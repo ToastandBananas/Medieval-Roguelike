@@ -48,9 +48,10 @@ public class TurnManager : MonoBehaviour
         units_HaventFinishedTurn.Remove(unit);
 
         if (unit.IsPlayer())
+        {
+            // Debug.Log("Player finished their turn");
             GridSystemVisual.Instance.HideAllGridPositions();
-
-        //Debug.Log(unit + " finished their turn.");
+        }
 
         StartCoroutine(StartNextUnitsTurn(unit));
     }

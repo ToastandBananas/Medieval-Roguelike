@@ -339,6 +339,23 @@ public class LevelGrid : MonoBehaviour
         return surroundingGridPositions;
     }
 
+    public GridPosition GetNearestSurroundingGridPosition(GridPosition startingGridPosition)
+    {
+        List<GridPosition> surroundingGridPositions = GetSurroundingGridPositions(startingGridPosition);
+        GridPosition nearestGridPosition = startingGridPosition;
+        float nearestDist = 1000000;
+        for (int i = 0; i < surroundingGridPositions.Count; i++)
+        {
+            float dist = Vector3.Distance(startingGridPosition.WorldPosition(), surroundingGridPositions[i].WorldPosition());
+            if (dist < nearestDist)
+            {
+                nearestGridPosition = surroundingGridPositions[i];
+                nearestDist = dist;
+            }
+        }
+        return nearestGridPosition;
+    }
+
     public static bool IsDiagonal(GridPosition startGridPosition, GridPosition endGridPosition)
     {
         if (Mathf.RoundToInt(startGridPosition.x) != Mathf.RoundToInt(endGridPosition.x) && Mathf.RoundToInt(startGridPosition.z) != Mathf.RoundToInt(endGridPosition.z))

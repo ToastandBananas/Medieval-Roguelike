@@ -22,7 +22,7 @@ public class MoveAction : BaseAction
     float moveSpeed;
 
     readonly int defaultTileMoveCost = 200;
-    int lastMoveCost;
+    bool nextMoveFree;
 
     public override void Awake()
     {
@@ -63,7 +63,7 @@ public class MoveAction : BaseAction
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is the same as the their current position...");
 
-            unit.stats.AddToCurrentAP(lastMoveCost);
+            nextMoveFree = true;
             CompleteAction();
             unit.unitActionHandler.FinishAction();
 
@@ -84,7 +84,7 @@ public class MoveAction : BaseAction
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable or is the same as the their current position...");
 
-            unit.stats.AddToCurrentAP(lastMoveCost);
+            nextMoveFree = true;
             CompleteAction();
             unit.unitActionHandler.FinishAction();
 
@@ -219,6 +219,11 @@ public class MoveAction : BaseAction
                 unit.unitAnimator.StopMovingForward();
                 unit.unitActionHandler.AttackTargetEnemy();
             }
+            else if(unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
+            {
+                finalTargetGridPosition = unit.unitActionHandler.targetEnemyUnit.gridPosition;
+                unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
+            }
             // If the Player hasn't reached their destination, add the next move to the queue
             else if (unit.gridPosition != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
@@ -237,6 +242,18 @@ public class MoveAction : BaseAction
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
     {
+        Unit unitAtMousePosition = null;
+
+        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+        {
+            unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+            if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
+            {
+                unitAtMousePosition.UnblockCurrentPosition();
+                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition);
+            }
+        }
+
         SetFinalTargetGridPosition(targetGridPosition);
 
         unit.UnblockCurrentPosition();
@@ -276,6 +293,8 @@ public class MoveAction : BaseAction
         }
 
         unit.BlockCurrentPosition();
+        if (unitAtMousePosition != null)
+            unitAtMousePosition.BlockCurrentPosition();
     }
 
     void RotateTowardsTargetPosition(Vector3 targetPosition)
@@ -352,7 +371,12 @@ public class MoveAction : BaseAction
 
         // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
 
-        lastMoveCost = cost;
+        if (nextMoveFree)
+        {
+            nextMoveFree = false;
+            return 0;
+        }
+
         return cost;
     }
 

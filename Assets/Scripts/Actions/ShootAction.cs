@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class ShootAction : BaseAction
 {
-    Unit targetEnemyUnit;
-
     public bool isShooting { get; private set; }
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
@@ -21,7 +19,7 @@ public class ShootAction : BaseAction
             unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>(), unit.gridPosition);
             return;
         }
-        else if (IsInAttackRange(targetEnemyUnit))
+        else if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
             Shoot();
         else
         {
@@ -42,7 +40,7 @@ public class ShootAction : BaseAction
         }
         else
         {
-            targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
+            unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
 
             CompleteAction();
             unit.unitActionHandler.FinishAction();
@@ -66,7 +64,7 @@ public class ShootAction : BaseAction
         while (isShooting)
         {
             float rotateSpeed = 10f;
-            Vector3 lookPos = (new Vector3(targetEnemyUnit.WorldPosition().x, transform.position.y, targetEnemyUnit.WorldPosition().z) - unit.WorldPosition()).normalized;
+            Vector3 lookPos = (new Vector3(unit.unitActionHandler.targetEnemyUnit.WorldPosition().x, transform.position.y, unit.unitActionHandler.targetEnemyUnit.WorldPosition().z) - unit.WorldPosition()).normalized;
             Quaternion rotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
             yield return null;
@@ -119,6 +117,4 @@ public class ShootAction : BaseAction
             return true;
         return false;
     }
-
-    public void SetTargetEnemyUnit(Unit target) => targetEnemyUnit = target;
 }

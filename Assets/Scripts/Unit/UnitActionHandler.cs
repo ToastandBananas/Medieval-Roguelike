@@ -12,6 +12,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
+    public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
     [SerializeField] LayerMask shootObstacleMask;
 
@@ -37,7 +38,7 @@ public class UnitActionHandler : MonoBehaviour
                 TurnManager.Instance.FinishTurn(unit);
                 return;
             }
-            else if (queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
+            else if (targetEnemyUnit != null && queuedAction == null)
             {
                 if (unit.RangedWeaponEquipped())
                 {
@@ -140,6 +141,8 @@ public class UnitActionHandler : MonoBehaviour
         // If the Unit isn't moving, they might still be in a move animation, so cancel that
         if (moveAction.isMoving == false)
             unit.unitAnimator.StopMovingForward();
+
+        unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
     public void ClearActionQueue()
@@ -182,6 +185,15 @@ public class UnitActionHandler : MonoBehaviour
                 return (T)baseAction;
         }
         return null;
+    }
+
+    public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
+
+    public void SetTargetEnemyUnit(Unit target)
+    {
+        targetEnemyUnit = target;
+        if (target != null)
+            previousTargetEnemyGridPosition = target.gridPosition;
     }
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;

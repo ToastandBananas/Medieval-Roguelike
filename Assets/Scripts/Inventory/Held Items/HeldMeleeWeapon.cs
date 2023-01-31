@@ -29,7 +29,7 @@ public class HeldMeleeWeapon : HeldItem
     void DamageTargetUnit()
     {
         // TODO: Determine damage from weapon data and attacking Unit's stats/perks
-        unit.unitActionHandler.GetAction<MeleeAction>().targetEnemyUnit.healthSystem.TakeDamage(itemData.damage);
+        unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(itemData.damage);
     }
 
     IEnumerator ResetToIdleRotation()
