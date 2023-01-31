@@ -43,15 +43,15 @@ public class ActionLineRenderer : MonoBehaviour
                 unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                 if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
                 {
-                    if ((UnitManager.Instance.player.MeleeWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
+                    if (((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
                         || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
                     {
                         HideLineRenderers();
                         yield break;
                     }
 
-                    unitAtMousePosition.UnblockCurrentPosition();
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition);
+                    //unitAtMousePosition.UnblockCurrentPosition();
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition, UnitManager.Instance.player.gridPosition);
                 }
                 else
                     targetGridPosition = mouseGridPosition;
@@ -70,8 +70,8 @@ public class ActionLineRenderer : MonoBehaviour
 
             ResetLineRenderers();
 
-            if (unitAtMousePosition != null)
-                unitAtMousePosition.BlockCurrentPosition();
+            //if (unitAtMousePosition != null)
+                //unitAtMousePosition.BlockCurrentPosition();
 
             if (path.error || path == null)
                 yield break;

@@ -33,7 +33,7 @@ public abstract class TacticsPathfindingUtilities
 
         float yDistance = Mathf.Abs(gridPositionDistance.y);
 
-        Debug.Log("Distance: " + (((MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance)) + (MOVE_STRAIGHT_COST * remaining)) + yDistance) / 10f);
+        // Debug.Log("Distance: " + (((MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance)) + (MOVE_STRAIGHT_COST * remaining)) + yDistance) / 10f);
         return ((MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance)) + (MOVE_STRAIGHT_COST * remaining) + yDistance) / 10f;
     }
 

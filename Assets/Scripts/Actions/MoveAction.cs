@@ -247,8 +247,7 @@ public class MoveAction : BaseAction
             if (UnitManager.Instance.player.alliance.IsEnemy(unitAtTargetGridPosition.alliance.CurrentFaction()))
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
-                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition);
-                if (unit.IsPlayer()) Debug.Log(targetGridPosition);
+                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition);
             }
         }
 
@@ -262,8 +261,7 @@ public class MoveAction : BaseAction
         // Schedule the path for calculation
         seeker.StartPath(path);
 
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
+        // Force the path request to complete immediately. This assumes the graph is small enough that this will not cause any lag
         path.BlockUntilCalculated();
 
         if (unit.IsNPC() && path.vectorPath.Count == 0)

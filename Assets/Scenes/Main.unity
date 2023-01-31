@@ -3148,7 +3148,7 @@ PrefabInstance:
     - target: {fileID: 456705060588477147, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: rangedAccuracy.baseValue
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 802832279952287149, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}

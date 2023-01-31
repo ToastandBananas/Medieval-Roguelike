@@ -339,14 +339,17 @@ public class LevelGrid : MonoBehaviour
         return surroundingGridPositions;
     }
 
-    public GridPosition GetNearestSurroundingGridPosition(GridPosition startingGridPosition)
+    public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition)
     {
-        List<GridPosition> surroundingGridPositions = GetSurroundingGridPositions(startingGridPosition);
-        GridPosition nearestGridPosition = startingGridPosition;
+        List<GridPosition> surroundingGridPositions = GetSurroundingGridPositions(targetGridPosition);
+        GridPosition nearestGridPosition = targetGridPosition;
         float nearestDist = 1000000;
         for (int i = 0; i < surroundingGridPositions.Count; i++)
         {
-            float dist = Vector3.Distance(startingGridPosition.WorldPosition(), surroundingGridPositions[i].WorldPosition());
+            if (GridPositionObstructed(surroundingGridPositions[i]))
+                continue;
+
+            float dist = Vector3.Distance(unitGridPosition.WorldPosition(), surroundingGridPositions[i].WorldPosition());
             if (dist < nearestDist)
             {
                 nearestGridPosition = surroundingGridPositions[i];

@@ -26,7 +26,6 @@ public class GameControls : MonoBehaviour
         gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Cirle(PS4) / B(Xbox)
 
         gamePlayActions.cancelAction.AddDefaultBinding(Key.Space);
-        gamePlayActions.cancelAction.AddDefaultBinding(Mouse.RightButton);
         gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Cirle(PS4) / B(Xbox)
 
         // Mouse Buttons

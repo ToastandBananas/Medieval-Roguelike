@@ -74,6 +74,7 @@ public class PlayerActionInput : MonoBehaviour
                                     || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)))
                                 {
                                     unit.unitActionHandler.AttackTargetEnemy();
+                                    return;
                                 }
                             }
                             else

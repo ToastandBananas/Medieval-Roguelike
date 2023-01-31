@@ -165,12 +165,12 @@ public class Projectile : MonoBehaviour
             if (randomZ == 0)
                 offsetZ *= -1f;
 
-            return new Vector3(offsetX, 0f, offsetZ);
+            return new Vector3(offsetX, -1f, offsetZ);
         }
         else // If the shooter is hitting the target, create a slight offset so they don't hit the same exact spot every time
         {
-            offsetX = UnityEngine.Random.Range(-0.12f, 0.12f);
-            offsetZ = UnityEngine.Random.Range(-0.12f, 0.12f);
+            offsetX = UnityEngine.Random.Range(-0.1f, 0.1f);
+            offsetZ = UnityEngine.Random.Range(-0.1f, 0.1f);
 
             return new Vector3(offsetX, 0f, offsetZ);
         }
@@ -179,9 +179,9 @@ public class Projectile : MonoBehaviour
     void RotateTowardsNextPosition(Vector3 nextPosition)
     {
         float rotateSpeed = 100f;
-        Vector3 lookPos = (nextPosition - transform.position).normalized;
+        Vector3 lookPos = (nextPosition - transform.localPosition).normalized;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, rotation, rotateSpeed * Time.deltaTime);
     }
 
     void Arrived(Transform collisionTransform)
@@ -196,7 +196,7 @@ public class Projectile : MonoBehaviour
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
-            transform.parent = collisionTransform;
+            transform.SetParent(collisionTransform, true);
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
         }
@@ -292,7 +292,6 @@ public class Projectile : MonoBehaviour
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
-                    Arrived(collider.transform);
                 }
             }
             else if (collider.CompareTag("Unit Head"))
@@ -302,11 +301,10 @@ public class Projectile : MonoBehaviour
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
-                    Arrived(collider.transform);
                 }
             }
-            else
-                Arrived(collider.transform);
+            
+            Arrived(collider.transform);
         }
     }
 }
