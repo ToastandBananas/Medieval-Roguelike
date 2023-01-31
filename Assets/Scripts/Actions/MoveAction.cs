@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class MoveAction : BaseAction
 {
+    public event EventHandler OnStartMoving;
+    public event EventHandler OnStopMoving;
+
     public Seeker seeker { get; private set; }
     public GridPosition finalTargetGridPosition { get; private set; }
     public GridPosition nextTargetGridPosition { get; private set; }
@@ -47,13 +50,8 @@ public class MoveAction : BaseAction
     {
         if (positionList.Count == 0)
         {
-            Debug.Log(unit.name + "'s position List length is 0");
-
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
-
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
-
             yield break;
         }
 
@@ -62,13 +60,9 @@ public class MoveAction : BaseAction
         if (finalTargetGridPosition == unit.gridPosition)
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is the same as the their current position...");
-
             nextMoveFree = true;
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
-
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
-
             yield break;
         }
 
@@ -76,6 +70,13 @@ public class MoveAction : BaseAction
         {
             // Get a new path to the target position because the previous path is obstructed
             GetPathToTargetPosition(finalTargetGridPosition);
+            if (positionList.Count == 0) // If we still can't find a path, just finish the action
+            {
+                CompleteAction();
+                StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+                yield break;
+            }
+
             nextTargetPosition = GetNextTargetPosition();
             nextTargetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition);
         }
@@ -83,13 +84,9 @@ public class MoveAction : BaseAction
         if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(nextTargetPosition)))
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable or is the same as the their current position...");
-
             nextMoveFree = true;
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
-
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
-
             yield break;
         }
 
@@ -206,7 +203,7 @@ public class MoveAction : BaseAction
         //    Debug.LogWarning("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
 
         CompleteAction();
-        unit.unitActionHandler.FinishAction();
+        OnStopMoving?.Invoke(this, EventArgs.Empty);
 
         if (unit.IsPlayer())
         {
@@ -242,15 +239,16 @@ public class MoveAction : BaseAction
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
     {
-        Unit unitAtMousePosition = null;
+        Unit unitAtTargetGridPosition = null;
 
         if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
-            unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-            if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
+            unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+            if (UnitManager.Instance.player.alliance.IsEnemy(unitAtTargetGridPosition.alliance.CurrentFaction()))
             {
-                unitAtMousePosition.UnblockCurrentPosition();
+                unitAtTargetGridPosition.UnblockCurrentPosition();
                 targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition);
+                if (unit.IsPlayer()) Debug.Log(targetGridPosition);
             }
         }
 
@@ -293,8 +291,8 @@ public class MoveAction : BaseAction
         }
 
         unit.BlockCurrentPosition();
-        if (unitAtMousePosition != null)
-            unitAtMousePosition.BlockCurrentPosition();
+        if (unitAtTargetGridPosition != null)
+            unitAtTargetGridPosition.BlockCurrentPosition();
     }
 
     void RotateTowardsTargetPosition(Vector3 targetPosition)
@@ -364,12 +362,9 @@ public class MoveAction : BaseAction
 
             unit.stats.AddToCurrentAP(cost);
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
         }
 
         unit.BlockCurrentPosition();
-
-        // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
 
         if (nextMoveFree)
         {
@@ -377,6 +372,7 @@ public class MoveAction : BaseAction
             return 0;
         }
 
+        // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
         return cost;
     }
 
@@ -480,6 +476,7 @@ public class MoveAction : BaseAction
         unit.UpdateGridPosition();
 
         isMoving = false;
+        unit.unitActionHandler.FinishAction();
     }
 
     public override bool ActionIsUsedInstantly() => false;

@@ -672,8 +672,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
-  visibleUnits: []
-  visibleEnemies: []
 --- !u!1 &8220662913183796567
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,7 +942,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7f9f785eba16144286a42972fd12bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canFightUnarmed: 0
+  canFightUnarmed: 1
+  baseUnarmedDamage: 5
+  unarmedAttackRange: 1.4
 --- !u!114 &8022252570378685524
 MonoBehaviour:
   m_ObjectHideFlags: 0

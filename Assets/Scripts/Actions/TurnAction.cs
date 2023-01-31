@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
 
@@ -60,7 +59,6 @@ public class TurnAction : BaseAction
         unit.vision.FindVisibleUnits();
 
         CompleteAction();
-        unit.unitActionHandler.FinishAction();
         unit.unitActionHandler.TakeTurn();
     }
 
@@ -414,9 +412,15 @@ public class TurnAction : BaseAction
         return gridPositionBehindUnit;
     }
 
+    public override void CompleteAction()
+    {
+        base.CompleteAction();
+        unit.unitActionHandler.FinishAction();
+    }
+
     public bool IsFacingTarget(GridPosition targetGridPosition) => DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
-    public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition); 
+    public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition);
 
     public override string GetActionName() => "Turn";
 

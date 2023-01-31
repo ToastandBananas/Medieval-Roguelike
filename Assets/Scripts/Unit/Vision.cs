@@ -3,7 +3,6 @@
 /// </summary>
 
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Vision : MonoBehaviour
@@ -17,16 +16,18 @@ public class Vision : MonoBehaviour
     public LayerMask unitsMask;
     public LayerMask obstacleMask;
 
-    public List<Unit> visibleUnits = new List<Unit>();
+    public List<Unit> visibleUnits { get; private set; }
     List<int> loseSightTimes = new List<int>();
-    public List<Unit> visibleEnemies = new List<Unit>();
+    public List<Unit> visibleEnemies { get; private set; }
 
     Unit unit;
-    readonly int loseSightOfEnemyCount = 120; // In turns (seconds)
+    readonly int loseSightTime = 120; // The amount of turns it takes to lose sight of a Unit
     Vector3 yOffset = new Vector3(0, 0.15f, 0);
 
     void Awake()
     {
+        visibleUnits = new List<Unit>();
+        visibleEnemies = new List<Unit>();
         unit = parentTransform.GetComponent<Unit>();
     }
 
@@ -55,28 +56,7 @@ public class Vision : MonoBehaviour
 
                     // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
                     if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
-                    {
-                        // Debug.Log("Adding " + targetTransform.name + " to the dictionary.");
-                        visibleUnits.Add(targetUnit);
-
-                        if (unit.alliance.IsEnemy(targetUnit.alliance.CurrentFaction()))
-                            visibleEnemies.Add(targetUnit);
-
-                        // We don't want Units to see themselves
-                        if (visibleUnits.Contains(unit))
-                        {
-                            Debug.LogWarning(unit.name + " can see themselves. Fix their Vision Transform.");
-                            visibleUnits.Remove(unit);
-                            continue;
-                        }
-
-                        // Add a corresponding lose sight time for this newly visible Unit
-                        loseSightTimes.Add(loseSightOfEnemyCount);
-
-                        // If this is the Player's Vision, show the newly visible NPC Unit
-                        if (unit.IsPlayer())
-                            targetUnit.ShowMeshRenderers();
-                    }
+                        AddVisibleUnit(targetUnit);
                 }
             }
         }
@@ -114,10 +94,7 @@ public class Vision : MonoBehaviour
                 if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     if (loseSightTimes[i] > 1)
-                    {
-                        // Subtract from the visible Unit's corresponding lose sight time
-                        loseSightTimes[i]--;
-                    }
+                        loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
                     else // The Unit is no longer visible
                     {
                         unitsToRemove.Add(visibleUnits[i]);
@@ -127,19 +104,13 @@ public class Vision : MonoBehaviour
                             visibleUnits[i].HideMeshRenderers();
                     }
                 }
-                else
-                {
-                    // We can still see the Unit, so reset their lose sight time
-                    loseSightTimes[i] = loseSightOfEnemyCount;
-                }
+                else // We can still see the Unit, so reset their lose sight time
+                    loseSightTimes[i] = loseSightTime;
             }
             else // The target is outside of the view angle
             {
                 if (loseSightTimes[i] > 1)
-                {
-                    // Subtract from the visible Unit's corresponding lose sight time
-                    loseSightTimes[i]--;
-                }
+                    loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
                 else // The Unit is no longer visible
                 {
                     unitsToRemove.Add(visibleUnits[i]);
@@ -151,14 +122,41 @@ public class Vision : MonoBehaviour
             }
         }
 
+        // Remove Units from their corresponding lists if they were found to no longer be visible
         for (int i = 0; i < unitsToRemove.Count; i++)
         {
-            // Debug.Log("Removing " + unitsToRemove[i].name + " from the dictionary.");
             loseSightTimes.RemoveAt(visibleUnits.IndexOf(unitsToRemove[i]));
             visibleUnits.Remove(unitsToRemove[i]);
             if (visibleEnemies.Contains(unitsToRemove[i]))
                 visibleEnemies.Remove(unitsToRemove[i]);
         }
+    }
+
+    public void AddVisibleUnit(Unit unitToAdd)
+    {
+        if (visibleUnits.Contains(unitToAdd) == false)
+        {
+            visibleUnits.Add(unitToAdd);
+            if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
+                visibleEnemies.Add(unitToAdd);
+
+            // We don't want Units to see themselves
+            if (visibleUnits.Contains(unit))
+            {
+                Debug.LogWarning(unit.name + " can see themselves. Fix their Vision Transform.");
+                visibleUnits.Remove(unit);
+                return;
+            }
+
+            // Add a corresponding lose sight time for this newly visible Unit
+            loseSightTimes.Add(loseSightTime);
+
+            // If this is the Player's Vision, show the newly visible NPC Unit
+            if (unit.IsPlayer())
+                unitToAdd.ShowMeshRenderers();
+        }
+        else
+            loseSightTimes[visibleUnits.IndexOf(unitToAdd)] = loseSightTime;
     }
 
     public Unit GetClosestEnemy()

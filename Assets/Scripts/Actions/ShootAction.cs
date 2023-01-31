@@ -5,26 +5,46 @@ using UnityEngine;
 public class ShootAction : BaseAction
 {
     public bool isShooting { get; private set; }
+    bool nextAttackFree;
+
+    void Start()
+    {
+        unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
+    }
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
         if (isShooting) return;
+
+        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.isDead)
+        {
+            unit.unitActionHandler.FinishAction();
+            return;
+        }
 
         StartAction(onActionComplete);
 
         if (RangedWeaponIsLoaded() == false)
         {
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
             unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>(), unit.gridPosition);
             return;
         }
         else if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
-            Shoot();
+        {
+            if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition))
+                Shoot();
+            else
+            {
+                nextAttackFree = true;
+                CompleteAction();
+                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
+                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
+            }
+        }
         else
         {
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
             unit.unitActionHandler.TakeTurn();
             return;
         }
@@ -40,10 +60,10 @@ public class ShootAction : BaseAction
         }
         else
         {
+            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
             unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
 
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
         }
     }
@@ -51,12 +71,11 @@ public class ShootAction : BaseAction
     IEnumerator WaitToFinishAction()
     {
         if (unit.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 
         CompleteAction();
-        unit.unitActionHandler.FinishAction();
     }
 
     IEnumerator RotateTowardsTarget()
@@ -91,6 +110,7 @@ public class ShootAction : BaseAction
     {
         base.CompleteAction();
         isShooting = false;
+        unit.unitActionHandler.FinishAction();
     }
 
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
@@ -100,10 +120,15 @@ public class ShootAction : BaseAction
 
     public override int GetActionPointsCost(GridPosition targetGridPosition)
     {
-        if (RangedWeaponIsLoaded() == false)
-            return 10;
+        if (nextAttackFree || RangedWeaponIsLoaded() == false)
+        {
+            nextAttackFree = false;
+            return 0;
+        }
         return 300;
     }
+
+    void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;
 
     public bool RangedWeaponIsLoaded() => unit.GetEquippedRangedWeapon().isLoaded; 
 

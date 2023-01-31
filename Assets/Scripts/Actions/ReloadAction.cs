@@ -24,10 +24,7 @@ public class ReloadAction : BaseAction
         {
             stateTimer -= Time.deltaTime;
             if (stateTimer <= 0f)
-            {
                 CompleteAction();
-                unit.unitActionHandler.FinishAction();
-            }
 
             yield return null;
         }
@@ -45,12 +42,8 @@ public class ReloadAction : BaseAction
     void Reload()
     {
         // StartCoroutine(StartReloadTimer());
-
-        unit.GetEquippedRangedWeapon().LoadProjectile(); 
-        
+        unit.GetEquippedRangedWeapon().LoadProjectile();
         CompleteAction();
-        unit.unitActionHandler.FinishAction();
-
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
@@ -64,6 +57,7 @@ public class ReloadAction : BaseAction
     {
         base.CompleteAction();
         isReloading = false;
+        unit.unitActionHandler.FinishAction();
     }
 
     public override int GetActionPointsCost(GridPosition targetGridPosition)

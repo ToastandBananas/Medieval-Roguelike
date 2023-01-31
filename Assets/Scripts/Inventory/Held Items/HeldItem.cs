@@ -40,7 +40,7 @@ public abstract class HeldItem : MonoBehaviour
 
     public IEnumerator DelayDoDefaultAttack()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
         DoDefaultAttack();
     }
 }

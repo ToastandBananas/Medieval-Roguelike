@@ -195,7 +195,7 @@ public class Projectile : MonoBehaviour
         ProjectileType projectileType = projectileScriptableObject.ProjectilesType();
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
-            Debug.Log(collisionTransform.name + " hit by projectile");
+            // Debug.Log(collisionTransform.name + " hit by projectile");
             transform.parent = collisionTransform;
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
@@ -224,6 +224,7 @@ public class Projectile : MonoBehaviour
                     if (collider.TryGetComponent(out Unit targetUnit))
                     {
                         // TODO: Less damage the further away from explosion
+                        targetUnit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                         targetUnit.healthSystem.TakeDamage(30);
                     }
                 }
@@ -289,6 +290,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
+                    unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }
@@ -298,6 +300,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
+                    unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }

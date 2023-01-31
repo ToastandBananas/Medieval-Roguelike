@@ -5,6 +5,7 @@ public class AnimationTimes : MonoBehaviour
 {
     [SerializeField] RuntimeAnimatorController bowController;
     [SerializeField] RuntimeAnimatorController meleeWeaponController;
+    [SerializeField] RuntimeAnimatorController unitController;
 
     // Bow Clips
     AnimationClip[] bowClips;
@@ -13,6 +14,10 @@ public class AnimationTimes : MonoBehaviour
     // Melee Weapon Clips
     AnimationClip[] meleeWeaponClips;
     public float humanAttack_1H_Time { get; private set; }
+
+    // Unit Clips
+    AnimationClip[] unitClips;
+    public float dualWieldAttack_Time { get; private set; }
 
     #region Singleton
     public static AnimationTimes Instance;
@@ -37,7 +42,7 @@ public class AnimationTimes : MonoBehaviour
         StartCoroutine(UpdateAnimClipTimes());
     }
 
-    public float GetAttackAnimationTime(Weapon weapon)
+    public float GetWeaponAttackAnimationTime(Weapon weapon)
     {
         if (weapon.IsMeleeWeapon())
         {
@@ -58,6 +63,7 @@ public class AnimationTimes : MonoBehaviour
 
         bowClips = bowController.animationClips;
         meleeWeaponClips = meleeWeaponController.animationClips;
+        unitClips = unitController.animationClips;
 
         foreach (AnimationClip clip in bowClips)
         {
@@ -77,6 +83,18 @@ public class AnimationTimes : MonoBehaviour
             {
                 case "Attack_1H_R":
                     humanAttack_1H_Time = clip.length;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        foreach (AnimationClip clip in unitClips)
+        {
+            switch (clip.name)
+            {
+                case "DualMeleeAttack":
+                    dualWieldAttack_Time = clip.length;
                     break;
                 default:
                     break;

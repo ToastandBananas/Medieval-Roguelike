@@ -220,7 +220,7 @@ public class NPCActionHandler : UnitActionHandler
             }
         }
 
-        //Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
+        // Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
         newEnemy = closestEnemy;
         SetTargetEnemyUnit(closestEnemy);
     }

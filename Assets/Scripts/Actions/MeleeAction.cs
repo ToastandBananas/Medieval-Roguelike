@@ -4,17 +4,28 @@ using UnityEngine;
 
 public class MeleeAction : BaseAction
 {
-    public bool isAttacking { get; private set; }
-
-    [SerializeField] int baseUnarmedDamage = 5;
+    [Header("Unarmed Combat")]
     [SerializeField] bool canFightUnarmed;
-    public readonly float unarmedAttackRange = 1.4f;
+    [SerializeField] float unarmedAttackRange = 1.4f;
+    [SerializeField] int baseUnarmedDamage = 5;
 
+    public bool isAttacking { get; private set; }
     bool nextAttackFree;
+
+    void Start()
+    {
+        unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
+    }
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
         if (isAttacking) return;
+
+        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.isDead)
+        {
+            unit.unitActionHandler.FinishAction();
+            return;
+        }
 
         StartAction(onActionComplete);
 
@@ -26,15 +37,16 @@ public class MeleeAction : BaseAction
             {
                 nextAttackFree = true;
                 CompleteAction();
-                unit.unitActionHandler.FinishAction(); 
                 unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
+                Debug.Log(unit);
+                Debug.Log(unit.unitActionHandler);
+                Debug.Log(unit.unitActionHandler.targetEnemyUnit);
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
             }
         }
         else
         {
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
             unit.unitActionHandler.TakeTurn();
             return;
         }
@@ -48,21 +60,22 @@ public class MeleeAction : BaseAction
             if (unit.leftHeldItem == null && unit.rightHeldItem == null && canFightUnarmed)
             {
                 unit.unitAnimator.StartMeleeAttack();
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(baseUnarmedDamage);
+                unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(UnarmedDamage());
             }
-            else if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+            else if (unit.IsDualWielding())
             {
-                // Do a dual wield attack
+                // Dual wield attack
                 unit.unitAnimator.StartDualMeleeAttack();
                 unit.rightHeldItem.DoDefaultAttack();
                 StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
             }
-            else if (unit.rightHeldItem != null)
+            else if (unit.rightHeldItem != null) // Right hand weapon attack
             {
                 unit.unitAnimator.StartMeleeAttack();
                 unit.rightHeldItem.DoDefaultAttack();
             }
-            else if (unit.leftHeldItem != null)
+            else if (unit.leftHeldItem != null) // Left hand weapon attack
             {
                 unit.unitAnimator.StartMeleeAttack();
                 unit.leftHeldItem.DoDefaultAttack();
@@ -72,30 +85,32 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item.IsMeleeWeapon() && unit.rightHeldItem != null && unit.rightHeldItem.itemData.item.IsMeleeWeapon())
+            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+
+            if (unit.IsDualWielding()) // Dual wield attack
                 unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
             else if (unit.rightHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
             else if (unit.leftHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
 
             CompleteAction();
-            unit.unitActionHandler.FinishAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
         }
     }
 
     IEnumerator WaitToFinishAction()
     {
-        if (unit.rightHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
+        if (unit.IsDualWielding())
+            yield return new WaitForSeconds(AnimationTimes.Instance.dualWieldAttack_Time / 2f);
+        else if (unit.rightHeldItem != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
         else if (unit.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon) / 2f);
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon) / 2f);
         else
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.25f);
 
         CompleteAction();
-        unit.unitActionHandler.FinishAction();
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
@@ -115,6 +130,11 @@ public class MeleeAction : BaseAction
         return false;
     }
 
+    public int UnarmedDamage()
+    {
+        return baseUnarmedDamage;
+    }
+
     protected override void StartAction(Action onActionComplete)
     {
         base.StartAction(onActionComplete);
@@ -125,6 +145,7 @@ public class MeleeAction : BaseAction
     {
         base.CompleteAction();
         isAttacking = false;
+        unit.unitActionHandler.FinishAction();
     }
 
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
@@ -139,8 +160,8 @@ public class MeleeAction : BaseAction
             if (targetUnit != null)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += targetUnit.healthSystem.CurrentHealthNormalized() * 100f;
-                finalActionValue -= TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+                finalActionValue += 500 - (targetUnit.healthSystem.CurrentHealthNormalized() * 100f);
+                finalActionValue -= TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition) * 10f;
             }
         }
 
@@ -168,6 +189,8 @@ public class MeleeAction : BaseAction
             return true;
         return false;
     }
+
+    void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false; 
 
     public bool CanFightUnarmed() => canFightUnarmed;
 

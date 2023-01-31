@@ -176,6 +176,8 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public bool IsDualWielding() => leftHeldItem != null && rightHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon() && rightHeldItem.itemData.item.IsMeleeWeapon();
+
     public bool MeleeWeaponEquipped() => (leftHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon()) || (rightHeldItem != null && rightHeldItem.itemData.item.IsMeleeWeapon());
 
     public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.itemData.item.IsRangedWeapon();
