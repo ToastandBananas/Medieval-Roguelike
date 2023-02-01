@@ -17,16 +17,18 @@ public class Vision : MonoBehaviour
     public LayerMask obstacleMask;
 
     public List<Unit> visibleUnits { get; private set; }
-    List<int> loseSightTimes = new List<int>();
+    public List<Unit> visibleDeadUnits { get; private set; }
     public List<Unit> visibleEnemies { get; private set; }
+    List<int> loseSightTimes = new List<int>();
 
     Unit unit;
-    readonly int loseSightTime = 120; // The amount of turns it takes to lose sight of a Unit
+    readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
     Vector3 yOffset = new Vector3(0, 0.15f, 0);
 
     void Awake()
     {
         visibleUnits = new List<Unit>();
+        visibleDeadUnits = new List<Unit>();
         visibleEnemies = new List<Unit>();
         unit = parentTransform.GetComponent<Unit>();
     }
@@ -45,7 +47,7 @@ public class Vision : MonoBehaviour
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(targetTransform.position));
-            if (targetUnit != null && visibleUnits.Contains(targetUnit) == false)
+            if (targetUnit != null && targetUnit.health.IsDead() == false && visibleUnits.Contains(targetUnit) == false)
             {
                 Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 
@@ -82,6 +84,14 @@ public class Vision : MonoBehaviour
         // Check if Units that were in sight are now out of sight
         for (int i = 0; i < visibleUnits.Count; i++)
         {
+            // If the visible Unit is now dead, update the appropriate lists
+            if (visibleUnits[i].health.IsDead() && visibleDeadUnits.Contains(visibleUnits[i]) == false)
+            {
+                visibleDeadUnits.Add(visibleUnits[i]);
+                if (visibleEnemies.Contains(visibleUnits[i]))
+                    visibleEnemies.Remove(visibleUnits[i]);
+            }
+
             Transform targetTransform = visibleUnits[i].transform;
             Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 
@@ -95,14 +105,8 @@ public class Vision : MonoBehaviour
                 {
                     if (loseSightTimes[i] > 1)
                         loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
-                    else // The Unit is no longer visible
-                    {
-                        unitsToRemove.Add(visibleUnits[i]);
-
-                        // If they are no longer visible to the player, hide them
-                        if (unit.IsPlayer())
-                            visibleUnits[i].HideMeshRenderers();
-                    }
+                    else
+                        unitsToRemove.Add(visibleUnits[i]); // The Unit is no longer visible
                 }
                 else // We can still see the Unit, so reset their lose sight time
                     loseSightTimes[i] = loseSightTime;
@@ -111,24 +115,15 @@ public class Vision : MonoBehaviour
             {
                 if (loseSightTimes[i] > 1)
                     loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
-                else // The Unit is no longer visible
-                {
-                    unitsToRemove.Add(visibleUnits[i]);
-
-                    // If they are no longer visible to the player, hide them
-                    if (unit.IsPlayer())
-                        visibleUnits[i].HideMeshRenderers();
-                }
+                else
+                    unitsToRemove.Add(visibleUnits[i]); // The Unit is no longer visible
             }
         }
 
         // Remove Units from their corresponding lists if they were found to no longer be visible
         for (int i = 0; i < unitsToRemove.Count; i++)
         {
-            loseSightTimes.RemoveAt(visibleUnits.IndexOf(unitsToRemove[i]));
-            visibleUnits.Remove(unitsToRemove[i]);
-            if (visibleEnemies.Contains(unitsToRemove[i]))
-                visibleEnemies.Remove(unitsToRemove[i]);
+            RemoveVisibleUnit(unitsToRemove[i]);
         }
     }
 
@@ -137,8 +132,6 @@ public class Vision : MonoBehaviour
         if (visibleUnits.Contains(unitToAdd) == false)
         {
             visibleUnits.Add(unitToAdd);
-            if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
-                visibleEnemies.Add(unitToAdd);
 
             // We don't want Units to see themselves
             if (visibleUnits.Contains(unit))
@@ -147,6 +140,11 @@ public class Vision : MonoBehaviour
                 visibleUnits.Remove(unit);
                 return;
             }
+
+            if (unitToAdd.health.IsDead())
+                visibleDeadUnits.Add(unitToAdd);
+            else if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
+                visibleEnemies.Add(unitToAdd);
 
             // Add a corresponding lose sight time for this newly visible Unit
             loseSightTimes.Add(loseSightTime);
@@ -157,6 +155,22 @@ public class Vision : MonoBehaviour
         }
         else
             loseSightTimes[visibleUnits.IndexOf(unitToAdd)] = loseSightTime;
+    }
+
+    void RemoveVisibleUnit(Unit unitToRemove)
+    {
+        loseSightTimes.RemoveAt(visibleUnits.IndexOf(unitToRemove));
+        visibleUnits.Remove(unitToRemove);
+
+        if (visibleDeadUnits.Contains(unitToRemove))
+            visibleDeadUnits.Remove(unitToRemove);
+
+        if (visibleEnemies.Contains(unitToRemove))
+            visibleEnemies.Remove(unitToRemove);
+
+        // If they are no longer visible to the player, hide them
+        if (unit.IsPlayer())
+            unitToRemove.HideMeshRenderers();
     }
 
     public Unit GetClosestEnemy()

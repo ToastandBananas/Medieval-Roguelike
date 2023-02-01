@@ -1,6 +1,5 @@
 using Pathfinding;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -18,14 +17,13 @@ public class Unit : MonoBehaviour
 
     public bool isMyTurn { get; private set; }
     public bool hasStartedTurn { get; private set; }
-    public bool isDead { get; private set; }
 
     public GridPosition gridPosition { get; private set; }
 
     public SingleNodeBlocker singleNodeBlocker { get; private set; }
 
     public Alliance alliance { get; private set; }
-    public HealthSystem healthSystem { get; private set; }
+    public HealthSystem health { get; private set; }
     public StateController stateController { get; private set; }
     public Stats stats { get; private set; }
     public UnitActionHandler unitActionHandler { get; private set; }
@@ -39,7 +37,7 @@ public class Unit : MonoBehaviour
         
         singleNodeBlocker = GetComponent<SingleNodeBlocker>();
         alliance = GetComponent<Alliance>();
-        healthSystem = GetComponent<HealthSystem>();
+        health = GetComponent<HealthSystem>();
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
@@ -201,8 +199,6 @@ public class Unit : MonoBehaviour
     public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
 
     public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
-
-    public bool SetIsDead(bool isDead) => this.isDead = isDead;
 
     public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
 

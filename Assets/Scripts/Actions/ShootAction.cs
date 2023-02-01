@@ -16,7 +16,7 @@ public class ShootAction : BaseAction
     {
         if (isShooting) return;
 
-        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.isDead)
+        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
             unit.unitActionHandler.FinishAction();
             return;
@@ -61,7 +61,7 @@ public class ShootAction : BaseAction
         else
         {
             unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
-            unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage);
+            unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage);
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));

@@ -31,9 +31,13 @@ public class UnitManager : MonoBehaviour
         deadNPCs = new List<Unit>();
 
         livingNPCs = FindObjectsOfType<Unit>().ToList();
+    }
+
+    void Start()
+    {
         for (int i = 0; i < livingNPCs.Count; i++)
         {
-            if (livingNPCs[i].isDead)
+            if (livingNPCs[i].health.IsDead())
             {
                 deadNPCs.Add(livingNPCs[i]);
                 livingNPCs.Remove(livingNPCs[i]);

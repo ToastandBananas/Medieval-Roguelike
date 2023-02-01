@@ -21,7 +21,7 @@ public class MeleeAction : BaseAction
     {
         if (isAttacking) return;
 
-        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.isDead)
+        if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
             unit.unitActionHandler.FinishAction();
             return;
@@ -38,9 +38,6 @@ public class MeleeAction : BaseAction
                 nextAttackFree = true;
                 CompleteAction();
                 unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
-                Debug.Log(unit);
-                Debug.Log(unit.unitActionHandler);
-                Debug.Log(unit.unitActionHandler.targetEnemyUnit);
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
             }
         }
@@ -61,7 +58,7 @@ public class MeleeAction : BaseAction
             {
                 unit.unitAnimator.StartMeleeAttack();
                 unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(UnarmedDamage());
+                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(UnarmedDamage());
             }
             else if (unit.IsDualWielding())
             {
@@ -88,11 +85,11 @@ public class MeleeAction : BaseAction
             unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
 
             if (unit.IsDualWielding()) // Dual wield attack
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
+                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
             else if (unit.rightHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
+                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
             else if (unit.leftHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.healthSystem.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
+                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -160,7 +157,7 @@ public class MeleeAction : BaseAction
             if (targetUnit != null)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.healthSystem.CurrentHealthNormalized() * 100f);
+                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 finalActionValue -= TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition) * 10f;
             }
         }

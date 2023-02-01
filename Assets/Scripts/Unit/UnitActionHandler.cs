@@ -31,7 +31,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public virtual void TakeTurn()
     {
-        if (unit.isMyTurn && unit.isDead == false)
+        if (unit.isMyTurn && unit.health.IsDead() == false)
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
             {
@@ -93,7 +93,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public void GetNextQueuedAction()
     {
-        if (unit.isDead)
+        if (unit.health.IsDead())
         {
             ClearActionQueue();
             return;
@@ -191,6 +191,8 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetTargetEnemyUnit(Unit target)
     {
+        if (target == null && unit.IsPlayer())
+            Debug.Log("Setting target enemy to NULL");
         targetEnemyUnit = target;
         if (target != null)
             previousTargetEnemyGridPosition = target.gridPosition;

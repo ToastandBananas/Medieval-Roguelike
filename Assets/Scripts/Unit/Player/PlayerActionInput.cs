@@ -18,7 +18,7 @@ public class PlayerActionInput : MonoBehaviour
         if (skipTurnCooldownTimer < skipTurnCooldown)
             skipTurnCooldownTimer += Time.deltaTime;
 
-        if (unit.isDead == false)
+        if (unit.health.IsDead() == false)
         {
             if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
             {
@@ -30,7 +30,6 @@ public class PlayerActionInput : MonoBehaviour
             {
                 if (GameControls.gamePlayActions.cancelAction.WasPressed)
                 {
-                    // Debug.Log("Cancelling Action");
                     unit.unitActionHandler.CancelAction();
                     ActionLineRenderer.Instance.ResetCurrentPositions();
                 }
@@ -69,16 +68,14 @@ public class PlayerActionInput : MonoBehaviour
                             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                             if (unit.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
                             {
+                                unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 if ((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.IsUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                                 {
                                     if (unitAtGridPosition.IsCompletelySurrounded())
                                         return;
-
-                                    unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 }
                                 else if (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
                                 {
-                                    unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                     unit.unitActionHandler.AttackTargetEnemy();
                                     return;
                                 }

@@ -50,7 +50,6 @@ public class ActionLineRenderer : MonoBehaviour
                         yield break;
                     }
 
-                    //unitAtMousePosition.UnblockCurrentPosition();
                     targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition, UnitManager.Instance.player.gridPosition);
                 }
                 else
@@ -69,9 +68,6 @@ public class ActionLineRenderer : MonoBehaviour
             yield return StartCoroutine(path.WaitForPath());
 
             ResetLineRenderers();
-
-            //if (unitAtMousePosition != null)
-                //unitAtMousePosition.BlockCurrentPosition();
 
             if (path.error || path == null)
                 yield break;

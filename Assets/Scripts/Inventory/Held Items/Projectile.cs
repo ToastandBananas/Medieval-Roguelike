@@ -183,7 +183,6 @@ public class Projectile : MonoBehaviour
         Vector3 lookPos = (nextPosition - transform.localPosition).normalized;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
         transform.localRotation = Quaternion.Slerp(transform.localRotation, rotation, rotateSpeed * Time.deltaTime);
-        Debug.Log(nextPosition + " | " + rotation);
     }
 
     void Arrived(Transform collisionTransform)
@@ -228,7 +227,7 @@ public class Projectile : MonoBehaviour
                     {
                         // TODO: Less damage the further away from explosion
                         targetUnit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                        targetUnit.healthSystem.TakeDamage(30);
+                        targetUnit.health.TakeDamage(30);
                     }
                 }
             }
@@ -294,7 +293,7 @@ public class Projectile : MonoBehaviour
                 if (unit != shooter)
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
+                    unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }
             }
@@ -304,7 +303,7 @@ public class Projectile : MonoBehaviour
                 if (unit != shooter)
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage * 2);
+                    unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage * 2);
                     Arrived(collider.transform);
                 }
             }

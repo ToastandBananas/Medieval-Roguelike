@@ -9,8 +9,12 @@ public class HealthSystem : MonoBehaviour
     [SerializeField] int maxHealth = 100;
     [SerializeField] int currentHealth;
 
+    Unit unit;
+
     void Awake()
     {
+        unit = GetComponent<Unit>();
+
         if (currentHealth == 0)
             currentHealth = maxHealth;
     }
@@ -31,7 +35,11 @@ public class HealthSystem : MonoBehaviour
     void Die()
     {
         OnDead?.Invoke(this, EventArgs.Empty);
+
+        unit.unitAnimator.Die();
     }
+
+    public bool IsDead() => currentHealth <= 0;
 
     public float CurrentHealthNormalized() => (float)currentHealth / maxHealth;
 

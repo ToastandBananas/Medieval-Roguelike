@@ -40,7 +40,7 @@ public class NPCActionHandler : UnitActionHandler
 
     public override void TakeTurn()
     {
-        if (unit.isMyTurn && unit.isDead == false)
+        if (unit.isMyTurn && unit.health.IsDead() == false)
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
             {
@@ -230,7 +230,7 @@ public class NPCActionHandler : UnitActionHandler
     void Flee()
     {
         // If there's no Unit to flee from or if the Unit to flee from died
-        if (unitToFleeFrom == null || unitToFleeFrom.isDead)
+        if (unitToFleeFrom == null || unitToFleeFrom.health.IsDead())
         {
             if (unit.stateController.DefaultState() == State.Flee)
                 unit.stateController.ChangeDefaultState(State.Wander);
@@ -285,7 +285,7 @@ public class NPCActionHandler : UnitActionHandler
     #region Follow
     void Follow()
     {
-        if (leader == null || leader.isDead)
+        if (leader == null || leader.health.IsDead())
         {
             Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
             shouldFollowLeader = false;

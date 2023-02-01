@@ -47,7 +47,7 @@ public class UnitAnimator : MonoBehaviour
         else
             unitAnim.Play("Die Forward");
 
-        StartCoroutine(Die_RotateHead());
+        // StartCoroutine(Die_RotateHead());
     }
 
     IEnumerator Die_RotateHead()

@@ -58,9 +58,9 @@ public class TurnManager : MonoBehaviour
 
     void StartUnitsTurn(Unit unit)
     {
-        if (unit.isDead)
+        if (unit.health.IsDead())
         {
-            Debug.LogError(unit + " is dead, but they are trying to take their turn...");
+            // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
             if (unit.IsNPC())
             {
                 UnitManager.Instance.deadNPCs.Add(unit);
@@ -72,6 +72,8 @@ public class TurnManager : MonoBehaviour
 
             if (units_FinishedTurn.Contains(unit))
                 units_FinishedTurn.Remove(unit);
+
+            StartCoroutine(StartNextUnitsTurn(unit, false));
         }
         else
         {
@@ -113,7 +115,7 @@ public class TurnManager : MonoBehaviour
         StartCoroutine(StartNextUnitsTurn(unitFinishingAction));
     }
 
-    public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction)
+    public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
     {
         if (activeUnit != unitFinishingAction)
             yield break;
@@ -128,11 +130,14 @@ public class TurnManager : MonoBehaviour
         if (units_HaventFinishedTurn.Count == 0)
             OnCompleteAllTurns();
 
-        // Increase the turn index
-        if (unitTurnIndex >= units_HaventFinishedTurn.Count - 1)
-            unitTurnIndex = 0;
-        else
-            unitTurnIndex++;
+        if (increaseTurnIndex)
+        {
+            // Increase the turn index
+            if (unitTurnIndex >= units_HaventFinishedTurn.Count - 1)
+                unitTurnIndex = 0;
+            else
+                unitTurnIndex++;
+        }
 
         activeUnit.SetIsMyTurn(false);
 
