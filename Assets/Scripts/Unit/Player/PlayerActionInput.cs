@@ -69,10 +69,16 @@ public class PlayerActionInput : MonoBehaviour
                             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                             if (unit.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
                             {
-                                unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
-                                if (((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.IsUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
-                                    || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)))
+                                if ((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.IsUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                                 {
+                                    if (unitAtGridPosition.IsCompletelySurrounded())
+                                        return;
+
+                                    unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                                }
+                                else if (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
+                                {
+                                    unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                     unit.unitActionHandler.AttackTargetEnemy();
                                     return;
                                 }

@@ -54,14 +54,14 @@ public class Projectile : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, Unit shooter)
+    public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit)
     {
         ReadyProjectile();
 
         targetPosition = targetUnit.WorldPosition();
 
         Vector3 startPos = transform.position;
-        Vector3 offset = GetOffset(shooter, true);
+        Vector3 offset = GetOffset(true);
 
         float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * projectileScriptableObject.ArcMultiplier();
         float animationTime = 0f;
@@ -84,14 +84,14 @@ public class Projectile : MonoBehaviour
         CameraController.Instance.StopFollowingTarget();
     }
 
-    public IEnumerator ShootProjectile_AtGridPosition(GridPosition targetGridPosition, Unit shooter)
+    public IEnumerator ShootProjectile_AtGridPosition(GridPosition targetGridPosition)
     {
         ReadyProjectile();
 
         targetPosition = targetGridPosition.WorldPosition();
 
         Vector3 startPos = transform.position;
-        Vector3 offset = GetOffset(shooter, false);
+        Vector3 offset = GetOffset(false);
 
         float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetGridPosition) * projectileScriptableObject.ArcMultiplier();
         float animationTime = 0f;
@@ -144,16 +144,17 @@ public class Projectile : MonoBehaviour
         return arcHeight;
     }
 
-    Vector3 GetOffset(Unit shootingUnit, bool accountForAccuracy)
+    Vector3 GetOffset(bool accountForAccuracy)
     {
         float random = UnityEngine.Random.Range(0f, 100f);
         float offsetX, offsetZ;
+        float rangedAccuracy = shooter.stats.RangedAccuracy();
 
         // If the shooter is missing
-        if (accountForAccuracy && random > shootingUnit.stats.RangedAccuracy())
+        if (accountForAccuracy && random > rangedAccuracy)
         {
-            offsetX = UnityEngine.Random.Range(0.35f, 1.35f);
-            offsetZ = UnityEngine.Random.Range(0.35f, 1.35f);
+            offsetX = UnityEngine.Random.Range(0.35f, 1.35f - (rangedAccuracy * 0.01f)); // More accurate Units will miss by a smaller margin
+            offsetZ = UnityEngine.Random.Range(0.35f, 1.35f - (rangedAccuracy * 0.01f));
 
             // Randomize whether the offsets will be negative or positive values
             int randomX, randomZ;
@@ -165,7 +166,7 @@ public class Projectile : MonoBehaviour
             if (randomZ == 0)
                 offsetZ *= -1f;
 
-            return new Vector3(offsetX, -1f, offsetZ);
+            return new Vector3(offsetX, 0f, offsetZ);
         }
         else // If the shooter is hitting the target, create a slight offset so they don't hit the same exact spot every time
         {
@@ -182,6 +183,7 @@ public class Projectile : MonoBehaviour
         Vector3 lookPos = (nextPosition - transform.localPosition).normalized;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
         transform.localRotation = Quaternion.Slerp(transform.localRotation, rotation, rotateSpeed * Time.deltaTime);
+        Debug.Log(nextPosition + " | " + rotation);
     }
 
     void Arrived(Transform collisionTransform)
@@ -196,7 +198,8 @@ public class Projectile : MonoBehaviour
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
-            transform.SetParent(collisionTransform, true);
+            if (collisionTransform != null)
+                transform.SetParent(collisionTransform, true);
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
         }
@@ -292,6 +295,7 @@ public class Projectile : MonoBehaviour
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
+                    Arrived(collider.transform);
                 }
             }
             else if (collider.CompareTag("Unit Head"))
@@ -300,11 +304,12 @@ public class Projectile : MonoBehaviour
                 if (unit != shooter)
                 {
                     unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage);
+                    unit.healthSystem.TakeDamage(shooter.leftHeldItem.itemData.damage * 2);
+                    Arrived(collider.transform);
                 }
             }
             
-            Arrived(collider.transform);
+            Arrived(null);
         }
     }
 }
