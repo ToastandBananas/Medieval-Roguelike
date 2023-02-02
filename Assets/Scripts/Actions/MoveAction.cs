@@ -213,14 +213,12 @@ public class MoveAction : BaseAction
             if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))))
             {
-                Debug.Log("Enemy in attack range of Player");
                 unit.unitAnimator.StopMovingForward();
                 unit.unitActionHandler.AttackTargetEnemy();
             }
             // If the enemy moved positions
             else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
             {
-                Debug.Log("Enemy moved positions");
                 unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
                 finalTargetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition, unit.gridPosition);
                 unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
@@ -228,7 +226,6 @@ public class MoveAction : BaseAction
             // If the Player hasn't reached their destination, add the next move to the queue
             else if (unit.gridPosition != finalTargetGridPosition)
             {
-                Debug.Log("Player advancing towards target");
                 unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
             }
         }

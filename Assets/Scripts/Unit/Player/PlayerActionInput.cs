@@ -30,7 +30,7 @@ public class PlayerActionInput : MonoBehaviour
             {
                 if (GameControls.gamePlayActions.cancelAction.WasPressed)
                 {
-                    unit.unitActionHandler.CancelAction();
+                    StartCoroutine(unit.unitActionHandler.CancelAction());
                     ActionLineRenderer.Instance.ResetCurrentPositions();
                 }
             }

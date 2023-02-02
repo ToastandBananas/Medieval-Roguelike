@@ -43,7 +43,7 @@ public class ActionLineRenderer : MonoBehaviour
                 unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                 if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
                 {
-                    if (((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
+                    if (((UnitManager.Instance.player.MeleeWeaponEquipped() || (UnitManager.Instance.player.RangedWeaponEquipped() == false && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
                         || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
                     {
                         HideLineRenderers();

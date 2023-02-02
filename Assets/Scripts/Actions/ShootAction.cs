@@ -55,6 +55,7 @@ public class ShootAction : BaseAction
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             StartCoroutine(RotateTowardsTarget());
+            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
             unit.leftHeldItem.DoDefaultAttack();
             StartCoroutine(WaitToFinishAction());
         }
@@ -94,8 +95,8 @@ public class ShootAction : BaseAction
 
     public bool IsInAttackRange(Unit enemyUnit)
     {
-        float attackRange = 10f;
-        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= attackRange)
+        float dist = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize();
+        if (dist <= unit.GetRangedWeapon().itemData.item.Weapon().maxRange && dist >= unit.GetRangedWeapon().itemData.item.Weapon().minRange)
             return true;
         return false;
     }
@@ -130,7 +131,7 @@ public class ShootAction : BaseAction
 
     void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;
 
-    public bool RangedWeaponIsLoaded() => unit.GetEquippedRangedWeapon().isLoaded; 
+    public bool RangedWeaponIsLoaded() => unit.GetRangedWeapon().isLoaded; 
 
     public override bool ActionIsUsedInstantly() => false;
 

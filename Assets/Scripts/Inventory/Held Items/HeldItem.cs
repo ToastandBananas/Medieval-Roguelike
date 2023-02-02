@@ -32,9 +32,28 @@ public abstract class HeldItem : MonoBehaviour
 
     void SetItemRotation() => transform.localEulerAngles = idleRotation;
 
+    public void ResetItemTransform()
+    {
+        SetItemPosition();
+        SetItemRotation();
+    }
+
     public Vector3 IdlePosition() => idlePosition;
 
     public Vector3 IdleRotation() => idleRotation;
+
+    IEnumerator ResetToIdleRotation()
+    {
+        Quaternion idleRotation = Quaternion.Euler(IdleRotation());
+        float rotateSpeed = 5f;
+        while (transform.localRotation != idleRotation)
+        {
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotation, rotateSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        transform.localRotation = idleRotation;
+    }
 
     public abstract void DoDefaultAttack();
 

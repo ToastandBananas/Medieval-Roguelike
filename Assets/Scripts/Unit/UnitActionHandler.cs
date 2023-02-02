@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
@@ -46,11 +47,16 @@ public class UnitActionHandler : MonoBehaviour
                     {
                         ClearActionQueue(); 
                         
-                        if (unit.GetEquippedRangedWeapon().isLoaded)
+                        if (unit.GetRangedWeapon().isLoaded)
                             QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                         else
                             QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
                         return;
+                    }
+                    else 
+                    {
+                        SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(targetEnemyUnit.gridPosition, unit.gridPosition));
+                        QueueAction(GetAction<MoveAction>(), targetGridPosition);
                     }
                 }
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
@@ -130,19 +136,27 @@ public class UnitActionHandler : MonoBehaviour
         }
     }
 
-    public void CancelAction()
+    public IEnumerator CancelAction()
     {
-        ClearActionQueue();
+        if (queuedAction != null)
+        {
+            while (isPerformingAction)
+            {
+                yield return null;
+            }
 
-        MoveAction moveAction = GetAction<MoveAction>();
-        if (moveAction.finalTargetGridPosition != unit.gridPosition)
-            moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
+            ClearActionQueue();
 
-        // If the Unit isn't moving, they might still be in a move animation, so cancel that
-        if (moveAction.isMoving == false)
-            unit.unitAnimator.StopMovingForward();
+            MoveAction moveAction = GetAction<MoveAction>();
+            if (moveAction.finalTargetGridPosition != unit.gridPosition)
+                moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
 
-        unit.unitActionHandler.SetTargetEnemyUnit(null);
+            // If the Unit isn't moving, they might still be in a move animation, so cancel that
+            if (moveAction.isMoving == false)
+                unit.unitAnimator.StopMovingForward();
+
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
+        }
     }
 
     public void ClearActionQueue()
@@ -161,7 +175,7 @@ public class UnitActionHandler : MonoBehaviour
         {
             if (unit.RangedWeaponEquipped())
             {
-                if (unit.GetEquippedRangedWeapon().isLoaded)
+                if (unit.GetRangedWeapon().isLoaded)
                     QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                 else
                     QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
@@ -191,8 +205,6 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetTargetEnemyUnit(Unit target)
     {
-        if (target == null && unit.IsPlayer())
-            Debug.Log("Setting target enemy to NULL");
         targetEnemyUnit = target;
         if (target != null)
             previousTargetEnemyGridPosition = target.gridPosition;

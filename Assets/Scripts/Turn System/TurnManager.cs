@@ -73,6 +73,9 @@ public class TurnManager : MonoBehaviour
             if (units_FinishedTurn.Contains(unit))
                 units_FinishedTurn.Remove(unit);
 
+            if (unitTurnIndex == units_HaventFinishedTurn.Count)
+                unitTurnIndex = 0;
+
             StartCoroutine(StartNextUnitsTurn(unit, false));
         }
         else

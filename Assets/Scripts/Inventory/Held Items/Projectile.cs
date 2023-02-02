@@ -153,28 +153,31 @@ public class Projectile : MonoBehaviour
         // If the shooter is missing
         if (accountForAccuracy && random > rangedAccuracy)
         {
-            offsetX = UnityEngine.Random.Range(0.35f, 1.35f - (rangedAccuracy * 0.01f)); // More accurate Units will miss by a smaller margin
-            offsetZ = UnityEngine.Random.Range(0.35f, 1.35f - (rangedAccuracy * 0.01f));
+            float minOffset = 0.35f;
+            float maxOffset = 1.35f;
+            float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
+            offsetX = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f)); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
+            offsetZ = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f));
+
+            if (offsetX < minOffset) offsetX = minOffset;
+            if (offsetZ < minOffset) offsetZ = minOffset;
 
             // Randomize whether the offsets will be negative or positive values
-            int randomX, randomZ;
-            randomX = UnityEngine.Random.Range(0, 2);
-            randomZ = UnityEngine.Random.Range(0, 2);
+            int randomX = UnityEngine.Random.Range(0, 2);
+            int randomZ = UnityEngine.Random.Range(0, 2);
 
             if (randomX == 0)
                 offsetX *= -1f;
             if (randomZ == 0)
                 offsetZ *= -1f;
-
-            return new Vector3(offsetX, 0f, offsetZ);
         }
         else // If the shooter is hitting the target, create a slight offset so they don't hit the same exact spot every time
         {
             offsetX = UnityEngine.Random.Range(-0.1f, 0.1f);
             offsetZ = UnityEngine.Random.Range(-0.1f, 0.1f);
-
-            return new Vector3(offsetX, 0f, offsetZ);
         }
+
+        return new Vector3(offsetX, 0f, offsetZ);
     }
 
     void RotateTowardsNextPosition(Vector3 nextPosition)
@@ -292,7 +295,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
-                    unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
+                    //unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage);
                     Arrived(collider.transform);
                 }
@@ -302,7 +305,7 @@ public class Projectile : MonoBehaviour
                 Unit unit = collider.transform.parent.parent.parent.GetComponent<Unit>();
                 if (unit != shooter)
                 {
-                    unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
+                    //unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                     unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage * 2);
                     Arrived(collider.transform);
                 }

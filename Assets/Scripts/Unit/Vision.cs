@@ -144,7 +144,11 @@ public class Vision : MonoBehaviour
             if (unitToAdd.health.IsDead())
                 visibleDeadUnits.Add(unitToAdd);
             else if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
+            {
                 visibleEnemies.Add(unitToAdd);
+                if (unit.IsPlayer())
+                    StartCoroutine(unit.unitActionHandler.CancelAction());
+            }
 
             // Add a corresponding lose sight time for this newly visible Unit
             loseSightTimes.Add(loseSightTime);

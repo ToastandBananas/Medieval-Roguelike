@@ -14,7 +14,7 @@ public class ReloadAction : BaseAction
         throw new NotImplementedException();
     }
 
-    public override bool IsValidAction() => unit.RangedWeaponEquipped() && unit.GetEquippedRangedWeapon().isLoaded == false;
+    public override bool IsValidAction() => unit.RangedWeaponEquipped() && unit.GetRangedWeapon().isLoaded == false;
 
     IEnumerator StartReloadTimer()
     {
@@ -42,7 +42,7 @@ public class ReloadAction : BaseAction
     void Reload()
     {
         // StartCoroutine(StartReloadTimer());
-        unit.GetEquippedRangedWeapon().LoadProjectile();
+        unit.GetRangedWeapon().LoadProjectile();
         CompleteAction();
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }

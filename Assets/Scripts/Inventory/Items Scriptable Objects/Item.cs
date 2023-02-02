@@ -28,17 +28,12 @@ public abstract class Item : ScriptableObject
     public Vector2Int value;
     public int staticValue = 1;
 
-    [Header("Sprites")]
-    public Sprite pickupSprite;
+    [Header("Mesh")]
+    public Mesh pickupMesh;
 
     public virtual void Use(Unit unit, Inventory inventory, InventoryItem invItem, ItemData itemData, int itemCount, EquipmentSlot equipSlot, PartialAmount partialAmountToUse = PartialAmount.Whole)
     {
         
-    }
-
-    public void RemoveFromInventory(Inventory inventory, InventoryItem invItem, ItemData itemData, int itemCount)
-    {
-        //inventory.RemoveItem(itemData, itemCount, invItem);
     }
 
     /// <summary>Returns partialAmount as a whole number percent.</summary>

@@ -46,7 +46,7 @@ public class AnimationTimes : MonoBehaviour
     {
         if (weapon.IsMeleeWeapon())
         {
-            if (weapon.isOneHanded)
+            if (weapon.isTwoHanded == false)
                 return humanAttack_1H_Time;
         }
         else if (weapon.IsRangedWeapon())

@@ -26,6 +26,8 @@ MonoBehaviour:
   value: {x: 0, y: 0}
   staticValue: 1
   pickupSprite: {fileID: 0}
+  minRange: 2
+  maxRange: 10
   minDamage: 5
   maxDamage: 10
   isOneHanded: 1

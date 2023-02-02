@@ -2634,7 +2634,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.7083333
+  - time: 0.9166667
     functionName: ResetToIdleRotation
     data: 
     objectReferenceParameter: {fileID: 0}

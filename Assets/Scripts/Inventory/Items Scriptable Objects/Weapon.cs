@@ -3,10 +3,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Item/Weapon")]
 public class Weapon : Equipment
 {
+    [Header("Range")]
+    public float minRange = 1f;
+    public float maxRange = 1.4f;
+
+    [Header("Damage")]
     public int minDamage = 1;
     public int maxDamage = 5;
 
-    public bool isOneHanded = true;
+    [Header("Weapon Info")]
+    public bool isTwoHanded;
+    public bool canDualWield;
 
     public override bool IsBag() => false;
 

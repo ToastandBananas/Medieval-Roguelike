@@ -113,7 +113,6 @@ public class MeleeAction : BaseAction
 
     public bool IsInAttackRange(Unit enemyUnit)
     {
-        float attackRange = 1.4f;
         if (unit.IsUnarmed())
         {
             if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= unarmedAttackRange)
@@ -121,7 +120,13 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= attackRange)
+            float maxRange;
+            if (unit.rightHeldItem != null)
+                maxRange = unit.GetRightMeleeWeapon().itemData.item.Weapon().maxRange;
+            else
+                maxRange = unit.GetLeftMeleeWeapon().itemData.item.Weapon().maxRange;
+
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= maxRange)
                 return true;
         }
         return false;

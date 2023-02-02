@@ -8,7 +8,7 @@ public class HeldMeleeWeapon : HeldItem
         // TODO: Determine attack animation based on melee weapon type
         if (this == unit.rightHeldItem)
         {
-            if (itemData.item.Weapon().isOneHanded)
+            if (itemData.item.Weapon().isTwoHanded == false)
                 anim.Play("Attack_1H_R");
 
             if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item is Shield) 
@@ -16,7 +16,7 @@ public class HeldMeleeWeapon : HeldItem
         }
         else if (this == unit.leftHeldItem)
         {
-            if (itemData.item.Weapon().isOneHanded)
+            if (itemData.item.Weapon().isTwoHanded == false)
                 anim.Play("Attack_1H_L");
 
             if (unit.rightHeldItem != null && unit.rightHeldItem.itemData.item is Shield)
@@ -26,24 +26,12 @@ public class HeldMeleeWeapon : HeldItem
         StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition));
     }
 
+    // Used in animation Key Frame
     void DamageTargetUnit()
     {
         // TODO: Determine damage from weapon data and attacking Unit's stats/perks
         unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
         unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(itemData.damage);
-    }
-
-    IEnumerator ResetToIdleRotation()
-    {
-        Quaternion idleRotation = Quaternion.Euler(Vector3.zero);
-        float rotateSpeed = 10f;
-        while (transform.parent.localRotation != idleRotation)
-        {
-            transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, idleRotation, rotateSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        transform.parent.localRotation = idleRotation;
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

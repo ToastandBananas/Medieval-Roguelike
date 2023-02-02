@@ -182,7 +182,20 @@ public class Unit : MonoBehaviour
 
     public bool IsUnarmed() => leftHeldItem == null && rightHeldItem == null;
 
-    public HeldRangedWeapon GetEquippedRangedWeapon() => leftHeldItem as HeldRangedWeapon;
+    public void SwitchWeapon()
+    {
+        if (RangedWeaponEquipped())
+        {
+            leftHeldItem.enabled = false;
+            leftHeldItem = null;
+        }
+    }
+
+    public HeldRangedWeapon GetRangedWeapon() => leftHeldItem as HeldRangedWeapon;
+
+    public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem as HeldMeleeWeapon;
+
+    public HeldMeleeWeapon GetRightMeleeWeapon() => rightHeldItem as HeldMeleeWeapon;
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
 

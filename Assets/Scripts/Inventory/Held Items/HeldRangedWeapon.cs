@@ -34,24 +34,11 @@ public class HeldRangedWeapon : HeldItem
         loadedProjectile = null;
     }
 
-    IEnumerator ResetToIdleRotation()
-    {
-        Quaternion idleRotation = Quaternion.Euler(IdleRotation());
-        float rotateSpeed = 5f;
-        while (transform.localRotation != idleRotation)
-        {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotation, rotateSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        transform.localRotation = idleRotation;
-    }
-
     IEnumerator RotateRangedWeapon(GridPosition targetGridPosition)
     {
         Quaternion targetRotation = Quaternion.Euler(0f, IdleRotation().y, CalculateZRotation(targetGridPosition));
         float rotateSpeed = 5f;
-        while (transform.localRotation != targetRotation)
+        while (unit.unitActionHandler.GetAction<ShootAction>().isShooting)
         {
             transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;

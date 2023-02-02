@@ -55,13 +55,17 @@ public class NPCActionHandler : UnitActionHandler
                     {
                         ClearActionQueue(); 
                         
-                        if (unit.GetEquippedRangedWeapon().isLoaded)
+                        if (unit.GetRangedWeapon().isLoaded)
                             QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                         else
                             QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
+                //else if (GetAction<MeleeAction>().IsInUnarmedAttackRange(targetEnemyUnit))
+                //{
+
+                //}
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 {
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
@@ -137,7 +141,7 @@ public class NPCActionHandler : UnitActionHandler
             return;
         }
 
-        if ((unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit)) || ((unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed()) && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit)))
+        if ((unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit)) || ((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && GetAction<MeleeAction>().CanFightUnarmed())) && GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit)))
             AttackTargetEnemy();
         else
             PursueTargetEnemy();
