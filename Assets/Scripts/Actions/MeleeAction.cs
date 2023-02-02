@@ -38,7 +38,7 @@ public class MeleeAction : BaseAction
                 nextAttackFree = true;
                 CompleteAction();
                 unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
+                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
             }
         }
         else
@@ -146,6 +146,8 @@ public class MeleeAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
+        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
         isAttacking = false;
         unit.unitActionHandler.FinishAction();
     }

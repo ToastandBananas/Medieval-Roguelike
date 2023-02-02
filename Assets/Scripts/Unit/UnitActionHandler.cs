@@ -43,29 +43,43 @@ public class UnitActionHandler : MonoBehaviour
             {
                 if (unit.RangedWeaponEquipped())
                 {
-                    if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    Unit closestEnemy = unit.vision.GetClosestEnemy(true);
+
+                    // If the closest enemy is too close, cancel the Player's current action
+                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
                     {
-                        ClearActionQueue(); 
-                        
-                        if (unit.GetRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
-                        else
-                            QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
+                        CancelAction();
                         return;
                     }
-                    else 
+                    else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        // Shoot the target enemy
+                        ClearActionQueue(true);
+                        if (unit.GetRangedWeapon().isLoaded)
+                            QueueAction(GetAction<ShootAction>());
+                        else
+                            QueueAction(GetAction<ReloadAction>());
+                        return;
+                    }
+                    else // If they're out of the shoot range, move towards the enemy
                     {
                         SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(targetEnemyUnit.gridPosition, unit.gridPosition));
-                        QueueAction(GetAction<MoveAction>(), targetGridPosition);
+                        QueueAction(GetAction<MoveAction>());
                     }
                 }
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 {
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                     {
-                        ClearActionQueue();
-                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                        // Melee attack the target enemy
+                        ClearActionQueue(false);
+                        QueueAction(GetAction<MeleeAction>());
                         return;
+                    }
+                    else // If they're out of melee range, move towards the enemy
+                    {
+                        SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(targetEnemyUnit.gridPosition, unit.gridPosition));
+                        QueueAction(GetAction<MoveAction>());
                     }
                 }
             }
@@ -78,7 +92,7 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     #region Action Queue
-    public void QueueAction(BaseAction action, GridPosition targetGridPosition)
+    public void QueueAction(BaseAction action)
     {
         // if (isNPC) Debug.Log(name + " queued " + action);
         queuedAction = action;
@@ -101,7 +115,7 @@ public class UnitActionHandler : MonoBehaviour
     {
         if (unit.health.IsDead())
         {
-            ClearActionQueue();
+            ClearActionQueue(true);
             return;
         }
 
@@ -126,7 +140,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public virtual void FinishAction()
     {
-        ClearActionQueue();
+        ClearActionQueue(false);
 
         // If the character has no AP remaining, end their turn
         if (unit.stats.CurrentAP() <= 0)
@@ -138,33 +152,36 @@ public class UnitActionHandler : MonoBehaviour
 
     public IEnumerator CancelAction()
     {
-        if (queuedAction != null)
+        MoveAction moveAction = GetAction<MoveAction>();
+        if (queuedAction != moveAction)
         {
             while (isPerformingAction)
             {
                 yield return null;
             }
-
-            ClearActionQueue();
-
-            MoveAction moveAction = GetAction<MoveAction>();
-            if (moveAction.finalTargetGridPosition != unit.gridPosition)
-                moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
-
-            // If the Unit isn't moving, they might still be in a move animation, so cancel that
-            if (moveAction.isMoving == false)
-                unit.unitAnimator.StopMovingForward();
-
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
         }
+
+        ClearActionQueue(true);
+
+        if (moveAction.finalTargetGridPosition != unit.gridPosition)
+        {
+            SetTargetGridPosition(moveAction.nextTargetGridPosition);
+            moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
+        }
+
+        unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
-    public void ClearActionQueue()
+    public void ClearActionQueue(bool stopMoveAnimation)
     {
         // Debug.Log("Clearing action queue");
         queuedAction = null;
         queuedAP = 0;
         isPerformingAction = false;
+
+        // If the Unit isn't moving, they might still be in a move animation, so cancel that
+        if (stopMoveAnimation && GetAction<MoveAction>().isMoving == false)
+            unit.unitAnimator.StopMovingForward();
     }
     #endregion
 
@@ -176,17 +193,17 @@ public class UnitActionHandler : MonoBehaviour
             if (unit.RangedWeaponEquipped())
             {
                 if (unit.GetRangedWeapon().isLoaded)
-                    QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                    QueueAction(GetAction<ShootAction>());
                 else
-                    QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
+                    QueueAction(GetAction<ReloadAction>());
             }
             else
-                QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                QueueAction(GetAction<MeleeAction>());
         }
         else
         {
             GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
-            QueueAction(GetAction<TurnAction>(), targetEnemyUnit.gridPosition);
+            QueueAction(GetAction<TurnAction>());
         }
     }
     #endregion

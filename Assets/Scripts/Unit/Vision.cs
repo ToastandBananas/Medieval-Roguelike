@@ -19,6 +19,7 @@ public class Vision : MonoBehaviour
     public List<Unit> visibleUnits { get; private set; }
     public List<Unit> visibleDeadUnits { get; private set; }
     public List<Unit> visibleEnemies { get; private set; }
+    public List<Unit> visibleAllies { get; private set; }
     List<int> loseSightTimes = new List<int>();
 
     Unit unit;
@@ -30,6 +31,7 @@ public class Vision : MonoBehaviour
         visibleUnits = new List<Unit>();
         visibleDeadUnits = new List<Unit>();
         visibleEnemies = new List<Unit>();
+        visibleAllies = new List<Unit>();
         unit = parentTransform.GetComponent<Unit>();
     }
 
@@ -70,7 +72,7 @@ public class Vision : MonoBehaviour
             {
                 NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
                 if (npcActionHandler.ShouldAlwaysFleeCombat())
-                    npcActionHandler.StartFlee(GetClosestEnemy());
+                    npcActionHandler.StartFlee(GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance());
                 else
                     npcActionHandler.StartFight();
             }
@@ -149,6 +151,8 @@ public class Vision : MonoBehaviour
                 if (unit.IsPlayer())
                     StartCoroutine(unit.unitActionHandler.CancelAction());
             }
+            else if (unit.alliance.IsAlly(unitToAdd.alliance.CurrentFaction()))
+                visibleAllies.Add(unitToAdd);
 
             // Add a corresponding lose sight time for this newly visible Unit
             loseSightTimes.Add(loseSightTime);
@@ -172,17 +176,25 @@ public class Vision : MonoBehaviour
         if (visibleEnemies.Contains(unitToRemove))
             visibleEnemies.Remove(unitToRemove);
 
+        if (visibleAllies.Contains(unitToRemove))
+            visibleAllies.Remove(unitToRemove);
+
         // If they are no longer visible to the player, hide them
         if (unit.IsPlayer())
             unitToRemove.HideMeshRenderers();
     }
 
-    public Unit GetClosestEnemy()
+    public Unit GetClosestEnemy(bool includeTargetEnemy)
     {
-        Unit closestEnemy = null;
-        float closestEnemyDist = 100000;
+        Unit closestEnemy = unit.unitActionHandler.targetEnemyUnit;
+        float closestEnemyDist = 1000000;
+        if (includeTargetEnemy && unit.unitActionHandler.targetEnemyUnit != null)
+            closestEnemyDist = Vector3.Distance(unit.WorldPosition(), unit.unitActionHandler.targetEnemyUnit.WorldPosition());
         for (int i = 0; i < visibleEnemies.Count; i++)
         {
+            if (includeTargetEnemy == false && unit.unitActionHandler.targetEnemyUnit != null && visibleEnemies[i] == unit.unitActionHandler.targetEnemyUnit)
+                continue;
+
             float distToEnemy = Vector3.Distance(transform.position, visibleEnemies[i].transform.position);
             if (distToEnemy < closestEnemyDist)
             {
@@ -190,7 +202,6 @@ public class Vision : MonoBehaviour
                 closestEnemyDist = distToEnemy;
             }
         }
-
         return closestEnemy;
     }
 

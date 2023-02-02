@@ -273,7 +273,7 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
     }
 
-    public GridPosition GetRandomFleeGridPosition(Unit unit, Unit enemyUnit, int fleeDistance, int maxRange)
+    public GridPosition GetRandomFleeGridPosition(Unit unit, Unit enemyUnit, int minFleeDistance, int maxFleeDistance)
     {
         Vector3 unitWorldPosition = unit.WorldPosition();
         Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
@@ -282,7 +282,7 @@ public class LevelGrid : MonoBehaviour
 
         unit.UnblockCurrentPosition();
 
-        ConstantPath path = ConstantPath.Construct(enemyWorldPosition, 1 + (maxRange * 1000));
+        ConstantPath path = ConstantPath.Construct(enemyWorldPosition, 1 + (maxFleeDistance * 1000));
         path.traversalProvider = DefaultTraversalProvider();
 
         // Schedule the path for calculation
@@ -300,7 +300,7 @@ public class LevelGrid : MonoBehaviour
                 continue;
 
             float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.gridPosition, nodeGridPosition);
-            if (distanceToEnemy > maxRange || distanceToEnemy < fleeDistance)
+            if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                 continue;
 
             Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());

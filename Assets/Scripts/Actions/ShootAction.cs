@@ -27,7 +27,7 @@ public class ShootAction : BaseAction
         if (RangedWeaponIsLoaded() == false)
         {
             CompleteAction();
-            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>(), unit.gridPosition);
+            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>());
             return;
         }
         else if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
@@ -39,7 +39,7 @@ public class ShootAction : BaseAction
                 nextAttackFree = true;
                 CompleteAction();
                 unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.targetEnemyUnit.gridPosition);
+                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
             }
         }
         else
@@ -81,10 +81,11 @@ public class ShootAction : BaseAction
 
     IEnumerator RotateTowardsTarget()
     {
+        Vector3 targetPos = unit.unitActionHandler.targetEnemyUnit.WorldPosition();
         while (isShooting)
         {
             float rotateSpeed = 10f;
-            Vector3 lookPos = (new Vector3(unit.unitActionHandler.targetEnemyUnit.WorldPosition().x, transform.position.y, unit.unitActionHandler.targetEnemyUnit.WorldPosition().z) - unit.WorldPosition()).normalized;
+            Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - unit.WorldPosition()).normalized;
             Quaternion rotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
             yield return null;
@@ -110,6 +111,8 @@ public class ShootAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
+        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
         isShooting = false;
         unit.unitActionHandler.FinishAction();
     }

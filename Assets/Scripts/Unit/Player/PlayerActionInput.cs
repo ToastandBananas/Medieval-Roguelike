@@ -2,10 +2,28 @@ using UnityEngine;
 
 public class PlayerActionInput : MonoBehaviour
 {
+    public static PlayerActionInput Instance;
+
+    public bool autoAttack { get; private set; }
+
     Unit unit;
 
     float skipTurnCooldown = 0.1f;
-    float skipTurnCooldownTimer;
+    float skipTurnCooldownTimer; 
+
+    void Awake()
+    {
+        if (Instance != null)
+        {
+            if (Instance != this)
+            {
+                Debug.LogWarning("More than one Instance of PlayerActionInput. Fix me!");
+                Destroy(gameObject);
+            }
+        }
+        else
+            Instance = this;
+    }
 
     void Start()
     {
@@ -25,14 +43,11 @@ public class PlayerActionInput : MonoBehaviour
                 ActionLineRenderer.Instance.ResetCurrentPositions();
                 unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<MoveAction>());
             }
-
-            if (unit.unitActionHandler.queuedAction != null || unit.unitActionHandler.GetAction<MoveAction>().isMoving)
+            
+            if (GameControls.gamePlayActions.cancelAction.WasPressed)
             {
-                if (GameControls.gamePlayActions.cancelAction.WasPressed)
-                {
-                    StartCoroutine(unit.unitActionHandler.CancelAction());
-                    ActionLineRenderer.Instance.ResetCurrentPositions();
-                }
+                StartCoroutine(unit.unitActionHandler.CancelAction());
+                ActionLineRenderer.Instance.ResetCurrentPositions();
             }
             else if (unit.isMyTurn && unit.unitActionHandler.isPerformingAction == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
             {
@@ -56,7 +71,7 @@ public class PlayerActionInput : MonoBehaviour
                     unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
 
                     if (GameControls.gamePlayActions.select.WasPressed && unit.unitActionHandler.GetAction<TurnAction>().targetDirection != unit.unitActionHandler.GetAction<TurnAction>().currentDirection)
-                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>(), unit.unitActionHandler.GetAction<TurnAction>().GetTargetGridPosition());
+                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
                 }
                 else if (GameControls.gamePlayActions.select.WasPressed)
                 {
@@ -90,11 +105,11 @@ public class PlayerActionInput : MonoBehaviour
                             unit.unitActionHandler.SetTargetEnemyUnit(null);
 
                         unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
-                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>(), mouseGridPosition);
+                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
                     }
                 }
             }
-            else
+            else if(unit.unitActionHandler.queuedAction != null || unit.unitActionHandler.GetAction<MoveAction>().isMoving)
             {
                 ActionLineRenderer.Instance.HideLineRenderers();
             }
@@ -106,4 +121,6 @@ public class PlayerActionInput : MonoBehaviour
         // Debug.Log("Mouse Grid Position: " + LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
         return LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
     }
+
+    public void SetAutoAttack(bool shouldAutoAttack) => autoAttack = shouldAutoAttack;
 }

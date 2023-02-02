@@ -2,6 +2,7 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MoveAction : BaseAction
@@ -221,13 +222,11 @@ public class MoveAction : BaseAction
             {
                 unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
                 finalTargetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition, unit.gridPosition);
-                unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
+                unit.unitActionHandler.QueueAction(this);
             }
             // If the Player hasn't reached their destination, add the next move to the queue
             else if (unit.gridPosition != finalTargetGridPosition)
-            {
-                unit.unitActionHandler.QueueAction(this, finalTargetGridPosition);
-            }
+                unit.unitActionHandler.QueueAction(this);
         }
         else // If NPC
         {
@@ -333,8 +332,8 @@ public class MoveAction : BaseAction
             positionIndex = positionList.Count - 1;
 
         // Only calculate a new path if the Unit's target position changed or if their path becomes obstructed
-        if (targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(positionList[positionIndex]))))
-            GetPathToTargetPosition(targetGridPosition);
+        if (unit.unitActionHandler.targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(positionList[positionIndex]))))
+            GetPathToTargetPosition(unit.unitActionHandler.targetGridPosition);
 
         if (positionList.Count == 0)
             return cost;

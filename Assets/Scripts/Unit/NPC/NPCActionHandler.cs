@@ -7,9 +7,10 @@ public class NPCActionHandler : UnitActionHandler
     [SerializeField] float maxChaseDistance = 15f;
 
     [Header("Flee State")]
-    [SerializeField] int fleeDistance = 20;
+    [SerializeField] int defaultFleeDistance = 20;
     [SerializeField] bool shouldAlwaysFleeCombat;
     public Unit unitToFleeFrom;
+    int fleeDistance;
     GridPosition unitToFleeFrom_PreviousGridPosition;
     bool needsNewFleeDestination = true;
     float unitToFleeFrom_PreviousDistance;
@@ -44,39 +45,46 @@ public class NPCActionHandler : UnitActionHandler
         {
             if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
             {
-                TurnManager.Instance.FinishTurn(unit);
+                TurnManager.Instance.FinishTurn(unit); // Unit can't do anything, so skip their turn
                 return;
             }
             else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
             {
                 if (unit.RangedWeaponEquipped())
                 {
-                    if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    Unit closestEnemy = unit.vision.GetClosestEnemy(true);
+                    float minShootRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
+
+                    // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
+                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange)
                     {
-                        ClearActionQueue(); 
-                        
+                        // Flee somewhere
+                        StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.GetRangedWeapon().itemData.item.Weapon().maxRange - 2)));
+                    }
+                    else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                    {
+                        // Shoot the target enemy
+                        ClearActionQueue(true);
                         if (unit.GetRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                            QueueAction(GetAction<ShootAction>());
                         else
-                            QueueAction(GetAction<ReloadAction>(), targetEnemyUnit.gridPosition);
+                            QueueAction(GetAction<ReloadAction>());
                         return;
                     }
                 }
-                //else if (GetAction<MeleeAction>().IsInUnarmedAttackRange(targetEnemyUnit))
-                //{
-
-                //}
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 {
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                     {
-                        ClearActionQueue();
-                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                        // Melee attack the target enemy
+                        ClearActionQueue(false);
+                        QueueAction(GetAction<MeleeAction>());
                         return;
                     }
                 }
             }
 
+            // If not attacking, get/determine the next action
             if (queuedAction != null)
                 GetNextQueuedAction();
             else
@@ -149,9 +157,9 @@ public class NPCActionHandler : UnitActionHandler
 
     public void StartFight()
     {
-        FindBestTargetEnemy();
-        ClearActionQueue();
         unit.stateController.SetCurrentState(State.Fight);
+        FindBestTargetEnemy();
+        ClearActionQueue(false);
     }
 
     void PursueTargetEnemy()
@@ -174,7 +182,7 @@ public class NPCActionHandler : UnitActionHandler
             }
         }
 
-        QueueAction(GetAction<MoveAction>(), targetGridPosition);
+        QueueAction(GetAction<MoveAction>());
     }
 
     void FindBestTargetEnemy()
@@ -209,20 +217,7 @@ public class NPCActionHandler : UnitActionHandler
     void SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy)
     {
         oldEnemy = targetEnemyUnit;
-        Unit closestEnemy = targetEnemyUnit;
-        float closestEnemyDist = 1000000;
-        for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
-        {
-            if (unit.vision.visibleEnemies[i] == targetEnemyUnit)
-                continue;
-
-            float distToEnemy = Vector3.Distance(transform.position, unit.vision.visibleEnemies[i].transform.position);
-            if (distToEnemy < closestEnemyDist)
-            {
-                closestEnemy = unit.vision.visibleEnemies[i];
-                closestEnemyDist = distToEnemy;
-            }
-        }
+        Unit closestEnemy = unit.vision.GetClosestEnemy(false);
 
         // Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
         newEnemy = closestEnemy;
@@ -270,16 +265,20 @@ public class NPCActionHandler : UnitActionHandler
         if (targetGridPosition == unit.gridPosition)
             SetTargetGridPosition(LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.gridPosition, unit, fleeDistance, fleeDistance + 15));
 
-        QueueAction(GetAction<MoveAction>(), targetGridPosition);
+        QueueAction(GetAction<MoveAction>());
     }
 
-    public void StartFlee(Unit unitToFleeFrom)
+    public void StartFlee(Unit unitToFleeFrom, int fleeDistance)
     {
-        this.unitToFleeFrom = unitToFleeFrom;
         unit.stateController.SetCurrentState(State.Flee);
+        this.unitToFleeFrom = unitToFleeFrom;
+        this.fleeDistance = fleeDistance;
+        ClearActionQueue(false);
     }
 
     GridPosition GetFleeDestination() => LevelGrid.Instance.GetRandomFleeGridPosition(unit, unitToFleeFrom, fleeDistance, fleeDistance + 15);
+
+    public int DefaultFleeDistance() => defaultFleeDistance;
 
     public void SetUnitToFleeFrom(Unit unitToFleeFrom) => this.unitToFleeFrom = unitToFleeFrom;
 
@@ -306,7 +305,7 @@ public class NPCActionHandler : UnitActionHandler
         else if (GetAction<MoveAction>().isMoving == false)
         {
             SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
-            QueueAction(GetAction<MoveAction>(), targetGridPosition);
+            QueueAction(GetAction<MoveAction>());
         }
     }
 
@@ -389,7 +388,7 @@ public class NPCActionHandler : UnitActionHandler
 
             // Queue the Move Action if the Unit isn't already moving
             if (GetAction<MoveAction>().isMoving == false)
-                QueueAction(GetAction<MoveAction>(), targetGridPosition);
+                QueueAction(GetAction<MoveAction>());
         }
         else // If no Patrol Points set
         {
@@ -463,7 +462,7 @@ public class NPCActionHandler : UnitActionHandler
 
             // Queue the Move Action if the Unit isn't already moving
             if (GetAction<MoveAction>().isMoving == false)
-                QueueAction(GetAction<MoveAction>(), targetGridPosition);
+                QueueAction(GetAction<MoveAction>());
         }
         // If the NPC has arrived at their destination
         else if (Vector3.Distance(wanderGridPosition.WorldPosition(), transform.position) <= 0.1f)
@@ -482,7 +481,7 @@ public class NPCActionHandler : UnitActionHandler
                 SetTargetGridPosition(wanderGridPosition);
             }
 
-            QueueAction(GetAction<MoveAction>(), targetGridPosition);
+            QueueAction(GetAction<MoveAction>());
         }
     }
 
@@ -495,6 +494,7 @@ public class NPCActionHandler : UnitActionHandler
         needsNewFleeDestination = true;
         unitToFleeFrom = null;
         unitToFleeFrom_PreviousDistance = 0f;
+        fleeDistance = 0;
 
         // Patrol
         hasAlternativePatrolPoint = false;
