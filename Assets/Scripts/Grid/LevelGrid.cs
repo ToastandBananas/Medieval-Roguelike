@@ -230,9 +230,9 @@ public class LevelGrid : MonoBehaviour
         return nearestGridPosition;
     }
 
-    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
+    public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        List<GridPosition> validGridPositionsList = new List<GridPosition>();
 
         unit.UnblockCurrentPosition();
 
@@ -261,13 +261,21 @@ public class LevelGrid : MonoBehaviour
             if (collisions.Length > 0)
                 continue;
 
-            validGridPositionList.Add(nodeGridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
         }
 
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
         unit.BlockCurrentPosition();
 
+        if (validGridPositionsList.Count == 0)
+            validGridPositionsList.Add(unit.gridPosition);
+        return validGridPositionsList;
+    }
+
+    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
+    {
+        List<GridPosition> validGridPositionList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange);
         if (validGridPositionList.Count == 0)
             return unit.gridPosition;
         return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];

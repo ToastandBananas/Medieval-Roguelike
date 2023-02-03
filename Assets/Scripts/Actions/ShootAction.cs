@@ -97,7 +97,7 @@ public class ShootAction : BaseAction
     public bool IsInAttackRange(Unit enemyUnit)
     {
         float dist = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize();
-        if (dist <= unit.GetRangedWeapon().itemData.item.Weapon().maxRange && dist >= unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+        if (dist <= unit.GetRangedWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition) && dist >= unit.GetRangedWeapon().itemData.item.Weapon().minRange)
             return true;
         return false;
     }

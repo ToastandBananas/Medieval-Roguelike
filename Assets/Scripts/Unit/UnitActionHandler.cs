@@ -59,7 +59,6 @@ public class UnitActionHandler : MonoBehaviour
                             QueueAction(GetAction<ShootAction>());
                         else
                             QueueAction(GetAction<ReloadAction>());
-                        return;
                     }
                     else // If they're out of the shoot range, move towards the enemy
                     {
@@ -74,7 +73,6 @@ public class UnitActionHandler : MonoBehaviour
                         // Melee attack the target enemy
                         ClearActionQueue(false);
                         QueueAction(GetAction<MeleeAction>());
-                        return;
                     }
                     else // If they're out of melee range, move towards the enemy
                     {

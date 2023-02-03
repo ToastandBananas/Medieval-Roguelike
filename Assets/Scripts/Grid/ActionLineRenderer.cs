@@ -9,6 +9,8 @@ public class ActionLineRenderer : MonoBehaviour
     [SerializeField] LineRenderer mainLineRenderer;
     [SerializeField] LineRenderer arrowHeadLineRenderer;
 
+    Unit player;
+
     Vector3 lineRendererOffset = new Vector3(0f, 0.1f, 0f);
     GridPosition currentMouseGridPosition;
     GridPosition currentPlayerPosition;
@@ -26,43 +28,62 @@ public class ActionLineRenderer : MonoBehaviour
         HideLineRenderers();
     }
 
+    void Start()
+    {
+        player = UnitManager.Instance.player;
+    }
+
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition;
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
+        bool findPathToShootPosition = false;
 
-        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || UnitManager.Instance.player.gridPosition != currentPlayerPosition))
+        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition))
         {
             currentMouseGridPosition = mouseGridPosition;
-            currentPlayerPosition = UnitManager.Instance.player.gridPosition;
-            Unit unitAtMousePosition = null;
+            currentPlayerPosition = player.gridPosition;
+            Unit unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
 
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(mouseGridPosition))
+            if (unitAtMousePosition == player)
             {
-                unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
-                if (UnitManager.Instance.player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
+                HideLineRenderers();
+                yield break;
+            }
+
+            if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
+            {
+                if (player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
                 {
-                    if (((UnitManager.Instance.player.MeleeWeaponEquipped() || (UnitManager.Instance.player.RangedWeaponEquipped() == false && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
-                        || (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
+                    // If the enemy Unit is in attack range, no need to show the line renderer
+                    if (((player.MeleeWeaponEquipped() || (player.RangedWeaponEquipped() == false && player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
+                        || (player.RangedWeaponEquipped() && player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
                     {
                         HideLineRenderers();
                         yield break;
                     }
 
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition, UnitManager.Instance.player.gridPosition);
+                    if (player.RangedWeaponEquipped())
+                        findPathToShootPosition = true;
+
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition, player.gridPosition);
                 }
                 else
                     targetGridPosition = mouseGridPosition;
             }
             else
+            {
                 targetGridPosition = mouseGridPosition;
+                if (unitAtMousePosition != null)
+                    unitAtMousePosition.UnblockCurrentPosition();
+            }
 
-            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(UnitManager.Instance.player.gridPosition), LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(player.gridPosition), LevelGrid.Instance.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
-            UnitManager.Instance.player.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
+            player.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
 
             // Wait for the path calculation to complete
             yield return StartCoroutine(path.WaitForPath());
@@ -74,6 +95,9 @@ public class ActionLineRenderer : MonoBehaviour
 
             if (LevelGrid.Instance.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
                 yield break;
+
+            if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition) == false)
+                unitAtMousePosition.BlockCurrentPosition();
 
             int verticeIndex = 0;
             for (int i = 0; i < path.vectorPath.Count - 1; i++)
@@ -131,6 +155,9 @@ public class ActionLineRenderer : MonoBehaviour
                 else // Otherwise, simply draw a line to the next point
                     mainLineRenderer.SetPosition(verticeIndex, path.vectorPath[i + 1] + lineRendererOffset);
 
+                if (findPathToShootPosition && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitAtMousePosition.gridPosition, LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1))) <= player.GetRangedWeapon().MaxRange(LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1)), unitAtMousePosition.gridPosition))
+                    yield break;
+
                 verticeIndex++;
             }
         }
@@ -148,11 +175,11 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         mainLineRenderer.positionCount = 2;
 
-        mainLineRenderer.SetPosition(0, UnitManager.Instance.player.WorldPosition() + lineRendererOffset);
+        mainLineRenderer.SetPosition(0, player.WorldPosition() + lineRendererOffset);
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = UnitManager.Instance.player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
+        Direction turnDirection = player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 

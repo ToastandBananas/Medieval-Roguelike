@@ -78,16 +78,26 @@ public class PlayerActionInput : MonoBehaviour
                     GridPosition mouseGridPosition = GetMouseGridPosition();
                     if (mouseGridPosition != unit.gridPosition && LevelGrid.Instance.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                     {
-                        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(mouseGridPosition))
+                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+                        bool unitIsVisible = true;
+                        if (unitAtGridPosition != null)
+                            unitIsVisible = unit.vision.IsVisible(unitAtGridPosition);
+
+                        if (unitAtGridPosition != null && unitIsVisible)
                         {
-                            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                             if (unit.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
                             {
                                 unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 if ((UnitManager.Instance.player.MeleeWeaponEquipped() || UnitManager.Instance.player.IsUnarmed()) && UnitManager.Instance.player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                                 {
                                     if (unitAtGridPosition.IsCompletelySurrounded())
+                                    {
+                                        unit.unitActionHandler.SetTargetEnemyUnit(null);
                                         return;
+                                    }
+
+                                    unit.unitActionHandler.AttackTargetEnemy();
+                                    return;
                                 }
                                 else if (UnitManager.Instance.player.RangedWeaponEquipped() && UnitManager.Instance.player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
                                 {

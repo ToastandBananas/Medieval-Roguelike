@@ -78,6 +78,9 @@ public class MeleeAction : BaseAction
                 unit.leftHeldItem.DoDefaultAttack();
             }
 
+            if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+                unit.unitActionHandler.SetTargetEnemyUnit(null);
+
             StartCoroutine(WaitToFinishAction());
         }
         else
@@ -90,6 +93,9 @@ public class MeleeAction : BaseAction
                 unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
             else if (unit.leftHeldItem != null)
                 unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
+
+            if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+                unit.unitActionHandler.SetTargetEnemyUnit(null);
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -146,8 +152,6 @@ public class MeleeAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
-        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
         isAttacking = false;
         unit.unitActionHandler.FinishAction();
     }

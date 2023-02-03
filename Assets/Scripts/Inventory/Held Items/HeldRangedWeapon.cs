@@ -62,4 +62,12 @@ public class HeldRangedWeapon : HeldItem
         // Debug.Log("Z Rotation: " + -zRotation);
         return -zRotation;
     }
+
+    public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition)
+    {
+        float maxRange = itemData.item.Weapon().maxRange;
+        maxRange += shooterGridPosition.y - targetGridPosition.y;
+        if (maxRange < 0f) maxRange = 0f;
+        return maxRange;
+    }
 }

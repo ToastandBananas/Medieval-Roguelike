@@ -251,11 +251,8 @@ public class MoveAction : BaseAction
         if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
             unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-            if (UnitManager.Instance.player.alliance.IsEnemy(unitAtTargetGridPosition.alliance.CurrentFaction()))
-            {
-                unitAtTargetGridPosition.UnblockCurrentPosition();
-                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition);
-            }
+            unitAtTargetGridPosition.UnblockCurrentPosition();
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition);
         }
 
         SetFinalTargetGridPosition(targetGridPosition);
