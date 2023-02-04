@@ -1,14 +1,17 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
 {
+    public event EventHandler OnSelectedActionChanged;
+
     public GridPosition targetGridPosition { get; protected set; }
 
     public BaseAction queuedAction { get; private set; }
     public int queuedAP { get; private set; }
 
-    BaseAction[] baseActionArray;
+    public BaseAction[] baseActionArray { get; private set; }
     public BaseAction selectedAction { get; private set; }
 
     public Unit unit { get; private set; }
@@ -195,7 +198,7 @@ public class UnitActionHandler : MonoBehaviour
                 else
                     QueueAction(GetAction<ReloadAction>());
             }
-            else
+            else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 QueueAction(GetAction<MeleeAction>());
         }
         else
@@ -227,7 +230,12 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 
-    public void SetSelectedAction(BaseAction action) => selectedAction = action;
+    public void SetSelectedAction(BaseAction action)
+    {
+        selectedAction = action;
+        if (unit.IsPlayer())
+            OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+    }
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 

@@ -1,6 +1,7 @@
 using Pathfinding;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class ActionLineRenderer : MonoBehaviour
 {
@@ -38,7 +39,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition;
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
-        bool findPathToShootPosition = false;
+        bool findPathToShootPosition = false;// If the mouse pointer is over a UI button
 
         if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition))
         {

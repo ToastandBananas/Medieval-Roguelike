@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class Stats : MonoBehaviour
 {
@@ -18,7 +17,7 @@ public class Stats : MonoBehaviour
 
     void Awake()
     {
-        ReplenishAP();
+        currentAP = MaxAP();
 
         unit = GetComponent<Unit>();
     }
@@ -31,17 +30,25 @@ public class Stats : MonoBehaviour
     {
         // Debug.Log("AP used: " + amount);
         currentAP -= amount;
+        UnitActionSystemUI.Instance.UpdateActionPoints();
         //if (unit.IsPlayer())
             //gm.healthDisplay.UpdateAPText();
     }
 
-    public void ReplenishAP() => currentAP = MaxAP();
+    public void ReplenishAP()
+    {
+        currentAP = MaxAP();
+        if (unit.IsPlayer())
+            UnitActionSystemUI.Instance.UpdateActionPoints();
+    }
 
     public void AddToCurrentAP(int amountToAdd)
     {
         currentAP += amountToAdd;
         if (currentAP > MaxAP())
             ReplenishAP();
+        if (unit.IsPlayer())
+            UnitActionSystemUI.Instance.UpdateActionPoints();
     }
 
     public void AddToAPLossBuildup(int amount) => APLossBuildup += amount; 
@@ -59,6 +66,9 @@ public class Stats : MonoBehaviour
             currentAP = 0;
             TurnManager.Instance.FinishTurn(unit);
         }
+
+        if (unit.IsPlayer())
+            UnitActionSystemUI.Instance.UpdateActionPoints();
     }
 
     public int UseAPAndGetRemainder(int amount)

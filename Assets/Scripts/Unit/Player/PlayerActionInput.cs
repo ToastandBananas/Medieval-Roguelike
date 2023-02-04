@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerActionInput : MonoBehaviour
 {
@@ -36,6 +37,12 @@ public class PlayerActionInput : MonoBehaviour
         if (skipTurnCooldownTimer < skipTurnCooldown)
             skipTurnCooldownTimer += Time.deltaTime;
 
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            ActionLineRenderer.Instance.HideLineRenderers();
+            return;
+        }
+
         if (unit.health.IsDead() == false)
         {
             if (GameControls.gamePlayActions.turnMode.WasReleased && unit.unitActionHandler.selectedAction == unit.unitActionHandler.GetAction<TurnAction>())
@@ -61,11 +68,20 @@ public class PlayerActionInput : MonoBehaviour
                 {
                     if (unit.unitActionHandler.selectedAction is MoveAction)
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                    else if (unit.unitActionHandler.selectedAction is MeleeAction || unit.unitActionHandler.selectedAction is ShootAction)
+                    {
+                        GridPosition mouseGridPosition = GetMouseGridPosition();
+                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+                        if (unitAtGridPosition != null && unit.vision.IsVisible(unitAtGridPosition) && unit.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                            StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                        else
+                            ActionLineRenderer.Instance.HideLineRenderers();
+                    }
                     else if (unit.unitActionHandler.selectedAction is TurnAction)
                         ActionLineRenderer.Instance.DrawTurnArrow(unit.unitActionHandler.GetAction<TurnAction>().targetPosition);
                 }
 
-                if (GameControls.gamePlayActions.turnMode.IsPressed)
+                if (GameControls.gamePlayActions.turnMode.IsPressed || unit.unitActionHandler.selectedAction is TurnAction)
                 {
                     unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<TurnAction>());
                     unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
@@ -104,18 +120,19 @@ public class PlayerActionInput : MonoBehaviour
                                     unit.unitActionHandler.AttackTargetEnemy();
                                     return;
                                 }
+
+                                unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
+                                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
                             }
                             else
-                            {
                                 unit.unitActionHandler.SetTargetEnemyUnit(null);
-                                return;
-                            }
                         }
-                        else
-                            unit.unitActionHandler.SetTargetEnemyUnit(null);
-
-                        unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
-                        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
+                        else if (unit.unitActionHandler.selectedAction is MoveAction)
+                        {
+                            unit.unitActionHandler.SetTargetEnemyUnit(null); 
+                            unit.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
+                            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
+                        }
                     }
                 }
             }
