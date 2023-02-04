@@ -239,5 +239,5 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
-    public LayerMask ShootObstacleMask() => shootObstacleMask;
+    public LayerMask AttackObstacleMask() => shootObstacleMask;
 }

@@ -37,6 +37,8 @@ public abstract class BaseAction : MonoBehaviour
         return enemyAIActionList[0];
     }
 
+    public virtual List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition) => null;
+
     public bool IsActive() => isActive;
 
     public abstract EnemyAIAction GetEnemyAIAction(GridPosition gridPosition);

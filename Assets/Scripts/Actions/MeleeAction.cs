@@ -1,5 +1,7 @@
+using Pathfinding;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeAction : BaseAction
@@ -189,6 +191,52 @@ public class MeleeAction : BaseAction
             return 0;
         }
         return 300;
+    }
+
+    public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+
+        // Schedule the path for calculation
+        AstarPath.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
+                continue;
+
+            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
+            if (distance > meleeWeapon.maxRange || distance < meleeWeapon.minRange)
+                continue;
+
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
+
+            // If both Units are on the same team
+            if (targetUnit.alliance.IsAlly(unit.alliance.CurrentFaction()))
+                continue;
+
+            float sphereCastRadius = 0.1f;
+            Vector3 shootDir = ((startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight())) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight()))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight()), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight())), unit.unitActionHandler.AttackObstacleMask()))
+                continue; // Blocked by an obstacle
+
+            // Debug.Log(gridPosition);
+            validGridPositionList.Add(nodeGridPosition);
+        }
+
+        return validGridPositionList;
     }
 
     public override bool IsValidAction()

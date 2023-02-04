@@ -29,6 +29,8 @@ public class GridSystemVisual : MonoBehaviour
 
     List<GridSystemVisualSingle> gridSystemVisualSingleList = new List<GridSystemVisualSingle>();
 
+    Unit player;
+
     void Awake()
     {
         if (Instance != null)
@@ -42,6 +44,8 @@ public class GridSystemVisual : MonoBehaviour
 
     void Start()
     {
+        player = UnitManager.Instance.player;
+
         for (int i = 0; i < amountToPool; i++)
         {
             GridSystemVisualSingle newGridSystemVisualSingle = CreateNewGridSystemVisualSingle();
@@ -83,6 +87,9 @@ public class GridSystemVisual : MonoBehaviour
 
     public void ShowGridPositionList(List<GridPosition> gridPositionList, GridVisualType gridVisualType)
     {
+        if (gridPositionList == null)
+            return;
+
         for (int i = 0; i < gridPositionList.Count; i++)
         {
             GridSystemVisualSingle gridSystemVisualSingle = GetGridVisualSystemSingleFromPool();
@@ -92,7 +99,7 @@ public class GridSystemVisual : MonoBehaviour
         }
     }
 
-    public void ShowShootGridPositionRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
+    public void ShowGridPositionRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
         List<GridPosition> gridPositionList = new List<GridPosition>(); 
         
@@ -115,12 +122,10 @@ public class GridSystemVisual : MonoBehaviour
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(gridPosition, nodeGridPosition);
             if (distance > maxRange || distance < minRange)
                 continue;
-            
-            Unit activeUnit = TurnManager.Instance.activeUnit;
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()) - ((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()))).normalized;
-            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(activeUnit.WorldPosition() + (Vector3.up * activeUnit.ShoulderHeight()), (Vector3)path.allNodes[i].position + (Vector3.up * activeUnit.ShoulderHeight())), activeUnit.unitActionHandler.ShootObstacleMask()))
+            Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight()) - ((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight()))).normalized;
+            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight()), (Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight())), player.unitActionHandler.AttackObstacleMask()))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);
@@ -134,35 +139,33 @@ public class GridSystemVisual : MonoBehaviour
     {
         HideAllGridPositions();
 
-        Unit activeUnit = TurnManager.Instance.activeUnit;
-        /*
-        BaseAction selectedAction = UnitActionSystem.Instance.SelectedAction();
-
+        BaseAction selectedAction = player.unitActionHandler.selectedAction;
         GridVisualType gridVisualType;
         switch (selectedAction)
         {
             case MeleeAction meleeAction:
                 gridVisualType = GridVisualType.Red;
-                ShowGridPositionRange(selectedUnit.GridPosition(), 1, meleeAction.MaxMeleeDistance(), GridVisualType.RedSoft);
+                Weapon meleeWeapon = player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                ShowGridPositionRange(player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
                 break;
             case ShootAction shootAction:
                 gridVisualType = GridVisualType.Red;
-                ShowGridPositionRange(selectedUnit.GridPosition(), shootAction.MinShootDistance(), shootAction.MaxShootDistance(), GridVisualType.RedSoft);
+                Weapon rangedWeapon = player.GetRangedWeapon().itemData.item.Weapon();
+                ShowGridPositionRange(player.gridPosition, rangedWeapon.minRange, rangedWeapon.maxRange, GridVisualType.RedSoft);
                 break;
-            case ThrowAction throwBombAction:
-                gridVisualType = GridVisualType.Red;
-                ShowGridPositionRange(selectedUnit.GridPosition(), throwBombAction.MinThrowDistance(), throwBombAction.MaxThrowDistance(), GridVisualType.RedSoft);
-                break;
-            case InteractAction interactAction:
-                gridVisualType = GridVisualType.Yellow;
-                break;
+            //case ThrowAction throwBombAction:
+                //gridVisualType = GridVisualType.Red;
+                //ShowGridPositionRange(player.gridPosition, throwBombAction.MinThrowDistance(), throwBombAction.MaxThrowDistance(), GridVisualType.RedSoft);
+                //break;
+            //case InteractAction interactAction:
+                //gridVisualType = GridVisualType.Yellow;
+                //break;
             default:
                 gridVisualType = GridVisualType.White;
                 break;
         }
 
-        ShowGridPositionList(selectedAction.GetValidActionGridPositionList(), gridVisualType);
-        */
+        ShowGridPositionList(selectedAction.GetValidActionGridPositionList(player.gridPosition), gridVisualType);
     }
 
     void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)

@@ -191,6 +191,15 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public HeldMeleeWeapon GetPrimaryMeleeWeapon()
+    {
+        if (rightHeldItem != null && rightHeldItem.itemData.item.IsMeleeWeapon())
+            return rightHeldItem as HeldMeleeWeapon;
+        else if (leftHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon())
+            return leftHeldItem as HeldMeleeWeapon;
+        return null;
+    }
+
     public HeldRangedWeapon GetRangedWeapon() => leftHeldItem as HeldRangedWeapon;
 
     public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem as HeldMeleeWeapon;

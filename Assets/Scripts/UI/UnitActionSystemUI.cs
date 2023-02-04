@@ -60,7 +60,10 @@ public class UnitActionSystemUI : MonoBehaviour
         if (playerActionHandler.queuedAction == null && playerActionHandler.selectedAction.ActionIsUsedInstantly())
             playerActionHandler.QueueAction(playerActionHandler.selectedAction);
         else
+        {
             UpdateSelectedVisual();
+            GridSystemVisual.Instance.UpdateGridVisual();
+        }
     } 
 
     void HideActionButtons()
