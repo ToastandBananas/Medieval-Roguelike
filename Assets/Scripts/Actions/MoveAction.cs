@@ -2,7 +2,6 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MoveAction : BaseAction
@@ -221,7 +220,11 @@ public class MoveAction : BaseAction
             else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
             {
                 unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
-                finalTargetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition, unit.gridPosition);
+                if (unit.RangedWeaponEquipped())
+                    finalTargetGridPosition = unit.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition);
+                else
+                    finalTargetGridPosition = unit.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition);
+
                 unit.unitActionHandler.QueueAction(this);
             }
             // If the Player hasn't reached their destination, add the next move to the queue
@@ -247,7 +250,6 @@ public class MoveAction : BaseAction
     void GetPathToTargetPosition(GridPosition targetGridPosition)
     {
         Unit unitAtTargetGridPosition = null;
-
         if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
             unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);

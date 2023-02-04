@@ -123,18 +123,18 @@ public class MeleeAction : BaseAction
     {
         if (unit.IsUnarmed())
         {
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= unarmedAttackRange)
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= UnarmedAttackRange(enemyUnit.gridPosition, true))
                 return true;
         }
         else
         {
             float maxRange;
             if (unit.rightHeldItem != null)
-                maxRange = unit.GetRightMeleeWeapon().itemData.item.Weapon().maxRange;
+                maxRange = unit.GetRightMeleeWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition);
             else
-                maxRange = unit.GetLeftMeleeWeapon().itemData.item.Weapon().maxRange;
+                maxRange = unit.GetLeftMeleeWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition);
 
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= maxRange)
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= maxRange)
                 return true;
         }
         return false;
@@ -216,10 +216,24 @@ public class MeleeAction : BaseAction
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
                 continue;
 
-            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
-            if (distance > meleeWeapon.maxRange || distance < meleeWeapon.minRange)
-                continue;
+            if (unit.MeleeWeaponEquipped())
+            {
+                Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                float maxRangeToNodePosition = meleeWeapon.maxRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y); ;
+                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+
+                if (distance > maxRangeToNodePosition || distance < meleeWeapon.minRange)
+                    continue;
+            }
+            else
+            {
+                float maxRangeToNodePosition = unarmedAttackRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y); ;
+                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+
+                if (distance > maxRangeToNodePosition || distance < 1f)
+                    continue;
+            }
 
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
 
@@ -239,9 +253,101 @@ public class MeleeAction : BaseAction
         return validGridPositionList;
     }
 
+    public List<GridPosition> GetValidGridPositionsInRange(GridPosition targetGridPosition)
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+
+        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+
+        // Schedule the path for calculation
+        AstarPath.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) // Grid Position has a Unit there already
+                continue;
+
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(nodeGridPosition, targetGridPosition);
+            float maxRangeToNodePosition = 0f;
+            if (unit.MeleeWeaponEquipped())
+            {
+                Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                maxRangeToNodePosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - nodeGridPosition.y);
+                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f; 
+                
+                if (distance > maxRangeToNodePosition || distance < meleeWeapon.minRange)
+                    continue;
+            }
+            else
+            {
+                maxRangeToNodePosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - nodeGridPosition.y);
+                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+
+                if (distance > maxRangeToNodePosition || distance < 1f)
+                    continue;
+            }
+
+            float sphereCastRadius = 0.1f;
+            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
+                continue; // Blocked by an obstacle
+
+            // Debug.Log(gridPosition);
+            validGridPositionList.Add(nodeGridPosition);
+        }
+
+        return validGridPositionList;
+    }
+
+    public GridPosition GetNearestMeleePosition(GridPosition startGridPosition, GridPosition targetGridPosition)
+    {
+        List<GridPosition> validGridPositionsList = GetValidGridPositionsInRange(targetGridPosition);
+        List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
+        float nearestDistance = 10000000f;
+
+        // First find the nearest valid Grid Positions to the Player
+        for (int i = 0; i < validGridPositionsList.Count; i++)
+        {
+            float distance = Vector3.Distance(validGridPositionsList[i].WorldPosition(), startGridPosition.WorldPosition());
+            if (distance < nearestDistance)
+            {
+                nearestGridPositionsList.Clear();
+                nearestGridPositionsList.Add(validGridPositionsList[i]);
+                nearestDistance = distance;
+            }
+            else if (Mathf.Approximately(distance, nearestDistance))
+                nearestGridPositionsList.Add(validGridPositionsList[i]);
+        }
+
+        GridPosition nearestGridPosition = startGridPosition;
+        float nearestDistanceToTarget = 10000000f;
+        for (int i = 0; i < nearestGridPositionsList.Count; i++)
+        {
+            // Get the Grid Position that is closest to the target Grid Position
+            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetGridPosition.WorldPosition());
+            if (distance < nearestDistanceToTarget)
+            {
+                nearestDistanceToTarget = distance;
+                nearestGridPosition = nearestGridPositionsList[i];
+            }
+        }
+
+        return nearestGridPosition;
+    }
+
     public override bool IsValidAction()
     {
-        if (unit.MeleeWeaponEquipped() || canFightUnarmed)
+        if (unit.MeleeWeaponEquipped() || (canFightUnarmed && unit.RangedWeaponEquipped() == false))
             return true;
         return false;
     }
@@ -249,6 +355,15 @@ public class MeleeAction : BaseAction
     void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false; 
 
     public bool CanFightUnarmed() => canFightUnarmed;
+
+    public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
+    {
+        if (accountForHeight == false)
+            return unarmedAttackRange;
+        float maxRange = unarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.gridPosition.y);
+        if (maxRange < 0f) maxRange = 0f;
+        return maxRange;
+    }
 
     public override bool ActionIsUsedInstantly() => false;
 

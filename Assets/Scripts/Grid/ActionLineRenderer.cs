@@ -39,7 +39,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition;
         GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
-        bool findPathToShootPosition = false;// If the mouse pointer is over a UI button
+        //bool findPathToShootPosition = false;// If the mouse pointer is over a UI button
 
         if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition))
         {
@@ -66,9 +66,9 @@ public class ActionLineRenderer : MonoBehaviour
                     }
 
                     if (player.RangedWeaponEquipped())
-                        findPathToShootPosition = true;
-
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(mouseGridPosition, player.gridPosition);
+                        targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(player.gridPosition, unitAtMousePosition.gridPosition);
+                    else
+                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(player.gridPosition, unitAtMousePosition.gridPosition);
                 }
                 else
                     targetGridPosition = mouseGridPosition;
@@ -156,8 +156,8 @@ public class ActionLineRenderer : MonoBehaviour
                 else // Otherwise, simply draw a line to the next point
                     mainLineRenderer.SetPosition(verticeIndex, path.vectorPath[i + 1] + lineRendererOffset);
 
-                if (findPathToShootPosition && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitAtMousePosition.gridPosition, LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1))) <= player.GetRangedWeapon().MaxRange(LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1)), unitAtMousePosition.gridPosition))
-                    yield break;
+                //if (findPathToShootPosition && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitAtMousePosition.gridPosition, LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1))) <= player.GetRangedWeapon().MaxRange(LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1)), unitAtMousePosition.gridPosition))
+                    //yield break;
 
                 verticeIndex++;
             }

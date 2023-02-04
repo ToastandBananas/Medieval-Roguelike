@@ -49,4 +49,11 @@ public class HeldMeleeWeapon : HeldItem
 
         transform.parent.localRotation = targetRotation;
     }
+
+    public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition)
+    {
+        float maxRange = itemData.item.Weapon().maxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
+        if (maxRange < 0f) maxRange = 0f;
+        return maxRange;
+    }
 }
