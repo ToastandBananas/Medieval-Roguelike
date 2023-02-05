@@ -30,12 +30,11 @@ public class ReloadAction : BaseAction
         }
     }
 
-    public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
+    public override void TakeAction(GridPosition gridPosition)
     {
         if (isReloading) return;
 
-        StartAction(onActionComplete);
-
+        StartAction();
         Reload();
     }
 
@@ -47,9 +46,9 @@ public class ReloadAction : BaseAction
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
-    protected override void StartAction(Action onActionComplete)
+    protected override void StartAction()
     {
-        base.StartAction(onActionComplete);
+        base.StartAction();
         isReloading = true;
     }
 
@@ -57,6 +56,8 @@ public class ReloadAction : BaseAction
     {
         base.CompleteAction();
         isReloading = false;
+        if (unit.IsPlayer())
+            unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<ShootAction>());
         unit.unitActionHandler.FinishAction();
     }
 

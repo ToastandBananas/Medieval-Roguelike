@@ -126,7 +126,7 @@ public class UnitActionHandler : MonoBehaviour
             if (APRemainder <= 0)
             {
                 isPerformingAction = true;
-                queuedAction.TakeAction(targetGridPosition, null);
+                queuedAction.TakeAction(targetGridPosition);
                 // if (isNPC == false) Debug.Log("Got next queued action. Actions still queued: " + actions.Count);
             }
             else

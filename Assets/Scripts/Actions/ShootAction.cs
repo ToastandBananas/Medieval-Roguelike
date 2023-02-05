@@ -14,7 +14,7 @@ public class ShootAction : BaseAction
         unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
     }
 
-    public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
+    public override void TakeAction(GridPosition gridPosition)
     {
         if (isShooting) return;
 
@@ -24,7 +24,7 @@ public class ShootAction : BaseAction
             return;
         }
 
-        StartAction(onActionComplete);
+        StartAction();
 
         if (RangedWeaponIsLoaded() == false)
         {
@@ -104,9 +104,9 @@ public class ShootAction : BaseAction
         return false;
     }
 
-    protected override void StartAction(Action onActionComplete)
+    protected override void StartAction()
     {
-        base.StartAction(onActionComplete);
+        base.StartAction();
         isShooting = true;
     }
 

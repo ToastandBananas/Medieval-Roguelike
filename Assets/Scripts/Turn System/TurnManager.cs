@@ -47,17 +47,14 @@ public class TurnManager : MonoBehaviour
         units_FinishedTurn.Add(unit);
         units_HaventFinishedTurn.Remove(unit);
 
-        if (unit.IsPlayer())
-        {
-            // Debug.Log("Player finished their turn");
-            GridSystemVisual.Instance.HideAllGridPositions();
-        }
-
         StartCoroutine(StartNextUnitsTurn(unit));
     }
 
     void StartUnitsTurn(Unit unit)
     {
+        if (UnitManager.Instance.player.health.IsDead())
+            return;
+
         if (unit.health.IsDead())
         {
             // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");

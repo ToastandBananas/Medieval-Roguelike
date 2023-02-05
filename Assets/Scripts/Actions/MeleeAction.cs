@@ -19,7 +19,7 @@ public class MeleeAction : BaseAction
         unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
     }
 
-    public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
+    public override void TakeAction(GridPosition gridPosition)
     {
         if (isAttacking) return;
 
@@ -29,7 +29,7 @@ public class MeleeAction : BaseAction
             return;
         }
 
-        StartAction(onActionComplete);
+        StartAction();
 
         if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
         {
@@ -80,9 +80,6 @@ public class MeleeAction : BaseAction
                 unit.leftHeldItem.DoDefaultAttack();
             }
 
-            if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
-                unit.unitActionHandler.SetTargetEnemyUnit(null);
-
             StartCoroutine(WaitToFinishAction());
         }
         else
@@ -95,9 +92,6 @@ public class MeleeAction : BaseAction
                 unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
             else if (unit.leftHeldItem != null)
                 unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
-
-            if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
-                unit.unitActionHandler.SetTargetEnemyUnit(null);
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -145,9 +139,9 @@ public class MeleeAction : BaseAction
         return baseUnarmedDamage;
     }
 
-    protected override void StartAction(Action onActionComplete)
+    protected override void StartAction()
     {
-        base.StartAction(onActionComplete);
+        base.StartAction();
         isAttacking = true;
     }
 

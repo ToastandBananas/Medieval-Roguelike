@@ -38,11 +38,11 @@ public class MoveAction : BaseAction
 
     void Start() => SetMoveSpeed();
 
-    public override void TakeAction(GridPosition targetGridPosition, Action onActionComplete)
+    public override void TakeAction(GridPosition targetGridPosition)
     {
         if (isMoving) return;
 
-        StartAction(onActionComplete);
+        StartAction();
         StartCoroutine(Move());
     }
 

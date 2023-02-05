@@ -25,9 +25,9 @@ MonoBehaviour:
   canUsePartial: 0
   value: {x: 0, y: 0}
   staticValue: 1
-  pickupSprite: {fileID: 0}
+  pickupMesh: {fileID: 0}
   minRange: 1
-  maxRange: 1.4
+  maxRange: 1.8
   minDamage: 5
   maxDamage: 10
   isTwoHanded: 0

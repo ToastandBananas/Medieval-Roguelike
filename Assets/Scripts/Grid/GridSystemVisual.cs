@@ -208,22 +208,10 @@ public class GridSystemVisual : MonoBehaviour
                 //gridVisualType = GridVisualType.Yellow;
                 //break;
             default:
-                gridVisualType = GridVisualType.White;
-                break;
+                return;
         }
 
         ShowGridPositionList(selectedAction.GetValidActionGridPositionList(player.gridPosition), gridVisualType);
-    }
-
-    void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
-    {
-        //if (UnitActionSystem.Instance.SelectedUnit() != null && TurnManager.Instance.IsPlayerTurn() && UnitActionSystem.Instance.SelectedUnit().GetAction<MoveAction>().IsActive() == false)
-            //UpdateGridVisual();
-    }
-
-    void UnitActionSystem_OnUnitDeselected(object sender, EventArgs e)
-    {
-        HideAllGridPositions();
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

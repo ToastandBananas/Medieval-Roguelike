@@ -19,12 +19,12 @@ public class TurnAction : BaseAction
         SetCurrentDirection();
     }
 
-    public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
+    public override void TakeAction(GridPosition gridPosition)
     {
         if (targetDirection == Direction.Center)
             return;
 
-        StartAction(onActionComplete);
+        StartAction();
 
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
             StartCoroutine(RotateTowardsPosition(targetPosition, false));

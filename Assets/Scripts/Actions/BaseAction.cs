@@ -13,22 +13,21 @@ public abstract class BaseAction : MonoBehaviour
         unit = GetComponent<Unit>();
     }
 
-    public abstract void TakeAction(GridPosition gridPosition, Action onActionComplete); 
+    public abstract void TakeAction(GridPosition gridPosition); 
     
-    protected virtual void StartAction(Action onActionComplete)
+    protected virtual void StartAction()
     {
         isActive = true;
-        //this.onActionComplete = onActionComplete;
 
-        //OnAnyActionStarted?.Invoke(this, EventArgs.Empty);
+        if (unit.IsPlayer())
+            GridSystemVisual.Instance.HideAllGridPositions();
     }
 
     public virtual void CompleteAction()
     {
         isActive = false;
-        //onActionComplete();
-
-        //OnAnyActionCompleted?.Invoke(this, EventArgs.Empty);
+        if (unit.IsPlayer())
+            UnitActionSystemUI.Instance.UpdateActionVisuals();
     }
 
     public EnemyAIAction GetBestEnemyAIActionFromList(List<EnemyAIAction> enemyAIActionList)

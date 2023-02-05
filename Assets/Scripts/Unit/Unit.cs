@@ -218,7 +218,12 @@ public class Unit : MonoBehaviour
 
     public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && UnitManager.Instance.player.vision.visibleUnits.Contains(this);
 
-    public void SetIsMyTurn(bool isMyTurn) => this.isMyTurn = isMyTurn;
+    public void SetIsMyTurn(bool isMyTurn)
+    {
+        this.isMyTurn = isMyTurn;
+        if (isMyTurn && IsPlayer() && unitActionHandler.queuedAction == null)
+            GridSystemVisual.Instance.UpdateGridVisual();
+    }
 
     public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
 
