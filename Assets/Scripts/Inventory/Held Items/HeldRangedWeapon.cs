@@ -34,11 +34,29 @@ public class HeldRangedWeapon : HeldItem
         loadedProjectile = null;
     }
 
+    public override IEnumerator ResetToIdleRotation()
+    {
+        Quaternion defaultRotation = Quaternion.Euler(IdleRotation());
+        Quaternion startRotation = transform.localRotation;
+        float time = 0f;
+        float duration = 0.25f;
+        while (time < duration)
+        {
+            transform.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);
+            yield return null;
+            time += Time.deltaTime;
+        }
+
+        transform.localRotation = defaultRotation;
+    }
+
     IEnumerator RotateRangedWeapon(GridPosition targetGridPosition)
     {
+        ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
         Quaternion targetRotation = Quaternion.Euler(0f, IdleRotation().y, CalculateZRotation(targetGridPosition));
         float rotateSpeed = 5f;
-        while (unit.unitActionHandler.GetAction<ShootAction>().isShooting)
+
+        while (shootAction.isShooting)
         {
             transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;

@@ -83,11 +83,12 @@ public class PlayerActionInput : MonoBehaviour
 
                 if (GameControls.gamePlayActions.turnMode.IsPressed || player.unitActionHandler.selectedAction is TurnAction)
                 {
-                    player.unitActionHandler.SetSelectedAction(player.unitActionHandler.GetAction<TurnAction>());
-                    player.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
+                    TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
+                    player.unitActionHandler.SetSelectedAction(turnAction);
+                    turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
 
-                    if (GameControls.gamePlayActions.select.WasPressed && player.unitActionHandler.GetAction<TurnAction>().targetDirection != player.unitActionHandler.GetAction<TurnAction>().currentDirection)
-                        player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<TurnAction>());
+                    if (GameControls.gamePlayActions.select.WasPressed && turnAction.targetDirection != turnAction.currentDirection)
+                        player.unitActionHandler.QueueAction(turnAction);
                 }
                 else if (GameControls.gamePlayActions.select.WasPressed)
                 {

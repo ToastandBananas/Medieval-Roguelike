@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
@@ -24,6 +23,7 @@ public class TurnAction : BaseAction
         if (targetDirection == Direction.Center)
             return;
 
+        SetTargetPosition(targetDirection);
         StartAction();
 
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())

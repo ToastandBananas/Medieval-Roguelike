@@ -54,11 +54,13 @@ public class NPCActionHandler : UnitActionHandler
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
                     float minShootRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
-
+                    
                     // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
-                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange)
+                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
                     {
-                        // Flee somewhere
+                        // TO DO: If the Unit has a melee weapon, switch to it
+
+                        // Else flee somewhere
                         StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.GetRangedWeapon().itemData.item.Weapon().maxRange - 2)));
                     }
                     else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
@@ -136,6 +138,21 @@ public class NPCActionHandler : UnitActionHandler
     #region Fight
     void Fight()
     {
+        if (unit.RangedWeaponEquipped())
+        {
+            Unit closestEnemy = unit.vision.GetClosestEnemy(true);
+            float minShootRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
+
+            // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
+            {
+                // TO DO: If the Unit has a melee weapon, switch to it
+
+                // Else flee somewhere
+                StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.GetRangedWeapon().itemData.item.Weapon().maxRange - 2)));
+            }
+        }
+
         FindBestTargetEnemy();
 
         // If there's no target enemy Unit, try to find one, else switch States
@@ -190,13 +207,33 @@ public class NPCActionHandler : UnitActionHandler
         if (unit.vision.visibleEnemies.Count > 0)
         {
             List<EnemyAIAction> enemyAIActions = new List<EnemyAIAction>();
-            MeleeAction meleeAction = GetAction<MeleeAction>();
-            for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+            if (unit.RangedWeaponEquipped())
             {
-                enemyAIActions.Add(meleeAction.GetEnemyAIAction(unit.vision.visibleEnemies[i].gridPosition));
-            }
+                ShootAction shootAction = GetAction<ShootAction>(); 
+                for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+                {
+                    enemyAIActions.Add(shootAction.GetEnemyAIAction(unit.vision.visibleEnemies[i].gridPosition));
+                }
 
-            SetTargetEnemyUnit(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+                SetTargetEnemyUnit(shootAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+
+            }
+            else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+            {
+                MeleeAction meleeAction = GetAction<MeleeAction>();
+                for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+                {
+                    enemyAIActions.Add(meleeAction.GetEnemyAIAction(unit.vision.visibleEnemies[i].gridPosition));
+                }
+
+                SetTargetEnemyUnit(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+            }
+            else
+            {
+                StartFlee(unit.vision.GetClosestEnemy(true), defaultFleeDistance);
+                DetermineAction();
+                return;
+            }
         }
         else
         {

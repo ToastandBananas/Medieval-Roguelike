@@ -39,12 +39,16 @@ public class HeldMeleeWeapon : HeldItem
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
     {
+        if (targetGridPosition.y == unit.gridPosition.y)
+            yield break;
+
+        MeleeAction meleeAction = unit.unitActionHandler.GetAction<MeleeAction>();
         Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
         targetRotation = Quaternion.Euler(new Vector3(-targetRotation.eulerAngles.x, 0f, 0f));
-
         float rotateSpeed = 10f;
-        while (transform.parent.localRotation != targetRotation)
+
+        while (meleeAction.isAttacking)
         {
             transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;

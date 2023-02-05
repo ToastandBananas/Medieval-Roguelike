@@ -8,10 +8,9 @@ public abstract class HeldItem : MonoBehaviour
     [SerializeField] Vector3 idleRotation = new Vector3(0f, 90f, 0f);
 
     public Animator anim { get; private set; }
+    public ItemData itemData { get; private set; }
 
     protected Unit unit;
-
-    public ItemData itemData { get; private set; }
 
     void Awake()
     {
@@ -42,17 +41,20 @@ public abstract class HeldItem : MonoBehaviour
 
     public Vector3 IdleRotation() => idleRotation;
 
-    IEnumerator ResetToIdleRotation()
+    public virtual IEnumerator ResetToIdleRotation()
     {
-        Quaternion idleRotation = Quaternion.Euler(IdleRotation());
-        float rotateSpeed = 5f;
-        while (transform.localRotation != idleRotation)
+        Quaternion defaultRotation = Quaternion.Euler(Vector3.zero);
+        Quaternion startRotation = transform.parent.localRotation;
+        float time = 0f;
+        float duration = 0.25f;
+        while (time < duration)
         {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotation, rotateSpeed * Time.deltaTime);
+            transform.parent.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);
             yield return null;
+            time += Time.deltaTime;
         }
 
-        transform.localRotation = idleRotation;
+        transform.parent.localRotation = defaultRotation;
     }
 
     public abstract void DoDefaultAttack();

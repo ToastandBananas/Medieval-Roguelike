@@ -40,7 +40,6 @@ public class ShootAction : BaseAction
             {
                 nextAttackFree = true;
                 CompleteAction();
-                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
             }
         }
@@ -260,7 +259,31 @@ public class ShootAction : BaseAction
 
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
     {
-        throw new NotImplementedException();
+        float finalActionValue = 0f;
+        Unit targetUnit = null;
+
+        if (IsValidAction())
+        {
+            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+
+            if (targetUnit != null)
+            {
+                // Target the Unit with the lowest health and/or the nearest target
+                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+                if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                    finalActionValue = 0f;
+                else
+                    finalActionValue -= distance * 10f;
+            }
+        }
+
+        return new EnemyAIAction
+        {
+            unit = targetUnit,
+            gridPosition = gridPosition,
+            actionValue = Mathf.RoundToInt(finalActionValue)
+        };
     }
 
     void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;

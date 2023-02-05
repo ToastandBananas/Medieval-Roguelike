@@ -39,7 +39,6 @@ public class MeleeAction : BaseAction
             {
                 nextAttackFree = true;
                 CompleteAction();
-                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(unit.unitActionHandler.GetAction<TurnAction>().targetDirection);
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
             }
         }
@@ -154,7 +153,7 @@ public class MeleeAction : BaseAction
 
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
     {
-        float finalActionValue = 0;
+        float finalActionValue = 0f;
         Unit targetUnit = null;
 
         if (IsValidAction())
@@ -165,7 +164,15 @@ public class MeleeAction : BaseAction
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                finalActionValue -= TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition) * 10f;
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+                float minAttackRange = 1f;
+                if (unit.MeleeWeaponEquipped())
+                    minAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
+
+                if (distance < minAttackRange)
+                    finalActionValue = 0f;
+                else
+                    finalActionValue -= distance * 10f;
             }
         }
 
@@ -252,6 +259,9 @@ public class MeleeAction : BaseAction
         List<GridPosition> validGridPositionList = new List<GridPosition>();
         Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
+        if (targetUnit == null)
+            return validGridPositionList;
+
         ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
 
         // Schedule the path for calculation
@@ -292,8 +302,8 @@ public class MeleeAction : BaseAction
             }
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
+            Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);

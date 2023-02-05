@@ -202,10 +202,7 @@ public class UnitActionHandler : MonoBehaviour
                 QueueAction(GetAction<MeleeAction>());
         }
         else
-        {
-            GetAction<TurnAction>().SetTargetPosition(GetAction<TurnAction>().targetDirection);
             QueueAction(GetAction<TurnAction>());
-        }
     }
     #endregion
 
