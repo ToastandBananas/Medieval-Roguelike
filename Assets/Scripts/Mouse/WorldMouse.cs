@@ -1,14 +1,27 @@
 using UnityEngine;
 
+public enum CursorState { Default, MeleeAttack, RangedAttack, UseDoor, PickupItem, LootBag, LootContainer, Speak }
+
 public class WorldMouse : MonoBehaviour
 {
     public static WorldMouse Instance;
     [SerializeField] LayerMask mousePlaneLayerMask;
 
-    [Header("Cursor")]
-    public Texture2D defaultCursorTexture;
-    public Sprite defaultCursorSprite;
-    public Vector2 hotSpot;
+    [Header("Cursors")]
+    public Texture2D defaultCursor;
+    public Texture2D meleeAttackCursor;
+    public Texture2D rangedAttackCursor;
+    public Texture2D useDoorCursor;
+    public Texture2D pickupItemCursor;
+    public Texture2D lootBagCursor;
+    public Texture2D lootContainerCursor;
+    public Texture2D speakCursor;
+
+    public static GridPosition currentGridPosition;
+    public static Unit currentUnit;
+    // public static LooseItem currentLooseItem;
+
+    Vector2 hotSpot = new Vector2(0.04f, 0.04f);
 
     void Awake()
     {
@@ -21,14 +34,67 @@ public class WorldMouse : MonoBehaviour
         Instance = this;
     }
 
+    void Start()
+    {
+        SetCursor(defaultCursor);
+    }
+
     public static Vector3 GetPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, Instance.mousePlaneLayerMask);
+
+        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(hit.point);
+        if (mouseGridPosition != currentGridPosition)
+        {
+            currentGridPosition = mouseGridPosition;
+            currentUnit = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+        }
+
+        /*Physics.Raycast(ray, out RaycastHit looseItemHit, float.MaxValue, Instance.looseItemLayerMask);
+        if (looseItemHit.collider != null)
+        {
+            // Get item
+        }*/
+
         return hit.point;
     }
 
     public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
 
-    public void SetCursor(Texture2D cursorTexture, Sprite cursorSprite) => Cursor.SetCursor(cursorTexture, cursorSprite.pivot, CursorMode.Auto); 
+    public static void ChangeCursor(CursorState cursorState)
+    {
+        switch (cursorState)
+        {
+            case CursorState.Default:
+                Instance.SetCursor(Instance.defaultCursor);
+                break;
+            case CursorState.MeleeAttack:
+                Instance.SetCursor(Instance.meleeAttackCursor);
+                break;
+            case CursorState.RangedAttack:
+                Instance.SetCursor(Instance.rangedAttackCursor);
+                break;
+            case CursorState.UseDoor:
+                Instance.SetCursor(Instance.useDoorCursor);
+                break;
+            case CursorState.PickupItem:
+                Instance.SetCursor(Instance.pickupItemCursor);
+                break;
+            case CursorState.LootBag:
+                Instance.SetCursor(Instance.lootBagCursor);
+                break;
+            case CursorState.LootContainer:
+                Instance.SetCursor(Instance.lootContainerCursor);
+                break;
+            case CursorState.Speak:
+                Instance.SetCursor(Instance.speakCursor);
+                break;
+            default:
+                Instance.SetCursor(Instance.defaultCursor);
+                break;
+        }
+    }
+
+    void SetCursor(Texture2D cursorTexture) => Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto); 
 }

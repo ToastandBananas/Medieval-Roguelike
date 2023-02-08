@@ -222,7 +222,7 @@ public class Unit : MonoBehaviour
     {
         this.isMyTurn = isMyTurn;
         if (isMyTurn && IsPlayer() && unitActionHandler.queuedAction == null)
-            GridSystemVisual.Instance.UpdateGridVisual();
+            GridSystemVisual.UpdateGridVisual();
     }
 
     public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;

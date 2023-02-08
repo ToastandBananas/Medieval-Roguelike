@@ -42,6 +42,15 @@ public class Vision : MonoBehaviour
         return false;
     }
 
+    public bool IsInLineOfSight(Unit unitToCheck)
+    {
+        float sphereCastRadius = 0.1f;
+        Vector3 shootDir = ((unit.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (unitToCheck.WorldPosition() + (Vector3.up * unitToCheck.ShoulderHeight() * 2f))).normalized;
+        if (Physics.SphereCast(unitToCheck.WorldPosition() + (Vector3.up * unitToCheck.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), unitToCheck.WorldPosition() + (Vector3.up * unitToCheck.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
+            return false; // Blocked by an obstacle
+        return true;
+    }
+
     public void FindVisibleUnits()
     {
         Collider[] unitsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, unitsMask);
@@ -148,7 +157,7 @@ public class Vision : MonoBehaviour
             else if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
             {
                 visibleEnemies.Add(unitToAdd);
-                if (unit.IsPlayer())
+                if (unit.IsPlayer() && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.queuedAction is MeleeAction == false && unit.unitActionHandler.queuedAction is ShootAction == false)
                     StartCoroutine(unit.unitActionHandler.CancelAction());
             }
             else if (unit.alliance.IsAlly(unitToAdd.alliance.CurrentFaction()))

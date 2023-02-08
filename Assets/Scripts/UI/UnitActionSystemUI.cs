@@ -62,7 +62,7 @@ public class UnitActionSystemUI : MonoBehaviour
         else
         {
             UpdateSelectedVisual();
-            GridSystemVisual.Instance.UpdateGridVisual();
+            GridSystemVisual.UpdateGridVisual();
         }
     } 
 

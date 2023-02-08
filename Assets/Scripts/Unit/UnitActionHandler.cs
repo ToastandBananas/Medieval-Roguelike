@@ -18,7 +18,7 @@ public class UnitActionHandler : MonoBehaviour
     public Unit targetEnemyUnit { get; protected set; }
     public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
-    [SerializeField] LayerMask shootObstacleMask;
+    [SerializeField] LayerMask attackObstacleMask;
 
     public bool isPerformingAction { get; private set; }
     public bool canPerformActions { get; protected set; }
@@ -88,13 +88,18 @@ public class UnitActionHandler : MonoBehaviour
             if (queuedAction != null)
                 GetNextQueuedAction();
             else
+            {
                 unit.UnblockCurrentPosition();
+                GridSystemVisual.UpdateGridVisual();
+            }
         }
     }
 
     #region Action Queue
     public void QueueAction(BaseAction action)
     {
+        GridSystemVisual.HideGridVisual();
+
         // if (isNPC) Debug.Log(name + " queued " + action);
         queuedAction = action;
         queuedAP = action.GetActionPointsCost(targetGridPosition);
@@ -107,8 +112,10 @@ public class UnitActionHandler : MonoBehaviour
                 GetNextQueuedAction();
         }
 
+        SetSelectedAction(GetAction<MoveAction>());
+
         // Update AP text
-        //if (IsNPC() == false)
+        //if (unit.IsPlayer())
         //APManager.Instance.UpdateLastAPUsed(APCost);
     }
 
@@ -117,6 +124,7 @@ public class UnitActionHandler : MonoBehaviour
         if (unit.health.IsDead())
         {
             ClearActionQueue(true);
+            GridSystemVisual.UpdateGridVisual();
             return;
         }
 
@@ -171,6 +179,9 @@ public class UnitActionHandler : MonoBehaviour
         }
 
         unit.unitActionHandler.SetTargetEnemyUnit(null);
+
+        if (unit.isMyTurn)
+            GridSystemVisual.UpdateGridVisual();
     }
 
     public void ClearActionQueue(bool stopMoveAnimation)
@@ -236,5 +247,5 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
-    public LayerMask AttackObstacleMask() => shootObstacleMask;
+    public LayerMask AttackObstacleMask() => attackObstacleMask;
 }

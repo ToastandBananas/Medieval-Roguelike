@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootObstacleMask:
+  attackObstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
   maxChaseDistance: 15
@@ -361,11 +361,10 @@ MonoBehaviour:
   leader: {fileID: 0}
   patrolPoints:
   - {x: 8, y: 1.5, z: 8}
-  - {x: 10, y: 0, z: 2}
   - {x: 3, y: 0, z: 3}
   defaultPosition: {x: 0, y: 0, z: 0}
   minWanderDistance: 5
-  maxWanderDistance: 20
+  maxWanderDistance: 100
 --- !u!114 &751464884551525251
 MonoBehaviour:
   m_ObjectHideFlags: 0

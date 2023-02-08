@@ -41,6 +41,13 @@ public class Alliance : MonoBehaviour
         return false;
     }
 
+    public bool IsNeutral(Faction factionToCheckAgainst)
+    {
+        if (IsAlly(factionToCheckAgainst) == false && IsEnemy(factionToCheckAgainst) == false)
+            return true;
+        return false;
+    }
+
     public bool IsPlayer() => currentFaction == Faction.Player;
 
     public Faction CurrentFaction() => currentFaction; 

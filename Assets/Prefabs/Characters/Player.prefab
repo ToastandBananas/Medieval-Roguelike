@@ -822,9 +822,15 @@ MonoBehaviour:
   speed:
     baseValue: 20
     modifiers: 
-  rangedAccuracy:
-    baseValue: 20
-    modifiers: []
+  bowSkill:
+    baseValue: 1
+    modifiers: 
+  shieldSkill:
+    baseValue: 1
+    modifiers: 
+  swordSkill:
+    baseValue: 1
+    modifiers: 
 --- !u!114 &809617103822942843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -900,7 +906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootObstacleMask:
+  attackObstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
 --- !u!114 &4910889609817399986

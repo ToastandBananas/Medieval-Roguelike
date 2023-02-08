@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,8 +18,8 @@ public abstract class BaseAction : MonoBehaviour
     {
         isActive = true;
 
-        if (unit.IsPlayer())
-            GridSystemVisual.Instance.HideAllGridPositions();
+        //if (unit.IsPlayer())
+            //GridSystemVisual.HideGridVisual();
     }
 
     public virtual void CompleteAction()
@@ -37,6 +36,8 @@ public abstract class BaseAction : MonoBehaviour
     }
 
     public virtual List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition) => null;
+
+    public virtual List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition) => null;
 
     public bool IsActive() => isActive;
 

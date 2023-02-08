@@ -51,12 +51,6 @@ public class GridSystemVisual : MonoBehaviour
             GridSystemVisualSingle newGridSystemVisualSingle = CreateNewGridSystemVisualSingle();
             newGridSystemVisualSingle.gameObject.SetActive(false);
         }
-
-        //UnitActionSystem.Instance.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
-        //UnitActionSystem.Instance.OnUnitDeselected += UnitActionSystem_OnUnitDeselected;
-
-        //if (TurnManager.Instance.ActiveUnit() != null)
-            //UpdateGridVisual();
     }
 
     public GridSystemVisualSingle GetGridVisualSystemSingleFromPool()
@@ -77,11 +71,11 @@ public class GridSystemVisual : MonoBehaviour
         return newGridSystemVisualSingle;
     }
 
-    public void HideAllGridPositions()
+    public static void HideGridVisual()
     {
-        for (int i = 0; i < gridSystemVisualSingleList.Count; i++)
+        for (int i = 0; i < Instance.gridSystemVisualSingleList.Count; i++)
         {
-            gridSystemVisualSingleList[i].gameObject.SetActive(false);
+            Instance.gridSystemVisualSingleList[i].gameObject.SetActive(false);
         }
     }
 
@@ -177,28 +171,31 @@ public class GridSystemVisual : MonoBehaviour
         ShowGridPositionList(gridPositionList, gridVisualType);
     }
 
-    public void UpdateGridVisual()
+    public static void UpdateGridVisual()
     {
-        HideAllGridPositions();
+        HideGridVisual();
 
-        BaseAction selectedAction = player.unitActionHandler.selectedAction;
+        BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
         GridVisualType gridVisualType;
+        GridVisualType secondaryGridVisualType;
         switch (selectedAction)
         {
             case MeleeAction meleeAction:
                 gridVisualType = GridVisualType.Red;
-                if (player.MeleeWeaponEquipped())
+                secondaryGridVisualType = GridVisualType.Yellow;
+                if (Instance.player.MeleeWeaponEquipped())
                 {
-                    Weapon meleeWeapon = player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-                    ShowGridPositionMeleeRange(player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
+                    Weapon meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                    Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
                 }
                 else
-                    ShowGridPositionMeleeRange(player.gridPosition, 1f, player.unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(player.gridPosition, false), GridVisualType.RedSoft);
+                    Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, 1f, Instance.player.unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(Instance.player.gridPosition, false), GridVisualType.RedSoft);
                 break;
             case ShootAction shootAction:
                 gridVisualType = GridVisualType.Red;
-                Weapon rangedWeapon = player.GetRangedWeapon().itemData.item.Weapon();
-                ShowGridPositionShootRange(player.gridPosition, rangedWeapon.minRange, rangedWeapon.maxRange, GridVisualType.RedSoft);
+                secondaryGridVisualType = GridVisualType.Yellow;
+                Weapon rangedWeapon = Instance.player.GetRangedWeapon().itemData.item.Weapon();
+                Instance.ShowGridPositionShootRange(Instance.player.gridPosition, rangedWeapon.minRange, rangedWeapon.maxRange, GridVisualType.RedSoft);
                 break;
             //case ThrowAction throwBombAction:
                 //gridVisualType = GridVisualType.Red;
@@ -211,7 +208,8 @@ public class GridSystemVisual : MonoBehaviour
                 return;
         }
 
-        ShowGridPositionList(selectedAction.GetValidActionGridPositionList(player.gridPosition), gridVisualType);
+        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList(Instance.player.gridPosition), gridVisualType);
+        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Secondary(Instance.player.gridPosition), secondaryGridVisualType);
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

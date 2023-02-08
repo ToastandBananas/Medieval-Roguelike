@@ -40,6 +40,7 @@ public class PlayerActionInput : MonoBehaviour
         if (EventSystem.current.IsPointerOverGameObject())
         {
             ActionLineRenderer.Instance.HideLineRenderers();
+            WorldMouse.ChangeCursor(CursorState.Default);
             return;
         }
 
@@ -67,15 +68,36 @@ public class PlayerActionInput : MonoBehaviour
                 if (player.unitActionHandler.selectedAction != null)
                 {
                     if (player.unitActionHandler.selectedAction is MoveAction)
+                    {
+                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(GetMouseGridPosition());
+                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                        {
+                            if (player.RangedWeaponEquipped())
+                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                            else
+                                WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                        }
+                        else
+                            WorldMouse.ChangeCursor(CursorState.Default);
+
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                    }
                     else if (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)
                     {
-                        GridPosition mouseGridPosition = GetMouseGridPosition();
-                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
-                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(GetMouseGridPosition());
+                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition.alliance.CurrentFaction()) == false)
+                        {
                             StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                            if (player.RangedWeaponEquipped())
+                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                            else
+                                WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                        }
                         else
+                        {
                             ActionLineRenderer.Instance.HideLineRenderers();
+                            WorldMouse.ChangeCursor(CursorState.Default);
+                        }
                     }
                     else if (player.unitActionHandler.selectedAction is TurnAction)
                         ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
@@ -85,7 +107,8 @@ public class PlayerActionInput : MonoBehaviour
                 {
                     TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
                     player.unitActionHandler.SetSelectedAction(turnAction);
-                    turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition())));
+                    turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(GetMouseGridPosition()));
+                    WorldMouse.ChangeCursor(CursorState.Default);
 
                     if (GameControls.gamePlayActions.select.WasPressed && turnAction.targetDirection != turnAction.currentDirection)
                         player.unitActionHandler.QueueAction(turnAction);
@@ -102,7 +125,7 @@ public class PlayerActionInput : MonoBehaviour
 
                         if (unitAtGridPosition != null && unitIsVisible)
                         {
-                            if (player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                            if (player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()) || (player.alliance.IsNeutral(unitAtGridPosition.alliance.CurrentFaction()) && (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)))
                             {
                                 player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 if ((player.MeleeWeaponEquipped() || player.IsUnarmed()) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
@@ -144,6 +167,7 @@ public class PlayerActionInput : MonoBehaviour
             else if(player.unitActionHandler.queuedAction != null || player.unitActionHandler.GetAction<MoveAction>().isMoving)
             {
                 ActionLineRenderer.Instance.HideLineRenderers();
+                WorldMouse.ChangeCursor(CursorState.Default);
             }
         }
     }

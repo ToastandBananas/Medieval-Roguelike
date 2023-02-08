@@ -95,13 +95,22 @@ public class ShootAction : BaseAction
         unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, unit.transform.position, false);
     }
 
-    public bool IsInAttackRange(Unit enemyUnit)
+    public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        float dist = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize();
-        if (dist <= unit.GetRangedWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition) && dist >= unit.GetRangedWeapon().itemData.item.Weapon().minRange)
-            return true;
-        return false;
+        if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
+            return false;
+
+        float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
+        Weapon rangedWeapon = unit.GetRangedWeapon().itemData.item.Weapon();
+        float maxRangeToTargetPosition = rangedWeapon.maxRange + (startGridPosition.y - targetGridPosition.y);
+        if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
+
+        if (distance > maxRangeToTargetPosition || distance < rangedWeapon.minRange)
+            return false;
+        return true;
     }
+
+    public bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
 
     protected override void StartAction()
     {
@@ -151,24 +160,71 @@ public class ShootAction : BaseAction
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
                 continue;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
-            Weapon rangedWeapon = unit.GetRangedWeapon().itemData.item.Weapon();
-            float maxRangeToNodePosition = rangedWeapon.maxRange + (startGridPosition.y - nodeGridPosition.y);
-            if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
 
-            if (distance > maxRangeToNodePosition || distance < rangedWeapon.minRange)
+            // If the target is dead
+            if (targetUnit.health.IsDead())
+                continue;
+
+            // If the target is out of sight
+            if (unit.vision.IsVisible(targetUnit) == false)
+                continue;
+
+            // If both Units are on the same team
+            if (unit.alliance.IsAlly(targetUnit.alliance.CurrentFaction()) || unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()))
+                continue;
+
+            // If target is out of attack range
+            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
+                continue;
+
+            // Debug.Log(gridPosition);
+            validGridPositionList.Add(nodeGridPosition);
+        }
+
+        return validGridPositionList;
+    }
+
+    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+
+        // Schedule the path for calculation
+        AstarPath.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
                 continue;
 
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
 
-            // If both Units are on the same team
-            if (targetUnit.alliance.IsAlly(unit.alliance.CurrentFaction()))
+            // If the target is dead
+            if (targetUnit.health.IsDead())
                 continue;
 
-            float sphereCastRadius = 0.1f;
-            Vector3 shootDir = ((startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
-                continue; // Blocked by an obstacle
+            // If the target is out of sight
+            if (unit.vision.IsVisible(targetUnit) == false)
+                continue;
+
+            // If both Units are on the same team
+            if (unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()) == false)
+                continue;
+
+            // If target is out of attack range
+            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
+                continue;
 
             // Debug.Log(gridPosition);
             validGridPositionList.Add(nodeGridPosition);
@@ -198,15 +254,12 @@ public class ShootAction : BaseAction
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) // Grid Position has a Unit there already
+            // Grid Position has a Unit there already
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) 
                 continue;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(nodeGridPosition, targetGridPosition);
-            Weapon rangedWeapon = unit.GetRangedWeapon().itemData.item.Weapon();
-            float maxRangeToNodePosition = rangedWeapon.maxRange + (nodeGridPosition.y - targetGridPosition.y);
-            if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-
-            if (distance > maxRangeToNodePosition || distance < rangedWeapon.minRange)
+            // If target is out of attack range
+            if (IsInAttackRange(null, nodeGridPosition, targetGridPosition) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;

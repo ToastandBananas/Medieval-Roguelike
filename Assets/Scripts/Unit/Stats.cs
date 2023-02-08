@@ -119,7 +119,7 @@ public class Stats : MonoBehaviour
         if (accuracy < 0f)
             accuracy = 0f;
 
-        Debug.Log("Accuracy: " + accuracy);
+        // Debug.Log("Accuracy: " + accuracy);
         return accuracy;
     }
 }

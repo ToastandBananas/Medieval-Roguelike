@@ -207,8 +207,6 @@ public class MoveAction : BaseAction
 
         if (unit.IsPlayer())
         {
-            GridSystemVisual.Instance.UpdateGridVisual();
-
             // If the Player is trying to attack an enemy
             if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))))
@@ -242,9 +240,9 @@ public class MoveAction : BaseAction
                     unit.unitActionHandler.AttackTargetEnemy();
                 }
             }
-
-            UnitManager.Instance.player.vision.FindVisibleUnits();
         }
+
+        UnitManager.Instance.player.vision.FindVisibleUnits();
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)

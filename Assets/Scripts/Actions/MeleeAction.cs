@@ -116,26 +116,34 @@ public class MeleeAction : BaseAction
         StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
-    public bool IsInAttackRange(Unit enemyUnit)
+    public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        if (unit.IsUnarmed())
+        if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
+            return false;
+
+        float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
+        if (unit.MeleeWeaponEquipped())
         {
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= UnarmedAttackRange(enemyUnit.gridPosition, true))
-                return true;
+            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+            float maxRangeToTargetPosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y); ;
+            if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
+
+            if (distance > maxRangeToTargetPosition || distance < meleeWeapon.minRange)
+                return false;
         }
         else
         {
-            float maxRange;
-            if (unit.rightHeldItem != null)
-                maxRange = unit.GetRightMeleeWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition);
-            else
-                maxRange = unit.GetLeftMeleeWeapon().MaxRange(unit.gridPosition, enemyUnit.gridPosition);
+            float maxRangeToTargetPosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y); ;
+            if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, enemyUnit.gridPosition) / LevelGrid.Instance.GridSize() <= maxRange)
-                return true;
+            if (distance > maxRangeToTargetPosition || distance < 1f)
+                return false;
         }
-        return false;
+
+        return true;
     }
+
+    public bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
 
     public int UnarmedDamage()
     {
@@ -221,35 +229,71 @@ public class MeleeAction : BaseAction
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
                 continue;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
-            if (unit.MeleeWeaponEquipped())
-            {
-                Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-                float maxRangeToNodePosition = meleeWeapon.maxRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y); ;
-                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
 
-                if (distance > maxRangeToNodePosition || distance < meleeWeapon.minRange)
-                    continue;
-            }
-            else
-            {
-                float maxRangeToNodePosition = unarmedAttackRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y); ;
-                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+            // If the target is dead
+            if (targetUnit.health.IsDead())
+                continue;
 
-                if (distance > maxRangeToNodePosition || distance < 1f)
-                    continue;
-            }
+            // If the target is out of sight
+            if (unit.vision.IsVisible(targetUnit) == false)
+                continue;
+
+            // If both Units are on the same team
+            if (unit.alliance.IsAlly(targetUnit.alliance.CurrentFaction()))
+                continue;
+
+            // If target is out of attack range
+            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
+                continue;
+
+            // Debug.Log(gridPosition);
+            validGridPositionList.Add(nodeGridPosition);
+        }
+
+        return validGridPositionList;
+    }
+
+    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
+    {
+        List<GridPosition> validGridPositionList = new List<GridPosition>();
+
+        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+
+        // Schedule the path for calculation
+        AstarPath.StartPath(path);
+
+        // Force the path request to complete immediately
+        // This assumes the graph is small enough that this will not cause any lag
+        path.BlockUntilCalculated();
+
+        for (int i = 0; i < path.allNodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+
+            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
+                continue;
 
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
 
-            // If both Units are on the same team
-            if (targetUnit.alliance.IsAlly(unit.alliance.CurrentFaction()))
+            // If the target is dead
+            if (targetUnit.health.IsDead())
                 continue;
 
-            float sphereCastRadius = 0.1f;
-            Vector3 shootDir = ((startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight())) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight()))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight()), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(startGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight()), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight())), unit.unitActionHandler.AttackObstacleMask()))
-                continue; // Blocked by an obstacle
+            // If the target is out of sight
+            if (unit.vision.IsVisible(targetUnit) == false)
+                continue;
+
+            // If both Units are on the same team
+            if (unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()) == false)
+                continue;
+
+            // If target is out of attack range
+            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
+                continue;
 
             // Debug.Log(gridPosition);
             validGridPositionList.Add(nodeGridPosition);
@@ -282,28 +326,13 @@ public class MeleeAction : BaseAction
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) // Grid Position has a Unit there already
+            // If Grid Position has a Unit there already
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) 
                 continue;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(nodeGridPosition, targetGridPosition);
-            float maxRangeToNodePosition = 0f;
-            if (unit.MeleeWeaponEquipped())
-            {
-                Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-                maxRangeToNodePosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - nodeGridPosition.y);
-                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f; 
-                
-                if (distance > maxRangeToNodePosition || distance < meleeWeapon.minRange)
-                    continue;
-            }
-            else
-            {
-                maxRangeToNodePosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - nodeGridPosition.y);
-                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-
-                if (distance > maxRangeToNodePosition || distance < 1f)
-                    continue;
-            }
+            // If target is out of attack range
+            if (IsInAttackRange(null, nodeGridPosition, targetGridPosition) == false)
+                continue;
 
             float sphereCastRadius = 0.1f;
             Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
