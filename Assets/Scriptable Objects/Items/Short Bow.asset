@@ -25,9 +25,13 @@ MonoBehaviour:
   canUsePartial: 0
   value: {x: 0, y: 0}
   staticValue: 1
-  pickupSprite: {fileID: 0}
+  pickupMesh: {fileID: 0}
   minRange: 2
   maxRange: 10
   minDamage: 5
   maxDamage: 10
-  isOneHanded: 1
+  minAccuracyModifier: -60
+  maxAccuracyModifier: -50
+  weaponType: 0
+  isTwoHanded: 0
+  canDualWield: 0

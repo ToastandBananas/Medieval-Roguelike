@@ -265,9 +265,15 @@ MonoBehaviour:
   speed:
     baseValue: 20
     modifiers: 
-  rangedAccuracy:
+  bowSkill:
+    baseValue: 1
+    modifiers: 
+  shieldSkill:
     baseValue: 20
-    modifiers: []
+    modifiers: 
+  swordSkill:
+    baseValue: 20
+    modifiers: 
 --- !u!114 &2337304120404066741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,7 +354,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4067264
   maxChaseDistance: 15
-  fleeDistance: 20
+  defaultFleeDistance: 20
   shouldAlwaysFleeCombat: 0
   unitToFleeFrom: {fileID: 0}
   stopFollowDistance: 3
@@ -400,6 +406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canFightUnarmed: 1
+  unarmedAttackRange: 1.4
+  baseUnarmedDamage: 5
 --- !u!114 &1009956166246566267
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -745,8 +753,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
-  visibleUnits: []
-  visibleEnemies: []
 --- !u!1 &6418375078083463654
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,11 @@ public class WorldMouse : MonoBehaviour
     public static WorldMouse Instance;
     [SerializeField] LayerMask mousePlaneLayerMask;
 
+    [Header("Cursor")]
+    public Texture2D defaultCursorTexture;
+    public Sprite defaultCursorSprite;
+    public Vector2 hotSpot;
+
     void Awake()
     {
         if (Instance != null)
@@ -24,4 +29,6 @@ public class WorldMouse : MonoBehaviour
     }
 
     public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
+
+    public void SetCursor(Texture2D cursorTexture, Sprite cursorSprite) => Cursor.SetCursor(cursorTexture, cursorSprite.pivot, CursorMode.Auto); 
 }

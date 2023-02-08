@@ -3,6 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Shield", menuName = "Inventory/Item/Shield")]
 public class Shield : Equipment
 {
+    public float blockChanceAddOn = 10f;
+
     public override bool IsBag() => false;
 
     public override bool IsConsumable() => false;

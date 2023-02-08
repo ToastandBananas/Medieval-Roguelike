@@ -55,11 +55,15 @@ public class MeleeAction : BaseAction
     {
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            if (unit.leftHeldItem == null && unit.rightHeldItem == null && canFightUnarmed)
+            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+
+            if (unit.IsUnarmed())
             {
-                unit.unitAnimator.StartMeleeAttack();
-                unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
-                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(UnarmedDamage());
+                if (canFightUnarmed)
+                {
+                    unit.unitAnimator.StartMeleeAttack();
+                    unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(UnarmedDamage());
+                }
             }
             else if (unit.IsDualWielding())
             {

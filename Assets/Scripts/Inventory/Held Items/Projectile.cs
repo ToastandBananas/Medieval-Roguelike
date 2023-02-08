@@ -148,7 +148,7 @@ public class Projectile : MonoBehaviour
     {
         float random = UnityEngine.Random.Range(0f, 100f);
         float offsetX, offsetZ;
-        float rangedAccuracy = shooter.stats.RangedAccuracy();
+        float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().itemData);
 
         // If the shooter is missing
         if (accountForAccuracy && random > rangedAccuracy)

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Stats : MonoBehaviour
@@ -10,8 +11,10 @@ public class Stats : MonoBehaviour
     [Header("Attributes")]
     [SerializeField] IntStat speed;
 
-    [Header("Other")]
-    [SerializeField] FloatStat rangedAccuracy;
+    [Header("Skills")]
+    [SerializeField] IntStat bowSkill;
+    [SerializeField] IntStat shieldSkill;
+    [SerializeField] IntStat swordSkill;
 
     Unit unit;
 
@@ -92,5 +95,31 @@ public class Stats : MonoBehaviour
 
     public int Speed() => speed.GetValue();
 
-    public float RangedAccuracy() => rangedAccuracy.GetValue();
+    public float BlockChance(ItemData shieldItemData)
+    {
+        float blockChance = shieldSkill.GetValue() * 2f;
+        blockChance = Mathf.RoundToInt((blockChance + shieldItemData.item.Shield().blockChanceAddOn) * 100f) / 100f;
+
+        if (blockChance < 0f)
+            blockChance = 0f;
+
+        Debug.Log("Block Chance: " + blockChance);
+        return blockChance;
+    }
+
+    public float RangedAccuracy(ItemData rangedWeaponItemData)
+    {
+        float accuracy = 0f;
+        if (rangedWeaponItemData.item.Weapon().weaponType == WeaponType.Bow)
+        {
+            accuracy = bowSkill.GetValue() * 4f;
+            accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.accuracyModifier) * 100f) / 100f;
+        }
+
+        if (accuracy < 0f)
+            accuracy = 0f;
+
+        Debug.Log("Accuracy: " + accuracy);
+        return accuracy;
+    }
 }
