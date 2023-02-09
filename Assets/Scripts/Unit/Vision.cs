@@ -154,13 +154,13 @@ public class Vision : MonoBehaviour
 
             if (unitToAdd.health.IsDead())
                 visibleDeadUnits.Add(unitToAdd);
-            else if (unit.alliance.IsEnemy(unitToAdd.alliance.CurrentFaction()))
+            else if (unit.alliance.IsEnemy(unitToAdd))
             {
                 visibleEnemies.Add(unitToAdd);
                 if (unit.IsPlayer() && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.queuedAction is MeleeAction == false && unit.unitActionHandler.queuedAction is ShootAction == false)
                     StartCoroutine(unit.unitActionHandler.CancelAction());
             }
-            else if (unit.alliance.IsAlly(unitToAdd.alliance.CurrentFaction()))
+            else if (unit.alliance.IsAlly(unitToAdd))
                 visibleAllies.Add(unitToAdd);
 
             // Add a corresponding lose sight time for this newly visible Unit

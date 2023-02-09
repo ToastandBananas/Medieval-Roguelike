@@ -30,7 +30,6 @@ public class HeldMeleeWeapon : HeldItem
     void DamageTargetUnit()
     {
         // TODO: Determine damage from weapon data and attacking Unit's stats/perks
-        unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
         unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(itemData.damage);
 
         if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)

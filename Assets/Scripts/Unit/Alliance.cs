@@ -16,34 +16,42 @@ public class Alliance : MonoBehaviour
     [SerializeField] Faction[] alliedFactions;
     [SerializeField] Faction[] enemyFactions;
 
-    public bool IsAlly(Faction factionToCheckAgainst)
+    public bool IsAlly(Unit unitToCheck)
     {
-        if (factionToCheckAgainst == currentFaction)
+        Faction unitsFaction = unitToCheck.alliance.CurrentFaction();
+        if (unitsFaction == currentFaction)
             return true;
 
         for (int i = 0; i < alliedFactions.Length; i++)
         {
-            if (factionToCheckAgainst == alliedFactions[i])
+            if (unitsFaction == alliedFactions[i])
                 return true;
         }
 
         return false;
     }
 
-    public bool IsEnemy(Faction factionToCheckAgainst)
+    public bool IsEnemy(Unit unitToCheck)
     {
+        Faction unitsFaction = unitToCheck.alliance.CurrentFaction();
         for (int i = 0; i < enemyFactions.Length; i++)
         {
-            if (factionToCheckAgainst == enemyFactions[i])
+            if (unitsFaction == enemyFactions[i])
+                return true;
+        }
+
+        for (int i = 0; i < unitToCheck.alliance.enemyFactions.Length; i++)
+        {
+            if (currentFaction == unitToCheck.alliance.enemyFactions[i])
                 return true;
         }
 
         return false;
     }
 
-    public bool IsNeutral(Faction factionToCheckAgainst)
+    public bool IsNeutral(Unit unitToCheck)
     {
-        if (IsAlly(factionToCheckAgainst) == false && IsEnemy(factionToCheckAgainst) == false)
+        if (IsAlly(unitToCheck) == false && IsEnemy(unitToCheck) == false)
             return true;
         return false;
     }

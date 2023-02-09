@@ -70,7 +70,7 @@ public class PlayerActionInput : MonoBehaviour
                     if (player.unitActionHandler.selectedAction is MoveAction)
                     {
                         Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(GetMouseGridPosition());
-                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()))
+                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
                         {
                             if (player.RangedWeaponEquipped())
                                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
@@ -85,7 +85,7 @@ public class PlayerActionInput : MonoBehaviour
                     else if (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)
                     {
                         Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(GetMouseGridPosition());
-                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition.alliance.CurrentFaction()) == false)
+                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition) == false)
                         {
                             StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                             if (player.RangedWeaponEquipped())
@@ -125,7 +125,7 @@ public class PlayerActionInput : MonoBehaviour
 
                         if (unitAtGridPosition != null && unitIsVisible)
                         {
-                            if (player.alliance.IsEnemy(unitAtGridPosition.alliance.CurrentFaction()) || (player.alliance.IsNeutral(unitAtGridPosition.alliance.CurrentFaction()) && (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)))
+                            if (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)))
                             {
                                 player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 if ((player.MeleeWeaponEquipped() || player.IsUnarmed()) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))

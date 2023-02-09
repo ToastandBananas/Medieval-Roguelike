@@ -207,7 +207,7 @@ public class MoveAction : BaseAction
 
         if (unit.IsPlayer())
         {
-            // If the Player is trying to attack an enemy
+            // If the Player is trying to attack an enemy and they are in range
             if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))))
             {
@@ -219,9 +219,9 @@ public class MoveAction : BaseAction
             {
                 unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
                 if (unit.RangedWeaponEquipped())
-                    finalTargetGridPosition = unit.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition);
+                    unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition));
                 else
-                    finalTargetGridPosition = unit.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition);
+                    unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit.gridPosition));
 
                 unit.unitActionHandler.QueueAction(this);
             }
@@ -304,14 +304,6 @@ public class MoveAction : BaseAction
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
     }
-
-    public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
-
-    public void SetFinalTargetGridPosition(GridPosition finalTargetGridPosition) => this.finalTargetGridPosition = finalTargetGridPosition;
-
-    public void SetNextTargetGridPosition(GridPosition nextTargetGridPosition) => this.nextTargetGridPosition = nextTargetGridPosition;
-
-    public override string GetActionName() => "Move";
 
     public override bool IsValidAction()
     {
@@ -463,8 +455,6 @@ public class MoveAction : BaseAction
             return moveSpeed;
     }
 
-    public void SetMoveSpeed() => moveSpeed = GetMoveSpeed();
-
     public override void CompleteAction()
     {
         base.CompleteAction();
@@ -480,6 +470,16 @@ public class MoveAction : BaseAction
         isMoving = false;
         unit.unitActionHandler.FinishAction();
     }
+
+    public void SetMoveSpeed() => moveSpeed = GetMoveSpeed();
+
+    public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
+
+    public void SetFinalTargetGridPosition(GridPosition finalTargetGridPosition) => this.finalTargetGridPosition = finalTargetGridPosition;
+
+    public void SetNextTargetGridPosition(GridPosition nextTargetGridPosition) => this.nextTargetGridPosition = nextTargetGridPosition;
+
+    public override string GetActionName() => "Move";
 
     public override bool ActionIsUsedInstantly() => false;
 

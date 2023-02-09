@@ -55,8 +55,8 @@ public class ShootAction : BaseAction
     {
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            StartCoroutine(RotateTowardsTarget());
             unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+            StartCoroutine(RotateTowardsTarget());
             unit.leftHeldItem.DoDefaultAttack();
             StartCoroutine(WaitToFinishAction());
         }
@@ -141,7 +141,7 @@ public class ShootAction : BaseAction
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);
@@ -171,7 +171,7 @@ public class ShootAction : BaseAction
                 continue;
 
             // If both Units are on the same team
-            if (unit.alliance.IsAlly(targetUnit.alliance.CurrentFaction()) || unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()))
+            if (unit.alliance.IsAlly(targetUnit) || unit.alliance.IsNeutral(targetUnit))
                 continue;
 
             // If target is out of attack range
@@ -189,7 +189,7 @@ public class ShootAction : BaseAction
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);
@@ -219,7 +219,7 @@ public class ShootAction : BaseAction
                 continue;
 
             // If both Units are on the same team
-            if (unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()) == false)
+            if (unit.alliance.IsNeutral(targetUnit) == false)
                 continue;
 
             // If target is out of attack range
@@ -238,7 +238,7 @@ public class ShootAction : BaseAction
         List<GridPosition> validGridPositionList = new List<GridPosition>();
         Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);

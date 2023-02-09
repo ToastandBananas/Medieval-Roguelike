@@ -156,7 +156,7 @@ public class LevelGrid : MonoBehaviour
             if (HasAnyUnitOnGridPosition(gridPosition))
             {
                 Unit unitToCheck = GetUnitAtGridPosition(gridPosition);
-                if (unit.alliance.IsEnemy(unitToCheck.alliance.CurrentFaction()))
+                if (unit.alliance.IsEnemy(unitToCheck))
                     enemies.Add(unitToCheck);
             }
         }

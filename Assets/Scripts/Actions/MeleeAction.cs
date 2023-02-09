@@ -210,7 +210,7 @@ public class MeleeAction : BaseAction
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);
@@ -240,7 +240,7 @@ public class MeleeAction : BaseAction
                 continue;
 
             // If both Units are on the same team
-            if (unit.alliance.IsAlly(targetUnit.alliance.CurrentFaction()))
+            if (unit.alliance.IsAlly(targetUnit))
                 continue;
 
             // If target is out of attack range
@@ -258,7 +258,7 @@ public class MeleeAction : BaseAction
     {
         List<GridPosition> validGridPositionList = new List<GridPosition>();
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);
@@ -288,7 +288,7 @@ public class MeleeAction : BaseAction
                 continue;
 
             // If both Units are on the same team
-            if (unit.alliance.IsNeutral(targetUnit.alliance.CurrentFaction()) == false)
+            if (unit.alliance.IsNeutral(targetUnit) == false)
                 continue;
 
             // If target is out of attack range
@@ -310,7 +310,7 @@ public class MeleeAction : BaseAction
         if (targetUnit == null)
             return validGridPositionList;
 
-        ConstantPath path = ConstantPath.Construct(unit.transform.position, 100100);
+        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
         // Schedule the path for calculation
         AstarPath.StartPath(path);
@@ -330,7 +330,7 @@ public class MeleeAction : BaseAction
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) 
                 continue;
 
-            // If target is out of attack range
+            // If target is out of attack range from this Grid Position
             if (IsInAttackRange(null, nodeGridPosition, targetGridPosition) == false)
                 continue;
 
@@ -352,7 +352,7 @@ public class MeleeAction : BaseAction
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
         float nearestDistance = 10000000f;
 
-        // First find the nearest valid Grid Positions to the Player
+        // First, find the nearest valid Grid Positions to the Player
         for (int i = 0; i < validGridPositionsList.Count; i++)
         {
             float distance = Vector3.Distance(validGridPositionsList[i].WorldPosition(), startGridPosition.WorldPosition());

@@ -27,7 +27,8 @@ public class ActionButtonUI : MonoBehaviour
 
         button.onClick.AddListener(() =>
         {
-            playerActionHandler.SetSelectedAction(baseAction);
+            if (playerActionHandler.queuedAction == null)
+                playerActionHandler.SetSelectedAction(baseAction);
         });
     }
 

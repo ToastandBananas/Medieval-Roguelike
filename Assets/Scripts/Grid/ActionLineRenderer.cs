@@ -55,7 +55,7 @@ public class ActionLineRenderer : MonoBehaviour
 
             if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
             {
-                if (player.alliance.IsEnemy(unitAtMousePosition.alliance.CurrentFaction()))
+                if (player.alliance.IsEnemy(unitAtMousePosition))
                 {
                     // If the enemy Unit is in attack range, no need to show the line renderer
                     if (((player.MeleeWeaponEquipped() || (player.RangedWeaponEquipped() == false && player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
