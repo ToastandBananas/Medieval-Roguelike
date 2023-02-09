@@ -157,7 +157,9 @@ public class Vision : MonoBehaviour
             else if (unit.alliance.IsEnemy(unitToAdd))
             {
                 visibleEnemies.Add(unitToAdd);
-                if (unit.IsPlayer() && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.queuedAction is MeleeAction == false && unit.unitActionHandler.queuedAction is ShootAction == false)
+
+                // The Player should cancel any action (other than attacks) when becoming aware of a new enemy
+                if (unit.IsPlayer() && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.AttackQueued() == false)
                     StartCoroutine(unit.unitActionHandler.CancelAction());
             }
             else if (unit.alliance.IsAlly(unitToAdd))
@@ -174,23 +176,26 @@ public class Vision : MonoBehaviour
             loseSightTimes[visibleUnits.IndexOf(unitToAdd)] = loseSightTime;
     }
 
-    void RemoveVisibleUnit(Unit unitToRemove)
+    public void RemoveVisibleUnit(Unit unitToRemove)
     {
-        loseSightTimes.RemoveAt(visibleUnits.IndexOf(unitToRemove));
-        visibleUnits.Remove(unitToRemove);
+        if (visibleUnits.Contains(unitToRemove))
+        {
+            loseSightTimes.RemoveAt(visibleUnits.IndexOf(unitToRemove));
+            visibleUnits.Remove(unitToRemove);
 
-        if (visibleDeadUnits.Contains(unitToRemove))
-            visibleDeadUnits.Remove(unitToRemove);
+            if (visibleDeadUnits.Contains(unitToRemove))
+                visibleDeadUnits.Remove(unitToRemove);
 
-        if (visibleEnemies.Contains(unitToRemove))
-            visibleEnemies.Remove(unitToRemove);
+            if (visibleEnemies.Contains(unitToRemove))
+                visibleEnemies.Remove(unitToRemove);
 
-        if (visibleAllies.Contains(unitToRemove))
-            visibleAllies.Remove(unitToRemove);
+            if (visibleAllies.Contains(unitToRemove))
+                visibleAllies.Remove(unitToRemove);
 
-        // If they are no longer visible to the player, hide them
-        if (unit.IsPlayer())
-            unitToRemove.HideMeshRenderers();
+            // If they are no longer visible to the player, hide them
+            if (unit.IsPlayer())
+                unitToRemove.HideMeshRenderers();
+        }
     }
 
     public Unit GetClosestEnemy(bool includeTargetEnemy)

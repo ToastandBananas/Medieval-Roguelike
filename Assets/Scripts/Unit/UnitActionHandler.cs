@@ -195,6 +195,8 @@ public class UnitActionHandler : MonoBehaviour
         if (stopMoveAnimation && GetAction<MoveAction>().isMoving == false)
             unit.unitAnimator.StopMovingForward();
     }
+
+    public bool AttackQueued() => queuedAction is MeleeAction || queuedAction is ShootAction;
     #endregion
 
     #region Combat

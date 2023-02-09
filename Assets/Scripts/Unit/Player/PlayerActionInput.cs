@@ -170,6 +170,11 @@ public class PlayerActionInput : MonoBehaviour
                 WorldMouse.ChangeCursor(CursorState.Default);
             }
         }
+        else
+        {
+            ActionLineRenderer.Instance.HideLineRenderers();
+            WorldMouse.ChangeCursor(CursorState.Default);
+        }
     }
 
     GridPosition GetMouseGridPosition()

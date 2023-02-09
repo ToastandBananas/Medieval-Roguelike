@@ -228,8 +228,9 @@ public class Projectile : MonoBehaviour
 
                     if (collider.TryGetComponent(out Unit targetUnit))
                     {
+                        shooter.unitActionHandler.GetAction<ShootAction>().BecomeVisibleEnemyOfTarget(targetUnit);
+
                         // TODO: Less damage the further away from explosion
-                        targetUnit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
                         targetUnit.health.TakeDamage(30);
                     }
                 }

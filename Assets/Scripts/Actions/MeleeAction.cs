@@ -53,16 +53,17 @@ public class MeleeAction : BaseAction
 
     public void Attack()
     {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+            BecomeVisibleEnemyOfTarget(targetUnit);
 
             if (unit.IsUnarmed())
             {
                 if (canFightUnarmed)
                 {
                     unit.unitAnimator.StartMeleeAttack();
-                    unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(UnarmedDamage());
+                    targetUnit.health.TakeDamage(UnarmedDamage());
                 }
             }
             else if (unit.IsDualWielding())
@@ -87,14 +88,14 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+            BecomeVisibleEnemyOfTarget(targetUnit);
 
             if (unit.IsDualWielding()) // Dual wield attack
-                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
+                targetUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage + unit.rightHeldItem.itemData.damage);
             else if (unit.rightHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
+                targetUnit.health.TakeDamage(unit.rightHeldItem.itemData.damage); // Right hand weapon attack
             else if (unit.leftHeldItem != null)
-                unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
+                targetUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage); // Left hand weapon attack
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));

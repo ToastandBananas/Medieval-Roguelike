@@ -53,17 +53,21 @@ public class ShootAction : BaseAction
 
     void Shoot()
     {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
+            BecomeVisibleEnemyOfTarget(targetUnit);
+
             StartCoroutine(RotateTowardsTarget());
             unit.leftHeldItem.DoDefaultAttack();
+
             StartCoroutine(WaitToFinishAction());
         }
         else
         {
-            unit.unitActionHandler.targetEnemyUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit
-            unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage);
+            BecomeVisibleEnemyOfTarget(targetUnit);
+
+            targetUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage);
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
