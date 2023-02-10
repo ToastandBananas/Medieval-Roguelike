@@ -216,9 +216,9 @@ public class Unit : MonoBehaviour
 
     public bool IsPlayer() => gameObject.CompareTag("Player");
 
-    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && UnitManager.Instance.player.vision.visibleUnits.Contains(this);
+    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && UnitManager.Instance.player.vision.IsVisible(this);
 
-    public void SetIsMyTurn(bool isMyTurn)
+    public void SetIsMyTurn(bool isMyTurn) 
     {
         this.isMyTurn = isMyTurn;
         if (isMyTurn && IsPlayer() && unitActionHandler.queuedAction == null)

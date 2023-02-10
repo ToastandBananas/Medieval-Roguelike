@@ -58,7 +58,7 @@ public class Vision : MonoBehaviour
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(targetTransform.position));
-            if (targetUnit != null && targetUnit.health.IsDead() == false && visibleUnits.Contains(targetUnit) == false)
+            if (targetUnit != null && visibleUnits.Contains(targetUnit) == false)
             {
                 Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 

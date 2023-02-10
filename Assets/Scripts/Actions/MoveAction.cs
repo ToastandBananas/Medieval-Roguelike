@@ -354,7 +354,6 @@ public class MoveAction : BaseAction
                 }
             }
 
-            unit.stats.AddToCurrentAP(cost);
             CompleteAction();
         }
 
