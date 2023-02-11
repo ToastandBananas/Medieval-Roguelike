@@ -25,7 +25,6 @@ public class MoveAction : BaseAction
     float moveSpeed;
 
     readonly int defaultTileMoveCost = 200;
-    bool nextMoveFree;
 
     public override void Awake()
     {
@@ -60,7 +59,6 @@ public class MoveAction : BaseAction
         if (finalTargetGridPosition == unit.gridPosition)
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is the same as the their current position...");
-            nextMoveFree = true;
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
             yield break;
@@ -84,7 +82,6 @@ public class MoveAction : BaseAction
         if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.Instance.GetGridPosition(nextTargetPosition)))
         {
             //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable or is the same as the their current position...");
-            nextMoveFree = true;
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
             yield break;
@@ -110,9 +107,13 @@ public class MoveAction : BaseAction
         Vector3 nextPathPosition = unit.transform.position;
         Direction directionToNextPosition;
 
+
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
+
+            unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(directionToNextPosition);
+            StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsTargetPosition(false));
 
             if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
                 nextPathPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1);
@@ -163,8 +164,6 @@ public class MoveAction : BaseAction
                 else
                     targetPosition = nextPathPosition;
 
-                RotateTowardsTargetPosition(nextPathPosition);
-
                 Vector3 moveDirection = (targetPosition - unitPosition).normalized;
                 float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
                 if (distanceToTargetPosition > stoppingDistance)
@@ -179,8 +178,6 @@ public class MoveAction : BaseAction
 
                 yield return null;
             }
-
-            unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition, unit.transform.position, false);
         }
         else // Move and rotate instantly while NPC is offscreen
         {
@@ -358,12 +355,6 @@ public class MoveAction : BaseAction
         }
 
         unit.BlockCurrentPosition();
-
-        if (nextMoveFree)
-        {
-            nextMoveFree = false;
-            return 0;
-        }
 
         // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
         return cost;

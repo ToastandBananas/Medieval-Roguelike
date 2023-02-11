@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TimeSystem : MonoBehaviour
 {
-    public static int currentHour = 9;
+    public static int currentHour = 8;
     public static int currentMinute;
     public static int currentSecond;
 

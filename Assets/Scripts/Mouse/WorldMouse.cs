@@ -50,7 +50,7 @@ public class WorldMouse : MonoBehaviour
             currentGridPosition = mouseGridPosition;
             currentUnit = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
         }
-
+        
         /*Physics.Raycast(ray, out RaycastHit looseItemHit, float.MaxValue, Instance.looseItemLayerMask);
         if (looseItemHit.collider != null)
         {
@@ -59,6 +59,8 @@ public class WorldMouse : MonoBehaviour
 
         return hit.point;
     }
+
+    public static GridPosition GetCurrentGridPosition() => LevelGrid.Instance.GetGridPosition(GetPosition());
 
     public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
 

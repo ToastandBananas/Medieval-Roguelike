@@ -27,12 +27,22 @@ public class TurnAction : BaseAction
         StartAction();
 
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
-            StartCoroutine(RotateTowardsPosition(targetPosition, false));
+            Turn(false);
         else
-            StartCoroutine(RotateTowardsPosition(targetPosition, true));
+            Turn(true);
     }
 
-    IEnumerator RotateTowardsPosition(Vector3 targetPosition, bool rotateInstantly)
+    void Turn(bool rotateInstantly)
+    {
+        StartCoroutine(RotateTowardsTargetPosition(rotateInstantly));
+
+        unit.vision.FindVisibleUnits();
+
+        CompleteAction();
+        unit.unitActionHandler.TakeTurn();
+    }
+
+    public IEnumerator RotateTowardsTargetPosition(bool rotateInstantly)
     {
         Vector3 forward = transform.forward;
         forward.y = 0;
@@ -40,10 +50,11 @@ public class TurnAction : BaseAction
 
         Vector3 lookPos = (new Vector3(targetPosition.x, transform.position.y, targetPosition.z) - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
+        Vector3 rotateTargetPosition = targetPosition;
 
         if (rotateInstantly == false)
         {
-            while (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f)
+            while (rotateTargetPosition == targetPosition && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
             {
                 forward = transform.forward;
                 forward.y = 0;
@@ -56,11 +67,6 @@ public class TurnAction : BaseAction
 
         transform.rotation = targetRotation;
         SetCurrentDirection();
-
-        unit.vision.FindVisibleUnits();
-
-        CompleteAction();
-        unit.unitActionHandler.TakeTurn();
     }
 
     public void RotateTowardsDirection(Direction direction, Vector3 startPosition, bool rotateInstantly)

@@ -38,7 +38,7 @@ public class ActionLineRenderer : MonoBehaviour
     {
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition;
-        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition());
+        GridPosition mouseGridPosition = WorldMouse.currentGridPosition;
         //bool findPathToShootPosition = false;// If the mouse pointer is over a UI button
 
         if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition))
@@ -47,7 +47,7 @@ public class ActionLineRenderer : MonoBehaviour
             currentPlayerPosition = player.gridPosition;
             Unit unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
 
-            if (unitAtMousePosition == player)
+            if (unitAtMousePosition == player || (unitAtMousePosition != null && unitAtMousePosition.health.IsDead()))
             {
                 HideLineRenderers();
                 yield break;
