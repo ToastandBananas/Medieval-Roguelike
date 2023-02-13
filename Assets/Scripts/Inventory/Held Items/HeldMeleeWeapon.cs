@@ -3,8 +3,17 @@ using UnityEngine;
 
 public class HeldMeleeWeapon : HeldItem
 {
-    public override void DoDefaultAttack()
+    bool attackBlocked;
+
+    public override void DoDefaultAttack(bool attackBlocked)
     {
+        this.attackBlocked = attackBlocked;
+
+        if (attackBlocked)
+        {
+            // Target Unit rotates towards this Unit & does block animation
+        }
+
         // TODO: Determine attack animation based on melee weapon type
         if (this == unit.rightHeldItem)
         {
@@ -29,11 +38,8 @@ public class HeldMeleeWeapon : HeldItem
     // Used in animation Key Frame
     void DamageTargetUnit()
     {
-        // TODO: Determine damage from weapon data and attacking Unit's stats/perks
-        unit.unitActionHandler.targetEnemyUnit.health.TakeDamage(itemData.damage);
-
-        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(this, attackBlocked);
+        attackBlocked = false; // Reset this bool for the next attack
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
@@ -62,4 +68,6 @@ public class HeldMeleeWeapon : HeldItem
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }
+
+    public void ResetAttackBlocked() => attackBlocked = false;
 }

@@ -47,28 +47,22 @@ public class MoveAction : BaseAction
 
     IEnumerator Move()
     {
-        if (positionList.Count == 0)
+        // If there's no path
+        if (positionList.Count == 0 || finalTargetGridPosition == unit.gridPosition)
         {
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
             yield break;
         }
 
-        isMoving = true;
-
-        if (finalTargetGridPosition == unit.gridPosition)
-        {
-            //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is the same as the their current position...");
-            CompleteAction();
-            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
-            yield break;
-        }
-
+        // If the next position is obstructed
         if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
         {
-            // Get a new path to the target position because the previous path is obstructed
+            // Get a new path to the target position
             GetPathToTargetPosition(finalTargetGridPosition);
-            if (positionList.Count == 0) // If we still can't find a path, just finish the action
+
+            // If we still can't find a path, just finish the action
+            if (positionList.Count == 0) 
             {
                 CompleteAction();
                 StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -87,15 +81,15 @@ public class MoveAction : BaseAction
             yield break;
         }
 
+        // Unblock the Unit's current position since they're about to move
+        isMoving = true;
         unit.UnblockCurrentPosition();
 
         // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
         unit.BlockAtPosition(nextTargetPosition);
 
-        // Remove the Unit from the Units list
+        // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
         LevelGrid.Instance.RemoveUnitAtGridPosition(unit.gridPosition);
-
-        // Add the Unit to its next position
         LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(nextTargetPosition), unit);
 
         // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
@@ -107,7 +101,6 @@ public class MoveAction : BaseAction
         Vector3 nextPathPosition = unit.transform.position;
         Direction directionToNextPosition;
 
-
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
@@ -115,6 +108,7 @@ public class MoveAction : BaseAction
             unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(directionToNextPosition);
             StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsTargetPosition(false));
 
+            // Get the next path position, not including the Y coordinate
             if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
                 nextPathPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1);
             else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z))
@@ -161,9 +155,10 @@ public class MoveAction : BaseAction
                         nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
                     }
                 }
-                else
+                else // Otherwise, the target position is simply the next position on the Path
                     targetPosition = nextPathPosition;
 
+                // Move to the target position
                 Vector3 moveDirection = (targetPosition - unitPosition).normalized;
                 float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
                 if (distanceToTargetPosition > stoppingDistance)
@@ -193,25 +188,23 @@ public class MoveAction : BaseAction
         nextPathPosition = new Vector3(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
         unit.transform.position = nextPathPosition;
 
+        // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
         if (unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
             positionIndex++;
-
-        //if (nextPathPosition != nextTargetPosition && unit.IsNPC())
-        //    Debug.LogWarning("Target and Next Target positions are not equal..." + nextPathPosition + " / " + nextTargetPosition);
 
         CompleteAction();
         OnStopMoving?.Invoke(this, EventArgs.Empty);
 
         if (unit.IsPlayer())
         {
-            // If the Player is trying to attack an enemy and they are in range
+            // If the Player is trying to attack an enemy and they are in range, stop moving and attack
             if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))))
             {
                 unit.unitAnimator.StopMovingForward();
                 unit.unitActionHandler.AttackTargetEnemy();
             }
-            // If the enemy moved positions
+            // If the enemy moved positions, set the target position to the nearest possible attack position
             else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
             {
                 unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
@@ -228,8 +221,10 @@ public class MoveAction : BaseAction
         }
         else // If NPC
         {
+            // If they're trying to attack
             if (unit.stateController.currentState == State.Fight && unit.unitActionHandler.targetEnemyUnit != null)
             {
+                // If they're in range, stop moving and attack
                 if (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit)))
                 {
@@ -239,6 +234,7 @@ public class MoveAction : BaseAction
             }
         }
 
+        // Check for newly visible Units
         UnitManager.Instance.player.vision.FindVisibleUnits();
     }
 

@@ -7,9 +7,17 @@ public class HeldRangedWeapon : HeldItem
 
     Projectile loadedProjectile;
     public bool isLoaded { get; private set; }
+    public bool attackBlocked { get; private set; }
 
-    public override void DoDefaultAttack()
+    public override void DoDefaultAttack(bool attackBlocked)
     {
+        this.attackBlocked = attackBlocked;
+
+        if (attackBlocked)
+        {
+            // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
+        }
+
         isLoaded = false;
         bowLineRenderer.StringStartFollowingTargetPositions();
         anim.Play("Shoot");
@@ -27,10 +35,7 @@ public class HeldRangedWeapon : HeldItem
 
     public void ShootProjectile()
     {
-        // Something here is Null sometimes. Fix me!
-        // Debug.Log("Projectile: " + loadedProjectile.name);
-        // Debug.Log("Target Enemy: " + unit.unitActionHandler.targetEnemyUnit.name);
-        StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit));
+        StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
         loadedProjectile = null;
     }
 
@@ -88,4 +93,6 @@ public class HeldRangedWeapon : HeldItem
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }
+
+    public void ResetAttackBlocked() => attackBlocked = false;
 }

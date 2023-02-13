@@ -4,6 +4,8 @@ using UnityEngine;
 public class Shield : Equipment
 {
     public float blockChanceAddOn = 10f;
+    public int minBlockPower = 1;
+    public int maxBlockPower = 5;
 
     public override bool IsBag() => false;
 

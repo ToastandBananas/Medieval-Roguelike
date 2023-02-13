@@ -54,14 +54,14 @@ public class Projectile : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit)
+    public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool missedTarget)
     {
         ReadyProjectile();
 
         targetPosition = targetUnit.WorldPosition();
 
         Vector3 startPos = transform.position;
-        Vector3 offset = GetOffset(true);
+        Vector3 offset = GetOffset(missedTarget);
 
         float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * projectileScriptableObject.ArcMultiplier();
         float animationTime = 0f;
@@ -82,37 +82,6 @@ public class Projectile : MonoBehaviour
         }
 
         CameraController.Instance.StopFollowingTarget();
-    }
-
-    public IEnumerator ShootProjectile_AtGridPosition(GridPosition targetGridPosition)
-    {
-        ReadyProjectile();
-
-        targetPosition = targetGridPosition.WorldPosition();
-
-        Vector3 startPos = transform.position;
-        Vector3 offset = GetOffset(false);
-
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetGridPosition) * projectileScriptableObject.ArcMultiplier();
-        float animationTime = 0f;
-
-        while (moveProjectile)
-        {
-            animationTime += speed * Time.deltaTime;
-            Vector3 nextPosition = MathParabola.Parabola(startPos, targetGridPosition.WorldPosition() + offset, arcHeight, animationTime / 5f);
-
-            RotateTowardsNextPosition(nextPosition);
-
-            transform.position = nextPosition;
-
-            if (transform.position.y < -20f)
-                Disable();
-
-            yield return null;
-        }
-
-        if (shooter.IsPlayer())
-            CameraController.Instance.StopFollowingTarget();
     }
 
     void ReadyProjectile()
@@ -144,15 +113,14 @@ public class Projectile : MonoBehaviour
         return arcHeight;
     }
 
-    Vector3 GetOffset(bool accountForAccuracy)
+    Vector3 GetOffset(bool missedTarget)
     {
-        float random = UnityEngine.Random.Range(0f, 100f);
         float offsetX, offsetZ;
-        float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().itemData);
 
         // If the shooter is missing
-        if (accountForAccuracy && random > rangedAccuracy)
+        if (missedTarget)
         {
+            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().itemData);
             float minOffset = 0.35f;
             float maxOffset = 1.35f;
             float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
@@ -293,26 +261,42 @@ public class Projectile : MonoBehaviour
         {
             if (collider.CompareTag("Unit Body"))
             {
-                Unit unit = collider.transform.parent.parent.GetComponent<Unit>();
-                if (unit != shooter)
+                Unit targetUnit = collider.transform.parent.parent.GetComponent<Unit>();
+                if (targetUnit != shooter)
                 {
-                    //unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                    unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage);
+                    HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                    if (rangedWeapon.attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, false);
+                    else
+                        rangedWeapon.ResetAttackBlocked();
+
                     Arrived(collider.transform);
                 }
             }
             else if (collider.CompareTag("Unit Head"))
             {
-                Unit unit = collider.transform.parent.parent.parent.GetComponent<Unit>();
-                if (unit != shooter)
+                Unit targetUnit = collider.transform.parent.parent.parent.GetComponent<Unit>();
+                if (targetUnit != shooter)
                 {
-                    //unit.vision.AddVisibleUnit(shooter); // The target Unit becomes aware of this Unit
-                    unit.health.TakeDamage(shooter.leftHeldItem.itemData.damage * 2);
+                    HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                    if (rangedWeapon.attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, false);
+                    else
+                        rangedWeapon.ResetAttackBlocked();
+
                     Arrived(collider.transform);
                 }
             }
-            
-            Arrived(null);
+            else if (collider.CompareTag("Shield"))
+            {
+                Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
+                HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, true);
+
+                Arrived(collider.transform);
+            }
+            else
+                Arrived(null);
         }
     }
 }

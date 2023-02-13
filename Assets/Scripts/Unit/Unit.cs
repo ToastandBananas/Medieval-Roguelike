@@ -180,6 +180,8 @@ public class Unit : MonoBehaviour
 
     public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.itemData.item.IsRangedWeapon();
 
+    public bool ShieldEquipped() => (leftHeldItem != null && leftHeldItem.itemData.item.IsShield()) || (rightHeldItem != null && rightHeldItem.itemData.item.IsShield());
+
     public bool IsUnarmed() => leftHeldItem == null && rightHeldItem == null;
 
     public void SwitchWeapon()
@@ -200,11 +202,20 @@ public class Unit : MonoBehaviour
         return null;
     }
 
-    public HeldRangedWeapon GetRangedWeapon() => leftHeldItem as HeldRangedWeapon;
+    public HeldRangedWeapon GetRangedWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldRangedWeapon;
 
-    public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem as HeldMeleeWeapon;
+    public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
 
-    public HeldMeleeWeapon GetRightMeleeWeapon() => rightHeldItem as HeldMeleeWeapon;
+    public HeldMeleeWeapon GetRightMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
+
+    public HeldShield GetShield()
+    {
+        if (leftHeldItem != null && leftHeldItem.itemData.item.IsShield())
+            return leftHeldItem as HeldShield;
+        else if (rightHeldItem != null && rightHeldItem.itemData.item.IsShield())
+            return rightHeldItem as HeldShield;
+        return null;
+    }
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
 

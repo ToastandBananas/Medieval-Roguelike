@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 1460794979494802749}
   - component: {fileID: 5232058871207089144}
   - component: {fileID: 2101053235}
+  - component: {fileID: 8008415603950332274}
   m_Layer: 0
   m_Name: Shield_L
-  m_TagString: Untagged
+  m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -69,7 +70,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idlePosition: {x: 0.23, y: -0.3, z: -0.23}
   idleRotation: {x: 0, y: -30, z: 0}
-  damage: 10
 --- !u!114 &2101053235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,6 +83,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177, type: 2}
+--- !u!65 &8008415603950332274
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1460794979494802751}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.42, y: 0.52, z: 0.052}
+  m_Center: {x: -0.0100000035, y: 0.26, z: 0.024}
 --- !u!1 &9067393067128502702
 GameObject:
   m_ObjectHideFlags: 0

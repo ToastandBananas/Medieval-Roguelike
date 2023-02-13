@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class ShootAction : BaseAction
 {
@@ -54,24 +55,62 @@ public class ShootAction : BaseAction
     void Shoot()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        BecomeVisibleEnemyOfTarget(targetUnit);
+
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            BecomeVisibleEnemyOfTarget(targetUnit);
-
             StartCoroutine(RotateTowardsTarget());
-            unit.leftHeldItem.DoDefaultAttack();
+            unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit));
 
             StartCoroutine(WaitToFinishAction());
         }
-        else
+        else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
-            BecomeVisibleEnemyOfTarget(targetUnit);
-
-            targetUnit.health.TakeDamage(unit.leftHeldItem.itemData.damage);
+            bool missedTarget = MissedTarget();
+            if (missedTarget == false)
+                DamageTarget(unit.unitActionHandler.targetEnemyUnit, unit.GetRangedWeapon(), AttackBlocked(targetUnit));
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
         }
+    }
+
+    public void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
+    {
+        int damageAmount = heldRangedWeapon.itemData.damage;
+        int armorAbsorbAmount = 0;
+
+        if (attackBlocked)
+        {
+            int blockAmount = targetUnit.GetShield().itemData.blockPower;
+            targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
+            heldRangedWeapon.ResetAttackBlocked();
+        }
+        else
+            targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
+
+        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
+    }
+
+    public bool MissedTarget()
+    {
+        float random = Random.Range(0f, 100f);
+        float rangedAccuracy = unit.stats.RangedAccuracy(unit.GetRangedWeapon().itemData);
+        if (random > rangedAccuracy)
+            return true;
+        return false;
+    }
+
+    bool AttackBlocked(Unit targetUnit)
+    {
+        if (targetUnit.ShieldEquipped())
+        {
+            float random = Random.Range(1f, 100f);
+            if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
+                return true;
+        }
+        return false;
     }
 
     IEnumerator WaitToFinishAction()

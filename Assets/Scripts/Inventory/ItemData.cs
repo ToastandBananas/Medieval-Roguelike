@@ -7,6 +7,8 @@ public class ItemData : MonoBehaviour
     public int damage { get; private set; }
     public float accuracyModifier { get; private set; }
 
+    public int blockPower { get; private set; }
+
     public bool hasBeenInitialized { get; private set; }
 
     void Start()
@@ -26,6 +28,11 @@ public class ItemData : MonoBehaviour
                 Weapon weapon = item as Weapon;
                 damage = Random.Range(weapon.minDamage, weapon.maxDamage + 1);
                 accuracyModifier = Random.Range(weapon.minAccuracyModifier, weapon.maxAccuracyModifier);
+            }
+            else if (item.IsShield())
+            {
+                Shield shield = item as Shield;
+                blockPower = Random.Range(shield.minBlockPower, shield.maxBlockPower + 1);
             }
         }
     }

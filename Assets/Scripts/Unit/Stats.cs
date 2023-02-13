@@ -95,7 +95,7 @@ public class Stats : MonoBehaviour
 
     public int Speed() => speed.GetValue();
 
-    public float BlockChance(ItemData shieldItemData)
+    public float ShieldBlockChance(ItemData shieldItemData)
     {
         float blockChance = shieldSkill.GetValue() * 2f;
         blockChance = Mathf.RoundToInt((blockChance + shieldItemData.item.Shield().blockChanceAddOn) * 100f) / 100f;
