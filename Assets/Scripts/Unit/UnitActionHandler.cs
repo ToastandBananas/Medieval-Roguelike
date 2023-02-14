@@ -249,5 +249,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
+    public bool IsAttacking() => GetAction<MeleeAction>().isAttacking || GetAction<ShootAction>().isShooting;
+
     public LayerMask AttackObstacleMask() => attackObstacleMask;
 }

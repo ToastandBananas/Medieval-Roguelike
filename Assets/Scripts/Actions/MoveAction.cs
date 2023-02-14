@@ -106,7 +106,7 @@ public class MoveAction : BaseAction
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
             unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(directionToNextPosition);
-            StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsTargetPosition(false));
+            StartCoroutine(unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_CurrentTargetPosition(false));
 
             // Get the next path position, not including the Y coordinate
             if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
@@ -177,7 +177,7 @@ public class MoveAction : BaseAction
         else // Move and rotate instantly while NPC is offscreen
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
-            unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(directionToNextPosition, unit.transform.position, true);
+            unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(directionToNextPosition, true);
 
             nextPathPosition = nextTargetPosition;
             unit.UpdateGridPosition();

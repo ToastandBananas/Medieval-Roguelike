@@ -7,11 +7,15 @@ public class HeldMeleeWeapon : HeldItem
 
     public override void DoDefaultAttack(bool attackBlocked)
     {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         this.attackBlocked = attackBlocked;
 
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation
+            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+            if (targetUnit.ShieldEquipped())
+                targetUnit.GetShield().RaiseShield();
         }
 
         // TODO: Determine attack animation based on melee weapon type
@@ -32,7 +36,8 @@ public class HeldMeleeWeapon : HeldItem
                 unit.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
         }
 
-        StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition));
+        if (unit.IsUnarmed() == false)
+            StartCoroutine(RotateWeaponTowardsTarget(targetUnit.gridPosition));
     }
 
     // Used in animation Key Frame

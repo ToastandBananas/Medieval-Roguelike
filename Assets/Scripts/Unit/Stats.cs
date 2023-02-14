@@ -100,10 +100,7 @@ public class Stats : MonoBehaviour
         float blockChance = shieldSkill.GetValue() * 2f;
         blockChance = Mathf.RoundToInt((blockChance + shieldItemData.item.Shield().blockChanceAddOn) * 100f) / 100f;
 
-        if (blockChance < 0f)
-            blockChance = 0f;
-
-        Debug.Log("Block Chance: " + blockChance);
+        if (blockChance < 0f) blockChance = 0f;
         return blockChance;
     }
 
@@ -116,10 +113,7 @@ public class Stats : MonoBehaviour
             accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.accuracyModifier) * 100f) / 100f;
         }
 
-        if (accuracy < 0f)
-            accuracy = 0f;
-
-        // Debug.Log("Accuracy: " + accuracy);
+        if (accuracy < 0f) accuracy = 0f;
         return accuracy;
     }
 }

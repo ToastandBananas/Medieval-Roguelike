@@ -67,8 +67,12 @@ public class ShootAction : BaseAction
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
             bool missedTarget = MissedTarget();
+            bool attackBlocked = AttackBlocked(targetUnit);
             if (missedTarget == false)
-                DamageTarget(unit.unitActionHandler.targetEnemyUnit, unit.GetRangedWeapon(), AttackBlocked(targetUnit));
+                DamageTarget(targetUnit, unit.GetRangedWeapon(), attackBlocked);
+
+            if (attackBlocked)
+                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -82,9 +86,16 @@ public class ShootAction : BaseAction
 
         if (attackBlocked)
         {
-            int blockAmount = targetUnit.GetShield().itemData.blockPower;
+            int blockAmount = 0;
+            if (targetUnit.ShieldEquipped())
+                blockAmount = targetUnit.GetShield().itemData.blockPower;
+
             targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
+
             heldRangedWeapon.ResetAttackBlocked();
+
+            if (targetUnit.ShieldEquipped())
+                targetUnit.GetShield().LowerShield();
         }
         else
             targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
@@ -104,7 +115,7 @@ public class ShootAction : BaseAction
 
     bool AttackBlocked(Unit targetUnit)
     {
-        if (targetUnit.ShieldEquipped())
+        if (targetUnit.ShieldEquipped() && targetUnit.unitActionHandler.GetAction<TurnAction>().IsFacingUnit(unit))
         {
             float random = Random.Range(1f, 100f);
             if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
@@ -135,7 +146,7 @@ public class ShootAction : BaseAction
             yield return null;
         }
 
-        unit.unitActionHandler.GetAction<TurnAction>().RotateTowardsDirection(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, unit.transform.position, false);
+        unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, false);
     }
 
     public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)

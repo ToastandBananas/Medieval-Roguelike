@@ -41,7 +41,7 @@ public class Unit : MonoBehaviour
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
-        unitAnimator = GetComponent<UnitAnimator>();
+        unitAnimator = GetComponentInChildren<UnitAnimator>();
         vision = GetComponentInChildren<Vision>();
 
         SetLeftHeldItem();

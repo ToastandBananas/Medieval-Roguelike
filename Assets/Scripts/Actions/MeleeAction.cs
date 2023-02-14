@@ -64,10 +64,7 @@ public class MeleeAction : BaseAction
             if (unit.IsUnarmed())
             {
                 if (canFightUnarmed)
-                {
-                    unit.unitAnimator.StartMeleeAttack();
-                    DamageTarget(null, AttackBlocked(targetUnit));
-                }
+                    unit.unitAnimator.DoUnarmedAttack(AttackBlocked(targetUnit));
             }
             else if (unit.IsDualWielding())
             {
@@ -91,17 +88,35 @@ public class MeleeAction : BaseAction
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
+            bool attackBlocked = false;
             if (unit.IsUnarmed())
-                DamageTarget(null, AttackBlocked(targetUnit));
+            {
+                attackBlocked = AttackBlocked(targetUnit);
+                DamageTarget(null, attackBlocked);
+            }
             else if (unit.IsDualWielding()) // Dual wield attack
             {
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, AttackBlocked(targetUnit));
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, AttackBlocked(targetUnit));
+                bool mainAttackBlocked = AttackBlocked(targetUnit);
+                bool offhandAttackBlocked = AttackBlocked(targetUnit);
+                if (mainAttackBlocked || offhandAttackBlocked)
+                    attackBlocked = true;
+
+                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, mainAttackBlocked);
+                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, offhandAttackBlocked);
             }
             else if (unit.rightHeldItem != null)
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, AttackBlocked(targetUnit)); // Right hand weapon attack
+            {
+                attackBlocked = AttackBlocked(targetUnit);
+                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked); // Right hand weapon attack
+            }
             else if (unit.leftHeldItem != null)
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, AttackBlocked(targetUnit)); // Left hand weapon attack
+            {
+                attackBlocked = AttackBlocked(targetUnit);
+                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked); // Left hand weapon attack
+            }
+
+            if (attackBlocked)
+                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
 
             CompleteAction();
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
@@ -124,10 +139,17 @@ public class MeleeAction : BaseAction
 
         if (attackBlocked)
         {
-            int blockAmount = targetUnit.GetShield().itemData.blockPower;
+            int blockAmount = 0;
+            if (targetUnit.ShieldEquipped())
+                blockAmount = targetUnit.GetShield().itemData.blockPower;
+
             targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+
             if (heldMeleeWeapon != null)
                 heldMeleeWeapon.ResetAttackBlocked();
+
+            if (targetUnit.ShieldEquipped())
+                targetUnit.GetShield().LowerShield();
         }
         else
             targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
@@ -138,10 +160,10 @@ public class MeleeAction : BaseAction
 
     bool AttackBlocked(Unit targetUnit)
     {
-        if (targetUnit.ShieldEquipped())
+        if (targetUnit.ShieldEquipped() && targetUnit.unitActionHandler.GetAction<TurnAction>().IsFacingUnit(unit))
         {
-            int random = Random.Range(0, 100);
-            if (random < targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
+            float random = Random.Range(1f, 100f);
+            if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
                 return true;
         }
         return false;

@@ -11,18 +11,22 @@ public class HeldRangedWeapon : HeldItem
 
     public override void DoDefaultAttack(bool attackBlocked)
     {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         this.attackBlocked = attackBlocked;
 
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
+            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+            if (targetUnit.ShieldEquipped())
+                targetUnit.GetShield().RaiseShield();
         }
 
         isLoaded = false;
         bowLineRenderer.StringStartFollowingTargetPositions();
         anim.Play("Shoot");
 
-        StartCoroutine(RotateRangedWeapon(unit.unitActionHandler.targetEnemyUnit.gridPosition));
+        StartCoroutine(RotateRangedWeapon(targetUnit.gridPosition));
     }
 
     public void LoadProjectile()

@@ -5,38 +5,54 @@ using UnityEngine;
 public class UnitAnimator : MonoBehaviour
 {
     [SerializeField] Transform headTransform;
-    [SerializeField] Animator unitAnim;
+    Animator unitAnim;
 
     public Animator leftHeldItemAnim { get; private set; }
     public Animator rightHeldItemAnim { get; private set; }
 
-    /*void Awake()
+    Unit unit;
+
+    bool unarmedAttackBlocked;
+
+    void Awake()
     {
-        if (TryGetComponent(out MoveAction moveAction))
+        unit = transform.parent.GetComponent<Unit>();
+        unitAnim = GetComponent<Animator>();
+        /*if (TryGetComponent(out MoveAction moveAction))
         {
             //moveAction.OnStartMoving += MoveAction_OnStartMoving;
           moveAction.OnStopMoving += MoveAction_OnStopMoving;
+        }*/
+    }
+
+    public void StartMovingForward() => unitAnim.SetBool("isMoving", true);
+
+    public void StopMovingForward() => unitAnim.SetBool("isMoving", false);
+
+    public void StartMeleeAttack() => unitAnim.Play("Melee Attack");
+
+    public void StartDualMeleeAttack() => unitAnim.Play("Dual Melee Attack");
+
+    public void DoUnarmedAttack(bool unarmedAttackBlocked)
+    {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        this.unarmedAttackBlocked = unarmedAttackBlocked;
+
+        if (unarmedAttackBlocked)
+        {
+            // Target Unit rotates towards this Unit & does block animation
+            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+            targetUnit.GetShield().RaiseShield();
         }
-    }*/
 
-    public void StartMovingForward()
-    {
-        unitAnim.SetBool("isMoving", true);
+        unitAnim.Play("Unarmed Attack");
     }
 
-    public void StopMovingForward()
+    // Used in animation Key Frame
+    void DamageTargetUnit_UnarmedAttack()
     {
-        unitAnim.SetBool("isMoving", false);
-    }
-
-    public void StartMeleeAttack()
-    {
-        unitAnim.Play("Melee Attack");
-    }
-
-    public void StartDualMeleeAttack()
-    {
-        unitAnim.Play("Dual Melee Attack");
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(null, unarmedAttackBlocked);
+        unarmedAttackBlocked = false; // Reset this bool for the next attack
     }
 
     public void Die()
@@ -65,23 +81,11 @@ public class UnitAnimator : MonoBehaviour
         }
     }
 
-    public void SetLeftHeldItemAnim(Animator leftHeldItemAnim)
-    {
-        this.leftHeldItemAnim = leftHeldItemAnim;
-    }
+    public void SetLeftHeldItemAnim(Animator leftHeldItemAnim) => this.leftHeldItemAnim = leftHeldItemAnim;
 
-    public void SetRightHeldItemAnim(Animator rightHeldItemAnim)
-    {
-        this.rightHeldItemAnim = rightHeldItemAnim;
-    }
+    public void SetRightHeldItemAnim(Animator rightHeldItemAnim) => this.rightHeldItemAnim = rightHeldItemAnim;
 
-    public void SetLeftHeldItemAnimController(RuntimeAnimatorController animController)
-    {
-        leftHeldItemAnim.runtimeAnimatorController = animController;
-    }
+    public void SetLeftHeldItemAnimController(RuntimeAnimatorController animController) => leftHeldItemAnim.runtimeAnimatorController = animController;
 
-    public void SetRightHeldItemAnimController(RuntimeAnimatorController animController)
-    {
-        rightHeldItemAnim.runtimeAnimatorController = animController;
-    }
+    public void SetRightHeldItemAnimController(RuntimeAnimatorController animController) => rightHeldItemAnim.runtimeAnimatorController = animController;
 }

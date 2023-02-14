@@ -34,15 +34,13 @@ public class TurnAction : BaseAction
 
     void Turn(bool rotateInstantly)
     {
-        StartCoroutine(RotateTowardsTargetPosition(rotateInstantly));
-
-        unit.vision.FindVisibleUnits();
+        StartCoroutine(RotateTowards_CurrentTargetPosition(rotateInstantly));
 
         CompleteAction();
         unit.unitActionHandler.TakeTurn();
     }
 
-    public IEnumerator RotateTowardsTargetPosition(bool rotateInstantly)
+    public IEnumerator RotateTowards_CurrentTargetPosition(bool rotateInstantly)
     {
         Vector3 forward = transform.forward;
         forward.y = 0;
@@ -67,58 +65,42 @@ public class TurnAction : BaseAction
 
         transform.rotation = targetRotation;
         SetCurrentDirection();
+
+        unit.vision.FindVisibleUnits();
     }
 
-    public void RotateTowardsDirection(Direction direction, Vector3 startPosition, bool rotateInstantly)
+    public void RotateTowards_Direction(Direction direction, bool rotateInstantly)
     {
-        if (direction == currentDirection)
-            return;
+        SetTargetPosition(direction);
+        StartCoroutine(RotateTowards_CurrentTargetPosition(rotateInstantly));
+    }
 
-        Vector3 targetPosition = startPosition;
-        switch (direction)
-        {
-            case Direction.North:
-                targetPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z + 1);
-                break;
-            case Direction.East:
-                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z);
-                break;
-            case Direction.South:
-                targetPosition = new Vector3(startPosition.x, startPosition.y, startPosition.z - 1);
-                break;
-            case Direction.West:
-                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z);
-                break;
-            case Direction.NorthWest:
-                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z + 1);
-                break;
-            case Direction.NorthEast:
-                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z + 1);
-                break;
-            case Direction.SouthWest:
-                targetPosition = new Vector3(startPosition.x - 1, startPosition.y, startPosition.z - 1);
-                break;
-            case Direction.SouthEast:
-                targetPosition = new Vector3(startPosition.x + 1, startPosition.y, startPosition.z - 1);
-                break;
-            case Direction.Center:
-                break;
-        }
+    public IEnumerator RotateTowards_AttackingTargetUnit(Unit targetUnit, bool rotateInstantly)
+    {
+        Vector3 targetPos = targetUnit.WorldPosition();
+        Vector3 forward = transform.forward;
+        forward.y = 0;
+        // float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
-        Vector3 dir = (targetPosition - startPosition).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(dir);
+        Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(lookPos);
+
         if (rotateInstantly == false)
         {
-            while (Quaternion.Angle(transform.rotation, targetRotation) > 0.01f)
+            while (targetUnit.unitActionHandler.IsAttacking())// && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
             {
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+                forward = transform.forward;
+                forward.y = 0;
+                // headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * 2f * Time.deltaTime);
+                yield return null;
             }
         }
 
         transform.rotation = targetRotation;
         SetCurrentDirection();
-
-        unit.vision.FindVisibleUnits();
+        RotateTowards_Direction(currentDirection, rotateInstantly);
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -419,6 +401,48 @@ public class TurnAction : BaseAction
         return gridPositionBehindUnit;
     }
 
+    public bool IsFacingUnit(Unit targetUnit)
+    {
+        if (targetUnit == null) return false;
+
+        switch (targetUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the target Unit is facing
+        {
+            case Direction.North:
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && transform.position.z > targetUnit.transform.position.z)
+                    return true;
+                break;
+            case Direction.East:
+                if ((currentDirection == Direction.West || currentDirection == Direction.SouthWest || currentDirection == Direction.NorthWest) && transform.position.x > targetUnit.transform.position.x)
+                    return true;
+                break;
+            case Direction.South:
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.NorthEast) && transform.position.z < targetUnit.transform.position.z)
+                    return true;
+                break;
+            case Direction.West:
+                if ((currentDirection == Direction.East || currentDirection == Direction.SouthEast || currentDirection == Direction.NorthEast) && transform.position.x < targetUnit.transform.position.x)
+                    return true;
+                break;
+            case Direction.NorthWest:
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthEast || currentDirection == Direction.East) && transform.position.x < targetUnit.transform.position.x && transform.position.z > targetUnit.transform.position.z)
+                    return true;
+                break;
+            case Direction.NorthEast:
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.West) && transform.position.x > targetUnit.transform.position.x && transform.position.z > targetUnit.transform.position.z)
+                    return true;
+                break;
+            case Direction.SouthWest:
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthEast || currentDirection == Direction.East) && transform.position.x < targetUnit.transform.position.x && transform.position.z < targetUnit.transform.position.z)
+                    return true;
+                break;
+            case Direction.SouthEast:
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.West) && transform.position.x > targetUnit.transform.position.x && transform.position.z < targetUnit.transform.position.z)
+                    return true;
+                break;
+        }
+        return false;
+    }
+
     public override void CompleteAction()
     {
         base.CompleteAction();
@@ -433,11 +457,7 @@ public class TurnAction : BaseAction
 
     public override bool IsValidAction() => true;
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
-    {
-        // Debug.Log(singleTurnSegmentAPCost * GetRotationsSegmentCount());
-        return singleTurnSegmentAPCost * GetRotationsSegmentCount();
-    }
+    public override int GetActionPointsCost(GridPosition targetGridPosition) => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
     public override bool ActionIsUsedInstantly() => false;
 
