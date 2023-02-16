@@ -43,13 +43,23 @@ public class NPCActionHandler : UnitActionHandler
     {
         if (unit.isMyTurn && unit.health.IsDead() == false)
         {
-            if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
+            if (canPerformActions == false || unit.stats.currentAP <= 0)
             {
                 TurnManager.Instance.FinishTurn(unit); // Unit can't do anything, so skip their turn
                 return;
             }
             else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
             {
+                if (targetEnemyUnit.health.IsDead())
+                {
+                    if (unit.stateController.DefaultState() == State.Fight)
+                        unit.stateController.ChangeDefaultState(State.Idle);
+                    unit.stateController.SetToDefaultState();
+                    CancelAction();
+                    TurnManager.Instance.FinishTurn(unit);
+                    return;
+                }
+
                 if (unit.RangedWeaponEquipped())
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
@@ -98,12 +108,22 @@ public class NPCActionHandler : UnitActionHandler
     {
         base.FinishAction();
 
-        if (unit.stats.CurrentAP() > 0 && unit.isMyTurn) // Take another action if this is the last NPC who hasn't finished their turn
+        // If the character has no AP remaining, end their turn
+        if (unit.stats.currentAP <= 0)
+        {
+            if (unit.isMyTurn)
+                TurnManager.Instance.FinishTurn(unit);
+        }
+
+        if (unit.isMyTurn) // Take another action if this is the last NPC who hasn't finished their turn
             StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     public void DetermineAction()
     {
+        if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
+
         switch (unit.stateController.currentState)
         {
             case State.Idle:
@@ -156,8 +176,9 @@ public class NPCActionHandler : UnitActionHandler
         FindBestTargetEnemy();
 
         // If there's no target enemy Unit, try to find one, else switch States
-        if (targetEnemyUnit == null)
+        if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
         {
+            SetTargetEnemyUnit(null);
             if (unit.stateController.DefaultState() == State.Fight)
                 unit.stateController.ChangeDefaultState(State.Idle);
             unit.stateController.SetToDefaultState();

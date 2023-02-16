@@ -21,7 +21,7 @@ public class MoveAction : BaseAction
     List<Vector3> positionList;
     int positionIndex;
 
-    readonly float defaultMoveSpeed = 4.5f;
+    readonly float defaultMoveSpeed = 3.5f;
     float moveSpeed;
 
     readonly int defaultTileMoveCost = 200;
@@ -35,7 +35,7 @@ public class MoveAction : BaseAction
         positionList = new List<Vector3>();
     }
 
-    void Start() => SetMoveSpeed();
+    void Start() => moveSpeed = defaultMoveSpeed;
 
     public override void TakeAction(GridPosition targetGridPosition)
     {
@@ -126,13 +126,27 @@ public class MoveAction : BaseAction
             else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
                 nextPathPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1);
 
+            float moveSpeedMultiplier = 1f;
+            if (unit.IsNPC())
+            {
+                if (LevelGrid.IsDiagonal(unit.transform.position, nextTargetPosition))
+                    moveSpeedMultiplier = 1.4f;
+
+                if (nextTargetPosition.y - unit.transform.position.y > 0f || nextTargetPosition.y - unit.transform.position.y < 0f)
+                    moveSpeedMultiplier *= 2f;
+            }
+
+            bool moveUpchecked = false;
+            bool moveDownChecked = false;
+            bool moveAboveChecked = false;
             float stoppingDistance = 0.0125f;
+            Vector3 unitPosition = unit.transform.position;
+            Vector3 targetPosition = unitPosition;
             while (Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
             {
                 unit.unitAnimator.StartMovingForward(); // Move animation
 
-                Vector3 unitPosition = unit.transform.position;
-                Vector3 targetPosition = unitPosition;
+                unitPosition = unit.transform.position;
 
                 // If the next point on the path is above or below the Unit
                 if (Mathf.Abs(Mathf.Abs(nextPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
@@ -140,17 +154,26 @@ public class MoveAction : BaseAction
                     // If the next path position is above the unit's current position
                     if (nextPointOnPath.y - unitPosition.y > 0f)
                     {
-                        targetPosition = new Vector3(unitPosition.x, nextPointOnPath.y, unitPosition.z);
-                        nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                        if (moveUpchecked == false)
+                        {
+                            moveUpchecked = true;
+                            targetPosition = new Vector3(unitPosition.x, nextPointOnPath.y, unitPosition.z);
+                            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                        }
                     }
                     // If the Unit is directly above the next path position
                     else if (nextPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
                     {
-                        targetPosition = nextPathPosition;
+                        if (moveDownChecked == false)
+                        {
+                            moveDownChecked = true;
+                            targetPosition = nextPathPosition;
+                        }
                     }
                     // If the next path position is below the unit's current position
-                    else if (nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
+                    else if (moveAboveChecked == false && nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
                     {
+                        moveAboveChecked = true;
                         targetPosition = new Vector3(nextPointOnPath.x, unitPosition.y, nextPointOnPath.z);
                         nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
                     }
@@ -159,7 +182,7 @@ public class MoveAction : BaseAction
                     targetPosition = nextPathPosition;
 
                 // Move to the target position
-                Vector3 moveDirection = (targetPosition - unitPosition).normalized;
+                //Vector3 moveDirection = (targetPosition - unitPosition).normalized;
                 float distanceToTargetPosition = Vector3.Distance(unitPosition, targetPosition);
                 if (distanceToTargetPosition > stoppingDistance)
                 {
@@ -167,8 +190,9 @@ public class MoveAction : BaseAction
                     float distanceToTriggerStopAnimation = 1f;
                     if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
                         unit.unitAnimator.StopMovingForward();
-                    
-                    unit.transform.position += moveDirection * moveSpeed * Time.deltaTime;
+
+                    unit.transform.position = Vector3.MoveTowards(unit.transform.position, targetPosition, moveSpeed * moveSpeedMultiplier * Time.deltaTime);
+                    //unit.transform.position += moveDirection * moveSpeed * moveSpeedMultiplier * Time.deltaTime;
                 }
 
                 yield return null;
@@ -189,7 +213,7 @@ public class MoveAction : BaseAction
         unit.transform.position = nextPathPosition;
 
         // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
-        if (unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
+        if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
             positionIndex++;
 
         CompleteAction();
@@ -197,8 +221,11 @@ public class MoveAction : BaseAction
 
         if (unit.IsPlayer())
         {
+            // If the target enemy Unit died
+            if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+                unit.unitActionHandler.CancelAction();
             // If the Player is trying to attack an enemy and they are in range, stop moving and attack
-            if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
+            else if (unit.unitActionHandler.targetEnemyUnit != null && (((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
                 || (unit.RangedWeaponEquipped() && unit.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))))
             {
                 unit.unitAnimator.StopMovingForward();
@@ -425,22 +452,6 @@ public class MoveAction : BaseAction
         return 1f;
     }
 
-    float GetMoveSpeed()
-    {
-        int unitsMaxAP = unit.stats.MaxAP();
-        int playersMaxAP = UnitManager.Instance.player.stats.MaxAP();
-        float moveSpeed;
-        if (unit.IsPlayer() || unitsMaxAP <= playersMaxAP)
-            return defaultMoveSpeed;
-        else
-            moveSpeed = defaultMoveSpeed + ((unitsMaxAP / playersMaxAP) - 1f); // Example: (150 / 100) = 1.5 | 1.5 - 1 = 0.5 add-on
-
-        if (moveSpeed > 8f)
-            return 8f;
-        else
-            return moveSpeed;
-    }
-
     public override void CompleteAction()
     {
         base.CompleteAction();
@@ -457,7 +468,13 @@ public class MoveAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public void SetMoveSpeed() => moveSpeed = GetMoveSpeed();
+    public void SetMoveSpeed(int pooledAP)
+    {
+        if (unit.IsPlayer() || ((float)pooledAP) / defaultTileMoveCost <= 1f)
+            moveSpeed = defaultMoveSpeed;
+        else
+            moveSpeed = Mathf.FloorToInt((((float)pooledAP) / defaultTileMoveCost) * defaultMoveSpeed) + 1f;
+    }
 
     public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 

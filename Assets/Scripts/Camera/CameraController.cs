@@ -43,9 +43,6 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(0))
-            return;
-
         newRotation = transform.rotation;
 
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
@@ -61,9 +58,6 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(0))
-            return;
-
         if (animatingCameraMovement == false && animatingCameraZoom == false)
         {
             //if (doingMouseDragRotation == false && doingMouseDragMovement == false)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
@@ -37,13 +38,19 @@ public class UnitActionHandler : MonoBehaviour
     {
         if (unit.isMyTurn && unit.health.IsDead() == false)
         {
-            if (canPerformActions == false || unit.stats.CurrentAP() <= 0)
+            if (canPerformActions == false)// || unit.stats.currentAP <= 0)
             {
                 TurnManager.Instance.FinishTurn(unit);
                 return;
             }
             else if (targetEnemyUnit != null && queuedAction == null)
             {
+                if (targetEnemyUnit.health.IsDead())
+                {
+                    SetTargetEnemyUnit(null);
+                    return;
+                }
+
                 if (unit.RangedWeaponEquipped())
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
@@ -108,7 +115,7 @@ public class UnitActionHandler : MonoBehaviour
         {
             if (canPerformActions == false)
                 TurnManager.Instance.FinishTurn(unit);
-            else if (GetAction<MoveAction>().isMoving == false && unit.stats.CurrentAP() > 0)
+            else if (GetAction<MoveAction>().isMoving == false)// && unit.stats.currentAP > 0)
                 GetNextQueuedAction();
         }
 
@@ -124,39 +131,75 @@ public class UnitActionHandler : MonoBehaviour
         if (unit.health.IsDead())
         {
             ClearActionQueue(true);
-            GridSystemVisual.UpdateGridVisual();
+            if (unit.IsPlayer())
+                GridSystemVisual.HideGridVisual();
             return;
         }
 
         if (queuedAction != null && isPerformingAction == false)
         {
-            int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP);
-            if (APRemainder <= 0)
+            if (unit.IsPlayer())
             {
-                isPerformingAction = true;
-                queuedAction.TakeAction(targetGridPosition);
-                // if (isNPC == false) Debug.Log("Got next queued action. Actions still queued: " + actions.Count);
+                unit.stats.UseAP(queuedAP);
+
+                if (queuedAction != null) // This can become null after a time tick update
+                {
+                    isPerformingAction = true;
+                    queuedAction.TakeAction(targetGridPosition);
+                }
+                else
+                    CancelAction();
             }
             else
             {
-                // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
-                isPerformingAction = false;
-                queuedAP = APRemainder;
-                TurnManager.Instance.FinishTurn(unit);
+                int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP);
+                if (unit.health.IsDead())
+                {
+                    ClearActionQueue(true);
+                    if (unit.IsPlayer())
+                        GridSystemVisual.HideGridVisual();
+                    return;
+                }
+
+                if (APRemainder <= 0)
+                {
+                    if (queuedAction != null) // This can become null after a time tick update
+                    {
+                        isPerformingAction = true;
+                        queuedAction.TakeAction(targetGridPosition);
+                    }
+                    else
+                    {
+                        CancelAction();
+                        TurnManager.Instance.FinishTurn(unit);
+                    }
+                    // if (isNPC == false) Debug.Log("Got next queued action. Actions still queued: " + actions.Count);
+                }
+                else
+                {
+                    // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
+                    isPerformingAction = false;
+                    queuedAP = APRemainder;
+                    TurnManager.Instance.FinishTurn(unit);
+                }
             }
+        }
+        else if (queuedAction == null && unit.IsNPC())
+        {
+            Debug.Log("Queued action is null for " + unit.name);
+            TurnManager.Instance.FinishTurn(unit);
         }
     }
 
     public virtual void FinishAction()
     {
         ClearActionQueue(false);
+    }
 
-        // If the character has no AP remaining, end their turn
-        if (unit.stats.CurrentAP() <= 0)
-        {
-            if (unit.isMyTurn)
-                TurnManager.Instance.FinishTurn(unit);
-        }
+    public void SkipTurn()
+    {
+        unit.stats.UseAP(unit.stats.MaxAP());
+        TurnManager.Instance.FinishTurn(unit);
     }
 
     public IEnumerator CancelAction()

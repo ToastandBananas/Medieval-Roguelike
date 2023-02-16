@@ -81,24 +81,27 @@ public class ShootAction : BaseAction
 
     public void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
     {
-        int damageAmount = heldRangedWeapon.itemData.damage;
-        int armorAbsorbAmount = 0;
-
-        if (attackBlocked)
+        if (targetUnit != null)
         {
-            int blockAmount = 0;
-            if (targetUnit.ShieldEquipped())
-                blockAmount = targetUnit.GetShield().itemData.blockPower;
+            int damageAmount = heldRangedWeapon.itemData.damage;
+            int armorAbsorbAmount = 0;
 
-            targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
+            if (attackBlocked)
+            {
+                int blockAmount = 0;
+                if (targetUnit.ShieldEquipped())
+                    blockAmount = targetUnit.GetShield().itemData.blockPower;
 
-            heldRangedWeapon.ResetAttackBlocked();
+                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
 
-            if (targetUnit.ShieldEquipped())
-                targetUnit.GetShield().LowerShield();
+                heldRangedWeapon.ResetAttackBlocked();
+
+                if (targetUnit.ShieldEquipped())
+                    targetUnit.GetShield().LowerShield();
+            }
+            else
+                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
-        else
-            targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
 
         if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -373,7 +376,7 @@ public class ShootAction : BaseAction
         {
             targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
 
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);

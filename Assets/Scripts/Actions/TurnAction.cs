@@ -35,9 +35,14 @@ public class TurnAction : BaseAction
     void Turn(bool rotateInstantly)
     {
         StartCoroutine(RotateTowards_CurrentTargetPosition(rotateInstantly));
+        currentDirection = targetDirection;
 
         CompleteAction();
-        unit.unitActionHandler.TakeTurn();
+
+        if (unit.IsNPC())
+            unit.unitActionHandler.TakeTurn();
+        else
+            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
     }
 
     public IEnumerator RotateTowards_CurrentTargetPosition(bool rotateInstantly)

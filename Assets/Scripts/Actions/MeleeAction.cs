@@ -28,6 +28,7 @@ public class MeleeAction : BaseAction
 
         if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
             unit.unitActionHandler.FinishAction();
             return;
         }
@@ -126,33 +127,36 @@ public class MeleeAction : BaseAction
     public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        int armorAbsorbAmount = 0;
-
-        int damageAmount;
-        if (heldMeleeWeapon == null) // If unarmed
-            damageAmount = UnarmedDamage();
-        else
-            damageAmount = heldMeleeWeapon.itemData.damage;
-
-        if (unit.IsDualWielding() && this == unit.GetLeftMeleeWeapon())
-            damageAmount = Mathf.RoundToInt(damageAmount * dualWieldDamagePenalty);
-
-        if (attackBlocked)
+        if (targetUnit != null)
         {
-            int blockAmount = 0;
-            if (targetUnit.ShieldEquipped())
-                blockAmount = targetUnit.GetShield().itemData.blockPower;
+            int armorAbsorbAmount = 0;
 
-            targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+            int damageAmount;
+            if (heldMeleeWeapon == null) // If unarmed
+                damageAmount = UnarmedDamage();
+            else
+                damageAmount = heldMeleeWeapon.itemData.damage;
 
-            if (heldMeleeWeapon != null)
-                heldMeleeWeapon.ResetAttackBlocked();
+            if (unit.IsDualWielding() && this == unit.GetLeftMeleeWeapon())
+                damageAmount = Mathf.RoundToInt(damageAmount * dualWieldDamagePenalty);
 
-            if (targetUnit.ShieldEquipped())
-                targetUnit.GetShield().LowerShield();
+            if (attackBlocked)
+            {
+                int blockAmount = 0;
+                if (targetUnit.ShieldEquipped())
+                    blockAmount = targetUnit.GetShield().itemData.blockPower;
+
+                targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+
+                if (heldMeleeWeapon != null)
+                    heldMeleeWeapon.ResetAttackBlocked();
+
+                if (targetUnit.ShieldEquipped())
+                    targetUnit.GetShield().LowerShield();
+            }
+            else
+                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
-        else
-            targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
 
         if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -240,7 +244,7 @@ public class MeleeAction : BaseAction
         {
             targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
 
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);

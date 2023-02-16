@@ -29,7 +29,6 @@ public class TimeSystem : MonoBehaviour
     public static void IncreaseTime()
     {
         IncreaseCurrentSecond(defaultTimeTickInSeconds);
-        //HealthDisplay.Instance.UpdateTimeText();
         // LogTime();
     }
 
@@ -83,6 +82,6 @@ public class TimeSystem : MonoBehaviour
 
     public static void LogTime()
     {
-        Debug.Log(currentHour + ":" + currentMinute + ":" + currentSecond);
+        Debug.Log("Time: " + currentHour + ":" + currentMinute + ":" + currentSecond);
     }
 }

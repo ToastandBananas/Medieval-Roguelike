@@ -31,6 +31,7 @@ public class UnitManager : MonoBehaviour
         deadNPCs = new List<Unit>();
 
         livingNPCs = FindObjectsOfType<Unit>().ToList();
+        livingNPCs.Remove(player);
     }
 
     void Start()
@@ -45,7 +46,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void AddUnitToUnitsList(Unit unit) => livingNPCs.Add(unit);
+    public void AddUnitToNPCList(Unit unit) => livingNPCs.Add(unit);
 
-    public void RemoveUnitFromUnitsList(Unit unit) => livingNPCs.Remove(unit);
+    public void RemoveUnitFromNPCList(Unit unit) => livingNPCs.Remove(unit);
 }

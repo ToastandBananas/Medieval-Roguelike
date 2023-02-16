@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
-    public List<Unit> units_HaventFinishedTurn { get; private set; }
-    public List<Unit> units_FinishedTurn { get; private set; }
-    int unitTurnIndex;
+    public List<Unit> npcs_HaventFinishedTurn { get; private set; }
+    public List<Unit> npcs_FinishedTurn { get; private set; }
+    int npcTurnIndex;
 
     public Unit activeUnit { get; private set; }
 
@@ -33,10 +33,11 @@ public class TurnManager : MonoBehaviour
     {
         activeUnit = UnitManager.Instance.player;
 
-        units_HaventFinishedTurn = new List<Unit>();
-        units_FinishedTurn = new List<Unit>();
+        npcs_HaventFinishedTurn = new List<Unit>();
+        npcs_FinishedTurn = new List<Unit>();
 
-        StartCoroutine(DelayStartNextUnitsTurn(activeUnit));
+        StartUnitsTurn(activeUnit);
+        //StartCoroutine(DelayStartNextUnitsTurn(activeUnit));
     }
 
     public void FinishTurn(Unit unit)
@@ -44,8 +45,25 @@ public class TurnManager : MonoBehaviour
         unit.SetIsMyTurn(false);
         unit.BlockCurrentPosition();
 
-        units_FinishedTurn.Add(unit);
-        units_HaventFinishedTurn.Remove(unit);
+        if (unit.stats.currentAP > 0)
+            unit.stats.UseAP(unit.stats.currentAP);
+
+        if (unit.IsNPC())
+        {
+            if (unit.stats.pooledAP <= 0)
+            {
+                npcs_FinishedTurn.Add(unit);
+                npcs_HaventFinishedTurn.Remove(unit);
+            }
+            else
+            {
+                npcs_HaventFinishedTurn.Remove(unit);
+                npcs_HaventFinishedTurn.Insert(npcs_HaventFinishedTurn.Count, unit);
+                if (npcs_HaventFinishedTurn.IndexOf(unit) != npcTurnIndex)
+                    npcTurnIndex--;
+                unit.stats.GetAPFromPool();
+            }
+        }
 
         StartCoroutine(StartNextUnitsTurn(unit));
     }
@@ -55,56 +73,30 @@ public class TurnManager : MonoBehaviour
         if (UnitManager.Instance.player.health.IsDead())
             return;
 
+        activeUnit = unit;
+
         if (unit.health.IsDead())
         {
+            unit.unitActionHandler.CancelAction();
+
             // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
             if (unit.IsNPC())
             {
-                UnitManager.Instance.deadNPCs.Add(unit);
-                UnitManager.Instance.livingNPCs.Remove(unit);
+                if (npcs_HaventFinishedTurn.Contains(unit))
+                    npcs_HaventFinishedTurn.Remove(unit);
+
+                if (npcs_FinishedTurn.Contains(unit))
+                    npcs_FinishedTurn.Remove(unit);
+
+                if (npcTurnIndex == npcs_HaventFinishedTurn.Count)
+                    npcTurnIndex = 0;
             }
-
-            if (units_HaventFinishedTurn.Contains(unit))
-                units_HaventFinishedTurn.Remove(unit);
-
-            if (units_FinishedTurn.Contains(unit))
-                units_FinishedTurn.Remove(unit);
-
-            if (unitTurnIndex == units_HaventFinishedTurn.Count)
-                unitTurnIndex = 0;
 
             StartCoroutine(StartNextUnitsTurn(unit, false));
         }
         else
         {
-            activeUnit = unit;
             unit.SetIsMyTurn(true);
-
-            if (unit.hasStartedTurn == false)
-            {
-                unit.vision.UpdateVisibleUnits();
-                unit.vision.FindVisibleUnits();
-
-                unit.SetHasStartedTurn(true);
-                unit.stats.ReplenishAP();
-
-                /*
-                unit.status.UpdateBuffs();
-                unit.status.UpdateInjuries();
-                unit.status.RegenerateStamina();
-                unit.nutrition.DrainStaminaBonus();
-
-                if (unit.unitActionHandler.canPerformActions || unit.IsPlayer())
-                {
-                    unit.nutrition.DrainNourishment();
-                    unit.nutrition.DrainWater();
-                    unit.nutrition.DrainNausea();
-                }
-                */
-
-                unit.stats.ApplyAPLossBuildup();
-            }
-            
             unit.unitActionHandler.TakeTurn();
         }
     }
@@ -117,34 +109,35 @@ public class TurnManager : MonoBehaviour
 
     public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
     {
+        // Debug.Log(activeUnit.name + " | " + unitFinishingAction.name);
         if (activeUnit != unitFinishingAction)
             yield break;
 
         // If the final Unit is still performing an action
-        while (units_HaventFinishedTurn.Count == 1 && units_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
+        while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
         {
             yield return null;
         }
 
-        // If every Unit finished their turn
-        if (units_HaventFinishedTurn.Count == 0)
-            OnCompleteAllTurns();
-
         if (increaseTurnIndex)
         {
             // Increase the turn index
-            if (unitTurnIndex >= units_HaventFinishedTurn.Count - 1)
-                unitTurnIndex = 0;
+            if (npcTurnIndex >= npcs_HaventFinishedTurn.Count - 1)
+                npcTurnIndex = 0;
             else
-                unitTurnIndex++;
+                npcTurnIndex++;
         }
 
-        activeUnit.SetIsMyTurn(false);
-
-        // Set new Active Unit
-        activeUnit = units_HaventFinishedTurn[unitTurnIndex];
-
-        StartUnitsTurn(units_HaventFinishedTurn[unitTurnIndex]);
+        // If every Unit finished their turn
+        if (npcs_HaventFinishedTurn.Count == 0)
+            OnCompleteAllTurns();
+        else
+        {
+            // Set new Active Unit
+            activeUnit.SetIsMyTurn(false);
+            activeUnit = npcs_HaventFinishedTurn[npcTurnIndex];
+            StartUnitsTurn(activeUnit);
+        }
     }
 
     void OnCompleteAllTurns()
@@ -153,19 +146,42 @@ public class TurnManager : MonoBehaviour
 
         TimeSystem.IncreaseTime(); 
         
-        units_FinishedTurn.Clear();
+        npcs_FinishedTurn.Clear();
         SortNPCsBySpeed();
-        unitTurnIndex = UnitManager.Instance.livingNPCs.Count - 1;
 
-        for (int i = 0; i < units_HaventFinishedTurn.Count; i++)
+        if (npcs_HaventFinishedTurn.Count > 0)
         {
-            units_HaventFinishedTurn[i].SetHasStartedTurn(false);
+            npcTurnIndex = npcs_HaventFinishedTurn.Count - 1;
+
+            for (int i = 0; i < npcs_HaventFinishedTurn.Count; i++)
+            {
+                npcs_HaventFinishedTurn[i].SetHasStartedTurn(false);
+                npcs_HaventFinishedTurn[i].stats.GetAPFromPool();
+            }
+
+            StartCoroutine(StartNextUnitsTurn(activeUnit));
+        }
+        else
+        {
+            activeUnit.SetIsMyTurn(false);
+            activeUnit = UnitManager.Instance.player;
+            StartUnitsTurn(activeUnit);
         }
 
         //gm.healthDisplay.UpdateTooltip();
     }
 
-    void SortNPCsBySpeed() => units_HaventFinishedTurn = UnitManager.Instance.livingNPCs.OrderByDescending(npc => npc.stats.Speed()).ToList();
+    void SortNPCsBySpeed()
+    {
+        for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
+        {
+            if (UnitManager.Instance.livingNPCs[i].stats.pooledAP > 0)
+                npcs_HaventFinishedTurn.Add(UnitManager.Instance.livingNPCs[i]);
+        }
+
+        if (npcs_HaventFinishedTurn.Count > 0)
+            npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.stats.Speed()).ToList();
+    }
 
     public bool IsPlayerTurn() => activeUnit == UnitManager.Instance.player;
 }

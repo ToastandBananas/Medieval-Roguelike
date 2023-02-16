@@ -17,4 +17,10 @@ public class GameManager : MonoBehaviour
         else
             Instance = this;
     }
+
+    void Start()
+    {
+        //QualitySettings.vSyncCount = 0;
+        //Application.targetFrameRate = 120;
+    }
 }

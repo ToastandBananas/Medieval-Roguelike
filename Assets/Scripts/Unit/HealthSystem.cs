@@ -37,6 +37,9 @@ public class HealthSystem : MonoBehaviour
 
     void Die()
     {
+        UnitManager.Instance.deadNPCs.Add(unit);
+        UnitManager.Instance.livingNPCs.Remove(unit);
+
         OnDead?.Invoke(this, EventArgs.Empty);
 
         unit.unitAnimator.Die();

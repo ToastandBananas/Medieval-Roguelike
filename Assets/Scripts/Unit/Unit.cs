@@ -46,7 +46,10 @@ public class Unit : MonoBehaviour
 
         SetLeftHeldItem();
         SetRightHeldItem();
+    }
 
+    void Start()
+    {
         if (leftHeldItem != null)
         {
             if (leftHeldItem.itemData.item.itemType == ItemType.RangedWeapon) // The item is a Bow
@@ -60,10 +63,7 @@ public class Unit : MonoBehaviour
 
         if (rightHeldItem != null)
             rightHeldItemMeshRenderer = rightHeldItem.GetComponentInChildren<MeshRenderer>();
-    }
 
-    void Start()
-    {
         singleNodeBlocker.manager = LevelGrid.Instance.GetBlockManager();
         LevelGrid.Instance.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.Instance.GetUnitSingleNodeBlockerList());
 

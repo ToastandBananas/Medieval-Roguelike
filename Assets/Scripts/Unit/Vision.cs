@@ -96,12 +96,8 @@ public class Vision : MonoBehaviour
         for (int i = 0; i < visibleUnits.Count; i++)
         {
             // If the visible Unit is now dead, update the appropriate lists
-            if (visibleUnits[i].health.IsDead() && visibleDeadUnits.Contains(visibleUnits[i]) == false)
-            {
-                visibleDeadUnits.Add(visibleUnits[i]);
-                if (visibleEnemies.Contains(visibleUnits[i]))
-                    visibleEnemies.Remove(visibleUnits[i]);
-            }
+            if (visibleUnits[i].health.IsDead())
+                UpdateDeadUnit(visibleUnits[i]);
 
             Transform targetTransform = visibleUnits[i].transform;
             Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
@@ -147,7 +143,6 @@ public class Vision : MonoBehaviour
             // We don't want Units to see themselves
             if (visibleUnits.Contains(unit))
             {
-                Debug.LogWarning(unit.name + " can see themselves. Fix their Vision Transform.");
                 visibleUnits.Remove(unit);
                 return;
             }
@@ -198,6 +193,18 @@ public class Vision : MonoBehaviour
         }
     }
 
+    public void UpdateDeadUnit(Unit deadUnit)
+    {
+        if (visibleDeadUnits.Contains(deadUnit) == false)
+            visibleDeadUnits.Add(deadUnit);
+
+        if (visibleEnemies.Contains(deadUnit))
+            visibleEnemies.Remove(deadUnit);
+
+        if (visibleAllies.Contains(deadUnit))
+            visibleAllies.Remove(deadUnit);
+    }
+
     public Unit GetClosestEnemy(bool includeTargetEnemy)
     {
         Unit closestEnemy = unit.unitActionHandler.targetEnemyUnit;
@@ -206,8 +213,11 @@ public class Vision : MonoBehaviour
             closestEnemyDist = Vector3.Distance(unit.WorldPosition(), unit.unitActionHandler.targetEnemyUnit.WorldPosition());
         for (int i = 0; i < visibleEnemies.Count; i++)
         {
-            if (includeTargetEnemy == false && unit.unitActionHandler.targetEnemyUnit != null && visibleEnemies[i] == unit.unitActionHandler.targetEnemyUnit)
-                continue;
+            if (unit.unitActionHandler.targetEnemyUnit != null)
+            {
+                if (unit.unitActionHandler.targetEnemyUnit.health.IsDead() || (includeTargetEnemy == false && visibleEnemies[i] == unit.unitActionHandler.targetEnemyUnit))
+                    continue;
+            }
 
             float distToEnemy = Vector3.Distance(transform.position, visibleEnemies[i].transform.position);
             if (distToEnemy < closestEnemyDist)

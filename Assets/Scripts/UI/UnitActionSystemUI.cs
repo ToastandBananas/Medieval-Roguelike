@@ -121,5 +121,5 @@ public class UnitActionSystemUI : MonoBehaviour
         }
     }
 
-    public void UpdateActionPoints() => actionPointsText.text = "Action Points: " + playerActionHandler.unit.stats.CurrentAP();
+    public void UpdateActionPoints() => actionPointsText.text = "Last Used AP: " + playerActionHandler.unit.stats.lastUsedAP;
 }
