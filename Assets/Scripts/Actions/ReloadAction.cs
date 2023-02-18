@@ -43,7 +43,7 @@ public class ReloadAction : BaseAction
         // StartCoroutine(StartReloadTimer());
         unit.GetRangedWeapon().LoadProjectile();
         CompleteAction();
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+        TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
     protected override void StartAction()

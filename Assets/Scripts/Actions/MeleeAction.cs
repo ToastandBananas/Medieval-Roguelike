@@ -120,7 +120,7 @@ public class MeleeAction : BaseAction
                 StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
 
             CompleteAction();
-            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
     }
 
@@ -185,7 +185,7 @@ public class MeleeAction : BaseAction
             yield return new WaitForSeconds(0.25f);
 
         CompleteAction();
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+        TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
     public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)

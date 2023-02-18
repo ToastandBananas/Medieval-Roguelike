@@ -116,7 +116,7 @@ public class NPCActionHandler : UnitActionHandler
         }
 
         if (unit.isMyTurn) // Take another action if this is the last NPC who hasn't finished their turn
-            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+            TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
     public void DetermineAction()

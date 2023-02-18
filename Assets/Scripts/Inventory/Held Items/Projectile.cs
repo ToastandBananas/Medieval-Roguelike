@@ -158,7 +158,7 @@ public class Projectile : MonoBehaviour
 
     void Arrived(Transform collisionTransform)
     {
-        StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(shooter));
+        TurnManager.Instance.StartNextUnitsTurn(shooter);
 
         moveProjectile = false;
         projectileCollider.enabled = false;

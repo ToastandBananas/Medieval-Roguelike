@@ -42,7 +42,7 @@ public class TurnAction : BaseAction
         if (unit.IsNPC())
             unit.unitActionHandler.TakeTurn();
         else
-            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+            TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
     public IEnumerator RotateTowards_CurrentTargetPosition(bool rotateInstantly)

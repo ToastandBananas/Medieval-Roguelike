@@ -65,7 +65,7 @@ public class TurnManager : MonoBehaviour
             }
         }
 
-        StartCoroutine(StartNextUnitsTurn(unit));
+        StartNextUnitsTurn(unit);
     }
 
     void StartUnitsTurn(Unit unit)
@@ -92,7 +92,7 @@ public class TurnManager : MonoBehaviour
                     npcTurnIndex = 0;
             }
 
-            StartCoroutine(StartNextUnitsTurn(unit, false));
+            StartNextUnitsTurn(unit, false);
         }
         else
         {
@@ -104,15 +104,11 @@ public class TurnManager : MonoBehaviour
     public IEnumerator DelayStartNextUnitsTurn(Unit unitFinishingAction)
     {
         yield return new WaitForSeconds(0.1f);
-        StartCoroutine(StartNextUnitsTurn(unitFinishingAction));
+        StartNextUnitsTurn(unitFinishingAction);
     }
 
-    public IEnumerator StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
+    IEnumerator DoNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
     {
-        // Debug.Log(activeUnit.name + " | " + unitFinishingAction.name);
-        if (activeUnit != unitFinishingAction)
-            yield break;
-
         // If the final Unit is still performing an action
         while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
         {
@@ -140,11 +136,17 @@ public class TurnManager : MonoBehaviour
         }
     }
 
+    public void StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
+    {
+        if (activeUnit != unitFinishingAction)
+            return;
+
+        StartCoroutine(DoNextUnitsTurn(unitFinishingAction, increaseTurnIndex));
+    }
+
     void OnCompleteAllTurns()
     {
-        //gm.tileInfoDisplay.DisplayTileInfo();
-
-        TimeSystem.IncreaseTime(); 
+        //gm.tileInfoDisplay.DisplayTileInfo(); 
         
         npcs_FinishedTurn.Clear();
         SortNPCsBySpeed();
@@ -159,7 +161,7 @@ public class TurnManager : MonoBehaviour
                 npcs_HaventFinishedTurn[i].stats.GetAPFromPool();
             }
 
-            StartCoroutine(StartNextUnitsTurn(activeUnit));
+            StartNextUnitsTurn(activeUnit);
         }
         else
         {

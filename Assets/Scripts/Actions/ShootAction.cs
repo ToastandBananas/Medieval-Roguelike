@@ -75,7 +75,7 @@ public class ShootAction : BaseAction
                 StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
 
             CompleteAction();
-            StartCoroutine(TurnManager.Instance.StartNextUnitsTurn(unit));
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
     }
 
