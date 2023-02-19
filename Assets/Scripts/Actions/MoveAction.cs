@@ -258,7 +258,7 @@ public class MoveAction : BaseAction
         }
 
         // Check for newly visible Units
-        UnitManager.Instance.player.vision.FindVisibleUnits();
+        unit.vision.FindVisibleUnits();
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)

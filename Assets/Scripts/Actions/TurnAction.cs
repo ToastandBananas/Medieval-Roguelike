@@ -55,6 +55,9 @@ public class TurnAction : BaseAction
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
         Vector3 rotateTargetPosition = targetPosition;
 
+        if (targetRotation == transform.rotation)
+            yield break;
+
         if (rotateInstantly == false)
         {
             while (rotateTargetPosition == targetPosition && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))

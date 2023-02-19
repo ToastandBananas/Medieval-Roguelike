@@ -62,7 +62,7 @@ public class PlayerActionInput : MonoBehaviour
                 if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
                 {
                     skipTurnCooldownTimer = 0f;
-                    player.unitActionHandler.SkipTurn();
+                    player.unitActionHandler.SkipPlayersTurn();
                 }
 
                 if (player.unitActionHandler.selectedAction != null)

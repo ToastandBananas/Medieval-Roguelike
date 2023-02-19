@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
@@ -14,6 +13,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public BaseAction[] baseActionArray { get; private set; }
     public BaseAction selectedAction { get; private set; }
+    public BaseAction lastQueuedAction { get; private set; }
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
@@ -109,6 +109,7 @@ public class UnitActionHandler : MonoBehaviour
 
         // if (isNPC) Debug.Log(name + " queued " + action);
         queuedAction = action;
+        lastQueuedAction = action;
         queuedAP = action.GetActionPointsCost(targetGridPosition);
 
         if (unit.isMyTurn)
@@ -196,9 +197,10 @@ public class UnitActionHandler : MonoBehaviour
         ClearActionQueue(false);
     }
 
-    public void SkipTurn()
+    public void SkipPlayersTurn()
     {
-        unit.stats.UseAP(unit.stats.MaxAP());
+        lastQueuedAction = null;
+        unit.stats.UseAP(unit.stats.APUntilTimeTick);
         TurnManager.Instance.FinishTurn(unit);
     }
 

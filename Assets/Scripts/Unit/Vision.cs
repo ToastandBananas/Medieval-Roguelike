@@ -21,10 +21,12 @@ public class Vision : MonoBehaviour
     public List<Unit> visibleEnemies { get; private set; }
     public List<Unit> visibleAllies { get; private set; }
     List<int> loseSightTimes = new List<int>();
+    List<Unit> unitsToRemove = new List<Unit>();
+    Collider[] unitsInViewRadius;
 
     Unit unit;
     readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
-    Vector3 yOffset = new Vector3(0, 0.15f, 0);
+    Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
     void Awake()
     {
@@ -53,7 +55,7 @@ public class Vision : MonoBehaviour
 
     public void FindVisibleUnits()
     {
-        Collider[] unitsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, unitsMask);
+        unitsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, unitsMask);
         for (int i = 0; i < unitsInViewRadius.Length; i++)
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
@@ -90,7 +92,7 @@ public class Vision : MonoBehaviour
 
     public void UpdateVisibleUnits()
     {
-        List<Unit> unitsToRemove = new List<Unit>();
+        unitsToRemove.Clear();
 
         // Check if Units that were in sight are now out of sight
         for (int i = 0; i < visibleUnits.Count; i++)

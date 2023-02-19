@@ -45,11 +45,11 @@ public class TurnManager : MonoBehaviour
         unit.SetIsMyTurn(false);
         unit.BlockCurrentPosition();
 
-        if (unit.stats.currentAP > 0)
-            unit.stats.UseAP(unit.stats.currentAP);
-
         if (unit.IsNPC())
         {
+            if (unit.stats.currentAP > 0)
+                unit.stats.UseAP(unit.stats.currentAP);
+
             if (unit.stats.pooledAP <= 0)
             {
                 npcs_FinishedTurn.Add(unit);
@@ -175,6 +175,7 @@ public class TurnManager : MonoBehaviour
 
     void SortNPCsBySpeed()
     {
+        npcs_HaventFinishedTurn.Clear();
         for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
         {
             if (UnitManager.Instance.livingNPCs[i].stats.pooledAP > 0)
