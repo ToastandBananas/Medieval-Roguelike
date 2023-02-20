@@ -77,6 +77,12 @@ public class Unit : MonoBehaviour
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
+    void Update()
+    {
+        if (isMyTurn && unitActionHandler.isPerformingAction == false)
+            unitActionHandler.TakeTurn();
+    }
+
     public void UpdateGridPosition()
     {
         GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);

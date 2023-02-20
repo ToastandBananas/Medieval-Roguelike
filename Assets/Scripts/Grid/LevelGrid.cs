@@ -21,6 +21,12 @@ public class LevelGrid : MonoBehaviour
     Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
     // public static Dictionary<Vector3, List<ItemData>> itemDatas = new Dictionary<Vector3, List<ItemData>>();
 
+    List<GridPosition> gridPositionsList = new List<GridPosition>();
+    List<GridPosition> validGridPositionsList = new List<GridPosition>();
+
+    Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
+    Collider[] collisionsCheckArray;
+
     void Awake()
     {
         if (Instance != null)
@@ -149,8 +155,8 @@ public class LevelGrid : MonoBehaviour
             if (IsValidGridPosition(gridPosition) == false)
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisions.Length > 0)
+            collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisionsCheckArray.Length > 0)
                 continue;
 
             if (HasAnyUnitOnGridPosition(gridPosition))
@@ -169,8 +175,7 @@ public class LevelGrid : MonoBehaviour
     public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, float rangeToSearch)
     {
         GridPosition newGridPosition = startingGridPosition;
-
-        List<GridPosition> gridPositions = new List<GridPosition>();
+        validGridPositionsList.Clear();
 
         unit.UnblockCurrentPosition();
 
@@ -198,18 +203,18 @@ public class LevelGrid : MonoBehaviour
             if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(gridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisions.Length > 0)
+            collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisionsCheckArray.Length > 0)
                 continue;
 
-            gridPositions.Add(gridPosition);
+            validGridPositionsList.Add(gridPosition);
         }
 
         unit.BlockCurrentPosition();
         if (unitAtStartPosition != null)
             unitAtStartPosition.BlockCurrentPosition();
 
-        newGridPosition = GetClosestGridPositionFromList(startingGridPosition, gridPositions);
+        newGridPosition = GetClosestGridPositionFromList(startingGridPosition, validGridPositionsList);
         return newGridPosition;
     }
 
@@ -232,7 +237,7 @@ public class LevelGrid : MonoBehaviour
 
     public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
-        List<GridPosition> validGridPositionsList = new List<GridPosition>();
+        validGridPositionsList.Clear();
 
         unit.UnblockCurrentPosition();
 
@@ -257,8 +262,8 @@ public class LevelGrid : MonoBehaviour
             if (distance > maxRange || distance < minRange)
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisions.Length > 0)
+            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisionsCheckArray.Length > 0)
                 continue;
 
             validGridPositionsList.Add(nodeGridPosition);
@@ -275,10 +280,10 @@ public class LevelGrid : MonoBehaviour
 
     public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
-        List<GridPosition> validGridPositionList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange);
-        if (validGridPositionList.Count == 0)
+        gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange);
+        if (gridPositionsList.Count == 0)
             return unit.gridPosition;
-        return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
+        return gridPositionsList[Random.Range(0, gridPositionsList.Count - 1)];
     }
 
     public GridPosition GetRandomFleeGridPosition(Unit unit, Unit enemyUnit, int minFleeDistance, int maxFleeDistance)
@@ -286,7 +291,7 @@ public class LevelGrid : MonoBehaviour
         Vector3 unitWorldPosition = unit.WorldPosition();
         Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
 
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        validGridPositionsList.Clear();
 
         unit.UnblockCurrentPosition();
 
@@ -311,8 +316,8 @@ public class LevelGrid : MonoBehaviour
             if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                 continue;
 
-            Collider[] collisions = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + new Vector3(0f, 0.025f, 0f), 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisions.Length > 0)
+            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisionsCheckArray.Length > 0)
                 continue;
 
             Vector3 dirToNode = (nodeGridPosition.WorldPosition() - enemyWorldPosition).normalized;
@@ -321,46 +326,46 @@ public class LevelGrid : MonoBehaviour
             if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                 continue;
 
-            validGridPositionList.Add(nodeGridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
         }
 
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
         unit.BlockCurrentPosition();
 
-        if (validGridPositionList.Count == 0)
+        if (validGridPositionsList.Count == 0)
             return unit.gridPosition;
-        return validGridPositionList[Random.Range(0, validGridPositionList.Count - 1)];
+        return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
     }
 
     public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition)
     {
-        List<GridPosition> surroundingGridPositions = new List<GridPosition>();
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(0, 0, 1)); // North
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(0, 0, -1)); // South
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, 0)); // East
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, 0)); // West
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, 1)); // NorthWest
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, 1)); // NorthEast
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(-1, 0, -1)); // SouthWest
-        surroundingGridPositions.Add(startingGridPosition + new GridPosition(1, 0, -1)); // SouthEast
-        return surroundingGridPositions;
+        gridPositionsList.Clear();
+        gridPositionsList.Add(startingGridPosition + new GridPosition(0, 0, 1)); // North
+        gridPositionsList.Add(startingGridPosition + new GridPosition(0, 0, -1)); // South
+        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, 0)); // East
+        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, 0)); // West
+        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, 1)); // NorthWest
+        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, 1)); // NorthEast
+        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, -1)); // SouthWest
+        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, -1)); // SouthEast
+        return gridPositionsList;
     }
 
     public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition)
     {
-        List<GridPosition> surroundingGridPositions = GetSurroundingGridPositions(targetGridPosition);
+        validGridPositionsList = GetSurroundingGridPositions(targetGridPosition);
         GridPosition nearestGridPosition = targetGridPosition;
         float nearestDist = 1000000;
-        for (int i = 0; i < surroundingGridPositions.Count; i++)
+        for (int i = 0; i < validGridPositionsList.Count; i++)
         {
-            if (GridPositionObstructed(surroundingGridPositions[i]))
+            if (GridPositionObstructed(validGridPositionsList[i]))
                 continue;
 
-            float dist = Vector3.Distance(unitGridPosition.WorldPosition(), surroundingGridPositions[i].WorldPosition());
+            float dist = Vector3.Distance(unitGridPosition.WorldPosition(), validGridPositionsList[i].WorldPosition());
             if (dist < nearestDist)
             {
-                nearestGridPosition = surroundingGridPositions[i];
+                nearestGridPosition = validGridPositionsList[i];
                 nearestDist = dist;
             }
         }

@@ -7,6 +7,9 @@ using Random = UnityEngine.Random;
 
 public class ShootAction : BaseAction
 {
+    List<GridPosition> validGridPositionList = new List<GridPosition>();
+    List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
+
     public bool isShooting { get; private set; }
     bool nextAttackFree;
 
@@ -196,7 +199,7 @@ public class ShootAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
     {
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        validGridPositionList.Clear();
 
         ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
@@ -242,9 +245,9 @@ public class ShootAction : BaseAction
         return validGridPositionList;
     }
 
-    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
+    public override List<GridPosition> GetValidActionGridPositionList_Neutral(GridPosition startGridPosition)
     {
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        validGridPositionList.Clear();
 
         ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
 
@@ -292,7 +295,7 @@ public class ShootAction : BaseAction
 
     public List<GridPosition> GetValidGridPositionsInRange(GridPosition targetGridPosition)
     {
-        List<GridPosition> validGridPositionList = new List<GridPosition>();
+        validGridPositionList.Clear();
         Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
         ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
@@ -334,7 +337,7 @@ public class ShootAction : BaseAction
     public GridPosition GetNearestShootPosition(GridPosition startGridPosition, GridPosition targetGridPosition)
     {
         List<GridPosition> validGridPositionsList = GetValidGridPositionsInRange(targetGridPosition);
-        List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
+        nearestGridPositionsList.Clear();
         float nearestDistance = 10000000f;
 
         // First find the nearest valid Grid Positions to the Player

@@ -209,7 +209,7 @@ public class GridSystemVisual : MonoBehaviour
         }
 
         Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList(Instance.player.gridPosition), gridVisualType);
-        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Secondary(Instance.player.gridPosition), secondaryGridVisualType);
+        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Neutral(Instance.player.gridPosition), secondaryGridVisualType);
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

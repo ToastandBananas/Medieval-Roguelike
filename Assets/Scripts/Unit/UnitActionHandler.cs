@@ -197,7 +197,7 @@ public class UnitActionHandler : MonoBehaviour
         ClearActionQueue(false);
     }
 
-    public void SkipPlayersTurn()
+    public virtual void SkipTurn()
     {
         lastQueuedAction = null;
         unit.stats.UseAP(unit.stats.APUntilTimeTick);

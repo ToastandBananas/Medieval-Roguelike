@@ -97,14 +97,8 @@ public class TurnManager : MonoBehaviour
         else
         {
             unit.SetIsMyTurn(true);
-            unit.unitActionHandler.TakeTurn();
+            //unit.unitActionHandler.TakeTurn();
         }
-    }
-
-    public IEnumerator DelayStartNextUnitsTurn(Unit unitFinishingAction)
-    {
-        yield return new WaitForSeconds(0.1f);
-        StartNextUnitsTurn(unitFinishingAction);
     }
 
     IEnumerator DoNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
@@ -142,6 +136,12 @@ public class TurnManager : MonoBehaviour
             return;
 
         StartCoroutine(DoNextUnitsTurn(unitFinishingAction, increaseTurnIndex));
+    }
+
+    public IEnumerator DelayStartNextUnitsTurn(Unit unitFinishingAction)
+    {
+        yield return new WaitForSeconds(0.1f);
+        StartNextUnitsTurn(unitFinishingAction);
     }
 
     void OnCompleteAllTurns()

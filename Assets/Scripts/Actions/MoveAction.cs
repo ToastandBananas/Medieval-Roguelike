@@ -148,23 +148,17 @@ public class MoveAction : BaseAction
                 if (Mathf.Abs(Mathf.Abs(nextPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
                 {
                     // If the next path position is above the unit's current position
-                    if (nextPointOnPath.y - unitPosition.y > 0f)
+                    if (moveUpchecked == false && nextPointOnPath.y - unitPosition.y > 0f)
                     {
-                        if (moveUpchecked == false)
-                        {
-                            moveUpchecked = true;
-                            targetPosition = new Vector3(unitPosition.x, nextPointOnPath.y, unitPosition.z);
-                            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
-                        }
+                        moveUpchecked = true;
+                        targetPosition = new Vector3(unitPosition.x, nextPointOnPath.y, unitPosition.z);
+                        nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
                     }
                     // If the Unit is directly above the next path position
-                    else if (nextPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
+                    else if (moveDownChecked == false && nextPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
                     {
-                        if (moveDownChecked == false)
-                        {
-                            moveDownChecked = true;
-                            targetPosition = nextPathPosition;
-                        }
+                        moveDownChecked = true;
+                        targetPosition = nextPathPosition;
                     }
                     // If the next path position is below the unit's current position
                     else if (moveAboveChecked == false && nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
@@ -186,10 +180,10 @@ public class MoveAction : BaseAction
                 }
 
                 // Move to the target position
-                //unit.transform.position = Vector3.MoveTowards(unit.transform.position, targetPosition, moveSpeed * moveSpeedMultiplier * Time.deltaTime);
+                unit.transform.position = Vector3.MoveTowards(unit.transform.position, targetPosition, moveSpeed * moveSpeedMultiplier * Time.deltaTime);
 
-                Vector3 moveDirection = (targetPosition - unitPosition).normalized;
-                unit.transform.position += moveDirection * moveSpeed * moveSpeedMultiplier * Time.deltaTime;
+                //Vector3 moveDirection = (targetPosition - unitPosition).normalized;
+                //unit.transform.position += moveDirection * moveSpeed * moveSpeedMultiplier * Time.deltaTime;
 
                 yield return null;
             }

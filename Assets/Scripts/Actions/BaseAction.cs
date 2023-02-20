@@ -67,7 +67,7 @@ public abstract class BaseAction : MonoBehaviour
 
     public virtual List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition) => null;
 
-    public virtual List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition) => null;
+    public virtual List<GridPosition> GetValidActionGridPositionList_Neutral(GridPosition startGridPosition) => null;
 
     public bool IsActive() => isActive;
 

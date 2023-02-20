@@ -45,7 +45,7 @@ public class NPCActionHandler : UnitActionHandler
         {
             if (canPerformActions == false || unit.stats.currentAP <= 0)
             {
-                TurnManager.Instance.FinishTurn(unit); // Unit can't do anything, so skip their turn
+                SkipTurn(); // Unit can't do anything, so skip their turn
                 return;
             }
             else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
@@ -104,6 +104,8 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
+    public override void SkipTurn() => TurnManager.Instance.FinishTurn(unit);
+
     public override void FinishAction()
     {
         base.FinishAction();
@@ -127,7 +129,7 @@ public class NPCActionHandler : UnitActionHandler
         switch (unit.stateController.currentState)
         {
             case State.Idle:
-                TurnManager.Instance.FinishTurn(unit);
+                SkipTurn();
                 break;
             case State.Patrol:
                 Patrol();
@@ -543,7 +545,14 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
-    GridPosition GetNewWanderPosition() => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance);
+    GridPosition GetNewWanderPosition()
+    {
+        // => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance);
+        Vector3 randomPosition = Random.insideUnitSphere * maxWanderDistance;
+        randomPosition.y = 0;
+        randomPosition += transform.position;
+        return LevelGrid.Instance.GetGridPosition(randomPosition);
+    }
     #endregion
 
     public void ResetToDefaults()
