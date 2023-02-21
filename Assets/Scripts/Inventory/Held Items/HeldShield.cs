@@ -1,11 +1,10 @@
-using System.Collections;
 using UnityEngine;
 
 public class HeldShield : HeldItem
 {
     public bool shieldRaised { get; private set; }
 
-    public override void DoDefaultAttack(bool attackBlocked)
+    public override void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
     {
         if (attackBlocked == false)
             Debug.Log("Shield bash!");

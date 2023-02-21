@@ -1,10 +1,15 @@
 using UnityEngine;
 
-public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, Hammer, Spear, Polearm }
+public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, WarHammer, Spear, Polearm }
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Item/Weapon")]
 public class Weapon : Equipment
 {
+    [Header("Weapon Info")]
+    public WeaponType weaponType = WeaponType.Sword;
+    public bool isTwoHanded;
+    public bool canDualWield;
+
     [Header("Range")]
     public float minRange = 1f;
     public float maxRange = 1.4f;
@@ -14,13 +19,9 @@ public class Weapon : Equipment
     public int maxDamage = 5;
 
     [Header("Modifiers")]
+    public float blockChanceAddOn;
     [Range(-100f, 100f)] public float minAccuracyModifier;
     [Range(-100f, 100f)] public float maxAccuracyModifier;
-
-    [Header("Weapon Info")]
-    public WeaponType weaponType = WeaponType.Sword;
-    public bool isTwoHanded;
-    public bool canDualWield;
 
     public override bool IsBag() => false;
 

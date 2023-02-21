@@ -233,21 +233,21 @@ public class LevelGrid : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
+            Vector3 dirToNode = (nodeGridPosition.WorldPosition() - enemyWorldPosition).normalized;
+            Vector3 dirToUnit = (unitWorldPosition - enemyWorldPosition).normalized;
+
+            if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                 continue;
 
             float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.gridPosition, nodeGridPosition);
             if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                 continue;
 
-            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisionsCheckArray.Length > 0)
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            Vector3 dirToNode = (nodeGridPosition.WorldPosition() - enemyWorldPosition).normalized;
-            Vector3 dirToUnit = (unitWorldPosition - enemyWorldPosition).normalized;
-
-            if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
+            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            if (collisionsCheckArray.Length > 0)
                 continue;
 
             validGridPositionsList.Add(nodeGridPosition);

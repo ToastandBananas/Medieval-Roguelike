@@ -3,9 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Shield", menuName = "Inventory/Item/Shield")]
 public class Shield : Equipment
 {
-    public float blockChanceAddOn = 10f;
+    [Header("Block Power")]
     public int minBlockPower = 1;
     public int maxBlockPower = 5;
+
+    [Header("Modifiers")]
+    public float blockChanceAddOn = 10f;
 
     public override bool IsBag() => false;
 

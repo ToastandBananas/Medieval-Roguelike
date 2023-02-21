@@ -3,19 +3,26 @@ using UnityEngine;
 
 public class HeldMeleeWeapon : HeldItem
 {
+    HeldItem itemBlockedWith;
     bool attackBlocked;
 
-    public override void DoDefaultAttack(bool attackBlocked)
+    public override void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        this.itemBlockedWith = itemBlockedWith;
         this.attackBlocked = attackBlocked;
 
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation
             StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
-            if (targetUnit.ShieldEquipped())
+            if (itemBlockedWith is HeldShield)
                 targetUnit.GetShield().RaiseShield();
+            else
+            {
+                HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
+                heldWeapon.RaiseWeapon();
+            }
         }
 
         // TODO: Determine attack animation based on melee weapon type
@@ -40,11 +47,47 @@ public class HeldMeleeWeapon : HeldItem
             StartCoroutine(RotateWeaponTowardsTarget(targetUnit.gridPosition));
     }
 
+    public void RaiseWeapon()
+    {
+        if (unit.rightHeldItem == this)
+        {
+            if (itemData.item.Weapon().isTwoHanded)
+                Debug.LogWarning("Animation not created yet.");
+            else
+                anim.Play("RaiseWeapon_1H_R");
+        }
+        else if (unit.leftHeldItem == this)
+        {
+            if (itemData.item.Weapon().isTwoHanded)
+                Debug.LogWarning("Animation not created yet.");
+            else
+                anim.Play("RaiseWeapon_1H_L");
+        }
+    }
+
+    public void LowerWeapon()
+    {
+        if (unit.rightHeldItem == this)
+        {
+            if (itemData.item.Weapon().isTwoHanded)
+                Debug.LogWarning("Animation not created yet.");
+            else
+                anim.Play("LowerWeapon_1H_R");
+        }
+        else if (unit.leftHeldItem == this)
+        {
+            if (itemData.item.Weapon().isTwoHanded)
+                Debug.LogWarning("Animation not created yet.");
+            else
+                anim.Play("LowerWeapon_1H_L");
+        }
+    }
+
     // Used in animation Key Frame
     void DamageTargetUnit()
     {
-        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(this, attackBlocked);
-        attackBlocked = false; // Reset this bool for the next attack
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(this, attackBlocked, itemBlockedWith);
+        ResetAttackBlocked();
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
@@ -74,5 +117,9 @@ public class HeldMeleeWeapon : HeldItem
         return maxRange;
     }
 
-    public void ResetAttackBlocked() => attackBlocked = false;
+    public void ResetAttackBlocked()
+    {
+        itemBlockedWith = null;
+        attackBlocked = false;
+    }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class FloatStat
 {
-    [SerializeField] float baseValue = 1f;
+    [SerializeField] float baseValue = 5f;
 
     [SerializeField] List<float> modifiers = new List<float>();
 

@@ -16,7 +16,8 @@ public class MeleeAction : BaseAction
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-    readonly float dualWieldDamagePenalty = 0.5f;
+    readonly float dualWieldPrimaryEfficiency = 0.8f;
+    readonly float dualWieldSecondaryEfficiency = 0.6f;
 
     public bool isAttacking { get; private set; }
     bool nextAttackFree;
@@ -69,24 +70,24 @@ public class MeleeAction : BaseAction
             if (unit.IsUnarmed())
             {
                 if (canFightUnarmed)
-                    unit.unitAnimator.DoUnarmedAttack(AttackBlocked(targetUnit));
+                    unit.unitAnimator.DoUnarmedAttack(AttackBlocked(targetUnit, out HeldItem itemBlockedWith), itemBlockedWith);
             }
             else if (unit.IsDualWielding())
             {
                 // Dual wield attack
                 unit.unitAnimator.StartDualMeleeAttack();
-                unit.rightHeldItem.DoDefaultAttack(AttackBlocked(targetUnit));
-                StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack(AttackBlocked(targetUnit)));
+                unit.rightHeldItem.DoDefaultAttack(AttackBlocked(targetUnit, out HeldItem itemBlockedWith), itemBlockedWith);
+                StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack(AttackBlocked(targetUnit, out HeldItem secondaryItemBlockedWith), secondaryItemBlockedWith));
             }
             else if (unit.rightHeldItem != null) // Right hand weapon attack
             {
                 unit.unitAnimator.StartMeleeAttack();
-                unit.rightHeldItem.DoDefaultAttack(AttackBlocked(targetUnit));
+                unit.rightHeldItem.DoDefaultAttack(AttackBlocked(targetUnit, out HeldItem itemBlockedWith), itemBlockedWith);
             }
             else if (unit.leftHeldItem != null) // Left hand weapon attack
             {
                 unit.unitAnimator.StartMeleeAttack();
-                unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit));
+                unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit, out HeldItem itemBlockedWith), itemBlockedWith);
             }
 
             StartCoroutine(WaitToCompleteAction());
@@ -96,28 +97,28 @@ public class MeleeAction : BaseAction
             bool attackBlocked = false;
             if (unit.IsUnarmed())
             {
-                attackBlocked = AttackBlocked(targetUnit);
-                DamageTarget(null, attackBlocked);
+                attackBlocked = AttackBlocked(targetUnit, out HeldItem itemBlockedWith);
+                DamageTarget(null, attackBlocked, itemBlockedWith);
             }
             else if (unit.IsDualWielding()) // Dual wield attack
             {
-                bool mainAttackBlocked = AttackBlocked(targetUnit);
-                bool offhandAttackBlocked = AttackBlocked(targetUnit);
+                bool mainAttackBlocked = AttackBlocked(targetUnit, out HeldItem itemBlockedWith);
+                bool offhandAttackBlocked = AttackBlocked(targetUnit, out HeldItem secondaryItemBlockedWith);
                 if (mainAttackBlocked || offhandAttackBlocked)
                     attackBlocked = true;
 
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, mainAttackBlocked);
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, offhandAttackBlocked);
+                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, mainAttackBlocked, itemBlockedWith);
+                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, offhandAttackBlocked, secondaryItemBlockedWith);
             }
             else if (unit.rightHeldItem != null)
             {
-                attackBlocked = AttackBlocked(targetUnit);
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked); // Right hand weapon attack
+                attackBlocked = AttackBlocked(targetUnit, out HeldItem itemBlockedWith);
+                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
             }
             else if (unit.leftHeldItem != null)
             {
-                attackBlocked = AttackBlocked(targetUnit);
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked); // Left hand weapon attack
+                attackBlocked = AttackBlocked(targetUnit, out HeldItem itemBlockedWith);
+                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
             }
 
             if (attackBlocked)
@@ -128,7 +129,7 @@ public class MeleeAction : BaseAction
         }
     }
 
-    public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked)
+    public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         if (targetUnit != null)
@@ -141,22 +142,46 @@ public class MeleeAction : BaseAction
             else
                 damageAmount = heldMeleeWeapon.itemData.damage;
 
-            if (unit.IsDualWielding() && this == unit.GetLeftMeleeWeapon())
-                damageAmount = Mathf.RoundToInt(damageAmount * dualWieldDamagePenalty);
+            if (unit.IsDualWielding())
+            {
+                if (this == unit.GetRightMeleeWeapon())
+                    damageAmount = Mathf.RoundToInt(damageAmount * dualWieldPrimaryEfficiency);
+                else
+                    damageAmount = Mathf.RoundToInt(damageAmount * dualWieldSecondaryEfficiency);
+            }
 
             if (attackBlocked)
             {
                 int blockAmount = 0;
-                if (targetUnit.ShieldEquipped())
-                    blockAmount = targetUnit.GetShield().itemData.blockPower;
+                if (targetUnit.ShieldEquipped() && itemBlockedWith == targetUnit.GetShield()) // If blocked with shield
+                    blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
+                else if (targetUnit.MeleeWeaponEquipped()) // If blocked with melee weapon
+                {
+                    if (itemBlockedWith == targetUnit.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
+                    {
+                        blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.GetPrimaryMeleeWeapon());
+                        if (unit.IsDualWielding())
+                        {
+                            if (this == unit.GetRightMeleeWeapon())
+                                blockAmount = Mathf.RoundToInt(blockAmount * dualWieldPrimaryEfficiency);
+                        }
+                    }
+                    else // If blocked with dual wield left hand weapon
+                        blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * dualWieldSecondaryEfficiency);
+                }
 
                 targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
 
                 if (heldMeleeWeapon != null)
                     heldMeleeWeapon.ResetAttackBlocked();
 
-                if (targetUnit.ShieldEquipped())
+                if (itemBlockedWith is HeldShield)
                     targetUnit.GetShield().LowerShield();
+                else
+                {
+                    HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
+                    heldWeapon.LowerWeapon();
+                }
             }
             else
                 targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
@@ -166,14 +191,122 @@ public class MeleeAction : BaseAction
             unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
-    bool AttackBlocked(Unit targetUnit)
+    bool AttackBlocked(Unit targetUnit, out HeldItem itemBlockedWith)
     {
-        if (targetUnit.ShieldEquipped() && targetUnit.unitActionHandler.GetAction<TurnAction>().IsFacingUnit(unit))
+        float random;
+        TurnAction targetUnitTurnAction = targetUnit.unitActionHandler.GetAction<TurnAction>();
+        if (targetUnitTurnAction.AttackerInFrontOfUnit(unit))
         {
-            float random = Random.Range(1f, 100f);
-            if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
-                return true;
+            if (targetUnit.ShieldEquipped())
+            {
+                // Try blocking with shield
+                random = Random.Range(1f, 100f);
+                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), false))
+                {
+                    itemBlockedWith = targetUnit.GetShield();
+                    return true;
+                }
+
+                // Still have a chance to block with weapon
+                if (targetUnit.MeleeWeaponEquipped())
+                {
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), false, true))
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+                }
+            }
+            else if (targetUnit.MeleeWeaponEquipped())
+            {
+                if (targetUnit.IsDualWielding())
+                {
+                    // Try blocking with right weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), false, false) * dualWieldPrimaryEfficiency)
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+
+                    // Try blocking with left weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetLeftMeleeWeapon(), false, false) * dualWieldSecondaryEfficiency)
+                    {
+                        itemBlockedWith = targetUnit.GetLeftMeleeWeapon();
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Try blocking with only weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), false, false))
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+                }
+            }
         }
+        else if (targetUnitTurnAction.AttackerBesideUnit(unit))
+        {
+            if (targetUnit.ShieldEquipped())
+            {
+                // Try blocking with shield
+                random = Random.Range(1f, 100f);
+                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), true))
+                {
+                    itemBlockedWith = targetUnit.GetShield();
+                    return true;
+                }
+
+                // Still have a chance to block with weapon
+                if (targetUnit.MeleeWeaponEquipped())
+                {
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), true, true))
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+                }
+            }
+            else if (targetUnit.MeleeWeaponEquipped())
+            {
+                if (targetUnit.IsDualWielding())
+                {
+                    // Try blocking with right weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), true, false) * dualWieldPrimaryEfficiency)
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+
+                    // Try blocking with left weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetLeftMeleeWeapon(), true, false) * dualWieldSecondaryEfficiency)
+                    {
+                        itemBlockedWith = targetUnit.GetLeftMeleeWeapon();
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Try blocking with only weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= targetUnit.stats.WeaponBlockChance(targetUnit.GetPrimaryMeleeWeapon(), true, false))
+                    {
+                        itemBlockedWith = targetUnit.GetPrimaryMeleeWeapon();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        itemBlockedWith = null;
         return false;
     }
 

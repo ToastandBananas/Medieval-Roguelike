@@ -9,7 +9,7 @@ public class HeldRangedWeapon : HeldItem
     public bool isLoaded { get; private set; }
     public bool attackBlocked { get; private set; }
 
-    public override void DoDefaultAttack(bool attackBlocked)
+    public override void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         this.attackBlocked = attackBlocked;
@@ -98,5 +98,5 @@ public class HeldRangedWeapon : HeldItem
         return maxRange;
     }
 
-    public void ResetAttackBlocked() => attackBlocked = false;
+    public void ResetAttackBlocked() => attackBlocked = false; 
 }

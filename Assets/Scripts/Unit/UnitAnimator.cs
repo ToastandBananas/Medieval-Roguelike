@@ -12,6 +12,7 @@ public class UnitAnimator : MonoBehaviour
 
     Unit unit;
 
+    HeldItem itemBlockedWith;
     bool unarmedAttackBlocked;
 
     void Awake()
@@ -33,16 +34,24 @@ public class UnitAnimator : MonoBehaviour
 
     public void StartDualMeleeAttack() => unitAnim.Play("Dual Melee Attack");
 
-    public void DoUnarmedAttack(bool unarmedAttackBlocked)
+    public void DoUnarmedAttack(bool unarmedAttackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        this.itemBlockedWith = itemBlockedWith;
         this.unarmedAttackBlocked = unarmedAttackBlocked;
 
         if (unarmedAttackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation
             StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
-            targetUnit.GetShield().RaiseShield();
+
+            if (itemBlockedWith is HeldShield)
+                targetUnit.GetShield().RaiseShield();
+            else
+            {
+                HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
+                heldWeapon.RaiseWeapon();
+            }
         }
 
         unitAnim.Play("Unarmed Attack");
@@ -51,7 +60,8 @@ public class UnitAnimator : MonoBehaviour
     // Used in animation Key Frame
     void DamageTargetUnit_UnarmedAttack()
     {
-        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(null, unarmedAttackBlocked);
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(null, unarmedAttackBlocked, itemBlockedWith);
+        itemBlockedWith = null;
         unarmedAttackBlocked = false; // Reset this bool for the next attack
     }
 

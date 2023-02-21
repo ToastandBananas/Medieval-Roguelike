@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
@@ -409,42 +410,90 @@ public class TurnAction : BaseAction
         return gridPositionBehindUnit;
     }
 
-    public bool IsFacingUnit(Unit targetUnit)
+    public bool AttackerInFrontOfUnit(Unit attackingUnit)
     {
-        if (targetUnit == null) return false;
+        if (attackingUnit == null) return false;
 
-        switch (targetUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the target Unit is facing
+        Vector3 unitPos = transform.position;
+        Vector3 attackerPos = attackingUnit.transform.position;
+
+        switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing
         {
             case Direction.North:
-                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && transform.position.z > targetUnit.transform.position.z)
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && unitPos.z > attackerPos.z)
                     return true;
                 break;
             case Direction.East:
-                if ((currentDirection == Direction.West || currentDirection == Direction.SouthWest || currentDirection == Direction.NorthWest) && transform.position.x > targetUnit.transform.position.x)
+                if ((currentDirection == Direction.West || currentDirection == Direction.SouthWest || currentDirection == Direction.NorthWest) && unitPos.x > attackerPos.x)
                     return true;
                 break;
             case Direction.South:
-                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.NorthEast) && transform.position.z < targetUnit.transform.position.z)
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.NorthEast) && unitPos.z < attackerPos.z)
                     return true;
                 break;
             case Direction.West:
-                if ((currentDirection == Direction.East || currentDirection == Direction.SouthEast || currentDirection == Direction.NorthEast) && transform.position.x < targetUnit.transform.position.x)
+                if ((currentDirection == Direction.East || currentDirection == Direction.SouthEast || currentDirection == Direction.NorthEast) && unitPos.x < attackerPos.x)
                     return true;
                 break;
             case Direction.NorthWest:
-                if ((currentDirection == Direction.South || currentDirection == Direction.SouthEast || currentDirection == Direction.East) && transform.position.x < targetUnit.transform.position.x && transform.position.z > targetUnit.transform.position.z)
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthEast || currentDirection == Direction.East) && unitPos.x < attackerPos.x && unitPos.z > attackerPos.z)
                     return true;
                 break;
             case Direction.NorthEast:
-                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.West) && transform.position.x > targetUnit.transform.position.x && transform.position.z > targetUnit.transform.position.z)
+                if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.West) && unitPos.x > attackerPos.x && unitPos.z > attackerPos.z)
                     return true;
                 break;
             case Direction.SouthWest:
-                if ((currentDirection == Direction.North || currentDirection == Direction.NorthEast || currentDirection == Direction.East) && transform.position.x < targetUnit.transform.position.x && transform.position.z < targetUnit.transform.position.z)
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthEast || currentDirection == Direction.East) && unitPos.x < attackerPos.x && unitPos.z < attackerPos.z)
                     return true;
                 break;
             case Direction.SouthEast:
-                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.West) && transform.position.x > targetUnit.transform.position.x && transform.position.z < targetUnit.transform.position.z)
+                if ((currentDirection == Direction.North || currentDirection == Direction.NorthWest || currentDirection == Direction.West) && unitPos.x > attackerPos.x && unitPos.z < attackerPos.z)
+                    return true;
+                break;
+        }
+        return false;
+    }
+
+    public bool AttackerBesideUnit(Unit attackingUnit)
+    {
+        if (attackingUnit == null) return false;
+
+        Vector3 unitPos = transform.position;
+        Vector3 attackerPos = attackingUnit.transform.position;
+
+        switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing
+        {
+            case Direction.North:
+                if ((currentDirection == Direction.West || currentDirection == Direction.East) && unitPos.x == attackerPos.x && unitPos.z > attackerPos.z)
+                    return true;
+                break;
+            case Direction.East:
+                if ((currentDirection == Direction.North || currentDirection == Direction.South) && unitPos.x > attackerPos.x && unitPos.z == attackerPos.z)
+                    return true;
+                break;
+            case Direction.South:
+                if ((currentDirection == Direction.West || currentDirection == Direction.East) && unitPos.x == attackerPos.x && unitPos.z < attackerPos.z)
+                    return true;
+                break;
+            case Direction.West:
+                if ((currentDirection == Direction.North || currentDirection == Direction.South) && unitPos.x < attackerPos.x && unitPos.z == attackerPos.z)
+                    return true;
+                break;
+            case Direction.NorthWest:
+                if ((currentDirection == Direction.NorthEast || currentDirection == Direction.SouthWest) && unitPos.x < attackerPos.x && unitPos.z > attackerPos.z)
+                    return true;
+                break;
+            case Direction.NorthEast:
+                if ((currentDirection == Direction.NorthWest || currentDirection == Direction.SouthEast) && unitPos.x > attackerPos.x && unitPos.z > attackerPos.z)
+                    return true;
+                break;
+            case Direction.SouthWest:
+                if ((currentDirection == Direction.NorthWest || currentDirection == Direction.SouthEast) && unitPos.x < attackerPos.x && unitPos.z < attackerPos.z)
+                    return true;
+                break;
+            case Direction.SouthEast:
+                if ((currentDirection == Direction.NorthEast || currentDirection == Direction.SouthWest) && unitPos.x > attackerPos.x && unitPos.z < attackerPos.z)
                     return true;
                 break;
         }

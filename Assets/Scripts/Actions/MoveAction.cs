@@ -119,12 +119,12 @@ public class MoveAction : BaseAction
             nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
 
             float moveSpeedMultiplier = 1f;
-            if (LevelGrid.IsDiagonal(unit.transform.position, nextTargetPosition))
-                moveSpeedMultiplier = 1.4f;
 
             if (unit.IsNPC())
             {
-                moveSpeedMultiplier = 1.2f;
+                moveSpeedMultiplier = 1.1f;
+                if (LevelGrid.IsDiagonal(unit.transform.position, nextTargetPosition))
+                    moveSpeedMultiplier *= 1.4f;
                 if (nextTargetPosition.y != unit.transform.position.y)
                     moveSpeedMultiplier *= 2f;
             }

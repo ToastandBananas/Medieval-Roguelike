@@ -64,7 +64,7 @@ public class ShootAction : BaseAction
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             StartCoroutine(RotateTowardsTarget());
-            unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit));
+            unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit), null);
 
             StartCoroutine(WaitToFinishAction());
         }
@@ -122,11 +122,20 @@ public class ShootAction : BaseAction
 
     bool AttackBlocked(Unit targetUnit)
     {
-        if (targetUnit.ShieldEquipped() && targetUnit.unitActionHandler.GetAction<TurnAction>().IsFacingUnit(unit))
+        if (targetUnit.ShieldEquipped())
         {
-            float random = Random.Range(1f, 100f);
-            if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield().itemData))
-                return true;
+            if (targetUnit.unitActionHandler.GetAction<TurnAction>().AttackerInFrontOfUnit(unit))
+            {
+                float random = Random.Range(1f, 100f);
+                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), false))
+                    return true;
+            }
+            else if (targetUnit.unitActionHandler.GetAction<TurnAction>().AttackerBesideUnit(unit))
+            {
+                float random = Random.Range(1f, 100f);
+                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), true))
+                    return true;
+            }
         }
         return false;
     }
