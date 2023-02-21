@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
 using Random = UnityEngine.Random;
+using Pathfinding.Util;
 
 public class LevelGrid : MonoBehaviour
 {
@@ -132,70 +133,17 @@ public class LevelGrid : MonoBehaviour
                gridPosition.z < (layeredGridGraph.depth / 2) + layeredGridGraph.center.z;
     }
 
-    public List<Unit> GetEnemiesInRange(GridPosition startingGridPosition, Unit unit, int rangeToSearch)
-    {
-        unit.UnblockCurrentPosition();
-
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (1000 * rangeToSearch));
-        path.traversalProvider = DefaultTraversalProvider();
-
-        // Schedule the path for calculation
-        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        List<Unit> enemies = new List<Unit>();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
-        {
-            GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
-
-            if (IsValidGridPosition(gridPosition) == false)
-                continue;
-
-            collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
-            if (collisionsCheckArray.Length > 0)
-                continue;
-
-            if (HasAnyUnitOnGridPosition(gridPosition))
-            {
-                Unit unitToCheck = GetUnitAtGridPosition(gridPosition);
-                if (unit.alliance.IsEnemy(unitToCheck))
-                    enemies.Add(unitToCheck);
-            }
-        }
-
-        unit.BlockCurrentPosition();
-
-        return enemies;
-    }
-
     public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, float rangeToSearch)
     {
-        GridPosition newGridPosition = startingGridPosition;
+        GridPosition newGridPosition;
         validGridPositionsList.Clear();
 
-        unit.UnblockCurrentPosition();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3((rangeToSearch * 2) + 0.1f, (rangeToSearch * 2) + 0.1f, (rangeToSearch * 2) + 0.1f)));
 
-        Unit unitAtStartPosition = GetUnitAtGridPosition(startingGridPosition);
-        if (unitAtStartPosition != null)
-            unitAtStartPosition.UnblockCurrentPosition();
-
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), Mathf.RoundToInt(1 + (1000 * rangeToSearch)));
-        path.traversalProvider = DefaultTraversalProvider();
-
-        // Schedule the path for calculation
-        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition gridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition gridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (gridPosition == startingGridPosition)
                 continue;
@@ -210,10 +158,7 @@ public class LevelGrid : MonoBehaviour
             validGridPositionsList.Add(gridPosition);
         }
 
-        unit.BlockCurrentPosition();
-        if (unitAtStartPosition != null)
-            unitAtStartPosition.BlockCurrentPosition();
-
+        ListPool<GraphNode>.Release(nodes);
         newGridPosition = GetClosestGridPositionFromList(startingGridPosition, validGridPositionsList);
         return newGridPosition;
     }
@@ -238,22 +183,12 @@ public class LevelGrid : MonoBehaviour
     public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
         validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3((maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f)));
 
-        unit.UnblockCurrentPosition();
-
-        ConstantPath path = ConstantPath.Construct(startingGridPosition.WorldPosition(), 1 + (maxRange * 1000));
-        path.traversalProvider = DefaultTraversalProvider();
-
-        // Schedule the path for calculation
-        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
@@ -271,8 +206,7 @@ public class LevelGrid : MonoBehaviour
 
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
-        unit.BlockCurrentPosition();
-
+        ListPool<GraphNode>.Release(nodes);
         if (validGridPositionsList.Count == 0)
             validGridPositionsList.Add(unit.gridPosition);
         return validGridPositionsList;
@@ -292,22 +226,12 @@ public class LevelGrid : MonoBehaviour
         Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
 
         validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3((maxFleeDistance * 2) + 0.1f, (maxFleeDistance * 2) + 0.1f, (maxFleeDistance * 2) + 0.1f)));
 
-        unit.UnblockCurrentPosition();
-
-        ConstantPath path = ConstantPath.Construct(enemyWorldPosition, 1 + (maxFleeDistance * 1000));
-        path.traversalProvider = DefaultTraversalProvider();
-
-        // Schedule the path for calculation
-        unit.unitActionHandler.GetAction<MoveAction>().seeker.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
@@ -331,8 +255,7 @@ public class LevelGrid : MonoBehaviour
 
         // GridSystemVisual.Instance.ShowGridPositionList(validGridPositionList, GridSystemVisual.GridVisualType.White);
 
-        unit.BlockCurrentPosition();
-
+        ListPool<GraphNode>.Release(nodes);
         if (validGridPositionsList.Count == 0)
             return unit.gridPosition;
         return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];

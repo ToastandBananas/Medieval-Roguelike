@@ -1,4 +1,5 @@
 using Pathfinding;
+using Pathfinding.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using Random = UnityEngine.Random;
 
 public class ShootAction : BaseAction
 {
-    List<GridPosition> validGridPositionList = new List<GridPosition>();
+    List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
     public bool isShooting { get; private set; }
@@ -199,20 +200,15 @@ public class ShootAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
     {
-        validGridPositionList.Clear();
+        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
 
-        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
+        validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
 
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -239,28 +235,24 @@ public class ShootAction : BaseAction
                 continue;
 
             // Debug.Log(gridPosition);
-            validGridPositionList.Add(nodeGridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
         }
 
-        return validGridPositionList;
+        ListPool<GraphNode>.Release(nodes);
+        return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetValidActionGridPositionList_Neutral(GridPosition startGridPosition)
+    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
     {
-        validGridPositionList.Clear();
+        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
 
-        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
+        validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
 
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -287,29 +279,28 @@ public class ShootAction : BaseAction
                 continue;
 
             // Debug.Log(gridPosition);
-            validGridPositionList.Add(nodeGridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
         }
 
-        return validGridPositionList;
+        ListPool<GraphNode>.Release(nodes);
+        return validGridPositionsList;
     }
 
-    public List<GridPosition> GetValidGridPositionsInRange(GridPosition targetGridPosition)
+    public List<GridPosition> GetValidGridPositionsInRange(GridPosition startGridPosition)
     {
-        validGridPositionList.Clear();
-        Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+        validGridPositionsList.Clear();
+        Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(startGridPosition);
+        if (targetUnit == null)
+            return validGridPositionsList;
 
-        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
+        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
 
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
 
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -319,7 +310,7 @@ public class ShootAction : BaseAction
                 continue;
 
             // If target is out of attack range
-            if (IsInAttackRange(null, nodeGridPosition, targetGridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, startGridPosition) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;
@@ -328,30 +319,32 @@ public class ShootAction : BaseAction
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);
-            validGridPositionList.Add(nodeGridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
         }
-
-        return validGridPositionList;
+        
+        ListPool<GraphNode>.Release(nodes);
+        return validGridPositionsList;
     }
 
     public GridPosition GetNearestShootPosition(GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        List<GridPosition> validGridPositionsList = GetValidGridPositionsInRange(targetGridPosition);
         nearestGridPositionsList.Clear();
+        List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
+        gridPositions = GetValidGridPositionsInRange(targetGridPosition);
         float nearestDistance = 10000000f;
 
         // First find the nearest valid Grid Positions to the Player
-        for (int i = 0; i < validGridPositionsList.Count; i++)
+        for (int i = 0; i < gridPositions.Count; i++)
         {
-            float distance = Vector3.Distance(validGridPositionsList[i].WorldPosition(), startGridPosition.WorldPosition());
+            float distance = Vector3.Distance(gridPositions[i].WorldPosition(), startGridPosition.WorldPosition());
             if (distance < nearestDistance)
             {
                 nearestGridPositionsList.Clear();
-                nearestGridPositionsList.Add(validGridPositionsList[i]);
+                nearestGridPositionsList.Add(gridPositions[i]);
                 nearestDistance = distance;
             }
             else if (Mathf.Approximately(distance, nearestDistance))
-                nearestGridPositionsList.Add(validGridPositionsList[i]);
+                nearestGridPositionsList.Add(gridPositions[i]);
         }
 
         GridPosition nearestGridPosition = startGridPosition;
@@ -367,6 +360,7 @@ public class ShootAction : BaseAction
             }
         }
 
+        ListPool<GridPosition>.Release(gridPositions);
         return nearestGridPosition;
     }
 

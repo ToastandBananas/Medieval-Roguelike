@@ -201,7 +201,7 @@ public class MeleeAction : BaseAction
         if (unit.MeleeWeaponEquipped())
         {
             Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-            float maxRangeToTargetPosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y); ;
+            float maxRangeToTargetPosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
             if (distance > maxRangeToTargetPosition || distance < meleeWeapon.minRange)
@@ -209,7 +209,7 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            float maxRangeToTargetPosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y); ;
+            float maxRangeToTargetPosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
             if (distance > maxRangeToTargetPosition || distance < 1f)
@@ -284,20 +284,19 @@ public class MeleeAction : BaseAction
 
     public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
     {
+        float maxAttackRange;
+        if (unit.MeleeWeaponEquipped())
+            maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+        else
+            maxAttackRange = unarmedAttackRange;
+
         validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
 
-        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 50100);
-
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -327,25 +326,25 @@ public class MeleeAction : BaseAction
             validGridPositionsList.Add(nodeGridPosition);
         }
 
+        ListPool<GraphNode>.Release(nodes);
         return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetValidActionGridPositionList_Neutral(GridPosition startGridPosition)
+    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
     {
+        float maxAttackRange;
+        if (unit.MeleeWeaponEquipped())
+            maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+        else
+            maxAttackRange = unarmedAttackRange;
+
         validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
 
-        ConstantPath path = ConstantPath.Construct(unit.WorldPosition(), 100100);
-
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -363,7 +362,7 @@ public class MeleeAction : BaseAction
             if (unit.vision.IsVisible(targetUnit) == false)
                 continue;
 
-            // If both Units are on the same team
+            // If the Units aren't neutral to each other
             if (unit.alliance.IsNeutral(targetUnit) == false)
                 continue;
 
@@ -375,28 +374,25 @@ public class MeleeAction : BaseAction
             validGridPositionsList.Add(nodeGridPosition);
         }
 
+        ListPool<GraphNode>.Release(nodes);
         return validGridPositionsList;
     }
 
     public List<GridPosition> GetValidGridPositionsInRange(GridPosition targetGridPosition)
     {
-        validGridPositionsList.Clear(); 
+        validGridPositionsList.Clear();
         Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = 0.5f;
+        float maxAttackRange;
         if (unit.MeleeWeaponEquipped())
-        {
-            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-            maxAttackRange += meleeWeapon.maxRange;
-        }
+            maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
         else
-            maxAttackRange += unarmedAttackRange;
+            maxAttackRange = unarmedAttackRange;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(maxAttackRange, maxAttackRange, maxAttackRange)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -427,22 +423,23 @@ public class MeleeAction : BaseAction
 
     public GridPosition GetNearestMeleePosition(GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        validGridPositionsList = GetValidGridPositionsInRange(targetGridPosition);
         nearestGridPositionsList.Clear();
+        List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
+        gridPositions = GetValidGridPositionsInRange(targetGridPosition);
         float nearestDistance = 10000000f;
 
         // First, find the nearest valid Grid Positions to the Player
-        for (int i = 0; i < validGridPositionsList.Count; i++)
+        for (int i = 0; i < gridPositions.Count; i++)
         {
-            float distance = Vector3.Distance(validGridPositionsList[i].WorldPosition(), startGridPosition.WorldPosition());
+            float distance = Vector3.Distance(gridPositions[i].WorldPosition(), startGridPosition.WorldPosition());
             if (distance < nearestDistance)
             {
                 nearestGridPositionsList.Clear();
-                nearestGridPositionsList.Add(validGridPositionsList[i]);
+                nearestGridPositionsList.Add(gridPositions[i]);
                 nearestDistance = distance;
             }
             else if (Mathf.Approximately(distance, nearestDistance))
-                nearestGridPositionsList.Add(validGridPositionsList[i]);
+                nearestGridPositionsList.Add(gridPositions[i]);
         }
 
         GridPosition nearestGridPosition = startGridPosition;
@@ -458,6 +455,7 @@ public class MeleeAction : BaseAction
             }
         }
 
+        ListPool<GridPosition>.Release(gridPositions);
         return nearestGridPosition;
     }
 

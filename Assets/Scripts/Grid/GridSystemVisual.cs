@@ -1,4 +1,5 @@
 using Pathfinding;
+using Pathfinding.Util;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ public class GridSystemVisual : MonoBehaviour
     [SerializeField] List<GridVisualTypeMaterial> gridVisualTypeMaterialList;
 
     List<GridSystemVisualSingle> gridSystemVisualSingleList = new List<GridSystemVisualSingle>();
+    List<GridPosition> gridPositionsList = new List<GridPosition>();
 
     Unit player;
 
@@ -95,20 +97,13 @@ public class GridSystemVisual : MonoBehaviour
 
     public void ShowGridPositionMeleeRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
-        List<GridPosition> gridPositionList = new List<GridPosition>();
+        gridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3((maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f)));
 
-        ConstantPath path = ConstantPath.Construct(LevelGrid.Instance.GetWorldPosition(gridPosition), 100000 + 1);
-
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -121,33 +116,27 @@ public class GridSystemVisual : MonoBehaviour
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir = (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
+            Vector3 shootDir = (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
+            if (Physics.SphereCast((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);
-            gridPositionList.Add(nodeGridPosition);
+            gridPositionsList.Add(nodeGridPosition);
         }
 
-        ShowGridPositionList(gridPositionList, gridVisualType);
+        ListPool<GraphNode>.Release(nodes);
+        ShowGridPositionList(gridPositionsList, gridVisualType);
     }
 
     public void ShowGridPositionShootRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
-        List<GridPosition> gridPositionList = new List<GridPosition>(); 
-        
-        ConstantPath path = ConstantPath.Construct(LevelGrid.Instance.GetWorldPosition(gridPosition), 100000 + 1);
+        gridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(((gridPosition.y + maxRange) * 2) + 0.1f, ((gridPosition.y + maxRange) * 2) + 0.1f, ((gridPosition.y + maxRange) * 2) + 0.1f)));
 
-        // Schedule the path for calculation
-        AstarPath.StartPath(path);
-
-        // Force the path request to complete immediately
-        // This assumes the graph is small enough that this will not cause any lag
-        path.BlockUntilCalculated();
-        
-        for (int i = 0; i < path.allNodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)path.allNodes[i].position);
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
             if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
@@ -160,15 +149,16 @@ public class GridSystemVisual : MonoBehaviour
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast((Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)path.allNodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
+            Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
+            if (Physics.SphereCast((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);
-            gridPositionList.Add(nodeGridPosition);
+            gridPositionsList.Add(nodeGridPosition);
         }
 
-        ShowGridPositionList(gridPositionList, gridVisualType);
+        ListPool<GraphNode>.Release(nodes);
+        ShowGridPositionList(gridPositionsList, gridVisualType);
     }
 
     public static void UpdateGridVisual()
@@ -209,7 +199,7 @@ public class GridSystemVisual : MonoBehaviour
         }
 
         Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList(Instance.player.gridPosition), gridVisualType);
-        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Neutral(Instance.player.gridPosition), secondaryGridVisualType);
+        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Secondary(Instance.player.gridPosition), secondaryGridVisualType);
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

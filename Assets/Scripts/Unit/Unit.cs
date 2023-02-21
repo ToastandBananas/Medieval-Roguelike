@@ -77,6 +77,7 @@ public class Unit : MonoBehaviour
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
+    // Used for debugging
     void Update()
     {
         if (isMyTurn && unitActionHandler.isPerformingAction == false)

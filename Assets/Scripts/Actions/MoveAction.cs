@@ -124,7 +124,7 @@ public class MoveAction : BaseAction
 
             if (unit.IsNPC())
             {
-                moveSpeedMultiplier = 1.1f;
+                moveSpeedMultiplier = 1.2f;
                 if (nextTargetPosition.y != unit.transform.position.y)
                     moveSpeedMultiplier *= 2f;
             }
