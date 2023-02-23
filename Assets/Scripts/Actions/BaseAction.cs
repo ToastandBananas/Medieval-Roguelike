@@ -71,7 +71,9 @@ public abstract class BaseAction : MonoBehaviour
 
     public bool IsActive() => isActive;
 
-    public abstract EnemyAIAction GetEnemyAIAction(GridPosition gridPosition);
+    public virtual EnemyAIAction GetEnemyAIAction(GridPosition gridPosition) => null;
+
+    public virtual EnemyAIAction GetEnemyAIAction(Unit targetUnit) => null;
 
     public abstract int GetActionPointsCost(GridPosition targetGridPosition);
 

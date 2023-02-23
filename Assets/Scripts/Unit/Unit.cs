@@ -73,7 +73,7 @@ public class Unit : MonoBehaviour
             HideMeshRenderers();
         }
 
-        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        gridPosition = LevelGrid.GetGridPosition(transform.position);
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
@@ -86,7 +86,7 @@ public class Unit : MonoBehaviour
 
     public void UpdateGridPosition()
     {
-        GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        GridPosition newGridPosition = LevelGrid.GetGridPosition(transform.position);
         if (newGridPosition != gridPosition)
         {
             // Unit changed Grid Position
@@ -239,15 +239,15 @@ public class Unit : MonoBehaviour
     public void SetIsMyTurn(bool isMyTurn) 
     {
         this.isMyTurn = isMyTurn;
-        if (isMyTurn && IsPlayer() && unitActionHandler.queuedAction == null)
+        if (isMyTurn && IsPlayer())
             GridSystemVisual.UpdateGridVisual();
     }
 
     public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
 
-    public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(gridPosition);
+    public Vector3 WorldPosition() => LevelGrid.GetWorldPosition(gridPosition);
 
     public float ShoulderHeight() => shoulderHeight;
 
-    public void CenterPosition() => transform.position = LevelGrid.Instance.GetGridPosition(transform.position).WorldPosition();
+    public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
 }

@@ -185,7 +185,7 @@ public class Projectile : MonoBehaviour
 
             foreach (Collider collider in colliderArray)
             {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.Instance.GetGridPosition(collider.transform.localPosition), LevelGrid.Instance.GetGridPosition(targetPosition)) <= damageRadius)
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.GetGridPosition(collider.transform.localPosition), LevelGrid.GetGridPosition(targetPosition)) <= damageRadius)
                 {
                     float sphereCastRadius = 0.1f;
                     Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight();

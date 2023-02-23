@@ -39,9 +39,8 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition;
         GridPosition mouseGridPosition = WorldMouse.currentGridPosition;
-        //bool findPathToShootPosition = false;// If the mouse pointer is over a UI button
-
-        if (mouseGridPosition != null && (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition))
+        
+        if (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
         {
             currentMouseGridPosition = mouseGridPosition;
             currentPlayerPosition = player.gridPosition;
@@ -58,17 +57,16 @@ public class ActionLineRenderer : MonoBehaviour
                 if (player.alliance.IsEnemy(unitAtMousePosition))
                 {
                     // If the enemy Unit is in attack range, no need to show the line renderer
-                    if (((player.MeleeWeaponEquipped() || (player.RangedWeaponEquipped() == false && player.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed())) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtMousePosition))
-                        || (player.RangedWeaponEquipped() && player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtMousePosition)))
+                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition))
                     {
                         HideLineRenderers();
                         yield break;
                     }
 
                     if (player.RangedWeaponEquipped())
-                        targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(player.gridPosition, unitAtMousePosition.gridPosition);
+                        targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(player.gridPosition, unitAtMousePosition);
                     else
-                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(player.gridPosition, unitAtMousePosition.gridPosition);
+                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(player.gridPosition, unitAtMousePosition);
                 }
                 else
                     targetGridPosition = mouseGridPosition;
@@ -80,7 +78,7 @@ public class ActionLineRenderer : MonoBehaviour
                     unitAtMousePosition.UnblockCurrentPosition();
             }
 
-            ABPath path = ABPath.Construct(LevelGrid.Instance.GetWorldPosition(player.gridPosition), LevelGrid.Instance.GetWorldPosition(targetGridPosition));
+            ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(player.gridPosition), LevelGrid.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
@@ -94,7 +92,7 @@ public class ActionLineRenderer : MonoBehaviour
             if (path.error || path == null)
                 yield break;
 
-            if (LevelGrid.Instance.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
+            if (LevelGrid.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
                 yield break;
 
             if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition) == false)
@@ -156,9 +154,6 @@ public class ActionLineRenderer : MonoBehaviour
                 else // Otherwise, simply draw a line to the next point
                     mainLineRenderer.SetPosition(verticeIndex, path.vectorPath[i + 1] + lineRendererOffset);
 
-                //if (findPathToShootPosition && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitAtMousePosition.gridPosition, LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1))) <= player.GetRangedWeapon().MaxRange(LevelGrid.Instance.GetGridPosition(mainLineRenderer.GetPosition(verticeIndex - 1)), unitAtMousePosition.gridPosition))
-                    //yield break;
-
                 verticeIndex++;
             }
         }
@@ -180,7 +175,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
         float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-        Direction turnDirection = player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.Instance.GetGridPosition(WorldMouse.GetPosition()));
+        Direction turnDirection = player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
         arrowHeadLineRenderer.enabled = true;
         arrowHeadLineRenderer.positionCount = 3;
 

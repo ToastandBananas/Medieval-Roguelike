@@ -119,11 +119,11 @@ public class LevelGrid : MonoBehaviour
         interactableObjects.Remove(gridPosition);
     }
 
-    public GridPosition GetGridPosition(Vector3 worldPosition) => new GridPosition(worldPosition);
+    public static GridPosition GetGridPosition(Vector3 worldPosition) => new GridPosition(worldPosition);
 
-    public Vector3 GetWorldPosition(GridPosition gridPosition) => new Vector3(gridPosition.x, gridPosition.y, gridPosition.z);
+    public static Vector3 GetWorldPosition(GridPosition gridPosition) => new Vector3(gridPosition.x, gridPosition.y, gridPosition.z);
 
-    public bool IsValidGridPosition(GridPosition gridPosition)
+    public static bool IsValidGridPosition(GridPosition gridPosition)
     {
         LayerGridGraph layeredGridGraph = AstarPath.active.data.layerGridGraph;
 

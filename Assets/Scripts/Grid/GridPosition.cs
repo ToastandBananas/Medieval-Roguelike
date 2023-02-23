@@ -21,7 +21,7 @@ public struct GridPosition : IEquatable<GridPosition>
         z = Mathf.RoundToInt(position.z);
     }
 
-    public Vector3 WorldPosition() => LevelGrid.Instance.GetWorldPosition(this);
+    public Vector3 WorldPosition() => LevelGrid.GetWorldPosition(this);
 
     public override string ToString()
     {

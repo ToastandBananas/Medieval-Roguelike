@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerActionInput : MonoBehaviour
+public class PlayerInput : MonoBehaviour
 {
-    public static PlayerActionInput Instance;
+    public static PlayerInput Instance;
 
     public bool autoAttack { get; private set; }
 
@@ -116,7 +116,7 @@ public class PlayerActionInput : MonoBehaviour
                 else if (GameControls.gamePlayActions.select.WasPressed)
                 {
                     GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
-                    if (mouseGridPosition != player.gridPosition && LevelGrid.Instance.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
+                    if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                     {
                         Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
                         bool unitIsVisible = true;
@@ -146,9 +146,9 @@ public class PlayerActionInput : MonoBehaviour
                                 }
 
                                 if (player.RangedWeaponEquipped())
-                                    player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(player.gridPosition, unitAtGridPosition.gridPosition));
+                                    player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(player.gridPosition, unitAtGridPosition));
                                 else
-                                    player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(player.gridPosition, unitAtGridPosition.gridPosition));
+                                    player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(player.gridPosition, unitAtGridPosition));
 
                                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
                             }

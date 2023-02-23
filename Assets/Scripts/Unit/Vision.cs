@@ -59,7 +59,7 @@ public class Vision : MonoBehaviour
         for (int i = 0; i < unitsInViewRadius.Length; i++)
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.Instance.GetGridPosition(targetTransform.position));
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(targetTransform.position));
             if (targetUnit != null && visibleUnits.Contains(targetUnit) == false)
             {
                 Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;

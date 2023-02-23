@@ -107,7 +107,7 @@ public class ShootAction : BaseAction
                 targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
 
-        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
@@ -191,7 +191,7 @@ public class ShootAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
-        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
         isShooting = false;
         unit.unitActionHandler.FinishAction();
@@ -219,7 +219,7 @@ public class ShootAction : BaseAction
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
@@ -263,7 +263,7 @@ public class ShootAction : BaseAction
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
@@ -295,23 +295,22 @@ public class ShootAction : BaseAction
         return validGridPositionsList;
     }
 
-    public List<GridPosition> GetValidGridPositionsInRange(GridPosition startGridPosition)
+    public List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
     {
         validGridPositionsList.Clear();
-        Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(startGridPosition);
         if (targetUnit == null)
             return validGridPositionsList;
 
         float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.transform.position, new Vector3(((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f, ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f, ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             // Grid Position has a Unit there already
@@ -319,7 +318,7 @@ public class ShootAction : BaseAction
                 continue;
 
             // If target is out of attack range
-            if (IsInAttackRange(null, nodeGridPosition, startGridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, targetUnit.gridPosition) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;
@@ -335,11 +334,11 @@ public class ShootAction : BaseAction
         return validGridPositionsList;
     }
 
-    public GridPosition GetNearestShootPosition(GridPosition startGridPosition, GridPosition targetGridPosition)
+    public GridPosition GetNearestShootPosition(GridPosition startGridPosition, Unit targetUnit)
     {
         nearestGridPositionsList.Clear();
         List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-        gridPositions = GetValidGridPositionsInRange(targetGridPosition);
+        gridPositions = GetValidGridPositionsInRange(targetUnit);
         float nearestDistance = 10000000f;
 
         // First find the nearest valid Grid Positions to the Player
@@ -361,7 +360,7 @@ public class ShootAction : BaseAction
         for (int i = 0; i < nearestGridPositionsList.Count; i++)
         {
             // Get the Grid Position that is closest to the target Grid Position
-            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetGridPosition.WorldPosition());
+            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetUnit.transform.position);
             if (distance < nearestDistanceToTarget)
             {
                 nearestDistanceToTarget = distance;
@@ -373,14 +372,12 @@ public class ShootAction : BaseAction
         return nearestGridPosition;
     }
 
-    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    public override EnemyAIAction GetEnemyAIAction(Unit targetUnit)
     {
         float finalActionValue = 0f;
-        Unit targetUnit = null;
-
-        if (IsValidAction())
+        if (targetUnit != null && IsValidAction())
         {
-            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetUnit.gridPosition);
 
             if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
@@ -393,11 +390,19 @@ public class ShootAction : BaseAction
                     finalActionValue -= distance * 10f;
             }
         }
-
+        
+        if (targetUnit == null) 
+            return new EnemyAIAction
+            {
+                unit = null,
+                gridPosition = unit.gridPosition,
+                actionValue = -1
+            }; 
+        
         return new EnemyAIAction
         {
             unit = targetUnit,
-            gridPosition = gridPosition,
+            gridPosition = targetUnit.gridPosition,
             actionValue = Mathf.RoundToInt(finalActionValue)
         };
     }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
@@ -373,28 +371,28 @@ public class TurnAction : BaseAction
         switch (currentDirection)
         {
             case Direction.North:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, -1));
                 break;
             case Direction.East:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 0));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 0));
                 break;
             case Direction.South:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, 1));
                 break;
             case Direction.West:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 0));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 0));
                 break;
             case Direction.NorthWest:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, -1));
                 break;
             case Direction.NorthEast:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, -1));
                 break;
             case Direction.SouthWest:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 1));
                 break;
             case Direction.SouthEast:
-                gridPositionBehindUnit = LevelGrid.Instance.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 1));
                 break;
             default:
                 return unit.gridPosition;
@@ -508,7 +506,7 @@ public class TurnAction : BaseAction
 
     public bool IsFacingTarget(GridPosition targetGridPosition) => DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
-    public GridPosition GetTargetGridPosition() => LevelGrid.Instance.GetGridPosition(targetPosition);
+    public GridPosition GetTargetGridPosition() => LevelGrid.GetGridPosition(targetPosition);
 
     public override string GetActionName() => "Turn";
 
@@ -517,9 +515,4 @@ public class TurnAction : BaseAction
     public override int GetActionPointsCost(GridPosition targetGridPosition) => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
     public override bool ActionIsUsedInstantly() => false;
-
-    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
-    {
-        throw new NotImplementedException();
-    }
 }

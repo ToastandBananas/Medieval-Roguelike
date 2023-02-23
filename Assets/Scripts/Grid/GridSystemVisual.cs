@@ -90,7 +90,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             GridSystemVisualSingle gridSystemVisualSingle = GetGridVisualSystemSingleFromPool();
             gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(gridVisualType));
-            gridSystemVisualSingle.transform.position = LevelGrid.Instance.GetWorldPosition(gridPositionList[i]);
+            gridSystemVisualSingle.transform.position = LevelGrid.GetWorldPosition(gridPositionList[i]);
             gridSystemVisualSingle.gameObject.SetActive(true);
         }
     }
@@ -105,7 +105,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             float maxRangeToNodePosition = maxRange - Mathf.Abs(nodeGridPosition.y - gridPosition.y);
@@ -138,7 +138,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             float maxRangeToNodePosition = maxRange + (gridPosition.y - nodeGridPosition.y);
@@ -164,6 +164,9 @@ public class GridSystemVisual : MonoBehaviour
     public static void UpdateGridVisual()
     {
         HideGridVisual();
+
+        if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null || Instance.player.unitActionHandler.targetEnemyUnit != null)
+            return;
 
         BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
         GridVisualType gridVisualType;

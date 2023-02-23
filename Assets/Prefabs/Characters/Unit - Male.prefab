@@ -262,16 +262,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed:
-    baseValue: 20
+    baseValue: 5
+    modifiers: 
+  strength:
+    baseValue: 5
+    modifiers: 
+  axeSkill:
+    baseValue: 5
     modifiers: 
   bowSkill:
-    baseValue: 1
+    baseValue: 5
+    modifiers: 
+  crossbowSkill:
+    baseValue: 5
+    modifiers: 
+  daggerSkill:
+    baseValue: 5
+    modifiers: 
+  maceSkill:
+    baseValue: 5
+    modifiers: 
+  polearmSkill:
+    baseValue: 5
     modifiers: 
   shieldSkill:
-    baseValue: 20
+    baseValue: 5
+    modifiers: 
+  spearSkill:
+    baseValue: 5
     modifiers: 
   swordSkill:
-    baseValue: 20
+    baseValue: 5
+    modifiers: 
+  throwingSkill:
+    baseValue: 5
+    modifiers: 
+  warHammerSkill:
+    baseValue: 5
     modifiers: 
 --- !u!114 &2337304120404066741
 MonoBehaviour:
@@ -322,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecdc00288b3da124f88440c2e31054ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultState: 0
+  defaultState: 2
 --- !u!114 &3566344150296233335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,7 +365,7 @@ MonoBehaviour:
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 4067264
-  maxChaseDistance: 15
+  maxChaseDistance: 25
   defaultFleeDistance: 20
   shouldAlwaysFleeCombat: 0
   unitToFleeFrom: {fileID: 0}

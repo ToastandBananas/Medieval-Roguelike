@@ -38,6 +38,8 @@ public class UnitActionHandler : MonoBehaviour
     {
         if (unit.isMyTurn && unit.health.IsDead() == false)
         {
+            unit.vision.FindVisibleUnits();
+
             if (canPerformActions == false)// || unit.stats.currentAP <= 0)
             {
                 TurnManager.Instance.FinishTurn(unit);
@@ -262,6 +264,13 @@ public class UnitActionHandler : MonoBehaviour
         else
             QueueAction(GetAction<TurnAction>());
     }
+
+    public bool IsInAttackRange(Unit targetUnit)
+    {
+        if ((unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetUnit)) || ((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && GetAction<MeleeAction>().CanFightUnarmed())) && GetAction<MeleeAction>().IsInAttackRange(targetUnit)))
+            return true;
+        return false;
+    }
     #endregion
 
     public T GetAction<T>() where T : BaseAction
@@ -276,7 +285,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
 
-    public void SetTargetEnemyUnit(Unit target)
+    public virtual void SetTargetEnemyUnit(Unit target)
     {
         targetEnemyUnit = target;
         if (target != null)

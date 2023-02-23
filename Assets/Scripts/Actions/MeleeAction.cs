@@ -187,7 +187,7 @@ public class MeleeAction : BaseAction
                 targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
 
-        if (unit.IsPlayer() && PlayerActionInput.Instance.autoAttack == false)
+        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
@@ -372,15 +372,11 @@ public class MeleeAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    public override EnemyAIAction GetEnemyAIAction(Unit targetUnit)
     {
         float finalActionValue = 0f;
-        Unit targetUnit = null;
-
-        if (IsValidAction())
+        if (targetUnit != null && IsValidAction())
         {
-            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
-
             if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
@@ -397,10 +393,18 @@ public class MeleeAction : BaseAction
             }
         }
 
+        if (targetUnit == null)
+            return new EnemyAIAction
+            {
+                unit = null,
+                gridPosition = unit.gridPosition,
+                actionValue = -1
+            };
+
         return new EnemyAIAction
         {
             unit = targetUnit,
-            gridPosition = gridPosition,
+            gridPosition = targetUnit.gridPosition,
             actionValue = Mathf.RoundToInt(finalActionValue)
         };
     }
@@ -431,7 +435,7 @@ public class MeleeAction : BaseAction
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
@@ -479,7 +483,7 @@ public class MeleeAction : BaseAction
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
@@ -494,15 +498,15 @@ public class MeleeAction : BaseAction
             // If the target is out of sight
             if (unit.vision.IsVisible(targetUnit) == false)
                 continue;
-
+            
             // If the Units aren't neutral to each other
             if (unit.alliance.IsNeutral(targetUnit) == false)
                 continue;
-
+            Debug.Log(targetUnit.name + " is neutral");
             // If target is out of attack range
             if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
                 continue;
-
+            Debug.Log(targetUnit.name + " is in attack range");
             // Debug.Log(gridPosition);
             validGridPositionsList.Add(nodeGridPosition);
         }
@@ -511,10 +515,9 @@ public class MeleeAction : BaseAction
         return validGridPositionsList;
     }
 
-    public List<GridPosition> GetValidGridPositionsInRange(GridPosition targetGridPosition)
+    public List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
     {
         validGridPositionsList.Clear();
-        Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
         if (targetUnit == null)
             return validGridPositionsList;
 
@@ -525,21 +528,21 @@ public class MeleeAction : BaseAction
             maxAttackRange = unarmedAttackRange;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.gridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (LevelGrid.Instance.IsValidGridPosition(nodeGridPosition) == false)
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                 continue;
 
             // If Grid Position has a Unit there already
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition)) 
                 continue;
-
+            
             // If target is out of attack range from this Grid Position
-            if (IsInAttackRange(null, nodeGridPosition, targetGridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, targetUnit.gridPosition) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;
@@ -554,11 +557,11 @@ public class MeleeAction : BaseAction
         return validGridPositionsList;
     }
 
-    public GridPosition GetNearestMeleePosition(GridPosition startGridPosition, GridPosition targetGridPosition)
+    public GridPosition GetNearestMeleePosition(GridPosition startGridPosition, Unit targetUnit)
     {
         nearestGridPositionsList.Clear();
         List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-        gridPositions = GetValidGridPositionsInRange(targetGridPosition);
+        gridPositions = GetValidGridPositionsInRange(targetUnit);
         float nearestDistance = 10000000f;
 
         // First, find the nearest valid Grid Positions to the Player
@@ -580,7 +583,7 @@ public class MeleeAction : BaseAction
         for (int i = 0; i < nearestGridPositionsList.Count; i++)
         {
             // Get the Grid Position that is closest to the target Grid Position
-            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetGridPosition.WorldPosition());
+            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetUnit.transform.position);
             if (distance < nearestDistanceToTarget)
             {
                 nearestDistanceToTarget = distance;

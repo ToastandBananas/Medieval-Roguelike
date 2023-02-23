@@ -44,7 +44,7 @@ public class WorldMouse : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, Instance.mousePlaneLayerMask);
 
-        GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(hit.point);
+        GridPosition mouseGridPosition = LevelGrid.GetGridPosition(hit.point);
         if (mouseGridPosition != currentGridPosition)
         {
             currentGridPosition = mouseGridPosition;
@@ -60,7 +60,7 @@ public class WorldMouse : MonoBehaviour
         return hit.point;
     }
 
-    public static GridPosition GetCurrentGridPosition() => LevelGrid.Instance.GetGridPosition(GetPosition());
+    public static GridPosition GetCurrentGridPosition() => LevelGrid.GetGridPosition(GetPosition());
 
     public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
 

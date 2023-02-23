@@ -57,7 +57,7 @@ public class UnitActionSystemUI : MonoBehaviour
 
     void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
-        if (playerActionHandler.queuedAction == null && playerActionHandler.selectedAction.ActionIsUsedInstantly())
+        if (playerActionHandler.selectedAction.ActionIsUsedInstantly())
             playerActionHandler.QueueAction(playerActionHandler.selectedAction);
         else
         {
