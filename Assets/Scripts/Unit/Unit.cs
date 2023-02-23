@@ -78,11 +78,11 @@ public class Unit : MonoBehaviour
     }
 
     // Used for debugging
-    void Update()
+    /*void Update()
     {
         if (isMyTurn && unitActionHandler.isPerformingAction == false)
             unitActionHandler.TakeTurn();
-    }
+    }*/
 
     public void UpdateGridPosition()
     {
@@ -152,9 +152,9 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool IsCompletelySurrounded()
+    public bool IsCompletelySurrounded(float range)
     {
-        List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition);
+        List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range);
         for (int i = 0; i < surroundingGridPositions.Count; i++)
         {
             if (LevelGrid.Instance.GridPositionObstructed(surroundingGridPositions[i]) == false)
@@ -224,6 +224,16 @@ public class Unit : MonoBehaviour
         return null;
     }
 
+    public float GetAttackRange(bool accountForHeight)
+    {
+        if (RangedWeaponEquipped())
+            return GetRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+        else if (MeleeWeaponEquipped())
+            return GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+        else
+            return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+    }
+
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
 
     public void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
@@ -239,7 +249,7 @@ public class Unit : MonoBehaviour
     public void SetIsMyTurn(bool isMyTurn) 
     {
         this.isMyTurn = isMyTurn;
-        if (isMyTurn && IsPlayer())
+        if (IsPlayer())
             GridSystemVisual.UpdateGridVisual();
     }
 

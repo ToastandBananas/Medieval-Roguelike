@@ -427,9 +427,10 @@ public class MeleeAction : BaseAction
         else
             maxAttackRange = unarmedAttackRange;
 
+        float boundsDimension = (maxAttackRange * 2) + 0.1f;
         validGridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -475,9 +476,10 @@ public class MeleeAction : BaseAction
         else
             maxAttackRange = unarmedAttackRange;
 
+        float boundsDimension = (maxAttackRange * 2) + 0.1f;
         validGridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -527,8 +529,9 @@ public class MeleeAction : BaseAction
         else
             maxAttackRange = unarmedAttackRange;
 
+        float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.gridPosition.WorldPosition(), new Vector3((maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f, (maxAttackRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {

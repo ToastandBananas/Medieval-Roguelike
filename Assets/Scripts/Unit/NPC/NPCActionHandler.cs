@@ -220,7 +220,7 @@ public class NPCActionHandler : UnitActionHandler
         SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));
 
         // If there's no space around the enemy unit, try to find another enemy to attack
-        if (targetEnemyUnit.IsCompletelySurrounded())
+        if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange(false)))
         {
             SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
             SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));

@@ -1,18 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Interactable : MonoBehaviour
+public abstract class Interactable : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public virtual void Awake()
     {
-        
+        gridPosition = LevelGrid.GetGridPosition(transform.position);
+        LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public GridPosition gridPosition { get; protected set; }
+
+    public abstract void Interact(Unit unit);
 }

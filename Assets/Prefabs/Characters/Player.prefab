@@ -685,7 +685,7 @@ MonoBehaviour:
     m_Bits: 8
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 4067264
+    m_Bits: 2151550912
 --- !u!1 &8220662913183796567
 GameObject:
   m_ObjectHideFlags: 0
@@ -705,6 +705,7 @@ GameObject:
   - component: {fileID: 6440773195933579921}
   - component: {fileID: 7077269047116504926}
   - component: {fileID: 2371494321970509754}
+  - component: {fileID: 3331432482388386438}
   - component: {fileID: 4910889609817399986}
   - component: {fileID: 6094857115427304514}
   - component: {fileID: 2290977517188116833}
@@ -818,7 +819,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentFaction: 0
-  alliedFactions: 0a000000
+  alliedFactions: 
   enemyFactions: 140000001e000000280000003200000033000000
 --- !u!114 &3713523194178401732
 MonoBehaviour:
@@ -833,16 +834,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed:
-    baseValue: 20
+    baseValue: 5
+    modifiers: 
+  strength:
+    baseValue: 5
+    modifiers: 
+  axeSkill:
+    baseValue: 5
     modifiers: 
   bowSkill:
-    baseValue: 1
+    baseValue: 5
+    modifiers: 
+  crossbowSkill:
+    baseValue: 5
+    modifiers: 
+  daggerSkill:
+    baseValue: 5
+    modifiers: 
+  maceSkill:
+    baseValue: 5
+    modifiers: 
+  polearmSkill:
+    baseValue: 5
     modifiers: 
   shieldSkill:
-    baseValue: 1
+    baseValue: 5
+    modifiers: 
+  spearSkill:
+    baseValue: 5
     modifiers: 
   swordSkill:
-    baseValue: 1
+    baseValue: 5
+    modifiers: 
+  throwingSkill:
+    baseValue: 5
+    modifiers: 
+  warHammerSkill:
+    baseValue: 5
     modifiers: 
 --- !u!114 &809617103822942843
 MonoBehaviour:
@@ -893,6 +921,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 2147483648
 --- !u!114 &2371494321970509754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -907,7 +938,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackObstacleMask:
     serializedVersion: 2
-    m_Bits: 4067264
+    m_Bits: 2151550912
+--- !u!114 &3331432482388386438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ff3bf5f40f69194b83f055f18effc4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4910889609817399986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -974,7 +1017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f55ed04e5a326c4a95254ab62271707, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToReload: 1
 --- !u!1 &8220662913851074348
 GameObject:
   m_ObjectHideFlags: 0

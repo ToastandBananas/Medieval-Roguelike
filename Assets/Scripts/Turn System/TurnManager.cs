@@ -97,7 +97,7 @@ public class TurnManager : MonoBehaviour
         else
         {
             unit.SetIsMyTurn(true);
-            //unit.unitActionHandler.TakeTurn();
+            unit.unitActionHandler.TakeTurn();
         }
     }
 

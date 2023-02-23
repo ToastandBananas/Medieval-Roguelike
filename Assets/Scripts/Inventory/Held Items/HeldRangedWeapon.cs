@@ -90,10 +90,12 @@ public class HeldRangedWeapon : HeldItem
         return -zRotation;
     }
 
-    public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition)
+    public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
-        float maxRange = itemData.item.Weapon().maxRange;
-        maxRange += shooterGridPosition.y - targetGridPosition.y;
+        if (accountForHeight == false)
+            return itemData.item.Weapon().maxRange;
+
+        float maxRange = itemData.item.Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

@@ -210,10 +210,11 @@ public class ShootAction : BaseAction
     public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
     {
         float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float boundsDimension = ((startGridPosition.y + maxAttackRange) * 2) + 0.1f;
 
         validGridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -254,10 +255,11 @@ public class ShootAction : BaseAction
     public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
     {
         float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float boundsDimension = ((startGridPosition.y + maxAttackRange) * 2) + 0.1f;
 
         validGridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f, ((startGridPosition.y + maxAttackRange) * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -302,9 +304,10 @@ public class ShootAction : BaseAction
             return validGridPositionsList;
 
         float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float boundsDimension = ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.transform.position, new Vector3(((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f, ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f, ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.transform.position, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {

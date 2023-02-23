@@ -17,6 +17,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
+    public Interactable targetInteractable { get; protected set; }
     public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
     [SerializeField] LayerMask attackObstacleMask;
@@ -30,6 +31,8 @@ public class UnitActionHandler : MonoBehaviour
         baseActionArray = GetComponents<BaseAction>();
 
         if (unit.IsPlayer()) canPerformActions = true;
+
+        targetGridPosition = LevelGrid.GetGridPosition(transform.position);
 
         SetSelectedAction(GetAction<MoveAction>());
     }
@@ -74,7 +77,7 @@ public class UnitActionHandler : MonoBehaviour
                     }
                     else // If they're out of the shoot range, move towards the enemy
                     {
-                        SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(targetEnemyUnit.gridPosition, unit.gridPosition));
+                        SetTargetGridPosition(GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, targetEnemyUnit));
                         QueueAction(GetAction<MoveAction>());
                     }
                 }
@@ -88,11 +91,13 @@ public class UnitActionHandler : MonoBehaviour
                     }
                     else // If they're out of melee range, move towards the enemy
                     {
-                        SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(targetEnemyUnit.gridPosition, unit.gridPosition));
+                        SetTargetGridPosition(GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, targetEnemyUnit));
                         QueueAction(GetAction<MoveAction>());
                     }
                 }
             }
+            //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
+                //QueueAction(GetAction<MoveAction>());
 
             if (queuedAction != null)
                 GetNextQueuedAction();
@@ -114,6 +119,10 @@ public class UnitActionHandler : MonoBehaviour
         lastQueuedAction = action;
         queuedAP = action.GetActionPointsCost(targetGridPosition);
 
+        // If the action changed while getting the action point cost (such as when running into a door)
+        if (action != queuedAction)
+            return;
+
         if (unit.isMyTurn)
         {
             if (canPerformActions == false)
@@ -123,10 +132,6 @@ public class UnitActionHandler : MonoBehaviour
         }
 
         SetSelectedAction(GetAction<MoveAction>());
-
-        // Update AP text
-        //if (unit.IsPlayer())
-        //APManager.Instance.UpdateLastAPUsed(APCost);
     }
 
     public void GetNextQueuedAction()
@@ -225,10 +230,10 @@ public class UnitActionHandler : MonoBehaviour
             moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
         }
 
-        unit.unitActionHandler.SetTargetEnemyUnit(null);
+        SetTargetInteractable(null);
+        SetTargetEnemyUnit(null);
 
-        if (unit.isMyTurn)
-            GridSystemVisual.UpdateGridVisual();
+        GridSystemVisual.UpdateGridVisual();
     }
 
     public void ClearActionQueue(bool stopMoveAnimation)
@@ -291,6 +296,8 @@ public class UnitActionHandler : MonoBehaviour
         if (target != null)
             previousTargetEnemyGridPosition = target.gridPosition;
     }
+
+    public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 

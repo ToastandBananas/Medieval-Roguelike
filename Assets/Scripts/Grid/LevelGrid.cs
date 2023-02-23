@@ -28,6 +28,8 @@ public class LevelGrid : MonoBehaviour
     Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
     Collider[] collisionsCheckArray;
 
+    public static float diagonalDist;
+
     void Awake()
     {
         if (Instance != null)
@@ -37,6 +39,8 @@ public class LevelGrid : MonoBehaviour
             return;
         }
         Instance = this;
+
+        diagonalDist = 1.4f * gridSize;
     }
 
     void Start()
@@ -119,6 +123,16 @@ public class LevelGrid : MonoBehaviour
         interactableObjects.Remove(gridPosition);
     }
 
+    public Interactable GetInteractableFromTransform(Transform transform)
+    {
+        foreach (KeyValuePair<GridPosition, Interactable> interactable in interactableObjects)
+        {
+            if (interactable.Value.transform == transform)
+                return interactable.Value;
+        }
+        return null;
+    }
+
     public static GridPosition GetGridPosition(Vector3 worldPosition) => new GridPosition(worldPosition);
 
     public static Vector3 GetWorldPosition(GridPosition gridPosition) => new Vector3(gridPosition.x, gridPosition.y, gridPosition.z);
@@ -137,9 +151,10 @@ public class LevelGrid : MonoBehaviour
     {
         GridPosition newGridPosition;
         validGridPositionsList.Clear();
+        float boundsDimension = (rangeToSearch * 2) + 0.1f;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3((rangeToSearch * 2) + 0.1f, (rangeToSearch * 2) + 0.1f, (rangeToSearch * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -183,8 +198,9 @@ public class LevelGrid : MonoBehaviour
     public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
     {
         validGridPositionsList.Clear();
+        float boundsDimension = (maxRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3((maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -224,10 +240,11 @@ public class LevelGrid : MonoBehaviour
     {
         Vector3 unitWorldPosition = unit.WorldPosition();
         Vector3 enemyWorldPosition = enemyUnit.WorldPosition();
+        float boundsDimension = (maxFleeDistance * 2) + 0.1f;
 
         validGridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3((maxFleeDistance * 2) + 0.1f, (maxFleeDistance * 2) + 0.1f, (maxFleeDistance * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -261,23 +278,34 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
     }
 
-    public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition)
+    public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range)
     {
         gridPositionsList.Clear();
-        gridPositionsList.Add(startingGridPosition + new GridPosition(0, 0, 1)); // North
-        gridPositionsList.Add(startingGridPosition + new GridPosition(0, 0, -1)); // South
-        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, 0)); // East
-        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, 0)); // West
-        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, 1)); // NorthWest
-        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, 1)); // NorthEast
-        gridPositionsList.Add(startingGridPosition + new GridPosition(-1, 0, -1)); // SouthWest
-        gridPositionsList.Add(startingGridPosition + new GridPosition(1, 0, -1)); // SouthEast
+        float boundsDimension = (range * 2f) + 0.1f;
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = GetGridPosition((Vector3)nodes[i].position);
+            if (nodeGridPosition == startingGridPosition)
+                continue;
+
+            if (GridPositionObstructed(nodeGridPosition))
+                continue;
+
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startingGridPosition, nodeGridPosition) > range)
+                continue;
+
+            gridPositionsList.Add(nodeGridPosition);
+        }
+
+        ListPool<GraphNode>.Release(nodes);
         return gridPositionsList;
     }
 
-    public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition)
+    public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range)
     {
-        validGridPositionsList = GetSurroundingGridPositions(targetGridPosition);
+        validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range);
         GridPosition nearestGridPosition = targetGridPosition;
         float nearestDist = 1000000;
         for (int i = 0; i < validGridPositionsList.Count; i++)
@@ -304,8 +332,6 @@ public class LevelGrid : MonoBehaviour
 
     public static bool IsDiagonal(Vector3 startPosition, Vector3 endPosition)
     {
-        //if (TurnManager.Instance.IsPlayerTurn())
-            //Debug.Log("Start: " + startPosition + " / " + "End: " + endPosition);
         if (Mathf.RoundToInt(startPosition.x) != Mathf.RoundToInt(endPosition.x) && Mathf.RoundToInt(startPosition.z) != Mathf.RoundToInt(endPosition.z))
             return true;
         return false;
@@ -313,7 +339,8 @@ public class LevelGrid : MonoBehaviour
 
     public bool GridPositionObstructed(GridPosition gridPosition)
     {
-        if (IsValidGridPosition(gridPosition) == false || HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(AstarPath.active.GetNearest(gridPosition.WorldPosition()).node, unitSingleNodeBlockers))
+        GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition()).node;
+        if (IsValidGridPosition(gridPosition) == false || HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
             return true;
         return false;
     }

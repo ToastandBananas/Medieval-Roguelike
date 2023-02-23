@@ -5,9 +5,12 @@ public class PlayerInput : MonoBehaviour
 {
     public static PlayerInput Instance;
 
+    [SerializeField] LayerMask interactableMask;
+
     public bool autoAttack { get; private set; }
 
     Unit player;
+    Interactable highlightedInteractable;
 
     float skipTurnCooldown = 0.1f;
     float skipTurnCooldownTimer; 
@@ -65,43 +68,7 @@ public class PlayerInput : MonoBehaviour
                     player.unitActionHandler.SkipTurn();
                 }
 
-                if (player.unitActionHandler.selectedAction != null)
-                {
-                    if (player.unitActionHandler.selectedAction is MoveAction)
-                    {
-                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
-                        if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
-                        {
-                            if (player.RangedWeaponEquipped())
-                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                            else
-                                WorldMouse.ChangeCursor(CursorState.MeleeAttack);
-                        }
-                        else
-                            WorldMouse.ChangeCursor(CursorState.Default);
-
-                        StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-                    }
-                    else if (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)
-                    {
-                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
-                        if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition) == false)
-                        {
-                            StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-                            if (player.RangedWeaponEquipped())
-                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                            else
-                                WorldMouse.ChangeCursor(CursorState.MeleeAttack);
-                        }
-                        else
-                        {
-                            ActionLineRenderer.Instance.HideLineRenderers();
-                            WorldMouse.ChangeCursor(CursorState.Default);
-                        }
-                    }
-                    else if (player.unitActionHandler.selectedAction is TurnAction)
-                        ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
-                }
+                SetupCursorAndLineRenderer();
 
                 if (GameControls.gamePlayActions.turnMode.IsPressed || player.unitActionHandler.selectedAction is TurnAction)
                 {
@@ -130,7 +97,7 @@ public class PlayerInput : MonoBehaviour
                                 player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                                 if ((player.MeleeWeaponEquipped() || player.IsUnarmed()) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                                 {
-                                    if (unitAtGridPosition.IsCompletelySurrounded())
+                                    if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)))
                                     {
                                         player.unitActionHandler.SetTargetEnemyUnit(null);
                                         return;
@@ -155,6 +122,20 @@ public class PlayerInput : MonoBehaviour
                             else
                                 player.unitActionHandler.SetTargetEnemyUnit(null);
                         }
+                        else if (highlightedInteractable != null)
+                        {
+                            player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
+                            {
+                                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize()));
+                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                            }
+                            else
+                            {
+                                player.unitActionHandler.GetAction<InteractAction>().SetInteractableGridPosition(highlightedInteractable.gridPosition);
+                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+                            }
+                        }
                         else if (player.unitActionHandler.selectedAction is MoveAction)
                         {
                             player.unitActionHandler.SetTargetEnemyUnit(null); 
@@ -174,6 +155,62 @@ public class PlayerInput : MonoBehaviour
         {
             ActionLineRenderer.Instance.HideLineRenderers();
             WorldMouse.ChangeCursor(CursorState.Default);
+        }
+    }
+
+    void SetupCursorAndLineRenderer()
+    {
+        if (player.unitActionHandler.selectedAction != null)
+        {
+            if (player.unitActionHandler.selectedAction is MoveAction)
+            {
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
+                {
+                    highlightedInteractable = null;
+                    if (player.RangedWeaponEquipped())
+                        WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                    else
+                        WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                }
+                else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, interactableMask))
+                {
+                    highlightedInteractable = LevelGrid.Instance.GetInteractableFromTransform(hit.transform.parent);
+                    if (highlightedInteractable != null && highlightedInteractable is Door)
+                        WorldMouse.ChangeCursor(CursorState.UseDoor);
+                }
+                else
+                {
+                    highlightedInteractable = null;
+                    WorldMouse.ChangeCursor(CursorState.Default);
+                }
+
+                StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+            }
+            else if (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction)
+            {
+                highlightedInteractable = null;
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition) == false)
+                {
+                    StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
+                    if (player.RangedWeaponEquipped())
+                        WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                    else
+                        WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                }
+                else
+                {
+                    ActionLineRenderer.Instance.HideLineRenderers();
+                    WorldMouse.ChangeCursor(CursorState.Default);
+                }
+            }
+            else if (player.unitActionHandler.selectedAction is TurnAction)
+            {
+                highlightedInteractable = null;
+                ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
+                WorldMouse.ChangeCursor(CursorState.Default);
+            }
         }
     }
 

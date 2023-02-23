@@ -97,9 +97,10 @@ public class GridSystemVisual : MonoBehaviour
 
     public void ShowGridPositionMeleeRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
+        float boundsDimension = (maxRange * 2) + 0.1f;
         gridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3((maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f, (maxRange * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -130,9 +131,10 @@ public class GridSystemVisual : MonoBehaviour
 
     public void ShowGridPositionShootRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
     {
+        float boundsDimension = ((gridPosition.y + maxRange) * 2) + 0.1f;
         gridPositionsList.Clear();
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(((gridPosition.y + maxRange) * 2) + 0.1f, ((gridPosition.y + maxRange) * 2) + 0.1f, ((gridPosition.y + maxRange) * 2) + 0.1f)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {

@@ -2,6 +2,7 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MoveAction : BaseAction
@@ -275,7 +276,7 @@ public class MoveAction : BaseAction
         {
             unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
             unitAtTargetGridPosition.UnblockCurrentPosition();
-            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition);
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition, LevelGrid.diagonalDist);
         }
 
         SetFinalTargetGridPosition(targetGridPosition);
@@ -342,15 +343,42 @@ public class MoveAction : BaseAction
         if (positionList.Count == 0)
             return cost;
 
+        // Check for an Interactable on the next move position
+        Vector3 nextPointOnPath = positionList[positionIndex];
+        Vector3 unitPosition = unit.transform.position;
+        Vector3 nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
+
+        // If the next path position is above the unit's current position
+        if (nextPointOnPath.y - unitPosition.y > 0f)
+            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+        // If the next path position is below the unit's current position
+        else if (nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
+            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+
+        // If there's an Interactable on the next path position
+        GridPosition nextGridPosition = LevelGrid.GetGridPosition(nextPathPosition);
+        if (LevelGrid.Instance.HasAnyInteractableOnGridPosition(nextGridPosition))
+        {
+            Interactable interactable = LevelGrid.Instance.GetInteractableAtGridPosition(nextGridPosition);
+            if (interactable is Door)
+            {
+                Door door = interactable as Door;
+                if (door.isOpen == false)
+                {
+                    unit.unitActionHandler.GetAction<InteractAction>().SetInteractableGridPosition(door.gridPosition);
+                    unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<InteractAction>());
+                    return 0;
+                }
+            }
+        }
+
         // Get the next Move position
         nextTargetPosition = GetNextTargetPosition();
         nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
 
         float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
-        // if (unit.IsPlayer()) Debug.Log(tileCostMultiplier);
 
         floatCost += floatCost * tileCostMultiplier;
-
         if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextTargetPosition))
             floatCost *= 1.4f;
 
