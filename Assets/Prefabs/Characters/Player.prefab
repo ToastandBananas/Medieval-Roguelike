@@ -332,6 +332,7 @@ Transform:
   m_Children:
   - {fileID: 703078855765633330}
   - {fileID: 2899893610087663347}
+  - {fileID: 3993356818367710035}
   - {fileID: 5499396121062417353}
   m_Father: {fileID: 6498372608485508665}
   m_RootOrder: 0
@@ -663,7 +664,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7142527425681057192}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!114 &5684903310377372463
 MonoBehaviour:
@@ -699,11 +700,11 @@ GameObject:
   - component: {fileID: 6440773195933579920}
   - component: {fileID: 3489051163152912302}
   - component: {fileID: 1195297390364979018}
+  - component: {fileID: 7077269047116504926}
   - component: {fileID: 6974571770984074728}
   - component: {fileID: 3713523194178401732}
   - component: {fileID: 809617103822942843}
   - component: {fileID: 6440773195933579921}
-  - component: {fileID: 7077269047116504926}
   - component: {fileID: 2371494321970509754}
   - component: {fileID: 3331432482388386438}
   - component: {fileID: 4910889609817399986}
@@ -806,6 +807,21 @@ MonoBehaviour:
   tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d00700004c040000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
     value: -1
+--- !u!114 &7077269047116504926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 2147483648
 --- !u!114 &6974571770984074728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -909,21 +925,6 @@ MonoBehaviour:
   - {fileID: 7622081336976406461}
   - {fileID: 4844891633756179713}
   - {fileID: 626653059070622638}
---- !u!114 &7077269047116504926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactableMask:
-    serializedVersion: 2
-    m_Bits: 2147483648
 --- !u!114 &2371494321970509754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1133,6 +1134,65 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &9120702598266729471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3993356818367710035}
+  - component: {fileID: 7698420547713366967}
+  - component: {fileID: 1051662800694096370}
+  m_Layer: 30
+  m_Name: Hearing
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3993356818367710035
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120702598266729471}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7142527425681057192}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7698420547713366967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120702598266729471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca69cfe22cff1804bae3c9dddd8a0c99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hearingRadius: 10
+--- !u!135 &1051662800694096370
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9120702598266729471}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9221229539346795454
 GameObject:
   m_ObjectHideFlags: 0

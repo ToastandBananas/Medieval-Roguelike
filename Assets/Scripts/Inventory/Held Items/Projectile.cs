@@ -93,8 +93,8 @@ public class Projectile : MonoBehaviour
 
         SetupTrail();
 
-        if (shooter.IsPlayer())
-            StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
+        //if (shooter.IsPlayer())
+            //StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
     }
 
     float CalculateProjectileArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)

@@ -24,6 +24,7 @@ public class Unit : MonoBehaviour
 
     public Alliance alliance { get; private set; }
     public HealthSystem health { get; private set; }
+    public Hearing hearing { get; private set; }
     public StateController stateController { get; private set; }
     public Stats stats { get; private set; }
     public UnitActionHandler unitActionHandler { get; private set; }
@@ -38,6 +39,7 @@ public class Unit : MonoBehaviour
         singleNodeBlocker = GetComponent<SingleNodeBlocker>();
         alliance = GetComponent<Alliance>();
         health = GetComponent<HealthSystem>();
+        hearing = GetComponentInChildren<Hearing>();
         stateController = GetComponent<StateController>();
         stats = GetComponent<Stats>();
         unitActionHandler = GetComponent<UnitActionHandler>();
