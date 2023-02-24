@@ -219,8 +219,14 @@ public class MoveAction : BaseAction
     {
         if (unit.IsPlayer())
         {
+            // If the Player has a target Interactable
+            if (unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, unitActionHandler.targetInteractable.gridPosition) <= 1.4f)
+            {
+                unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(unitActionHandler.targetInteractable.gridPosition);
+                unitActionHandler.QueueAction(unitActionHandler.GetAction<InteractAction>());
+            }
             // If the target enemy Unit died
-            if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead())
+            else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead())
                 unitActionHandler.CancelAction();
             // If the Player is trying to attack an enemy and they are in range, stop moving and attack
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit))
@@ -365,7 +371,8 @@ public class MoveAction : BaseAction
                 Door door = interactable as Door;
                 if (door.isOpen == false)
                 {
-                    unit.unitActionHandler.GetAction<InteractAction>().SetInteractableGridPosition(door.gridPosition);
+                    unit.unitActionHandler.SetTargetInteractable(door);
+                    unit.unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(door.gridPosition);
                     unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<InteractAction>());
                     return 0;
                 }

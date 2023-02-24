@@ -1,7 +1,6 @@
 using Pathfinding;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class ActionLineRenderer : MonoBehaviour
 {
@@ -37,10 +36,10 @@ public class ActionLineRenderer : MonoBehaviour
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
-        GridPosition targetGridPosition;
         GridPosition mouseGridPosition = WorldMouse.currentGridPosition;
-        
-        if (mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
+        GridPosition targetGridPosition = mouseGridPosition;
+
+        if (PlayerInput.Instance.highlightedInteractable != null || mouseGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
         {
             currentMouseGridPosition = mouseGridPosition;
             currentPlayerPosition = player.gridPosition;
@@ -52,7 +51,17 @@ public class ActionLineRenderer : MonoBehaviour
                 yield break;
             }
 
-            if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
+            if (PlayerInput.Instance.highlightedInteractable != null)
+            {
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize());
+                else
+                {
+                    HideLineRenderers();
+                    yield break;
+                }
+            }
+            else if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
             {
                 if (player.alliance.IsEnemy(unitAtMousePosition))
                 {
@@ -73,7 +82,6 @@ public class ActionLineRenderer : MonoBehaviour
             }
             else
             {
-                targetGridPosition = mouseGridPosition;
                 if (unitAtMousePosition != null)
                     unitAtMousePosition.UnblockCurrentPosition();
             }

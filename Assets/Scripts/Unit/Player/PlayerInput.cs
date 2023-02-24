@@ -7,10 +7,10 @@ public class PlayerInput : MonoBehaviour
 
     [SerializeField] LayerMask interactableMask;
 
+    public Interactable highlightedInteractable { get; private set; }
     public bool autoAttack { get; private set; }
 
     Unit player;
-    Interactable highlightedInteractable;
 
     float skipTurnCooldown = 0.1f;
     float skipTurnCooldownTimer; 
@@ -83,6 +83,8 @@ public class PlayerInput : MonoBehaviour
                 else if (GameControls.gamePlayActions.select.WasPressed)
                 {
                     GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
+                    player.unitActionHandler.SetTargetInteractable(null);
+
                     if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
                     {
                         Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
@@ -90,7 +92,21 @@ public class PlayerInput : MonoBehaviour
                         if (unitAtGridPosition != null)
                             unitIsVisible = player.vision.IsVisible(unitAtGridPosition);
 
-                        if (unitAtGridPosition != null && unitIsVisible)
+                        if (highlightedInteractable != null)
+                        {
+                            player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
+                            {
+                                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize()));
+                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                            }
+                            else
+                            {
+                                player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(highlightedInteractable.gridPosition);
+                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+                            }
+                        }
+                        else if (unitAtGridPosition != null && unitIsVisible)
                         {
                             if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction))))
                             {
@@ -122,20 +138,6 @@ public class PlayerInput : MonoBehaviour
                             else
                                 player.unitActionHandler.SetTargetEnemyUnit(null);
                         }
-                        else if (highlightedInteractable != null)
-                        {
-                            player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
-                            {
-                                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize()));
-                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
-                            }
-                            else
-                            {
-                                player.unitActionHandler.GetAction<InteractAction>().SetInteractableGridPosition(highlightedInteractable.gridPosition);
-                                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
-                            }
-                        }
                         else if (player.unitActionHandler.selectedAction is MoveAction)
                         {
                             player.unitActionHandler.SetTargetEnemyUnit(null); 
@@ -164,20 +166,20 @@ public class PlayerInput : MonoBehaviour
         {
             if (player.unitActionHandler.selectedAction is MoveAction)
             {
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
-                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition()); 
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, interactableMask))
+                {
+                    highlightedInteractable = LevelGrid.Instance.GetInteractableFromTransform(hit.transform.parent);
+                    if (highlightedInteractable != null && highlightedInteractable is Door)
+                        WorldMouse.ChangeCursor(CursorState.UseDoor);
+                }
+                else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
                 {
                     highlightedInteractable = null;
                     if (player.RangedWeaponEquipped())
                         WorldMouse.ChangeCursor(CursorState.RangedAttack);
                     else
                         WorldMouse.ChangeCursor(CursorState.MeleeAttack);
-                }
-                else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, interactableMask))
-                {
-                    highlightedInteractable = LevelGrid.Instance.GetInteractableFromTransform(hit.transform.parent);
-                    if (highlightedInteractable != null && highlightedInteractable is Door)
-                        WorldMouse.ChangeCursor(CursorState.UseDoor);
                 }
                 else
                 {

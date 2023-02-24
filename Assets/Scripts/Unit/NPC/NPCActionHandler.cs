@@ -47,6 +47,8 @@ public class NPCActionHandler : UnitActionHandler
     {
         if (unit.isMyTurn && unit.health.IsDead() == false)
         {
+            unit.vision.FindVisibleUnits();
+
             if (canPerformActions == false || unit.stats.currentAP <= 0)
             {
                 SkipTurn(); // Unit can't do anything, so skip their turn

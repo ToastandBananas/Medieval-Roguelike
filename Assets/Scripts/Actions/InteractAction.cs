@@ -1,14 +1,23 @@
 public class InteractAction : BaseAction
 {
-    GridPosition interactableGridPosition;
+    GridPosition targetInteractableGridPosition;
 
     public override void TakeAction(GridPosition gridPosition)
     {
         StartAction();
-        LevelGrid.Instance.GetInteractableAtGridPosition(interactableGridPosition).Interact(unit);
+        if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(targetInteractableGridPosition))
+        {
+            LevelGrid.Instance.GetInteractableAtGridPosition(targetInteractableGridPosition).Interact(unit);
 
-        CompleteAction();
-        TurnManager.Instance.StartNextUnitsTurn(unit);
+            CompleteAction();
+            unit.unitActionHandler.SetTargetInteractable(null);
+            TurnManager.Instance.StartNextUnitsTurn(unit);
+        }
+        else
+        {
+            CompleteAction();
+            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
+        }
     }
 
     public override int GetActionPointsCost(GridPosition targetGridPosition)
@@ -19,12 +28,11 @@ public class InteractAction : BaseAction
         return 100;
     }
 
-    public void SetInteractableGridPosition(GridPosition gridPosition) => interactableGridPosition = gridPosition;
+    public void SetTargetInteractableGridPosition(GridPosition gridPosition) => targetInteractableGridPosition = gridPosition;
 
     public override void CompleteAction()
     {
         base.CompleteAction();
-        unit.unitActionHandler.SetTargetInteractable(null);
         unit.unitActionHandler.FinishAction();
     }
 

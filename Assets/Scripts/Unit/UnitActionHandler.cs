@@ -48,6 +48,14 @@ public class UnitActionHandler : MonoBehaviour
                 TurnManager.Instance.FinishTurn(unit);
                 return;
             }
+            else if (targetInteractable != null)
+            {
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetInteractable.gridPosition) <= 1.4f)
+                {
+                    GetAction<InteractAction>().SetTargetInteractableGridPosition(targetInteractable.gridPosition);
+                    QueueAction(GetAction<InteractAction>());
+                }
+            }
             else if (targetEnemyUnit != null && queuedAction == null)
             {
                 if (targetEnemyUnit.health.IsDead())
@@ -223,6 +231,8 @@ public class UnitActionHandler : MonoBehaviour
         }
 
         ClearActionQueue(true);
+        SetTargetInteractable(null);
+        SetTargetEnemyUnit(null);
 
         if (moveAction.finalTargetGridPosition != unit.gridPosition)
         {
@@ -230,8 +240,6 @@ public class UnitActionHandler : MonoBehaviour
             moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
         }
 
-        SetTargetInteractable(null);
-        SetTargetEnemyUnit(null);
 
         GridSystemVisual.UpdateGridVisual();
     }
