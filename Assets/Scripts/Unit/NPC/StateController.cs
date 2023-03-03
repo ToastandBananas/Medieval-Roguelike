@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum State { Idle, Patrol, Wander, Follow, MoveToTarget, Fight, Flee, Hunt, FindFood }
+public enum State { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
 
 public class StateController : MonoBehaviour
 {
@@ -15,11 +15,11 @@ public class StateController : MonoBehaviour
         unit = GetComponent<Unit>();
         npcActionHandler = unit.unitActionHandler as NPCActionHandler;
 
-        /*if (defaultState == State.Fight || defaultState == State.Flee || defaultState == State.MoveToTarget)
+        if (DefaultStateInvalid())
         {
             Debug.LogWarning(unit.name + "'s default State is <" + defaultState.ToString() + "> which is an invalid default State to have. Fix me!");
             ChangeDefaultState(State.Idle);
-        }*/
+        }
 
         SetToDefaultState();
     }
@@ -32,13 +32,18 @@ public class StateController : MonoBehaviour
 
     public void SetToDefaultState()
     {
-        npcActionHandler.ResetToDefaults();
-
         if (npcActionHandler.shouldFollowLeader && npcActionHandler.Leader() != null)
             currentState = State.Follow;
         else
-            currentState = defaultState;
+        {
+            if (DefaultStateInvalid())
+                ChangeDefaultState(State.Idle);
+
+            SetCurrentState(defaultState);
+        }
     }
+
+    bool DefaultStateInvalid() => defaultState == State.Fight || defaultState == State.Flee || defaultState == State.InspectSound;
 
     public State DefaultState() => defaultState;
 

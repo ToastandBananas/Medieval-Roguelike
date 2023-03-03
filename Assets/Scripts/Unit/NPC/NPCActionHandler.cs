@@ -22,6 +22,13 @@ public class NPCActionHandler : UnitActionHandler
     [SerializeField] Unit leader;
     [SerializeField] public bool shouldFollowLeader { get; private set; }
 
+    [Header("Inspect Sound State")]
+    GridPosition inspectSoundGridPosition;
+    public GridPosition soundGridPosition { get; private set; }
+    int inspectSoundIterations;
+    int maxInspectSoundIterations;
+    bool needsNewSoundInspectPosition = true;
+
     [Header("Patrol State")]
     [SerializeField] Vector3[] patrolPoints;
     public int currentPatrolPointIndex { get; private set; }
@@ -58,8 +65,6 @@ public class NPCActionHandler : UnitActionHandler
             {
                 if (targetEnemyUnit.health.IsDead())
                 {
-                    if (unit.stateController.DefaultState() == State.Fight)
-                        unit.stateController.ChangeDefaultState(State.Idle);
                     unit.stateController.SetToDefaultState();
                     CancelAction();
                     TurnManager.Instance.FinishTurn(unit);
@@ -146,7 +151,8 @@ public class NPCActionHandler : UnitActionHandler
             case State.Follow:
                 Follow();
                 break;
-            case State.MoveToTarget:
+            case State.InspectSound:
+                InspectSound();
                 break;
             case State.Fight:
                 Fight();
@@ -195,10 +201,7 @@ public class NPCActionHandler : UnitActionHandler
         if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
         {
             SetTargetEnemyUnit(null);
-            if (unit.stateController.DefaultState() == State.Fight)
-                unit.stateController.ChangeDefaultState(State.Idle);
             unit.stateController.SetToDefaultState();
-
             DetermineAction();
             return;
         }
@@ -214,6 +217,14 @@ public class NPCActionHandler : UnitActionHandler
         unit.stateController.SetCurrentState(State.Fight);
         FindBestTargetEnemy();
         ClearActionQueue(false);
+
+        if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
+        {
+            SetTargetEnemyUnit(null);
+            unit.stateController.SetToDefaultState();
+            DetermineAction();
+            return;
+        }
     }
 
     void PursueTargetEnemy()
@@ -276,12 +287,6 @@ public class NPCActionHandler : UnitActionHandler
                 }
             }
         }
-        else
-        {
-            if (unit.stateController.DefaultState() == State.Fight)
-                unit.stateController.ChangeDefaultState(State.Idle);
-            unit.stateController.SetToDefaultState();
-        }
     }
 
     void GetRandomTargetEnemy()
@@ -321,8 +326,6 @@ public class NPCActionHandler : UnitActionHandler
         // If there's no Unit to flee from or if the Unit to flee from died
         if (unitToFleeFrom == null || unitToFleeFrom.health.IsDead())
         {
-            if (unit.stateController.DefaultState() == State.Flee)
-                unit.stateController.ChangeDefaultState(State.Wander);
             unit.stateController.SetToDefaultState(); // Variables are reset in this method
             DetermineAction();
             return;
@@ -333,8 +336,6 @@ public class NPCActionHandler : UnitActionHandler
         // If the Unit has fled far enough
         if (distanceFromUnitToFleeFrom >= fleeDistance)
         {
-            if (unit.stateController.DefaultState() == State.Flee)
-                unit.stateController.ChangeDefaultState(State.Wander);
             unit.stateController.SetToDefaultState(); // Variables are also reset in this method
             DetermineAction();
             return;
@@ -382,9 +383,6 @@ public class NPCActionHandler : UnitActionHandler
         {
             Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
             shouldFollowLeader = false;
-            if (unit.stateController.DefaultState() == State.Follow)
-                unit.stateController.ChangeDefaultState(State.Idle);
-
             unit.stateController.SetToDefaultState();
             DetermineAction();
             return;
@@ -404,6 +402,41 @@ public class NPCActionHandler : UnitActionHandler
     public void SetLeader(Unit newLeader) => leader = newLeader;
 
     public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
+    #endregion
+
+    #region Inpect Sound
+    void InspectSound()
+    {
+        if (needsNewSoundInspectPosition)
+        {
+            if (inspectSoundIterations == maxInspectSoundIterations)
+            {
+                unit.stateController.SetToDefaultState();
+                DetermineAction();
+                return;
+            }
+
+            needsNewSoundInspectPosition = false;
+
+            inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, unit, 0, 6, true);
+            unit.unitActionHandler.SetTargetGridPosition(inspectSoundGridPosition);
+            QueueAction(GetAction<MoveAction>());
+        }
+        else if (Vector3.Distance(inspectSoundGridPosition.WorldPosition(), transform.position) <= 0.1f)
+        {
+            // Get a new Inspect Sound Position when the current one is reached
+            inspectSoundIterations++;
+            needsNewSoundInspectPosition = true;
+            soundGridPosition = inspectSoundGridPosition;
+            InspectSound();
+        }
+    }
+
+    public void SetSoundGridPosition(Vector3 soundPosition)
+    {
+        soundGridPosition = LevelGrid.GetGridPosition(soundPosition);
+        maxInspectSoundIterations = Random.Range(2, 6);
+    }
     #endregion
 
     #region Patrol
@@ -558,7 +591,6 @@ public class NPCActionHandler : UnitActionHandler
             // Get a new Wander Position when the current one is reached
             wanderPositionSet = false;
             Wander();
-            return;
         }
         else if (GetAction<MoveAction>().isMoving == false)
         {
@@ -593,6 +625,10 @@ public class NPCActionHandler : UnitActionHandler
         unitToFleeFrom = null;
         unitToFleeFrom_PreviousDistance = 0f;
         fleeDistance = 0;
+
+        // Inspect Sound
+        needsNewSoundInspectPosition = true;
+        inspectSoundIterations = 0;
 
         // Patrol
         hasAlternativePatrolPoint = false;

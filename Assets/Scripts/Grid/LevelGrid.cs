@@ -195,7 +195,7 @@ public class LevelGrid : MonoBehaviour
         return nearestGridPosition;
     }
 
-    public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
+    public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange, bool checkForObstacles = false)
     {
         validGridPositionsList.Clear();
         float boundsDimension = (maxRange * 2) + 0.1f;
@@ -206,12 +206,20 @@ public class LevelGrid : MonoBehaviour
         {
             GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
+            if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit or is otherwise unwalkable
                 continue;
 
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startingGridPosition, nodeGridPosition);
             if (distance > maxRange || distance < minRange)
                 continue;
+
+            if (checkForObstacles)
+            {
+                float sphereCastRadius = 0.1f;
+                Vector3 shootDir = ((nodeGridPosition.WorldPosition() + Vector3.up) - (startingGridPosition.WorldPosition() + Vector3.up)).normalized;
+                if (Physics.SphereCast(startingGridPosition.WorldPosition() + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + Vector3.up, startingGridPosition.WorldPosition() + Vector3.up), unit.unitActionHandler.AttackObstacleMask()))
+                    continue; // Blocked by an obstacle
+            }
 
             collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
             if (collisionsCheckArray.Length > 0)
@@ -228,9 +236,9 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionsList;
     }
 
-    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange)
+    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange, bool checkForObstacles = false)
     {
-        gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange);
+        gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange, checkForObstacles);
         if (gridPositionsList.Count == 0)
             return unit.gridPosition;
         return gridPositionsList[Random.Range(0, gridPositionsList.Count - 1)];

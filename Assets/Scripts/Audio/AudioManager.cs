@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+
 [System.Serializable]
 public class Sound
 {
@@ -47,6 +48,16 @@ public class Sound
         for (int i = 0; i < unitsInSoundRadius.Length; i++)
         {
             Unit unit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.position));
+            if (unit.IsPlayer())
+                continue;
+
+            if (unit.stateController.currentState == State.Fight || unit.stateController.currentState == State.Flee)
+                continue;
+
+            NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+            if (unit.stateController.currentState == State.InspectSound && npcActionHandler.soundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                continue;
+
             bool soundHeard = true;
 
             Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight())) - (soundPosition + (Vector3.up * unit.ShoulderHeight()));
@@ -67,15 +78,14 @@ public class Sound
             
             if (soundHeard)
             {
-
+                Debug.Log(unit.name + " heard: " + soundName);
+                npcActionHandler.SetSoundGridPosition(soundPosition);
+                unit.stateController.SetCurrentState(State.InspectSound);
             }
         }
     }
 
-    public void Stop()
-    {
-        source.Stop();
-    }
+    public void Stop() => source.Stop();
 }
 
 public class AudioManager : MonoBehaviour
