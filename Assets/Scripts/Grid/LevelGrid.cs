@@ -195,7 +195,7 @@ public class LevelGrid : MonoBehaviour
         return nearestGridPosition;
     }
 
-    public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange, bool checkForObstacles = false)
+    public List<GridPosition> GetGridPositionsInRange(GridPosition startingGridPosition, Unit unit, float minRange, float maxRange, bool checkForObstacles = false)
     {
         validGridPositionsList.Clear();
         float boundsDimension = (maxRange * 2) + 0.1f;
@@ -236,7 +236,7 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionsList;
     }
 
-    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, int minRange, int maxRange, bool checkForObstacles = false)
+    public GridPosition GetRandomGridPositionInRange(GridPosition startingGridPosition, Unit unit, float minRange, float maxRange, bool checkForObstacles = false)
     {
         gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange, checkForObstacles);
         if (gridPositionsList.Count == 0)

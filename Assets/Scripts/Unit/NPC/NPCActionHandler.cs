@@ -418,7 +418,7 @@ public class NPCActionHandler : UnitActionHandler
 
             needsNewSoundInspectPosition = false;
 
-            inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, unit, 0, 6, true);
+            inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, unit, 0 + inspectSoundIterations, 2 + inspectSoundIterations, true);
             unit.unitActionHandler.SetTargetGridPosition(inspectSoundGridPosition);
             QueueAction(GetAction<MoveAction>());
         }
@@ -427,15 +427,25 @@ public class NPCActionHandler : UnitActionHandler
             // Get a new Inspect Sound Position when the current one is reached
             inspectSoundIterations++;
             needsNewSoundInspectPosition = true;
-            soundGridPosition = inspectSoundGridPosition;
             InspectSound();
+        }
+        else if (GetAction<MoveAction>().isMoving == false)
+        {
+            // Get a new Inspect Sound Position if there's now another Unit or obstruction there
+            if (LevelGrid.Instance.GridPositionObstructed(inspectSoundGridPosition))
+            {
+                inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.gridPosition, 1.4f);
+                SetTargetGridPosition(inspectSoundGridPosition);
+            }
+
+            QueueAction(GetAction<MoveAction>());
         }
     }
 
     public void SetSoundGridPosition(Vector3 soundPosition)
     {
         soundGridPosition = LevelGrid.GetGridPosition(soundPosition);
-        maxInspectSoundIterations = Random.Range(2, 6);
+        maxInspectSoundIterations = Random.Range(3, 7);
     }
     #endregion
 
@@ -595,7 +605,7 @@ public class NPCActionHandler : UnitActionHandler
         else if (GetAction<MoveAction>().isMoving == false)
         {
             // Get a new Wander Position if there's now another Unit or obstruction there
-            if (LevelGrid.Instance.GridPositionObstructed(wanderGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(wanderGridPosition) != unit)
+            if (LevelGrid.Instance.GridPositionObstructed(wanderGridPosition))
             {
                 wanderGridPosition = GetNewWanderPosition();
                 SetTargetGridPosition(wanderGridPosition);

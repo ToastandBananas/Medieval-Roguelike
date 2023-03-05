@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -14,14 +15,14 @@ public class Sound
     [SerializeField][Range(0f, 0.25f)] float randomVolumeAddOn = 0.25f;
     [SerializeField][Range(0f, 0.25f)] float randomPitchAddOn = 0.25f;
 
-    [SerializeField] float soundRadius = 15f;
+    [SerializeField] float soundRadius = 10f;
 
     [SerializeField] bool loop = false;
 
     AudioSource source;
     Collider[] unitsInSoundRadius;
 
-    float muffleAmountPerObstacle = 3f;
+    readonly float muffleAmountPerObstacle = 3f;
 
     public void SetSource(AudioSource _source)
     {
@@ -30,7 +31,7 @@ public class Sound
         source.loop = loop;
     }
 
-    public void Play(Vector3 soundPosition)
+    public void Play(Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
     {
         float distToPlayer = Vector3.Distance(soundPosition, UnitManager.Instance.player.transform.position);
         if (distToPlayer <= soundRadius)
@@ -44,43 +45,51 @@ public class Sound
             source.Play();
         }
 
-        unitsInSoundRadius = Physics.OverlapSphere(soundPosition, soundRadius, AudioManager.Instance.HearingMask());
-        for (int i = 0; i < unitsInSoundRadius.Length; i++)
+        if (shouldTriggerNPCInspectSound)
         {
-            Unit unit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.position));
-            if (unit.IsPlayer())
-                continue;
-
-            if (unit.stateController.currentState == State.Fight || unit.stateController.currentState == State.Flee)
-                continue;
-
-            NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-            if (unit.stateController.currentState == State.InspectSound && npcActionHandler.soundGridPosition == LevelGrid.GetGridPosition(soundPosition))
-                continue;
-
-            bool soundHeard = true;
-
-            Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight())) - (soundPosition + (Vector3.up * unit.ShoulderHeight()));
-            float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
-            RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.unitActionHandler.AttackObstacleMask());
-            if (hits.Length > 0)
+            unitsInSoundRadius = Physics.OverlapSphere(soundPosition, soundRadius, AudioManager.Instance.HearingMask());
+            for (int i = 0; i < unitsInSoundRadius.Length; i++)
             {
-                float soundMuffle = hits.Length * muffleAmountPerObstacle;
-                float hearingRadiusAfterMuffle = unit.hearing.HearingRadius() - soundMuffle;
-                if (hearingRadiusAfterMuffle <= 0f) // If the sound was muffled so much that the Unit's hearing radius after muffling is 0, the sound is not heard
-                    soundHeard = false;
-                else if (distToUnit > hearingRadiusAfterMuffle) // If the sound position is not within the Unit's hearing radius after muffling
+                Unit unit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
+                if (unit == null)
+                    continue;
+
+                if (unitMakingSound != null && unitMakingSound == unit)
+                    continue;
+
+                if (unit.IsPlayer())
+                    continue;
+
+                if (unit.stateController.currentState == State.Fight || unit.stateController.currentState == State.Flee)
+                    continue;
+
+                NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                if (unit.stateController.currentState == State.InspectSound && npcActionHandler.soundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                    continue;
+
+                bool soundHeard = true;
+                Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight())) - (soundPosition + (Vector3.up * unit.ShoulderHeight()));
+                float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
+                RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.unitActionHandler.AttackObstacleMask());
+                if (hits.Length > 0)
                 {
-                    if (distToUnit - hearingRadiusAfterMuffle - soundRadius > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
+                    float soundMuffle = hits.Length * muffleAmountPerObstacle;
+                    float soundRadiusAfterMuffle = soundRadius - soundMuffle;
+                    if (soundRadiusAfterMuffle <= 0f) // If the sound was muffled so much that the Unit's hearing radius after muffling is 0, the sound is not heard
                         soundHeard = false;
+                    else if (distToUnit > soundRadiusAfterMuffle) // If the sound position is not within the Unit's hearing radius after muffling
+                    {
+                        if (distToUnit - soundRadiusAfterMuffle - unit.hearing.HearingRadius() > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
+                            soundHeard = false;
+                    }
                 }
-            }
-            
-            if (soundHeard)
-            {
-                Debug.Log(unit.name + " heard: " + soundName);
-                npcActionHandler.SetSoundGridPosition(soundPosition);
-                unit.stateController.SetCurrentState(State.InspectSound);
+
+                if (soundHeard)
+                {
+                    Debug.Log(unit.name + " heard: " + soundName);
+                    npcActionHandler.SetSoundGridPosition(soundPosition);
+                    unit.stateController.SetCurrentState(State.InspectSound);
+                }
             }
         }
     }
@@ -202,51 +211,58 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
-        foreach (Sound[] soundArray in allSounds)
-        {
-            for (int i = 0; i < soundArray.Length; i++)
-            {
-                GameObject _go = new GameObject("Sound_" + i + " " + soundArray[i].soundName);
-                _go.transform.SetParent(transform);
-                soundArray[i].SetSource(_go.AddComponent<AudioSource>());
-                _go.GetComponent<AudioSource>().outputAudioMixerGroup = masterAudioMixerGroup;
-            }
-        }
-
         player = UnitManager.Instance.player;
 
         PlayAmbienceSound();
     }
 
-    public void PlaySound(Sound[] soundArray, string _soundName, Vector3 soundPosition)
+    public static void PlaySound(Sound[] soundArray, string soundName, Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
     {
         for (int i = 0; i < soundArray.Length; i++)
         {
-            if (soundArray[i].soundName == _soundName)
+            if (soundArray[i].soundName == soundName)
             {
-                soundArray[i].Play(soundPosition);
+                AudioSource audioSource = SoundPool.Instance.GetSoundFromPool(soundArray[i]);
+                audioSource.gameObject.SetActive(true);
+                soundArray[i].SetSource(audioSource);
+                soundArray[i].Play(soundPosition, unitMakingSound, shouldTriggerNPCInspectSound);
+                
+                Instance.StartCoroutine(DelayDeactivateSound(audioSource));
                 return;
             }
         }
 
         // No sound with _soundName
-        Debug.LogWarning("AudioManager: Sound not found in list: " + _soundName);
+        Debug.LogWarning("AudioManager: Sound not found in list: " + soundName);
     }
 
-    public void PlayRandomSound(Sound[] soundArray, Vector3 soundPosition)
+    static IEnumerator DelayDeactivateSound(AudioSource audioSource)
+    {
+        if (audioSource.clip == null)
+        {
+            yield return new WaitForSeconds(1f);
+            audioSource.gameObject.SetActive(false);
+            yield break;
+        }
+
+        yield return new WaitForSeconds(audioSource.clip.length);
+        audioSource.gameObject.SetActive(false);
+    }
+
+    public static void PlayRandomSound(Sound[] soundArray, Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
     {
         int randomIndex = Random.Range(0, soundArray.Length);
         for (int i = 0; i < soundArray.Length; i++)
         {
             if (soundArray[randomIndex] == soundArray[i])
             {
-                PlaySound(soundArray, soundArray[i].soundName, soundPosition);
+                PlaySound(soundArray, soundArray[i].soundName, soundPosition, unitMakingSound, shouldTriggerNPCInspectSound);
                 return;
             }
         }
     }
 
-    public void StopSound(Sound[] soundArray, string _soundName)
+    public static void StopSound(Sound[] soundArray, string _soundName)
     {
         for (int i = 0; i < soundArray.Length; i++)
         {
@@ -268,7 +284,7 @@ public class AudioManager : MonoBehaviour
         {
             if (windSounds[randomIndex] == windSounds[i])
             {
-                PlaySound(windSounds, windSounds[i].soundName, player.transform.position);
+                PlaySound(windSounds, windSounds[i].soundName, player.transform.position, null, false);
 
                 // Play another ambience sound after this clip finishes
                 Invoke("PlayAmbienceSound", windSounds[i].clip.length);
@@ -323,7 +339,7 @@ public class AudioManager : MonoBehaviour
 
         if (soundFound == false)
         {
-            PlayRandomSound(defaultPickUpSounds, player.transform.position);
+            PlayRandomSound(defaultPickUpSounds, player.transform.position, null, false);
             soundFound = true;
         }
     }
@@ -331,19 +347,19 @@ public class AudioManager : MonoBehaviour
     public void PlayPickUpGoldSound(int goldAmount)
     {
         if (goldAmount <= 10)
-            PlaySound(goldSounds, goldSounds[0].soundName, player.transform.position);
+            PlaySound(goldSounds, goldSounds[0].soundName, player.transform.position, null, false);
         else if (goldAmount > 10 && goldAmount <= 50)
         {
             int randomNum = Random.Range(1, 3);
             if (randomNum == 1)
-                PlaySound(goldSounds, goldSounds[1].soundName, player.transform.position);
+                PlaySound(goldSounds, goldSounds[1].soundName, player.transform.position, null, false);
             else
-                PlaySound(goldSounds, goldSounds[2].soundName, player.transform.position);
+                PlaySound(goldSounds, goldSounds[2].soundName, player.transform.position, null, false);
         }
         else if (goldAmount > 50 && goldAmount <= 100)
-            PlaySound(goldSounds, goldSounds[3].soundName, player.transform.position);
+            PlaySound(goldSounds, goldSounds[3].soundName, player.transform.position, null, false);
         else
-            PlaySound(goldSounds, goldSounds[4].soundName, player.transform.position);
+            PlaySound(goldSounds, goldSounds[4].soundName, player.transform.position, null, false);
     }
 
     public void PlayDamageSound()
