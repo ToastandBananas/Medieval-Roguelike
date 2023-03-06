@@ -5,8 +5,10 @@ using UnityEngine;
 public class IntStat
 {
     [SerializeField] int baseValue = 5;
+    [SerializeField] int minValue = 1;
 
     [SerializeField] List<int> modifiers = new List<int>();
+    [SerializeField] List<float> percentModifiers = new List<float>();
 
     public int GetValue()
     {
@@ -15,6 +17,17 @@ public class IntStat
         {
             finalValue += modifiers[i];
         }
+
+        float percentModifierTotal = 0f;
+        for (int i = 0; i < percentModifiers.Count; i++)
+        {
+            percentModifierTotal += percentModifiers[i];
+        }
+
+        finalValue += Mathf.FloorToInt(baseValue * percentModifierTotal);
+        if (finalValue < minValue)
+            finalValue = minValue;
+
         return finalValue;
     }
 
@@ -43,6 +56,18 @@ public class IntStat
     {
         if (modifier != 0)
             modifiers.Remove(modifier);
+    }
+
+    public void AddPercentModifier(float percentModifier)
+    {
+        if (percentModifier != 0f)
+            percentModifiers.Add(percentModifier);
+    }
+
+    public void RemovePercentModifier(float percentModifier)
+    {
+        if (percentModifier != 0f)
+            percentModifiers.Remove(percentModifier);
     }
 
     public void ClearModifiers()

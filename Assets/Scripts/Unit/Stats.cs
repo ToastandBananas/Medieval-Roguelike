@@ -41,7 +41,7 @@ public class Stats : MonoBehaviour
         UnitActionSystemUI.Instance.UpdateActionPoints();
     }
 
-    public int MaxAP() => Mathf.RoundToInt(baseAP + (Speed() * 5f));
+    public int MaxAP() => Mathf.RoundToInt(baseAP + (Speed().GetValue() * 5f));
 
     public void UseAP(int amount)
     {
@@ -153,33 +153,33 @@ public class Stats : MonoBehaviour
 
     public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP();
 
-    public int Speed() => speed.GetValue();
+    public IntStat Speed() => speed;
 
-    public int Strength() => strength.GetValue();
+    public IntStat Strength() => strength;
 
-    public int AxeSkill() => axeSkill.GetValue();
+    public IntStat AxeSkill() => axeSkill;
 
-    public int BowSkill() => bowSkill.GetValue();
+    public IntStat BowSkill() => bowSkill;
 
-    public int CrossbowSkill() => crossbowSkill.GetValue();
+    public IntStat CrossbowSkill() => crossbowSkill;
 
-    public int DaggerSkill() => daggerSkill.GetValue();
+    public IntStat DaggerSkill() => daggerSkill;
 
-    public int MaceSkill() => maceSkill.GetValue();
+    public IntStat MaceSkill() => maceSkill;
 
-    public int PolearmSkill() => polearmSkill.GetValue();
+    public IntStat PolearmSkill() => polearmSkill;
 
-    public int ShieldSkill() => shieldSkill.GetValue();
+    public IntStat ShieldSkill() => shieldSkill;
 
-    public int SpearSkill() => spearSkill.GetValue();
+    public IntStat SpearSkill() => spearSkill;
 
-    public int SwordSkill() => swordSkill.GetValue();
+    public IntStat SwordSkill() => swordSkill;
 
-    public int ThrowingSkill() => throwingSkill.GetValue();
+    public IntStat ThrowingSkill() => throwingSkill;
 
-    public int WarHammerSkill() => warHammerSkill.GetValue();
+    public IntStat WarHammerSkill() => warHammerSkill;
 
-    public int NaturalBlockPower() => Mathf.RoundToInt(Strength() * 2.5f); 
+    public int NaturalBlockPower() => Mathf.RoundToInt(strength.GetValue() * 2.5f); 
 
     public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
     {
@@ -209,7 +209,7 @@ public class Stats : MonoBehaviour
         return blockChance;
     }
 
-    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill() * 2) + heldShield.itemData.blockPower;
+    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.itemData.blockPower;
 
     public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
     {
@@ -235,25 +235,25 @@ public class Stats : MonoBehaviour
         switch (weaponType)
         {
             case WeaponType.Bow:
-                return BowSkill();
+                return bowSkill.GetValue();
             case WeaponType.Crossbow:
-                return CrossbowSkill();
+                return crossbowSkill.GetValue();
             case WeaponType.Throwing:
-                return ThrowingSkill();
+                return throwingSkill.GetValue();
             case WeaponType.Dagger:
-                return DaggerSkill();
+                return daggerSkill.GetValue();
             case WeaponType.Sword:
-                return SwordSkill();
+                return swordSkill.GetValue();
             case WeaponType.Axe:
-                return AxeSkill();
+                return axeSkill.GetValue();
             case WeaponType.Mace:
-                return MaceSkill();
+                return maceSkill.GetValue();
             case WeaponType.WarHammer:
-                return WarHammerSkill();
+                return warHammerSkill.GetValue();
             case WeaponType.Spear:
-                return SpearSkill();
+                return spearSkill.GetValue();
             case WeaponType.Polearm:
-                return PolearmSkill();
+                return polearmSkill.GetValue();
             default:
                 Debug.LogError(weaponType.ToString() + " has not been implemented in this method. Fix me!");
                 return 0;
