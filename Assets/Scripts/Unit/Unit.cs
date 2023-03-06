@@ -11,6 +11,8 @@ public class Unit : MonoBehaviour
     MeshRenderer leftHeldItemMeshRenderer, rightHeldItemMeshRenderer;
     MeshRenderer[] bowMeshRenderers;
     LineRenderer bowLineRenderer;
+
+    public bool meshesHidden { get; private set; }
     
     public HeldItem leftHeldItem { get; private set; }
     public HeldItem rightHeldItem { get; private set; }
@@ -100,6 +102,11 @@ public class Unit : MonoBehaviour
 
     public void ShowMeshRenderers()
     {
+        if (meshesHidden == false)
+            return;
+
+        meshesHidden = false;
+
         if (meshRenderers != null)
         {
             for (int i = 0; i < meshRenderers.Length; i++)
@@ -128,6 +135,11 @@ public class Unit : MonoBehaviour
 
     public void HideMeshRenderers()
     {
+        if (meshesHidden)
+            return;
+
+        meshesHidden = true;
+
         if (meshRenderers != null)
         {
             for (int i = 0; i < meshRenderers.Length; i++)

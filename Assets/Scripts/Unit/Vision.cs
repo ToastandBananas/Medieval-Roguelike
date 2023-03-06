@@ -60,19 +60,55 @@ public class Vision : MonoBehaviour
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
             Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(targetTransform.position));
-            if (targetUnit != null && visibleUnits.Contains(targetUnit) == false)
+            if (targetUnit != null && targetUnit != unit)
             {
-                Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
-
-                // If target Unit is in the view angle
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                // If the Unit in the view radius is not already "visible"
+                if (visibleUnits.Contains(targetUnit) == false)
                 {
-                    float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
+                    Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
 
-                    // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
-                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
-                        AddVisibleUnit(targetUnit);
+                    // If target Unit is in the view angle
+                    if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                    {
+                        float distToTarget = Vector3.Distance(unit.transform.position, targetUnit.transform.position);
+
+                        // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
+                        if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                            AddVisibleUnit(targetUnit);
+                        else if (unit.IsPlayer() && distToTarget > 1.45f * LevelGrid.Instance.GridSize()) // Else, hide the NPC's mesh renderers
+                            targetUnit.HideMeshRenderers();
+                    }
                 }
+            }
+        }
+
+        if (unit.IsPlayer())
+        {
+            // Check if a "visible NPC Unit" is outside of the Player's view radius. If so, hide their mesh renderers
+            for (int i = 0; i < visibleUnits.Count; i++)
+            {
+                bool shouldHide = true;
+                for (int j = 0; j < unitsInViewRadius.Length; j++)
+                {
+                    if (visibleUnits[i].transform == unitsInViewRadius[j].transform && unitsInViewRadius[j].transform != unit.transform) // Skip if they're in the view radius
+                    {
+                        Transform targetTransform = unitsInViewRadius[j].transform;
+                        Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
+                        float distToTarget = Vector3.Distance(unit.transform.position, visibleUnits[i].transform.position);
+
+                        // If target Unit is in the view angle and no obstacles are in the way
+                        if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2 && Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                            shouldHide = false;
+                    }
+                }
+                
+                if (shouldHide && visibleUnits[i] != unit)
+                {
+                    if (Vector3.Distance(unit.transform.position, visibleUnits[i].transform.position) > 1.45f * LevelGrid.Instance.GridSize())
+                        visibleUnits[i].HideMeshRenderers();
+                }
+                else
+                    visibleUnits[i].ShowMeshRenderers();
             }
         }
 
@@ -102,23 +138,31 @@ public class Vision : MonoBehaviour
                 UpdateDeadUnit(visibleUnits[i]);
 
             Transform targetTransform = visibleUnits[i].transform;
-            Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
+            Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
 
             // If target Unit is in the view angle
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
-                float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
+                float distToTarget = Vector3.Distance(unit.transform.position, targetTransform.position);
 
-                // If an obstacle is in the way, remove the target Unit from the visibleUnits dictionary
+                // If an obstacle is in the way, lower the lose sight time
                 if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     if (loseSightTimes[i] > 1)
                         loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
                     else
                         unitsToRemove.Add(visibleUnits[i]); // The Unit is no longer visible
+
+                    if (unit.IsPlayer()) // Hide the NPC's mesh renderers
+                        visibleUnits[i].HideMeshRenderers();
                 }
                 else // We can still see the Unit, so reset their lose sight time
+                {
                     loseSightTimes[i] = loseSightTime;
+
+                    if (unit.IsPlayer()) // Show the NPC's mesh renderers
+                        visibleUnits[i].ShowMeshRenderers();
+                }
             }
             else // The target is outside of the view angle
             {
@@ -126,6 +170,9 @@ public class Vision : MonoBehaviour
                     loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
                 else
                     unitsToRemove.Add(visibleUnits[i]); // The Unit is no longer visible
+
+                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > 1.45f * LevelGrid.Instance.GridSize()) // Hide the NPC's mesh renderers
+                    visibleUnits[i].HideMeshRenderers();
             }
         }
 
