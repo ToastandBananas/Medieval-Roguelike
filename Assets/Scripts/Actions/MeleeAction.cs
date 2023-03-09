@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+enum MeleeSkill { Default, Swipe, Charge }
+
 public class MeleeAction : BaseAction
 {
     [Header("Unarmed Combat")]
@@ -16,11 +18,13 @@ public class MeleeAction : BaseAction
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-    readonly float dualWieldPrimaryEfficiency = 0.8f;
-    readonly float dualWieldSecondaryEfficiency = 0.6f;
+    MeleeSkill currentMeleeSkill = MeleeSkill.Default;
 
     public bool isAttacking { get; private set; }
     bool nextAttackFree;
+
+    readonly float dualWieldPrimaryEfficiency = 0.8f;
+    readonly float dualWieldSecondaryEfficiency = 0.6f;
 
     void Start()
     {
@@ -65,6 +69,22 @@ public class MeleeAction : BaseAction
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         BecomeVisibleEnemyOfTarget(targetUnit);
 
+        switch (currentMeleeSkill)
+        {
+            case MeleeSkill.Default:
+                DefaultAttack(targetUnit);
+                break;
+            case MeleeSkill.Swipe:
+                break;
+            case MeleeSkill.Charge:
+                break;
+            default:
+                break;
+        }
+    }
+
+    void DefaultAttack(Unit targetUnit)
+    {
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
             if (unit.IsUnarmed())

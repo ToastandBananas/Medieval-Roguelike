@@ -234,7 +234,7 @@ MonoBehaviour:
   traversableTags: 2147483647
   tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d00700004c040000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
-    value: -1
+    value: 1
 --- !u!114 &126505681558484576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,43 +264,69 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   strength:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   axeSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   bowSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   crossbowSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   daggerSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   maceSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   polearmSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   shieldSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   spearSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   swordSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   throwingSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
   warHammerSkill:
     baseValue: 5
+    minValue: 1
     modifiers: 
+    percentModifiers: []
 --- !u!114 &2337304120404066741
 MonoBehaviour:
   m_ObjectHideFlags: 0

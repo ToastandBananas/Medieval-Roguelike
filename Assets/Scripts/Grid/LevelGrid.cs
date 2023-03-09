@@ -15,8 +15,6 @@ public class LevelGrid : MonoBehaviour
     List<SingleNodeBlocker> unitSingleNodeBlockers = new List<SingleNodeBlocker>();
     BlockManager.TraversalProvider defaultTraversalProvider;
 
-    [SerializeField] float gridSize = 1f;
-
     Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Unit> deadUnits = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
@@ -28,7 +26,8 @@ public class LevelGrid : MonoBehaviour
     Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
     Collider[] collisionsCheckArray;
 
-    public static float diagonalDist;
+    public static readonly float diaganolDistance = 1.4142f;
+    public static readonly int gridSize = 1;
 
     void Awake()
     {
@@ -39,8 +38,6 @@ public class LevelGrid : MonoBehaviour
             return;
         }
         Instance = this;
-
-        diagonalDist = 1.4f * gridSize;
     }
 
     void Start()
@@ -368,6 +365,4 @@ public class LevelGrid : MonoBehaviour
     public void AddSingleNodeBlockerToList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Add(singleNodeBlocker);
 
     public void RemoveSingleNodeBlockerFromList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Remove(singleNodeBlocker);
-
-    public float GridSize() => gridSize;
 }

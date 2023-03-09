@@ -282,7 +282,7 @@ public class MoveAction : BaseAction
         {
             unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
             unitAtTargetGridPosition.UnblockCurrentPosition();
-            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition, LevelGrid.diagonalDist);
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition, LevelGrid.diaganolDistance);
         }
 
         SetFinalTargetGridPosition(targetGridPosition);

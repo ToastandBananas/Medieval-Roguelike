@@ -53,8 +53,8 @@ public class ActionLineRenderer : MonoBehaviour
 
             if (PlayerInput.Instance.highlightedInteractable != null)
             {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize());
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.gridPosition) > LevelGrid.gridSize)
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.gridSize);
                 else
                 {
                     HideLineRenderers();

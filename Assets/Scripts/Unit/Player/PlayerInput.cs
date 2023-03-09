@@ -77,7 +77,7 @@ public class PlayerInput : MonoBehaviour
                     turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
                     WorldMouse.ChangeCursor(CursorState.Default);
 
-                    if (GameControls.gamePlayActions.select.WasPressed && turnAction.targetDirection != turnAction.currentDirection)
+                    if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.gridPosition && turnAction.targetDirection != turnAction.currentDirection)
                         player.unitActionHandler.QueueAction(turnAction);
                 }
                 else if (GameControls.gamePlayActions.select.WasPressed)
@@ -95,9 +95,9 @@ public class PlayerInput : MonoBehaviour
                         if (highlightedInteractable != null)
                         {
                             player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.Instance.GridSize())
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.gridSize)
                             {
-                                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.Instance.GridSize()));
+                                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.gridSize));
                                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
                             }
                             else

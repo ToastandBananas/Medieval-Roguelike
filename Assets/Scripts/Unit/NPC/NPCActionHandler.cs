@@ -434,7 +434,7 @@ public class NPCActionHandler : UnitActionHandler
             // Get a new Inspect Sound Position if there's now another Unit or obstruction there
             if (LevelGrid.Instance.GridPositionObstructed(inspectSoundGridPosition))
             {
-                inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.gridPosition, 1.4f);
+                inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.gridPosition, LevelGrid.diaganolDistance);
                 SetTargetGridPosition(inspectSoundGridPosition);
             }
 

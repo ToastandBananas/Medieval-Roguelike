@@ -28,6 +28,8 @@ public class Vision : MonoBehaviour
     readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
     Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
+    readonly float playerPerceptionDistance = 1.45f;
+
     void Awake()
     {
         visibleUnits = new List<Unit>();
@@ -65,17 +67,17 @@ public class Vision : MonoBehaviour
                 // If the Unit in the view radius is not already "visible"
                 if (visibleUnits.Contains(targetUnit) == false)
                 {
-                    Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
+                    Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
 
                     // If target Unit is in the view angle
                     if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
                     {
-                        float distToTarget = Vector3.Distance(unit.transform.position, targetUnit.transform.position);
+                        float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
                         // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
                         if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
                             AddVisibleUnit(targetUnit);
-                        else if (unit.IsPlayer() && distToTarget > 1.45f * LevelGrid.Instance.GridSize()) // Else, hide the NPC's mesh renderers
+                        else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
                             targetUnit.HideMeshRenderers();
                     }
                 }
@@ -93,8 +95,8 @@ public class Vision : MonoBehaviour
                     if (visibleUnits[i].transform == unitsInViewRadius[j].transform && unitsInViewRadius[j].transform != unit.transform) // Skip if they're in the view radius
                     {
                         Transform targetTransform = unitsInViewRadius[j].transform;
-                        Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
-                        float distToTarget = Vector3.Distance(unit.transform.position, visibleUnits[i].transform.position);
+                        Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+                        float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
                         // If target Unit is in the view angle and no obstacles are in the way
                         if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2 && Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
@@ -104,7 +106,7 @@ public class Vision : MonoBehaviour
                 
                 if (shouldHide && visibleUnits[i] != unit)
                 {
-                    if (Vector3.Distance(unit.transform.position, visibleUnits[i].transform.position) > 1.45f * LevelGrid.Instance.GridSize())
+                    if (Vector3.Distance(unit.transform.position, visibleUnits[i].transform.position) > playerPerceptionDistance)
                         visibleUnits[i].HideMeshRenderers();
                 }
                 else
@@ -138,12 +140,12 @@ public class Vision : MonoBehaviour
                 UpdateDeadUnit(visibleUnits[i]);
 
             Transform targetTransform = visibleUnits[i].transform;
-            Vector3 dirToTarget = ((targetTransform.position + yOffset) - (unit.transform.position + yOffset)).normalized;
+            Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
 
             // If target Unit is in the view angle
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
-                float distToTarget = Vector3.Distance(unit.transform.position, targetTransform.position);
+                float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
                 // If an obstacle is in the way, lower the lose sight time
                 if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
@@ -171,7 +173,7 @@ public class Vision : MonoBehaviour
                 else
                     unitsToRemove.Add(visibleUnits[i]); // The Unit is no longer visible
 
-                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > 1.45f * LevelGrid.Instance.GridSize()) // Hide the NPC's mesh renderers
+                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
                     visibleUnits[i].HideMeshRenderers();
             }
         }
