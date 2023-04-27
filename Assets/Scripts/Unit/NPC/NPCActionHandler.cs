@@ -89,7 +89,7 @@ public class NPCActionHandler : UnitActionHandler
                         // Shoot the target enemy
                         ClearActionQueue(true);
                         if (unit.GetRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>());
+                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                         else
                             QueueAction(GetAction<ReloadAction>());
                         return;
@@ -101,7 +101,7 @@ public class NPCActionHandler : UnitActionHandler
                     {
                         // Melee attack the target enemy
                         ClearActionQueue(false);
-                        QueueAction(GetAction<MeleeAction>());
+                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
                         return;
                     }
                 }
@@ -115,7 +115,11 @@ public class NPCActionHandler : UnitActionHandler
         }
     }
 
-    public override void SkipTurn() => TurnManager.Instance.FinishTurn(unit);
+    public override void SkipTurn()
+    {
+        // unit.stats.UseAP(unit.stats.currentAP);
+        TurnManager.Instance.FinishTurn(unit);
+    }
 
     public override void FinishAction()
     {

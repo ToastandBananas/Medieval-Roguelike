@@ -17,9 +17,6 @@ public abstract class BaseAction : MonoBehaviour
     protected virtual void StartAction()
     {
         isActive = true;
-
-        //if (unit.IsPlayer())
-            //GridSystemVisual.HideGridVisual();
     }
 
     public virtual void CompleteAction()
@@ -65,9 +62,23 @@ public abstract class BaseAction : MonoBehaviour
         targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
     }
 
-    public virtual List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition) => null;
+    public virtual List<GridPosition> GetValidActionGridPositions(GridPosition startGridPosition)
+    {
+        Debug.LogWarning("The 'GetValidActionGridPositions' method has not been implemented for the " + GetActionName());
+        return null;
+    }
 
-    public virtual List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition) => null;
+    public virtual List<GridPosition> GetPossibleAttackGridPositions(GridPosition targetGridPosition)
+    {
+        Debug.LogWarning("The 'GetPossibleAttackGridPositions' method has not been implemented for the " + GetActionName());
+        return null;
+    }
+
+    public virtual GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
+    {
+        Debug.LogWarning("The 'GetNearestAttackPosition' method has not been implemented for the " + GetActionName());
+        return unit.gridPosition;
+    }
 
     public bool IsActive() => isActive;
 
@@ -75,9 +86,15 @@ public abstract class BaseAction : MonoBehaviour
 
     public virtual EnemyAIAction GetEnemyAIAction(Unit targetUnit) => null;
 
-    public abstract int GetActionPointsCost(GridPosition targetGridPosition);
+    public abstract int GetActionPointsCost();
 
     public abstract bool IsValidAction();
+
+    public abstract bool IsAttackAction();
+
+    public abstract bool IsMeleeAttackAction();
+
+    public abstract bool IsRangedAttackAction();
 
     public abstract bool ActionIsUsedInstantly();
 

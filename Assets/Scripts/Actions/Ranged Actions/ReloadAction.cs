@@ -35,12 +35,18 @@ public class ReloadAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    public override int GetActionPointsCost()
     {
         return 100;
     }
 
     public override bool ActionIsUsedInstantly() => true;
+
+    public override bool IsAttackAction() => false;
+
+    public override bool IsMeleeAttackAction() => false;
+
+    public override bool IsRangedAttackAction() => false;
 
     public override string GetActionName() => "Reload";
 }

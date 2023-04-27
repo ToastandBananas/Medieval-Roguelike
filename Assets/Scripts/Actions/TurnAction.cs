@@ -12,6 +12,8 @@ public class TurnAction : BaseAction
     readonly float defaultRotateSpeed = 10f;
     readonly int singleTurnSegmentAPCost = 25;
 
+    public bool isRotating { get; private set; }
+
     void Start()
     {
         SetCurrentDirection();
@@ -59,6 +61,7 @@ public class TurnAction : BaseAction
 
         if (rotateInstantly == false)
         {
+            isRotating = true;
             while (rotateTargetPosition == targetPosition && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
             {
                 forward = transform.forward;
@@ -70,6 +73,7 @@ public class TurnAction : BaseAction
             }
         }
 
+        isRotating = false;
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
@@ -87,18 +91,16 @@ public class TurnAction : BaseAction
         Vector3 targetPos = targetUnit.WorldPosition();
         Vector3 forward = transform.forward;
         forward.y = 0;
-        // float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
         Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
 
         if (rotateInstantly == false)
         {
-            while (targetUnit.unitActionHandler.IsAttacking())// && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
+            while (targetUnit.unitActionHandler.IsAttacking())
             {
                 forward = transform.forward;
                 forward.y = 0;
-                // headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * 2f * Time.deltaTime);
                 yield return null;
@@ -512,7 +514,13 @@ public class TurnAction : BaseAction
 
     public override bool IsValidAction() => true;
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition) => singleTurnSegmentAPCost * GetRotationsSegmentCount();
+    public override bool IsAttackAction() => false;
+
+    public override bool IsMeleeAttackAction() => false;
+
+    public override bool IsRangedAttackAction() => false;
+
+    public override int GetActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
     public override bool ActionIsUsedInstantly() => false;
 }

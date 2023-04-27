@@ -20,9 +20,9 @@ public class InteractAction : BaseAction
         }
     }
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    public override int GetActionPointsCost()
     {
-        Interactable interactable = LevelGrid.Instance.GetInteractableAtGridPosition(targetGridPosition);
+        Interactable interactable = LevelGrid.Instance.GetInteractableAtGridPosition(unit.unitActionHandler.targetGridPosition);
         if (interactable is Door)
             return 150;
         return 100;
@@ -37,6 +37,12 @@ public class InteractAction : BaseAction
     }
 
     public override bool IsValidAction() => false; // Setting this to false prevents it from showing up as an action in the action bar
+
+    public override bool IsAttackAction() => false;
+
+    public override bool IsMeleeAttackAction() => false;
+
+    public override bool IsRangedAttackAction() => false;
 
     public override bool ActionIsUsedInstantly() => true;
 

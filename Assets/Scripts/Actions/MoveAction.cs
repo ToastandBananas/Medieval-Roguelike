@@ -2,7 +2,6 @@ using Pathfinding;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class MoveAction : BaseAction
@@ -239,9 +238,9 @@ public class MoveAction : BaseAction
             {
                 unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
                 if (unit.RangedWeaponEquipped())
-                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
                 else
-                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
 
                 unitActionHandler.QueueAction(this);
             }
@@ -265,9 +264,9 @@ public class MoveAction : BaseAction
                 {
                     unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
                     if (unit.RangedWeaponEquipped())
-                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
                     else
-                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
 
                     unitActionHandler.QueueAction(this);
                 }
@@ -333,7 +332,7 @@ public class MoveAction : BaseAction
         return true;
     }
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    public override int GetActionPointsCost()
     {
         // TODO: Cost 600 (6 seconds) per square (or more depending on terrain type)
         int cost = defaultTileMoveCost;
@@ -541,6 +540,12 @@ public class MoveAction : BaseAction
     public override string GetActionName() => "Move";
 
     public override bool ActionIsUsedInstantly() => false;
+
+    public override bool IsAttackAction() => false;
+
+    public override bool IsMeleeAttackAction() => false;
+
+    public override bool IsRangedAttackAction() => false;
 
     public LayerMask MoveObstaclesMask() => moveObstaclesMask;
 

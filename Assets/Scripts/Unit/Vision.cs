@@ -28,7 +28,7 @@ public class Vision : MonoBehaviour
     readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
     Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
-    readonly float playerPerceptionDistance = 1.45f;
+    readonly float playerPerceptionDistance = 5f;
 
     void Awake()
     {
@@ -61,25 +61,24 @@ public class Vision : MonoBehaviour
         for (int i = 0; i < unitsInViewRadius.Length; i++)
         {
             Transform targetTransform = unitsInViewRadius[i].transform;
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(targetTransform.position));
+            targetTransform.TryGetComponent(out Unit targetUnit);
             if (targetUnit != null && targetUnit != unit)
             {
                 // If the Unit in the view radius is not already "visible"
-                if (visibleUnits.Contains(targetUnit) == false)
+                if (visibleUnits.Contains(targetUnit)) continue;
+
+                Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+
+                // If target Unit is in the view angle
+                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
                 {
-                    Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+                    float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
-                    // If target Unit is in the view angle
-                    if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
-                    {
-                        float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
-
-                        // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
-                        if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
-                            AddVisibleUnit(targetUnit);
-                        else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
-                            targetUnit.HideMeshRenderers();
-                    }
+                    // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
+                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                        AddVisibleUnit(targetUnit);
+                    else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
+                        targetUnit.HideMeshRenderers();
                 }
             }
         }

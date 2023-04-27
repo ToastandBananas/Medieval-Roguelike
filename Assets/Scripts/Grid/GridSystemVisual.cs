@@ -116,10 +116,12 @@ public class GridSystemVisual : MonoBehaviour
             if (distance > maxRangeToNodePosition || distance < minRange)
                 continue;
 
+            // Check for obstacles
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir = (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
-                continue; // Blocked by an obstacle
+            Vector3 offset = Vector3.up * player.ShoulderHeight() * 2f;
+            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (gridPosition.WorldPosition() + offset)).normalized;
+            if (Physics.SphereCast(gridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), player.unitActionHandler.AttackObstacleMask()))
+                continue;
 
             // Debug.Log(gridPosition);
             gridPositionsList.Add(nodeGridPosition);
@@ -151,9 +153,10 @@ public class GridSystemVisual : MonoBehaviour
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir =  (gridPosition.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f) - ((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast((Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + (Vector3.up * player.ShoulderHeight() * 2f), (Vector3)nodes[i].position + (Vector3.up * player.ShoulderHeight() * 2f)), player.unitActionHandler.AttackObstacleMask()))
-                continue; // Blocked by an obstacle
+            Vector3 offset = Vector3.up * player.ShoulderHeight() * 2f;
+            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (gridPosition.WorldPosition() + offset)).normalized;
+            if (Physics.SphereCast(gridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), player.unitActionHandler.AttackObstacleMask()))
+                continue;
 
             // Debug.Log(gridPosition);
             gridPositionsList.Add(nodeGridPosition);
@@ -171,40 +174,59 @@ public class GridSystemVisual : MonoBehaviour
             return;
 
         BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
-        GridVisualType gridVisualType;
-        GridVisualType secondaryGridVisualType;
+        Weapon meleeWeapon = null;
         switch (selectedAction)
         {
             case MeleeAction meleeAction:
-                gridVisualType = GridVisualType.Red;
-                secondaryGridVisualType = GridVisualType.Yellow;
                 if (Instance.player.MeleeWeaponEquipped())
                 {
-                    Weapon meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                    meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
                     Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
                 }
                 else
                     Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, 1f, Instance.player.unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(Instance.player.gridPosition, false), GridVisualType.RedSoft);
                 break;
+            case SwipeAction swipeAction:
+                meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+                Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
+                break;
             case ShootAction shootAction:
-                gridVisualType = GridVisualType.Red;
-                secondaryGridVisualType = GridVisualType.Yellow;
                 Weapon rangedWeapon = Instance.player.GetRangedWeapon().itemData.item.Weapon();
                 Instance.ShowGridPositionShootRange(Instance.player.gridPosition, rangedWeapon.minRange, rangedWeapon.maxRange, GridVisualType.RedSoft);
                 break;
-            //case ThrowAction throwBombAction:
-                //gridVisualType = GridVisualType.Red;
-                //ShowGridPositionRange(player.gridPosition, throwBombAction.MinThrowDistance(), throwBombAction.MaxThrowDistance(), GridVisualType.RedSoft);
-                //break;
-            //case InteractAction interactAction:
-                //gridVisualType = GridVisualType.Yellow;
+            //case ThrowAction throwAction:
+                //Instance.ShowGridPositionRange(player.gridPosition, throwAction.MinThrowDistance(), throwAction.MaxThrowDistance(), GridVisualType.RedSoft);
                 //break;
             default:
                 return;
         }
+    }
 
-        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList(Instance.player.gridPosition), gridVisualType);
-        Instance.ShowGridPositionList(selectedAction.GetValidActionGridPositionList_Secondary(Instance.player.gridPosition), secondaryGridVisualType);
+    public static void UpdateAttackGridVisual()
+    {
+        UpdateGridVisual();
+
+        if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null || Instance.player.unitActionHandler.targetEnemyUnit != null)
+            return;
+
+        BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
+        switch (selectedAction)
+        {
+            case MeleeAction meleeAction:
+                Instance.ShowGridPositionList(meleeAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                break;
+            case SwipeAction swipeAction:
+                Instance.ShowGridPositionList(swipeAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                break;
+            case ShootAction shootAction:
+                Instance.ShowGridPositionList(shootAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                break;
+            //case ThrowAction throwAction:
+                //Instance.ShowGridPositionList(throwAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                //break;
+            default:
+                break;
+        }
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

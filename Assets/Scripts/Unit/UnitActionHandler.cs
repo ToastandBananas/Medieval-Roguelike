@@ -17,6 +17,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
+    public GridPosition targetAttackGridPosition { get; protected set; }
     public Interactable targetInteractable { get; protected set; }
     public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
@@ -79,15 +80,12 @@ public class UnitActionHandler : MonoBehaviour
                         // Shoot the target enemy
                         ClearActionQueue(true);
                         if (unit.GetRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>());
+                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                         else
                             QueueAction(GetAction<ReloadAction>());
                     }
                     else // If they're out of the shoot range, move towards the enemy
-                    {
-                        SetTargetGridPosition(GetAction<ShootAction>().GetNearestShootPosition(unit.gridPosition, targetEnemyUnit));
-                        QueueAction(GetAction<MoveAction>());
-                    }
+                        QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                 }
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 {
@@ -95,13 +93,10 @@ public class UnitActionHandler : MonoBehaviour
                     {
                         // Melee attack the target enemy
                         ClearActionQueue(false);
-                        QueueAction(GetAction<MeleeAction>());
+                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
                     }
                     else // If they're out of melee range, move towards the enemy
-                    {
-                        SetTargetGridPosition(GetAction<MeleeAction>().GetNearestMeleePosition(unit.gridPosition, targetEnemyUnit));
-                        QueueAction(GetAction<MoveAction>());
-                    }
+                        QueueAction(GetAction<MoveAction>(), GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                 }
             }
             //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
@@ -118,6 +113,12 @@ public class UnitActionHandler : MonoBehaviour
     }
 
     #region Action Queue
+    public void QueueAction(BaseAction action, GridPosition targetGridPosition)
+    {
+        SetTargetGridPosition(targetGridPosition);
+        QueueAction(action);
+    }
+
     public void QueueAction(BaseAction action)
     {
         GridSystemVisual.HideGridVisual();
@@ -125,7 +126,7 @@ public class UnitActionHandler : MonoBehaviour
         // if (isNPC) Debug.Log(name + " queued " + action);
         queuedAction = action;
         lastQueuedAction = action;
-        queuedAP = action.GetActionPointsCost(targetGridPosition);
+        queuedAP = action.GetActionPointsCost();
 
         // If the action changed while getting the action point cost (such as when running into a door)
         if (action != queuedAction)
@@ -262,17 +263,17 @@ public class UnitActionHandler : MonoBehaviour
     #region Combat
     public void AttackTargetEnemy()
     {
-        if (GetAction<TurnAction>().IsFacingTarget(targetEnemyUnit.gridPosition))
+        if (GetAction<TurnAction>().IsFacingTarget(targetAttackGridPosition))
         {
             if (unit.RangedWeaponEquipped())
             {
                 if (unit.GetRangedWeapon().isLoaded)
-                    QueueAction(GetAction<ShootAction>());
+                    QueueAction(GetAction<ShootAction>(), targetAttackGridPosition);
                 else
                     QueueAction(GetAction<ReloadAction>());
             }
             else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
-                QueueAction(GetAction<MeleeAction>());
+                QueueAction(GetAction<MeleeAction>(), targetAttackGridPosition);
         }
         else
             QueueAction(GetAction<TurnAction>());
@@ -302,12 +303,17 @@ public class UnitActionHandler : MonoBehaviour
     {
         targetEnemyUnit = target;
         if (target != null)
+        {
+            targetAttackGridPosition = target.gridPosition;
             previousTargetEnemyGridPosition = target.gridPosition;
+        }
     }
 
     public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
 
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
+
+    public void SetTargetAttackGridPosition(GridPosition targetAttackGridPosition) => this.targetAttackGridPosition = targetAttackGridPosition;
 
     public void SetSelectedAction(BaseAction action)
     {

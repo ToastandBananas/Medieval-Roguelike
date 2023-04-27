@@ -40,7 +40,7 @@ public class ShootAction : BaseAction
         else if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
         {
             if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition))
-                Shoot();
+                StartCoroutine(Shoot());
             else
             {
                 nextAttackFree = true;
@@ -56,22 +56,25 @@ public class ShootAction : BaseAction
         }
     }
 
-    void Shoot()
+    IEnumerator Shoot()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         BecomeVisibleEnemyOfTarget(targetUnit);
 
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            while (unit.unitActionHandler.GetAction<TurnAction>().isRotating)
+                yield return null;
+
             StartCoroutine(RotateTowardsTarget());
-            unit.leftHeldItem.DoDefaultAttack(AttackBlocked(targetUnit), null);
+            unit.leftHeldItem.DoDefaultAttack(targetUnit.TryBlockRangedAttack(unit), null);
 
             StartCoroutine(WaitToFinishAction());
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
             bool missedTarget = MissedTarget();
-            bool attackBlocked = AttackBlocked(targetUnit);
+            bool attackBlocked = targetUnit.TryBlockRangedAttack(unit);
             if (missedTarget == false)
                 DamageTarget(targetUnit, unit.GetRangedWeapon(), attackBlocked);
 
@@ -117,26 +120,6 @@ public class ShootAction : BaseAction
         float rangedAccuracy = unit.stats.RangedAccuracy(unit.GetRangedWeapon().itemData);
         if (random > rangedAccuracy)
             return true;
-        return false;
-    }
-
-    bool AttackBlocked(Unit targetUnit)
-    {
-        if (targetUnit.ShieldEquipped())
-        {
-            if (targetUnit.unitActionHandler.GetAction<TurnAction>().AttackerInFrontOfUnit(unit))
-            {
-                float random = Random.Range(1f, 100f);
-                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), false))
-                    return true;
-            }
-            else if (targetUnit.unitActionHandler.GetAction<TurnAction>().AttackerBesideUnit(unit))
-            {
-                float random = Random.Range(1f, 100f);
-                if (random <= targetUnit.stats.ShieldBlockChance(targetUnit.GetShield(), true))
-                    return true;
-            }
-        }
         return false;
     }
 
@@ -197,7 +180,7 @@ public class ShootAction : BaseAction
         unit.unitActionHandler.FinishAction();
     }
 
-    public override int GetActionPointsCost(GridPosition targetGridPosition)
+    public override int GetActionPointsCost()
     {
         if (nextAttackFree || RangedWeaponIsLoaded() == false)
         {
@@ -207,7 +190,7 @@ public class ShootAction : BaseAction
         return 300;
     }
 
-    public override List<GridPosition> GetValidActionGridPositionList(GridPosition startGridPosition)
+    public override List<GridPosition> GetValidActionGridPositions(GridPosition startGridPosition)
     {
         float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
         float boundsDimension = ((startGridPosition.y + maxAttackRange) * 2) + 0.1f;
@@ -252,48 +235,35 @@ public class ShootAction : BaseAction
         return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetValidActionGridPositionList_Secondary(GridPosition startGridPosition)
+    public override List<GridPosition> GetPossibleAttackGridPositions(GridPosition targetGridPosition)
     {
-        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
-        float boundsDimension = ((startGridPosition.y + maxAttackRange) * 2) + 0.1f;
-
         validGridPositionsList.Clear();
-        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-        for (int i = 0; i < nodes.Count; i++)
+        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
+            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
-            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
-                continue;
-
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
+            // If targeting oneself
+            if (unitAtGridPosition == unit)
+                return validGridPositionsList;
 
             // If the target is dead
-            if (targetUnit.health.IsDead())
-                continue;
+            if (unitAtGridPosition.health.IsDead())
+                return validGridPositionsList;
+
+            // If the target is an ally
+            if (unit.alliance.IsAlly(unitAtGridPosition))
+                return validGridPositionsList;
 
             // If the target is out of sight
-            if (unit.vision.IsVisible(targetUnit) == false)
-                continue;
-
-            // If both Units are on the same team
-            if (unit.alliance.IsNeutral(targetUnit) == false)
-                continue;
+            if (unit.vision.IsVisible(unitAtGridPosition) == false)
+                return validGridPositionsList;
 
             // If target is out of attack range
-            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
-                continue;
+            if (IsInAttackRange(unitAtGridPosition) == false)
+                return validGridPositionsList;
 
-            // Debug.Log(gridPosition);
-            validGridPositionsList.Add(nodeGridPosition);
+            validGridPositionsList.Add(targetGridPosition);
         }
-
-        ListPool<GraphNode>.Release(nodes);
         return validGridPositionsList;
     }
 
@@ -337,7 +307,7 @@ public class ShootAction : BaseAction
         return validGridPositionsList;
     }
 
-    public GridPosition GetNearestShootPosition(GridPosition startGridPosition, Unit targetUnit)
+    public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
     {
         nearestGridPositionsList.Clear();
         List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
@@ -415,6 +385,12 @@ public class ShootAction : BaseAction
     public bool RangedWeaponIsLoaded() => unit.GetRangedWeapon().isLoaded; 
 
     public override bool ActionIsUsedInstantly() => false;
+
+    public override bool IsAttackAction() => true;
+
+    public override bool IsMeleeAttackAction() => false;
+
+    public override bool IsRangedAttackAction() => true;
 
     public override string GetActionName() => "Shoot";
 

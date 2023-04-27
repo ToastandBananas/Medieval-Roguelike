@@ -26,6 +26,9 @@ MonoBehaviour:
   value: {x: 0, y: 0}
   staticValue: 1
   pickupMesh: {fileID: 0}
+  weaponType: 4
+  isTwoHanded: 0
+  canDualWield: 1
   minRange: 1
   maxRange: 1.8
   minDamage: 5
@@ -33,6 +36,3 @@ MonoBehaviour:
   blockChanceAddOn: 2
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
-  weaponType: 4
-  isTwoHanded: 0
-  canDualWield: 1
