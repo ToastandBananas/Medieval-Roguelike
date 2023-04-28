@@ -141,7 +141,7 @@ public class Unit : MonoBehaviour
                 {
                     // Try blocking with right weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), false, false) * MeleeAction.dualWieldPrimaryEfficiency)
+                    if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), false, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
                         itemBlockedWith = GetPrimaryMeleeWeapon();
                         return true;
@@ -149,7 +149,7 @@ public class Unit : MonoBehaviour
 
                     // Try blocking with left weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), false, false) * MeleeAction.dualWieldSecondaryEfficiency)
+                    if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
                         itemBlockedWith = GetLeftMeleeWeapon();
                         return true;
@@ -196,7 +196,7 @@ public class Unit : MonoBehaviour
                 {
                     // Try blocking with right weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), true, false) * MeleeAction.dualWieldPrimaryEfficiency)
+                    if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), true, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
                         itemBlockedWith = GetPrimaryMeleeWeapon();
                         return true;
@@ -204,7 +204,7 @@ public class Unit : MonoBehaviour
 
                     // Try blocking with left weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), true, false) * MeleeAction.dualWieldSecondaryEfficiency)
+                    if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
                         itemBlockedWith = GetLeftMeleeWeapon();
                         return true;

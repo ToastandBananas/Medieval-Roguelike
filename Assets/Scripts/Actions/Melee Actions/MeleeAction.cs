@@ -18,9 +18,6 @@ public class MeleeAction : BaseAction
     public bool isAttacking { get; private set; }
     bool nextAttackFree;
 
-    public static float dualWieldPrimaryEfficiency = 0.8f;
-    public static float dualWieldSecondaryEfficiency = 0.6f;
-
     void Start()
     {
         unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
@@ -138,15 +135,7 @@ public class MeleeAction : BaseAction
             if (heldMeleeWeapon == null) // If unarmed
                 damageAmount = UnarmedDamage();
             else
-                damageAmount = heldMeleeWeapon.itemData.damage;
-
-            if (unit.IsDualWielding())
-            {
-                if (this == unit.GetRightMeleeWeapon())
-                    damageAmount = Mathf.RoundToInt(damageAmount * dualWieldPrimaryEfficiency);
-                else
-                    damageAmount = Mathf.RoundToInt(damageAmount * dualWieldSecondaryEfficiency);
-            }
+                damageAmount = heldMeleeWeapon.DamageAmount();
 
             if (attackBlocked)
             {
@@ -161,11 +150,11 @@ public class MeleeAction : BaseAction
                         if (unit.IsDualWielding())
                         {
                             if (this == unit.GetRightMeleeWeapon())
-                                blockAmount = Mathf.RoundToInt(blockAmount * dualWieldPrimaryEfficiency);
+                                blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
                         }
                     }
                     else // If blocked with dual wield left hand weapon
-                        blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * dualWieldSecondaryEfficiency);
+                        blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                 }
 
                 targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
@@ -189,7 +178,7 @@ public class MeleeAction : BaseAction
             unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
-    public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
+    public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
         if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
             return false;
@@ -216,7 +205,7 @@ public class MeleeAction : BaseAction
         return true;
     }
 
-    public bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
+    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
 
     public int UnarmedDamage()
     {

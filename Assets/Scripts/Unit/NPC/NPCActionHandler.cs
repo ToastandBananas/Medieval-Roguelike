@@ -211,7 +211,7 @@ public class NPCActionHandler : UnitActionHandler
         }
 
         if (IsInAttackRange(targetEnemyUnit))
-            AttackTargetEnemy();
+            AttackTargetGridPosition();
         else
             PursueTargetEnemy();
     }

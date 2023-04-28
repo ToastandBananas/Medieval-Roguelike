@@ -4,6 +4,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public static float dualWieldPrimaryEfficiency = 0.8f;
+    public static float dualWieldSecondaryEfficiency = 0.6f;
+
     void Awake()
     {
         if (Instance != null)

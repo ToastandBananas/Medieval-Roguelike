@@ -23,10 +23,13 @@ public class SwipeAction : BaseAction
     {
         if (isAttacking) return;
 
-        if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+        if (IsValidUnitInActionArea(gridPosition) == false)
         {
             unit.unitActionHandler.SetTargetEnemyUnit(null);
             unit.unitActionHandler.FinishAction();
+
+            Debug.Log("No valid unit in action area");
+            unit.unitActionHandler.SetIsTryingToAttackGridPosition(false);
             return;
         }
 
@@ -53,7 +56,94 @@ public class SwipeAction : BaseAction
 
     void Attack()
     {
+        Debug.Log("Do Swipe Attack");
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        BecomeVisibleEnemyOfTarget(targetUnit);
 
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        {
+            if (unit.rightHeldItem != null) // Right hand weapon attack
+            {
+                unit.unitAnimator.StartMeleeAttack();
+                unit.rightHeldItem.DoDefaultAttack(targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith), itemBlockedWith);
+            }
+            else if (unit.leftHeldItem != null) // Left hand weapon attack
+            {
+                unit.unitAnimator.StartMeleeAttack();
+                unit.leftHeldItem.DoDefaultAttack(targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith), itemBlockedWith);
+            }
+
+            StartCoroutine(WaitToCompleteAction());
+        }
+        else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
+        {
+            bool attackBlocked = false;
+            if (unit.rightHeldItem != null)
+            {
+                attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
+                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
+            }
+            else if (unit.leftHeldItem != null)
+            {
+                attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
+                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
+            }
+
+            if (attackBlocked)
+                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+
+            CompleteAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
+        }
+    }
+
+    public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
+    {
+        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        if (targetUnit != null)
+        {
+            int armorAbsorbAmount = 0;
+            int damageAmount = heldMeleeWeapon.DamageAmount();
+
+            if (attackBlocked)
+            {
+                int blockAmount = 0;
+                if (targetUnit.ShieldEquipped() && itemBlockedWith == targetUnit.GetShield()) // If blocked with shield
+                    blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
+                else if (targetUnit.MeleeWeaponEquipped()) // If blocked with melee weapon
+                {
+                    if (itemBlockedWith == targetUnit.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
+                    {
+                        blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.GetPrimaryMeleeWeapon());
+                        if (unit.IsDualWielding())
+                        {
+                            if (this == unit.GetRightMeleeWeapon())
+                                blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
+                        }
+                    }
+                    else // If blocked with dual wield left hand weapon
+                        blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
+                }
+
+                targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+
+                if (heldMeleeWeapon != null)
+                    heldMeleeWeapon.ResetAttackBlocked();
+
+                if (itemBlockedWith is HeldShield)
+                    targetUnit.GetShield().LowerShield();
+                else
+                {
+                    HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
+                    heldWeapon.LowerWeapon();
+                }
+            }
+            else
+                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
+        }
+
+        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
     public override EnemyAIAction GetEnemyAIAction(Unit targetUnit)
@@ -314,9 +404,35 @@ public class SwipeAction : BaseAction
         return nearestGridPosition;
     }
 
-    public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit, startGridPosition, targetGridPosition);
+    public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
+    {
+        List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
+        attackGridPositions = GetPossibleAttackGridPositions(targetGridPosition);
 
-    public bool IsInAttackRange(Unit targetUnit) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit);
+        for (int i = 0; i < attackGridPositions.Count; i++)
+        {
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(attackGridPositions[i]) == false)
+                continue;
+
+            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(attackGridPositions[i]);
+            if (unit.alliance.IsAlly(unitAtGridPosition))
+                continue;
+
+            if (unit.health.IsDead())
+                continue;
+
+            // If the loop makes it to this point, then it found a valid unit
+            ListPool<GridPosition>.Release(attackGridPositions);
+            return true;
+        }
+
+        ListPool<GridPosition>.Release(attackGridPositions);
+        return false;
+    }
+
+    public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit, startGridPosition, targetGridPosition);
+
+    public override bool IsInAttackRange(Unit targetUnit) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit);
 
     public override int GetActionPointsCost()
     {

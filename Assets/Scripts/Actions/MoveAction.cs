@@ -231,13 +231,15 @@ public class MoveAction : BaseAction
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit))
             {
                 unit.unitAnimator.StopMovingForward();
-                unitActionHandler.AttackTargetEnemy();
+                unitActionHandler.AttackTargetGridPosition();
             }
             // If the enemy moved positions, set the target position to the nearest possible attack position
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)
             {
                 unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
-                if (unit.RangedWeaponEquipped())
+                if (unitActionHandler.selectedAction.IsAttackAction())
+                    unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                else if (unit.RangedWeaponEquipped())
                     unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
                 else
                     unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
@@ -257,7 +259,7 @@ public class MoveAction : BaseAction
                 if (unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit))
                 {
                     unit.unitAnimator.StopMovingForward();
-                    unitActionHandler.AttackTargetEnemy();
+                    unitActionHandler.AttackTargetGridPosition();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
                 else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead() == false && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)

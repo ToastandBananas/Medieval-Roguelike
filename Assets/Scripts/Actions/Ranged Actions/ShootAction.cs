@@ -148,7 +148,7 @@ public class ShootAction : BaseAction
         unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, false);
     }
 
-    public bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
+    public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
         if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
             return false;
@@ -163,7 +163,7 @@ public class ShootAction : BaseAction
         return true;
     }
 
-    public bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
+    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
 
     protected override void StartAction()
     {

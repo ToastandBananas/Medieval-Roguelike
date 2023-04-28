@@ -159,27 +159,54 @@ public class PlayerInput : MonoBehaviour
                     // Set the Unit as the target enemy
                     player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
 
-                    // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                    if ((player.MeleeWeaponEquipped() || player.IsUnarmed()) && player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
+                    // If the player has an attack action selected
+                    if (player.unitActionHandler.selectedAction.IsAttackAction())
                     {
-                        // If the target enemy unit is already completely surrounded by other units or other obstructions
-                        if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)))
+                        // If the target is in attack range
+                        if (player.unitActionHandler.selectedAction.IsInAttackRange(unitAtGridPosition))
                         {
-                            // Remove the unit as the target enemy
-                            player.unitActionHandler.SetTargetEnemyUnit(null);
+                            // If the target enemy unit is already completely surrounded by other units or other obstructions
+                            if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
+                            {
+                                // Remove the unit as the target enemy
+                                player.unitActionHandler.SetTargetEnemyUnit(null);
+                                return;
+                            }
+
+                            // Turn towards and attack the target enemy
+                            player.unitActionHandler.AttackTargetGridPosition();
                             return;
                         }
+                    }
+                    // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
+                    else if ((player.MeleeWeaponEquipped() || player.IsUnarmed()))
+                    {
+                        // If the target is in attack range
+                        if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
+                        {
+                            // If the target enemy unit is already completely surrounded by other units or other obstructions
+                            if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
+                            {
+                                // Remove the unit as the target enemy
+                                player.unitActionHandler.SetTargetEnemyUnit(null);
+                                return;
+                            }
 
-                        // Turn towards and attack the target enemy
-                        player.unitActionHandler.AttackTargetEnemy();
-                        return;
+                            // Turn towards and attack the target enemy
+                            player.unitActionHandler.AttackTargetGridPosition();
+                            return;
+                        }
                     }
                     // If the player has a ranged weapon equipped and the target enemy is within attack range
-                    else if (player.RangedWeaponEquipped() && player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
+                    else if (player.RangedWeaponEquipped())
                     {
-                        // Turn towards and attack the target enemy
-                        player.unitActionHandler.AttackTargetEnemy();
-                        return;
+                        // If the target is in shooting range
+                        if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)) 
+                        {
+                            // Turn towards and attack the target enemy
+                            player.unitActionHandler.AttackTargetGridPosition();
+                            return;
+                        }
                     }
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +241,14 @@ public class PlayerInput : MonoBehaviour
             // If there's no unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
             else if (player.unitActionHandler.selectedAction.IsAttackAction())
             {
-                
+                // If there's any enemy or neutral unit within the attack positions
+                if (player.unitActionHandler.selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition))
+                {
+                    // Turn towards and attack the target enemy
+                    player.unitActionHandler.AttackTargetGridPosition();
+                    player.unitActionHandler.SetIsTryingToAttackGridPosition(true);
+                    return;
+                }
             }
             else if (player.unitActionHandler.selectedAction is MoveAction)
             {

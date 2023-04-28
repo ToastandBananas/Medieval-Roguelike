@@ -110,6 +110,20 @@ public class HeldMeleeWeapon : HeldItem
         transform.parent.localRotation = targetRotation;
     }
 
+    public int DamageAmount()
+    {
+        int damageAmount = itemData.damage;
+        if (unit.IsDualWielding())
+        {
+            if (this == unit.GetRightMeleeWeapon())
+                damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);
+            else
+                damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldSecondaryEfficiency);
+        }
+
+        return damageAmount;
+    }
+
     public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)

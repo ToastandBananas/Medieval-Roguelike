@@ -25,6 +25,7 @@ public class UnitActionHandler : MonoBehaviour
 
     public bool isPerformingAction { get; private set; }
     public bool canPerformActions { get; protected set; }
+    public bool isTryingToAttackGridPosition { get; protected set; }
 
     void Awake()
     {
@@ -44,7 +45,7 @@ public class UnitActionHandler : MonoBehaviour
         {
             unit.vision.FindVisibleUnits();
 
-            if (canPerformActions == false)// || unit.stats.currentAP <= 0)
+            if (canPerformActions == false)
             {
                 TurnManager.Instance.FinishTurn(unit);
                 return;
@@ -57,46 +58,53 @@ public class UnitActionHandler : MonoBehaviour
                     QueueAction(GetAction<InteractAction>());
                 }
             }
-            else if (targetEnemyUnit != null && queuedAction == null)
+            else if (queuedAction == null)
             {
-                if (targetEnemyUnit.health.IsDead())
+                if (isTryingToAttackGridPosition)
                 {
-                    SetTargetEnemyUnit(null);
-                    return;
+                    Debug.Log("Trying to attack grid position");
                 }
-
-                if (unit.RangedWeaponEquipped())
+                else if (targetEnemyUnit != null)
                 {
-                    Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-
-                    // If the closest enemy is too close, cancel the Player's current action
-                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                    if (targetEnemyUnit.health.IsDead())
                     {
-                        CancelAction();
+                        SetTargetEnemyUnit(null);
                         return;
                     }
-                    else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+
+                    if (unit.RangedWeaponEquipped())
                     {
-                        // Shoot the target enemy
-                        ClearActionQueue(true);
-                        if (unit.GetRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
-                        else
-                            QueueAction(GetAction<ReloadAction>());
+                        Unit closestEnemy = unit.vision.GetClosestEnemy(true);
+
+                        // If the closest enemy is too close, cancel the Player's current action
+                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                        {
+                            CancelAction();
+                            return;
+                        }
+                        else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                        {
+                            // Shoot the target enemy
+                            ClearActionQueue(true);
+                            if (unit.GetRangedWeapon().isLoaded)
+                                QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                            else
+                                QueueAction(GetAction<ReloadAction>());
+                        }
+                        else // If they're out of the shoot range, move towards the enemy
+                            QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                     }
-                    else // If they're out of the shoot range, move towards the enemy
-                        QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
-                }
-                else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
-                {
-                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                    else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                     {
-                        // Melee attack the target enemy
-                        ClearActionQueue(false);
-                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                        {
+                            // Melee attack the target enemy
+                            ClearActionQueue(false);
+                            QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                        }
+                        else // If they're out of melee range, move towards the enemy
+                            QueueAction(GetAction<MoveAction>(), GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                     }
-                    else // If they're out of melee range, move towards the enemy
-                        QueueAction(GetAction<MoveAction>(), GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                 }
             }
             //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
@@ -261,11 +269,13 @@ public class UnitActionHandler : MonoBehaviour
     #endregion
 
     #region Combat
-    public void AttackTargetEnemy()
+    public void AttackTargetGridPosition()
     {
         if (GetAction<TurnAction>().IsFacingTarget(targetAttackGridPosition))
         {
-            if (unit.RangedWeaponEquipped())
+            if (selectedAction.IsAttackAction())
+                QueueAction(selectedAction, targetAttackGridPosition);
+            else if (unit.RangedWeaponEquipped())
             {
                 if (unit.GetRangedWeapon().isLoaded)
                     QueueAction(GetAction<ShootAction>(), targetAttackGridPosition);
@@ -281,7 +291,9 @@ public class UnitActionHandler : MonoBehaviour
 
     public bool IsInAttackRange(Unit targetUnit)
     {
-        if ((unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetUnit)) || ((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && GetAction<MeleeAction>().CanFightUnarmed())) && GetAction<MeleeAction>().IsInAttackRange(targetUnit)))
+        if ((selectedAction.IsAttackAction() && selectedAction.IsInAttackRange(targetUnit)) 
+            || (unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetUnit)) 
+            || ((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && GetAction<MeleeAction>().CanFightUnarmed())) && GetAction<MeleeAction>().IsInAttackRange(targetUnit)))
             return true;
         return false;
     }
@@ -314,6 +326,8 @@ public class UnitActionHandler : MonoBehaviour
     public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
 
     public void SetTargetAttackGridPosition(GridPosition targetAttackGridPosition) => this.targetAttackGridPosition = targetAttackGridPosition;
+
+    public void SetIsTryingToAttackGridPosition(bool isTrying) => isTryingToAttackGridPosition = isTrying;
 
     public void SetSelectedAction(BaseAction action)
     {
