@@ -84,9 +84,9 @@ public class HeldMeleeWeapon : HeldItem
     }
 
     // Used in animation Key Frame
-    void DamageTargetUnit()
+    void DamageTargetUnits()
     {
-        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(this, attackBlocked, itemBlockedWith);
+        unit.unitActionHandler.queuedAction.DamageTargets(this, attackBlocked, itemBlockedWith);
         ResetAttackBlocked();
     }
 

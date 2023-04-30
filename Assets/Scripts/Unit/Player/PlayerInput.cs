@@ -122,7 +122,7 @@ public class PlayerInput : MonoBehaviour
         GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
         player.unitActionHandler.SetTargetInteractable(null);
 
-        // Make sure the mouse grid position is a valid position to perfor an action
+        // Make sure the mouse grid position is a valid position to perform an action
         if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
         {
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
@@ -154,7 +154,7 @@ public class PlayerInput : MonoBehaviour
             else if (unitAtGridPosition != null && unitIsVisible)
             {
                 // If the unit is someone the player can attack
-                if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && (player.unitActionHandler.selectedAction is MeleeAction || player.unitActionHandler.selectedAction is ShootAction))))
+                if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
                 {
                     // Set the Unit as the target enemy
                     player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
@@ -213,27 +213,23 @@ public class PlayerInput : MonoBehaviour
                     // The target enemy wasn't in attack range, so find and move to the nearest melee or ranged attack position //
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction
-                    if (player.unitActionHandler.selectedAction.IsAttackAction() == false)
+                    // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction (or if one of these actions is already selected)
+                    if (player.unitActionHandler.selectedAction.IsAttackAction() == false || player.unitActionHandler.selectedAction.IsDefaultAttackAction())
                     {
                         // If the player has a ranged weapon equipped, find the nearest Shoot Action attack position
                         if (player.RangedWeaponEquipped())
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
                         else // If the player has a melee weapon equipped or is unarmed, find the nearest Melee Action attack position
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
-                    }
-                    // If the player already has an attack action selected
-                    else
-                    {
-                        // Since the player already has an attack action selected, we can just directly use the 'GetNearestAttackPosition' method from that action 
-                        player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.selectedAction.GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
-                    }
 
-                    // Set the target attack position to the target unit's position
-                    player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.gridPosition);
+                        // Set the target attack position to the target unit's position
+                        player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.gridPosition);
 
-                    // Move towards the nearest attack position
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                        // Move towards the nearest attack position
+                        player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                    }
+                    else // The player either doesn't have an attack action selected or has a non-default attack action selected
+                        player.unitActionHandler.SetTargetEnemyUnit(null);
                 }
                 else // The unit the mouse is hovering over is not an attackable unit (likely an ally)
                     player.unitActionHandler.SetTargetEnemyUnit(null);
@@ -246,7 +242,7 @@ public class PlayerInput : MonoBehaviour
                 {
                     // Turn towards and attack the target enemy
                     player.unitActionHandler.AttackTargetGridPosition();
-                    player.unitActionHandler.SetIsTryingToAttackGridPosition(true);
+                    player.unitActionHandler.SetQueuedAttack(player.unitActionHandler.selectedAction);
                     return;
                 }
             }

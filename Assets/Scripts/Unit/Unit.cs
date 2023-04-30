@@ -92,12 +92,14 @@ public class Unit : MonoBehaviour
     {
         if (ShieldEquipped())
         {
+            // If the attacker is in front of this Unit (greater chance to block)
             if (unitActionHandler.GetAction<TurnAction>().AttackerInFrontOfUnit(attackingUnit))
             {
                 float random = Random.Range(1f, 100f);
                 if (random <= stats.ShieldBlockChance(GetShield(), false))
                     return true;
             }
+            // If the attacker is beside this Unit (less of a chance to block)
             else if (unitActionHandler.GetAction<TurnAction>().AttackerBesideUnit(attackingUnit))
             {
                 float random = Random.Range(1f, 100f);
@@ -108,7 +110,7 @@ public class Unit : MonoBehaviour
         return false;
     }
 
-    public bool TryBlockMeleeAttack(Unit attackingUnit, out HeldItem itemBlockedWith)
+    public bool TryBlockMeleeAttack(Unit attackingUnit, out HeldItem itemBlockedLastAttackWith)
     {
         float random;
         TurnAction targetUnitTurnAction = unitActionHandler.GetAction<TurnAction>();
@@ -120,7 +122,7 @@ public class Unit : MonoBehaviour
                 random = Random.Range(1f, 100f);
                 if (random <= stats.ShieldBlockChance(GetShield(), false))
                 {
-                    itemBlockedWith = GetShield();
+                    itemBlockedLastAttackWith = GetShield();
                     return true;
                 }
 
@@ -130,7 +132,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), false, true))
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
                 }
@@ -143,7 +145,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), false, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
 
@@ -151,7 +153,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
-                        itemBlockedWith = GetLeftMeleeWeapon();
+                        itemBlockedLastAttackWith = GetLeftMeleeWeapon();
                         return true;
                     }
                 }
@@ -161,7 +163,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), false, false))
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
                 }
@@ -175,7 +177,7 @@ public class Unit : MonoBehaviour
                 random = Random.Range(1f, 100f);
                 if (random <= stats.ShieldBlockChance(GetShield(), true))
                 {
-                    itemBlockedWith = GetShield();
+                    itemBlockedLastAttackWith = GetShield();
                     return true;
                 }
 
@@ -185,7 +187,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), true, true))
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
                 }
@@ -198,7 +200,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), true, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
 
@@ -206,7 +208,7 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetLeftMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
-                        itemBlockedWith = GetLeftMeleeWeapon();
+                        itemBlockedLastAttackWith = GetLeftMeleeWeapon();
                         return true;
                     }
                 }
@@ -216,14 +218,14 @@ public class Unit : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= stats.WeaponBlockChance(GetPrimaryMeleeWeapon(), true, false))
                     {
-                        itemBlockedWith = GetPrimaryMeleeWeapon();
+                        itemBlockedLastAttackWith = GetPrimaryMeleeWeapon();
                         return true;
                     }
                 }
             }
         }
 
-        itemBlockedWith = null;
+        itemBlockedLastAttackWith = null;
         return false;
     }
 

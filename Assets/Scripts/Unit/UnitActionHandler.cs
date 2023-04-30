@@ -9,6 +9,7 @@ public class UnitActionHandler : MonoBehaviour
     public GridPosition targetGridPosition { get; protected set; }
 
     public BaseAction queuedAction { get; private set; }
+    public BaseAction queuedAttack { get; private set; }
     public int queuedAP { get; private set; }
 
     public BaseAction[] baseActionArray { get; private set; }
@@ -25,7 +26,6 @@ public class UnitActionHandler : MonoBehaviour
 
     public bool isPerformingAction { get; private set; }
     public bool canPerformActions { get; protected set; }
-    public bool isTryingToAttackGridPosition { get; protected set; }
 
     void Awake()
     {
@@ -60,24 +60,52 @@ public class UnitActionHandler : MonoBehaviour
             }
             else if (queuedAction == null)
             {
-                if (isTryingToAttackGridPosition)
+                // Debug.Log(queuedAttack);
+                // If the queued attack is not a default attack
+                if (queuedAttack != null && queuedAttack.IsDefaultAttackAction() == false)
                 {
-                    Debug.Log("Trying to attack grid position");
+                    Debug.Log(unit.name + " is trying to attack grid position with a queuedAttack!");
+                    // If the target attack position is in range and there are valid units within the attack area
+                    if (queuedAttack.IsInAttackRange(null, unit.gridPosition, targetAttackGridPosition) && queuedAttack.IsValidUnitInActionArea(targetAttackGridPosition))
+                    {
+                        if (queuedAttack.IsRangedAttackAction())
+                        {
+                            Unit closestEnemy = unit.vision.GetClosestEnemy(true);
+
+                            // If the closest enemy or target attack positions are too close, cancel the Player's current action
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                            {
+                                CancelAction();
+                                return;
+                            }
+                        }
+                        
+                        // Queue the attack action
+                        QueueAction(queuedAttack, targetAttackGridPosition);
+                    }
+                    else // If there's no unit in the attack area or the target attack position is out of range, cancel the action
+                    {
+                        CancelAction();
+                        return;
+                    }
                 }
+                // If there's a target enemy and either an attack wasn't queued, or the queued attack is a default attack
                 else if (targetEnemyUnit != null)
                 {
+                    // If the target enemy is dead, cancel the action
                     if (targetEnemyUnit.health.IsDead())
                     {
-                        SetTargetEnemyUnit(null);
+                        CancelAction();
                         return;
                     }
 
+                    // Handle default ranged attack
                     if (unit.RangedWeaponEquipped())
                     {
                         Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
-                        // If the closest enemy is too close, cancel the Player's current action
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                        // If the closest or target enemies are too close, cancel the Player's current action
+                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
                         {
                             CancelAction();
                             return;
@@ -94,6 +122,7 @@ public class UnitActionHandler : MonoBehaviour
                         else // If they're out of the shoot range, move towards the enemy
                             QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                     }
+                    // Handle default melee attack
                     else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                     {
                         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
@@ -108,7 +137,7 @@ public class UnitActionHandler : MonoBehaviour
                 }
             }
             //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
-                //QueueAction(GetAction<MoveAction>());
+            //QueueAction(GetAction<MoveAction>());
 
             if (queuedAction != null)
                 GetNextQueuedAction();
@@ -123,6 +152,7 @@ public class UnitActionHandler : MonoBehaviour
     #region Action Queue
     public void QueueAction(BaseAction action, GridPosition targetGridPosition)
     {
+        Debug.Log(action);
         SetTargetGridPosition(targetGridPosition);
         QueueAction(action);
     }
@@ -144,7 +174,7 @@ public class UnitActionHandler : MonoBehaviour
         {
             if (canPerformActions == false)
                 TurnManager.Instance.FinishTurn(unit);
-            else if (GetAction<MoveAction>().isMoving == false)// && unit.stats.currentAP > 0)
+            else if (GetAction<MoveAction>().isMoving == false)
                 GetNextQueuedAction();
         }
 
@@ -242,6 +272,7 @@ public class UnitActionHandler : MonoBehaviour
         ClearActionQueue(true);
         SetTargetInteractable(null);
         SetTargetEnemyUnit(null);
+        SetQueuedAttack(null);
 
         if (moveAction.finalTargetGridPosition != unit.gridPosition)
         {
@@ -255,6 +286,9 @@ public class UnitActionHandler : MonoBehaviour
 
     public void ClearActionQueue(bool stopMoveAnimation)
     {
+        if (queuedAction != null && queuedAction.IsAttackAction())
+            queuedAttack = null;
+
         // Debug.Log("Clearing action queue");
         queuedAction = null;
         queuedAP = 0;
@@ -286,7 +320,10 @@ public class UnitActionHandler : MonoBehaviour
                 QueueAction(GetAction<MeleeAction>(), targetAttackGridPosition);
         }
         else
+        {
+            SetQueuedAttack(selectedAction);
             QueueAction(GetAction<TurnAction>());
+        }
     }
 
     public bool IsInAttackRange(Unit targetUnit)
@@ -327,7 +364,13 @@ public class UnitActionHandler : MonoBehaviour
 
     public void SetTargetAttackGridPosition(GridPosition targetAttackGridPosition) => this.targetAttackGridPosition = targetAttackGridPosition;
 
-    public void SetIsTryingToAttackGridPosition(bool isTrying) => isTryingToAttackGridPosition = isTrying;
+    public void SetQueuedAttack(BaseAction attackAction)
+    {
+        if (attackAction != null && attackAction.IsAttackAction())
+            queuedAttack = attackAction;
+        else
+            queuedAttack = null;
+    }
 
     public void SetSelectedAction(BaseAction action)
     {

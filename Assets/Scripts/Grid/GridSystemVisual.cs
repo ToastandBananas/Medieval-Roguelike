@@ -213,13 +213,13 @@ public class GridSystemVisual : MonoBehaviour
         switch (selectedAction)
         {
             case MeleeAction meleeAction:
-                Instance.ShowGridPositionList(meleeAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                Instance.ShowGridPositionList(meleeAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
                 break;
             case SwipeAction swipeAction:
-                Instance.ShowGridPositionList(swipeAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                Instance.ShowGridPositionList(swipeAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
                 break;
             case ShootAction shootAction:
-                Instance.ShowGridPositionList(shootAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
+                Instance.ShowGridPositionList(shootAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
                 break;
             //case ThrowAction throwAction:
                 //Instance.ShowGridPositionList(throwAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);

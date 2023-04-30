@@ -93,7 +93,7 @@ public class MeleeAction : BaseAction
             if (unit.IsUnarmed())
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTarget(null, attackBlocked, itemBlockedWith);
+                DamageTargets(null, attackBlocked, itemBlockedWith);
             }
             else if (unit.IsDualWielding()) // Dual wield attack
             {
@@ -102,18 +102,18 @@ public class MeleeAction : BaseAction
                 if (mainAttackBlocked || offhandAttackBlocked)
                     attackBlocked = true;
 
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, mainAttackBlocked, itemBlockedWith);
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, offhandAttackBlocked, secondaryItemBlockedWith);
+                DamageTargets(unit.rightHeldItem as HeldMeleeWeapon, mainAttackBlocked, itemBlockedWith);
+                DamageTargets(unit.leftHeldItem as HeldMeleeWeapon, offhandAttackBlocked, secondaryItemBlockedWith);
             }
             else if (unit.rightHeldItem != null)
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
+                DamageTargets(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
             }
             else if (unit.leftHeldItem != null)
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
+                DamageTargets(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
             }
 
             if (attackBlocked)
@@ -124,7 +124,7 @@ public class MeleeAction : BaseAction
         }
     }
 
-    public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
+    public override void DamageTargets(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         if (targetUnit != null)
@@ -334,10 +334,24 @@ public class MeleeAction : BaseAction
         return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetPossibleAttackGridPositions(GridPosition targetGridPosition)
+    public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
-        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+        if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
+            return validGridPositionsList;
+
+        if (IsInAttackRange(null, unit.gridPosition, targetGridPosition) == false)
+            return validGridPositionsList;
+
+        float sphereCastRadius = 0.1f;
+        Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
+        Vector3 shootDir = ((unit.WorldPosition() + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
+        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask()))
+            return validGridPositionsList; // Blocked by an obstacle
+
+        validGridPositionsList.Add(targetGridPosition);
+
+        /*if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
@@ -362,7 +376,7 @@ public class MeleeAction : BaseAction
                 return validGridPositionsList;
 
             validGridPositionsList.Add(targetGridPosition);
-        }
+        }*/
         return validGridPositionsList;
     }
 
@@ -445,6 +459,13 @@ public class MeleeAction : BaseAction
 
         ListPool<GridPosition>.Release(gridPositions);
         return nearestGridPosition;
+    }
+
+    public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
+    {
+        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && unit.alliance.IsAlly(LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition)) == false)
+            return true;
+        return false;
     }
 
     public override bool IsValidAction()

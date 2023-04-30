@@ -29,7 +29,7 @@ public class SwipeAction : BaseAction
             unit.unitActionHandler.FinishAction();
 
             Debug.Log("No valid unit in action area");
-            unit.unitActionHandler.SetIsTryingToAttackGridPosition(false);
+            unit.unitActionHandler.SetQueuedAttack(null);
             return;
         }
 
@@ -57,6 +57,12 @@ public class SwipeAction : BaseAction
     void Attack()
     {
         Debug.Log("Do Swipe Attack");
+
+        foreach(GridPosition gridPosition in GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
+        {
+
+        }
+
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         BecomeVisibleEnemyOfTarget(targetUnit);
 
@@ -81,12 +87,12 @@ public class SwipeAction : BaseAction
             if (unit.rightHeldItem != null)
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTarget(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
+                DamageTargets(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
             }
             else if (unit.leftHeldItem != null)
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTarget(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
+                DamageTargets(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
             }
 
             if (attackBlocked)
@@ -97,7 +103,7 @@ public class SwipeAction : BaseAction
         }
     }
 
-    public void DamageTarget(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
+    public override void DamageTargets(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         if (targetUnit != null)
@@ -221,7 +227,7 @@ public class SwipeAction : BaseAction
         return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetPossibleAttackGridPositions(GridPosition targetGridPosition)
+    public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
 
@@ -407,7 +413,7 @@ public class SwipeAction : BaseAction
     public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
     {
         List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
-        attackGridPositions = GetPossibleAttackGridPositions(targetGridPosition);
+        attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
 
         for (int i = 0; i < attackGridPositions.Count; i++)
         {

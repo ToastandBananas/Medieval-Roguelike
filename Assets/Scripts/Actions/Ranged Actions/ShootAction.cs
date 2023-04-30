@@ -86,7 +86,7 @@ public class ShootAction : BaseAction
         }
     }
 
-    public void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
+    public override void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
     {
         if (targetUnit != null)
         {
@@ -235,10 +235,24 @@ public class ShootAction : BaseAction
         return validGridPositionsList;
     }
 
-    public override List<GridPosition> GetPossibleAttackGridPositions(GridPosition targetGridPosition)
+    public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
-        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+        if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
+            return validGridPositionsList;
+
+        if (IsInAttackRange(null, unit.gridPosition, targetGridPosition) == false)
+            return validGridPositionsList;
+
+        float sphereCastRadius = 0.1f;
+        Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
+        Vector3 shootDir = ((unit.WorldPosition() + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
+        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask()))
+            return validGridPositionsList; // Blocked by an obstacle
+
+        validGridPositionsList.Add(targetGridPosition);
+
+        /*if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
         {
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
 
@@ -263,7 +277,7 @@ public class ShootAction : BaseAction
                 return validGridPositionsList;
 
             validGridPositionsList.Add(targetGridPosition);
-        }
+        }*/
         return validGridPositionsList;
     }
 
@@ -380,6 +394,20 @@ public class ShootAction : BaseAction
         };
     }
 
+    public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
+    {
+        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && unit.alliance.IsAlly(LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition)) == false)
+            return true;
+        return false;
+    }
+
+    public override bool IsValidAction()
+    {
+        if (unit.RangedWeaponEquipped())
+            return true;
+        return false;
+    }
+
     void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;
 
     public bool RangedWeaponIsLoaded() => unit.GetRangedWeapon().isLoaded; 
@@ -393,11 +421,4 @@ public class ShootAction : BaseAction
     public override bool IsRangedAttackAction() => true;
 
     public override string GetActionName() => "Shoot";
-
-    public override bool IsValidAction()
-    {
-        if (unit.RangedWeaponEquipped())
-            return true;
-        return false;
-    }
 }

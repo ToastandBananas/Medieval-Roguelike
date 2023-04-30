@@ -65,8 +65,8 @@ public class ActionLineRenderer : MonoBehaviour
             {
                 if (player.alliance.IsEnemy(unitAtMousePosition))
                 {
-                    // If the enemy Unit is in attack range, no need to show the line renderer
-                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition))
+                    // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
+                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition) || player.unitActionHandler.selectedAction.IsDefaultAttackAction() == false)
                     {
                         HideLineRenderers();
                         yield break;

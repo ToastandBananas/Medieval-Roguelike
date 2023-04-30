@@ -60,7 +60,7 @@ public class UnitAnimator : MonoBehaviour
     // Used in animation Key Frame
     void DamageTargetUnit_UnarmedAttack()
     {
-        unit.unitActionHandler.GetAction<MeleeAction>().DamageTarget(null, unarmedAttackBlocked, itemBlockedWith);
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null, unarmedAttackBlocked, itemBlockedWith);
         itemBlockedWith = null;
         unarmedAttackBlocked = false; // Reset this bool for the next attack
     }
