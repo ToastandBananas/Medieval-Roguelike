@@ -57,11 +57,11 @@ public abstract class HeldItem : MonoBehaviour
         transform.parent.localRotation = defaultRotation;
     }
 
-    public abstract void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith);
+    public abstract void DoDefaultAttack();
 
-    public IEnumerator DelayDoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
+    public IEnumerator DelayDoDefaultAttack()
     {
-        yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f);
-        DoDefaultAttack(attackBlocked, itemBlockedWith);
+        yield return new WaitForSeconds((AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.rightHeldItem.itemData.item as Weapon) / 2f) + 0.05f);
+        DoDefaultAttack();
     }
 }

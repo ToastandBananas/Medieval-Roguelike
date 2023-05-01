@@ -62,15 +62,7 @@ public abstract class BaseAction : MonoBehaviour
         targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
     }
 
-    public virtual void DamageTargets(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
-    {
-        if (IsAttackAction() == false)
-            Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'DamageTarget' method.");
-        else
-            Debug.LogWarning("The 'DamageTarget' method has not been implemented for the " + name);
-    }
-
-    public virtual void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
+    public virtual void DamageTargets(HeldItem heldWeapon)
     {
         if (IsAttackAction() == false)
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'DamageTarget' method.");

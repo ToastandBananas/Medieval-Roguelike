@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitActionHandler : MonoBehaviour
@@ -7,6 +8,9 @@ public class UnitActionHandler : MonoBehaviour
     public event EventHandler OnSelectedActionChanged;
 
     public GridPosition targetGridPosition { get; protected set; }
+
+    /// <summary>The Units targeted by the last attack and the item they blocked with (if they successfully blocked).</summary>
+    public Dictionary<Unit, HeldItem> targetUnits { get; private set; }
 
     public BaseAction queuedAction { get; private set; }
     public BaseAction queuedAttack { get; private set; }
@@ -35,6 +39,7 @@ public class UnitActionHandler : MonoBehaviour
         if (unit.IsPlayer()) canPerformActions = true;
 
         targetGridPosition = LevelGrid.GetGridPosition(transform.position);
+        targetUnits = new Dictionary<Unit, HeldItem>();
 
         SetSelectedAction(GetAction<MoveAction>());
     }
@@ -152,7 +157,6 @@ public class UnitActionHandler : MonoBehaviour
     #region Action Queue
     public void QueueAction(BaseAction action, GridPosition targetGridPosition)
     {
-        Debug.Log(action);
         SetTargetGridPosition(targetGridPosition);
         QueueAction(action);
     }
@@ -161,7 +165,7 @@ public class UnitActionHandler : MonoBehaviour
     {
         GridSystemVisual.HideGridVisual();
 
-        // if (isNPC) Debug.Log(name + " queued " + action);
+        // if (unit.IsPlayer()) Debug.Log(name + " queued " + action);
         queuedAction = action;
         lastQueuedAction = action;
         queuedAP = action.GetActionPointsCost();

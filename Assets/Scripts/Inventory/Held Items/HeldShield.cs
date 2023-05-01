@@ -4,12 +4,9 @@ public class HeldShield : HeldItem
 {
     public bool shieldRaised { get; private set; }
 
-    public override void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
+    public override void DoDefaultAttack()
     {
-        if (attackBlocked == false)
-            Debug.Log("Shield bash!");
-        else
-            Debug.Log("Shield bash blocked...");
+        Debug.LogWarning("Default attack for Shields is not created yet.");
     }
 
     public void RaiseShield()

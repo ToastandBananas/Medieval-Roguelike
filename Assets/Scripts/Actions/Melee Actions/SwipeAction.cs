@@ -12,7 +12,6 @@ public class SwipeAction : BaseAction
 
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-    List<Vector3> potentialPositions = new List<Vector3>();
 
     void Start()
     {
@@ -26,10 +25,10 @@ public class SwipeAction : BaseAction
         if (IsValidUnitInActionArea(gridPosition) == false)
         {
             unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SetQueuedAttack(null);
             unit.unitActionHandler.FinishAction();
 
             Debug.Log("No valid unit in action area");
-            unit.unitActionHandler.SetQueuedAttack(null);
             return;
         }
 
@@ -58,95 +57,92 @@ public class SwipeAction : BaseAction
     {
         Debug.Log("Do Swipe Attack");
 
-        foreach(GridPosition gridPosition in GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
-        {
-
-        }
-
-        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        BecomeVisibleEnemyOfTarget(targetUnit);
-
+        // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            if (unit.rightHeldItem != null) // Right hand weapon attack
-            {
-                unit.unitAnimator.StartMeleeAttack();
-                unit.rightHeldItem.DoDefaultAttack(targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith), itemBlockedWith);
-            }
-            else if (unit.leftHeldItem != null) // Left hand weapon attack
-            {
-                unit.unitAnimator.StartMeleeAttack();
-                unit.leftHeldItem.DoDefaultAttack(targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith), itemBlockedWith);
-            }
+            unit.unitAnimator.StartMeleeAttack();
+            unit.GetPrimaryMeleeWeapon().DoSwipeAttack();
 
             StartCoroutine(WaitToCompleteAction());
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
-            bool attackBlocked = false;
-            if (unit.rightHeldItem != null)
+            // Loop through the grid positions in the attack area
+            foreach (GridPosition gridPosition in GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
             {
-                attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTargets(unit.rightHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Right hand weapon attack
-            }
-            else if (unit.leftHeldItem != null)
-            {
-                attackBlocked = targetUnit.TryBlockMeleeAttack(unit, out HeldItem itemBlockedWith);
-                DamageTargets(unit.leftHeldItem as HeldMeleeWeapon, attackBlocked, itemBlockedWith); // Left hand weapon attack
-            }
+                // Skip this position if there's no unit here
+                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                    continue;
 
-            if (attackBlocked)
-                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+                // Get the unit at this grid position
+                Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+
+                // The targetUnit tries to block the attack and if they do, they face their attacker
+                if(targetUnit.TryBlockMeleeAttack(unit))
+                    StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+
+                // Damage this unit
+                DamageTargets(unit.GetPrimaryMeleeWeapon());
+            }
 
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
     }
 
-    public override void DamageTargets(HeldMeleeWeapon heldMeleeWeapon, bool attackBlocked, HeldItem itemBlockedWith)
+    public override void DamageTargets(HeldItem heldWeapon)
     {
-        Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        if (targetUnit != null)
+        HeldMeleeWeapon heldMeleeWeapon = heldWeapon as HeldMeleeWeapon;
+        foreach (KeyValuePair<Unit, HeldItem> target in unit.unitActionHandler.targetUnits)
         {
-            int armorAbsorbAmount = 0;
-            int damageAmount = heldMeleeWeapon.DamageAmount();
+            Unit targetUnit = target.Key;
+            HeldItem itemBlockedWith = target.Value;
 
-            if (attackBlocked)
+            if (targetUnit != null)
             {
-                int blockAmount = 0;
-                if (targetUnit.ShieldEquipped() && itemBlockedWith == targetUnit.GetShield()) // If blocked with shield
-                    blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
-                else if (targetUnit.MeleeWeaponEquipped()) // If blocked with melee weapon
+                // The unit being attacked becomes aware of this unit
+                BecomeVisibleEnemyOfTarget(targetUnit);
+
+                int armorAbsorbAmount = 0;
+                int damageAmount = heldMeleeWeapon.DamageAmount();
+
+                // If the attack was blocked
+                if (itemBlockedWith != null)
                 {
-                    if (itemBlockedWith == targetUnit.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
+                    int blockAmount = 0;
+                    if (targetUnit.ShieldEquipped() && itemBlockedWith == targetUnit.GetShield()) // If blocked with shield
+                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
+                    else if (targetUnit.MeleeWeaponEquipped()) // If blocked with melee weapon
                     {
-                        blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.GetPrimaryMeleeWeapon());
-                        if (unit.IsDualWielding())
+                        if (itemBlockedWith == targetUnit.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
                         {
-                            if (this == unit.GetRightMeleeWeapon())
-                                blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
+                            blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.GetPrimaryMeleeWeapon());
+                            if (unit.IsDualWielding())
+                            {
+                                if (this == unit.GetRightMeleeWeapon())
+                                    blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
+                            }
                         }
+                        else // If blocked with dual wield left hand weapon
+                            blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
-                    else // If blocked with dual wield left hand weapon
-                        blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
+
+                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+
+                    if (itemBlockedWith is HeldShield)
+                        targetUnit.GetShield().LowerShield();
+                    else
+                    {
+                        HeldMeleeWeapon blockingWeapon = itemBlockedWith as HeldMeleeWeapon;
+                        blockingWeapon.LowerWeapon();
+                    }
                 }
-
-                targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
-
-                if (heldMeleeWeapon != null)
-                    heldMeleeWeapon.ResetAttackBlocked();
-
-                if (itemBlockedWith is HeldShield)
-                    targetUnit.GetShield().LowerShield();
                 else
-                {
-                    HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
-                    heldWeapon.LowerWeapon();
-                }
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
             }
-            else
-                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
+
+        unit.unitActionHandler.targetUnits.Clear();
 
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -465,10 +461,7 @@ public class SwipeAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        if (unit.GetPrimaryMeleeWeapon() != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon) / 2f);
-        else
-            yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon) / 2f);
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);

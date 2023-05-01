@@ -59,15 +59,20 @@ public class ShootAction : BaseAction
     IEnumerator Shoot()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+
+        // The unit being attacked becomes aware of this unit
         BecomeVisibleEnemyOfTarget(targetUnit);
 
+        // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Wait to finish any rotations already in progress
             while (unit.unitActionHandler.GetAction<TurnAction>().isRotating)
                 yield return null;
 
+            // Rotate towards the target and do the shoot animation
             StartCoroutine(RotateTowardsTarget());
-            unit.leftHeldItem.DoDefaultAttack(targetUnit.TryBlockRangedAttack(unit), null);
+            unit.leftHeldItem.DoDefaultAttack();
 
             StartCoroutine(WaitToFinishAction());
         }
@@ -76,7 +81,7 @@ public class ShootAction : BaseAction
             bool missedTarget = MissedTarget();
             bool attackBlocked = targetUnit.TryBlockRangedAttack(unit);
             if (missedTarget == false)
-                DamageTarget(targetUnit, unit.GetRangedWeapon(), attackBlocked);
+                DamageTargets(unit.GetRangedWeapon());
 
             if (attackBlocked)
                 StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
@@ -86,29 +91,36 @@ public class ShootAction : BaseAction
         }
     }
 
-    public override void DamageTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeapon, bool attackBlocked)
+    public override void DamageTargets(HeldItem heldWeapon)
     {
-        if (targetUnit != null)
+        HeldRangedWeapon heldRangedWeapon = heldWeapon as HeldRangedWeapon;
+        foreach (KeyValuePair<Unit, HeldItem> target in unit.unitActionHandler.targetUnits)
         {
-            int damageAmount = heldRangedWeapon.itemData.damage;
-            int armorAbsorbAmount = 0;
-
-            if (attackBlocked)
+            Unit targetUnit = target.Key;
+            HeldItem itemBlockedWith = target.Value;
+            if (targetUnit != null)
             {
-                int blockAmount = 0;
-                if (targetUnit.ShieldEquipped())
-                    blockAmount = targetUnit.GetShield().itemData.blockPower;
+                int damageAmount = heldRangedWeapon.itemData.damage;
+                int armorAbsorbAmount = 0;
 
-                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
+                // If the attack was blocked
+                if (itemBlockedWith != null)
+                {
+                    int blockAmount = 0;
+                    if (targetUnit.ShieldEquipped())
+                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
 
-                heldRangedWeapon.ResetAttackBlocked();
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
 
-                if (targetUnit.ShieldEquipped())
-                    targetUnit.GetShield().LowerShield();
+                    if (targetUnit.ShieldEquipped())
+                        targetUnit.GetShield().LowerShield();
+                }
+                else
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
             }
-            else
-                targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
         }
+
+        unit.unitActionHandler.targetUnits.Clear();
 
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -126,7 +138,7 @@ public class ShootAction : BaseAction
     IEnumerator WaitToFinishAction()
     {
         if (unit.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetWeaponAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 

@@ -12,9 +12,6 @@ public class UnitAnimator : MonoBehaviour
 
     Unit unit;
 
-    HeldItem itemBlockedWith;
-    bool unarmedAttackBlocked;
-
     void Awake()
     {
         unit = transform.parent.GetComponent<Unit>();
@@ -34,13 +31,17 @@ public class UnitAnimator : MonoBehaviour
 
     public void StartDualMeleeAttack() => unitAnim.Play("Dual Melee Attack");
 
-    public void DoUnarmedAttack(bool unarmedAttackBlocked, HeldItem itemBlockedWith)
+    public void DoDefaultUnarmedAttack()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        this.itemBlockedWith = itemBlockedWith;
-        this.unarmedAttackBlocked = unarmedAttackBlocked;
+        HeldItem itemBlockedWith = null;
 
-        if (unarmedAttackBlocked)
+        // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
+        bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
+        if (unit.unitActionHandler.targetUnits.ContainsKey(targetUnit))
+            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+
+        if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation
             StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
@@ -60,9 +61,7 @@ public class UnitAnimator : MonoBehaviour
     // Used in animation Key Frame
     void DamageTargetUnit_UnarmedAttack()
     {
-        unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null, unarmedAttackBlocked, itemBlockedWith);
-        itemBlockedWith = null;
-        unarmedAttackBlocked = false; // Reset this bool for the next attack
+        unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null);
     }
 
     public void Die()

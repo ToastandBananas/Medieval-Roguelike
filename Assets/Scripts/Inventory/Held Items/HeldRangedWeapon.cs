@@ -7,12 +7,15 @@ public class HeldRangedWeapon : HeldItem
 
     Projectile loadedProjectile;
     public bool isLoaded { get; private set; }
-    public bool attackBlocked { get; private set; }
 
-    public override void DoDefaultAttack(bool attackBlocked, HeldItem itemBlockedWith)
+    public override void DoDefaultAttack()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        this.attackBlocked = attackBlocked;
+
+        // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
+        bool attackBlocked = targetUnit.TryBlockRangedAttack(unit);
+        if (unit.unitActionHandler.targetUnits.ContainsKey(targetUnit))
+            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
         if (attackBlocked)
         {
@@ -99,6 +102,4 @@ public class HeldRangedWeapon : HeldItem
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }
-
-    public void ResetAttackBlocked() => attackBlocked = false; 
 }

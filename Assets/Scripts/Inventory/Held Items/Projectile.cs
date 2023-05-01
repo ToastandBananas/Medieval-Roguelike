@@ -264,11 +264,17 @@ public class Projectile : MonoBehaviour
                 Unit targetUnit = collider.transform.parent.parent.GetComponent<Unit>();
                 if (targetUnit != shooter)
                 {
+                    bool attackBlocked = false;
+                    if (shooter.unitActionHandler.targetUnits.ContainsKey(targetUnit))
+                    {
+                        shooter.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedAttackWith);
+                        if (itemBlockedAttackWith != null)
+                            attackBlocked = true;
+                    }
+
                     HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
-                    if (rangedWeapon.attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
-                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, false);
-                    else
-                        rangedWeapon.ResetAttackBlocked();
+                    if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
                 }
@@ -278,11 +284,17 @@ public class Projectile : MonoBehaviour
                 Unit targetUnit = collider.transform.parent.parent.parent.GetComponent<Unit>();
                 if (targetUnit != shooter)
                 {
+                    bool attackBlocked = false;
+                    if (shooter.unitActionHandler.targetUnits.ContainsKey(targetUnit))
+                    {
+                        shooter.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedAttackWith);
+                        if (itemBlockedAttackWith != null)
+                            attackBlocked = true;
+                    }
+
                     HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
-                    if (rangedWeapon.attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
-                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, false);
-                    else
-                        rangedWeapon.ResetAttackBlocked();
+                    if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
                 }
@@ -291,7 +303,7 @@ public class Projectile : MonoBehaviour
             {
                 Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
                 HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
-                shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, rangedWeapon, true);
+                shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);
             }

@@ -42,7 +42,7 @@ public class AnimationTimes : MonoBehaviour
         StartCoroutine(UpdateAnimClipTimes());
     }
 
-    public float GetWeaponAttackAnimationTime(Weapon weapon)
+    public float GetDefaultWeaponAttackAnimationTime(Weapon weapon)
     {
         if (weapon.IsMeleeWeapon())
         {
