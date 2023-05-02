@@ -9,15 +9,18 @@ public class AnimationTimes : MonoBehaviour
 
     // Bow Clips
     AnimationClip[] bowClips;
-    public float shoot_Time { get; private set; }
+    float defaultShoot_Time;
 
     // Melee Weapon Clips
     AnimationClip[] meleeWeaponClips;
-    public float humanAttack_1H_Time { get; private set; }
+    float defaultAttack_1H_Time;
+    float defaultAttack_2H_Time;
+    float swipeAttack_2H_Time;
 
     // Unit Clips
     AnimationClip[] unitClips;
-    public float dualWieldAttack_Time { get; private set; }
+    float dualWieldAttack_Time;
+    float unarmedAttack_Time;
 
     #region Singleton
     public static AnimationTimes Instance;
@@ -42,21 +45,6 @@ public class AnimationTimes : MonoBehaviour
         StartCoroutine(UpdateAnimClipTimes());
     }
 
-    public float GetDefaultWeaponAttackAnimationTime(Weapon weapon)
-    {
-        if (weapon.IsMeleeWeapon())
-        {
-            if (weapon.isTwoHanded == false)
-                return humanAttack_1H_Time;
-        }
-        else if (weapon.IsRangedWeapon())
-        {
-            return shoot_Time;
-        }
-
-        return 0.1f;
-    }
-
     public IEnumerator UpdateAnimClipTimes()
     {
         yield return new WaitForSeconds(0.1f);
@@ -70,7 +58,7 @@ public class AnimationTimes : MonoBehaviour
             switch (clip.name)
             {
                 case "Shoot":
-                    shoot_Time = clip.length;
+                    defaultShoot_Time = clip.length;
                     break;
                 default:
                     break;
@@ -81,8 +69,17 @@ public class AnimationTimes : MonoBehaviour
         {
             switch (clip.name)
             {
-                case "Attack_1H_R":
-                    humanAttack_1H_Time = clip.length;
+                case "DefaultAttack_1H_R":
+                    defaultAttack_1H_Time = clip.length;
+                    break;
+                case "DefaultAttack_1H_L":
+                    defaultAttack_1H_Time = clip.length;
+                    break;
+                case "DefaultAttack_2H":
+                    defaultAttack_2H_Time = clip.length;
+                    break;
+                case "SwipeAttack_2H":
+                    swipeAttack_2H_Time = clip.length;
                     break;
                 default:
                     break;
@@ -96,9 +93,35 @@ public class AnimationTimes : MonoBehaviour
                 case "DualMeleeAttack":
                     dualWieldAttack_Time = clip.length;
                     break;
+                case "MeleeAttack":
+                    unarmedAttack_Time = clip.length;
+                    break;
                 default:
                     break;
             }
         }
     }
+
+    public float DefaultWeaponAttackTime(Weapon weapon)
+    {
+        if (weapon.IsMeleeWeapon())
+        {
+            if (weapon.isTwoHanded)
+                return defaultAttack_2H_Time;
+            else
+                return defaultAttack_1H_Time;
+        }
+        else if (weapon.IsRangedWeapon())
+        {
+            return defaultShoot_Time;
+        }
+
+        return 0.25f;
+    }
+
+    public float DualWieldAttackTime() => dualWieldAttack_Time;
+
+    public float SwipeAttackTime() => swipeAttack_2H_Time;
+
+    public float UnarmedAttackTime() => unarmedAttack_Time;
 }

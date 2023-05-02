@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8885308fd742f9b4a8cffc75dcf0ae7f
+guid: d9e7c5c5772014945977b91ffef2bd6f
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Weapon_ArmingSword
-    second: {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
+      name: Weapon_Claymore
+    second: {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Weapon_ClaymoreMat
+    second: {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

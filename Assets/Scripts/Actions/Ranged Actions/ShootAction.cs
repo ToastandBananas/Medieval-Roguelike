@@ -138,7 +138,7 @@ public class ShootAction : BaseAction
     IEnumerator WaitToFinishAction()
     {
         if (unit.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.leftHeldItem.itemData.item as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.leftHeldItem.itemData.item as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 
@@ -202,51 +202,6 @@ public class ShootAction : BaseAction
         return 300;
     }
 
-    public override List<GridPosition> GetValidActionGridPositions(GridPosition startGridPosition)
-    {
-        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
-        float boundsDimension = ((startGridPosition.y + maxAttackRange) * 2) + 0.1f;
-
-        validGridPositionsList.Clear();
-        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
-                continue;
-
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
-
-            // If the target is dead
-            if (targetUnit.health.IsDead())
-                continue;
-
-            // If the target is out of sight
-            if (unit.vision.IsVisible(targetUnit) == false)
-                continue;
-
-            // If both Units are on the same team
-            if (unit.alliance.IsAlly(targetUnit) || unit.alliance.IsNeutral(targetUnit))
-                continue;
-
-            // If target is out of attack range
-            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
-                continue;
-
-            // Debug.Log(gridPosition);
-            validGridPositionsList.Add(nodeGridPosition);
-        }
-
-        ListPool<GraphNode>.Release(nodes);
-        return validGridPositionsList;
-    }
-
     public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
@@ -263,33 +218,6 @@ public class ShootAction : BaseAction
             return validGridPositionsList; // Blocked by an obstacle
 
         validGridPositionsList.Add(targetGridPosition);
-
-        /*if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
-        {
-            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-
-            // If targeting oneself
-            if (unitAtGridPosition == unit)
-                return validGridPositionsList;
-
-            // If the target is dead
-            if (unitAtGridPosition.health.IsDead())
-                return validGridPositionsList;
-
-            // If the target is an ally
-            if (unit.alliance.IsAlly(unitAtGridPosition))
-                return validGridPositionsList;
-
-            // If the target is out of sight
-            if (unit.vision.IsVisible(unitAtGridPosition) == false)
-                return validGridPositionsList;
-
-            // If target is out of attack range
-            if (IsInAttackRange(unitAtGridPosition) == false)
-                return validGridPositionsList;
-
-            validGridPositionsList.Add(targetGridPosition);
-        }*/
         return validGridPositionsList;
     }
 

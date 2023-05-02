@@ -14,7 +14,7 @@ public class UnitActionSystemUI : MonoBehaviour
     int amountActionButtonsToPool = 8;
     List<ActionButtonUI> actionButtons = new List<ActionButtonUI>();
     
-    UnitActionHandler playerActionHandler;
+    PlayerActionHandler playerActionHandler;
 
     void Awake()
     {
@@ -29,8 +29,7 @@ public class UnitActionSystemUI : MonoBehaviour
 
     void Start()
     {
-        playerActionHandler = UnitManager.Instance.player.unitActionHandler;
-
+        playerActionHandler = UnitManager.Instance.player.unitActionHandler as PlayerActionHandler;
         playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
         InitializeActionButtonPool();

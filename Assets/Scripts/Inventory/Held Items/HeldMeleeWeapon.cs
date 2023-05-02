@@ -8,30 +8,21 @@ public class HeldMeleeWeapon : HeldItem
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
         HeldItem itemBlockedWith = null;
 
-        // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
+        // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
         bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
-        if (unit.unitActionHandler.targetUnits.ContainsKey(targetUnit))
-            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
 
         // If the target is successfully blocking the attack
         if (attackBlocked)
-        {
-            // Target Unit rotates towards this Unit & does block animation with shield or weapon
-            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
-            if (itemBlockedWith is HeldShield)
-                targetUnit.GetShield().RaiseShield();
-            else
-            {
-                HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
-                heldWeapon.RaiseWeapon();
-            }
-        }
+            BlockAttack(targetUnit, itemBlockedWith);
 
-        // TODO: Determine attack animation based on melee weapon type
+        // Determine attack animation based on melee weapon type
         if (this == unit.rightHeldItem)
         {
-            if (itemData.item.Weapon().isTwoHanded == false)
-                anim.Play("Attack_1H_R");
+            if (itemData.item.Weapon().isTwoHanded)
+                anim.Play("DefaultAttack_2H");
+            else
+                anim.Play("DefaultAttack_1H_R");
 
             if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item is Shield) 
                 unit.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L"); 
@@ -39,24 +30,53 @@ public class HeldMeleeWeapon : HeldItem
         else if (this == unit.leftHeldItem)
         {
             if (itemData.item.Weapon().isTwoHanded == false)
-                anim.Play("Attack_1H_L");
+                anim.Play("DefaultAttack_1H_L");
 
             if (unit.rightHeldItem != null && unit.rightHeldItem.itemData.item is Shield)
                 unit.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
         }
 
         // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-        if (unit.IsUnarmed() == false)
-            StartCoroutine(RotateWeaponTowardsTarget(targetUnit.gridPosition));
+        StartCoroutine(RotateWeaponTowardsTarget(targetUnit.gridPosition));
     }
 
     public void DoSwipeAttack()
     {
-        anim.Play("Attack_1H_R");
+        foreach (GridPosition gridPosition in unit.unitActionHandler.GetAction<SwipeAction>().GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
+        {
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                continue;
+
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+            HeldItem itemBlockedWith = null;
+
+            // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
+            bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
+            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+
+            // If the target is successfully blocking the attack
+            if (attackBlocked)
+                BlockAttack(targetUnit, itemBlockedWith);
+        }
+
+        // Play the Swipe animation
+        anim.Play("SwipeAttack_2H");
 
         // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-        if (unit.IsUnarmed() == false)
-            StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetAttackGridPosition));
+        StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetAttackGridPosition));
+    }
+
+    void BlockAttack(Unit blockingUnit, HeldItem itemBlockedWith)
+    {
+        // Target Unit rotates towards this Unit & does block animation with shield or weapon
+        StartCoroutine(blockingUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+        if (itemBlockedWith is HeldShield)
+            blockingUnit.GetShield().RaiseShield();
+        else
+        {
+            HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
+            heldWeapon.RaiseWeapon();
+        }
     }
 
     public void RaiseWeapon()
@@ -98,7 +118,21 @@ public class HeldMeleeWeapon : HeldItem
     // Used in animation Key Frame
     void DamageTargetUnits()
     {
-        unit.unitActionHandler.lastQueuedAction.DamageTargets(this);
+        switch (unit.unitActionHandler.lastQueuedAction)
+        {
+            case MeleeAction meleeAction:
+                meleeAction.DamageTargets(this);
+                break;
+            case ShootAction shootAction:
+                shootAction.DamageTargets(this);
+                break;
+            case SwipeAction swipeAction:
+                swipeAction.DamageTargets(this);
+                break;
+            default:
+                break;
+        }
+        //unit.unitActionHandler.lastQueuedAction.DamageTargets(this);
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

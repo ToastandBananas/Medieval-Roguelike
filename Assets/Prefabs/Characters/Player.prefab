@@ -507,6 +507,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4485341241154367501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,7 +706,7 @@ GameObject:
   - component: {fileID: 3713523194178401732}
   - component: {fileID: 809617103822942843}
   - component: {fileID: 6440773195933579921}
-  - component: {fileID: 2371494321970509754}
+  - component: {fileID: 2894362986920051941}
   - component: {fileID: 3331432482388386438}
   - component: {fileID: 4910889609817399986}
   - component: {fileID: 6094857115427304514}
@@ -951,7 +952,7 @@ MonoBehaviour:
   - {fileID: 7622081336976406461}
   - {fileID: 4844891633756179713}
   - {fileID: 626653059070622638}
---- !u!114 &2371494321970509754
+--- !u!114 &2894362986920051941
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -960,9 +961,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aead1222a5a742e4ca20aa32ebcadad0, type: 3}
+  m_Script: {fileID: 11500000, guid: 57954ad8252b5354f8bbfe88b73792d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatActions: []
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912

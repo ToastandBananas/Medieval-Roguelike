@@ -67,7 +67,7 @@ public abstract class BaseAction : MonoBehaviour
         if (IsAttackAction() == false)
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'DamageTarget' method.");
         else
-            Debug.LogWarning("The 'DamageTarget' method has not been implemented for the " + name);
+            Debug.LogWarning("The 'DamageTarget' method has not been implemented for the " + GetActionName() + " action.");
     }
 
     public virtual bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -75,7 +75,7 @@ public abstract class BaseAction : MonoBehaviour
         if (IsAttackAction() == false)
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'IsInAttackRange' method.");
         else
-            Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + name);
+            Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + GetActionName() + " action.");
         return false;
     }
 
@@ -84,20 +84,8 @@ public abstract class BaseAction : MonoBehaviour
         if (IsAttackAction() == false)
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'IsInAttackRange' method.");
         else
-            Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + name);
+            Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + GetActionName() + " action.");
         return false;
-    }
-
-    public virtual List<GridPosition> GetValidActionGridPositions(GridPosition startGridPosition)
-    {
-        Debug.LogWarning("The 'GetValidActionGridPositions' method has not been implemented for the " + name);
-        return null;
-    }
-
-    public virtual List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
-    {
-        Debug.LogWarning("The 'GetPossibleAttackGridPositions' method has not been implemented for the " + name);
-        return null;
     }
 
     public virtual GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
@@ -105,14 +93,20 @@ public abstract class BaseAction : MonoBehaviour
         if (IsAttackAction() == false)
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'GetNearestAttackPosition' method.");
         else
-            Debug.LogWarning("The 'GetNearestAttackPosition' method has not been implemented for the " + name);
+            Debug.LogWarning("The 'GetNearestAttackPosition' method has not been implemented for the " + GetActionName() + " action.");
         return unit.gridPosition;
     }
 
     public virtual bool IsValidUnitInActionArea(GridPosition targetGridPosition)
     {
-        Debug.LogWarning("The 'IsUnitInActionArea' method has not been implemented for the " + name);
+        Debug.LogWarning("The 'IsUnitInActionArea' method has not been implemented for the " + GetActionName() + " action.");
         return false;
+    }
+
+    public virtual List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
+    {
+        Debug.LogWarning("The 'GetPossibleAttackGridPositions' method has not been implemented for the " + GetActionName() + " action.");
+        return null;
     }
 
     public virtual EnemyAIAction GetEnemyAIAction(GridPosition gridPosition) => null;

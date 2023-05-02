@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitActionHandler : MonoBehaviour
+public abstract class UnitActionHandler : MonoBehaviour
 {
-    public event EventHandler OnSelectedActionChanged;
-
     public GridPosition targetGridPosition { get; protected set; }
 
     /// <summary>The Units targeted by the last attack and the item they blocked with (if they successfully blocked).</summary>
@@ -14,11 +12,12 @@ public class UnitActionHandler : MonoBehaviour
 
     public BaseAction queuedAction { get; private set; }
     public BaseAction queuedAttack { get; private set; }
-    public int queuedAP { get; private set; }
+    public int queuedAP { get; protected set; }
 
     public BaseAction[] baseActionArray { get; private set; }
+    public List<BaseAction> combatActions = new List<BaseAction>();
     public BaseAction selectedAction { get; private set; }
-    public BaseAction lastQueuedAction { get; private set; }
+    public BaseAction lastQueuedAction { get; protected set; }
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
@@ -28,130 +27,26 @@ public class UnitActionHandler : MonoBehaviour
 
     [SerializeField] LayerMask attackObstacleMask;
 
-    public bool isPerformingAction { get; private set; }
+    public bool isPerformingAction { get; protected set; }
     public bool canPerformActions { get; protected set; }
 
-    void Awake()
+    public virtual void Awake()
     {
         unit = GetComponent<Unit>(); 
         baseActionArray = GetComponents<BaseAction>();
 
-        if (unit.IsPlayer()) canPerformActions = true;
+        // Determine which BaseActions are combat actions and add them to the combatActions list
+        for (int i = 0; i < baseActionArray.Length; i++)
+        {
+            if (baseActionArray[i].IsAttackAction())
+                combatActions.Add(baseActionArray[i]);
+        }
 
         targetGridPosition = LevelGrid.GetGridPosition(transform.position);
         targetUnits = new Dictionary<Unit, HeldItem>();
 
+        // Default to the MoveAction
         SetSelectedAction(GetAction<MoveAction>());
-    }
-
-    public virtual void TakeTurn()
-    {
-        if (unit.isMyTurn && unit.health.IsDead() == false)
-        {
-            unit.vision.FindVisibleUnits();
-
-            if (canPerformActions == false)
-            {
-                TurnManager.Instance.FinishTurn(unit);
-                return;
-            }
-            else if (targetInteractable != null)
-            {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetInteractable.gridPosition) <= 1.4f)
-                {
-                    GetAction<InteractAction>().SetTargetInteractableGridPosition(targetInteractable.gridPosition);
-                    QueueAction(GetAction<InteractAction>());
-                }
-            }
-            else if (queuedAction == null)
-            {
-                // Debug.Log(queuedAttack);
-                // If the queued attack is not a default attack
-                if (queuedAttack != null && queuedAttack.IsDefaultAttackAction() == false)
-                {
-                    Debug.Log(unit.name + " is trying to attack grid position with a queuedAttack!");
-                    // If the target attack position is in range and there are valid units within the attack area
-                    if (queuedAttack.IsInAttackRange(null, unit.gridPosition, targetAttackGridPosition) && queuedAttack.IsValidUnitInActionArea(targetAttackGridPosition))
-                    {
-                        if (queuedAttack.IsRangedAttackAction())
-                        {
-                            Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-
-                            // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
-                            {
-                                CancelAction();
-                                return;
-                            }
-                        }
-                        
-                        // Queue the attack action
-                        QueueAction(queuedAttack, targetAttackGridPosition);
-                    }
-                    else // If there's no unit in the attack area or the target attack position is out of range, cancel the action
-                    {
-                        CancelAction();
-                        return;
-                    }
-                }
-                // If there's a target enemy and either an attack wasn't queued, or the queued attack is a default attack
-                else if (targetEnemyUnit != null)
-                {
-                    // If the target enemy is dead, cancel the action
-                    if (targetEnemyUnit.health.IsDead())
-                    {
-                        CancelAction();
-                        return;
-                    }
-
-                    // Handle default ranged attack
-                    if (unit.RangedWeaponEquipped())
-                    {
-                        Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-
-                        // If the closest or target enemies are too close, cancel the Player's current action
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
-                        {
-                            CancelAction();
-                            return;
-                        }
-                        else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
-                        {
-                            // Shoot the target enemy
-                            ClearActionQueue(true);
-                            if (unit.GetRangedWeapon().isLoaded)
-                                QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
-                            else
-                                QueueAction(GetAction<ReloadAction>());
-                        }
-                        else // If they're out of the shoot range, move towards the enemy
-                            QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
-                    }
-                    // Handle default melee attack
-                    else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
-                    {
-                        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
-                        {
-                            // Melee attack the target enemy
-                            ClearActionQueue(false);
-                            QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
-                        }
-                        else // If they're out of melee range, move towards the enemy
-                            QueueAction(GetAction<MoveAction>(), GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
-                    }
-                }
-            }
-            //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
-            //QueueAction(GetAction<MoveAction>());
-
-            if (queuedAction != null)
-                GetNextQueuedAction();
-            else
-            {
-                unit.UnblockCurrentPosition();
-                GridSystemVisual.UpdateGridVisual();
-            }
-        }
     }
 
     #region Action Queue
@@ -185,82 +80,13 @@ public class UnitActionHandler : MonoBehaviour
         SetSelectedAction(GetAction<MoveAction>());
     }
 
-    public void GetNextQueuedAction()
-    {
-        if (unit.health.IsDead())
-        {
-            ClearActionQueue(true);
-            if (unit.IsPlayer())
-                GridSystemVisual.HideGridVisual();
-            return;
-        }
+    public abstract void GetNextQueuedAction();
 
-        if (queuedAction != null && isPerformingAction == false)
-        {
-            if (unit.IsPlayer())
-            {
-                unit.stats.UseAP(queuedAP);
+    public abstract void TakeTurn();
 
-                if (queuedAction != null) // This can become null after a time tick update
-                {
-                    isPerformingAction = true;
-                    queuedAction.TakeAction(targetGridPosition);
-                }
-                else
-                    CancelAction();
-            }
-            else
-            {
-                int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP);
-                if (unit.health.IsDead())
-                {
-                    ClearActionQueue(true);
-                    if (unit.IsPlayer())
-                        GridSystemVisual.HideGridVisual();
-                    return;
-                }
+    public abstract void SkipTurn();
 
-                if (APRemainder <= 0)
-                {
-                    if (queuedAction != null) // This can become null after a time tick update
-                    {
-                        isPerformingAction = true;
-                        queuedAction.TakeAction(targetGridPosition);
-                    }
-                    else
-                    {
-                        CancelAction();
-                        TurnManager.Instance.FinishTurn(unit);
-                    }
-                    // if (isNPC == false) Debug.Log("Got next queued action. Actions still queued: " + actions.Count);
-                }
-                else
-                {
-                    // if (isNPC == false) Debug.Log("Can't do next queued action yet. Remaining AP: " + APRemainder);
-                    isPerformingAction = false;
-                    queuedAP = APRemainder;
-                    TurnManager.Instance.FinishTurn(unit);
-                }
-            }
-        }
-        else if (queuedAction == null && unit.IsNPC())
-        {
-            Debug.Log("Queued action is null for " + unit.name);
-            TurnManager.Instance.FinishTurn(unit);
-        }
-    }
-
-    public virtual void FinishAction()
-    {
-        ClearActionQueue(false);
-    }
-
-    public virtual void SkipTurn()
-    {
-        lastQueuedAction = null;
-        unit.stats.UseAP(unit.stats.APUntilTimeTick);
-        TurnManager.Instance.FinishTurn(unit);
-    }
+    public virtual void FinishAction() => ClearActionQueue(false);
 
     public IEnumerator CancelAction()
     {
@@ -376,12 +202,7 @@ public class UnitActionHandler : MonoBehaviour
             queuedAttack = null;
     }
 
-    public void SetSelectedAction(BaseAction action)
-    {
-        selectedAction = action;
-        if (unit.IsPlayer())
-            OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
-    }
+    public virtual void SetSelectedAction(BaseAction action) => selectedAction = action;
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 

@@ -121,6 +121,50 @@ public class NPCActionHandler : UnitActionHandler
         TurnManager.Instance.FinishTurn(unit);
     }
 
+    public override void GetNextQueuedAction()
+    {
+        if (unit.health.IsDead())
+        {
+            ClearActionQueue(true);
+            return;
+        }
+
+        if (queuedAction != null && isPerformingAction == false)
+        {
+            int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAP);
+            if (unit.health.IsDead())
+            {
+                ClearActionQueue(true);
+                return;
+            }
+
+            if (APRemainder <= 0)
+            {
+                if (queuedAction != null) // This can become null after a time tick update
+                {
+                    isPerformingAction = true;
+                    queuedAction.TakeAction(targetGridPosition);
+                }
+                else
+                {
+                    CancelAction();
+                    TurnManager.Instance.FinishTurn(unit);
+                }
+            }
+            else
+            {
+                isPerformingAction = false;
+                queuedAP = APRemainder;
+                TurnManager.Instance.FinishTurn(unit);
+            }
+        }
+        else if (queuedAction == null)
+        {
+            Debug.Log("Queued action is null for " + unit.name);
+            TurnManager.Instance.FinishTurn(unit);
+        }
+    }
+
     public override void FinishAction()
     {
         base.FinishAction();
@@ -181,7 +225,7 @@ public class NPCActionHandler : UnitActionHandler
             Unit closestEnemy = unit.vision.GetClosestEnemy(true);
             float minShootRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
 
-            // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
+            // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
             if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
             {
                 // TO DO: If the Unit has a melee weapon, switch to it
@@ -214,6 +258,11 @@ public class NPCActionHandler : UnitActionHandler
             AttackTargetGridPosition();
         else
             PursueTargetEnemy();
+    }
+
+    void ChooseAction()
+    {
+        BaseAction selectedAction = null;
     }
 
     public void StartFight()

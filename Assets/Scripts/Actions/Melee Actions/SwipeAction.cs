@@ -55,14 +55,14 @@ public class SwipeAction : BaseAction
 
     void Attack()
     {
-        Debug.Log("Do Swipe Attack");
-
         // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Play the attack animations and handle blocking for each target
             unit.unitAnimator.StartMeleeAttack();
             unit.GetPrimaryMeleeWeapon().DoSwipeAttack();
 
+            // Wait until the attack lands before completing the action
             StartCoroutine(WaitToCompleteAction());
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
@@ -330,44 +330,6 @@ public class SwipeAction : BaseAction
         return generalDirection;
     }
 
-    public GridPosition GetNearestMeleePosition(GridPosition startGridPosition, Unit targetUnit)
-    {
-        nearestGridPositionsList.Clear();
-        List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-        gridPositions = GetValidGridPositionsInRange(targetUnit);
-        float nearestDistance = 10000f;
-
-        // First, find the nearest valid Grid Positions to the Player
-        for (int i = 0; i < gridPositions.Count; i++)
-        {
-            float distance = Vector3.Distance(gridPositions[i].WorldPosition(), startGridPosition.WorldPosition());
-            if (distance < nearestDistance)
-            {
-                nearestGridPositionsList.Clear();
-                nearestGridPositionsList.Add(gridPositions[i]);
-                nearestDistance = distance;
-            }
-            else if (Mathf.Approximately(distance, nearestDistance))
-                nearestGridPositionsList.Add(gridPositions[i]);
-        }
-
-        GridPosition nearestGridPosition = startGridPosition;
-        float nearestDistanceToTarget = 10000f;
-        for (int i = 0; i < nearestGridPositionsList.Count; i++)
-        {
-            // Get the Grid Position that is closest to the target Grid Position
-            float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetUnit.transform.position);
-            if (distance < nearestDistanceToTarget)
-            {
-                nearestDistanceToTarget = distance;
-                nearestGridPosition = nearestGridPositionsList[i];
-            }
-        }
-
-        ListPool<GridPosition>.Release(gridPositions);
-        return nearestGridPosition;
-    }
-
     public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
     {
         nearestGridPositionsList.Clear();
@@ -461,7 +423,7 @@ public class SwipeAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        yield return new WaitForSeconds(AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon) / 2f);
+        yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime() / 2f);
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);

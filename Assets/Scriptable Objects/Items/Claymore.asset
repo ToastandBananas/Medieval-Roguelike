@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf1544ed0f702bb49bf187dc41863a59, type: 3}
-  m_Name: Arming Sword
+  m_Name: Claymore
   m_EditorClassIdentifier: 
-  name: Arming Sword
+  name: Claymore
   pluralName: 
   itemType: 1
   mainMaterial: 35
@@ -27,12 +27,12 @@ MonoBehaviour:
   staticValue: 1
   pickupMesh: {fileID: 0}
   weaponType: 4
-  isTwoHanded: 0
-  canDualWield: 1
+  isTwoHanded: 1
+  canDualWield: 0
   minRange: 1
-  maxRange: 1.5
-  minDamage: 5
-  maxDamage: 10
-  blockChanceAddOn: 2
+  maxRange: 2.2
+  minDamage: 10
+  maxDamage: 15
+  blockChanceAddOn: 1.5
   minAccuracyModifier: 0
   maxAccuracyModifier: 0

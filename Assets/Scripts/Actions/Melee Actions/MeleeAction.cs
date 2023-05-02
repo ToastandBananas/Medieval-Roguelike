@@ -62,6 +62,7 @@ public class MeleeAction : BaseAction
         // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Play the attack animations and handle blocking for the target
             if (unit.IsUnarmed())
             {
                 if (canFightUnarmed)
@@ -74,17 +75,20 @@ public class MeleeAction : BaseAction
                 unit.rightHeldItem.DoDefaultAttack();
                 StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
             }
-            else if (unit.rightHeldItem != null) // Right hand weapon attack
+            else if (unit.rightHeldItem != null) 
             {
+                // Right hand weapon attack
                 unit.unitAnimator.StartMeleeAttack(); 
                 unit.rightHeldItem.DoDefaultAttack();
             }
-            else if (unit.leftHeldItem != null) // Left hand weapon attack
+            else if (unit.leftHeldItem != null) 
             {
+                // Left hand weapon attack
                 unit.unitAnimator.StartMeleeAttack();
                 unit.leftHeldItem.DoDefaultAttack();
             }
 
+            // Wait until the attack lands before completing the action
             StartCoroutine(WaitToCompleteAction());
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
@@ -236,12 +240,12 @@ public class MeleeAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        if (unit.IsDualWielding())
-            yield return new WaitForSeconds(AnimationTimes.Instance.dualWieldAttack_Time);
-        else if (unit.GetPrimaryMeleeWeapon() != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.GetDefaultWeaponAttackAnimationTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon));
+        if (unit.IsUnarmed())
+            yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
+        else if (unit.IsDualWielding())
+            yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
         else
-            yield return new WaitForSeconds(0.25f);
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon));
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -294,55 +298,6 @@ public class MeleeAction : BaseAction
         return 300;
     }
 
-    public override List<GridPosition> GetValidActionGridPositions(GridPosition startGridPosition)
-    {
-        float maxAttackRange;
-        if (unit.MeleeWeaponEquipped())
-            maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
-        else
-            maxAttackRange = unarmedAttackRange;
-
-        float boundsDimension = (maxAttackRange * 2) + 0.1f;
-        validGridPositionsList.Clear();
-        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition) == false) // Grid Position is empty, no Unit to shoot
-                continue;
-
-            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(nodeGridPosition);
-
-            // If the target is dead
-            if (targetUnit.health.IsDead())
-                continue;
-
-            // If the target is out of sight
-            if (unit.vision.IsVisible(targetUnit) == false)
-                continue;
-
-            // If both Units are on the same team
-            if (unit.alliance.IsAlly(targetUnit))
-                continue;
-
-            // If target is out of attack range
-            if (IsInAttackRange(targetUnit, startGridPosition, nodeGridPosition) == false)
-                continue;
-
-            // Debug.Log(gridPosition);
-            validGridPositionsList.Add(nodeGridPosition);
-        }
-
-        ListPool<GraphNode>.Release(nodes);
-        return validGridPositionsList;
-    }
-
     public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
@@ -359,33 +314,6 @@ public class MeleeAction : BaseAction
             return validGridPositionsList; // Blocked by an obstacle
 
         validGridPositionsList.Add(targetGridPosition);
-
-        /*if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
-        {
-            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-
-            // If targeting oneself
-            if (unitAtGridPosition == unit)
-                return validGridPositionsList;
-
-            // If the target is dead
-            if (unitAtGridPosition.health.IsDead())
-                return validGridPositionsList;
-
-            // If the target is an ally
-            if (unit.alliance.IsAlly(unitAtGridPosition))
-                return validGridPositionsList;
-
-            // If the target is out of sight
-            if (unit.vision.IsVisible(unitAtGridPosition) == false)
-                return validGridPositionsList;
-
-            // If target is out of attack range
-            if (IsInAttackRange(unitAtGridPosition) == false)
-                return validGridPositionsList;
-
-            validGridPositionsList.Add(targetGridPosition);
-        }*/
         return validGridPositionsList;
     }
 
