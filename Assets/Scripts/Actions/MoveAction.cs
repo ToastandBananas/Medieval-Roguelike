@@ -228,7 +228,7 @@ public class MoveAction : BaseAction
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead())
                 unitActionHandler.CancelAction();
             // If the Player is trying to attack an enemy and they are in range, stop moving and attack
-            else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit))
+            else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit, true))
             {
                 unit.unitAnimator.StopMovingForward();
                 unitActionHandler.AttackTargetGridPosition();
@@ -256,16 +256,20 @@ public class MoveAction : BaseAction
             if (unit.stateController.currentState == State.Fight && unitActionHandler.targetEnemyUnit != null)
             {
                 // If they're in range, stop moving and attack
-                if (unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit))
+                if (unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit, false))
                 {
                     unit.unitAnimator.StopMovingForward();
-                    unitActionHandler.AttackTargetGridPosition();
+                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                    npcActionHandler.ChooseCombatAction();
+                    // unitActionHandler.AttackTargetGridPosition();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
                 else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead() == false && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)
                 {
                     unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
-                    if (unit.RangedWeaponEquipped())
+                    if (unitActionHandler.selectedAction.IsAttackAction())
+                        unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+                    else if (unit.RangedWeaponEquipped())
                         unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
                     else
                         unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
@@ -551,7 +555,7 @@ public class MoveAction : BaseAction
 
     public LayerMask MoveObstaclesMask() => moveObstaclesMask;
 
-    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition)
     {
         throw new NotImplementedException();
     }

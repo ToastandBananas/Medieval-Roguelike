@@ -156,12 +156,24 @@ public abstract class UnitActionHandler : MonoBehaviour
         }
     }
 
-    public bool IsInAttackRange(Unit targetUnit)
+    public bool IsInAttackRange(Unit targetUnit, bool defaultCombatActionsOnly)
     {
-        if ((selectedAction.IsAttackAction() && selectedAction.IsInAttackRange(targetUnit)) 
-            || (unit.RangedWeaponEquipped() && GetAction<ShootAction>().IsInAttackRange(targetUnit)) 
-            || ((unit.MeleeWeaponEquipped() || (unit.RangedWeaponEquipped() == false && GetAction<MeleeAction>().CanFightUnarmed())) && GetAction<MeleeAction>().IsInAttackRange(targetUnit)))
-            return true;
+        if (defaultCombatActionsOnly)
+        {
+            if (GetAction<ShootAction>().IsValidAction() && GetAction<ShootAction>().IsInAttackRange(targetUnit))
+                return true;
+
+            if (GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
+                return true;
+        }
+        else 
+        {
+            for (int i = 0; i < combatActions.Count; i++)
+            {
+                if (combatActions[i].IsValidAction() && combatActions[i].IsInAttackRange(targetUnit))
+                    return true;
+            }
+        }
         return false;
     }
     #endregion

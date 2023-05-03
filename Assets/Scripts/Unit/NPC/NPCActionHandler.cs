@@ -1,4 +1,6 @@
+using Pathfinding.Util;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NPCActionHandler : UnitActionHandler
@@ -43,7 +45,7 @@ public class NPCActionHandler : UnitActionHandler
     GridPosition wanderGridPosition;
     bool wanderPositionSet;
 
-    List<EnemyAIAction> enemyAIActions = new List<EnemyAIAction>();
+    List<NPCAIAction> npcAIActions = new List<NPCAIAction>();
 
     void Start()
     {
@@ -61,6 +63,40 @@ public class NPCActionHandler : UnitActionHandler
                 SkipTurn(); // Unit can't do anything, so skip their turn
                 return;
             }
+            else if (queuedAttack != null)
+            {
+                bool canAttack = false;
+                List<GridPosition> actionGridPositionsInRange = ListPool<GridPosition>.Claim();
+                actionGridPositionsInRange = queuedAttack.GetActionGridPositionsInRange(unit.gridPosition);
+
+                // Check if there's any enemies in the valid attack positions
+                for (int i = 0; i < actionGridPositionsInRange.Count; i++)
+                {
+                    if (canAttack) break;
+
+                    foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
+                    {
+                        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                            continue;
+
+                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+                        if (unit.alliance.IsEnemy(unitAtGridPosition))
+                        {
+                            canAttack = true;
+                            break;
+                        }
+                    }
+                }
+
+                ListPool<GridPosition>.Release(actionGridPositionsInRange);
+
+                // If so, queue the attack and return out of this method
+                if (canAttack)
+                {
+                    QueueAction(queuedAttack, targetAttackGridPosition);
+                    return;
+                }
+            }
             else if (unit.stateController.currentState == State.Fight && queuedAction == GetAction<MoveAction>() && targetEnemyUnit != null)
             {
                 if (targetEnemyUnit.health.IsDead())
@@ -71,6 +107,36 @@ public class NPCActionHandler : UnitActionHandler
                     return;
                 }
 
+                /*if (queuedAttack != null)
+                {
+                    // Check if there's any enemies in the valid attack positions
+                    bool canAttack = false;
+                    foreach (GridPosition actionGridPosition in queuedAttack.GetActionGridPositionsInRange(unit.gridPosition))
+                    {
+                        if (canAttack) break;
+
+                        foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPosition))
+                        {
+                            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                                continue;
+
+                            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+                            if (unit.alliance.IsEnemy(unitAtGridPosition))
+                            {
+                                canAttack = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // If so, queue the attack and return out of this method
+                    if (canAttack)
+                    {
+                        QueueAction(queuedAttack, targetAttackGridPosition);
+                        return;
+                    }
+                }*/
+
                 if (unit.RangedWeaponEquipped())
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
@@ -79,7 +145,7 @@ public class NPCActionHandler : UnitActionHandler
                     // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
                     if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
                     {
-                        // TO DO: If the Unit has a melee weapon, switch to it
+                        // TO DO: If the Unit has a melee weapon, switch to it (need to do inventory system first)
 
                         // Else flee somewhere
                         StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.GetRangedWeapon().itemData.item.Weapon().maxRange - 2)));
@@ -176,8 +242,12 @@ public class NPCActionHandler : UnitActionHandler
                 TurnManager.Instance.FinishTurn(unit);
         }
 
-        if (unit.isMyTurn) // Take another action if this is the last NPC who hasn't finished their turn
+        // Take another action if this is the last NPC who hasn't finished their turn
+        if (unit.isMyTurn)
+        {
+            //Debug.Log("Here");
             TurnManager.Instance.StartNextUnitsTurn(unit);
+        }
     }
 
     public void DetermineAction()
@@ -226,7 +296,7 @@ public class NPCActionHandler : UnitActionHandler
             float minShootRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
 
             // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
+            if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
             {
                 // TO DO: If the Unit has a melee weapon, switch to it
 
@@ -254,15 +324,84 @@ public class NPCActionHandler : UnitActionHandler
             return;
         }
 
-        if (IsInAttackRange(targetEnemyUnit))
-            AttackTargetGridPosition();
+        if (IsInAttackRange(targetEnemyUnit, false))
+            ChooseCombatAction();
         else
             PursueTargetEnemy();
     }
 
-    void ChooseAction()
+    public void ChooseCombatAction()
     {
-        BaseAction selectedAction = null;
+        BaseAction bestAction = null;
+        npcAIActions.Clear();
+
+        // Loop through all combat actions
+        for (int i = 0; i < combatActions.Count; i++)
+        {
+            if (combatActions[i].IsValidAction() == false)
+                continue;
+
+            // Loop through every grid position in range of the combat action
+            foreach (GridPosition gridPositionInRange in combatActions[i].GetActionGridPositionsInRange(unit.gridPosition))
+            {
+                // For each of these grid positions, get the best one for this combat action
+                npcAIActions.Add(combatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
+            }
+        }
+
+        // Sort the list of best NPCAIActions by the highest action value
+        npcAIActions = npcAIActions.OrderByDescending(npcAIAction => npcAIAction.actionValue).ToList();
+
+        // Loop through the best npcAIAction for each combat action
+        for (int i = 0; i < npcAIActions.Count; i++)
+        {
+            // Debug.Log("Action Value: " + npcAIActions[i].actionValue + " | Grid Position: " + npcAIActions[i].actionGridPosition);
+        }
+
+        // If no NPCAIActions were valid, just pursue the target enemy
+        if (npcAIActions.Count == 0 || npcAIActions[0].actionValue <= 0)
+            PursueTargetEnemy();
+        else
+        {
+            List<NPCAIAction> filteredNPCAIActions = ListPool<NPCAIAction>.Claim();
+            List<int> accumulatedWeights = ListPool<int>.Claim();
+            int totalWeight = 0;
+
+            // Get rid of any NPCAIActions that weren't valid (have a less than or equal to 0 value)
+            filteredNPCAIActions = npcAIActions.Where(npcAIAction => npcAIAction.actionValue > 0).ToList();
+
+            // Add each NPCAIAction's actionValue to the totalWeight, we'll use this for a weighted random selection of the best NPCAIActions
+            for (int i = 0; i < filteredNPCAIActions.Count; i++)
+            {
+                totalWeight += filteredNPCAIActions[i].actionValue;
+                accumulatedWeights.Add(totalWeight);
+            }
+
+            // Generate a random number between 0 and the total weight
+            int randomWeight = Random.Range(0, totalWeight);
+
+            // Find the index of the first accumulated weight greater than or equal to the random weight
+            int selectedIndex = accumulatedWeights.FindIndex(weight => weight >= randomWeight);
+
+            // Get the BaseAction from the corresponding NPCAIAction
+            bestAction = filteredNPCAIActions[selectedIndex].baseAction;
+
+            // If an action was found
+            if (bestAction != null)
+            {
+                // Set the unit's target attack position to the one corresponding to the NPCAIAction that was chosen
+                SetTargetAttackGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
+                SetQueuedAttack(bestAction);
+                QueueAction(bestAction, targetAttackGridPosition);
+            }
+            else // If no combat action was found, just move towards the target enemy
+                PursueTargetEnemy();
+
+            ListPool<NPCAIAction>.Release(filteredNPCAIActions);
+            ListPool<int>.Release(accumulatedWeights);
+        }
+
+        // (We will need to incorporate queuedAttack when TakingTurn...I think queuedAttack will need to be set with default attacks as well)
     }
 
     public void StartFight()
@@ -282,6 +421,12 @@ public class NPCActionHandler : UnitActionHandler
 
     void PursueTargetEnemy()
     {
+        if (targetEnemyUnit == null)
+        {
+            DetermineAction();
+            return;
+        }
+
         // Move towards the target Unit
         SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));
 
@@ -304,19 +449,22 @@ public class NPCActionHandler : UnitActionHandler
                 SetTargetEnemyUnit(unit.vision.visibleEnemies[0]);
             else
             {
-                enemyAIActions.Clear();
+                npcAIActions.Clear();
                 if (unit.RangedWeaponEquipped())
                 {
                     ShootAction shootAction = GetAction<ShootAction>();
                     for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
                     {
-                        enemyAIActions.Add(shootAction.GetEnemyAIAction(unit.vision.visibleEnemies[i]));
+                        npcAIActions.Add(shootAction.GetNPCAIAction_Unit(unit.vision.visibleEnemies[i]));
                     }
 
-                    if (enemyAIActions.Count == 1 && enemyAIActions[0].actionValue == -1)
+                    if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
+                    {
                         TurnManager.Instance.FinishTurn(unit);
+                        return;
+                    }
 
-                    SetTargetEnemyUnit(shootAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+                    SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                 }
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
@@ -324,13 +472,16 @@ public class NPCActionHandler : UnitActionHandler
                     MeleeAction meleeAction = GetAction<MeleeAction>();
                     for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
                     {
-                        enemyAIActions.Add(meleeAction.GetEnemyAIAction(unit.vision.visibleEnemies[i]));
+                        npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(unit.vision.visibleEnemies[i]));
                     }
 
-                    if (enemyAIActions.Count == 1 && enemyAIActions[0].actionValue == -1)
+                    if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
+                    {
                         TurnManager.Instance.FinishTurn(unit);
+                        return;
+                    }
 
-                    SetTargetEnemyUnit(meleeAction.GetBestEnemyAIActionFromList(enemyAIActions).unit);
+                    SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(meleeAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
                 }
                 else
                 {

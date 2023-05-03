@@ -41,8 +41,8 @@ public class SwipeAction : BaseAction
             else
             {
                 nextAttackFree = true;
-                CompleteAction();
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
+                CompleteAction();
             }
         }
         else
@@ -148,40 +148,7 @@ public class SwipeAction : BaseAction
             unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
-    public override EnemyAIAction GetEnemyAIAction(Unit targetUnit)
-    {
-        float finalActionValue = 0f;
-        if (targetUnit != null && IsValidAction())
-        {
-            if (targetUnit != null && targetUnit.health.IsDead() == false)
-            {
-                // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-                float minAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
-
-                if (distance < minAttackRange)
-                    finalActionValue = 0f;
-                else
-                    finalActionValue -= distance * 10f;
-            }
-        }
-
-        if (targetUnit == null)
-            return new EnemyAIAction
-            {
-                unit = null,
-                gridPosition = unit.gridPosition,
-                actionValue = -1
-            };
-
-        return new EnemyAIAction
-        {
-            unit = targetUnit,
-            gridPosition = targetUnit.gridPosition,
-            actionValue = Mathf.RoundToInt(finalActionValue)
-        };
-    }
+    public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().GetActionGridPositionsInRange(startGridPosition);
 
     public List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
     {
@@ -397,6 +364,96 @@ public class SwipeAction : BaseAction
     public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit, startGridPosition, targetGridPosition);
 
     public override bool IsInAttackRange(Unit targetUnit) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit);
+
+    public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
+    {
+        float finalActionValue = 0f;
+        if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead() == false)
+        {
+            // Target the Unit with the lowest health and/or the nearest target
+            finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            float minAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
+
+            if (distance < minAttackRange)
+                finalActionValue = 0f;
+            else
+                finalActionValue -= distance * 10f;
+
+            return new NPCAIAction
+            {
+                baseAction = this,
+                actionGridPosition = targetUnit.gridPosition,
+                actionValue = Mathf.RoundToInt(finalActionValue)
+            };
+        }
+
+        return new NPCAIAction
+        {
+            baseAction = this,
+            actionGridPosition = unit.gridPosition,
+            actionValue = -1
+        };
+    }
+
+    public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition)
+    {
+        float finalActionValue = 0f;
+        List<GridPosition> actionAreaGridPositions = ListPool<GridPosition>.Claim();
+        actionAreaGridPositions = GetActionAreaGridPositions(actionGridPosition);
+
+        // Loop through each grid position within the action area (for example, each grid position within a Swipe attack)
+        for (int i = 0; i < actionAreaGridPositions.Count; i++)
+        {
+            // Make sure there's a Unit at this grid position
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(actionAreaGridPositions[i]) == false)
+                continue;
+
+            // Adjust the finalActionValue based on the Alliance of the unit at the grid position
+            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionAreaGridPositions[i]);
+            if (unit.alliance.IsEnemy(unitAtGridPosition))
+            {
+                // Enemies in the action area increase this action's value
+                finalActionValue += 50f;
+
+                // Lower enemy health gives this action more value
+                finalActionValue += 50f - (unitAtGridPosition.health.CurrentHealthNormalized() * 50f);
+            }
+            else if (unit.alliance.IsAlly(unitAtGridPosition))
+            {
+                // Allies in the action area decrease this action's value
+                finalActionValue -= 35f;
+
+                // Lower ally health gives this action less value
+                finalActionValue -= 35f - (unitAtGridPosition.health.CurrentHealthNormalized() * 35f);
+
+                // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
+                if (unitAtGridPosition.IsPlayer())
+                    finalActionValue -= 100f;
+            }
+            else // If IsNeutral
+            {
+                // Neutral units in the action area decrease this action's value, but to a lesser extent than allies
+                finalActionValue -= 15f;
+
+                // Lower neutral unit health gives this action less value
+                finalActionValue -= 15f - (unitAtGridPosition.health.CurrentHealthNormalized() * 15f);
+
+                // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
+                if (unitAtGridPosition.IsPlayer())
+                    finalActionValue -= 50f;
+            }
+        }
+
+        ListPool<GridPosition>.Release(actionAreaGridPositions);
+
+        return new NPCAIAction
+        {
+            baseAction = this,
+            actionGridPosition = actionGridPosition,
+            actionValue = Mathf.RoundToInt(finalActionValue)
+        };
+    }
 
     public override int GetActionPointsCost()
     {

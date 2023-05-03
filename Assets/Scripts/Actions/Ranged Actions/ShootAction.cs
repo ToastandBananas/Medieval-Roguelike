@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GridSystemVisual;
 using Random = UnityEngine.Random;
 
 public class ShootAction : BaseAction
@@ -44,8 +45,8 @@ public class ShootAction : BaseAction
             else
             {
                 nextAttackFree = true;
-                CompleteAction();
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
+                CompleteAction();
             }
         }
         else
@@ -202,6 +203,44 @@ public class ShootAction : BaseAction
         return 300;
     }
 
+    public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
+    {
+        float minRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
+        float maxRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
+
+        validGridPositionsList.Clear();
+        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
+
+            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
+                continue;
+
+            float maxRangeToNodePosition = maxRange + (startGridPosition.y - nodeGridPosition.y);
+            if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
+            if (distance > maxRangeToNodePosition || distance < minRange)
+                continue;
+
+            float sphereCastRadius = 0.1f;
+            Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
+            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (startGridPosition.WorldPosition() + offset)).normalized;
+            if (Physics.SphereCast(startGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask()))
+                continue;
+
+            // Debug.Log(gridPosition);
+            validGridPositionsList.Add(nodeGridPosition);
+        }
+
+        ListPool<GraphNode>.Release(nodes);
+        return validGridPositionsList;
+    }
+
     public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
     {
         validGridPositionsList.Clear();
@@ -299,38 +338,78 @@ public class ShootAction : BaseAction
         return nearestGridPosition;
     }
 
-    public override EnemyAIAction GetEnemyAIAction(Unit targetUnit)
+    public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
     {
         float finalActionValue = 0f;
-        if (targetUnit != null && IsValidAction())
+        if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead() == false)
         {
-            targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetUnit.gridPosition);
+            // Target the Unit with the lowest health and/or the nearest target
+            finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                finalActionValue = 0f;
+            else
+                finalActionValue -= distance * 10f;
 
-            if (targetUnit != null && targetUnit.health.IsDead() == false)
+            return new NPCAIAction
             {
-                // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-                if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
-                    finalActionValue = 0f;
-                else
-                    finalActionValue -= distance * 10f;
-            }
+                baseAction = this,
+                actionGridPosition = targetUnit.gridPosition,
+                actionValue = Mathf.RoundToInt(finalActionValue)
+            };
         }
-        
-        if (targetUnit == null) 
-            return new EnemyAIAction
-            {
-                unit = null,
-                gridPosition = unit.gridPosition,
-                actionValue = -1
-            }; 
-        
-        return new EnemyAIAction
+
+        return new NPCAIAction
         {
-            unit = targetUnit,
-            gridPosition = targetUnit.gridPosition,
-            actionValue = Mathf.RoundToInt(finalActionValue)
+            baseAction = this,
+            actionGridPosition = unit.gridPosition,
+            actionValue = -1
+        };
+    }
+
+    public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition)
+    {
+        float finalActionValue = 0f;
+
+        // Make sure there's a Unit at this grid position
+        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(actionGridPosition))
+        {
+            // Adjust the finalActionValue based on the Alliance of the unit at the grid position
+            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionGridPosition);
+            if (unit.alliance.IsEnemy(unitAtGridPosition))
+            {
+                // Enemies in the action area increase this action's value
+                finalActionValue += 70f;
+
+                // Lower enemy health gives this action more value
+                finalActionValue += 70f - (unitAtGridPosition.health.CurrentHealthNormalized() * 70f);
+
+                // Favor the targetEnemyUnit
+                if (unit.unitActionHandler.targetEnemyUnit != null && unitAtGridPosition == unit.unitActionHandler.targetEnemyUnit)
+                    finalActionValue += 15f; 
+                
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, actionGridPosition);
+                if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                    finalActionValue = -1f;
+                else
+                    finalActionValue -= distance * 1.5f;
+            }
+            else
+                finalActionValue = -1f;
+
+            return new NPCAIAction
+            {
+                baseAction = this,
+                actionGridPosition = actionGridPosition,
+                actionValue = Mathf.RoundToInt(finalActionValue)
+            };
+        }
+
+        return new NPCAIAction
+        {
+            baseAction = this,
+            actionGridPosition = unit.gridPosition,
+            actionValue = -1
         };
     }
 

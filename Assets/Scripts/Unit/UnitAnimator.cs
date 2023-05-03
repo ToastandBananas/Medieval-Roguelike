@@ -38,8 +38,7 @@ public class UnitAnimator : MonoBehaviour
 
         // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
         bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
-        if (unit.unitActionHandler.targetUnits.ContainsKey(targetUnit))
-            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
 
         if (attackBlocked)
         {

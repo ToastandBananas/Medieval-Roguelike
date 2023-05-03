@@ -26,10 +26,10 @@ public abstract class BaseAction : MonoBehaviour
             UnitActionSystemUI.Instance.UpdateActionVisuals();
     }
 
-    public EnemyAIAction GetBestEnemyAIActionFromList(List<EnemyAIAction> enemyAIActionList)
+    public NPCAIAction GetBestNPCAIActionFromList(List<NPCAIAction> npcAIActionList)
     {
-        enemyAIActionList.Sort((EnemyAIAction a, EnemyAIAction b) => b.actionValue - a.actionValue);
-        return enemyAIActionList[0];
+        npcAIActionList.Sort((NPCAIAction a, NPCAIAction b) => b.actionValue - a.actionValue);
+        return npcAIActionList[0];
     }
 
     public void BecomeVisibleEnemyOfTarget(Unit targetUnit)
@@ -109,9 +109,29 @@ public abstract class BaseAction : MonoBehaviour
         return null;
     }
 
-    public virtual EnemyAIAction GetEnemyAIAction(GridPosition gridPosition) => null;
+    public virtual List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
+    {
+        Debug.LogWarning("The 'GetActionGridPositionsInRange' method has not been implemented for the " + GetActionName() + " action.");
+        return null;
+    }
 
-    public virtual EnemyAIAction GetEnemyAIAction(Unit targetUnit) => null;
+    /// <summary>Determines the value of performing this BaseAction at the 'actionGridPosition'. For use when an NPC needs to determine which combat action to take.</summary>
+    /// <param name="actionGridPosition">The target action position we are testing.</param>
+    /// <returns>NPCAIAction with an associated actionValue. A higher actionValue is better.</returns>
+    public virtual NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition)
+    {
+        Debug.LogWarning("The 'GetNPCAIAction_ActionGridPosition' method has not been implemented for the " + GetActionName() + " action.");
+        return null;
+    }
+
+    /// <summary>Determines the value of attacking the targetUnit. For use when an NPC needs to determine which enemy unit is best to set as this unit's targetEnemyUnit (in UnitActionHandler).</summary>
+    /// <param name="targetUnit">The Unit we are testing.</param>
+    /// <returns>NPCAIAction with an associated actionValue. A higher actionValue is better.</returns>
+    public virtual NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
+    {
+        Debug.LogWarning("The 'GetNPCAIAction_Unit' method has not been implemented for the " + GetActionName() + " action.");
+        return null;
+    }
 
     public bool IsActive() => isActive;
 

@@ -95,74 +95,9 @@ public class GridSystemVisual : MonoBehaviour
         }
     }
 
-    public void ShowGridPositionMeleeRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
+    public void ShowAttackRange(BaseAction attackAction, GridPosition startGridPosition, GridVisualType gridVisualType)
     {
-        float boundsDimension = (maxRange * 2) + 0.1f;
-        gridPositionsList.Clear();
-        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-
-            float maxRangeToNodePosition = maxRange - Mathf.Abs(nodeGridPosition.y - gridPosition.y);
-            if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(gridPosition, nodeGridPosition);
-            if (distance > maxRangeToNodePosition || distance < minRange)
-                continue;
-
-            // Check for obstacles
-            float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * player.ShoulderHeight() * 2f;
-            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (gridPosition.WorldPosition() + offset)).normalized;
-            if (Physics.SphereCast(gridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), player.unitActionHandler.AttackObstacleMask()))
-                continue;
-
-            // Debug.Log(gridPosition);
-            gridPositionsList.Add(nodeGridPosition);
-        }
-
-        ListPool<GraphNode>.Release(nodes);
-        ShowGridPositionList(gridPositionsList, gridVisualType);
-    }
-
-    public void ShowGridPositionShootRange(GridPosition gridPosition, float minRange, float maxRange, GridVisualType gridVisualType)
-    {
-        float boundsDimension = ((gridPosition.y + maxRange) * 2) + 0.1f;
-        gridPositionsList.Clear();
-        List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-            if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                continue;
-
-            float maxRangeToNodePosition = maxRange + (gridPosition.y - nodeGridPosition.y);
-            if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-            
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(gridPosition, nodeGridPosition);
-            if (distance > maxRangeToNodePosition || distance < minRange)
-                continue;
-
-            float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * player.ShoulderHeight() * 2f;
-            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (gridPosition.WorldPosition() + offset)).normalized;
-            if (Physics.SphereCast(gridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(player.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), player.unitActionHandler.AttackObstacleMask()))
-                continue;
-
-            // Debug.Log(gridPosition);
-            gridPositionsList.Add(nodeGridPosition);
-        }
-
-        ListPool<GraphNode>.Release(nodes);
+        gridPositionsList = attackAction.GetActionGridPositionsInRange(startGridPosition);
         ShowGridPositionList(gridPositionsList, gridVisualType);
     }
 
@@ -174,32 +109,10 @@ public class GridSystemVisual : MonoBehaviour
             return;
 
         BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
-        Weapon meleeWeapon = null;
-        switch (selectedAction)
-        {
-            case MeleeAction meleeAction:
-                if (Instance.player.MeleeWeaponEquipped())
-                {
-                    meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-                    Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
-                }
-                else
-                    Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, 1f, Instance.player.unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(Instance.player.gridPosition, false), GridVisualType.RedSoft);
-                break;
-            case SwipeAction swipeAction:
-                meleeWeapon = Instance.player.GetPrimaryMeleeWeapon().itemData.item.Weapon();
-                Instance.ShowGridPositionMeleeRange(Instance.player.gridPosition, meleeWeapon.minRange, meleeWeapon.maxRange, GridVisualType.RedSoft);
-                break;
-            case ShootAction shootAction:
-                Weapon rangedWeapon = Instance.player.GetRangedWeapon().itemData.item.Weapon();
-                Instance.ShowGridPositionShootRange(Instance.player.gridPosition, rangedWeapon.minRange, rangedWeapon.maxRange, GridVisualType.RedSoft);
-                break;
-            //case ThrowAction throwAction:
-                //Instance.ShowGridPositionRange(player.gridPosition, throwAction.MinThrowDistance(), throwAction.MaxThrowDistance(), GridVisualType.RedSoft);
-                //break;
-            default:
-                return;
-        }
+        if (selectedAction.IsAttackAction() == false)
+            return;
+
+        Instance.ShowAttackRange(selectedAction, Instance.player.gridPosition, GridVisualType.RedSoft);
     }
 
     public static void UpdateAttackGridVisual()

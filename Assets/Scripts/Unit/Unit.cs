@@ -114,7 +114,8 @@ public class Unit : MonoBehaviour
             }
         }
 
-        attackingUnit.unitActionHandler.targetUnits.Add(this, null);
+        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(this) == false)
+            attackingUnit.unitActionHandler.targetUnits.Add(this, null);
         return false;
     }
 
@@ -233,7 +234,8 @@ public class Unit : MonoBehaviour
             }
         }
 
-        attackingUnit.unitActionHandler.targetUnits.Add(this, null);
+        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(this) == false)
+            attackingUnit.unitActionHandler.targetUnits.Add(this, null);
         return false;
     }
 
