@@ -43,7 +43,7 @@ public class UnitAnimator : MonoBehaviour
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation
-            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+            targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
 
             if (itemBlockedWith is HeldShield)
                 targetUnit.GetShield().RaiseShield();

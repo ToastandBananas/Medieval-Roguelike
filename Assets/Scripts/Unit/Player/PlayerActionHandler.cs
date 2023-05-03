@@ -106,8 +106,6 @@ public class PlayerActionHandler : UnitActionHandler
                     }
                 }
             }
-            //else if (queuedAction == null && targetGridPosition != unit.gridPosition)
-            //QueueAction(GetAction<MoveAction>());
 
             if (queuedAction != null)
                 GetNextQueuedAction();

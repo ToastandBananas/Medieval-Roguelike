@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEngine;
+
 public class InteractAction : BaseAction
 {
     GridPosition targetInteractableGridPosition;
@@ -5,19 +8,31 @@ public class InteractAction : BaseAction
     public override void TakeAction(GridPosition gridPosition)
     {
         StartAction();
-        if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(targetInteractableGridPosition))
-        {
-            LevelGrid.Instance.GetInteractableAtGridPosition(targetInteractableGridPosition).Interact(unit);
 
-            CompleteAction();
-            unit.unitActionHandler.SetTargetInteractable(null);
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+        StartCoroutine(Interact());
+    }
+
+    IEnumerator Interact()
+    {
+        TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+
+        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        {
+            if (turnAction.IsFacingTarget(targetInteractableGridPosition) == false)
+                turnAction.RotateTowardsPosition(targetInteractableGridPosition.WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
+
+            while (turnAction.isRotating)
+                yield return null;
         }
         else
-        {
-            CompleteAction();
-            unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
-        }
+            turnAction.RotateTowardsPosition(targetInteractableGridPosition.WorldPosition(), true);
+
+        // Do the interaction
+        LevelGrid.Instance.GetInteractableAtGridPosition(targetInteractableGridPosition).Interact(unit);
+
+        CompleteAction();
+        unit.unitActionHandler.SetTargetInteractable(null);
+        TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
     public override int GetActionPointsCost()

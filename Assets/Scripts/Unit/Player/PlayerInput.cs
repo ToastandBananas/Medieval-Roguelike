@@ -122,36 +122,36 @@ public class PlayerInput : MonoBehaviour
         GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
         player.unitActionHandler.SetTargetInteractable(null);
 
+        // If the mouse is hovering over an Interactable
+        if (highlightedInteractable != null)
+        {
+            // Set the target Interactable
+            player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
+
+            // If the player is too far away from the Interactable to interact with it
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.gridSize)
+            {
+                // Queue a Move Action towards the Interactable
+                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.gridSize));
+                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+            }
+            else
+            {
+                // Queue the Interact Action with the Interactable
+                player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(highlightedInteractable.gridPosition);
+                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+            }
+        }
         // Make sure the mouse grid position is a valid position to perform an action
-        if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
+        else if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
         {
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
             bool unitIsVisible = true;
             if (unitAtGridPosition != null)
                 unitIsVisible = player.vision.IsVisible(unitAtGridPosition);
 
-            // If the mouse is hovering over an Interactable
-            if (highlightedInteractable != null)
-            {
-                // Set the target Interactable
-                player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
-
-                // If the player is too far away from the Interactable to interact with it
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.gridSize)
-                {
-                    // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.gridSize));
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
-                }
-                else
-                {
-                    // Queue the Interact Action with the Interactable
-                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(highlightedInteractable.gridPosition);
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
-                }
-            }
             // If the mouse is hovering over a unit that's in the player's Vision
-            else if (unitAtGridPosition != null && unitIsVisible)
+            if (unitAtGridPosition != null && unitIsVisible)
             {
                 // If the unit is someone the player can attack
                 if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
@@ -174,7 +174,7 @@ public class PlayerInput : MonoBehaviour
                             }
 
                             // Turn towards and attack the target enemy
-                            player.unitActionHandler.AttackTargetGridPosition();
+                            player.unitActionHandler.AttackTarget();
                             return;
                         }
                     }
@@ -193,7 +193,7 @@ public class PlayerInput : MonoBehaviour
                             }
 
                             // Turn towards and attack the target enemy
-                            player.unitActionHandler.AttackTargetGridPosition();
+                            player.unitActionHandler.AttackTarget();
                             return;
                         }
                     }
@@ -204,7 +204,7 @@ public class PlayerInput : MonoBehaviour
                         if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)) 
                         {
                             // Turn towards and attack the target enemy
-                            player.unitActionHandler.AttackTargetGridPosition();
+                            player.unitActionHandler.AttackTarget();
                             return;
                         }
                     }
@@ -241,8 +241,8 @@ public class PlayerInput : MonoBehaviour
                 if (player.unitActionHandler.selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition))
                 {
                     // Turn towards and attack the target enemy
-                    player.unitActionHandler.AttackTargetGridPosition();
                     player.unitActionHandler.SetQueuedAttack(player.unitActionHandler.selectedAction);
+                    player.unitActionHandler.AttackTarget();
                     return;
                 }
             }
@@ -267,7 +267,7 @@ public class PlayerInput : MonoBehaviour
             if (player.unitActionHandler.selectedAction is MoveAction)
             {
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition()); 
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, interactableMask))
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, interactableMask))
                 {
                     highlightedInteractable = LevelGrid.Instance.GetInteractableFromTransform(hit.transform.parent);
                     if (highlightedInteractable != null && highlightedInteractable is Door)

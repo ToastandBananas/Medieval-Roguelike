@@ -69,7 +69,7 @@ public class HeldMeleeWeapon : HeldItem
     void BlockAttack(Unit blockingUnit, HeldItem itemBlockedWith)
     {
         // Target Unit rotates towards this Unit & does block animation with shield or weapon
-        StartCoroutine(blockingUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+        blockingUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
         if (itemBlockedWith is HeldShield)
             blockingUnit.GetShield().RaiseShield();
         else

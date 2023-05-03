@@ -1,6 +1,5 @@
 using Pathfinding;
 using Pathfinding.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,15 +7,9 @@ using UnityEngine;
 public class SwipeAction : BaseAction
 {
     public bool isAttacking { get; private set; }
-    bool nextAttackFree;
 
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
-    void Start()
-    {
-        unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
-    }
 
     public override void TakeAction(GridPosition gridPosition)
     {
@@ -35,16 +28,7 @@ public class SwipeAction : BaseAction
         StartAction();
 
         if (IsInAttackRange(null, unit.gridPosition, unit.unitActionHandler.targetAttackGridPosition))
-        {
-            if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition))
-                Attack();
-            else
-            {
-                nextAttackFree = true;
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
-                CompleteAction();
-            }
-        }
+            StartCoroutine(Attack());
         else
         {
             CompleteAction();
@@ -53,11 +37,21 @@ public class SwipeAction : BaseAction
         }
     }
 
-    void Attack()
+    IEnumerator Attack()
     {
+        TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+
         // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition) == false)
+                turnAction.RotateTowardsPosition(unit.unitActionHandler.targetAttackGridPosition.WorldPosition(), false);
+
+            // Wait to finish any rotations already in progress
+            while (turnAction.isRotating)
+                yield return null;
+
             // Play the attack animations and handle blocking for each target
             unit.unitAnimator.StartMeleeAttack();
             unit.GetPrimaryMeleeWeapon().DoSwipeAttack();
@@ -67,6 +61,10 @@ public class SwipeAction : BaseAction
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition) == false)
+                turnAction.RotateTowardsPosition(unit.unitActionHandler.targetAttackGridPosition.WorldPosition(), true);
+
             // Loop through the grid positions in the attack area
             foreach (GridPosition gridPosition in GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
             {
@@ -79,7 +77,7 @@ public class SwipeAction : BaseAction
 
                 // The targetUnit tries to block the attack and if they do, they face their attacker
                 if(targetUnit.TryBlockMeleeAttack(unit))
-                    StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+                    targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
                 // Damage this unit
                 DamageTargets(unit.GetPrimaryMeleeWeapon());
@@ -457,12 +455,12 @@ public class SwipeAction : BaseAction
 
     public override int GetActionPointsCost()
     {
-        if (nextAttackFree)
-        {
-            nextAttackFree = false;
-            return 0;
-        }
-        return 300;
+        int cost = 300;
+
+        // If not facing the target position, add the cost of turning towards that position
+        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetAttackGridPosition);
+        cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+        return cost;
     }
 
     protected override void StartAction()
@@ -485,8 +483,6 @@ public class SwipeAction : BaseAction
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
     }
-
-    void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;
 
     public override bool IsValidAction() => unit.MeleeWeaponEquipped();
 

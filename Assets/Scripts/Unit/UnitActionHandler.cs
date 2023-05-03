@@ -133,27 +133,19 @@ public abstract class UnitActionHandler : MonoBehaviour
     #endregion
 
     #region Combat
-    public void AttackTargetGridPosition()
+    public void AttackTarget()
     {
-        if (GetAction<TurnAction>().IsFacingTarget(targetAttackGridPosition))
+        if (selectedAction.IsAttackAction())
+            QueueAction(selectedAction, targetAttackGridPosition);
+        else if (unit.RangedWeaponEquipped())
         {
-            if (selectedAction.IsAttackAction())
-                QueueAction(selectedAction, targetAttackGridPosition);
-            else if (unit.RangedWeaponEquipped())
-            {
-                if (unit.GetRangedWeapon().isLoaded)
-                    QueueAction(GetAction<ShootAction>(), targetAttackGridPosition);
-                else
-                    QueueAction(GetAction<ReloadAction>());
-            }
-            else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
-                QueueAction(GetAction<MeleeAction>(), targetAttackGridPosition);
+            if (unit.GetRangedWeapon().isLoaded)
+                QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+            else
+                QueueAction(GetAction<ReloadAction>());
         }
-        else
-        {
-            SetQueuedAttack(selectedAction);
-            QueueAction(GetAction<TurnAction>());
-        }
+        else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+            QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
     }
 
     public bool IsInAttackRange(Unit targetUnit, bool defaultCombatActionsOnly)

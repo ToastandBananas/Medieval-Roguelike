@@ -35,7 +35,7 @@ public class TurnAction : BaseAction
 
     void Turn(bool rotateInstantly)
     {
-        StartCoroutine(RotateTowards_CurrentTargetPosition(rotateInstantly));
+        RotateTowards_CurrentTargetPosition(rotateInstantly);
         currentDirection = targetDirection;
 
         CompleteAction();
@@ -46,29 +46,44 @@ public class TurnAction : BaseAction
             TurnManager.Instance.StartNextUnitsTurn(unit);
     }
 
-    public IEnumerator RotateTowards_CurrentTargetPosition(bool rotateInstantly)
+    public void RotateTowards_CurrentTargetPosition(bool rotateInstantly)
     {
-        Vector3 forward = transform.forward;
-        forward.y = 0;
-        float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+        StartCoroutine(Rotate(targetPosition, rotateInstantly));
+    }
 
-        Vector3 lookPos = (new Vector3(targetPosition.x, transform.position.y, targetPosition.z) - transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(lookPos);
-        Vector3 rotateTargetPosition = targetPosition;
+    public void RotateTowards_Direction(Direction direction, bool rotateInstantly)
+    {
+        SetTargetPosition(direction);
+        RotateTowards_CurrentTargetPosition(rotateInstantly);
+    }
 
-        if (targetRotation == transform.rotation)
+    public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
+    {
+        StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
+    }
+
+    IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
+    {
+        Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - transform.position).normalized;
+        if (lookPos == Vector3.zero)
             yield break;
+
+        targetPosition = targetPos;
+        Vector3 rotateTargetPosition = targetPos;
+        Quaternion targetRotation = Quaternion.LookRotation(lookPos);
 
         if (rotateInstantly == false)
         {
-            isRotating = true;
-            while (rotateTargetPosition == targetPosition && (Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) > 0.25f || Mathf.Abs(targetRotation.eulerAngles.y) - Mathf.Abs(headingAngle) < -0.25f))
+            while (true)
             {
-                forward = transform.forward;
-                forward.y = 0;
-                headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+                if (rotateTargetPosition != targetPosition)
+                    break;
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+
+                if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+                    break;
+
                 yield return null;
             }
         }
@@ -80,36 +95,9 @@ public class TurnAction : BaseAction
         unit.vision.FindVisibleUnits();
     }
 
-    public void RotateTowards_Direction(Direction direction, bool rotateInstantly)
+    public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
     {
-        SetTargetPosition(direction);
-        StartCoroutine(RotateTowards_CurrentTargetPosition(rotateInstantly));
-    }
-
-    public IEnumerator RotateTowards_AttackingTargetUnit(Unit targetUnit, bool rotateInstantly)
-    {
-        Vector3 targetPos = targetUnit.WorldPosition();
-        Vector3 forward = transform.forward;
-        forward.y = 0;
-
-        Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(lookPos);
-
-        if (rotateInstantly == false)
-        {
-            while (targetUnit.unitActionHandler.IsAttacking())
-            {
-                forward = transform.forward;
-                forward.y = 0;
-
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, defaultRotateSpeed * 2f * Time.deltaTime);
-                yield return null;
-            }
-        }
-
-        transform.rotation = targetRotation;
-        SetCurrentDirection();
-        RotateTowards_Direction(currentDirection, rotateInstantly);
+        RotateTowardsPosition(targetUnit.gridPosition.WorldPosition(), rotateInstantly, defaultRotateSpeed * 2f);
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -134,7 +122,7 @@ public class TurnAction : BaseAction
             targetDirection = Direction.SouthEast;
         else
             targetDirection = Direction.Center;
-
+        
         return targetDirection;
     }
 
@@ -523,4 +511,6 @@ public class TurnAction : BaseAction
     public override int GetActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
     public override bool ActionIsUsedInstantly() => false;
+
+    public float DefaultRotateSpeed() => defaultRotateSpeed;
 }

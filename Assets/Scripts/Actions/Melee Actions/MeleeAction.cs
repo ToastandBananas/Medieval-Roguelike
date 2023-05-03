@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GridSystemVisual;
 
 public class MeleeAction : BaseAction
 {
@@ -17,12 +16,6 @@ public class MeleeAction : BaseAction
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
     public bool isAttacking { get; private set; }
-    bool nextAttackFree;
-
-    void Start()
-    {
-        unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
-    }
 
     public override void TakeAction(GridPosition gridPosition)
     {
@@ -38,16 +31,7 @@ public class MeleeAction : BaseAction
         StartAction();
 
         if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
-        {
-            if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition))
-                Attack();
-            else
-            {
-                nextAttackFree = true;
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
-                CompleteAction();
-            }
-        }
+            StartCoroutine(Attack());
         else
         {
             CompleteAction();
@@ -56,13 +40,22 @@ public class MeleeAction : BaseAction
         }
     }
 
-    public void Attack()
+    IEnumerator Attack()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
         // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+                turnAction.RotateTowards_Unit(targetUnit, false);
+
+            // Wait to finish any rotations already in progress
+            while (turnAction.isRotating)
+                yield return null;
+
             // Play the attack animations and handle blocking for the target
             if (unit.IsUnarmed())
             {
@@ -94,6 +87,7 @@ public class MeleeAction : BaseAction
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
+            // Try to block the attack
             bool attackBlocked = false;
             if (unit.IsUnarmed())
             {
@@ -122,8 +116,13 @@ public class MeleeAction : BaseAction
                 DamageTargets(unit.leftHeldItem as HeldMeleeWeapon); // Left hand weapon attack
             }
 
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+                turnAction.RotateTowards_Unit(targetUnit, false);
+
+            // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
             if (attackBlocked)
-                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+                targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -327,12 +326,12 @@ public class MeleeAction : BaseAction
 
     public override int GetActionPointsCost()
     {
-        if (nextAttackFree)
-        {
-            nextAttackFree = false;
-            return 0;
-        }
-        return 300;
+        int cost = 300;
+
+        // If not facing the target position, add the cost of turning towards that position
+        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.gridPosition);
+        cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+        return cost;
     }
 
     public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
@@ -504,8 +503,6 @@ public class MeleeAction : BaseAction
     public override bool IsMeleeAttackAction() => true;
 
     public override bool IsRangedAttackAction() => false;
-
-    void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false; 
 
     public bool CanFightUnarmed() => canFightUnarmed;
 

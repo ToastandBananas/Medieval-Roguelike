@@ -1,10 +1,8 @@
 using Pathfinding;
 using Pathfinding.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GridSystemVisual;
 using Random = UnityEngine.Random;
 
 public class ShootAction : BaseAction
@@ -13,12 +11,6 @@ public class ShootAction : BaseAction
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
     public bool isShooting { get; private set; }
-    bool nextAttackFree;
-
-    void Start()
-    {
-        unit.unitActionHandler.GetAction<MoveAction>().OnStopMoving += MoveAction_OnStopMoving;
-    }
 
     public override void TakeAction(GridPosition gridPosition)
     {
@@ -39,16 +31,7 @@ public class ShootAction : BaseAction
             return;
         }
         else if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
-        {
-            if (unit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.unitActionHandler.targetEnemyUnit.gridPosition))
-                StartCoroutine(Shoot());
-            else
-            {
-                nextAttackFree = true;
-                unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<TurnAction>());
-                CompleteAction();
-            }
-        }
+            StartCoroutine(Shoot());
         else
         {
             CompleteAction();
@@ -60,6 +43,7 @@ public class ShootAction : BaseAction
     IEnumerator Shoot()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
+        TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
         // The unit being attacked becomes aware of this unit
         BecomeVisibleEnemyOfTarget(targetUnit);
@@ -67,8 +51,12 @@ public class ShootAction : BaseAction
         // If this is the Player attacking, or if this is an NPC that's visible on screen
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+                turnAction.RotateTowards_Unit(targetUnit, false);
+
             // Wait to finish any rotations already in progress
-            while (unit.unitActionHandler.GetAction<TurnAction>().isRotating)
+            while (turnAction.isRotating)
                 yield return null;
 
             // Rotate towards the target and do the shoot animation
@@ -84,8 +72,13 @@ public class ShootAction : BaseAction
             if (missedTarget == false)
                 DamageTargets(unit.GetRangedWeapon());
 
+            // Rotate towards the target
+            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+                turnAction.RotateTowards_Unit(targetUnit, true);
+
+            // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
             if (attackBlocked)
-                StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, true));
+                targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -158,6 +151,7 @@ public class ShootAction : BaseAction
             yield return null;
         }
 
+        // After this Unit is done shooting, rotate back towards their TurnAction's currentDirection
         unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, false);
     }
 
@@ -195,12 +189,12 @@ public class ShootAction : BaseAction
 
     public override int GetActionPointsCost()
     {
-        if (nextAttackFree || RangedWeaponIsLoaded() == false)
-        {
-            nextAttackFree = false;
-            return 0;
-        }
-        return 300;
+        int cost = 300;
+
+        // If not facing the target position, add the cost of turning towards that position
+        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.gridPosition);
+        cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+        return cost;
     }
 
     public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
@@ -426,8 +420,6 @@ public class ShootAction : BaseAction
             return true;
         return false;
     }
-
-    void MoveAction_OnStopMoving(object sender, EventArgs e) => nextAttackFree = false;
 
     public bool RangedWeaponIsLoaded() => unit.GetRangedWeapon().isLoaded; 
 

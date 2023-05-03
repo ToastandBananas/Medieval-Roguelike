@@ -112,7 +112,7 @@ public class MoveAction : BaseAction
 
             // Start rotating towards the target position
             unitActionHandler.GetAction<TurnAction>().SetTargetPosition(directionToNextPosition);
-            StartCoroutine(unitActionHandler.GetAction<TurnAction>().RotateTowards_CurrentTargetPosition(false));
+            unitActionHandler.GetAction<TurnAction>().RotateTowards_CurrentTargetPosition(false);
 
             // Get the next path position, not including the Y coordinate
             nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
@@ -231,7 +231,7 @@ public class MoveAction : BaseAction
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.IsInAttackRange(unitActionHandler.targetEnemyUnit, true))
             {
                 unit.unitAnimator.StopMovingForward();
-                unitActionHandler.AttackTargetGridPosition();
+                unitActionHandler.AttackTarget();
             }
             // If the enemy moved positions, set the target position to the nearest possible attack position
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)
@@ -261,7 +261,6 @@ public class MoveAction : BaseAction
                     unit.unitAnimator.StopMovingForward();
                     NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
                     npcActionHandler.ChooseCombatAction();
-                    // unitActionHandler.AttackTargetGridPosition();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
                 else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead() == false && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)

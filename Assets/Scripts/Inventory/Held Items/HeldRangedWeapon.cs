@@ -19,7 +19,7 @@ public class HeldRangedWeapon : HeldItem
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
-            StartCoroutine(targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_AttackingTargetUnit(unit, false));
+            targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
             if (targetUnit.ShieldEquipped())
                 targetUnit.GetShield().RaiseShield();
         }
