@@ -153,7 +153,7 @@ public class PlayerInput : MonoBehaviour
             // If the mouse is hovering over a unit that's in the player's Vision
             if (unitAtGridPosition != null && unitIsVisible)
             {
-                // If the unit is someone the player can attack
+                // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
                 if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
                 {
                     // Set the Unit as the target enemy
@@ -179,7 +179,7 @@ public class PlayerInput : MonoBehaviour
                         }
                     }
                     // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                    else if ((player.MeleeWeaponEquipped() || player.IsUnarmed()))
+                    else if (player.MeleeWeaponEquipped() || player.IsUnarmed())
                     {
                         // If the target is in attack range
                         if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
@@ -273,7 +273,7 @@ public class PlayerInput : MonoBehaviour
                     if (highlightedInteractable != null && highlightedInteractable is Door)
                         WorldMouse.ChangeCursor(CursorState.UseDoor);
                 }
-                else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsEnemy(unitAtGridPosition))
+                else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsEnemy(unitAtGridPosition) && player.vision.IsVisible(unitAtGridPosition))
                 {
                     highlightedInteractable = null;
                     if (player.RangedWeaponEquipped())
@@ -293,7 +293,7 @@ public class PlayerInput : MonoBehaviour
             {
                 highlightedInteractable = null;
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
-                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition) && player.alliance.IsAlly(unitAtGridPosition) == false)
+                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                     if (player.RangedWeaponEquipped())

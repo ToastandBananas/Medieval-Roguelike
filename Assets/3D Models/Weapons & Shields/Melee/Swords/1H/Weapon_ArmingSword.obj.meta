@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Weapon_ArmingSword
     second: {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Weapon_ArmingSwordMat
+    second: {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -74,7 +79,7 @@ ModelImporter:
     useFileScale: 1
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 0
+    normalImportMode: 1
     tangentImportMode: 3
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0

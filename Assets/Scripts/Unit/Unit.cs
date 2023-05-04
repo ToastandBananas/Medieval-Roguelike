@@ -409,7 +409,9 @@ public class Unit : MonoBehaviour
 
     public bool IsPlayer() => gameObject.CompareTag("Player");
 
-    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && UnitManager.Instance.player.vision.IsVisible(this);
+    public bool IsVisibleOnScreen() => meshRenderers[0].isVisible && CanSeeMeshRenderers() && UnitManager.Instance.player.vision.IsKnown(this);
+
+    public bool CanSeeMeshRenderers() => meshRenderers[0].shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
 
     public void SetIsMyTurn(bool isMyTurn) 
     {

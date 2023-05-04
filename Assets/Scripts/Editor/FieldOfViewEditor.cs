@@ -19,9 +19,9 @@ public class FieldOfViewEditor : Editor
         Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleB * fov.viewRadius);
 
         Handles.color = Color.red;
-        if (fov.visibleUnits.Count > 0)
+        if (fov.knownUnits.Count > 0)
         {
-            foreach (Unit visibleUnit in fov.visibleUnits)
+            foreach (Unit visibleUnit in fov.knownUnits)
             {
                 Handles.DrawLine(fov.transform.position, visibleUnit.transform.position + yOffset);
             }

@@ -66,7 +66,7 @@ public class ActionLineRenderer : MonoBehaviour
                 if (player.alliance.IsEnemy(unitAtMousePosition))
                 {
                     // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition, true) || player.unitActionHandler.selectedAction.IsDefaultAttackAction() == false)
+                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition, true) || (player.unitActionHandler.selectedAction.IsAttackAction() && player.unitActionHandler.selectedAction.IsDefaultAttackAction() == false))
                     {
                         HideLineRenderers();
                         yield break;
@@ -82,6 +82,7 @@ public class ActionLineRenderer : MonoBehaviour
             }
             else
             {
+                // If the unit at the mouse position isn't visible, unblock their position so we can draw a line to it (we will re-block it after the line is drawn)
                 if (unitAtMousePosition != null)
                     unitAtMousePosition.UnblockCurrentPosition();
             }
@@ -103,6 +104,7 @@ public class ActionLineRenderer : MonoBehaviour
             if (LevelGrid.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
                 yield break;
 
+            // Re-block the unit's position, in case it was unblocked
             if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition) == false)
                 unitAtMousePosition.BlockCurrentPosition();
 

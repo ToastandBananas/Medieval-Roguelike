@@ -107,36 +107,6 @@ public class NPCActionHandler : UnitActionHandler
                     return;
                 }
 
-                /*if (queuedAttack != null)
-                {
-                    // Check if there's any enemies in the valid attack positions
-                    bool canAttack = false;
-                    foreach (GridPosition actionGridPosition in queuedAttack.GetActionGridPositionsInRange(unit.gridPosition))
-                    {
-                        if (canAttack) break;
-
-                        foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPosition))
-                        {
-                            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
-                                continue;
-
-                            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
-                            if (unit.alliance.IsEnemy(unitAtGridPosition))
-                            {
-                                canAttack = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // If so, queue the attack and return out of this method
-                    if (canAttack)
-                    {
-                        QueueAction(queuedAttack, targetAttackGridPosition);
-                        return;
-                    }
-                }*/
-
                 if (unit.RangedWeaponEquipped())
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
@@ -242,12 +212,8 @@ public class NPCActionHandler : UnitActionHandler
                 TurnManager.Instance.FinishTurn(unit);
         }
 
-        // Take another action if this is the last NPC who hasn't finished their turn
         if (unit.isMyTurn)
-        {
-            //Debug.Log("Here");
             TurnManager.Instance.StartNextUnitsTurn(unit);
-        }
     }
 
     public void DetermineAction()
@@ -442,20 +408,20 @@ public class NPCActionHandler : UnitActionHandler
 
     void FindBestTargetEnemy()
     {
-        if (unit.vision.visibleEnemies.Count > 0)
+        if (unit.vision.knownEnemies.Count > 0)
         {
             // If there's only one visible enemy, then there's no need to figure out the best enemy AI action
-            if (unit.vision.visibleEnemies.Count == 1)
-                SetTargetEnemyUnit(unit.vision.visibleEnemies[0]);
+            if (unit.vision.knownEnemies.Count == 1)
+                SetTargetEnemyUnit(unit.vision.knownEnemies[0]);
             else
             {
                 npcAIActions.Clear();
                 if (unit.RangedWeaponEquipped())
                 {
                     ShootAction shootAction = GetAction<ShootAction>();
-                    for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+                    for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
                     {
-                        npcAIActions.Add(shootAction.GetNPCAIAction_Unit(unit.vision.visibleEnemies[i]));
+                        npcAIActions.Add(shootAction.GetNPCAIAction_Unit(unit.vision.knownEnemies[i]));
                     }
 
                     if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
@@ -470,9 +436,9 @@ public class NPCActionHandler : UnitActionHandler
                 else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                 {
                     MeleeAction meleeAction = GetAction<MeleeAction>();
-                    for (int i = 0; i < unit.vision.visibleEnemies.Count; i++)
+                    for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
                     {
-                        npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(unit.vision.visibleEnemies[i]));
+                        npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(unit.vision.knownEnemies[i]));
                     }
 
                     if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
@@ -495,8 +461,8 @@ public class NPCActionHandler : UnitActionHandler
 
     void GetRandomTargetEnemy()
     {
-        if (unit.vision.visibleEnemies.Count > 0)
-            targetEnemyUnit = unit.vision.visibleEnemies[Random.Range(0, unit.vision.visibleEnemies.Count)];
+        if (unit.vision.knownEnemies.Count > 0)
+            targetEnemyUnit = unit.vision.knownEnemies[Random.Range(0, unit.vision.knownEnemies.Count)];
         else
             targetEnemyUnit = null;
     }

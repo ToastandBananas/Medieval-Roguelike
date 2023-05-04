@@ -1,6 +1,5 @@
 using Pathfinding;
 using Pathfinding.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,7 +34,8 @@ public class MeleeAction : BaseAction
         else
         {
             CompleteAction();
-            unit.unitActionHandler.TakeTurn();
+            if (unit.IsPlayer())
+                unit.unitActionHandler.TakeTurn();
             return;
         }
     }
@@ -193,7 +193,7 @@ public class MeleeAction : BaseAction
 
     public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
+        if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
             return false;
 
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);

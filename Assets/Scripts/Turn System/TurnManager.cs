@@ -37,7 +37,6 @@ public class TurnManager : MonoBehaviour
         npcs_FinishedTurn = new List<Unit>();
 
         StartUnitsTurn(activeUnit);
-        //StartCoroutine(DelayStartNextUnitsTurn(activeUnit));
     }
 
     public void FinishTurn(Unit unit)
@@ -47,20 +46,27 @@ public class TurnManager : MonoBehaviour
 
         if (unit.IsNPC())
         {
+            // The unit should be at 0 AP, but if they finished their turn without performing an action (because it had to be cancelled, for example) then just zero out their currentAP
             if (unit.stats.currentAP > 0)
                 unit.stats.UseAP(unit.stats.currentAP);
 
             if (unit.stats.pooledAP <= 0)
             {
+                // The unit has no more pooledAP, so they can't do anything else (their turn is over)
                 npcs_FinishedTurn.Add(unit);
                 npcs_HaventFinishedTurn.Remove(unit);
             }
             else
             {
+                // Put the unit at the end of the list, since they still have some AP to use
                 npcs_HaventFinishedTurn.Remove(unit);
                 npcs_HaventFinishedTurn.Insert(npcs_HaventFinishedTurn.Count, unit);
+
+                // Since the unit's turn isn't fully over for this round, subtract from the turn index (since we'll be adding to it in DoNextUnitsTurn), unless this is the last unit that needs to finish their turn
                 if (npcs_HaventFinishedTurn.IndexOf(unit) != npcTurnIndex)
                     npcTurnIndex--;
+
+                // Refill their currentAP with some (or the remainder) of their pooledAP
                 unit.stats.GetAPFromPool();
             }
         }
@@ -92,6 +98,7 @@ public class TurnManager : MonoBehaviour
                     npcTurnIndex = 0;
             }
 
+            // Start the next units turn, but don't increase the turn index (or else it'll mess up the turn order)
             StartNextUnitsTurn(unit, false);
         }
         else
@@ -101,7 +108,7 @@ public class TurnManager : MonoBehaviour
         }
     }
 
-    IEnumerator DoNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
+    IEnumerator DoNextUnitsTurn(bool increaseTurnIndex = true)
     {
         // If the final Unit is still performing an action
         while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
@@ -109,9 +116,9 @@ public class TurnManager : MonoBehaviour
             yield return null;
         }
 
+        // Increase the turn index or go back to 0 if it's time for a new round of turns
         if (increaseTurnIndex)
         {
-            // Increase the turn index
             if (npcTurnIndex >= npcs_HaventFinishedTurn.Count - 1)
                 npcTurnIndex = 0;
             else
@@ -119,7 +126,7 @@ public class TurnManager : MonoBehaviour
         }
 
         // If every Unit finished their turn
-        if (npcs_HaventFinishedTurn.Count == 0)
+        if (npcs_HaventFinishedTurn.Count == 0 || npcTurnIndex >= npcs_HaventFinishedTurn.Count)
             OnCompleteAllTurns();
         else
         {
@@ -135,13 +142,7 @@ public class TurnManager : MonoBehaviour
         if (activeUnit != unitFinishingAction)
             return;
 
-        StartCoroutine(DoNextUnitsTurn(unitFinishingAction, increaseTurnIndex));
-    }
-
-    public IEnumerator DelayStartNextUnitsTurn(Unit unitFinishingAction)
-    {
-        yield return new WaitForSeconds(0.1f);
-        StartNextUnitsTurn(unitFinishingAction);
+        StartCoroutine(DoNextUnitsTurn(increaseTurnIndex));
     }
 
     void OnCompleteAllTurns()

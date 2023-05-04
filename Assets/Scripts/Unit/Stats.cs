@@ -88,8 +88,7 @@ public class Stats : MonoBehaviour
 
     public void GetAPFromPool()
     {
-        int maxAP = MaxAP();
-        int APDifference = maxAP - currentAP;
+        int APDifference = MaxAP() - currentAP;
         if (pooledAP > APDifference)
         {
             pooledAP -= APDifference;

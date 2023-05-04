@@ -80,7 +80,6 @@ public class MoveAction : BaseAction
 
         if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(nextTargetPosition)))
         {
-            //if (unit.IsPlayer()) Debug.Log(unit.name + "'s next position is not walkable or is the same as the their current position...");
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
             yield break;

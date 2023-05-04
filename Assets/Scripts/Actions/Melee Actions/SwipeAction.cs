@@ -20,8 +20,6 @@ public class SwipeAction : BaseAction
             unit.unitActionHandler.SetTargetEnemyUnit(null);
             unit.unitActionHandler.SetQueuedAttack(null);
             unit.unitActionHandler.FinishAction();
-
-            Debug.Log("No valid unit in action area");
             return;
         }
 
@@ -32,7 +30,8 @@ public class SwipeAction : BaseAction
         else
         {
             CompleteAction();
-            unit.unitActionHandler.TakeTurn();
+            if (unit.IsPlayer())
+                unit.unitActionHandler.TakeTurn();
             return;
         }
     }

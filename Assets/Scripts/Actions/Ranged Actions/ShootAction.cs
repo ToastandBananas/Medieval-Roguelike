@@ -35,7 +35,8 @@ public class ShootAction : BaseAction
         else
         {
             CompleteAction();
-            unit.unitActionHandler.TakeTurn();
+            if (unit.IsPlayer())
+                unit.unitActionHandler.TakeTurn();
             return;
         }
     }
@@ -63,7 +64,7 @@ public class ShootAction : BaseAction
             StartCoroutine(RotateTowardsTarget());
             unit.leftHeldItem.DoDefaultAttack();
 
-            StartCoroutine(WaitToFinishAction());
+            StartCoroutine(WaitToCompleteAction());
         }
         else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
         {
@@ -129,7 +130,7 @@ public class ShootAction : BaseAction
         return false;
     }
 
-    IEnumerator WaitToFinishAction()
+    IEnumerator WaitToCompleteAction()
     {
         if (unit.leftHeldItem != null)
             yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.leftHeldItem.itemData.item as Weapon));
@@ -157,7 +158,7 @@ public class ShootAction : BaseAction
 
     public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
     {
-        if (targetUnit != null && unit.vision.IsInLineOfSight(targetUnit) == false)
+        if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
             return false;
 
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
