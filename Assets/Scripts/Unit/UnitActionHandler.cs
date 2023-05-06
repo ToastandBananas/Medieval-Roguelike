@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,6 +67,9 @@ public abstract class UnitActionHandler : MonoBehaviour
         // If the action changed while getting the action point cost (such as when running into a door)
         if (action != queuedAction)
             return;
+
+        if (action.IsAttackAction())
+            unit.unitAnimator.StopMovingForward();
 
         if (unit.isMyTurn)
         {
@@ -184,6 +186,12 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public virtual void SetTargetEnemyUnit(Unit target)
     {
+        if (target != null && target.health.IsDead())
+        {
+            targetEnemyUnit = null;
+            return;
+        }
+
         targetEnemyUnit = target;
         if (target != null)
         {

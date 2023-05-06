@@ -317,6 +317,14 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public void RemoveAllWeaponRenderers()
+    {
+        leftHeldItemMeshRenderer = null;
+        rightHeldItemMeshRenderer = null;
+        bowMeshRenderers = null;
+        bowLineRenderer = null;
+    }
+
     public bool IsCompletelySurrounded(float range)
     {
         List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range);
@@ -392,11 +400,11 @@ public class Unit : MonoBehaviour
     public float GetAttackRange(bool accountForHeight)
     {
         if (RangedWeaponEquipped())
-            return GetRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+            return GetRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
         else if (MeleeWeaponEquipped())
-            return GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+            return GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
         else
-            return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(unitActionHandler.targetEnemyUnit.gridPosition, accountForHeight);
+            return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(unitActionHandler.targetAttackGridPosition, accountForHeight);
     }
 
     public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();

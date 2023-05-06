@@ -63,7 +63,7 @@ public class NPCActionHandler : UnitActionHandler
                 SkipTurn(); // Unit can't do anything, so skip their turn
                 return;
             }
-            else if (queuedAttack != null)
+            else if (queuedAction == null && queuedAttack != null)
             {
                 bool canAttack = false;
                 List<GridPosition> actionGridPositionsInRange = ListPool<GridPosition>.Claim();
@@ -93,6 +93,8 @@ public class NPCActionHandler : UnitActionHandler
                 // If so, queue the attack and return out of this method
                 if (canAttack)
                 {
+                    if (unit.name == "Bandit - Male (1)")
+                        Debug.Log("Queuing action: " + queuedAttack.ToString());
                     QueueAction(queuedAttack, targetAttackGridPosition);
                     return;
                 }

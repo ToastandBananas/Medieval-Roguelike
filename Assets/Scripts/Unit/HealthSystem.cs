@@ -19,7 +19,7 @@ public class HealthSystem : MonoBehaviour
             currentHealth = maxHealth;
     }
 
-    public void TakeDamage(int damageAmount)
+    public void TakeDamage(int damageAmount, Transform attackerTransform)
     {
         if (damageAmount <= 0)
             return;
@@ -32,17 +32,17 @@ public class HealthSystem : MonoBehaviour
         OnHealthChanged?.Invoke(this, EventArgs.Empty);
 
         if (currentHealth == 0)
-            Die();
+            Die(attackerTransform);
     }
 
-    void Die()
+    void Die(Transform attackerTransform)
     {
         UnitManager.Instance.deadNPCs.Add(unit);
         UnitManager.Instance.livingNPCs.Remove(unit);
 
         OnDead?.Invoke(this, EventArgs.Empty);
 
-        unit.unitAnimator.Die();
+        unit.unitAnimator.Die(attackerTransform);
     }
 
     public bool IsDead() => currentHealth <= 0;

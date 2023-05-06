@@ -28,8 +28,13 @@ public abstract class Item : ScriptableObject
     public Vector2Int value;
     public int staticValue = 1;
 
-    [Header("Mesh")]
+    [Header("Equipped Mesh")]
+    public Mesh[] meshes;
+    public Material[] meshRendererMaterials;
+
+    [Header("Pickup Mesh")]
     public Mesh pickupMesh;
+    public Material pickupMeshRendererMaterial;
 
     public virtual void Use(Unit unit, Inventory inventory, InventoryItem invItem, ItemData itemData, int itemCount, EquipmentSlot equipSlot, PartialAmount partialAmountToUse = PartialAmount.Whole)
     {

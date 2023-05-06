@@ -69,17 +69,11 @@ public class MeleeAction : BaseAction
                 unit.rightHeldItem.DoDefaultAttack();
                 StartCoroutine(unit.leftHeldItem.DelayDoDefaultAttack());
             }
-            else if (unit.rightHeldItem != null) 
+            else
             {
-                // Right hand weapon attack
+                // Primary weapon attack
                 unit.unitAnimator.StartMeleeAttack(); 
-                unit.rightHeldItem.DoDefaultAttack();
-            }
-            else if (unit.leftHeldItem != null) 
-            {
-                // Left hand weapon attack
-                unit.unitAnimator.StartMeleeAttack();
-                unit.leftHeldItem.DoDefaultAttack();
+                unit.GetPrimaryMeleeWeapon().DoDefaultAttack();
             }
 
             // Wait until the attack lands before completing the action
@@ -105,15 +99,10 @@ public class MeleeAction : BaseAction
                 if (mainAttackBlocked || offhandAttackBlocked)
                     attackBlocked = true;
             }
-            else if (unit.rightHeldItem != null)
+            else
             {
                 attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
-                DamageTargets(unit.rightHeldItem as HeldMeleeWeapon); // Right hand weapon attack
-            }
-            else if (unit.leftHeldItem != null)
-            {
-                attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
-                DamageTargets(unit.leftHeldItem as HeldMeleeWeapon); // Left hand weapon attack
+                DamageTargets(unit.GetPrimaryMeleeWeapon()); // Right hand weapon attack
             }
 
             // Rotate towards the target
@@ -137,7 +126,7 @@ public class MeleeAction : BaseAction
             Unit targetUnit = target.Key;
             HeldItem itemBlockedWith = target.Value;
 
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 // The unit being attacked becomes aware of this unit
                 BecomeVisibleEnemyOfTarget(targetUnit);
@@ -170,7 +159,7 @@ public class MeleeAction : BaseAction
                             blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
 
-                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit.transform);
 
                     if (itemBlockedWith is HeldShield)
                         targetUnit.GetShield().LowerShield();
@@ -181,14 +170,11 @@ public class MeleeAction : BaseAction
                     }
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
             }
         }
 
         unit.unitActionHandler.targetUnits.Clear();
-
-        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
     public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -234,7 +220,11 @@ public class MeleeAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
+
         isAttacking = false;
+        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
+
         unit.unitActionHandler.FinishAction();
     }
 
@@ -293,7 +283,8 @@ public class MeleeAction : BaseAction
         {
             // Adjust the finalActionValue based on the Alliance of the unit at the grid position
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionGridPosition);
-            if (unit.alliance.IsEnemy(unitAtGridPosition))
+
+            if (unit.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
             {
                 // Enemies in the action area increase this action's value
                 finalActionValue += 70f;
@@ -486,7 +477,8 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
     {
-        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && unit.alliance.IsAlly(LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition)) == false)
+        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+        if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsVisible(unitAtGridPosition))
             return true;
         return false;
     }

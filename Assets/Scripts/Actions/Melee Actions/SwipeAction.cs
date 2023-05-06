@@ -95,7 +95,7 @@ public class SwipeAction : BaseAction
             Unit targetUnit = target.Key;
             HeldItem itemBlockedWith = target.Value;
 
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 // The unit being attacked becomes aware of this unit
                 BecomeVisibleEnemyOfTarget(targetUnit);
@@ -124,7 +124,7 @@ public class SwipeAction : BaseAction
                             blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
 
-                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount);
+                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit.transform);
 
                     if (itemBlockedWith is HeldShield)
                         targetUnit.GetShield().LowerShield();
@@ -135,14 +135,11 @@ public class SwipeAction : BaseAction
                     }
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
             }
         }
 
         unit.unitActionHandler.targetUnits.Clear();
-
-        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
     }
 
     public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().GetActionGridPositionsInRange(startGridPosition);
@@ -336,17 +333,19 @@ public class SwipeAction : BaseAction
     {
         List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
         attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
-
         for (int i = 0; i < attackGridPositions.Count; i++)
         {
             if (LevelGrid.Instance.HasAnyUnitOnGridPosition(attackGridPositions[i]) == false)
                 continue;
 
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(attackGridPositions[i]);
+            if (unitAtGridPosition.health.IsDead())
+                continue;
+
             if (unit.alliance.IsAlly(unitAtGridPosition))
                 continue;
 
-            if (unit.health.IsDead())
+            if (unit.vision.IsVisible(unitAtGridPosition) == false)
                 continue;
 
             // If the loop makes it to this point, then it found a valid unit
@@ -408,6 +407,11 @@ public class SwipeAction : BaseAction
 
             // Adjust the finalActionValue based on the Alliance of the unit at the grid position
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionAreaGridPositions[i]);
+
+            // Skip this unit if they're dead
+            if (unitAtGridPosition.health.IsDead())
+                continue;
+            
             if (unit.alliance.IsEnemy(unitAtGridPosition))
             {
                 // Enemies in the action area increase this action's value
@@ -471,7 +475,11 @@ public class SwipeAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
+
         isAttacking = false;
+        if (unit.IsPlayer())
+            unit.unitActionHandler.SetTargetEnemyUnit(null);
+
         unit.unitActionHandler.FinishAction();
     }
 

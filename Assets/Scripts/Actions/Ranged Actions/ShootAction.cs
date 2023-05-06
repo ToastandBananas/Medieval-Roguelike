@@ -93,7 +93,7 @@ public class ShootAction : BaseAction
         {
             Unit targetUnit = target.Key;
             HeldItem itemBlockedWith = target.Value;
-            if (targetUnit != null)
+            if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
                 int damageAmount = heldRangedWeapon.itemData.damage;
                 int armorAbsorbAmount = 0;
@@ -105,13 +105,13 @@ public class ShootAction : BaseAction
                     if (targetUnit.ShieldEquipped())
                         blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.GetShield());
 
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit.transform);
 
                     if (targetUnit.ShieldEquipped())
                         targetUnit.GetShield().LowerShield();
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
             }
         }
 
@@ -371,7 +371,7 @@ public class ShootAction : BaseAction
         {
             // Adjust the finalActionValue based on the Alliance of the unit at the grid position
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionGridPosition);
-            if (unit.alliance.IsEnemy(unitAtGridPosition))
+            if (unit.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
             {
                 // Enemies in the action area increase this action's value
                 finalActionValue += 70f;
@@ -410,7 +410,8 @@ public class ShootAction : BaseAction
 
     public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
     {
-        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition) && unit.alliance.IsAlly(LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition)) == false)
+        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+        if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsVisible(unitAtGridPosition))
             return true;
         return false;
     }

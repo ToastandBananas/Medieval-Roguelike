@@ -199,7 +199,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().BecomeVisibleEnemyOfTarget(targetUnit);
 
                         // TODO: Less damage the further away from explosion
-                        targetUnit.health.TakeDamage(30);
+                        targetUnit.health.TakeDamage(30, shooter.transform);
                     }
                 }
             }

@@ -95,6 +95,30 @@ public class GridSystemVisual : MonoBehaviour
         }
     }
 
+    public void ShowAttackGridPositionList(List<GridPosition> gridPositionList)
+    {
+        if (gridPositionList == null)
+            return;
+
+        for (int i = 0; i < gridPositionList.Count; i++)
+        {
+            GridSystemVisualSingle gridSystemVisualSingle = GetGridVisualSystemSingleFromPool();
+            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPositionList[i]);
+
+            if (unitAtGridPosition == null || player.vision.IsVisible(unitAtGridPosition) == false)
+                gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Red));
+            else if (player.alliance.IsEnemy(unitAtGridPosition))
+                gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Red));
+            else if (player.alliance.IsAlly(unitAtGridPosition))
+                gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Blue));
+            else
+                gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Yellow));
+
+            gridSystemVisualSingle.transform.position = LevelGrid.GetWorldPosition(gridPositionList[i]);
+            gridSystemVisualSingle.gameObject.SetActive(true);
+        }
+    }
+
     public void ShowAttackRange(BaseAction attackAction, GridPosition startGridPosition, GridVisualType gridVisualType)
     {
         gridPositionsList = attackAction.GetActionGridPositionsInRange(startGridPosition);
@@ -123,23 +147,8 @@ public class GridSystemVisual : MonoBehaviour
             return;
 
         BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
-        switch (selectedAction)
-        {
-            case MeleeAction meleeAction:
-                Instance.ShowGridPositionList(meleeAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
-                break;
-            case SwipeAction swipeAction:
-                Instance.ShowGridPositionList(swipeAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
-                break;
-            case ShootAction shootAction:
-                Instance.ShowGridPositionList(shootAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
-                break;
-            //case ThrowAction throwAction:
-                //Instance.ShowGridPositionList(throwAction.GetPossibleAttackGridPositions(WorldMouse.currentGridPosition), GridVisualType.Red);
-                //break;
-            default:
-                break;
-        }
+        if (selectedAction.IsAttackAction())
+            Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
     }
 
     Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

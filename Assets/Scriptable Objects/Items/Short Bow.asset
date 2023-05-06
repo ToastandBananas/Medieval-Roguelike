@@ -25,7 +25,20 @@ MonoBehaviour:
   canUsePartial: 0
   value: {x: 0, y: 0}
   staticValue: 1
+  meshes:
+  - {fileID: -6585281750592459246, guid: f86f0040792db3e46a4f2cb377fd37f9, type: 3}
+  - {fileID: -6184066467353739386, guid: f2c24415ef08f0e4c80d61a40c428a9e, type: 3}
+  - {fileID: -6567934382552847019, guid: 899b553669bfdfb4fb0ef105a9ace7e5, type: 3}
+  - {fileID: 2858289826068144650, guid: 46ffb20919493cf4cbe0491996d25635, type: 3}
+  - {fileID: -8309451116884128516, guid: e9cc73cd0e18a7941819414ff718494d, type: 3}
+  meshRendererMaterials:
+  - {fileID: -7085867950720389769, guid: f86f0040792db3e46a4f2cb377fd37f9, type: 3}
+  - {fileID: 3543470844453102860, guid: f2c24415ef08f0e4c80d61a40c428a9e, type: 3}
+  - {fileID: 8290674039516075314, guid: 899b553669bfdfb4fb0ef105a9ace7e5, type: 3}
+  - {fileID: -2843932816187074204, guid: 46ffb20919493cf4cbe0491996d25635, type: 3}
+  - {fileID: 7298417193033885815, guid: e9cc73cd0e18a7941819414ff718494d, type: 3}
   pickupMesh: {fileID: 0}
+  pickupMeshRendererMaterial: {fileID: 0}
   weaponType: 0
   isTwoHanded: 0
   canDualWield: 0

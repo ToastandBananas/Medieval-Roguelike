@@ -389,6 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatActions: []
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
@@ -968,6 +969,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4343231345554784987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -981,6 +983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headTransform: {fileID: 149888672908566048}
+  bodyTransform: {fileID: 4261816302161493425}
 --- !u!1 &6599784181234506697
 GameObject:
   m_ObjectHideFlags: 0

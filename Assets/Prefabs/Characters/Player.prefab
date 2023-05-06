@@ -521,6 +521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   headTransform: {fileID: 7142527425681057192}
+  bodyTransform: {fileID: 6498372608485508665}
 --- !u!1 &4223528258892472385
 GameObject:
   m_ObjectHideFlags: 0

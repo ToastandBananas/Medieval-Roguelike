@@ -151,10 +151,10 @@ public class PlayerInput : MonoBehaviour
                 unitIsVisible = player.vision.IsVisible(unitAtGridPosition);
 
             // If the mouse is hovering over a unit that's in the player's Vision
-            if (unitAtGridPosition != null && unitIsVisible)
+            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unitIsVisible)
             {
                 // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                if (unitAtGridPosition.health.IsDead() == false && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
+                if (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction()))
                 {
                     // Set the Unit as the target enemy
                     player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
@@ -181,6 +181,10 @@ public class PlayerInput : MonoBehaviour
                     // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
                     else if (player.MeleeWeaponEquipped() || player.IsUnarmed())
                     {
+                        // Do nothing if the target unit is dead
+                        if (unitAtGridPosition.health.IsDead())
+                            return;
+
                         // If the target is in attack range
                         if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                         {
@@ -200,6 +204,10 @@ public class PlayerInput : MonoBehaviour
                     // If the player has a ranged weapon equipped and the target enemy is within attack range
                     else if (player.RangedWeaponEquipped())
                     {
+                        // Do nothing if the target unit is dead
+                        if (unitAtGridPosition.health.IsDead())
+                            return;
+
                         // If the target is in shooting range
                         if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)) 
                         {
@@ -231,7 +239,7 @@ public class PlayerInput : MonoBehaviour
                     else // The player either doesn't have an attack action selected or has a non-default attack action selected
                         player.unitActionHandler.SetTargetEnemyUnit(null);
                 }
-                else // The unit the mouse is hovering over is not an attackable unit (likely an ally)
+                else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit)
                     player.unitActionHandler.SetTargetEnemyUnit(null);
             }
             // If there's no unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)

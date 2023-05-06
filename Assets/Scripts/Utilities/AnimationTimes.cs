@@ -19,6 +19,7 @@ public class AnimationTimes : MonoBehaviour
 
     // Unit Clips
     AnimationClip[] unitClips;
+    float die_Time;
     float dualWieldAttack_Time;
     float unarmedAttack_Time;
 
@@ -90,6 +91,9 @@ public class AnimationTimes : MonoBehaviour
         {
             switch (clip.name)
             {
+                case "Die_Forward":
+                    die_Time = clip.length;
+                    break;
                 case "DualMeleeAttack":
                     dualWieldAttack_Time = clip.length;
                     break;
@@ -124,4 +128,6 @@ public class AnimationTimes : MonoBehaviour
     public float SwipeAttackTime() => swipeAttack_2H_Time;
 
     public float UnarmedAttackTime() => unarmedAttack_Time;
+
+    public float DeathTime() => die_Time;
 }
