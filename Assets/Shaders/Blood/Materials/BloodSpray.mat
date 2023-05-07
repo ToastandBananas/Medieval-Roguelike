@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Blood_Tutorial
+  m_Name: BloodSpray
   m_Shader: {fileID: -6465566751694194690, guid: cd96eff285289fc4ba7b456e63c3d0c9,
     type: 3}
   m_ValidKeywords: []
@@ -102,13 +102,13 @@ Material:
     - _NormalStrength: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _Power: 0.03
+    - _Power: 0.1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
-    - _Specular: 0
+    - _Specular: 0.1
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
