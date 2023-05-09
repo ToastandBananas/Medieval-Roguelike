@@ -9,6 +9,7 @@ TagManager:
   - Unit Armor
   - Unit Helm
   - Shield
+  - Particle Effect
   layers:
   - Default
   - TransparentFX

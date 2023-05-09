@@ -8,7 +8,7 @@ public enum ProjectileType
     Explosive = 30,
 };
 
-[CreateAssetMenu(fileName = "New Projectile", menuName = "ScriptableObjects/Held Item/Projectile")]
+[CreateAssetMenu(fileName = "New Projectile", menuName = "Held Item/Projectile")]
 public class Projectile_Item : Item
 {
     [SerializeField] Mesh mesh;
