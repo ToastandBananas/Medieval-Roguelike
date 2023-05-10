@@ -98,7 +98,7 @@ public class UnitAnimator : MonoBehaviour
         // Get rid of the HeldItem
         Destroy(heldItem.gameObject);
 
-        float randomForceMagnitude = Random.Range(1f, 6f);
+        float randomForceMagnitude = Random.Range(100f, 600f);
         float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
 
         // Get the attacker's position and the character's position
@@ -119,7 +119,10 @@ public class UnitAnimator : MonoBehaviour
         // Get the Rigidbody component and apply the force
         looseItem.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        StartCoroutine(DelayStopPhysicsMovements(looseItem));
+        if (UnitManager.Instance.player.vision.IsVisible(unit) == false)
+            looseItem.HideMeshRenderer();
+
+        // StartCoroutine(DelayStopPhysicsMovements(looseItem));
     }
 
     IEnumerator DelayStopPhysicsMovements(LooseItem looseItem)

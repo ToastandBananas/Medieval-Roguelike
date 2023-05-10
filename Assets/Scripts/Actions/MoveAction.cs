@@ -210,7 +210,7 @@ public class MoveAction : BaseAction
         TryQueueNextAction();
 
         // Check for newly visible Units
-        unit.vision.FindVisibleUnits();
+        unit.vision.FindVisibleUnitsAndObjects();
     }
 
     void TryQueueNextAction()

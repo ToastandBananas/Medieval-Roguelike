@@ -2,6 +2,7 @@
 /// Derived from Sebastian Lague's Tutorial "Field of View Visualisation" (https://www.youtube.com/watch?v=rQG9aUWarwE)
 /// </summary>
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,39 +10,48 @@ public class Vision : MonoBehaviour
 {
     [Header("Field of View")]
     [SerializeField] Transform parentTransform;
-    public float viewRadius = 20f;
-    [Range(0, 360)] public float viewAngle = 160f;
+    [SerializeField] float viewRadius = 20f;
+    [Range(0, 360)][SerializeField] float viewAngle = 160f;
+    Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
     [Header("Layer Masks")]
-    public LayerMask unitsMask;
-    public LayerMask obstacleMask;
+    [SerializeField] LayerMask unitsMask;
+    [SerializeField] LayerMask obstacleMask;
+    [SerializeField] LayerMask interactableMask;
 
-    public List<Unit> knownUnits { get; private set; }
+    public ConcurrentDictionary<LooseItem, int> knownLooseItems { get; private set; }
+    public ConcurrentDictionary<Unit, int> knownUnits { get; private set; }
     public List<Unit> knownDeadUnits { get; private set; }
     public List<Unit> knownEnemies { get; private set; }
     public List<Unit> knownAllies { get; private set; }
-    List<int> loseSightTimes = new List<int>();
+
+    List<LooseItem> looseItemsToRemove = new List<LooseItem>();
     List<Unit> unitsToRemove = new List<Unit>();
+
+    public Collider[] looseItemsInViewRadius;
     Collider[] unitsInViewRadius;
 
     Unit unit;
     readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
-    Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
+    // The distance at which the player loses sight of something outside of their view radius, even if it is contained in one of the "known" lists
     readonly float playerPerceptionDistance = 5f;
 
     void Awake()
     {
-        knownUnits = new List<Unit>();
+        knownLooseItems = new ConcurrentDictionary<LooseItem, int>();
+        knownUnits = new ConcurrentDictionary<Unit, int>();
         knownDeadUnits = new List<Unit>();
         knownEnemies = new List<Unit>();
         knownAllies = new List<Unit>();
         unit = parentTransform.GetComponent<Unit>();
+
+        yOffset = new Vector3(0, Mathf.Abs(transform.position.y - unit.transform.localPosition.y), 0);
     }
 
     public bool IsVisible(Unit unitToCheck)
     {
-        if (knownUnits.Contains(unitToCheck) == false)
+        if (knownUnits.ContainsKey(unitToCheck) == false)
             return false;
 
         if (unitToCheck.CanSeeMeshRenderers() == false)
@@ -53,9 +63,30 @@ public class Vision : MonoBehaviour
         return true;
     }
 
+    public bool IsVisible(LooseItem looseItemToCheck)
+    {
+        if (knownLooseItems.ContainsKey(looseItemToCheck) == false)
+            return false;
+
+        if (looseItemToCheck.CanSeeMeshRenderer() == false)
+            return false;
+
+        if (IsInLineOfSight_Raycast(looseItemToCheck.transform) == false)
+            return false;
+
+        return true;
+    }
+
     public bool IsKnown(Unit unitToCheck)
     {
-        if (knownUnits.Contains(unitToCheck))
+        if (knownUnits.ContainsKey(unitToCheck))
+            return true;
+        return false;
+    }
+
+    public bool IsKnown(LooseItem looseItemToCheck)
+    {
+        if (knownLooseItems.ContainsKey(looseItemToCheck))
             return true;
         return false;
     }
@@ -81,7 +112,20 @@ public class Vision : MonoBehaviour
         return false;
     }
 
-    public void FindVisibleUnits()
+    public void FindVisibleUnitsAndObjects()
+    {
+        FindVisibleUnits();
+        FindVisibleLooseItems();
+    }
+
+    public void UpdateVision()
+    {
+        UpdateVisibleUnits();
+        UpdateVisibleLooseItems();
+    }
+
+    #region Units
+    void FindVisibleUnits()
     {
         unitsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, unitsMask);
         for (int i = 0; i < unitsInViewRadius.Length; i++)
@@ -90,8 +134,8 @@ public class Vision : MonoBehaviour
             targetTransform.TryGetComponent(out Unit targetUnit);
             if (targetUnit != null && targetUnit != unit)
             {
-                // If the Unit in the view radius is not already "visible"
-                if (knownUnits.Contains(targetUnit)) continue;
+                // If the Unit in the view radius is already "known", skip them
+                if (knownUnits.ContainsKey(targetUnit)) continue;
 
                 Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
 
@@ -100,7 +144,7 @@ public class Vision : MonoBehaviour
                 {
                     float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
-                    // If no obstacles are in the way, add the Unit to the visibleUnits dictionary
+                    // If no obstacles are in the way, add the Unit to the knownUnits dictionary
                     if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
                         AddVisibleUnit(targetUnit);
                     else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
@@ -112,12 +156,12 @@ public class Vision : MonoBehaviour
         if (unit.IsPlayer())
         {
             // Check if a "visible NPC Unit" is outside of the Player's view radius. If so, hide their mesh renderers
-            for (int i = 0; i < knownUnits.Count; i++)
+            foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
             {
                 bool shouldHide = true;
                 for (int j = 0; j < unitsInViewRadius.Length; j++)
                 {
-                    if (knownUnits[i].transform == unitsInViewRadius[j].transform && unitsInViewRadius[j].transform != unit.transform) 
+                    if (knownUnit.Key.transform == unitsInViewRadius[j].transform && unitsInViewRadius[j].transform != unit.transform)
                     {
                         // Skip if they're in the view radius and there's no obstacles in the way
                         Vector3 dirToTarget = ((unitsInViewRadius[j].transform.position + yOffset) - transform.position).normalized;
@@ -129,13 +173,13 @@ public class Vision : MonoBehaviour
                     }
                 }
                 
-                if (shouldHide && knownUnits[i] != unit)
+                if (shouldHide && knownUnit.Key != unit)
                 {
-                    if (Vector3.Distance(unit.transform.position, knownUnits[i].transform.position) > playerPerceptionDistance)
-                        knownUnits[i].HideMeshRenderers();
+                    if (Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
+                        knownUnit.Key.HideMeshRenderers();
                 }
                 else
-                    knownUnits[i].ShowMeshRenderers();
+                    knownUnit.Key.ShowMeshRenderers();
             }
         }
 
@@ -153,18 +197,18 @@ public class Vision : MonoBehaviour
         }
     }
 
-    public void UpdateVisibleUnits()
+    void UpdateVisibleUnits()
     {
         unitsToRemove.Clear();
 
         // Check if Units that were in sight are now out of sight
-        for (int i = 0; i < knownUnits.Count; i++)
+        foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
         {
             // If the visible Unit is now dead, update the appropriate lists
-            if (knownUnits[i].health.IsDead())
-                UpdateDeadUnit(knownUnits[i]);
+            if (knownUnit.Key.health.IsDead())
+                UpdateDeadUnit(knownUnit.Key);
 
-            Transform targetTransform = knownUnits[i].transform;
+            Transform targetTransform = knownUnit.Key.transform;
             Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
 
             // If target Unit is in the view angle
@@ -175,31 +219,31 @@ public class Vision : MonoBehaviour
                 // If an obstacle is in the way, lower the lose sight time
                 if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                 {
-                    if (loseSightTimes[i] > 1)
-                        loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
+                    if (knownUnit.Value > 1)
+                        knownUnits[knownUnit.Key]--; // Subtract from the visible Unit's corresponding lose sight time
                     else
-                        unitsToRemove.Add(knownUnits[i]); // The Unit is no longer visible
+                        unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
                     if (unit.IsPlayer()) // Hide the NPC's mesh renderers
-                        knownUnits[i].HideMeshRenderers();
+                        knownUnit.Key.HideMeshRenderers();
                 }
                 else // We can still see the Unit, so reset their lose sight time
                 {
-                    loseSightTimes[i] = loseSightTime;
+                    knownUnits[knownUnit.Key] = loseSightTime;
 
                     if (unit.IsPlayer()) // Show the NPC's mesh renderers
-                        knownUnits[i].ShowMeshRenderers();
+                        knownUnit.Key.ShowMeshRenderers();
                 }
             }
             else // The target is outside of the view angle
             {
-                if (loseSightTimes[i] > 1)
-                    loseSightTimes[i]--; // Subtract from the visible Unit's corresponding lose sight time
+                if (knownUnit.Value > 1)
+                    knownUnits[knownUnit.Key]--; // Subtract from the visible Unit's corresponding lose sight time
                 else
-                    unitsToRemove.Add(knownUnits[i]); // The Unit is no longer visible
+                    unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
                 if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
-                    knownUnits[i].HideMeshRenderers();
+                    knownUnit.Key.HideMeshRenderers();
             }
         }
 
@@ -212,16 +256,14 @@ public class Vision : MonoBehaviour
 
     public void AddVisibleUnit(Unit unitToAdd)
     {
-        if (knownUnits.Contains(unitToAdd) == false)
-        {
-            knownUnits.Add(unitToAdd);
+        // We don't want Units to see themselves
+        if (unitToAdd == unit)
+            return;
 
-            // We don't want Units to see themselves
-            if (knownUnits.Contains(unit))
-            {
-                knownUnits.Remove(unit);
-                return;
-            }
+        if (knownUnits.ContainsKey(unitToAdd) == false)
+        {
+            // Add the unit to the dictionary
+            knownUnits.TryAdd(unitToAdd, loseSightTime);
 
             if (unitToAdd.health.IsDead())
                 knownDeadUnits.Add(unitToAdd);
@@ -236,23 +278,19 @@ public class Vision : MonoBehaviour
             else if (unit.alliance.IsAlly(unitToAdd))
                 knownAllies.Add(unitToAdd);
 
-            // Add a corresponding lose sight time for this newly visible Unit
-            loseSightTimes.Add(loseSightTime);
-
             // If this is the Player's Vision, show the newly visible NPC Unit
             if (unit.IsPlayer())
                 unitToAdd.ShowMeshRenderers();
         }
-        else
-            loseSightTimes[knownUnits.IndexOf(unitToAdd)] = loseSightTime;
+        else // Restart the lose sight countdown
+            knownUnits[unitToAdd] = loseSightTime;
     }
 
     public void RemoveVisibleUnit(Unit unitToRemove)
     {
-        if (knownUnits.Contains(unitToRemove))
+        if (knownUnits.ContainsKey(unitToRemove))
         {
-            loseSightTimes.RemoveAt(knownUnits.IndexOf(unitToRemove));
-            knownUnits.Remove(unitToRemove);
+            knownUnits.Remove(unitToRemove, out int value);
 
             if (knownDeadUnits.Contains(unitToRemove))
                 knownDeadUnits.Remove(unitToRemove);
@@ -269,7 +307,7 @@ public class Vision : MonoBehaviour
         }
     }
 
-    public void UpdateDeadUnit(Unit deadUnit)
+    void UpdateDeadUnit(Unit deadUnit)
     {
         if (knownDeadUnits.Contains(deadUnit) == false)
             knownDeadUnits.Add(deadUnit);
@@ -304,10 +342,177 @@ public class Vision : MonoBehaviour
         }
         return closestEnemy;
     }
+    #endregion
+
+    #region Loose Items
+    void FindVisibleLooseItems()
+    {
+        looseItemsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, interactableMask);
+        for (int i = 0; i < looseItemsInViewRadius.Length; i++)
+        {
+            if (looseItemsInViewRadius[i].CompareTag("Loose Item") == false)
+                continue;
+
+            Transform targetTransform = looseItemsInViewRadius[i].transform;
+            targetTransform.TryGetComponent(out LooseItem looseItem);
+            if (looseItem != null)
+            {
+                // If the LooseItem in the view radius is already "known", skip it
+                if (knownLooseItems.ContainsKey(looseItem)) continue;
+
+                Vector3 dirToTarget = (looseItem.MeshCollider().bounds.center - transform.position).normalized;
+
+                // If target LooseItem is in the view angle
+                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                {
+                    float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
+
+                    // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
+                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                        AddVisibleLooseItem(looseItem);
+                    else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
+                        looseItem.HideMeshRenderer();
+                }
+            }
+        }
+
+        if (unit.IsPlayer())
+        {
+            // Check if a "visible LooseItem" is outside of the Player's view radius. If so, hide their mesh renderers
+            foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
+            {
+                bool shouldHide = true;
+                for (int j = 0; j < looseItemsInViewRadius.Length; j++)
+                {
+                    if (looseItem.Key.transform == looseItemsInViewRadius[j].transform && looseItemsInViewRadius[j].transform != unit.transform)
+                    {
+                        // Skip if it's in the view radius and there's no obstacles in the way
+                        Vector3 dirToTarget = (looseItem.Key.MeshCollider().bounds.center - transform.position).normalized;
+                        float distToTarget = Vector3.Distance(transform.position, looseItemsInViewRadius[j].transform.position);
+
+                        // If target LooseItem is in the view angle and no obstacles are in the way
+                        if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2 && Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                            shouldHide = false;
+                    }
+                }
+
+                if (shouldHide) // Hide the LooseItem
+                {
+                    if (Vector3.Distance(unit.transform.position, looseItem.Key.transform.position) > playerPerceptionDistance)
+                        looseItem.Key.HideMeshRenderer();
+                }
+                else // Show the LooseItem
+                    looseItem.Key.ShowMeshRenderer();
+            }
+        }
+    }
+
+    void UpdateVisibleLooseItems()
+    {
+        looseItemsToRemove.Clear();
+
+        // Check if LooseItems that were in sight are now out of sight
+        foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
+        {
+            Transform targetTransform = looseItem.Key.transform;
+            Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+
+            // If target LooseItem is in the view angle
+            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            {
+                float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
+
+                // If an obstacle is in the way, lower the lose sight time
+                if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
+                {
+                    if (looseItem.Value > 1)
+                        knownLooseItems[looseItem.Key]--; // Subtract from the visible LooseItem's corresponding lose sight time
+                    else
+                        looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
+
+                    if (unit.IsPlayer()) // Hide the LooseItem's mesh renderers
+                        looseItem.Key.HideMeshRenderer();
+                }
+                else // We can still see the LooseItem, so reset their lose sight time
+                {
+                    knownLooseItems[looseItem.Key] = loseSightTime;
+
+                    if (unit.IsPlayer()) // Show the LooseItem's mesh renderers
+                        looseItem.Key.ShowMeshRenderer();
+                }
+            }
+            else // The target is outside of the view angle
+            {
+                if (looseItem.Value > 1)
+                    knownLooseItems[looseItem.Key]--; // Subtract from the visible LooseItem's corresponding lose sight time
+                else
+                    looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
+
+                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the LooseItem's mesh renderers
+                    looseItem.Key.HideMeshRenderer();
+            }
+        }
+
+        // Remove LooseItems from their corresponding list if they were found to no longer be visible
+        for (int i = 0; i < looseItemsToRemove.Count; i++)
+        {
+            RemoveVisibleLooseItem(looseItemsToRemove[i]);
+        }
+    }
+
+    void AddVisibleLooseItem(LooseItem looseItemToAdd)
+    {
+        if (knownLooseItems.ContainsKey(looseItemToAdd) == false)
+        {
+            // Add the LooseItem to the dictionary
+            knownLooseItems.TryAdd(looseItemToAdd, loseSightTime);
+
+            // If this is the Player's Vision, show the newly visible LooseItem
+            if (unit.IsPlayer())
+                looseItemToAdd.ShowMeshRenderer();
+        }
+        else // Restart the lose sight countdown
+            knownLooseItems[looseItemToAdd] = loseSightTime;
+    }
+
+    void RemoveVisibleLooseItem(LooseItem looseItemToRemove)
+    {
+        if (knownLooseItems.ContainsKey(looseItemToRemove))
+        {
+            knownLooseItems.Remove(looseItemToRemove, out int value);
+
+            // If they are no longer visible to the player, hide them
+            if (unit.IsPlayer())
+                looseItemToRemove.HideMeshRenderer();
+        }
+    }
+
+    public LooseItem GetClosestLooseItem()
+    {
+        LooseItem closestLooseItem = null;
+        float closestLooseItemDistance = 1000000;
+        foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+        {
+            float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.position);
+            if (distToLooseItem < closestLooseItemDistance)
+            {
+                closestLooseItem = knownLooseItem.Key;
+                closestLooseItemDistance = distToLooseItem;
+            }
+        }
+        return closestLooseItem;
+    }
+    #endregion
 
     public Vector3 DirectionFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
         if (angleIsGlobal == false) angleInDegrees += transform.eulerAngles.y;
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
+
+    public float ViewRadius() => viewRadius;
+
+    public float ViewAngle() => viewAngle;
+
+    public Vector3 YOffset() => yOffset;
 }

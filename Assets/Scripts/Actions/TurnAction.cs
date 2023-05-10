@@ -92,7 +92,7 @@ public class TurnAction : BaseAction
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
-        unit.vision.FindVisibleUnits();
+        unit.vision.FindVisibleUnitsAndObjects();
     }
 
     public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)

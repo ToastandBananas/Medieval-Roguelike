@@ -63,7 +63,7 @@ public class TurnManager : MonoBehaviour
                 npcs_HaventFinishedTurn.Insert(npcs_HaventFinishedTurn.Count, unit);
 
                 // Since the unit's turn isn't fully over for this round, subtract from the turn index (since we'll be adding to it in DoNextUnitsTurn), unless this is the last unit that needs to finish their turn
-                if (npcs_HaventFinishedTurn.IndexOf(unit) != npcTurnIndex)
+                if (npcs_HaventFinishedTurn.IndexOf(unit) != npcTurnIndex && npcTurnIndex > 0)
                     npcTurnIndex--;
 
                 // Refill their currentAP with some (or the remainder) of their pooledAP

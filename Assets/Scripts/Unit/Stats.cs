@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Stats : MonoBehaviour
@@ -10,6 +9,7 @@ public class Stats : MonoBehaviour
     readonly int baseAP = 60;
 
     [Header("Attributes")]
+    [SerializeField] IntStat endurance;
     [SerializeField] IntStat speed;
     [SerializeField] IntStat strength;
 
@@ -125,11 +125,11 @@ public class Stats : MonoBehaviour
         if (unit.IsPlayer())
             TimeSystem.IncreaseTime();
 
-        unit.vision.UpdateVisibleUnits();
+        unit.vision.UpdateVision();
 
         // We already are running this after the Move and Turn actions are complete, so no need to run it again
         if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
-            unit.vision.FindVisibleUnits();
+            unit.vision.FindVisibleUnitsAndObjects();
 
         //unit.SetHasStartedTurn(true);
 

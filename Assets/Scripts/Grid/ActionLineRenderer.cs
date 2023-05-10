@@ -44,7 +44,7 @@ public class ActionLineRenderer : MonoBehaviour
             currentMouseGridPosition = mouseGridPosition;
             currentPlayerPosition = player.gridPosition;
             Unit unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
-
+            
             if (unitAtMousePosition == player || (unitAtMousePosition != null && unitAtMousePosition.health.IsDead()))
             {
                 HideLineRenderers();
@@ -87,6 +87,8 @@ public class ActionLineRenderer : MonoBehaviour
                     unitAtMousePosition.UnblockCurrentPosition();
             }
 
+            player.UnblockCurrentPosition();
+
             ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(player.gridPosition), LevelGrid.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
@@ -95,6 +97,8 @@ public class ActionLineRenderer : MonoBehaviour
 
             // Wait for the path calculation to complete
             yield return StartCoroutine(path.WaitForPath());
+
+            player.BlockCurrentPosition();
 
             ResetLineRenderers();
 

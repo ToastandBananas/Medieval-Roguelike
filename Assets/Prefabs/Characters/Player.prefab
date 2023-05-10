@@ -689,6 +689,9 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 2147483648
 --- !u!1 &8220662913183796567
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LooseItem : MonoBehaviour
+public class LooseItem : Interactable
 {
     [SerializeField] MeshFilter meshFilter;
     [SerializeField] MeshRenderer meshRenderer;
@@ -9,7 +9,12 @@ public class LooseItem : MonoBehaviour
 
     ItemData itemData;
 
-    public void PickUp(Unit unitPickingUpItem)
+    public override void Awake()
+    {
+        gridPosition = LevelGrid.GetGridPosition(transform.position);
+    }
+
+    public override void Interact(Unit unitPickingUpItem)
     {
         Debug.Log("Picking up item");
     }
@@ -24,4 +29,12 @@ public class LooseItem : MonoBehaviour
     public ItemData ItemData => itemData;
 
     public Rigidbody RigidBody() => rigidBody;
+
+    public MeshCollider MeshCollider() => meshCollider;
+
+    public void ShowMeshRenderer() => meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+
+    public void HideMeshRenderer() => meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+
+    public bool CanSeeMeshRenderer() => meshRenderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
 }

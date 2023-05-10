@@ -15,7 +15,7 @@ public class PlayerActionHandler : UnitActionHandler
     {
         if (unit.isMyTurn && unit.health.IsDead() == false)
         {
-            unit.vision.FindVisibleUnits();
+            unit.vision.FindVisibleUnitsAndObjects();
 
             if (canPerformActions == false)
             {
