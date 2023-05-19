@@ -234,17 +234,7 @@ public class MoveAction : BaseAction
             }
             // If the enemy moved positions, set the target position to the nearest possible attack position
             else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)
-            {
-                unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
-                if (unitActionHandler.selectedAction.IsAttackAction())
-                    unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-                else if (unit.RangedWeaponEquipped())
-                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-                else
-                    unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-
-                unitActionHandler.QueueAction(this);
-            }
+                QueueMoveToTargetEnemy();
             // If the Player hasn't reached their destination, add the next move to the queue
             else if (unit.gridPosition != finalTargetGridPosition)
                 unitActionHandler.QueueAction(this);
@@ -263,19 +253,22 @@ public class MoveAction : BaseAction
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
                 else if (unitActionHandler.targetEnemyUnit != null && unitActionHandler.targetEnemyUnit.health.IsDead() == false && unitActionHandler.previousTargetEnemyGridPosition != unitActionHandler.targetEnemyUnit.gridPosition)
-                {
-                    unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
-                    if (unitActionHandler.selectedAction.IsAttackAction())
-                        unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-                    else if (unit.RangedWeaponEquipped())
-                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-                    else
-                        unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-
-                    unitActionHandler.QueueAction(this);
-                }
+                    QueueMoveToTargetEnemy();
             }
         }
+    }
+
+    void QueueMoveToTargetEnemy()
+    {
+        unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
+        if (unitActionHandler.selectedAction.IsAttackAction())
+            unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+        else if (unit.RangedWeaponEquipped())
+            unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+        else
+            unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
+
+        unitActionHandler.QueueAction(this);
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
@@ -550,6 +543,8 @@ public class MoveAction : BaseAction
     public override bool IsMeleeAttackAction() => false;
 
     public override bool IsRangedAttackAction() => false;
+
+    public override int GetEnergyCost() => 0;
 
     public LayerMask MoveObstaclesMask() => moveObstaclesMask;
 

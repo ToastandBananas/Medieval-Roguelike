@@ -149,5 +149,7 @@ public abstract class BaseAction : MonoBehaviour
 
     public abstract int GetActionPointsCost();
 
+    public abstract int GetEnergyCost();
+
     public abstract string GetActionName();
 }

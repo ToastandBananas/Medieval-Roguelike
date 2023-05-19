@@ -15,7 +15,8 @@ public class Projectile : MonoBehaviour
     [SerializeField] TrailRenderer trailRenderer;
 
     Unit shooter;
-    Projectile_Item projectileScriptableObject;
+
+    public ItemData itemData { get; private set; }
 
     Vector3 targetPosition;
 
@@ -26,30 +27,40 @@ public class Projectile : MonoBehaviour
 
     void Awake()
     {
+        itemData = GetComponent<ItemData>();
+
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
     }
 
-    public void Setup(Projectile_Item projectile_SO, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
+    void FixedUpdate()
+    {
+        if (transform.position.y < -16f)
+            Disable();
+    }
+
+    public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
     {
         this.shooter = shooter;
         this.onProjectileBehaviourComplete = onProjectileBehaviourComplete;
 
-        projectileScriptableObject = projectile_SO;
-        speed = projectileScriptableObject.Speed();
+        this.itemData = itemData;
+        Ammunition ammunitionItem = this.itemData.item.Ammunition();
 
-        meshFilter.mesh = projectileScriptableObject.ProjectileMesh();
-        meshRenderer.material = projectileScriptableObject.ProjectileMaterial();
+        speed = ammunitionItem.Speed();
 
-        projectileCollider.center = projectileScriptableObject.CapsuleColliderCenter();
-        projectileCollider.radius = projectileScriptableObject.CapsuleColliderRadius();
-        projectileCollider.height = projectileScriptableObject.CapsuleColliderHeight();
-        projectileCollider.direction = projectileScriptableObject.CapsuleColliderDirection();
+        meshFilter.mesh = ammunitionItem.AmmunitionMesh();
+        meshRenderer.material = ammunitionItem.AmmunitionMaterial();
+
+        projectileCollider.center = ammunitionItem.CapsuleColliderCenter();
+        projectileCollider.radius = ammunitionItem.CapsuleColliderRadius();
+        projectileCollider.height = ammunitionItem.CapsuleColliderHeight();
+        projectileCollider.direction = ammunitionItem.CapsuleColliderDirection();
 
         transform.parent = parentTransform;
-        transform.localPosition = projectileScriptableObject.ProjectilePositionOffset();
-        transform.localEulerAngles = projectileScriptableObject.ProjectileRotation();
-        transform.localScale = projectileScriptableObject.ProjectileScale();
+        transform.localPosition = ammunitionItem.AmmunitionPositionOffset();
+        transform.localEulerAngles = ammunitionItem.AmmunitionRotation();
+        transform.localScale = ammunitionItem.AmmunitionScale();
 
         gameObject.SetActive(true);
     }
@@ -63,7 +74,7 @@ public class Projectile : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
 
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * projectileScriptableObject.ArcMultiplier();
+        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.item.Ammunition().ArcMultiplier();
         float animationTime = 0f;
 
         while (moveProjectile)
@@ -158,13 +169,15 @@ public class Projectile : MonoBehaviour
 
     void Arrived(Transform collisionTransform)
     {
+        shooter.unitActionHandler.targetUnits.Clear();
+
         TurnManager.Instance.StartNextUnitsTurn(shooter);
 
         moveProjectile = false;
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
 
-        ProjectileType projectileType = projectileScriptableObject.ProjectilesType();
+        ProjectileType projectileType = itemData.item.Ammunition().ProjectileType();
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
@@ -222,7 +235,7 @@ public class Projectile : MonoBehaviour
 
     void SetupTrail()
     {
-        switch (projectileScriptableObject.ProjectilesType())
+        switch (itemData.item.Ammunition().ProjectileType())
         {
             case ProjectileType.Arrow:
                 trailRenderer.time = 0.065f;
@@ -245,7 +258,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    void Disable()
+    public void Disable()
     {
         moveProjectile = false;
         shooter = null;

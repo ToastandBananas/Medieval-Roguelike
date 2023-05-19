@@ -8,12 +8,9 @@ public enum ProjectileType
     Explosive = 30,
 };
 
-[CreateAssetMenu(fileName = "New Projectile", menuName = "Held Item/Projectile")]
-public class Projectile_Item : Item
+[CreateAssetMenu(fileName = "New Ammunition", menuName = "Held Item/Ammunition")]
+public class Ammunition : Item
 {
-    [SerializeField] Mesh mesh;
-    [SerializeField] Material material;
-
     [Header("Capsule Collider")]
     [SerializeField] Vector3 capsuleColliderCenter;
     [SerializeField] float capsuleColliderRadius;
@@ -30,25 +27,25 @@ public class Projectile_Item : Item
     [SerializeField] float arcMultiplier = 1f;
 
     [Header("Transform")]
-    [SerializeField] Vector3 projectilePositionOffset;
-    [SerializeField] Vector3 projectileRotation;
-    [SerializeField] Vector3 projectileScale = Vector3.one;
+    [SerializeField] Vector3 ammunitionPositionOffset;
+    [SerializeField] Vector3 ammunitionRotation;
+    [SerializeField] Vector3 ammunitionScale = Vector3.one;
 
-    public Mesh ProjectileMesh() => mesh;
-    public Material ProjectileMaterial() => material;
+    public Mesh AmmunitionMesh() => meshes[0];
+    public Material AmmunitionMaterial() => meshRendererMaterials[0];
 
     public Vector3 CapsuleColliderCenter() => capsuleColliderCenter;
     public float CapsuleColliderRadius() => capsuleColliderRadius;
     public float CapsuleColliderHeight() => capsuleColliderHeight;
     public int CapsuleColliderDirection() => capsuleColliderDirection;
 
-    public ProjectileType ProjectilesType() => projectileType;
+    public ProjectileType ProjectileType() => projectileType;
     public int Speed() => speed;
     public float ArcMultiplier() => arcMultiplier;
 
-    public Vector3 ProjectilePositionOffset() => projectilePositionOffset;
-    public Vector3 ProjectileRotation() => projectileRotation;
-    public Vector3 ProjectileScale() => projectileScale;
+    public Vector3 AmmunitionPositionOffset() => ammunitionPositionOffset;
+    public Vector3 AmmunitionRotation() => ammunitionRotation;
+    public Vector3 AmmunitionScale() => ammunitionScale;
 
     public override bool IsEquipment() => false;
 

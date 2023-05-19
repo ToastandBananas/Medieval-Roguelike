@@ -89,7 +89,7 @@ public abstract class Item : ScriptableObject
 
     public Equipment Equipment() => this as Equipment;
 
-    public Projectile_Item ProjectileItem() => this as Projectile_Item;
+    public Ammunition Ammunition() => this as Ammunition;
 
     public Shield Shield() => this as Shield;
 

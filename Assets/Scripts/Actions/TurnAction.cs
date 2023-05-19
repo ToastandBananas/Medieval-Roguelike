@@ -510,6 +510,8 @@ public class TurnAction : BaseAction
 
     public override int GetActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
+    public override int GetEnergyCost() => 0;
+
     public override bool ActionIsUsedInstantly() => false;
 
     public float DefaultRotateSpeed() => defaultRotateSpeed;

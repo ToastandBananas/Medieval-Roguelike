@@ -164,7 +164,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         {
             for (int i = 0; i < combatActions.Count; i++)
             {
-                if (combatActions[i].IsValidAction() && combatActions[i].IsInAttackRange(targetUnit))
+                if (combatActions[i].IsValidAction() && unit.stats.HasEnoughEnergy(combatActions[i].GetEnergyCost()) && combatActions[i].IsInAttackRange(targetUnit))
                     return true;
             }
         }

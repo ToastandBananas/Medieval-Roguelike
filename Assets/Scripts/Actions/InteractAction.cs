@@ -61,5 +61,7 @@ public class InteractAction : BaseAction
 
     public override bool ActionIsUsedInstantly() => true;
 
+    public override int GetEnergyCost() => 0;
+
     public override string GetActionName() => "Interact";
 }

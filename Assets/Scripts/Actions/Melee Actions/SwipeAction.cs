@@ -15,7 +15,7 @@ public class SwipeAction : BaseAction
     {
         if (isAttacking) return;
 
-        if (IsValidUnitInActionArea(gridPosition) == false)
+        if (IsValidUnitInActionArea(gridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
         {
             unit.unitActionHandler.SetTargetEnemyUnit(null);
             unit.unitActionHandler.SetQueuedAttack(null);
@@ -470,6 +470,7 @@ public class SwipeAction : BaseAction
     {
         base.StartAction();
         isAttacking = true;
+        unit.stats.UseEnergy(GetEnergyCost());
     }
 
     public override void CompleteAction()
@@ -485,11 +486,13 @@ public class SwipeAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime() / 2f);
+        yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
     }
+
+    public override int GetEnergyCost() => 25;
 
     public override bool IsValidAction() => unit.MeleeWeaponEquipped();
 

@@ -8,6 +8,11 @@ public class Stats : MonoBehaviour
     public int lastUsedAP { get; private set; }
     readonly int baseAP = 60;
 
+    public int currentEnergy { get; private set; }
+    readonly int baseEnergy = 20;
+    readonly float energyRegenPerTurn = 0.25f;
+    float energyRegenBuildup;
+
     [Header("Attributes")]
     [SerializeField] IntStat endurance;
     [SerializeField] IntStat speed;
@@ -31,23 +36,25 @@ public class Stats : MonoBehaviour
     void Awake()
     {
         unit = GetComponent<Unit>();
+
         APUntilTimeTick = MaxAP();
-        // currentAP = MaxAP();
+        ReplenishEnergy();
     }
 
+    #region AP
     public void SetLastUsedAP(int amountUsed)
     {
         lastUsedAP = amountUsed;
         UnitActionSystemUI.Instance.UpdateActionPoints();
     }
 
-    public int MaxAP() => Mathf.RoundToInt(baseAP + (Speed().GetValue() * 5f));
+    public int MaxAP() => Mathf.RoundToInt(baseAP + (speed.GetValue() * 5f));
 
     public void UseAP(int amount)
     {
         if (amount <= 0)
             return;
-        
+
         if (unit.IsPlayer())
         {
             UpdateAPUntilTimeTick(amount);
@@ -55,7 +62,10 @@ public class Stats : MonoBehaviour
 
             for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
             {
+                // Every time the Player takes an action that costs AP, a correlating amount of AP is added to each NPCs AP pool (based off percentage of the Player's MaxAP used)
                 UnitManager.Instance.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt(UnitManager.Instance.livingNPCs[i].stats.APUsedMultiplier(amount) * UnitManager.Instance.livingNPCs[i].stats.MaxAP()));
+
+                // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
                 UnitManager.Instance.livingNPCs[i].unitActionHandler.GetAction<MoveAction>().SetMoveSpeed(amount);
             }
         }
@@ -63,6 +73,13 @@ public class Stats : MonoBehaviour
         {
             // Debug.Log("AP used: " + amount);
             currentAP -= amount;
+
+            if (currentAP < 0)
+            {
+                Debug.LogWarning($"Trying to use more AP than {unit.name} has...");
+                currentAP = 0;
+            }
+
             UpdateAPUntilTimeTick(amount);
         }
     }
@@ -80,7 +97,7 @@ public class Stats : MonoBehaviour
         }
     }
 
-    public void ReplenishAP() => currentAP = MaxAP(); 
+    public void ReplenishAP() => currentAP = MaxAP();
 
     public void AddToCurrentAP(int amountToAdd) => currentAP += amountToAdd;
 
@@ -120,6 +137,48 @@ public class Stats : MonoBehaviour
         return remainingAmount;
     }
 
+    public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP();
+    #endregion
+
+    #region Energy
+    public int MaxEnergy() => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 10f));
+
+    public void UseEnergy(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        currentEnergy -= amount;
+        if (currentEnergy < 0)
+        {
+            Debug.LogWarning($"Trying to use more energy than {unit.name} has...");
+            currentEnergy = 0;
+        }
+    }
+
+    public void ReplenishEnergy() => currentEnergy = MaxEnergy();
+
+    public void AddToCurrentEnergy(int amountToAdd)
+    {
+        currentEnergy += amountToAdd;
+        if (currentEnergy > MaxEnergy())
+            currentEnergy = MaxEnergy();
+    }
+
+    void RegenerateEnergy()
+    {
+        energyRegenBuildup += energyRegenPerTurn;
+        if (energyRegenBuildup >= 1f)
+        {
+            int amountToAdd = Mathf.FloorToInt(energyRegenBuildup);
+            AddToCurrentEnergy(amountToAdd);
+            energyRegenBuildup -= amountToAdd;
+        }
+    }
+
+    public bool HasEnoughEnergy(int energyCost) => currentEnergy >= energyCost;
+    #endregion
+
     void UpdateUnit()
     {
         if (unit.IsPlayer())
@@ -131,9 +190,7 @@ public class Stats : MonoBehaviour
         if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
             unit.vision.FindVisibleUnitsAndObjects();
 
-        //unit.SetHasStartedTurn(true);
-
-        //unit.stats.ReplenishAP();
+        RegenerateEnergy();
 
         /*
         unit.status.UpdateBuffs();
@@ -149,8 +206,6 @@ public class Stats : MonoBehaviour
         }
         */
     }
-
-    public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP();
 
     public IntStat Speed() => speed;
 

@@ -9,8 +9,8 @@ public class ProjectilePool : MonoBehaviour
     [SerializeField] int amountToPool = 40;
 
     [Header("Scriptable Objects")]
-    [SerializeField] Projectile_Item arrow;
-    [SerializeField] Projectile_Item bomb;
+    [SerializeField] Ammunition arrow;
+    [SerializeField] Ammunition bomb;
 
     List<Projectile> projectiles = new List<Projectile>();
 
@@ -52,7 +52,7 @@ public class ProjectilePool : MonoBehaviour
         return newProjectile;
     }
 
-    public Projectile_Item Arrow_SO() => arrow;
+    public Ammunition Arrow_SO() => arrow;
 
-    public Projectile_Item Bomb_SO() => bomb;
+    public Ammunition Bomb_SO() => bomb;
 }

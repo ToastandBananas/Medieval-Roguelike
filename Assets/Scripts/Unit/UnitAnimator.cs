@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class UnitAnimator : MonoBehaviour
@@ -58,6 +57,39 @@ public class UnitAnimator : MonoBehaviour
         unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null);
     }
 
+    public void DoSlightKnockback(Transform attackerTransform) => StartCoroutine(SlightKnockback(attackerTransform));
+
+    IEnumerator SlightKnockback(Transform attackerTransform)
+    {
+        float knockbackForce = 0.25f;
+        float knockbackDuration = 0.1f;
+        float returnDuration = 0.1f;
+        float elapsedTime = 0;
+
+        Vector3 originalPosition = unit.transform.position;
+        Vector3 knockbackDirection = (originalPosition - attackerTransform.position).normalized;
+        Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
+
+        // Knockback
+        while (elapsedTime < knockbackDuration && unit.health.IsDead() == false)
+        {
+            elapsedTime += Time.deltaTime;
+            unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
+            yield return null;
+        }
+
+        // Reset the elapsed time for the return movement
+        elapsedTime = 0;
+
+        // Return to original position
+        while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
+        {
+            elapsedTime += Time.deltaTime;
+            unit.transform.position = Vector3.Lerp(knockbackTargetPosition, originalPosition, elapsedTime / returnDuration);
+            yield return null;
+        }
+    }
+
     public void Die(Transform attackerTransform)
     {
         bool diedForward = Random.value <= 0.5f;
@@ -78,19 +110,23 @@ public class UnitAnimator : MonoBehaviour
 
     void Die_DropHeldItem(HeldItem heldItem, Transform attackerTransform, bool diedForward)
     {
-        LooseItem looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
+        LooseItem looseProjectile = null;
+        LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
         Item item = heldItem.itemData.item;
 
-        if (item.pickupMesh != null)
-            looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
-        else if (item.meshes[0] != null)
-            looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
-        else
-            Debug.LogWarning("Mesh Info has not been set on the ScriptableObject for: " + item.name);
+        SetupItemDrop(heldItem.transform, looseWeapon, item);
 
-        // Set the LooseItem's position to match the HeldItem before we add force
-        looseItem.transform.position = heldItem.transform.position;
-        looseItem.gameObject.SetActive(true);
+        if (heldItem is HeldRangedWeapon)
+        {
+            HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
+            if (heldRangedWeapon.isLoaded)
+            {
+                looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
+                Item projectileItem = heldRangedWeapon.loadedProjectile.itemData.item;
+                SetupItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, projectileItem);
+                heldRangedWeapon.loadedProjectile.Disable();
+            }
+        }
 
         // Remove references to weapon renderers for the dying unit
         unit.RemoveAllWeaponRenderers();
@@ -116,13 +152,33 @@ public class UnitAnimator : MonoBehaviour
         Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
         forceDirection = randomRotation * forceDirection;
 
-        // Get the Rigidbody component and apply the force
-        looseItem.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+        // Get the Rigidbody component(s) and apply force
+        looseWeapon.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+        if (looseProjectile != null)
+            looseProjectile.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        if (UnitManager.Instance.player.vision.IsVisible(unit) == false)
-            looseItem.HideMeshRenderer();
+        if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
+        {
+            looseWeapon.HideMeshRenderer();
+            if (looseProjectile != null)
+                looseProjectile.HideMeshRenderer();
+        }
 
         // StartCoroutine(DelayStopPhysicsMovements(looseItem));
+    }
+
+    void SetupItemDrop(Transform itemDropTransform, LooseItem looseItem, Item item)
+    {
+        if (item.pickupMesh != null)
+            looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
+        else if (item.meshes[0] != null)
+            looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
+        else
+            Debug.LogWarning("Mesh Info has not been set on the ScriptableObject for: " + item.name);
+
+        // Set the LooseItem's position to match the HeldItem before we add force
+        looseItem.transform.position = itemDropTransform.position;
+        looseItem.gameObject.SetActive(true);
     }
 
     IEnumerator DelayStopPhysicsMovements(LooseItem looseItem)

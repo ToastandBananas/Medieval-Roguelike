@@ -423,6 +423,8 @@ public class ShootAction : BaseAction
         return false;
     }
 
+    public override int GetEnergyCost() => 0;
+
     public bool RangedWeaponIsLoaded() => unit.GetRangedWeapon().isLoaded; 
 
     public override bool ActionIsUsedInstantly() => false;

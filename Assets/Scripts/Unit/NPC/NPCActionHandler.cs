@@ -300,13 +300,16 @@ public class NPCActionHandler : UnitActionHandler
 
     public void ChooseCombatAction()
     {
-        BaseAction bestAction = null;
+        BaseAction chosenCombatAction = null;
         npcAIActions.Clear();
 
         // Loop through all combat actions
         for (int i = 0; i < combatActions.Count; i++)
         {
             if (combatActions[i].IsValidAction() == false)
+                continue;
+
+            if (unit.stats.HasEnoughEnergy(combatActions[i].GetEnergyCost()) == false)
                 continue;
 
             // Loop through every grid position in range of the combat action
@@ -319,12 +322,6 @@ public class NPCActionHandler : UnitActionHandler
 
         // Sort the list of best NPCAIActions by the highest action value
         npcAIActions = npcAIActions.OrderByDescending(npcAIAction => npcAIAction.actionValue).ToList();
-
-        // Loop through the best npcAIAction for each combat action
-        for (int i = 0; i < npcAIActions.Count; i++)
-        {
-            // Debug.Log("Action Value: " + npcAIActions[i].actionValue + " | Grid Position: " + npcAIActions[i].actionGridPosition);
-        }
 
         // If no NPCAIActions were valid, just pursue the target enemy
         if (npcAIActions.Count == 0 || npcAIActions[0].actionValue <= 0)
@@ -352,15 +349,15 @@ public class NPCActionHandler : UnitActionHandler
             int selectedIndex = accumulatedWeights.FindIndex(weight => weight >= randomWeight);
 
             // Get the BaseAction from the corresponding NPCAIAction
-            bestAction = filteredNPCAIActions[selectedIndex].baseAction;
+            chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction;
 
             // If an action was found
-            if (bestAction != null)
+            if (chosenCombatAction != null)
             {
                 // Set the unit's target attack position to the one corresponding to the NPCAIAction that was chosen
                 SetTargetAttackGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
-                SetQueuedAttack(bestAction);
-                QueueAction(bestAction, targetAttackGridPosition);
+                SetQueuedAttack(chosenCombatAction);
+                QueueAction(chosenCombatAction, targetAttackGridPosition);
             }
             else // If no combat action was found, just move towards the target enemy
                 PursueTargetEnemy();
@@ -368,8 +365,6 @@ public class NPCActionHandler : UnitActionHandler
             ListPool<NPCAIAction>.Release(filteredNPCAIActions);
             ListPool<int>.Release(accumulatedWeights);
         }
-
-        // (We will need to incorporate queuedAttack when TakingTurn...I think queuedAttack will need to be set with default attacks as well)
     }
 
     public void StartFight()

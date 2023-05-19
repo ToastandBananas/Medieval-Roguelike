@@ -1002,7 +1002,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1327,7 +1327,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6122,7 +6122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b49c80c211f15ff4285f87c5c8653d6b, type: 3}
---- !u!1001 &1704227093
+--- !u!1001 &1750081191
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -6188,22 +6188,22 @@ PrefabInstance:
     - target: {fileID: 8416253515466033739, guid: e6dada2e37d507a4fb0ea451834b129d,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.6903456
+      value: 0.6903455
       objectReference: {fileID: 0}
     - target: {fileID: 8416253515466033739, guid: e6dada2e37d507a4fb0ea451834b129d,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.15304591
+      value: 0.1530459
       objectReference: {fileID: 0}
     - target: {fileID: 8416253515466033739, guid: e6dada2e37d507a4fb0ea451834b129d,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.6903456
+      value: 0.6903455
       objectReference: {fileID: 0}
     - target: {fileID: 8416253515466033739, guid: e6dada2e37d507a4fb0ea451834b129d,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.15304591
+      value: 0.1530459
       objectReference: {fileID: 0}
     - target: {fileID: 8416253515466033739, guid: e6dada2e37d507a4fb0ea451834b129d,
         type: 3}
@@ -8105,6 +8105,11 @@ PrefabInstance:
       propertyPath: manager
       value: 
       objectReference: {fileID: 671623199}
+    - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: bowSkill.baseValue
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: rangedAccuracy.baseValue

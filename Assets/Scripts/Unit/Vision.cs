@@ -57,7 +57,7 @@ public class Vision : MonoBehaviour
         if (unitToCheck.CanSeeMeshRenderers() == false)
             return false;
 
-        if (IsInLineOfSight_Raycast(unitToCheck.transform) == false)
+        if (IsInLineOfSight_Raycast(unitToCheck) == false)
             return false;
 
         return true;
@@ -71,7 +71,7 @@ public class Vision : MonoBehaviour
         if (looseItemToCheck.CanSeeMeshRenderer() == false)
             return false;
 
-        if (IsInLineOfSight_Raycast(looseItemToCheck.transform) == false)
+        if (IsInLineOfSight_Raycast(looseItemToCheck) == false)
             return false;
 
         return true;
@@ -95,16 +95,28 @@ public class Vision : MonoBehaviour
     {
         float sphereCastRadius = 0.1f;
         Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight() * 2f;
-        Vector3 shootDir = ((unit.WorldPosition() + offset) - (unitToCheck.WorldPosition() + offset)).normalized;
-        if (Physics.SphereCast(unitToCheck.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, unitToCheck.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask()))
+        Vector3 shootDir = ((unitToCheck.WorldPosition() + offset) - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + offset);
+        if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask()))
             return false; // Blocked by an obstacle
         return true;
     }
 
-    bool IsInLineOfSight_Raycast(Transform transformToCheck)
+    bool IsInLineOfSight_Raycast(Unit unitToCheck)
     {
-        Vector3 dirToTarget = ((transformToCheck.position + yOffset) - transform.position).normalized;
-        float distToTarget = Vector3.Distance(transform.position, transformToCheck.position);
+        Vector3 dirToTarget = ((unitToCheck.WorldPosition() + yOffset) - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + yOffset);
+
+        // If target Unit is in the view angle and no obstacles are in the way
+        if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+            return true;
+        return false;
+    }
+
+    bool IsInLineOfSight_Raycast(LooseItem looseItem)
+    {
+        Vector3 dirToTarget = (looseItem.MeshCollider().bounds.center - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, looseItem.MeshCollider().bounds.center);
 
         // If target Unit is in the view angle and no obstacles are in the way
         if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)

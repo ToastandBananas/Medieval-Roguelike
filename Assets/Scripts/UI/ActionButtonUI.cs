@@ -50,7 +50,23 @@ public class ActionButtonUI : MonoBehaviour
         if (baseAction == null || baseAction.IsValidAction() == false)
             transform.gameObject.SetActive(false);
         else
+        {
             transform.gameObject.SetActive(true);
+            if (playerActionHandler.unit.stats.HasEnoughEnergy(baseAction.GetEnergyCost()))
+                ActivateButton();
+            else
+                DeactivateButton();
+        }
+    }
+
+    void ActivateButton()
+    {
+        button.interactable = true;
+    }
+
+    void DeactivateButton()
+    {
+        button.interactable = false;
     }
 
     public BaseAction GetBaseAction() => baseAction;

@@ -110,7 +110,7 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator DoNextUnitsTurn(bool increaseTurnIndex = true)
     {
-        // If the final Unit is still performing an action
+        // If the final Unit is still performing an action or if someone is attacking
         while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
         {
             yield return null;

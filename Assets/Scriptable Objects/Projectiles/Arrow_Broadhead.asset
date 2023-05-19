@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e724c628a682061469b14a57d938e03e, type: 3}
+  m_Name: Arrow_Broadhead
+  m_EditorClassIdentifier: 
+  name: Broadhead Arrow
+  pluralName: 
+  itemType: 3
+  mainMaterial: 9
+  itemSize: 3
+  description: 
+  maxStackSize: 20
+  weight: 0.1
+  volume: 0.1
+  isUsable: 1
+  canUsePartial: 0
+  value: {x: 0, y: 0}
+  staticValue: 1
+  meshes:
+  - {fileID: 314023484990756521, guid: 02c3d204eac64a3459bece5895fcc48f, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4, type: 2}
+  pickupMesh: {fileID: 0}
+  pickupMeshRendererMaterial: {fileID: 0}
+  capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.3}
+  capsuleColliderRadius: 0.0025
+  capsuleColliderHeight: 0.4
+  capsuleColliderDirection: 2
+  projectileType: 0
+  speed: 15
+  arcMultiplier: 1
+  ammunitionPositionOffset: {x: 0.005, y: 0, z: 0}
+  ammunitionRotation: {x: 0, y: 0, z: 90}
+  ammunitionScale: {x: 1, y: 1, z: 1}

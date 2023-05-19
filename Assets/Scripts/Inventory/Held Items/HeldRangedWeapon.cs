@@ -5,7 +5,7 @@ public class HeldRangedWeapon : HeldItem
 {
     [SerializeField] BowLineRenderer bowLineRenderer;
 
-    Projectile loadedProjectile;
+    public Projectile loadedProjectile { get; private set; }
     public bool isLoaded { get; private set; }
 
     public override void DoDefaultAttack()
@@ -34,7 +34,7 @@ public class HeldRangedWeapon : HeldItem
     public void LoadProjectile()
     {
         Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-        projectile.Setup(ProjectilePool.Instance.Arrow_SO(), unit, bowLineRenderer.GetStringCenterTarget(), null);
+        projectile.Setup(projectile.itemData, unit, bowLineRenderer.GetStringCenterTarget(), null);
         loadedProjectile = projectile;
         isLoaded = true;
     }

@@ -125,6 +125,10 @@ public class PlayerInput : MonoBehaviour
         // If the mouse is hovering over an Interactable
         if (highlightedInteractable != null)
         {
+            // Do nothing if the player is in the same grid position as the interactable (such as an open door)
+            if (player.gridPosition == highlightedInteractable.gridPosition)
+                return;
+
             // Set the target Interactable
             player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
 
@@ -142,8 +146,13 @@ public class PlayerInput : MonoBehaviour
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
             }
         }
+        // If the player is trying to perform an action on themselves
+        else if (mouseGridPosition == player.gridPosition)
+        {
+            // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
+        }
         // Make sure the mouse grid position is a valid position to perform an action
-        else if (mouseGridPosition != player.gridPosition && LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
+        else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
         {
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
             bool unitIsVisible = true;
@@ -154,7 +163,7 @@ public class PlayerInput : MonoBehaviour
             if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unitIsVisible)
             {
                 // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                if (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction()))
+                if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
                 {
                     // Set the Unit as the target enemy
                     player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
@@ -209,7 +218,7 @@ public class PlayerInput : MonoBehaviour
                             return;
 
                         // If the target is in shooting range
-                        if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition)) 
+                        if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
                         {
                             // Turn towards and attack the target enemy
                             player.unitActionHandler.AttackTarget();
@@ -239,20 +248,29 @@ public class PlayerInput : MonoBehaviour
                     else // The player either doesn't have an attack action selected or has a non-default attack action selected
                         player.unitActionHandler.SetTargetEnemyUnit(null);
                 }
-                else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit)
+                else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
+                {
+                    // Set the selected action to Move if the Player doesn't have enough energy for their selected action
+                    if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) == false)
+                        player.unitActionHandler.SetSelectedAction(player.unitActionHandler.GetAction<MoveAction>());
+
                     player.unitActionHandler.SetTargetEnemyUnit(null);
+                }
             }
             // If there's no unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
             else if (player.unitActionHandler.selectedAction.IsAttackAction())
             {
-                // If there's any enemy or neutral unit within the attack positions
-                if (player.unitActionHandler.selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition))
-                {
-                    // Turn towards and attack the target enemy
-                    player.unitActionHandler.SetQueuedAttack(player.unitActionHandler.selectedAction);
-                    player.unitActionHandler.AttackTarget();
+                // Make sure the Player has enough energy for the attack
+                if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) == false)
                     return;
-                }
+
+                // If there's any enemy or neutral unit within the attack positions
+                if (player.unitActionHandler.selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition) == false)
+                    return;
+                
+                // Turn towards and attack the target enemy
+                player.unitActionHandler.SetQueuedAttack(player.unitActionHandler.selectedAction);
+                player.unitActionHandler.AttackTarget();
             }
             else if (player.unitActionHandler.selectedAction is MoveAction)
             {
@@ -260,11 +278,6 @@ public class PlayerInput : MonoBehaviour
                 player.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
             }
-        }
-        // If the player is trying to perform an action on themselves
-        else if (mouseGridPosition == player.gridPosition)
-        {
-            // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
         }
     }
 

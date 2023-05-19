@@ -48,5 +48,7 @@ public class ReloadAction : BaseAction
 
     public override bool IsRangedAttackAction() => false;
 
+    public override int GetEnergyCost() => 0;
+
     public override string GetActionName() => "Reload";
 }

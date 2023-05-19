@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class HealthSystem : MonoBehaviour
@@ -38,38 +37,7 @@ public class HealthSystem : MonoBehaviour
         if (currentHealth == 0)
             Die(attackerTransform);
         else
-            StartCoroutine(SlightKnockback(attackerTransform));
-    }
-
-    IEnumerator SlightKnockback(Transform attackerTransform)
-    {
-        float knockbackForce = 0.25f;
-        float knockbackDuration = 0.1f;
-        float returnDuration = 0.1f;
-        float elapsedTime = 0;
-
-        Vector3 originalPosition = unit.gridPosition.WorldPosition();
-        Vector3 knockbackDirection = (originalPosition - attackerTransform.position).normalized;
-        Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
-
-        // Knockback
-        while (elapsedTime < knockbackDuration && IsDead() == false)
-        {
-            elapsedTime += Time.deltaTime;
-            unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
-            yield return null;
-        }
-
-        // Reset the elapsed time for the return movement
-        elapsedTime = 0;
-
-        // Return to original position
-        while (elapsedTime < returnDuration && IsDead() == false)
-        {
-            elapsedTime += Time.deltaTime;
-            unit.transform.position = Vector3.Lerp(knockbackTargetPosition, originalPosition, elapsedTime / returnDuration);
-            yield return null;
-        }
+            unit.unitAnimator.DoSlightKnockback(attackerTransform);
     }
 
     void SpawnBlood(Transform attackerTransform)

@@ -63,10 +63,10 @@ public class ActionLineRenderer : MonoBehaviour
             }
             else if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
             {
-                if (player.alliance.IsEnemy(unitAtMousePosition))
+                if (player.alliance.IsEnemy(unitAtMousePosition) || (player.alliance.IsNeutral(unitAtMousePosition) && player.unitActionHandler.selectedAction.IsDefaultAttackAction()))
                 {
                     // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition, true) || (player.unitActionHandler.selectedAction.IsAttackAction() && player.unitActionHandler.selectedAction.IsDefaultAttackAction() == false))
+                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition, true) || player.unitActionHandler.selectedAction.IsDefaultAttackAction() == false)
                     {
                         HideLineRenderers();
                         yield break;
@@ -78,7 +78,10 @@ public class ActionLineRenderer : MonoBehaviour
                         targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
                 }
                 else
-                    targetGridPosition = mouseGridPosition;
+                {
+                    HideLineRenderers();
+                    yield break;
+                }
             }
             else
             {

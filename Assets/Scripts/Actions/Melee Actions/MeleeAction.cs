@@ -496,6 +496,8 @@ public class MeleeAction : BaseAction
 
     public override bool IsRangedAttackAction() => false;
 
+    public override int GetEnergyCost() => 0;
+
     public bool CanFightUnarmed() => canFightUnarmed;
 
     public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
