@@ -38,14 +38,14 @@ public class Stats : MonoBehaviour
         unit = GetComponent<Unit>();
 
         APUntilTimeTick = MaxAP();
-        ReplenishEnergy();
+        currentEnergy = MaxEnergy();
     }
 
     #region AP
     public void SetLastUsedAP(int amountUsed)
     {
         lastUsedAP = amountUsed;
-        UnitActionSystemUI.Instance.UpdateActionPoints();
+        ActionSystemUI.Instance.UpdateActionPointsText();
     }
 
     public int MaxAP() => Mathf.RoundToInt(baseAP + (speed.GetValue() * 5f));
@@ -154,15 +154,27 @@ public class Stats : MonoBehaviour
             Debug.LogWarning($"Trying to use more energy than {unit.name} has...");
             currentEnergy = 0;
         }
+
+        if (unit.IsPlayer())
+            ActionSystemUI.Instance.UpdateEnergyText();
     }
 
-    public void ReplenishEnergy() => currentEnergy = MaxEnergy();
+    public void ReplenishEnergy()
+    {
+        currentEnergy = MaxEnergy();
+
+        if (unit.IsPlayer())
+            ActionSystemUI.Instance.UpdateEnergyText();
+    }
 
     public void AddToCurrentEnergy(int amountToAdd)
     {
         currentEnergy += amountToAdd;
         if (currentEnergy > MaxEnergy())
             currentEnergy = MaxEnergy();
+
+        if (unit.IsPlayer())
+            ActionSystemUI.Instance.UpdateEnergyText();
     }
 
     void RegenerateEnergy()

@@ -23,7 +23,7 @@ public abstract class BaseAction : MonoBehaviour
     {
         isActive = false;
         if (unit.IsPlayer())
-            UnitActionSystemUI.Instance.UpdateActionVisuals();
+            ActionSystemUI.Instance.UpdateActionVisuals();
     }
 
     public NPCAIAction GetBestNPCAIActionFromList(List<NPCAIAction> npcAIActionList)

@@ -1,12 +1,8 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 public class HealthSystem : MonoBehaviour
 {
-    public event EventHandler OnHealthChanged;
-    public event EventHandler OnDead;
-
     [SerializeField] int maxHealth = 100;
     [SerializeField] int currentHealth;
 
@@ -30,7 +26,8 @@ public class HealthSystem : MonoBehaviour
         if (currentHealth < 0)
             currentHealth = 0;
 
-        OnHealthChanged?.Invoke(this, EventArgs.Empty);
+        if (unit.IsPlayer())
+            ActionSystemUI.Instance.UpdateHealthText();
 
         // SpawnBlood(attackerTransform);
 
@@ -38,6 +35,16 @@ public class HealthSystem : MonoBehaviour
             Die(attackerTransform);
         else
             unit.unitAnimator.DoSlightKnockback(attackerTransform);
+    }
+
+    public void IncreaseHealth(int healAmount)
+    {
+        currentHealth += healAmount;
+        if (currentHealth > maxHealth)
+            currentHealth = maxHealth;
+
+        if (unit.IsPlayer())
+            ActionSystemUI.Instance.UpdateHealthText();
     }
 
     void SpawnBlood(Transform attackerTransform)
@@ -62,8 +69,6 @@ public class HealthSystem : MonoBehaviour
     {
         UnitManager.Instance.deadNPCs.Add(unit);
         UnitManager.Instance.livingNPCs.Remove(unit);
-
-        OnDead?.Invoke(this, EventArgs.Empty);
 
         unit.unitAnimator.Die(attackerTransform);
     }

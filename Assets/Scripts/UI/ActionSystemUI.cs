@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class UnitActionSystemUI : MonoBehaviour
+public class ActionSystemUI : MonoBehaviour
 {
-    public static UnitActionSystemUI Instance { get; private set; }
+    public static ActionSystemUI Instance { get; private set; }
 
     [SerializeField] Transform actionButtonPrefab;
     [SerializeField] Transform actionButtonContainerTransform;
     [SerializeField] TextMeshProUGUI actionPointsText;
+    [SerializeField] TextMeshProUGUI energyText;
+    [SerializeField] TextMeshProUGUI healthText;
 
     int amountActionButtonsToPool = 8;
     List<ActionButtonUI> actionButtons = new List<ActionButtonUI>();
@@ -34,7 +36,10 @@ public class UnitActionSystemUI : MonoBehaviour
 
         InitializeActionButtonPool();
 
-        UpdateActionPoints();
+        UpdateActionPointsText();
+        UpdateEnergyText();
+        UpdateHealthText();
+
         SetupUnitActionButtons();
         UpdateSelectedVisual(); 
     }
@@ -63,7 +68,7 @@ public class UnitActionSystemUI : MonoBehaviour
             UpdateSelectedVisual();
             GridSystemVisual.UpdateGridVisual();
         }
-    } 
+    }
 
     void HideActionButtons()
     {
@@ -120,5 +125,9 @@ public class UnitActionSystemUI : MonoBehaviour
         }
     }
 
-    public void UpdateActionPoints() => actionPointsText.text = "Last Used AP: " + playerActionHandler.unit.stats.lastUsedAP;
+    public void UpdateActionPointsText() => actionPointsText.text = $"Last Used AP: {playerActionHandler.unit.stats.lastUsedAP}";
+
+    public void UpdateEnergyText() => energyText.text = $"Energy: {playerActionHandler.unit.stats.currentEnergy}";
+
+    public void UpdateHealthText() => healthText.text = $"Health: {playerActionHandler.unit.health.CurrentHealth()}";
 }

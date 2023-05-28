@@ -262,6 +262,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3945c63d399bb904a8e8e95ef2116a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  endurance:
+    baseValue: 5
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
   speed:
     baseValue: 5
     minValue: 1
@@ -863,9 +868,13 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
+  looseItemVisionObstacleMask:
+    serializedVersion: 2
+    m_Bits: 4067264
   interactableMask:
     serializedVersion: 2
     m_Bits: 2147483648
+  looseItemsInViewRadius: []
 --- !u!1 &6418375078083463654
 GameObject:
   m_ObjectHideFlags: 0
