@@ -250,7 +250,7 @@ public class Stats : MonoBehaviour
     public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
     {
         float blockChance = shieldSkill.GetValue() * 2f;
-        blockChance = Mathf.RoundToInt((blockChance + heldShield.itemData.item.Shield().blockChanceAddOn) * 100f) / 100f;
+        blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData().Item().Shield().blockChanceAddOn) * 100f) / 100f;
 
         if (attackerBesideUnit)
             blockChance *= 0.5f;
@@ -261,7 +261,7 @@ public class Stats : MonoBehaviour
 
     public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
     {
-        Weapon weapon = heldWeapon.itemData.item.Weapon();
+        Weapon weapon = heldWeapon.ItemData().Item().Weapon();
         float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
         blockChance = Mathf.RoundToInt((blockChance + weapon.blockChanceAddOn) * 100f) / 100f;
 
@@ -275,21 +275,21 @@ public class Stats : MonoBehaviour
         return blockChance;
     }
 
-    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.itemData.blockPower;
+    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.ItemData().BlockPower();
 
     public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
     {
-        Weapon weapon = heldWeapon.itemData.item.Weapon();
+        Weapon weapon = heldWeapon.ItemData().Item().Weapon();
         return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.weaponType) * 2)) * WeaponBlockModifier(weapon));
     }
 
     public float RangedAccuracy(ItemData rangedWeaponItemData)
     {
         float accuracy = 0f;
-        if (rangedWeaponItemData.item.Weapon().weaponType == WeaponType.Bow)
+        if (rangedWeaponItemData.Item().Weapon().weaponType == WeaponType.Bow)
         {
             accuracy = bowSkill.GetValue() * 4f;
-            accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.accuracyModifier) * 100f) / 100f;
+            accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier()) * 100f) / 100f;
         }
 
         if (accuracy < 0f) accuracy = 0f;

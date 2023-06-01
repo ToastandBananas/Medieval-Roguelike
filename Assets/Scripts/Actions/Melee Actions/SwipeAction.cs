@@ -150,7 +150,7 @@ public class SwipeAction : BaseAction
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+        float maxAttackRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -213,7 +213,7 @@ public class SwipeAction : BaseAction
             return validGridPositionsList; ;
         }
 
-        float maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+        float maxAttackRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
         nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -369,7 +369,7 @@ public class SwipeAction : BaseAction
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-            float minAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
+            float minAttackRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
 
             if (distance < minAttackRange)
                 finalActionValue = 0f;

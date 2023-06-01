@@ -32,16 +32,30 @@ MonoBehaviour:
     - InControl
     - AstarPathfindingProject
     - Assembly-CSharp-firstpass
+    - MoreMountains.Feedbacks
+    - MoreMountains.Tools
+    - MoreMountains.Feedbacks.URP
     - Assembly-CSharp
     - Cinemachine
+    - MoreMountains.Feedbacks.MMTools
+    - MoreMountains.Feedbacks.NiceVibrations
+    - MoreMountains.Feedbacks.PostProcessing
+    - MoreMountains.Feedbacks.HDRP
+    - MoreMountains.Feedbacks.TextMeshPro
     - PackageTools
+    - Lofelt.NiceVibrations
+    - MoreMountains.Feedbacks.Cinemachine
+    - MoreMountains.Feedbacks.Authorizations
     - Drawing
+    - MoreMountains.Tools.Editor
     - AstarPathfindingProjectEditor
+    - MoreMountains.Feedbacks.Editor
     - PPv2URPConverters
     - InControl.Editor
     - AstarPackageToolsEditor
     - DrawingPackageToolsEditor
     - DrawingEditor
+    - Lofelt.NiceVibrations.Editor
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1

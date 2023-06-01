@@ -22,20 +22,20 @@ public class HeldMeleeWeapon : HeldItem
         // Determine attack animation based on melee weapon type
         if (this == unit.rightHeldItem)
         {
-            if (itemData.item.Weapon().isTwoHanded)
+            if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("DefaultAttack_2H");
             else
                 anim.Play("DefaultAttack_1H_R");
 
-            if (unit.leftHeldItem != null && unit.leftHeldItem.itemData.item is Shield) 
+            if (unit.leftHeldItem != null && unit.leftHeldItem.ItemData().Item() is Shield) 
                 unit.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L"); 
         }
         else if (this == unit.leftHeldItem)
         {
-            if (itemData.item.Weapon().isTwoHanded == false)
+            if (itemData.Item().Weapon().isTwoHanded == false)
                 anim.Play("DefaultAttack_1H_L");
 
-            if (unit.rightHeldItem != null && unit.rightHeldItem.itemData.item is Shield)
+            if (unit.rightHeldItem != null && unit.rightHeldItem.ItemData().Item() is Shield)
                 unit.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
         }
 
@@ -89,14 +89,14 @@ public class HeldMeleeWeapon : HeldItem
     {
         if (unit.rightHeldItem == this)
         {
-            if (itemData.item.Weapon().isTwoHanded)
+            if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("RaiseWeapon_2H");
             else
                 anim.Play("RaiseWeapon_1H_R");
         }
         else if (unit.leftHeldItem == this)
         {
-            if (itemData.item.Weapon().isTwoHanded)
+            if (itemData.Item().Weapon().isTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
             else
                 anim.Play("RaiseWeapon_1H_L");
@@ -107,14 +107,14 @@ public class HeldMeleeWeapon : HeldItem
     {
         if (unit.rightHeldItem == this)
         {
-            if (itemData.item.Weapon().isTwoHanded)
+            if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("LowerWeapon_2H");
             else
                 anim.Play("LowerWeapon_1H_R");
         }
         else if (unit.leftHeldItem == this)
         {
-            if (itemData.item.Weapon().isTwoHanded)
+            if (itemData.Item().Weapon().isTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
             else
                 anim.Play("LowerWeapon_1H_L");
@@ -149,7 +149,7 @@ public class HeldMeleeWeapon : HeldItem
 
     public int DamageAmount()
     {
-        int damageAmount = itemData.damage;
+        int damageAmount = itemData.Damage();
         if (unit.IsDualWielding())
         {
             if (this == unit.GetRightMeleeWeapon())
@@ -164,9 +164,9 @@ public class HeldMeleeWeapon : HeldItem
     public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.item.Weapon().maxRange;
+            return itemData.Item().Weapon().maxRange;
 
-        float maxRange = itemData.item.Weapon().maxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
+        float maxRange = itemData.Item().Weapon().maxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

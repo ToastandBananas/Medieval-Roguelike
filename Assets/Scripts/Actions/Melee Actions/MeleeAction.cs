@@ -185,7 +185,7 @@ public class MeleeAction : BaseAction
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
         if (unit.MeleeWeaponEquipped())
         {
-            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon();
+            Weapon meleeWeapon = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon();
             float maxRangeToTargetPosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
@@ -235,7 +235,7 @@ public class MeleeAction : BaseAction
         else if (unit.IsDualWielding())
             yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
         else
-            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.GetPrimaryMeleeWeapon().itemData.item as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.GetPrimaryMeleeWeapon().ItemData().Item() as Weapon));
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -251,7 +251,7 @@ public class MeleeAction : BaseAction
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
             float minAttackRange = 1f;
             if (unit.MeleeWeaponEquipped())
-                minAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
+                minAttackRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
 
             if (distance < minAttackRange)
                 finalActionValue = 0f;
@@ -337,8 +337,8 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            minRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().minRange;
-            maxRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+            minRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
+            maxRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
         }
 
         float boundsDimension = (maxRange * 2) + 0.1f;
@@ -402,7 +402,7 @@ public class MeleeAction : BaseAction
 
         float maxAttackRange;
         if (unit.MeleeWeaponEquipped())
-            maxAttackRange = unit.GetPrimaryMeleeWeapon().itemData.item.Weapon().maxRange;
+            maxAttackRange = unit.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
         else
             maxAttackRange = unarmedAttackRange;
 

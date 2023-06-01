@@ -56,7 +56,7 @@ public class Unit : MonoBehaviour
     {
         if (leftHeldItem != null)
         {
-            if (leftHeldItem.itemData.item.itemType == ItemType.RangedWeapon) // The item is a Bow
+            if (leftHeldItem.ItemData().Item().itemType == ItemType.RangedWeapon) // The item is a Bow
             {
                 bowMeshRenderers = leftHeldItem.GetComponentsInChildren<MeshRenderer>();
                 bowLineRenderer = leftHeldItem.GetComponentInChildren<LineRenderer>();
@@ -354,13 +354,13 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public bool IsDualWielding() => leftHeldItem != null && rightHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon() && rightHeldItem.itemData.item.IsMeleeWeapon();
+    public bool IsDualWielding() => leftHeldItem != null && rightHeldItem != null && leftHeldItem.ItemData().Item().IsMeleeWeapon() && rightHeldItem.ItemData().Item().IsMeleeWeapon();
 
-    public bool MeleeWeaponEquipped() => (leftHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon()) || (rightHeldItem != null && rightHeldItem.itemData.item.IsMeleeWeapon());
+    public bool MeleeWeaponEquipped() => (leftHeldItem != null && leftHeldItem.ItemData().Item().IsMeleeWeapon()) || (rightHeldItem != null && rightHeldItem.ItemData().Item().IsMeleeWeapon());
 
-    public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.itemData.item.IsRangedWeapon();
+    public bool RangedWeaponEquipped() => leftHeldItem != null && leftHeldItem.ItemData().Item().IsRangedWeapon();
 
-    public bool ShieldEquipped() => (leftHeldItem != null && leftHeldItem.itemData.item.IsShield()) || (rightHeldItem != null && rightHeldItem.itemData.item.IsShield());
+    public bool ShieldEquipped() => (leftHeldItem != null && leftHeldItem.ItemData().Item().IsShield()) || (rightHeldItem != null && rightHeldItem.ItemData().Item().IsShield());
 
     public bool IsUnarmed() => leftHeldItem == null && rightHeldItem == null;
 
@@ -375,9 +375,9 @@ public class Unit : MonoBehaviour
 
     public HeldMeleeWeapon GetPrimaryMeleeWeapon()
     {
-        if (rightHeldItem != null && rightHeldItem.itemData.item.IsMeleeWeapon())
+        if (rightHeldItem != null && rightHeldItem.ItemData().Item().IsMeleeWeapon())
             return rightHeldItem as HeldMeleeWeapon;
-        else if (leftHeldItem != null && leftHeldItem.itemData.item.IsMeleeWeapon())
+        else if (leftHeldItem != null && leftHeldItem.ItemData().Item().IsMeleeWeapon())
             return leftHeldItem as HeldMeleeWeapon;
         return null;
     }
@@ -390,9 +390,9 @@ public class Unit : MonoBehaviour
 
     public HeldShield GetShield()
     {
-        if (leftHeldItem != null && leftHeldItem.itemData.item.IsShield())
+        if (leftHeldItem != null && leftHeldItem.ItemData().Item().IsShield())
             return leftHeldItem as HeldShield;
-        else if (rightHeldItem != null && rightHeldItem.itemData.item.IsShield())
+        else if (rightHeldItem != null && rightHeldItem.ItemData().Item().IsShield())
             return rightHeldItem as HeldShield;
         return null;
     }

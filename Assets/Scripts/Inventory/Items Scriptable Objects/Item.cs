@@ -18,11 +18,16 @@ public abstract class Item : ScriptableObject
     public ItemMaterial mainMaterial;
     public ItemSize itemSize;
     public string description;
+    public bool isUsable = true;
+    public bool canUsePartial;
+
+    [Header("Inventory")]
+    public Sprite inventorySprite;
+    public int width = 1;
+    public int height = 1;
     public int maxStackSize = 1;
     public float weight = 0.1f;
     public float volume = 0.1f;
-    public bool isUsable = true;
-    public bool canUsePartial;
 
     [Header("Value")]
     public Vector2Int value;

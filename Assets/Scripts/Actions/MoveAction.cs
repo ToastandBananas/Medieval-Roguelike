@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class MoveAction : BaseAction
 {
-    public event EventHandler OnStopMoving;
-
     public Seeker seeker { get; private set; }
     public GridPosition finalTargetGridPosition { get; private set; }
     public GridPosition nextTargetGridPosition { get; private set; }
@@ -180,9 +178,6 @@ public class MoveAction : BaseAction
                 // Move to the target position
                 unit.transform.position = Vector3.MoveTowards(unit.transform.position, targetPosition, moveSpeed * moveSpeedMultiplier * Time.deltaTime);
 
-                //Vector3 moveDirection = (targetPosition - unitPosition).normalized;
-                //unit.transform.position += moveDirection * moveSpeed * moveSpeedMultiplier * Time.deltaTime;
-
                 yield return null;
             }
         }
@@ -205,7 +200,6 @@ public class MoveAction : BaseAction
             positionIndex++;
 
         CompleteAction();
-        OnStopMoving?.Invoke(this, EventArgs.Empty);
 
         TryQueueNextAction();
 

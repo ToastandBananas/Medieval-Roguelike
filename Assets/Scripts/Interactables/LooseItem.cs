@@ -7,11 +7,13 @@ public class LooseItem : Interactable
     [SerializeField] MeshCollider meshCollider;
     [SerializeField] Rigidbody rigidBody;
 
-    ItemData itemData;
+    [SerializeField] ItemData itemData;
 
     public override void Awake()
     {
         gridPosition = LevelGrid.GetGridPosition(transform.position);
+
+        itemData.InitializeData();
     }
 
     public override void Interact(Unit unitPickingUpItem)

@@ -43,7 +43,7 @@ public class PlayerActionHandler : UnitActionHandler
                             Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                             // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                             {
                                 CancelAction();
                                 return;
@@ -72,10 +72,8 @@ public class PlayerActionHandler : UnitActionHandler
                     // Handle default ranged attack
                     if (unit.RangedWeaponEquipped())
                     {
-                        Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-
-                        // If the closest or target enemies are too close, cancel the Player's current action
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                        // If the target enemy is too close, cancel the Player's current action
+                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                         {
                             CancelAction();
                             return;

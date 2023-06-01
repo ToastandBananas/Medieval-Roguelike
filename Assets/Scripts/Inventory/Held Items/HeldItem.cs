@@ -4,26 +4,28 @@ using UnityEngine;
 // If a class is abstract, this means that the class cannot be placed on a GameObject
 public abstract class HeldItem : MonoBehaviour
 {
+    [Header("Default Positioning")]
     [SerializeField] Vector3 idlePosition = new Vector3(-0.23f, -0.3f, -0.23f);
     [SerializeField] Vector3 idleRotation = new Vector3(0f, 90f, 0f);
 
+    [Header("Item Data")]
+    [SerializeField] protected ItemData itemData;
+
     public Animator anim { get; private set; }
-    public ItemData itemData { get; private set; }
 
     protected Unit unit;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
-        itemData = GetComponent<ItemData>();
+
+        itemData.InitializeData();
 
         SetItemPosition();
         SetItemRotation();
 
         SetUnit();
     }
-
-    public void SetItemData(ItemData itemData) => this.itemData = itemData;
 
     void SetUnit() => unit = transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
 
@@ -61,7 +63,9 @@ public abstract class HeldItem : MonoBehaviour
 
     public IEnumerator DelayDoDefaultAttack()
     {
-        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.rightHeldItem.itemData.item as Weapon) / 2f) + 0.05f);
+        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.rightHeldItem.itemData.Item() as Weapon) / 2f) + 0.05f);
         DoDefaultAttack();
     }
+
+    public ItemData ItemData() => itemData;
 }

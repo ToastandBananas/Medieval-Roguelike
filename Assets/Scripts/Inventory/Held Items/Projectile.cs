@@ -14,9 +14,10 @@ public class Projectile : MonoBehaviour
     [Header("VFX")]
     [SerializeField] TrailRenderer trailRenderer;
 
-    Unit shooter;
+    [Header("Item Data")]
+    [SerializeField] ItemData itemData;
 
-    public ItemData itemData { get; private set; }
+    Unit shooter;
 
     Vector3 targetPosition;
 
@@ -27,16 +28,10 @@ public class Projectile : MonoBehaviour
 
     void Awake()
     {
-        itemData = GetComponent<ItemData>();
-
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
-    }
 
-    void FixedUpdate()
-    {
-        if (transform.position.y < -16f)
-            Disable();
+        itemData.InitializeData();
     }
 
     public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
@@ -45,7 +40,7 @@ public class Projectile : MonoBehaviour
         this.onProjectileBehaviourComplete = onProjectileBehaviourComplete;
 
         this.itemData = itemData;
-        Ammunition ammunitionItem = this.itemData.item.Ammunition();
+        Ammunition ammunitionItem = this.itemData.Item().Ammunition();
 
         speed = ammunitionItem.Speed();
 
@@ -74,7 +69,7 @@ public class Projectile : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
 
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.item.Ammunition().ArcMultiplier();
+        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item().Ammunition().ArcMultiplier();
         float animationTime = 0f;
 
         while (moveProjectile)
@@ -131,7 +126,7 @@ public class Projectile : MonoBehaviour
         // If the shooter is missing
         if (missedTarget)
         {
-            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().itemData);
+            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().ItemData());
             float minOffset = 0.35f;
             float maxOffset = 1.35f;
             float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
@@ -177,12 +172,13 @@ public class Projectile : MonoBehaviour
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
 
-        ProjectileType projectileType = itemData.item.Ammunition().ProjectileType();
+        ProjectileType projectileType = itemData.Item().Ammunition().ProjectileType();
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
-            if (collisionTransform != null)
-                transform.SetParent(collisionTransform, true);
+            //if (collisionTransform != null)
+                //transform.SetParent(collisionTransform, true);
+
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
         }
@@ -235,7 +231,7 @@ public class Projectile : MonoBehaviour
 
     void SetupTrail()
     {
-        switch (itemData.item.Ammunition().ProjectileType())
+        switch (itemData.Item().Ammunition().ProjectileType())
         {
             case ProjectileType.Arrow:
                 trailRenderer.time = 0.065f;
@@ -290,6 +286,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
+                    Disable();
                 }
             }
             else if (collider.CompareTag("Unit Head"))
@@ -310,6 +307,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
+                    Disable();
                 }
             }
             else if (collider.CompareTag("Shield"))
@@ -319,9 +317,12 @@ public class Projectile : MonoBehaviour
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);
+                Disable();
             }
             else
                 Arrived(null);
         }
     }
+
+    public ItemData ItemData() => itemData;
 }

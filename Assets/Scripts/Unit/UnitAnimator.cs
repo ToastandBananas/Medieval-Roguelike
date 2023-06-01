@@ -112,7 +112,7 @@ public class UnitAnimator : MonoBehaviour
     {
         LooseItem looseProjectile = null;
         LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
-        Item item = heldItem.itemData.item;
+        Item item = heldItem.ItemData().Item();
 
         SetupItemDrop(heldItem.transform, looseWeapon, item);
 
@@ -122,7 +122,7 @@ public class UnitAnimator : MonoBehaviour
             if (heldRangedWeapon.isLoaded)
             {
                 looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
-                Item projectileItem = heldRangedWeapon.loadedProjectile.itemData.item;
+                Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
                 SetupItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, projectileItem);
                 heldRangedWeapon.loadedProjectile.Disable();
             }

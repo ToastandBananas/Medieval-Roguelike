@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class HeldRangedWeapon : HeldItem
 {
+    [Header("Line Renderer")]
     [SerializeField] BowLineRenderer bowLineRenderer;
 
     public Projectile loadedProjectile { get; private set; }
@@ -34,7 +35,7 @@ public class HeldRangedWeapon : HeldItem
     public void LoadProjectile()
     {
         Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-        projectile.Setup(projectile.itemData, unit, bowLineRenderer.GetStringCenterTarget(), null);
+        projectile.Setup(projectile.ItemData(), unit, bowLineRenderer.GetStringCenterTarget(), null);
         loadedProjectile = projectile;
         isLoaded = true;
     }
@@ -95,9 +96,9 @@ public class HeldRangedWeapon : HeldItem
     public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.item.Weapon().maxRange;
+            return itemData.Item().Weapon().maxRange;
 
-        float maxRange = itemData.item.Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
+        float maxRange = itemData.Item().Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

@@ -18,11 +18,13 @@ MonoBehaviour:
   mainMaterial: 9
   itemSize: 4
   description: 
+  isUsable: 1
+  canUsePartial: 0
+  width: 3
+  height: 5
   maxStackSize: 1
   weight: 0.1
   volume: 0.1
-  isUsable: 1
-  canUsePartial: 0
   value: {x: 0, y: 0}
   staticValue: 1
   meshes:

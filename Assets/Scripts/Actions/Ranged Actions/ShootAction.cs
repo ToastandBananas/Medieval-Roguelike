@@ -26,7 +26,9 @@ public class ShootAction : BaseAction
 
         if (RangedWeaponIsLoaded() == false)
         {
+            Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
             CompleteAction();
+            unit.unitActionHandler.SetTargetEnemyUnit(targetUnit);
             unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>());
             return;
         }
@@ -95,7 +97,7 @@ public class ShootAction : BaseAction
             HeldItem itemBlockedWith = target.Value;
             if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
-                int damageAmount = heldRangedWeapon.itemData.damage;
+                int damageAmount = heldRangedWeapon.ItemData().Damage();
                 int armorAbsorbAmount = 0;
 
                 // If the attack was blocked
@@ -124,7 +126,7 @@ public class ShootAction : BaseAction
     public bool MissedTarget()
     {
         float random = Random.Range(0f, 100f);
-        float rangedAccuracy = unit.stats.RangedAccuracy(unit.GetRangedWeapon().itemData);
+        float rangedAccuracy = unit.stats.RangedAccuracy(unit.GetRangedWeapon().ItemData());
         if (random > rangedAccuracy)
             return true;
         return false;
@@ -133,7 +135,7 @@ public class ShootAction : BaseAction
     IEnumerator WaitToCompleteAction()
     {
         if (unit.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.leftHeldItem.itemData.item as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.leftHeldItem.ItemData().Item() as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 
@@ -162,7 +164,7 @@ public class ShootAction : BaseAction
             return false;
 
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-        Weapon rangedWeapon = unit.GetRangedWeapon().itemData.item.Weapon();
+        Weapon rangedWeapon = unit.GetRangedWeapon().ItemData().Item().Weapon();
         float maxRangeToTargetPosition = rangedWeapon.maxRange + (startGridPosition.y - targetGridPosition.y);
         if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
@@ -200,8 +202,8 @@ public class ShootAction : BaseAction
 
     public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
     {
-        float minRange = unit.GetRangedWeapon().itemData.item.Weapon().minRange;
-        float maxRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float minRange = unit.GetRangedWeapon().ItemData().Item().Weapon().minRange;
+        float maxRange = unit.GetRangedWeapon().ItemData().Item().Weapon().maxRange;
         float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
 
         validGridPositionsList.Clear();
@@ -261,7 +263,7 @@ public class ShootAction : BaseAction
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = unit.GetRangedWeapon().itemData.item.Weapon().maxRange;
+        float maxAttackRange = unit.GetRangedWeapon().ItemData().Item().Weapon().maxRange;
         float boundsDimension = ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -341,7 +343,7 @@ public class ShootAction : BaseAction
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-            if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+            if (distance < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                 finalActionValue = 0f;
             else
                 finalActionValue -= distance * 10f;
@@ -384,7 +386,7 @@ public class ShootAction : BaseAction
                     finalActionValue += 15f; 
                 
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, actionGridPosition);
-                if (distance < unit.GetRangedWeapon().itemData.item.Weapon().minRange)
+                if (distance < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                     finalActionValue = -1f;
                 else
                     finalActionValue -= distance * 1.5f;

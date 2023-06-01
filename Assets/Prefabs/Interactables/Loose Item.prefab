@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4136017461024531674}
   - component: {fileID: 2372850988380590422}
   - component: {fileID: 1974948824427181876}
-  - component: {fileID: 7561434626820261404}
   m_Layer: 31
   m_Name: Loose Item
   m_TagString: Loose Item
@@ -82,19 +81,6 @@ MonoBehaviour:
   meshRenderer: {fileID: 169634531984447832}
   meshCollider: {fileID: 2372850988380590422}
   rigidBody: {fileID: 4136017461024531674}
---- !u!114 &7561434626820261404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3454943409024732620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4076fa5db4932043be7f194d6aab5cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  item: {fileID: 11400000, guid: 62d61fdafcd0ff34186a20d052051ef9, type: 2}
 --- !u!1 &5387763566216881598
 GameObject:
   m_ObjectHideFlags: 0
