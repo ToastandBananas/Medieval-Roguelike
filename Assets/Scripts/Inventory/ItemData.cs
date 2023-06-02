@@ -4,19 +4,23 @@ using UnityEngine;
 public class ItemData
 {
     [SerializeField] Item item;
+    [SerializeField] int currentStackSize = 1;
 
     [SerializeField] int damage;
     [SerializeField] float accuracyModifier;
 
     [SerializeField] int blockPower;
 
-    [SerializeField] bool hasBeenInitialized;
+    [SerializeField] bool hasBeenRandomized;
 
-    public void InitializeData()
+    public void RandomizeData()
     {
-        if (item != null && hasBeenInitialized == false)
+        if (item != null && hasBeenRandomized == false)
         {
-            hasBeenInitialized = true;
+            hasBeenRandomized = true;
+
+            if (item.maxStackSize > 1)
+                currentStackSize = Random.Range(1, item.maxStackSize + 1);
 
             if (item.IsWeapon())
             {
@@ -32,43 +36,49 @@ public class ItemData
         }
     }
 
-    public void SetItemData(ItemData itemDataToCopy)
+    public void TransferData(ItemData itemDataToCopy)
     {
         item = itemDataToCopy.item;
+        currentStackSize = itemDataToCopy.currentStackSize;
         damage = itemDataToCopy.damage;
         accuracyModifier = itemDataToCopy.accuracyModifier;
         blockPower = itemDataToCopy.blockPower;
-        hasBeenInitialized = true;
+        hasBeenRandomized = true;
     }
 
-    public void SwapItemData(ItemData otherItemData)
+    public void SwapData(ItemData otherItemData)
     {
         ItemData temp = new ItemData();
         temp.item = item;
+        temp.currentStackSize = currentStackSize;
         temp.damage = damage;
         temp.accuracyModifier = accuracyModifier;
         temp.blockPower = blockPower;
 
         item = otherItemData.item;
+        currentStackSize = otherItemData.currentStackSize;
         damage = otherItemData.damage;
         accuracyModifier = otherItemData.accuracyModifier;
         blockPower = otherItemData.blockPower;
-        hasBeenInitialized = true;
+        hasBeenRandomized = true;
 
         otherItemData.item = temp.item;
+        otherItemData.currentStackSize = temp.currentStackSize;
         otherItemData.damage = temp.damage;
         otherItemData.accuracyModifier = temp.accuracyModifier;
         otherItemData.blockPower = temp.blockPower;
-        otherItemData.hasBeenInitialized = true;
+        otherItemData.hasBeenRandomized = true;
     }
 
     public void ClearItemData()
     {
-        hasBeenInitialized = false;
+        hasBeenRandomized = false;
         item = null;
     }
 
     public Item Item() => item;
+
+    public int CurrentStackSize() => currentStackSize;
 
     public int Damage() => damage;
 
@@ -76,5 +86,5 @@ public class ItemData
 
     public int BlockPower() => blockPower;
 
-    public bool HasBeenInitialized() => hasBeenInitialized;
+    public bool HasBeenInitialized() => hasBeenRandomized;
 }

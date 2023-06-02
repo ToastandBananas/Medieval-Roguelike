@@ -18,7 +18,9 @@ public class InventoryUI : MonoBehaviour
 
     public bool isDraggingItem { get; private set; }
     public bool validDragPosition { get; private set; }
-    Slot slotDraggedFrom;
+    public int draggedItemOverlapCount { get; private set; }
+    public Slot parentSlotDraggedFrom { get; private set; }
+    public Slot overlappedItemsParentSlot { get; private set; }
 
     RectTransform rectTransform;
 
@@ -39,44 +41,39 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
-        if (GameControls.gamePlayActions.menuSelect.WasPressed)
+        // If we're not already dragging an item
+        if (isDraggingItem == false)
         {
-            // If we're clicking on a slot that has an item in it and we're not already dragging one
-            if (isDraggingItem)
-                return;
+            // If we select an item
+            if (GameControls.gamePlayActions.menuSelect.WasPressed)
+            {
+                if (activeSlot == null)
+                    return;
 
-            if (activeSlot == null)
-                return;
+                if (activeSlot.parentSlot == null || activeSlot.parentSlot.InventoryItem().itemData.Item() == null)
+                    return;
 
-            if (activeSlot.parentSlot == null || activeSlot.parentSlot.InventoryItem().ItemData().Item() == null)
-                return;
+                // "Pickup" the item by hiding the item's sprite and showing that same sprite on the draggedItem object
+                SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot.parentSlot, activeSlot.parentSlot.myInventory);
 
-            isDraggingItem = true;
-            slotDraggedFrom = activeSlot;
-            Cursor.visible = false;
-
-            // Pickup the item
-            SetupDraggedItem(activeSlot.parentSlot.InventoryItem().ItemData());
+                activeSlot.parentSlot.InventoryItem().DisableSprite();
+                activeSlot.parentSlot.SetupEmptySlotSprites();
+            }
         }
-        else if (GameControls.gamePlayActions.menuSelect.IsPressed)
+        else // If we are dragging an item
         {
-            if (isDraggingItem == false)
-                return;
-
+            // The dragged item should follow the mouse position
             Vector2 offset = draggedItem.GetDraggedItemOffset();
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localPosition);
-            draggedItem.RectTransform().localPosition = localPosition + offset;
-        }
-        else if (GameControls.gamePlayActions.menuSelect.WasReleased)
-        {
-            if (isDraggingItem == false)
-                return;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localMousePosition);
+            draggedItem.RectTransform().localPosition = localMousePosition + offset;
 
-            // Place the item
-
-            isDraggingItem = false;
-            slotDraggedFrom = null;
-            Cursor.visible = true;
+            // If we try to place an item
+            if (GameControls.gamePlayActions.menuSelect.WasPressed)
+            {
+                // Try placing the item
+                if (activeSlot != null)
+                    activeSlot.myInventory.TryAddDraggedItemAt(activeSlot, draggedItem.itemData);
+            }
         }
     }
 
@@ -85,6 +82,7 @@ public class InventoryUI : MonoBehaviour
         int width = draggedItem.itemData.Item().width;
         int height = draggedItem.itemData.Item().height;
         ItemData overlappedItemData = null;
+        draggedItemOverlapCount = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -99,37 +97,61 @@ public class InventoryUI : MonoBehaviour
                         continue;
 
                     if (overlappedItemData == null)
+                    {
                         overlappedItemData = slotToCheck.parentSlot.InventoryItem().itemData;
+                        overlappedItemsParentSlot = slotToCheck.parentSlot;
+                        draggedItemOverlapCount++;
+                    }
                     else if (overlappedItemData != slotToCheck.parentSlot.InventoryItem().itemData)
+                    {
+                        draggedItemOverlapCount++;
                         return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    public void SetActiveSlot(Slot slot) => activeSlot = slot;
-
-    public InventoryItem DraggedItem() => draggedItem;
-
-    public void SetupDraggedItem(ItemData newItemData)
+    public void ReplaceDraggedItem()
     {
-        slotDraggedFrom = activeSlot.parentSlot;
+        // No need to setup the ItemData since it hasn't changed, so just show the item's sprite and change the slot's color/remove highlighting
+        activeSlot.RemoveSlotHighlights();
+        parentSlotDraggedFrom.ShowSlotImage();
+        parentSlotDraggedFrom.SetupAsParentSlot();
 
-        draggedItem.SetMyInventory(activeSlot.myInventory);
+        // Hide the dragged item
+        DisableDraggedItem();
+    }
+
+    public void SetupDraggedItem(ItemData newItemData, Slot parentSlotDraggedFrom, Inventory inventoryDraggedFrom)
+    {
+        Cursor.visible = false;
+        isDraggingItem = true;
+
+        this.parentSlotDraggedFrom = parentSlotDraggedFrom;
+
+        draggedItem.SetMyInventory(inventoryDraggedFrom);
         draggedItem.SetItemData(newItemData);
-
         draggedItem.SetupDraggedSprite();
-        activeSlot.parentSlot.InventoryItem().DisableSprite();
-        activeSlot.parentSlot.RemoveFilledSlotSprites();
     }
 
     public void DisableDraggedItem()
     {
-        slotDraggedFrom = null;
-        draggedItem.ItemData().ClearItemData();
+        activeSlot.RemoveSlotHighlights();
+
+        Cursor.visible = true;
+        isDraggingItem = false;
+        parentSlotDraggedFrom = null;
+        draggedItemOverlapCount = 0;
+
+        draggedItem.SetItemData(null);
         draggedItem.DisableSprite();
     }
+
+    public void SetActiveSlot(Slot slot) => activeSlot = slot;
+
+    public InventoryItem DraggedItem() => draggedItem;
 
     public InventorySlot InventorySlotPrefab() => inventorySlotPrefab;
 

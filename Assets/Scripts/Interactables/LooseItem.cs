@@ -13,7 +13,7 @@ public class LooseItem : Interactable
     {
         gridPosition = LevelGrid.GetGridPosition(transform.position);
 
-        itemData.InitializeData();
+        itemData.RandomizeData();
     }
 
     public override void Interact(Unit unitPickingUpItem)

@@ -48,7 +48,5 @@ public class InventoryItem : MonoBehaviour
 
     public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
-    public ItemData ItemData() => itemData;
-
     public RectTransform RectTransform() => rectTransform;
 }

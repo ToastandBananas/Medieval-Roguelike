@@ -28,6 +28,7 @@ public class Inventory : MonoBehaviour
             newSlot.SetSlotCoordinate(new Vector2((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
             newSlot.name = $"Slot - {newSlot.slotCoordinate}";
             newSlot.SetMyInventory(this);
+            newSlot.InventoryItem().SetMyInventory(this);
             slots.Add(newSlot);
 
             // Debug.Log(newSlot.name + ": " + newSlot.slotCoordinate);
@@ -42,27 +43,125 @@ public class Inventory : MonoBehaviour
                 continue;
 
             if (itemDatas[i].HasBeenInitialized() == false)
-                itemDatas[i].InitializeData();
+                itemDatas[i].RandomizeData();
 
-            if (AddItem(itemDatas[i]) == false)
+            if (TryAddItem(itemDatas[i]) == false)
                 Debug.LogError($"{itemDatas[i].Item().name} can't fit in {name} inventory...");
         }
     }
 
-    public bool AddItem(ItemData newItemData)
+    public bool TryAddItem(ItemData newItemData)
     {
         if (newItemData.Item() != null)
         {
             InventorySlot slot = GetNextAvailableInventorySlot(newItemData);
             if (slot != null)
             {
-                slot.InventoryItem().SetItemData(newItemData);
-                slot.ShowSlotImage();
-                slot.SetupParentSlot();
+                // Setup the slot's item data and sprites
+                SetupNewItem(slot, newItemData);
                 return true;
             }
         }
         return false;
+    }
+
+    public bool TryAddDraggedItemAt(Slot targetSlot, ItemData newItemData)
+    {
+        // Check if there's multiple items in the way or if the position is invalid
+        if (InventoryUI.Instance.validDragPosition == false || InventoryUI.Instance.draggedItemOverlapCount == 2)
+            return false;
+
+        // If there's only one item in the way
+        if (InventoryUI.Instance.draggedItemOverlapCount == 1)
+        {
+            // Get a reference to the overlapped item's data and parent slot before we clear it out
+            Slot overlappedItemsParentSlot = InventoryUI.Instance.overlappedItemsParentSlot;
+            ItemData overlappedItemsData = overlappedItemsParentSlot.InventoryItem().itemData;
+            ItemData newDraggedItemData;
+
+            // If the slots are in different inventories
+            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem().myInventory)
+            {
+                // Create a new ItemData and assign it to the new inventory
+                newDraggedItemData = new ItemData();
+                newDraggedItemData.TransferData(newItemData);
+                itemDatas.Add(newDraggedItemData);
+
+                // Remove the item from its original inventory
+                InventoryUI.Instance.DraggedItem().myInventory.itemDatas.Remove(newItemData);
+            }
+            else // Else, just get a reference to the dragged item's data before we clear it out
+                newDraggedItemData = newItemData;
+
+            // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
+            if (overlappedItemsParentSlot == targetSlot && newDraggedItemData.Item() == overlappedItemsData.Item() && newDraggedItemData.Item().maxStackSize > 1 && overlappedItemsData.CurrentStackSize() < overlappedItemsData.Item().maxStackSize)
+            {
+                int remainingStack = newDraggedItemData.CurrentStackSize();
+
+                // If we can't fit the entire stack
+                if (overlappedItemsData.CurrentStackSize() + remainingStack > overlappedItemsData.Item().maxStackSize)
+                {
+
+                }
+            }
+
+            // Clear out the overlapped item
+            overlappedItemsParentSlot.ClearItem();
+
+            // Clear out the dragged item
+            if (InventoryUI.Instance.parentSlotDraggedFrom != null)
+                InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+
+            // Setup the target slot's item data and sprites
+            SetupNewItem(targetSlot, newDraggedItemData);
+
+            // Setup the dragged item's data and sprite and start dragging the new item
+            InventoryUI.Instance.SetupDraggedItem(overlappedItemsData, null, this);
+        }
+        // If trying to place the item back into the slot it came from
+        else if (targetSlot == InventoryUI.Instance.parentSlotDraggedFrom)
+        {
+            // Place the dragged item back to where it came from
+            InventoryUI.Instance.ReplaceDraggedItem();
+        }
+        else // If there's no items in the way
+        {
+            ItemData newDraggedItemData;
+
+            // If the slots are in different inventories
+            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem().myInventory)
+            {
+                // Create a new ItemData and assign it to the new inventory
+                newDraggedItemData = new ItemData();
+                newDraggedItemData.TransferData(newItemData);
+                itemDatas.Add(newDraggedItemData);
+
+                // Remove the item from its original inventory
+                InventoryUI.Instance.DraggedItem().myInventory.itemDatas.Remove(newItemData);
+            }
+            else // Else, just get a reference to the dragged item's data before we clear it out
+                newDraggedItemData = newItemData;
+
+            // Clear out the dragged item's original slot
+            if (InventoryUI.Instance.parentSlotDraggedFrom != null)
+                InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+
+            // Setup the target slot's item data and sprites
+            SetupNewItem(targetSlot, newDraggedItemData);
+
+            // Hide the dragged item
+            InventoryUI.Instance.DisableDraggedItem();
+        }
+
+        return true;
+    }
+
+    /// <summary>Setup the target slot's item data and sprites.</summary>
+    void SetupNewItem(Slot targetSlot, ItemData newItemData)
+    {
+        targetSlot.InventoryItem().SetItemData(newItemData);
+        targetSlot.ShowSlotImage();
+        targetSlot.SetupAsParentSlot();
     }
 
     InventorySlot GetNextAvailableInventorySlot(ItemData itemData)

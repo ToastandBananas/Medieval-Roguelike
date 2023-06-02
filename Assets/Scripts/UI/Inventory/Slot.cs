@@ -34,7 +34,9 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         inventoryItem.SetupSprite();
     }
 
-    public void SetupParentSlot()
+    public void HideSlotImage() => inventoryItem.DisableSprite();
+
+    public void SetupAsParentSlot()
     {
         int width = inventoryItem.itemData.Item().width;
         int height = inventoryItem.itemData.Item().height;
@@ -52,7 +54,22 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         SetFullSlotSprite();
     }
 
-    public void RemoveFilledSlotSprites()
+    public void RemoveParentSlots()
+    {
+        int width = inventoryItem.itemData.Item().width;
+        int height = inventoryItem.itemData.Item().height;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                myInventory.GetSlotFromCoordinate(new Vector2(slotCoordinate.x - x, slotCoordinate.y - y)).SetParentSlot(null);
+            }
+        }
+
+        SetParentSlot(null);
+    }
+
+    public void SetupEmptySlotSprites()
     {
         int width = inventoryItem.itemData.Item().width;
         int height = inventoryItem.itemData.Item().height;
@@ -66,11 +83,28 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    public void SetFullSlotSprite() => image.sprite = fullSlotSprite;
+    public void ClearItem()
+    {
+        Slot parentSlot = this.parentSlot;
 
-    public void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
+        // Hide the item's sprite
+        parentSlot.HideSlotImage();
 
-    public bool IsFull() => (inventoryItem.ItemData() != null && inventoryItem.ItemData().Item() != null) || (parentSlot != null && parentSlot.inventoryItem.ItemData() != null && parentSlot.inventoryItem.ItemData().Item() != null);
+        // Setup the empty slot sprites
+        parentSlot.SetupEmptySlotSprites();
+
+        // Remove parent slot references
+        parentSlot.RemoveParentSlots();
+
+        // Clear out the slot's item data
+        parentSlot.inventoryItem.SetItemData(null);
+    }
+
+    void SetFullSlotSprite() => image.sprite = fullSlotSprite;
+
+    void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
+
+    public bool IsFull() => (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null) || (parentSlot != null && parentSlot.inventoryItem.itemData != null && parentSlot.inventoryItem.itemData.Item() != null);
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;
 
@@ -79,23 +113,6 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void SetSlotCoordinate(Vector2 coord) => slotCoordinate = coord;
 
     public InventoryItem InventoryItem() => inventoryItem;
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        InventoryUI.Instance.SetActiveSlot(this);
-
-        if (InventoryUI.Instance.isDraggingItem)
-            HighlightSlots();
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (InventoryUI.Instance.activeSlot == this)
-            InventoryUI.Instance.SetActiveSlot(null);
-
-        if (InventoryUI.Instance.isDraggingItem)
-            RemoveSlotHighlights();
-    }
 
     void HighlightSlots()
     {
@@ -125,7 +142,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    void RemoveSlotHighlights()
+    public void RemoveSlotHighlights()
     {
         int width = InventoryUI.Instance.DraggedItem().itemData.Item().width;
         int height = InventoryUI.Instance.DraggedItem().itemData.Item().height;
@@ -143,5 +160,22 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 slotToHighlight.image.color = Color.white;
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        InventoryUI.Instance.SetActiveSlot(this);
+
+        if (InventoryUI.Instance.isDraggingItem)
+            HighlightSlots();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (InventoryUI.Instance.activeSlot == this)
+            InventoryUI.Instance.SetActiveSlot(null);
+
+        if (InventoryUI.Instance.isDraggingItem)
+            RemoveSlotHighlights();
     }
 }

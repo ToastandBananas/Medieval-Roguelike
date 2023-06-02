@@ -19,7 +19,7 @@ public abstract class HeldItem : MonoBehaviour
     {
         anim = GetComponent<Animator>();
 
-        itemData.InitializeData();
+        itemData.RandomizeData();
 
         SetItemPosition();
         SetItemRotation();

@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
 
-        itemData.InitializeData();
+        itemData.RandomizeData();
     }
 
     public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
