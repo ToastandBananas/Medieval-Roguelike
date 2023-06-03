@@ -22,12 +22,12 @@ public abstract class Item : ScriptableObject
     public bool canUsePartial;
 
     [Header("Inventory")]
-    public Sprite inventorySprite;
     public int width = 1;
     public int height = 1;
-    public int maxStackSize = 1;
     public float weight = 0.1f;
     public float volume = 0.1f;
+    public int maxStackSize = 1;
+    public Sprite inventorySprite;
 
     [Header("Value")]
     public Vector2Int value;

@@ -101,11 +101,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5301632360201378780}
     m_Modifications:
+    - target: {fileID: 7895380748443772649, guid: a3a899b27765e2143bc4df3cf14c65c2,
+        type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8207440348244061328, guid: a3a899b27765e2143bc4df3cf14c65c2,
         type: 3}
       propertyPath: m_Name
       value: Inventory Item
       objectReference: {fileID: 0}
+    - target: {fileID: 8207440348244061342, guid: a3a899b27765e2143bc4df3cf14c65c2,
+        type: 3}
+      propertyPath: mySlot
+      value: 
+      objectReference: {fileID: 7074852841376672448}
     - target: {fileID: 8207440348244061343, guid: a3a899b27765e2143bc4df3cf14c65c2,
         type: 3}
       propertyPath: m_Pivot.x

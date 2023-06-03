@@ -926,20 +926,23 @@ MonoBehaviour:
   maxSlotsPerRow: 12
   itemDatas:
   - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
+    currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenInitialized: 0
+    hasBeenRandomized: 0
   - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
+    currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenInitialized: 0
+    hasBeenRandomized: 0
   - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
+    currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenInitialized: 0
+    hasBeenRandomized: 0
 --- !u!1 &230574116
 GameObject:
   m_ObjectHideFlags: 0
@@ -4455,8 +4458,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotsParent: {fileID: 1841457385}
-  amountOfSlots: 72
-  maxSlots: 180
+  amountOfSlots: 24
+  maxSlots: 24
   maxSlotsPerRow: 12
   itemDatas: []
 --- !u!1 &1040277960

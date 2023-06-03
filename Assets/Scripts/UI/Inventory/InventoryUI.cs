@@ -58,6 +58,7 @@ public class InventoryUI : MonoBehaviour
 
                 activeSlot.parentSlot.InventoryItem().DisableSprite();
                 activeSlot.parentSlot.SetupEmptySlotSprites();
+                activeSlot.parentSlot.InventoryItem().ClearStackSizeText();
             }
         }
         else // If we are dragging an item
@@ -119,6 +120,7 @@ public class InventoryUI : MonoBehaviour
         activeSlot.RemoveSlotHighlights();
         parentSlotDraggedFrom.ShowSlotImage();
         parentSlotDraggedFrom.SetupAsParentSlot();
+        parentSlotDraggedFrom.InventoryItem().UpdateStackSizeText();
 
         // Hide the dragged item
         DisableDraggedItem();
@@ -133,6 +135,7 @@ public class InventoryUI : MonoBehaviour
 
         draggedItem.SetMyInventory(inventoryDraggedFrom);
         draggedItem.SetItemData(newItemData);
+        draggedItem.UpdateStackSizeText();
         draggedItem.SetupDraggedSprite();
     }
 
@@ -147,6 +150,7 @@ public class InventoryUI : MonoBehaviour
 
         draggedItem.SetItemData(null);
         draggedItem.DisableSprite();
+        draggedItem.ClearStackSizeText();
     }
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;

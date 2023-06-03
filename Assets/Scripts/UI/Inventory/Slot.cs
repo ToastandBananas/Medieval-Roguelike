@@ -93,6 +93,9 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         // Setup the empty slot sprites
         parentSlot.SetupEmptySlotSprites();
 
+        // Clear the stack size text
+        parentSlot.inventoryItem.ClearStackSizeText();
+
         // Remove parent slot references
         parentSlot.RemoveParentSlots();
 

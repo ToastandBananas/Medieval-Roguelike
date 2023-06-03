@@ -76,6 +76,22 @@ public class ItemData
         item = null;
     }
 
+    public void SetCurrentStackSize(int stackSize)
+    {
+        currentStackSize = stackSize;
+        if (currentStackSize > item.maxStackSize)
+            currentStackSize = item.maxStackSize;
+    }
+
+    public void AdjustCurrentStackSize(int adjustmentAmount)
+    {
+        currentStackSize += adjustmentAmount;
+        if (currentStackSize > item.maxStackSize)
+            currentStackSize = item.maxStackSize;
+        else if (currentStackSize < 0)
+            currentStackSize = 0;
+    }
+
     public Item Item() => item;
 
     public int CurrentStackSize() => currentStackSize;
