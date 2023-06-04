@@ -107,7 +107,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
 
-    public bool IsFull() => (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null) || (parentSlot != null && parentSlot.inventoryItem.itemData != null && parentSlot.inventoryItem.itemData.Item() != null);
+    public bool IsFull() => parentSlot != null && parentSlot.inventoryItem.itemData != null && parentSlot.inventoryItem.itemData.Item() != null;
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;
 

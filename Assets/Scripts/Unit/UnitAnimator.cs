@@ -28,11 +28,10 @@ public class UnitAnimator : MonoBehaviour
     public void DoDefaultUnarmedAttack()
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-        HeldItem itemBlockedWith = null;
 
         // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
         bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
-        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
         if (attackBlocked)
         {
@@ -163,8 +162,6 @@ public class UnitAnimator : MonoBehaviour
             if (looseProjectile != null)
                 looseProjectile.HideMeshRenderer();
         }
-
-        // StartCoroutine(DelayStopPhysicsMovements(looseItem));
     }
 
     void SetupItemDrop(Transform itemDropTransform, LooseItem looseItem, Item item)
@@ -174,32 +171,11 @@ public class UnitAnimator : MonoBehaviour
         else if (item.meshes[0] != null)
             looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
         else
-            Debug.LogWarning("Mesh Info has not been set on the ScriptableObject for: " + item.name);
+            Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
         // Set the LooseItem's position to match the HeldItem before we add force
         looseItem.transform.position = itemDropTransform.position;
         looseItem.gameObject.SetActive(true);
-    }
-
-    IEnumerator DelayStopPhysicsMovements(LooseItem looseItem)
-    {
-        Rigidbody rigidBody = looseItem.RigidBody();
-        float threshold = 0.01f;
-        float timer = 1f;
-
-        while (true)
-        {
-            if (timer > 0)
-                timer -= Time.deltaTime;
-            else if (rigidBody.velocity.sqrMagnitude < threshold * threshold && rigidBody.angularVelocity.sqrMagnitude < threshold * threshold)
-            {
-                rigidBody.isKinematic = true;
-                rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
-                break;
-            }
-
-            yield return null;
-        }
     }
 
     IEnumerator Die_RotateHead(bool diedForward)

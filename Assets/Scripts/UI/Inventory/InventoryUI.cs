@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static Pathfinding.RVO.SimulatorBurst;
 
 public class InventoryUI : MonoBehaviour
@@ -74,6 +75,8 @@ public class InventoryUI : MonoBehaviour
                 // Try placing the item
                 if (activeSlot != null)
                     activeSlot.myInventory.TryAddDraggedItemAt(activeSlot, draggedItem.itemData);
+                else if (EventSystem.current.IsPointerOverGameObject() == false)
+                    draggedItem.DropItem();
             }
         }
     }
@@ -141,7 +144,8 @@ public class InventoryUI : MonoBehaviour
 
     public void DisableDraggedItem()
     {
-        activeSlot.RemoveSlotHighlights();
+        if (activeSlot != null)
+            activeSlot.RemoveSlotHighlights();
 
         Cursor.visible = true;
         isDraggingItem = false;

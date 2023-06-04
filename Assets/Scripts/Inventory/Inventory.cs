@@ -4,6 +4,7 @@ using UnityEngine;
 public class Inventory : MonoBehaviour
 {
     [SerializeField] Transform slotsParent;
+    [SerializeField] Unit myUnit;
 
     [Header("Slot Counts")]
     [SerializeField] int amountOfSlots = 24;
@@ -254,4 +255,6 @@ public class Inventory : MonoBehaviour
     }
 
     public List<ItemData> ItemDatas() => itemDatas;
+
+    public Unit MyUnit() => myUnit;
 }

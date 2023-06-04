@@ -15,6 +15,87 @@ public class InventoryItem : MonoBehaviour
 
     readonly int slotSize = 48;
 
+    public void DropItem()
+    {
+        if (mySlot != null && mySlot.IsFull() == false)
+            return;
+
+        if (mySlot == null && InventoryUI.Instance.DraggedItem() == this && itemData.Item() == null)
+            return;
+
+        Unit myUnit = myInventory.MyUnit();
+        LooseItem looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
+        LooseItem looseProjectile = null;
+
+        SetupItemDrop(looseItem, itemData.Item()); 
+        
+        if (myUnit.GetRangedWeapon().ItemData() == itemData && myUnit.RangedWeaponEquipped())
+        {
+            HeldRangedWeapon heldRangedWeapon = myUnit.GetRangedWeapon();
+            if (heldRangedWeapon.isLoaded)
+            {
+                looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
+                Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
+                SetupItemDrop(looseProjectile, projectileItem);
+                heldRangedWeapon.loadedProjectile.Disable();
+            }
+        }
+
+        float randomForceMagnitude = Random.Range(100f, 600f);
+        float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
+
+        Vector3 forwardPosition = Vector3.forward;
+        Vector3 unitPosition = transform.parent.position;
+        Vector3 forceDirection = (unitPosition - forwardPosition).normalized;
+
+        // Add some randomness to the force direction
+        Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
+        forceDirection = randomRotation * forceDirection;
+
+        // Get the Rigidbody component(s) and apply force
+        looseItem.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+        if (looseProjectile != null)
+            looseProjectile.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+
+        if (myUnit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(myUnit) == false)
+        {
+            looseItem.HideMeshRenderer();
+            if (looseProjectile != null)
+                looseProjectile.HideMeshRenderer();
+        }
+
+        myInventory.ItemDatas().Remove(itemData);
+
+        if (mySlot != null)
+            mySlot.parentSlot.ClearItem();
+        else if (this == InventoryUI.Instance.DraggedItem())
+        {
+            if (InventoryUI.Instance.parentSlotDraggedFrom != null)
+                InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+
+            InventoryUI.Instance.DisableDraggedItem();
+        }
+    }
+
+    void SetupItemDrop(LooseItem looseItem, Item item)
+    {
+        if (item.pickupMesh != null)
+            looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
+        else if (item.meshes[0] != null)
+            looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
+        else
+            Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
+
+        // Set the LooseItem's position to match the HeldItem before we add force
+        looseItem.transform.position = myInventory.MyUnit().transform.position + new Vector3(Vector3.forward.x / 2f, myInventory.MyUnit().ShoulderHeight(), Vector3.forward.y / 2f);
+
+        // Randomize the rotation
+        Vector3 randomRotation = new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
+        transform.rotation = Quaternion.Euler(randomRotation);
+
+        looseItem.gameObject.SetActive(true);
+    }
+
     public Vector2 GetInventoryItemOffset()
     {
         int width = itemData.Item().width;

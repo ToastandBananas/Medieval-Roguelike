@@ -382,6 +382,16 @@ public class Unit : MonoBehaviour
         return null;
     }
 
+    public HeldItem GetHeldItemFromItemData(ItemData itemData)
+    {
+        if (rightHeldItem.ItemData() == itemData)
+            return rightHeldItem;
+
+        if (leftHeldItem.ItemData() == itemData)
+            return leftHeldItem;
+        return null;
+    }
+
     public HeldRangedWeapon GetRangedWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldRangedWeapon;
 
     public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
