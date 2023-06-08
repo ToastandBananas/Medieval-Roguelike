@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static Pathfinding.RVO.SimulatorBurst;
@@ -24,6 +25,8 @@ public class InventoryUI : MonoBehaviour
     public Slot overlappedItemsParentSlot { get; private set; }
 
     RectTransform rectTransform;
+
+    WaitForSeconds stopDraggingDelay = new WaitForSeconds(0.05f);
 
     void Awake()
     {
@@ -152,9 +155,15 @@ public class InventoryUI : MonoBehaviour
         parentSlotDraggedFrom = null;
         draggedItemOverlapCount = 0;
 
-        draggedItem.SetItemData(null);
+        StartCoroutine(DelayStopDraggingItem());
         draggedItem.DisableSprite();
         draggedItem.ClearStackSizeText();
+    }
+
+    IEnumerator DelayStopDraggingItem()
+    {
+        yield return stopDraggingDelay;
+        draggedItem.SetItemData(null);
     }
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;

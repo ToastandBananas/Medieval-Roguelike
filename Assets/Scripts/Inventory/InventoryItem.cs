@@ -8,12 +8,12 @@ public class InventoryItem : MonoBehaviour
     public ItemData itemData { get; private set; }
 
     [Header("Components")]
-    [SerializeField] Image image;
+    [SerializeField] Image iconImage;
     [SerializeField] RectTransform rectTransform;
     [SerializeField] Slot mySlot;
     [SerializeField] TextMeshProUGUI stackSizeText;
 
-    readonly int slotSize = 48;
+    readonly int slotSize = 60;
 
     public void DropItem()
     {
@@ -27,7 +27,9 @@ public class InventoryItem : MonoBehaviour
         LooseItem looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
         LooseItem looseProjectile = null;
 
-        SetupItemDrop(looseItem, itemData.Item()); 
+        Vector3 dropDirection = GetDropDirection(myUnit);
+
+        SetupItemDrop(looseItem, itemData.Item(), dropDirection); 
         
         if (myUnit.GetRangedWeapon().ItemData() == itemData && myUnit.RangedWeaponEquipped())
         {
@@ -36,26 +38,17 @@ public class InventoryItem : MonoBehaviour
             {
                 looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
                 Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
-                SetupItemDrop(looseProjectile, projectileItem);
+                SetupItemDrop(looseProjectile, projectileItem, dropDirection);
                 heldRangedWeapon.loadedProjectile.Disable();
             }
         }
 
-        float randomForceMagnitude = Random.Range(100f, 600f);
-        float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
-
-        Vector3 forwardPosition = Vector3.forward;
-        Vector3 unitPosition = transform.parent.position;
-        Vector3 forceDirection = (unitPosition - forwardPosition).normalized;
-
-        // Add some randomness to the force direction
-        Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
-        forceDirection = randomRotation * forceDirection;
+        float randomForceMagnitude = Random.Range(50f, 300f);
 
         // Get the Rigidbody component(s) and apply force
-        looseItem.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+        looseItem.RigidBody().AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
         if (looseProjectile != null)
-            looseProjectile.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+            looseProjectile.RigidBody().AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
         if (myUnit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(myUnit) == false)
         {
@@ -77,7 +70,7 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    void SetupItemDrop(LooseItem looseItem, Item item)
+    void SetupItemDrop(LooseItem looseItem, Item item, Vector3 dropDirection)
     {
         if (item.pickupMesh != null)
             looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
@@ -86,14 +79,39 @@ public class InventoryItem : MonoBehaviour
         else
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
-        // Set the LooseItem's position to match the HeldItem before we add force
-        looseItem.transform.position = myInventory.MyUnit().transform.position + new Vector3(Vector3.forward.x / 2f, myInventory.MyUnit().ShoulderHeight(), Vector3.forward.y / 2f);
+        // Set the LooseItem's position to be slightly in front of the Unit dropping the item
+        looseItem.transform.position = myInventory.MyUnit().transform.position + new Vector3(0, myInventory.MyUnit().ShoulderHeight(), 0) + (dropDirection / 2);
 
-        // Randomize the rotation
-        Vector3 randomRotation = new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
-        transform.rotation = Quaternion.Euler(randomRotation);
-
+        // Randomize the rotation and set active
+        looseItem.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f)));
         looseItem.gameObject.SetActive(true);
+    }
+
+    Vector3 GetDropDirection(Unit myUnit)
+    {
+        Vector3 forceDirection =  myUnit.transform.forward; // In front of myUnit
+        if (Physics.Raycast(myUnit.transform.position, forceDirection, out RaycastHit hit, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+        {
+            Debug.Log(hit.collider.name);
+            forceDirection = -myUnit.transform.forward; // Behind myUnit
+            if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+            {
+                forceDirection = myUnit.transform.right; // Right of myUnit
+                if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+                {
+                    forceDirection = -myUnit.transform.right; // Left of myUnit
+                    if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+                        forceDirection = myUnit.transform.up; // Above myUnit
+                }
+            }
+        }
+
+        // Add some randomness to the force direction
+        float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
+        Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
+        forceDirection = randomRotation * forceDirection;
+
+        return forceDirection;
     }
 
     public Vector2 GetInventoryItemOffset()
@@ -113,17 +131,17 @@ public class InventoryItem : MonoBehaviour
 
     public void SetupSprite()
     {
-        image.sprite = itemData.Item().inventorySprite;
+        iconImage.sprite = itemData.Item().inventorySprite;
         rectTransform.offsetMin = new Vector2(-slotSize * (itemData.Item().width - 1), 0);
         rectTransform.offsetMax = new Vector2(0, slotSize * (itemData.Item().height - 1));
-        image.enabled = true;
+        iconImage.enabled = true;
     }
 
     public void SetupDraggedSprite()
     {
-        image.sprite = itemData.Item().inventorySprite;
+        iconImage.sprite = itemData.Item().inventorySprite;
         rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item().width, slotSize * itemData.Item().height);
-        image.enabled = true;
+        iconImage.enabled = true;
     }
 
     public void UpdateStackSizeText()
@@ -161,7 +179,11 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    public void DisableSprite() => image.enabled = false;
+    public void DisableSprite()
+    {
+        iconImage.sprite = null;
+        iconImage.enabled = false;
+    }
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;
 

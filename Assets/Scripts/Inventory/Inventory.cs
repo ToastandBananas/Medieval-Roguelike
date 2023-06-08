@@ -80,6 +80,9 @@ public class Inventory : MonoBehaviour
             ItemData overlappedItemsData = overlappedItemsParentSlot.InventoryItem().itemData;
             ItemData newDraggedItemData;
 
+            // Remove the highlighting
+            targetSlot.RemoveSlotHighlights();
+
             // If the slots are in different inventories
             if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem().myInventory)
             {
@@ -129,6 +132,9 @@ public class Inventory : MonoBehaviour
                     // Update the dragged item's stack size and text
                     InventoryUI.Instance.DraggedItem().itemData.SetCurrentStackSize(remainingStack);
                     InventoryUI.Instance.DraggedItem().UpdateStackSizeText();
+
+                    // Re-enable the highlighting
+                    targetSlot.HighlightSlots();
                 }
             }
             else
@@ -145,6 +151,9 @@ public class Inventory : MonoBehaviour
 
                 // Setup the dragged item's data and sprite and start dragging the new item
                 InventoryUI.Instance.SetupDraggedItem(overlappedItemsData, null, this);
+
+                // Re-enable the highlighting
+                targetSlot.HighlightSlots();
             }
         }
         // If trying to place the item back into the slot it came from

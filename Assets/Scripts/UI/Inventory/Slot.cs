@@ -117,7 +117,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public InventoryItem InventoryItem() => inventoryItem;
 
-    void HighlightSlots()
+    public void HighlightSlots()
     {
         int width = InventoryUI.Instance.DraggedItem().itemData.Item().width;
         int height = InventoryUI.Instance.DraggedItem().itemData.Item().height;
@@ -136,7 +136,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                     continue;
 
                 slotToHighlight.SetEmptySlotSprite();
-
+                
                 if (validSlot)
                     slotToHighlight.image.color = Color.green;
                 else

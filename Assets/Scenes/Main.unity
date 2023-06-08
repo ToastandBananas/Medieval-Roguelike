@@ -922,9 +922,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotsParent: {fileID: 985893441}
   myUnit: {fileID: 6419999078298759150}
-  amountOfSlots: 216
-  maxSlots: 216
-  maxSlotsPerRow: 12
+  amountOfSlots: 140
+  maxSlots: 140
+  maxSlotsPerRow: 10
   itemDatas:
   - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
     currentStackSize: 1
@@ -932,7 +932,13 @@ MonoBehaviour:
     accuracyModifier: 0
     blockPower: 0
     hasBeenRandomized: 0
-  - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
+  - item: {fileID: 11400000, guid: 62d61fdafcd0ff34186a20d052051ef9, type: 2}
+    currentStackSize: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    hasBeenRandomized: 0
+  - item: {fileID: 11400000, guid: 62d61fdafcd0ff34186a20d052051ef9, type: 2}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
@@ -1169,7 +1175,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1494,7 +1500,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2839,7 +2845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 1
-  m_ReferencePixelsPerUnit: 100
+  m_ReferencePixelsPerUnit: 64
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
@@ -2861,7 +2867,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -4279,14 +4285,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 0
+    m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 48, y: 48}
+  m_CellSize: {x: 60, y: 60}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
@@ -4460,9 +4466,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotsParent: {fileID: 1841457385}
   myUnit: {fileID: 6419999078298759150}
-  amountOfSlots: 24
-  maxSlots: 24
-  maxSlotsPerRow: 12
+  amountOfSlots: 20
+  maxSlots: 20
+  maxSlotsPerRow: 10
   itemDatas: []
 --- !u!1 &1040277960
 GameObject:
@@ -5287,7 +5293,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACAn+spXEGhgAMAALMIAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVdtu4kgQ/RXLzyyyvZDASJF2lmQye0lihbk8LHlo7DLupem2+hIgEf++VW2DbWbECoRN1anqOnXr91CwPeiZctKGH4JkEIRZyTTLLOjPwFclSeNhNEYFl6aCzCp9r3n+oHJAVUjvYVf5GXZspeScv8ER853ntiQQ85hnZrkit2Rm1Aas5tlHuRIEjlDoJC+U3tzlK5gpYw2KCyYMoEorS9YSRe9BuGsM9s3zjZ7BgUiARAYtahwNx2dAEnmsk5lgmwpyirk1iaOja3zzQIl8GgzFnikhuGmCCe2+8mRnrDIOqSAg5wzJ+TCi4QQFZZvRcdfBU1EYsB5Gcs32t1xjpmrf4e+qTt+GmXUd3ysTjk4bRVfXydXIR1c7f/g5pmFQaLVpy+oJ2pJn62e2z5ixnUR3xbctj9jna8vEmi0FfC9BPqp7jd2To9JqR6bOQHLbcXWiOSshW7e4OuAzoat+LG3clvbg07CbW6jO27MRfzVg5kL5YjQ+SdNIpuQTNBbyDyTkW8k0J6GUgkT7L2zV7blG8YlrY1HVBCTp+KVymqDhnY+FyDo7U1qCFzfnVyCZsPsU3dhetX/UdY4903xiNF3N4Y3uODRnJl7c4qPoTJWq7amYGnvV+AY+vv3zHv52bOaU2bLgMudyNXxGfQr6b9oXONm84Fmdv0Hw0VimO9hUq3+xfQfBN8wDQm6iof8MgpkT1mm4keCsZmIQpG4pePYX7L+oNcgb6YSgNPqt9NxG5P/jK00ROw3GHHxBqF19XSJsjxZ7fREb97DTi9ikh42ji+Bf++D4InjUB/9PyNd99OVkxJM++jLFeNpDJ5c5Jv1MJ5dJJv1cX11OX3x4oaGTtGCOW+XwcqgXy59uU6WKSzsHprOy0/umVNsHMOWTs4LLzvST4hEHfqakrHeq+YnZ3OmCZR0zCzvq1FtmmR+PNqCTKQ6/t6CmpeXqJ843LGaPvi/1dYrnCi8OH5X0N0Pv6bmtHM/7eztcTibxOJ4sWbwsRjCFX65GSbSMp3GRs7yI4Dr0O51L3A9MpPWAN2sFt113l0hc4OTSDy/kAd3a+MOqMoh3sb+rNNve87eN6uwtLgs1zzSAfOq7M6DxRLwJ87ucI2esocWx95vwfREKla0hX5wcLXyW73Y48YvWyyKs+KuyJFmEM39fL0ISn+6LVMMrhy0dfnR2CA//AVBLAwQUAAAICAAAgJ/rHGV0oHEAAAB9AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9YzNdRRUEovSizIKAaKgDmlmSkgdrRSkoWFoamhRVKiYVKaSaplqq6ZiZFBkqGlYVpKYkqaQaq5UixQfUllQapfYm4qRE9AYklGWmZeSmZeup5PYmVqkXtRZoo7yHyl2FoAUEsBAi0AFAAACAgAAICf6ylcQaGAAwAAswgAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAICf6xxldKBxAAAAfQAAAAkAJAAAAAAAAAAAAAAAzQMAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAACJBAAAAAA=
+    dataString: UEsDBBQAAAgIAACAn+tIdsf5gQMAALIIAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVdtu4kgQ/RXLzyyyvZDASJF2lmQye0lihbk8LHlo7DLupem2+hIgEf++VW2DbWbECoRN1anqOnXr91CwPeiZctKGH4JkEIRZyTTLLOjPwFclSeNhNEYFl6aCzCp9r3n+oHJAVUjvYVf5GXZspeScv8ER853ntiQQ85hnZrkit2Rm1Aas5tlHuRIEjlDoJC+U3tzlK5gpYw2KCyYMoEorS9YSRe9BuGsM9s3zjZ7BgUiARAYtahwNx2dAEnmsk5lgmwpyirk1iaOja3zzQIl8GgzFnikhuGmCCe2+8mRnrDIOqSAg5wzJ+TCi4QQFZZvRcdfBU1EYsB5Gcs32t1xjpmrf4e+qTt+GmXUd3ysTjk4bRVfXydXIR1c7f/g5pmFQaLVpy+oJ2pJn62e2z5ixnUR3xbctj9jna8vEmi0FfC9BPqp7jd2To9JqR6bOQHLbcXWiOSshW7e4OuAzoat+LG3clvbg07CbW6jO27MRfzVg5kL5YjQ+SdNIpuQTNBbyDyTkW8k0J6GUgkT7L2zV7blG8YlrY1HVBCTp+KVymqDhnY+FyDo7U1qCFzfnVyCZsPsU3dhetX/UdY4903xiNF3N4Y3uODRnJl7c4qPoTJWq7amYGnvV+AY+vv3zHv52bOaU2bLgMudyNXxGfQr6b9oXONm84Fmdv0Hw0VimO9hUq3+xfQfBN8wDQm6iof8MgpkT1mm4keCsZmIQpG4pePYX7L+oNcgb6YSgNPqt9NxG5P/jK00ROw3GHHxBqF19XSJsjxZ7fREb97DTi9ikh42ji+Bf++D4InjUB/9PyNd99OVkxJM++jLFeNpDJ5c5Jv1MJ5dJJv1cX11OX3x4oaGTtGCOW+XwcqgXy59uU6WKSzsHprOy0/umVNsHMOWTs4LLzvST4hEHfqakrHeq+YnZ3OmCZR0zCzvq1FtmmR+PNqCTKQ6/t6CmpeXqJ843LGaPvi/1dYrnCi8OH5X0N0Pv6bmtHM/7eztcTibxOJ4sWbwsRjCFX65GSbSMp3GRs7yI4Dr0O51L3A9MpPWAN2sFt51suUjc3+TRzy7kAV3a+MOqMoh3sb+qNNve87eN6qwtLgs1zzSAfKq9nYiDxgPxIszvco6UsYQWp94vwvdFKFS2hnxxcrTwSb7b4cAvWi+LsOKvypJkEc78db0ISXy6LlINrxy2dPjR2SE8/AdQSwMEFAAACAgAAICf6xxldKBxAAAAfQAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPWMzXUUVBKL0osyCgGioA5pZkpIHa0UpKFhaGpoUVSomFSmkmqZaqumYmRQZKhpWFaSmJKmkGquVIsUH1JZUGqX2JuKkRPQGJJRlpmXkpmXrqeT2JlapF7UWaKO8h8pdhaAFBLAQItABQAAAgIAACAn+tIdsf5gQMAALIIAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAACAn+scZXSgcQAAAH0AAAAJACQAAAAAAAAAAAAAAM4DAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAAigQAAAAA
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -5699,7 +5705,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 12, y: 3, z: 12, w: 0}
+  m_margin: {x: 0, y: 3, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7693,7 +7699,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 12, y: 3, z: 12, w: 0}
+  m_margin: {x: 0, y: 3, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -7734,8 +7740,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1821624214}
   m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 9, y: 0.5, z: 6}
-  m_LocalScale: {x: 2.75, y: 1, z: 0.75}
+  m_LocalPosition: {x: 9, y: 1.242, z: 6}
+  m_LocalScale: {x: 2.75, y: 0.2, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1408169200}
@@ -8162,14 +8168,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
-    m_Right: 12
+    m_Left: 0
+    m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 48, y: 48}
+  m_CellSize: {x: 60, y: 60}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2
