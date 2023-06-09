@@ -63,7 +63,11 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
         else
         {
             Debug.Log("Complete! " + (videoFrame - 1) + " videoframes rendered! (Folder: " + folderName + ")");
-            Debug.Break();
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                Debug.Break();
+            #endif
         }
     }
 
@@ -116,16 +120,9 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
 
     void CreateNewFolderForScreenshots()
     {
-        // Find a folder name that doesn't exist yet. Append number if necessary.
         folderName = baseFolderName + iconFolderName;
-        /*int count = 1;
-        while (System.IO.Directory.Exists(folderName))
-        {
-            folderName = folderBaseName + count;
-            count++;
-        }*/
-        if (System.IO.Directory.Exists(folderName) == false)
-            System.IO.Directory.CreateDirectory(folderName); // Create the folder
+        if (Directory.Exists(folderName) == false)
+            Directory.CreateDirectory(folderName); // Create the folder if necessary
     }
 
     void WriteScreenImageToTexture(Texture2D tex)
@@ -145,14 +142,17 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
                 // each column
                 float alpha = textureWhite.GetPixel(x, y).r - textureBlack.GetPixel(x, y).r;
                 alpha = 1.0f - alpha;
-                if (alpha == 0)
+
+                if (alpha <= 0.2f)
                 {
+                    alpha = 0;
                     color = Color.clear;
                 }
                 else
                 {
                     color = textureBlack.GetPixel(x, y) / alpha;
                 }
+
                 color.a = alpha;
                 textureTransparentBackground.SetPixel(x, y, color);
             }
@@ -172,14 +172,22 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
         var pngShot = textureTransparentBackground.EncodeToPNG();
         File.WriteAllBytes(filePath, pngShot);
 
-        AssetDatabase.Refresh();
-        AssetDatabase.ImportAsset(filePath);
-        TextureImporter importer = AssetImporter.GetAtPath(filePath) as TextureImporter;
+        string relativePath;
+        if (count == 0)
+            relativePath = Path.Combine("Assets", folderName, saveFileName + ".png");
+        else
+            relativePath = Path.Combine("Assets", folderName, saveFileName + count + ".png");
+
+        AssetDatabase.ImportAsset(relativePath);
+
+        TextureImporter importer = AssetImporter.GetAtPath(relativePath) as TextureImporter;
         importer.textureType = TextureImporterType.Sprite;
         importer.spritePixelsPerUnit = 64;
         importer.filterMode = FilterMode.Point;
         importer.textureCompression = TextureImporterCompression.Uncompressed;
-        AssetDatabase.WriteImportSettingsIfDirty(filePath);
+        AssetDatabase.WriteImportSettingsIfDirty(relativePath);
+
+        AssetDatabase.Refresh();
     }
 
     void CacheAndInitialiseFields()

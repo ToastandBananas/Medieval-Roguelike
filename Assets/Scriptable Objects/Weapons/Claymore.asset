@@ -20,12 +20,12 @@ MonoBehaviour:
   description: 
   isUsable: 1
   canUsePartial: 0
-  width: 1
-  height: 4
+  width: 2
+  height: 5
   weight: 0.1
   volume: 0.1
   maxStackSize: 1
-  inventorySprite: {fileID: 21300000, guid: 97ec751d00e8b594889428010fbb8eea, type: 3}
+  inventorySprite: {fileID: 21300000, guid: 54cdcffc7dfb1e54e88a8a0f29f4af48, type: 3}
   value: {x: 0, y: 0}
   staticValue: 1
   meshes:
