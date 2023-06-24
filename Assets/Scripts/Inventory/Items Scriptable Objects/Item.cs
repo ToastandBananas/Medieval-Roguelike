@@ -41,7 +41,7 @@ public abstract class Item : ScriptableObject
     public Mesh pickupMesh;
     public Material pickupMeshRendererMaterial;
 
-    public virtual void Use(Unit unit, Inventory inventory, InventoryItem invItem, ItemData itemData, int itemCount, EquipmentSlot equipSlot, PartialAmount partialAmountToUse = PartialAmount.Whole)
+    public virtual void Use(Unit unit, InventoryItem invItem, PartialAmount partialAmountToUse = PartialAmount.Whole)
     {
         
     }

@@ -34,6 +34,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
+  equipSlot: 1
   weaponType: 4
   isTwoHanded: 1
   canDualWield: 0

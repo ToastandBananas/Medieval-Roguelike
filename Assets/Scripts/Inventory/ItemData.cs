@@ -21,6 +21,8 @@ public class ItemData
 
             if (item.maxStackSize > 1)
                 currentStackSize = Random.Range(1, item.maxStackSize + 1);
+            else
+                currentStackSize = 1;
 
             if (item.IsWeapon())
             {

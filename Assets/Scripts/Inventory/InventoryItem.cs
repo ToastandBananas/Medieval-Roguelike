@@ -5,17 +5,18 @@ using UnityEngine.UI;
 public class InventoryItem : MonoBehaviour
 {
     public Inventory myInventory { get; private set; }
+    public CharacterEquipment myCharacterEquipment { get; private set; }
     public ItemData itemData { get; private set; }
 
     [Header("Components")]
-    [SerializeField] Image iconImage;
-    [SerializeField] RectTransform rectTransform;
-    [SerializeField] Slot mySlot;
-    [SerializeField] TextMeshProUGUI stackSizeText;
+    [SerializeField] protected Image iconImage;
+    [SerializeField] protected RectTransform rectTransform;
+    [SerializeField] protected Slot mySlot;
+    [SerializeField] protected TextMeshProUGUI stackSizeText;
 
     readonly int slotSize = 60;
 
-    public void DropItem()
+    public virtual void DropItem()
     {
         if (mySlot != null && mySlot.IsFull() == false)
             return;
@@ -23,41 +24,30 @@ public class InventoryItem : MonoBehaviour
         if (mySlot == null && InventoryUI.Instance.DraggedItem() == this && itemData.Item() == null)
             return;
 
-        Unit myUnit = myInventory.MyUnit();
         LooseItem looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
-        LooseItem looseProjectile = null;
 
-        Vector3 dropDirection = GetDropDirection(myUnit);
+        Vector3 dropDirection = GetDropDirection(GetMyUnit());
 
-        SetupItemDrop(looseItem, itemData.Item(), dropDirection); 
-        
-        if (myUnit.GetRangedWeapon().ItemData() == itemData && myUnit.RangedWeaponEquipped())
-        {
-            HeldRangedWeapon heldRangedWeapon = myUnit.GetRangedWeapon();
-            if (heldRangedWeapon.isLoaded)
-            {
-                looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
-                Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
-                SetupItemDrop(looseProjectile, projectileItem, dropDirection);
-                heldRangedWeapon.loadedProjectile.Disable();
-            }
-        }
+        SetupItemDrop(looseItem, itemData.Item(), dropDirection);
 
         float randomForceMagnitude = Random.Range(50f, 300f);
 
-        // Get the Rigidbody component(s) and apply force
+        // Apply force to the dropped item
         looseItem.RigidBody().AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
-        if (looseProjectile != null)
-            looseProjectile.RigidBody().AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        if (myUnit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(myUnit) == false)
+        if (myInventory != null)
+            myInventory.ItemDatas().Remove(itemData);
+        else 
         {
-            looseItem.HideMeshRenderer();
-            if (looseProjectile != null)
-                looseProjectile.HideMeshRenderer();
-        }
+            EquipmentSlot equipmentSlot = null;
+            if (mySlot != null)
+                equipmentSlot = mySlot as EquipmentSlot;
+            else if (this == InventoryUI.Instance.DraggedItem())
+                equipmentSlot = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
 
-        myInventory.ItemDatas().Remove(itemData);
+            if (equipmentSlot != null)
+                myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlot.EquipSlot()] = null;
+        }
 
         if (mySlot != null)
             mySlot.parentSlot.ClearItem();
@@ -70,7 +60,7 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    void SetupItemDrop(LooseItem looseItem, Item item, Vector3 dropDirection)
+    public virtual void SetupItemDrop(LooseItem looseItem, Item item, Vector3 dropDirection)
     {
         if (item.pickupMesh != null)
             looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
@@ -80,27 +70,35 @@ public class InventoryItem : MonoBehaviour
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
         // Set the LooseItem's position to be slightly in front of the Unit dropping the item
-        looseItem.transform.position = myInventory.MyUnit().transform.position + new Vector3(0, myInventory.MyUnit().ShoulderHeight(), 0) + (dropDirection / 2);
+        looseItem.transform.position = GetMyUnit().transform.position + new Vector3(0, GetMyUnit().ShoulderHeight(), 0) + (dropDirection / 2);
 
         // Randomize the rotation and set active
         looseItem.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f)));
         looseItem.gameObject.SetActive(true);
     }
 
-    Vector3 GetDropDirection(Unit myUnit)
+    Unit GetMyUnit()
+    {
+        if (myInventory != null)
+            return myInventory.MyUnit();
+        else
+            return myCharacterEquipment.MyUnit();
+    }
+
+    protected Vector3 GetDropDirection(Unit myUnit)
     {
         Vector3 forceDirection =  myUnit.transform.forward; // In front of myUnit
-        if (Physics.Raycast(myUnit.transform.position, forceDirection, out RaycastHit hit, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+        float raycastDistance = 1.2f;
+        if (Physics.Raycast(myUnit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, myUnit.unitActionHandler.AttackObstacleMask()))
         {
-            Debug.Log(hit.collider.name);
             forceDirection = -myUnit.transform.forward; // Behind myUnit
-            if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+            if (Physics.Raycast(myUnit.transform.position, forceDirection, raycastDistance, myUnit.unitActionHandler.AttackObstacleMask()))
             {
                 forceDirection = myUnit.transform.right; // Right of myUnit
-                if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+                if (Physics.Raycast(myUnit.transform.position, forceDirection, raycastDistance, myUnit.unitActionHandler.AttackObstacleMask()))
                 {
                     forceDirection = -myUnit.transform.right; // Left of myUnit
-                    if (Physics.Raycast(myUnit.transform.position, forceDirection, 1.2f, myUnit.unitActionHandler.AttackObstacleMask()))
+                    if (Physics.Raycast(myUnit.transform.position, forceDirection, raycastDistance, myUnit.unitActionHandler.AttackObstacleMask()))
                         forceDirection = myUnit.transform.up; // Above myUnit
                 }
             }
@@ -132,8 +130,14 @@ public class InventoryItem : MonoBehaviour
     public void SetupSprite()
     {
         iconImage.sprite = itemData.Item().inventorySprite;
-        rectTransform.offsetMin = new Vector2(-slotSize * (itemData.Item().width - 1), 0);
-        rectTransform.offsetMax = new Vector2(0, slotSize * (itemData.Item().height - 1));
+        if (mySlot is InventorySlot)
+        {
+            rectTransform.offsetMin = new Vector2(-slotSize * (itemData.Item().width - 1), 0);
+            rectTransform.offsetMax = new Vector2(0, slotSize * (itemData.Item().height - 1));
+        }
+        else
+            rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item().width, slotSize * itemData.Item().height);
+
         iconImage.enabled = true;
     }
 
@@ -155,14 +159,25 @@ public class InventoryItem : MonoBehaviour
         }
         else
         {
-            if (mySlot.parentSlot == null)
-                return;
+            if (mySlot is InventorySlot)
+            {
+                InventorySlot myInventorySlot = mySlot as InventorySlot;
+                if (myInventorySlot.parentSlot == null)
+                    return;
 
-            Slot stackSizeSlot = mySlot.parentSlot;//myInventory.GetSlotFromCoordinate(new Vector2(mySlot.parentSlot.slotCoordinate.x, mySlot.parentSlot.slotCoordinate.y + mySlot.parentSlot.InventoryItem().itemData.Item().height - 1));
-            if (mySlot.parentSlot.InventoryItem().itemData.CurrentStackSize() == 1)
-                stackSizeSlot.InventoryItem().stackSizeText.text = "";
+                if (myInventorySlot.parentSlot.InventoryItem().itemData.CurrentStackSize() == 1)
+                    myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = "";
+                else
+                    myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = myInventorySlot.parentSlot.InventoryItem().itemData.CurrentStackSize().ToString();
+            }
             else
-                stackSizeSlot.InventoryItem().stackSizeText.text = mySlot.parentSlot.InventoryItem().itemData.CurrentStackSize().ToString();
+            {
+                EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
+                if (myEquipmentSlot.InventoryItem().itemData.CurrentStackSize() == 1)
+                    myEquipmentSlot.InventoryItem().stackSizeText.text = "";
+                else
+                    myEquipmentSlot.InventoryItem().stackSizeText.text = myEquipmentSlot.InventoryItem().itemData.CurrentStackSize().ToString();
+            }
         }
     }
 
@@ -172,10 +187,19 @@ public class InventoryItem : MonoBehaviour
             stackSizeText.text = "";
         else
         {
-            if (mySlot.parentSlot == null)
-                return;
+            if (mySlot is InventorySlot)
+            {
+                InventorySlot myInventorySlot = mySlot as InventorySlot;
+                if (myInventorySlot.parentSlot == null)
+                    return;
 
-            mySlot.parentSlot.InventoryItem().stackSizeText.text = "";//myInventory.GetSlotFromCoordinate(new Vector2(mySlot.parentSlot.slotCoordinate.x, mySlot.parentSlot.slotCoordinate.y + mySlot.parentSlot.InventoryItem().itemData.Item().height - 1)).InventoryItem().stackSizeText.text = "";
+                myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = "";
+            }
+            else
+            {
+                EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
+                myEquipmentSlot.InventoryItem().stackSizeText.text = "";
+            }
         }
     }
 
@@ -186,6 +210,8 @@ public class InventoryItem : MonoBehaviour
     }
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;
+
+    public void SetMyCharacterEquipment(CharacterEquipment charEquipment) => myCharacterEquipment = charEquipment;
 
     public void SetItemData(ItemData newItemData) => itemData = newItemData;
 

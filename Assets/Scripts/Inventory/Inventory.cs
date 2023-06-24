@@ -66,7 +66,7 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
-    public bool TryAddDraggedItemAt(Slot targetSlot, ItemData newItemData)
+    public bool TryAddDraggedItemAt(InventorySlot targetSlot, ItemData newItemData)
     {
         // Check if there's multiple items in the way or if the position is invalid
         if (InventoryUI.Instance.validDragPosition == false || InventoryUI.Instance.draggedItemOverlapCount == 2)
@@ -91,8 +91,15 @@ public class Inventory : MonoBehaviour
                 newDraggedItemData.TransferData(newItemData);
                 itemDatas.Add(newDraggedItemData);
 
+                // Remove the item from its original character equipment
+                if (InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
+                {
+                    EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
+                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = newItemData;
+                }
                 // Remove the item from its original inventory
-                InventoryUI.Instance.DraggedItem().myInventory.itemDatas.Remove(newItemData);
+                else
+                    InventoryUI.Instance.DraggedItem().myInventory.ItemDatas().Remove(newItemData);
             }
             else // Else, just get a reference to the dragged item's data before we clear it out
                 newDraggedItemData = newItemData;
@@ -174,8 +181,15 @@ public class Inventory : MonoBehaviour
                 newDraggedItemData.TransferData(newItemData);
                 itemDatas.Add(newDraggedItemData);
 
+                // Remove the item from its original character equipment
+                if (InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
+                {
+                    EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
+                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = null;
+                }
                 // Remove the item from its original inventory
-                InventoryUI.Instance.DraggedItem().myInventory.itemDatas.Remove(newItemData);
+                else if (InventoryUI.Instance.DraggedItem().myInventory != null)
+                    InventoryUI.Instance.DraggedItem().myInventory.ItemDatas().Remove(newItemData);
             }
             else // Else, just get a reference to the dragged item's data before we clear it out
                 newDraggedItemData = newItemData;
@@ -195,7 +209,7 @@ public class Inventory : MonoBehaviour
     }
 
     /// <summary>Setup the target slot's item data and sprites.</summary>
-    void SetupNewItem(Slot targetSlot, ItemData newItemData)
+    void SetupNewItem(InventorySlot targetSlot, ItemData newItemData)
     {
         targetSlot.InventoryItem().SetItemData(newItemData);
         targetSlot.ShowSlotImage();

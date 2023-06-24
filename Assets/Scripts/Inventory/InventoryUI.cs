@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static Pathfinding.RVO.SimulatorBurst;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -12,6 +11,9 @@ public class InventoryUI : MonoBehaviour
     [Header("Inventories")]
     [SerializeField] Inventory pocketsInventory;
     [SerializeField] Inventory backpackInventory;
+
+    [Header("Character Equipment")]
+    [SerializeField] CharacterEquipment playerEquipment;
 
     [Header("Prefab")]
     [SerializeField] InventorySlot inventorySlotPrefab;
@@ -51,18 +53,20 @@ public class InventoryUI : MonoBehaviour
             // If we select an item
             if (GameControls.gamePlayActions.menuSelect.WasPressed)
             {
-                if (activeSlot == null)
-                    return;
-
-                if (activeSlot.parentSlot == null || activeSlot.parentSlot.InventoryItem().itemData.Item() == null)
+                if (activeSlot == null || activeSlot.IsFull() == false)
                     return;
 
                 // "Pickup" the item by hiding the item's sprite and showing that same sprite on the draggedItem object
-                SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot.parentSlot, activeSlot.parentSlot.myInventory);
+                if (activeSlot is InventorySlot)
+                    SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot.parentSlot, activeSlot.parentSlot.InventoryItem().myInventory);
+                else
+                    SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
 
-                activeSlot.parentSlot.InventoryItem().DisableSprite();
                 activeSlot.parentSlot.SetupEmptySlotSprites();
+                activeSlot.parentSlot.InventoryItem().DisableSprite();
                 activeSlot.parentSlot.InventoryItem().ClearStackSizeText();
+
+                activeSlot.HighlightSlots();
             }
         }
         else // If we are dragging an item
@@ -77,7 +81,18 @@ public class InventoryUI : MonoBehaviour
             {
                 // Try placing the item
                 if (activeSlot != null)
-                    activeSlot.myInventory.TryAddDraggedItemAt(activeSlot, draggedItem.itemData);
+                {
+                    if (activeSlot is InventorySlot)
+                    {
+                        InventorySlot activeInventorySlot = activeSlot as InventorySlot;
+                        activeInventorySlot.myInventory.TryAddDraggedItemAt(activeInventorySlot, draggedItem.itemData);
+                    }
+                    else
+                    {
+                        EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
+                        activeEquipmentSlot.MyCharacterEquipment().TryAddDraggedItemAt(activeEquipmentSlot, draggedItem.itemData);
+                    }
+                }
                 else if (EventSystem.current.IsPointerOverGameObject() == false)
                     draggedItem.DropItem();
             }
@@ -90,26 +105,42 @@ public class InventoryUI : MonoBehaviour
         int height = draggedItem.itemData.Item().height;
         ItemData overlappedItemData = null;
         draggedItemOverlapCount = 0;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                InventorySlot slotToCheck = activeSlot.myInventory.GetSlotFromCoordinate(new Vector2(activeSlot.slotCoordinate.x - x, activeSlot.slotCoordinate.y - y));
+                Slot slotToCheck;
+                if (activeSlot is InventorySlot)
+                {
+                    InventorySlot activeInventorySlot = activeSlot as InventorySlot;
+                    slotToCheck = activeInventorySlot.myInventory.GetSlotFromCoordinate(new Vector2(activeInventorySlot.slotCoordinate.x - x, activeInventorySlot.slotCoordinate.y - y));
+                }
+                else
+                    slotToCheck = activeSlot;
+
                 if (slotToCheck == null)
                     continue;
 
                 if (slotToCheck.IsFull())
                 {
-                    if (slotToCheck.parentSlot.InventoryItem().itemData == draggedItem.itemData)
+                    if (slotToCheck.GetItemData() == draggedItem.itemData)
                         continue;
 
                     if (overlappedItemData == null)
                     {
-                        overlappedItemData = slotToCheck.parentSlot.InventoryItem().itemData;
-                        overlappedItemsParentSlot = slotToCheck.parentSlot;
+                        overlappedItemData = slotToCheck.GetItemData();
+                        if (slotToCheck is InventorySlot)
+                        {
+                            InventorySlot inventorySlotToCheck = slotToCheck as InventorySlot;
+                            overlappedItemsParentSlot = inventorySlotToCheck.parentSlot;
+                        }
+                        else
+                            overlappedItemsParentSlot = slotToCheck;
+
                         draggedItemOverlapCount++;
                     }
-                    else if (overlappedItemData != slotToCheck.parentSlot.InventoryItem().itemData)
+                    else if (overlappedItemData != slotToCheck.GetItemData())
                     {
                         draggedItemOverlapCount++;
                         return true;
@@ -125,7 +156,14 @@ public class InventoryUI : MonoBehaviour
         // No need to setup the ItemData since it hasn't changed, so just show the item's sprite and change the slot's color/remove highlighting
         activeSlot.RemoveSlotHighlights();
         parentSlotDraggedFrom.ShowSlotImage();
-        parentSlotDraggedFrom.SetupAsParentSlot();
+        if (parentSlotDraggedFrom is InventorySlot)
+        {
+            InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
+            parentInventorySlotDraggedFrom.SetupAsParentSlot();
+        }
+        else
+            parentSlotDraggedFrom.SetFullSlotSprite();
+
         parentSlotDraggedFrom.InventoryItem().UpdateStackSizeText();
 
         // Hide the dragged item
@@ -140,6 +178,21 @@ public class InventoryUI : MonoBehaviour
         this.parentSlotDraggedFrom = parentSlotDraggedFrom;
 
         draggedItem.SetMyInventory(inventoryDraggedFrom);
+        draggedItem.SetMyCharacterEquipment(null);
+        draggedItem.SetItemData(newItemData);
+        draggedItem.UpdateStackSizeText();
+        draggedItem.SetupDraggedSprite();
+    }
+
+    public void SetupDraggedItem(ItemData newItemData, Slot parentSlotDraggedFrom, CharacterEquipment characterEquipmentDraggedFrom)
+    {
+        Cursor.visible = false;
+        isDraggingItem = true;
+
+        this.parentSlotDraggedFrom = parentSlotDraggedFrom;
+
+        draggedItem.SetMyInventory(null);
+        draggedItem.SetMyCharacterEquipment(characterEquipmentDraggedFrom);
         draggedItem.SetItemData(newItemData);
         draggedItem.UpdateStackSizeText();
         draggedItem.SetupDraggedSprite();

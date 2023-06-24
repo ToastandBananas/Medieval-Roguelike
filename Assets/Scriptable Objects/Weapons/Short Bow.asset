@@ -22,9 +22,10 @@ MonoBehaviour:
   canUsePartial: 0
   width: 2
   height: 3
-  maxStackSize: 1
   weight: 0.1
   volume: 0.1
+  maxStackSize: 1
+  inventorySprite: {fileID: 0}
   value: {x: 0, y: 0}
   staticValue: 1
   meshes:
@@ -41,6 +42,7 @@ MonoBehaviour:
   - {fileID: 7298417193033885815, guid: e9cc73cd0e18a7941819414ff718494d, type: 3}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
+  equipSlot: 0
   weaponType: 0
   isTwoHanded: 0
   canDualWield: 0

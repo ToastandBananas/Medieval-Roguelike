@@ -2,6 +2,9 @@ using UnityEngine;
 
 public abstract class Equipment : Item
 {
+    [Header("Equip Info")]
+    [SerializeField] EquipSlot equipSlot;
+
     public abstract override bool IsBag();
 
     public abstract override bool IsConsumable();
@@ -23,4 +26,6 @@ public abstract class Equipment : Item
     public abstract override bool IsWeapon();
 
     public abstract override bool IsWearable();
+
+    public EquipSlot EquipSlot() => equipSlot;
 }
