@@ -14,7 +14,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     [SerializeField] Sprite emptySlotSprite;
     [SerializeField] Sprite fullSlotSprite;
     
-    public void ShowSlotImage()
+    public virtual void ShowSlotImage()
     {
         if (inventoryItem.itemData == null || inventoryItem.itemData.Item() == null)
         {
@@ -28,7 +28,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             return;
         }
 
-        inventoryItem.SetupSprite();
+        inventoryItem.SetupSprite(true);
     }
 
     public void HideSlotImage() => inventoryItem.DisableSprite();

@@ -1597,7 +1597,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1922,7 +1922,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3425,42 +3425,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &530591828
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 530591829}
-  m_Layer: 5
-  m_Name: Player Equipment UI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &530591829
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530591828}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1107308956}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 328, y: 0}
-  m_SizeDelta: {x: 656, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &543484251
 GameObject:
   m_ObjectHideFlags: 0
@@ -6323,7 +6287,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1622884278}
-  - {fileID: 530591829}
   - {fileID: 666556618}
   m_Father: {fileID: 548798041}
   m_RootOrder: 0
@@ -6348,6 +6311,7 @@ MonoBehaviour:
   draggedItem: {fileID: 666556619}
   pocketsInventory: {fileID: 1029023059}
   backpackInventory: {fileID: 211806707}
+  playerEquipment: {fileID: 0}
   inventorySlotPrefab: {fileID: 7074852841376672448, guid: f94d8ef5210fb2246920edcba72472ef,
     type: 3}
 --- !u!4 &1108511052 stripped
@@ -7296,7 +7260,7 @@ GameObject:
   - component: {fileID: 1301393432}
   - component: {fileID: 1301393433}
   m_Layer: 5
-  m_Name: Equipment
+  m_Name: Player Equipment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

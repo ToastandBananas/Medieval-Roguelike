@@ -60,7 +60,27 @@ public class InventoryUI : MonoBehaviour
                 if (activeSlot is InventorySlot)
                     SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot.parentSlot, activeSlot.parentSlot.InventoryItem().myInventory);
                 else
-                    SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
+                {
+                    EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
+                    if (activeEquipmentSlot.EquipSlot() == EquipSlot.RightHeldItem && (activeEquipmentSlot.InventoryItem().itemData == null || activeEquipmentSlot.InventoryItem().itemData.Item() == null))
+                    {
+                        EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
+                        if (oppositeWeaponSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+                        {
+                            SetupDraggedItem(oppositeWeaponSlot.InventoryItem().itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem().myCharacterEquipment);
+                            oppositeWeaponSlot.InventoryItem().DisableSprite();
+                        }
+                        else
+                            SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
+                    }
+                    else
+                    {
+                        SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
+
+                        if (activeEquipmentSlot.EquipSlot() == EquipSlot.LeftHeldItem && activeEquipmentSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+                            activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem().DisableSprite();
+                    }
+                }
 
                 activeSlot.parentSlot.SetupEmptySlotSprites();
                 activeSlot.parentSlot.InventoryItem().DisableSprite();
@@ -154,15 +174,27 @@ public class InventoryUI : MonoBehaviour
     public void ReplaceDraggedItem()
     {
         // No need to setup the ItemData since it hasn't changed, so just show the item's sprite and change the slot's color/remove highlighting
-        activeSlot.RemoveSlotHighlights();
+        if (activeSlot != null)
+            activeSlot.RemoveSlotHighlights();
+
         parentSlotDraggedFrom.ShowSlotImage();
+
         if (parentSlotDraggedFrom is InventorySlot)
         {
             InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
             parentInventorySlotDraggedFrom.SetupAsParentSlot();
         }
         else
-            parentSlotDraggedFrom.SetFullSlotSprite();
+        {
+            EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
+            parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
+
+            if (parentEquipmentSlotDraggedFrom.IsWeaponSlot() && parentEquipmentSlotDraggedFrom.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+            {
+                EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
+                oppositeWeaponSlot.SetFullSlotSprite();
+            }
+        }
 
         parentSlotDraggedFrom.InventoryItem().UpdateStackSizeText();
 

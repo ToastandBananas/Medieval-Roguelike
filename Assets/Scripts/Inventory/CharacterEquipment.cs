@@ -39,12 +39,7 @@ public class CharacterEquipment : MonoBehaviour
 
             int targetEquipSlotIndex = (int)targetSlot.EquipSlot();
             if (newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
-            {
-                if (newItemData.Item().Weapon().IsMeleeWeapon())
-                    targetEquipSlotIndex = (int)EquipSlot.RightHeldItem;
-                else
-                    targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem;
-            }
+                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem;
 
             // If the slots are in different character equipments
             if (targetSlot.MyCharacterEquipment() != InventoryUI.Instance.DraggedItem().myCharacterEquipment)
@@ -129,8 +124,6 @@ public class CharacterEquipment : MonoBehaviour
 
             // Re-enable the highlighting
             targetSlot.HighlightSlots();
-
-            //}
         }
         else // If there's no items in the way
         {
@@ -138,12 +131,7 @@ public class CharacterEquipment : MonoBehaviour
 
             int targetEquipSlotIndex = (int)targetSlot.EquipSlot();
             if (newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
-            {
-                if (newItemData.Item().Weapon().IsMeleeWeapon())
-                    targetEquipSlotIndex = (int)EquipSlot.RightHeldItem;
-                else
-                    targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem;
-            }
+                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem;
 
             // If the slots are in different character equipments
             if (targetSlot.MyCharacterEquipment() != InventoryUI.Instance.DraggedItem().myCharacterEquipment)
@@ -197,9 +185,25 @@ public class CharacterEquipment : MonoBehaviour
     void SetupNewItem(EquipmentSlot targetSlot, ItemData newItemData)
     {
         targetSlot.InventoryItem().SetItemData(newItemData);
-        targetSlot.ShowSlotImage();
         targetSlot.SetFullSlotSprite();
+        targetSlot.ShowSlotImage();
         targetSlot.InventoryItem().UpdateStackSizeText();
+
+        if (targetSlot.IsWeaponSlot() && targetSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+        {
+            EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
+            oppositeWeaponSlot.SetFullSlotSprite();
+        }
+    }
+
+    public EquipmentSlot GetEquipmentSlot(EquipSlot equipSlot)
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].EquipSlot() == equipSlot)
+                return slots[i];
+        }
+        return null;
     }
 
     public ItemData[] EquippedItemDatas() => equippedItemDatas;

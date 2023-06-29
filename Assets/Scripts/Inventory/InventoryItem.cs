@@ -127,17 +127,42 @@ public class InventoryItem : MonoBehaviour
         return new Vector2(((-width * slotSize) / 2) + (slotSize / 2), ((height * slotSize) / 2) - (slotSize / 2));
     }
 
-    public void SetupSprite()
+    public void SetupSprite(bool fullyOpaque)
     {
-        iconImage.sprite = itemData.Item().inventorySprite;
-        if (mySlot is InventorySlot)
+        ItemData spriteItemData = null;
+        if ((itemData == null || itemData.Item() == null) && mySlot is EquipmentSlot)
         {
-            rectTransform.offsetMin = new Vector2(-slotSize * (itemData.Item().width - 1), 0);
-            rectTransform.offsetMax = new Vector2(0, slotSize * (itemData.Item().height - 1));
+            EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
+            if (myEquipmentSlot.IsWeaponSlot())
+            {
+                EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
+                spriteItemData = oppositeWeaponSlot.InventoryItem().itemData;
+                iconImage.sprite = oppositeWeaponSlot.InventoryItem().itemData.Item().inventorySprite;
+            }
+            else
+                return;
         }
         else
-            rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item().width, slotSize * itemData.Item().height);
+        {
+            spriteItemData = itemData;
+            iconImage.sprite = spriteItemData.Item().inventorySprite;
+        }
 
+        if (mySlot is InventorySlot)
+        {
+            rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item().width - 1), 0);
+            rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item().height - 1));
+        }
+        else
+            rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item().width, slotSize * spriteItemData.Item().height);
+
+        Color imageColor = iconImage.color;
+        if (fullyOpaque)
+            imageColor.a = 1f;
+        else
+            imageColor.a = 0.3f;
+
+        iconImage.color = imageColor;
         iconImage.enabled = true;
     }
 
