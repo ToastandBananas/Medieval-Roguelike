@@ -31,8 +31,11 @@ public class CharacterEquipment : MonoBehaviour
         {
             // Get a reference to the overlapped item's data and parent slot before we clear it out
             Slot overlappedItemsParentSlot = InventoryUI.Instance.overlappedItemsParentSlot;
-            ItemData overlappedItemsData = overlappedItemsParentSlot.InventoryItem().itemData;
+            ItemData overlappedItemData = overlappedItemsParentSlot.GetItemData();
             ItemData newDraggedItemData;
+
+            Debug.Log(overlappedItemsParentSlot);
+            Debug.Log(overlappedItemData.Item());
 
             // Remove the highlighting
             targetSlot.RemoveSlotHighlights();
@@ -120,14 +123,14 @@ public class CharacterEquipment : MonoBehaviour
             SetupNewItem(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newDraggedItemData);
 
             // Setup the dragged item's data and sprite and start dragging the new item
-            InventoryUI.Instance.SetupDraggedItem(overlappedItemsData, null, this);
+            InventoryUI.Instance.SetupDraggedItem(overlappedItemData, null, this);
 
             // Re-enable the highlighting
             targetSlot.HighlightSlots();
         }
         else // If there's no items in the way
         {
-            ItemData newDraggedItemData;
+            ItemData newEquipmentItemData;
 
             int targetEquipSlotIndex = (int)targetSlot.EquipSlot();
             if (newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
@@ -137,9 +140,9 @@ public class CharacterEquipment : MonoBehaviour
             if (targetSlot.MyCharacterEquipment() != InventoryUI.Instance.DraggedItem().myCharacterEquipment)
             {
                 // Create a new ItemData and assign it to the new character equipment
-                newDraggedItemData = new ItemData();
-                newDraggedItemData.TransferData(newItemData);
-                equippedItemDatas[targetEquipSlotIndex] = newDraggedItemData;
+                newEquipmentItemData = new ItemData();
+                newEquipmentItemData.TransferData(newItemData);
+                equippedItemDatas[targetEquipSlotIndex] = newEquipmentItemData;
 
                 // Remove the item from its original character equipment
                 if (InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
@@ -153,19 +156,33 @@ public class CharacterEquipment : MonoBehaviour
             }
             else // Else, just get a reference to the dragged item's data before we clear it out
             {
-                newDraggedItemData = newItemData;
-                equippedItemDatas[targetEquipSlotIndex] = newDraggedItemData;
+                newEquipmentItemData = newItemData;
+                equippedItemDatas[targetEquipSlotIndex] = newEquipmentItemData;
             }
 
             // Clear out the dragged item's original slot
             if (InventoryUI.Instance.parentSlotDraggedFrom != null)
                 InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
 
-            // Setup the target slot's item data and sprites
-            SetupNewItem(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newDraggedItemData);
+            EquipmentSlot targetEquipmentSlot = GetEquipmentSlotFromIndex(targetEquipSlotIndex);
 
-            // Hide the dragged item
-            InventoryUI.Instance.DisableDraggedItem();
+            // If we're equipping a two handed weapon to the left weapon slot and there's already a weapon in the right weapon slot
+            if (targetEquipmentSlot.EquipSlot() == EquipSlot.LeftHeldItem && newEquipmentItemData.Item().Weapon().isTwoHanded && GetEquipmentSlot(EquipSlot.RightHeldItem).GetItemData() != null && GetEquipmentSlot(EquipSlot.RightHeldItem).GetItemData().Item() != null)
+            {
+                ItemData newDraggedItemData = new ItemData();
+                EquipmentSlot rightWeaponSlot = GetEquipmentSlot(EquipSlot.RightHeldItem);
+                newDraggedItemData.TransferData(rightWeaponSlot.GetItemData());
+                rightWeaponSlot.ClearItem();
+
+                // Setup the dragged item's data and sprite and start dragging the new item
+                InventoryUI.Instance.SetupDraggedItem(newDraggedItemData, null, this);
+            }
+            else
+                // Hide the dragged item
+                InventoryUI.Instance.DisableDraggedItem();
+
+            // Setup the target slot's item data and sprites
+            SetupNewItem(targetEquipmentSlot, newEquipmentItemData);
         }
 
         return true;

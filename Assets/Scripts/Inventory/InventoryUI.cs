@@ -142,23 +142,40 @@ public class InventoryUI : MonoBehaviour
                 if (slotToCheck == null)
                     continue;
 
+                bool slotToCheckIsFull = false;
                 if (slotToCheck.IsFull())
+                    slotToCheckIsFull = true;
+                else if (slotToCheck is EquipmentSlot)
+                {
+                    EquipmentSlot equipmentSlotToCheck = slotToCheck as EquipmentSlot;
+                    if (equipmentSlotToCheck.EquipSlot() == EquipSlot.RightHeldItem && equipmentSlotToCheck.GetOppositeWeaponSlot().IsFull())
+                        slotToCheckIsFull = true;
+                }
+
+                if (slotToCheckIsFull)
                 {
                     if (slotToCheck.GetItemData() == draggedItem.itemData)
                         continue;
 
                     if (overlappedItemData == null)
                     {
-                        overlappedItemData = slotToCheck.GetItemData();
                         if (slotToCheck is InventorySlot)
                         {
-                            InventorySlot inventorySlotToCheck = slotToCheck as InventorySlot;
-                            overlappedItemsParentSlot = inventorySlotToCheck.parentSlot;
+                            overlappedItemsParentSlot = slotToCheck.parentSlot;
+                            overlappedItemData = slotToCheck.GetItemData();
+                            draggedItemOverlapCount++;
                         }
                         else
-                            overlappedItemsParentSlot = slotToCheck;
+                        {
+                            EquipmentSlot equipmentSlotToCheck = slotToCheck as EquipmentSlot;
+                            if (equipmentSlotToCheck.EquipSlot() == EquipSlot.RightHeldItem && draggedItem.itemData.Item().IsWeapon())
+                                overlappedItemsParentSlot = equipmentSlotToCheck.GetOppositeWeaponSlot();
+                            else
+                                overlappedItemsParentSlot = slotToCheck;
 
-                        draggedItemOverlapCount++;
+                            draggedItemOverlapCount++;
+                            return false;
+                        }
                     }
                     else if (overlappedItemData != slotToCheck.GetItemData())
                     {
@@ -238,7 +255,6 @@ public class InventoryUI : MonoBehaviour
         Cursor.visible = true;
         isDraggingItem = false;
         parentSlotDraggedFrom = null;
-        draggedItemOverlapCount = 0;
 
         StartCoroutine(DelayStopDraggingItem());
         draggedItem.DisableSprite();
