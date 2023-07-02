@@ -11554,6 +11554,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6440773195933579921, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: myInventory
+      value: 
+      objectReference: {fileID: 1029023059}
+    - target: {fileID: 6440773195933579921, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: myCharacterEquipment
+      value: 
+      objectReference: {fileID: 1301393433}
     - target: {fileID: 6486341831773549153, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalPosition.x

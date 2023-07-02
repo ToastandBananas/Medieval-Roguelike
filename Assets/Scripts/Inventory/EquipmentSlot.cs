@@ -19,18 +19,7 @@ public class EquipmentSlot : Slot
         myCharacterEquipment.slots.Add(this);
     }
 
-    public override bool IsFull()
-    {
-        if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null)
-            return true;
-        else if (IsWeaponSlot())
-        {
-            EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-            if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item() != null && oppositeWeaponSlot.inventoryItem.itemData.Item().Weapon().isTwoHanded)
-                return true;
-        }
-        return false;
-    }
+    public override bool IsFull() => inventoryItem.itemData != null && inventoryItem.itemData.Item() != null;
 
     public override void ClearItem()
     {

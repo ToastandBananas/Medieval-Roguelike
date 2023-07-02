@@ -12,6 +12,10 @@ public class Unit : MonoBehaviour
     MeshRenderer[] bowMeshRenderers;
     LineRenderer bowLineRenderer;
 
+    [Header("Inventories")]
+    [SerializeField] Inventory myInventory;
+    [SerializeField] CharacterEquipment myCharacterEquipment;
+
     public bool meshesHidden { get; private set; }
     
     public HeldItem leftHeldItem { get; private set; }
@@ -445,4 +449,8 @@ public class Unit : MonoBehaviour
     public float ShoulderHeight() => shoulderHeight;
 
     public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
+
+    public Inventory Inventory() => myInventory;
+
+    public CharacterEquipment CharacterEquipment() => myCharacterEquipment;
 }

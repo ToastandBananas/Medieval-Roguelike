@@ -6,13 +6,13 @@ public class EquipmentItem : InventoryItem
 
     public override void DropItem()
     {
+        if (mySlot == null)
+            Debug.LogError($"mySlot for {name} is not assigned...");
+
         if (mySlot != null && mySlot.IsFull() == false)
             return;
 
-        if (mySlot == null && InventoryUI.Instance.DraggedItem() == this && itemData.Item() == null)
-            return;
-
-        Unit myUnit = myInventory.MyUnit();
+        Unit myUnit = myCharacterEquipment.MyUnit();
         LooseItem looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
         LooseItem looseProjectile = null;
 
@@ -46,10 +46,7 @@ public class EquipmentItem : InventoryItem
                 looseProjectile.HideMeshRenderer();
         }
 
-        myInventory.ItemDatas().Remove(itemData);
-
-        if (mySlot != null)
-            mySlot.parentSlot.ClearItem();
+        mySlot.ClearItem();
     }
 
     public override void SetupItemDrop(LooseItem looseItem, Item item, Vector3 dropDirection)

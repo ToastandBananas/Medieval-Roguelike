@@ -60,6 +60,8 @@ public class Inventory : MonoBehaviour
             {
                 // Setup the slot's item data and sprites
                 SetupNewItem(slot, newItemData);
+                if (itemDatas.Contains(newItemData) == false)
+                    itemDatas.Add(newItemData);
                 return true;
             }
         }
