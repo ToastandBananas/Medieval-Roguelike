@@ -4,6 +4,11 @@ public abstract class Interactable : MonoBehaviour
 {
     public virtual void Awake()
     {
+        UpdateGridPosition();
+    }
+
+    public virtual void UpdateGridPosition()
+    {
         gridPosition = LevelGrid.GetGridPosition(transform.position);
         LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
     }

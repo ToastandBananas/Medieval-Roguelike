@@ -15,7 +15,7 @@ public class Door : Interactable
     {
         base.Awake();
 
-        doorHinge = transform.GetChild(0);
+        doorHinge = transform;
         closedRotation = doorHinge.rotation.eulerAngles;
     }
 
@@ -27,6 +27,12 @@ public class Door : Interactable
             StartCoroutine(OpenDoor());
         else
             StartCoroutine(CloseDoor());
+    }
+
+    public override void UpdateGridPosition()
+    {
+        gridPosition = LevelGrid.GetGridPosition(transform.parent.position);
+        LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
     }
 
     IEnumerator OpenDoor()

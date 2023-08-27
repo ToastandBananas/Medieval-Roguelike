@@ -16,9 +16,20 @@ public class LooseItem : Interactable
         itemData.RandomizeData();
     }
 
+    public void FixedUpdate()
+    {
+        if (rigidBody.velocity.magnitude >= 0.01f)
+            UpdateGridPosition();
+    }
+
     public override void Interact(Unit unitPickingUpItem)
     {
         Debug.Log("Picking up item");
+    }
+
+    public override void UpdateGridPosition()
+    {
+        gridPosition = LevelGrid.GetGridPosition(meshCollider.bounds.center);
     }
 
     public void SetupMesh(Mesh mesh, Material material)

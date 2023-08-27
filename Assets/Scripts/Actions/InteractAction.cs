@@ -1,9 +1,8 @@
 using System.Collections;
-using UnityEngine;
 
 public class InteractAction : BaseAction
 {
-    GridPosition targetInteractableGridPosition;
+    Interactable targetInteractable;
 
     public override void TakeAction(GridPosition gridPosition)
     {
@@ -18,17 +17,17 @@ public class InteractAction : BaseAction
 
         if (unit.IsPlayer() || unit.IsVisibleOnScreen())
         {
-            if (turnAction.IsFacingTarget(targetInteractableGridPosition) == false)
-                turnAction.RotateTowardsPosition(targetInteractableGridPosition.WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
+            if (turnAction.IsFacingTarget(targetInteractable.gridPosition) == false)
+                turnAction.RotateTowardsPosition(targetInteractable.gridPosition.WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
 
             while (turnAction.isRotating)
                 yield return null;
         }
         else
-            turnAction.RotateTowardsPosition(targetInteractableGridPosition.WorldPosition(), true);
+            turnAction.RotateTowardsPosition(targetInteractable.gridPosition.WorldPosition(), true);
 
         // Do the interaction
-        LevelGrid.Instance.GetInteractableAtGridPosition(targetInteractableGridPosition).Interact(unit);
+        targetInteractable.Interact(unit);
 
         CompleteAction();
         unit.unitActionHandler.SetTargetInteractable(null);
@@ -43,7 +42,7 @@ public class InteractAction : BaseAction
         return 100;
     }
 
-    public void SetTargetInteractableGridPosition(GridPosition gridPosition) => targetInteractableGridPosition = gridPosition;
+    public void SetTargetInteractable(Interactable target) => targetInteractable = target;
 
     public override void CompleteAction()
     {

@@ -18,7 +18,7 @@ public class LevelGrid : MonoBehaviour
     Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Unit> deadUnits = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
-    // public static Dictionary<Vector3, List<ItemData>> itemDatas = new Dictionary<Vector3, List<ItemData>>();
+    // Dictionary<LooseItem, Vector3> looseItems = new Dictionary<LooseItem, Vector3>();
 
     List<GridPosition> gridPositionsList = new List<GridPosition>();
     List<GridPosition> validGridPositionsList = new List<GridPosition>();

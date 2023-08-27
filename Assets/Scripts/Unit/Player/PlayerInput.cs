@@ -145,7 +145,7 @@ public class PlayerInput : MonoBehaviour
             else
             {
                 // Queue the Interact Action with the Interactable
-                player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractableGridPosition(highlightedInteractable.gridPosition);
+                player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
             }
         }
@@ -293,9 +293,14 @@ public class PlayerInput : MonoBehaviour
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition()); 
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, interactableMask))
                 {
-                    highlightedInteractable = LevelGrid.Instance.GetInteractableFromTransform(hit.transform.parent);
-                    if (highlightedInteractable != null && highlightedInteractable is Door)
-                        WorldMouse.ChangeCursor(CursorState.UseDoor);
+                    if (highlightedInteractable == null || highlightedInteractable.gameObject != hit.transform.gameObject)
+                        highlightedInteractable = hit.transform.GetComponent<Interactable>();
+                    
+                    if (highlightedInteractable != null)
+                    {
+                        if (highlightedInteractable is Door)
+                            WorldMouse.ChangeCursor(CursorState.UseDoor);
+                    }
                 }
                 else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsEnemy(unitAtGridPosition) && player.vision.IsVisible(unitAtGridPosition))
                 {

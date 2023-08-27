@@ -26,7 +26,7 @@ public class PlayerActionHandler : UnitActionHandler
             {
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetInteractable.gridPosition) <= 1.4f)
                 {
-                    GetAction<InteractAction>().SetTargetInteractableGridPosition(targetInteractable.gridPosition);
+                    GetAction<InteractAction>().SetTargetInteractable(targetInteractable);
                     QueueAction(GetAction<InteractAction>());
                 }
             }
