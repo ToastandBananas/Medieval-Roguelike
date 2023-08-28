@@ -113,7 +113,7 @@ public class UnitAnimator : MonoBehaviour
         LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
         Item item = heldItem.ItemData().Item();
 
-        SetupItemDrop(heldItem.transform, looseWeapon, item);
+        SetupItemDrop(heldItem.transform, looseWeapon, heldItem.ItemData(), item);
 
         if (heldItem is HeldRangedWeapon)
         {
@@ -122,7 +122,7 @@ public class UnitAnimator : MonoBehaviour
             {
                 looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
                 Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
-                SetupItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, projectileItem);
+                SetupItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, heldRangedWeapon.loadedProjectile.ItemData(), projectileItem);
                 heldRangedWeapon.loadedProjectile.Disable();
             }
         }
@@ -164,7 +164,7 @@ public class UnitAnimator : MonoBehaviour
         }
     }
 
-    void SetupItemDrop(Transform itemDropTransform, LooseItem looseItem, Item item)
+    void SetupItemDrop(Transform itemDropTransform, LooseItem looseItem, ItemData itemData, Item item)
     {
         if (item.pickupMesh != null)
             looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
@@ -172,6 +172,8 @@ public class UnitAnimator : MonoBehaviour
             looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
         else
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
+
+        looseItem.SetItemData(itemData);
 
         // Set the LooseItem's position to match the HeldItem before we add force
         looseItem.transform.position = itemDropTransform.position;

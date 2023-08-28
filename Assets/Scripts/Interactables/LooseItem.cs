@@ -24,7 +24,10 @@ public class LooseItem : Interactable
 
     public override void Interact(Unit unitPickingUpItem)
     {
-        Debug.Log("Picking up item");
+        Debug.Log("Picking up " + name);
+
+        if (unitPickingUpItem.PocketsInventory().TryAddItem(itemData) || unitPickingUpItem.BackpackInventory().TryAddItem(itemData))
+            gameObject.SetActive(false);
     }
 
     public override void UpdateGridPosition()
@@ -39,7 +42,9 @@ public class LooseItem : Interactable
         meshCollider.sharedMesh = mesh;
     }
 
-    public ItemData ItemData => itemData;
+    public ItemData ItemData() => itemData;
+
+    public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
     public Rigidbody RigidBody() => rigidBody;
 
@@ -50,4 +55,6 @@ public class LooseItem : Interactable
     public void HideMeshRenderer() => meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
 
     public bool CanSeeMeshRenderer() => meshRenderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
+
+    public override bool CanInteractAtMyGridPosition() => true;
 }

@@ -129,17 +129,17 @@ public class PlayerInput : MonoBehaviour
         if (highlightedInteractable != null)
         {
             // Do nothing if the player is in the same grid position as the interactable (such as an open door)
-            if (player.gridPosition == highlightedInteractable.gridPosition)
+            if (player.gridPosition == highlightedInteractable.gridPosition && highlightedInteractable is LooseItem == false)
                 return;
 
             // Set the target Interactable
             player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
 
             // If the player is too far away from the Interactable to interact with it
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.gridSize)
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.diaganolDistance)
             {
                 // Queue a Move Action towards the Interactable
-                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.gridSize));
+                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
             }
             else
@@ -298,7 +298,9 @@ public class PlayerInput : MonoBehaviour
                     
                     if (highlightedInteractable != null)
                     {
-                        if (highlightedInteractable is Door)
+                        if (highlightedInteractable is LooseItem)
+                            WorldMouse.ChangeCursor(CursorState.PickupItem);
+                        else if (highlightedInteractable is Door)
                             WorldMouse.ChangeCursor(CursorState.UseDoor);
                     }
                 }

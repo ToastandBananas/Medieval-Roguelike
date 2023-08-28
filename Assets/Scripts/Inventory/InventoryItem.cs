@@ -69,6 +69,8 @@ public class InventoryItem : MonoBehaviour
         else
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
+        looseItem.SetItemData(itemData);
+
         // Set the LooseItem's position to be slightly in front of the Unit dropping the item
         looseItem.transform.position = GetMyUnit().transform.position + new Vector3(0, GetMyUnit().ShoulderHeight(), 0) + (dropDirection / 2);
 

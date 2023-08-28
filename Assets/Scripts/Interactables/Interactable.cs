@@ -16,4 +16,6 @@ public abstract class Interactable : MonoBehaviour
     public GridPosition gridPosition { get; protected set; }
 
     public abstract void Interact(Unit unit);
+
+    public abstract bool CanInteractAtMyGridPosition();
 }

@@ -13,7 +13,8 @@ public class Unit : MonoBehaviour
     LineRenderer bowLineRenderer;
 
     [Header("Inventories")]
-    [SerializeField] Inventory myInventory;
+    [SerializeField] Inventory myPocketsInventory;
+    [SerializeField] Inventory myBackpackInventory;
     [SerializeField] CharacterEquipment myCharacterEquipment;
 
     public bool meshesHidden { get; private set; }
@@ -331,7 +332,7 @@ public class Unit : MonoBehaviour
 
     public bool IsCompletelySurrounded(float range)
     {
-        List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range);
+        List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range, false);
         for (int i = 0; i < surroundingGridPositions.Count; i++)
         {
             if (LevelGrid.Instance.GridPositionObstructed(surroundingGridPositions[i]) == false)
@@ -450,7 +451,9 @@ public class Unit : MonoBehaviour
 
     public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
 
-    public Inventory Inventory() => myInventory;
+    public Inventory BackpackInventory() => myBackpackInventory;
+
+    public Inventory PocketsInventory() => myBackpackInventory;
 
     public CharacterEquipment CharacterEquipment() => myCharacterEquipment;
 }

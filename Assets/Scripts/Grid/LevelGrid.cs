@@ -283,7 +283,7 @@ public class LevelGrid : MonoBehaviour
         return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
     }
 
-    public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range)
+    public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool startingGridPositionValid)
     {
         gridPositionsList.Clear();
         float boundsDimension = (range * 2f) + 0.1f;
@@ -292,7 +292,7 @@ public class LevelGrid : MonoBehaviour
         for (int i = 0; i < nodes.Count; i++)
         {
             GridPosition nodeGridPosition = GetGridPosition((Vector3)nodes[i].position);
-            if (nodeGridPosition == startingGridPosition)
+            if (startingGridPositionValid == false && nodeGridPosition == startingGridPosition)
                 continue;
 
             if (GridPositionObstructed(nodeGridPosition))
@@ -308,16 +308,13 @@ public class LevelGrid : MonoBehaviour
         return gridPositionsList;
     }
 
-    public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range)
+    public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range, bool targetGridPositionValid)
     {
-        validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range);
+        validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range, targetGridPositionValid);
         GridPosition nearestGridPosition = targetGridPosition;
         float nearestDist = 1000000;
         for (int i = 0; i < validGridPositionsList.Count; i++)
         {
-            if (GridPositionObstructed(validGridPositionsList[i]))
-                continue;
-
             float dist = Vector3.Distance(unitGridPosition.WorldPosition(), validGridPositionsList[i].WorldPosition());
             if (dist < nearestDist)
             {

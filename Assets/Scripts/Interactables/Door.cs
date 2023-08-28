@@ -9,14 +9,12 @@ public class Door : Interactable
     float speed = 2f;
 
     Vector3 closedRotation;
-    Transform doorHinge;
 
     public override void Awake()
     {
         base.Awake();
 
-        doorHinge = transform;
-        closedRotation = doorHinge.rotation.eulerAngles;
+        closedRotation = transform.rotation.eulerAngles;
     }
 
     public override void Interact(Unit unit)
@@ -37,7 +35,7 @@ public class Door : Interactable
 
     IEnumerator OpenDoor()
     {
-        Quaternion startRotation = doorHinge.rotation;
+        Quaternion startRotation = transform.rotation;
         Quaternion endRotation;
 
         endRotation = Quaternion.Euler(new Vector3(0f, startRotation.y + rotationAmount, 0f));
@@ -45,7 +43,7 @@ public class Door : Interactable
         float time = 0f;
         while (time < 1f)
         {
-            doorHinge.rotation = Quaternion.Slerp(startRotation, endRotation, time);
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
             yield return null;
             time += Time.deltaTime * speed;
         }
@@ -53,15 +51,17 @@ public class Door : Interactable
 
     IEnumerator CloseDoor()
     {
-        Quaternion startRotation = doorHinge.rotation;
+        Quaternion startRotation = transform.rotation;
         Quaternion endRotation = Quaternion.Euler(closedRotation);
 
         float time = 0f;
         while (time < 1f)
         {
-            doorHinge.rotation = Quaternion.Slerp(startRotation, endRotation, time);
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
             yield return null;
             time += Time.deltaTime * speed;
         }
     }
+
+    public override bool CanInteractAtMyGridPosition() => false;
 }

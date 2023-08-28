@@ -45,7 +45,7 @@ public class CharacterEquipment : MonoBehaviour
                 if (oppositeWeaponSlot.IsFull() && (newItemData.Item().Weapon().isTwoHanded || oppositeWeaponSlot.GetItemData().Item().Weapon().isTwoHanded))
                 {
                     // Try adding the item to the character's inventory
-                    if (myUnit.Inventory().TryAddItem(oppositeWeaponSlot.GetItemData()) == false)
+                    if (myUnit.BackpackInventory().TryAddItem(oppositeWeaponSlot.GetItemData()) == false)
                         oppositeWeaponSlot.InventoryItem().DropItem(); // Else, drop the item
                     else
                         oppositeWeaponSlot.ClearItem();
@@ -55,7 +55,7 @@ public class CharacterEquipment : MonoBehaviour
             }
 
             // Try adding the target slot's item to the character's inventory
-            if (myUnit.Inventory().TryAddItem(targetSlot.GetItemData()) == false)
+            if (myUnit.BackpackInventory().TryAddItem(targetSlot.GetItemData()) == false)
             {
                 // Else, drop the item
                 targetSlot.InventoryItem().DropItem();
@@ -100,7 +100,7 @@ public class CharacterEquipment : MonoBehaviour
                 if (oppositeWeaponSlot.IsFull() && (newItemData.Item().Weapon().isTwoHanded || oppositeWeaponSlot.GetItemData().Item().Weapon().isTwoHanded))
                 {
                     // Try adding the item to the character's inventory
-                    if (myUnit.Inventory().TryAddItem(oppositeWeaponSlot.GetItemData()) == false)
+                    if (myUnit.BackpackInventory().TryAddItem(oppositeWeaponSlot.GetItemData()) == false)
                         oppositeWeaponSlot.InventoryItem().DropItem(); // Else, drop the item
                     else
                         oppositeWeaponSlot.ClearItem();
