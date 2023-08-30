@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public Slot parentSlot { get; protected set; }
+    // public Slot parentSlot { get; protected set; }
 
     [Header("Components")]
     [SerializeField] protected InventoryItem inventoryItem;
@@ -44,6 +44,8 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public abstract void ClearItem();
 
     public abstract bool IsFull();
+
+    public abstract Slot GetParentSlot();
 
     public abstract void HighlightSlots();
 

@@ -13,8 +13,7 @@ public class ItemData
 
     [SerializeField] bool hasBeenRandomized;
 
-    Vector2 inventorySlotCoordinate = Vector2.zero;
-    bool inventorySlotCoordinateAssigned;
+    SlotCoordinate inventorySlotCoordinate;
 
     public void RandomizeData()
     {
@@ -109,7 +108,7 @@ public class ItemData
 
     public bool HasBeenInitialized() => hasBeenRandomized;
 
-    public Vector2 InventorySlotCoordinate() => inventorySlotCoordinate;
+    public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
 
-    public bool InventorySlotCoordinateAssigned() => inventorySlotCoordinateAssigned;
+    public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
 }

@@ -15,29 +15,65 @@ public class Inventory : MonoBehaviour
     [Header("Items in Inventory")]
     [SerializeField] List<ItemData> itemDatas = new List<ItemData>();
 
-    public List<InventorySlot> slots { get; private set; }
+    List<InventorySlot> slots = new List<InventorySlot>();
+    List<SlotCoordinate> slotCoordinates = new List<SlotCoordinate>();
+
+    bool slotVisualsCreated;
 
     void Awake()
     {
-        maxSlotsPerColumn = Mathf.CeilToInt(maxSlots / maxSlotsPerRow);
+        CreateSlotCoordinates();
 
-        slots = new List<InventorySlot>();
+        if (myUnit.CompareTag("Player"))
+            CreateSlotVisuals();
+        else
+            SetupItems();
+    }
+
+    void CreateSlotVisuals()
+    {
+        if (slotVisualsCreated)
+        {
+            Debug.LogWarning($"Slot visuals for {name}, owned by {myUnit.name}, has already been created...");
+            return;
+        }
+
+        if (slots.Count > 0)
+        {
+            // Clear out any slots already in the list, so we can start from scratch
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].RemoveSlotHighlights();
+                slots[i].ClearItem();
+                slots[i].SetSlotCoordinate(null);
+                slots[i].gameObject.SetActive(false);
+            }
+
+            slots.Clear();
+        }
 
         for (int i = 0; i < amountOfSlots; i++)
         {
             InventorySlot newSlot = Instantiate(InventoryUI.Instance.InventorySlotPrefab(), slotsParent);
-            newSlot.SetSlotCoordinate(new Vector2((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
-            newSlot.name = $"Slot - {newSlot.slotCoordinate}";
+
+            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
+            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
+
             newSlot.SetMyInventory(this);
             newSlot.InventoryItem().SetMyInventory(this);
             slots.Add(newSlot);
-
-            // Debug.Log(newSlot.name + ": " + newSlot.slotCoordinate);
 
             if (i == maxSlots - 1)
                 break;
         }
 
+        slotVisualsCreated = true;
+
+        SetupItems();
+    }
+
+    public void SetupItems()
+    {
         for (int i = 0; i < itemDatas.Count; i++)
         {
             if (itemDatas[i].Item() == null)
@@ -55,17 +91,41 @@ public class Inventory : MonoBehaviour
     {
         if (newItemData.Item() != null)
         {
-            InventorySlot slot = GetNextAvailableInventorySlot(newItemData);
-            if (slot != null)
+            SlotCoordinate targetSlotCoordinate;
+            if (newItemData.InventorySlotCoordinate() == null)
             {
-                // Setup the slot's item data and sprites
-                SetupNewItem(slot, newItemData);
+                targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
+                if (targetSlotCoordinate != null)
+                {
+                    newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
+                    targetSlotCoordinate.SetupNewItem(newItemData);
+                }
+            }
+            else
+                targetSlotCoordinate = newItemData.InventorySlotCoordinate();
+
+            if (targetSlotCoordinate != null)
+            {
                 if (itemDatas.Contains(newItemData) == false)
                     itemDatas.Add(newItemData);
+
+                if (slotVisualsCreated)
+                    ShowItemInInventory(newItemData, targetSlotCoordinate);
+
                 return true;
             }
         }
         return false;
+    }
+
+    void ShowItemInInventory(ItemData itemData, SlotCoordinate slotCoordinate)
+    {
+        InventorySlot slot = GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y);
+        if (slot != null)
+        {
+            // Setup the slot's item data and sprites
+            SetupNewItem(slot, itemData);
+        }
     }
 
     public bool TryAddDraggedItemAt(InventorySlot targetSlot, ItemData newItemData)
@@ -157,6 +217,7 @@ public class Inventory : MonoBehaviour
 
                 // Setup the target slot's item data and sprites
                 SetupNewItem(targetSlot, newDraggedItemData);
+                targetSlot.slotCoordinate.SetupNewItem(newDraggedItemData);
 
                 // Setup the dragged item's data and sprite and start dragging the new item
                 InventoryUI.Instance.SetupDraggedItem(overlappedItemsData, null, this);
@@ -202,6 +263,7 @@ public class Inventory : MonoBehaviour
 
             // Setup the target slot's item data and sprites
             SetupNewItem(targetSlot, newDraggedItemData);
+            targetSlot.slotCoordinate.SetupNewItem(newDraggedItemData);
 
             // Hide the dragged item
             InventoryUI.Instance.DisableDraggedItem();
@@ -215,18 +277,18 @@ public class Inventory : MonoBehaviour
     {
         targetSlot.InventoryItem().SetItemData(newItemData);
         targetSlot.ShowSlotImage();
-        targetSlot.SetupAsParentSlot();
+        targetSlot.SetupFullSlotSprites();
         targetSlot.InventoryItem().UpdateStackSizeText();
     }
 
-    InventorySlot GetNextAvailableInventorySlot(ItemData itemData)
+    SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
     {
         int width = itemData.Item().width;
         int height = itemData.Item().height;
 
-        for (int i = 0; i < slots.Count; i++)
+        for (int i = 0; i < slotCoordinates.Count; i++)
         {
-            if (slots[i].IsFull())
+            if (slotCoordinates[i].isFull)
                 continue;
 
             bool isAvailable = true;
@@ -234,8 +296,8 @@ public class Inventory : MonoBehaviour
             {
                 for (int y = 0; y < height; y++)
                 {
-                    InventorySlot slotToCheck = GetSlotFromCoordinate(new Vector2(slots[i].slotCoordinate.x - x, slots[i].slotCoordinate.y - y));
-                    if (slotToCheck == null || slotToCheck.IsFull())
+                    SlotCoordinate slotCoordinateToCheck = GetSlotCoordinate(slotCoordinates[i].coordinate.x - x, slotCoordinates[i].coordinate.y - y);
+                    if (slotCoordinateToCheck == null || slotCoordinateToCheck.isFull)
                     {
                         isAvailable = false;
                         break;
@@ -248,16 +310,31 @@ public class Inventory : MonoBehaviour
 
             if (isAvailable)
             {
-                // Debug.Log(slots[i].name + " is available to place " + itemData.Item().name + " in " + name);
-                return slots[i];
+                Debug.Log(slotCoordinates[i].name + " is available to place " + itemData.Item().name + " in " + name);
+                return slotCoordinates[i];
             }
         }
         return null;
     }
 
-    public InventorySlot GetSlotFromCoordinate(Vector2 slotCoordinate)
+    public InventorySlot GetSlotFromCoordinate(int xCoord, int yCoord)
     {
-        if (slotCoordinate.x <= 0 || slotCoordinate.y <= 0)
+        if (xCoord <= 0 || yCoord <= 0)
+            return null;
+
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].slotCoordinate.coordinate.x == xCoord && slots[i].slotCoordinate.coordinate.y == yCoord)
+                return slots[i];
+        }
+
+        Debug.LogWarning("Invalid slot coordinate");
+        return null;
+    }
+
+    public InventorySlot GetSlotFromCoordinate(SlotCoordinate slotCoordinate)
+    {
+        if (slotCoordinate == null)
             return null;
 
         for (int i = 0; i < slots.Count; i++)
@@ -265,6 +342,7 @@ public class Inventory : MonoBehaviour
             if (slots[i].slotCoordinate == slotCoordinate)
                 return slots[i];
         }
+
         Debug.LogWarning("Invalid slot coordinate");
         return null;
     }
@@ -277,6 +355,46 @@ public class Inventory : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    void CreateSlotCoordinates()
+    {
+        maxSlotsPerColumn = Mathf.CeilToInt(maxSlots / maxSlotsPerRow);
+
+        int coordinateCount = 0;
+        for (int y = 1; y < maxSlotsPerColumn + 1; y++)
+        {
+            for (int x = 1; x < maxSlotsPerRow + 1; x++)
+            {
+                if (coordinateCount == amountOfSlots)
+                    return;
+
+                slotCoordinates.Add(new SlotCoordinate(x, y, this));
+                coordinateCount++;
+            }
+        }
+    }
+
+    public void UpdateSlotCoordinates()
+    {
+        if (slotCoordinates.Count == amountOfSlots) // Slot count didn't change, so no need to do anything
+            return;
+
+        slotCoordinates.Clear();
+        CreateSlotCoordinates();
+
+        if (slots.Count > 0 && slotVisualsCreated == false)
+            CreateSlotVisuals();
+    }
+
+    public SlotCoordinate GetSlotCoordinate(int xCoord, int yCoord)
+    {
+        for (int i = 0; i < slotCoordinates.Count; i++)
+        {
+            if (slotCoordinates[i].coordinate.x == xCoord && slotCoordinates[i].coordinate.y == yCoord)
+                return slotCoordinates[i];
+        }
+        return null;
     }
 
     public List<ItemData> ItemDatas() => itemDatas;

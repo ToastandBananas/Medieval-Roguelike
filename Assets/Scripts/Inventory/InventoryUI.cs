@@ -58,7 +58,10 @@ public class InventoryUI : MonoBehaviour
 
                 // "Pickup" the item by hiding the item's sprite and showing that same sprite on the draggedItem object
                 if (activeSlot is InventorySlot)
-                    SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot.parentSlot, activeSlot.parentSlot.InventoryItem().myInventory);
+                {
+                    InventorySlot activeInventorySlot = activeSlot as InventorySlot;
+                    SetupDraggedItem(activeInventorySlot.slotCoordinate.parentSlotCoordinate.itemData, activeInventorySlot.GetParentSlot(), activeInventorySlot.myInventory);
+                }
                 else
                 {
                     EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
@@ -71,20 +74,20 @@ public class InventoryUI : MonoBehaviour
                             oppositeWeaponSlot.InventoryItem().DisableSprite();
                         }
                         else
-                            SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
+                            SetupDraggedItem(activeEquipmentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
                     }
                     else
                     {
-                        SetupDraggedItem(activeSlot.parentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
+                        SetupDraggedItem(activeEquipmentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
 
                         if (activeEquipmentSlot.EquipSlot() == EquipSlot.LeftHeldItem && activeEquipmentSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
                             activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem().DisableSprite();
                     }
                 }
 
-                activeSlot.parentSlot.SetupEmptySlotSprites();
-                activeSlot.parentSlot.InventoryItem().DisableSprite();
-                activeSlot.parentSlot.InventoryItem().ClearStackSizeText();
+                activeSlot.GetParentSlot().SetupEmptySlotSprites();
+                activeSlot.GetParentSlot().InventoryItem().DisableSprite();
+                activeSlot.GetParentSlot().InventoryItem().ClearStackSizeText();
 
                 activeSlot.HighlightSlots();
             }
@@ -134,7 +137,7 @@ public class InventoryUI : MonoBehaviour
                 if (activeSlot is InventorySlot)
                 {
                     InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                    slotToCheck = activeInventorySlot.myInventory.GetSlotFromCoordinate(new Vector2(activeInventorySlot.slotCoordinate.x - x, activeInventorySlot.slotCoordinate.y - y));
+                    slotToCheck = activeInventorySlot.myInventory.GetSlotFromCoordinate(activeInventorySlot.slotCoordinate.coordinate.x - x, activeInventorySlot.slotCoordinate.coordinate.y - y);
                 }
                 else
                     slotToCheck = activeSlot;
@@ -151,7 +154,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         if (slotToCheck is InventorySlot)
                         {
-                            overlappedItemsParentSlot = slotToCheck.parentSlot;
+                            overlappedItemsParentSlot = slotToCheck.GetParentSlot();
                             overlappedItemData = slotToCheck.GetItemData();
                             draggedItemOverlapCount++;
                         }
@@ -184,7 +187,7 @@ public class InventoryUI : MonoBehaviour
         if (parentSlotDraggedFrom is InventorySlot)
         {
             InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
-            parentInventorySlotDraggedFrom.SetupAsParentSlot();
+            parentInventorySlotDraggedFrom.SetupFullSlotSprites();
         }
         else
         {

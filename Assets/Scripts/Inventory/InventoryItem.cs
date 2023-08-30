@@ -50,7 +50,16 @@ public class InventoryItem : MonoBehaviour
         }
 
         if (mySlot != null)
-            mySlot.parentSlot.ClearItem();
+        {
+            if (myInventory != null)
+            {
+                InventorySlot myInventorySlot = mySlot as InventorySlot;
+                InventorySlot myParentInventorySlot = myInventory.GetSlotFromCoordinate(myInventorySlot.slotCoordinate.parentSlotCoordinate);
+                myParentInventorySlot.ClearItem();
+            }
+            else
+                mySlot.ClearItem();
+        }
         else if (this == InventoryUI.Instance.DraggedItem())
         {
             if (InventoryUI.Instance.parentSlotDraggedFrom != null)
@@ -70,6 +79,7 @@ public class InventoryItem : MonoBehaviour
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
         looseItem.SetItemData(itemData);
+        itemData.SetInventorySlotCoordinate(null);
 
         // Set the LooseItem's position to be slightly in front of the Unit dropping the item
         looseItem.transform.position = GetMyUnit().transform.position + new Vector3(0, GetMyUnit().ShoulderHeight(), 0) + (dropDirection / 2);
@@ -189,13 +199,13 @@ public class InventoryItem : MonoBehaviour
             if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.parentSlot == null)
+                if (myInventorySlot.GetParentSlot() == null)
                     return;
 
-                if (myInventorySlot.parentSlot.InventoryItem().itemData.CurrentStackSize() == 1)
-                    myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = "";
+                if (myInventorySlot.GetParentSlot().InventoryItem().itemData.CurrentStackSize() == 1)
+                    myInventorySlot.GetParentSlot().InventoryItem().stackSizeText.text = "";
                 else
-                    myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = myInventorySlot.parentSlot.InventoryItem().itemData.CurrentStackSize().ToString();
+                    myInventorySlot.GetParentSlot().InventoryItem().stackSizeText.text = myInventorySlot.GetParentSlot().InventoryItem().itemData.CurrentStackSize().ToString();
             }
             else
             {
@@ -217,10 +227,10 @@ public class InventoryItem : MonoBehaviour
             if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.parentSlot == null)
+                if (myInventorySlot.GetParentSlot() == null)
                     return;
 
-                myInventorySlot.parentSlot.InventoryItem().stackSizeText.text = "";
+                myInventorySlot.GetParentSlot().InventoryItem().stackSizeText.text = "";
             }
             else
             {

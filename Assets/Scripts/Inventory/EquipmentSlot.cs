@@ -10,7 +10,6 @@ public class EquipmentSlot : Slot
 
     void Awake()
     {
-        parentSlot = this;
         inventoryItem.SetMyCharacterEquipment(myCharacterEquipment);
     }
 
@@ -144,4 +143,6 @@ public class EquipmentSlot : Slot
     public CharacterEquipment MyCharacterEquipment() => myCharacterEquipment;
 
     public EquipSlot EquipSlot() => equipSlot;
+
+    public override Slot GetParentSlot() => this;
 }
