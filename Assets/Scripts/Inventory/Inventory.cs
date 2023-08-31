@@ -30,63 +30,6 @@ public class Inventory : MonoBehaviour
             SetupItems();
     }
 
-    void CreateSlotVisuals()
-    {
-        if (slotVisualsCreated)
-        {
-            Debug.LogWarning($"Slot visuals for {name}, owned by {myUnit.name}, has already been created...");
-            return;
-        }
-
-        if (slots.Count > 0)
-        {
-            // Clear out any slots already in the list, so we can start from scratch
-            for (int i = 0; i < slots.Count; i++)
-            {
-                slots[i].RemoveSlotHighlights();
-                slots[i].ClearItem();
-                slots[i].SetSlotCoordinate(null);
-                slots[i].gameObject.SetActive(false);
-            }
-
-            slots.Clear();
-        }
-
-        for (int i = 0; i < amountOfSlots; i++)
-        {
-            InventorySlot newSlot = Instantiate(InventoryUI.Instance.InventorySlotPrefab(), slotsParent);
-
-            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
-            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
-
-            newSlot.SetMyInventory(this);
-            newSlot.InventoryItem().SetMyInventory(this);
-            slots.Add(newSlot);
-
-            if (i == maxSlots - 1)
-                break;
-        }
-
-        slotVisualsCreated = true;
-
-        SetupItems();
-    }
-
-    public void SetupItems()
-    {
-        for (int i = 0; i < itemDatas.Count; i++)
-        {
-            if (itemDatas[i].Item() == null)
-                continue;
-
-            if (itemDatas[i].HasBeenInitialized() == false)
-                itemDatas[i].RandomizeData();
-
-            if (TryAddItem(itemDatas[i]) == false)
-                Debug.LogError($"{itemDatas[i].Item().name} can't fit in {name} inventory...");
-        }
-    }
-
     public bool TryAddItem(ItemData newItemData)
     {
         if (newItemData.Item() != null)
@@ -272,6 +215,11 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
+    public void RemoveItem(ItemData itemDataToRemove)
+    {
+        itemDatas.Remove(itemDataToRemove);
+    }
+
     /// <summary>Setup the target slot's item data and sprites.</summary>
     void SetupNewItem(InventorySlot targetSlot, ItemData newItemData)
     {
@@ -310,7 +258,7 @@ public class Inventory : MonoBehaviour
 
             if (isAvailable)
             {
-                Debug.Log(slotCoordinates[i].name + " is available to place " + itemData.Item().name + " in " + name);
+                // Debug.Log(slotCoordinates[i].name + " is available to place " + itemData.Item().name + " in " + name);
                 return slotCoordinates[i];
             }
         }
@@ -357,6 +305,8 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public bool ContainsItemData(ItemData itemData) => itemDatas.Contains(itemData);
+
     void CreateSlotCoordinates()
     {
         maxSlotsPerColumn = Mathf.CeilToInt(maxSlots / maxSlotsPerRow);
@@ -395,6 +345,63 @@ public class Inventory : MonoBehaviour
                 return slotCoordinates[i];
         }
         return null;
+    }
+
+    void CreateSlotVisuals()
+    {
+        if (slotVisualsCreated)
+        {
+            Debug.LogWarning($"Slot visuals for {name}, owned by {myUnit.name}, has already been created...");
+            return;
+        }
+
+        if (slots.Count > 0)
+        {
+            // Clear out any slots already in the list, so we can start from scratch
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].RemoveSlotHighlights();
+                slots[i].ClearItem();
+                slots[i].SetSlotCoordinate(null);
+                slots[i].gameObject.SetActive(false);
+            }
+
+            slots.Clear();
+        }
+
+        for (int i = 0; i < amountOfSlots; i++)
+        {
+            InventorySlot newSlot = Instantiate(InventoryUI.Instance.InventorySlotPrefab(), slotsParent);
+
+            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
+            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
+
+            newSlot.SetMyInventory(this);
+            newSlot.InventoryItem().SetMyInventory(this);
+            slots.Add(newSlot);
+
+            if (i == maxSlots - 1)
+                break;
+        }
+
+        slotVisualsCreated = true;
+
+        SetupItems();
+    }
+
+    public void SetupItems()
+    {
+        for (int i = 0; i < itemDatas.Count; i++)
+        {
+            if (itemDatas[i].Item() == null)
+                continue;
+
+            if (itemDatas[i].HasBeenInitialized() == false)
+                itemDatas[i].RandomizeData();
+
+            if (TryAddItem(itemDatas[i]) == false)
+                Debug.LogError($"{itemDatas[i].Item().name} can't fit in {name} inventory...");
+        }
     }
 
     public List<ItemData> ItemDatas() => itemDatas;

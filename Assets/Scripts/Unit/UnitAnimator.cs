@@ -174,7 +174,6 @@ public class UnitAnimator : MonoBehaviour
             Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
 
         looseItem.SetItemData(itemData);
-        itemData.SetInventorySlotCoordinate(null);
 
         // Set the LooseItem's position to match the HeldItem before we add force
         looseItem.transform.position = itemDropTransform.position;

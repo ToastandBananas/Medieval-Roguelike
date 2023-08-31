@@ -456,4 +456,11 @@ public class Unit : MonoBehaviour
     public Inventory PocketsInventory() => myBackpackInventory;
 
     public CharacterEquipment CharacterEquipment() => myCharacterEquipment;
+
+    public bool TryAddItemToInventories(ItemData itemData)
+    {
+        if (myPocketsInventory == null && myBackpackInventory == null)
+            return false;
+        return myBackpackInventory.TryAddItem(itemData) || myPocketsInventory.TryAddItem(itemData);
+    }
 }

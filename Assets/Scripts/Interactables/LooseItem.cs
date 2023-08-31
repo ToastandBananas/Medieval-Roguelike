@@ -24,7 +24,7 @@ public class LooseItem : Interactable
 
     public override void Interact(Unit unitPickingUpItem)
     {
-        if ((unitPickingUpItem.PocketsInventory() != null && unitPickingUpItem.PocketsInventory().TryAddItem(itemData)) || (unitPickingUpItem.BackpackInventory() != null && unitPickingUpItem.BackpackInventory().TryAddItem(itemData)))
+        if (unitPickingUpItem.TryAddItemToInventories(itemData))
             gameObject.SetActive(false);
     }
 

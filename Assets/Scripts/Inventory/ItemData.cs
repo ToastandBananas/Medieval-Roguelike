@@ -78,6 +78,7 @@ public class ItemData
     {
         hasBeenRandomized = false;
         item = null;
+        inventorySlotCoordinate = null;
     }
 
     public void SetCurrentStackSize(int stackSize)
