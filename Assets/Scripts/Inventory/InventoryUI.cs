@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,8 +14,13 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] Inventory pocketsInventory;
     [SerializeField] Inventory backpackInventory;
 
-    [Header("Character Equipment")]
-    [SerializeField] CharacterEquipment playerEquipment;
+    [Header("Player Equipment")]
+    [SerializeField] Transform playerEquipmentParent;
+    public List<EquipmentSlot> playerEquipmentSlots { get; private set; }
+
+    [Header("NPC Equipment")]
+    [SerializeField] Transform npcEquipmentParent;
+    public List<EquipmentSlot> npcEquipmentSlots { get; private set; }
 
     [Header("Prefab")]
     [SerializeField] InventorySlot inventorySlotPrefab;
@@ -39,6 +46,9 @@ public class InventoryUI : MonoBehaviour
             return;
         }
         Instance = this;
+
+        playerEquipmentSlots = playerEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
+        // npcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
 
         rectTransform = GetComponent<RectTransform>();
 
@@ -113,7 +123,7 @@ public class InventoryUI : MonoBehaviour
                     else
                     {
                         EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                        activeEquipmentSlot.MyCharacterEquipment().TryAddDraggedItemAt(activeEquipmentSlot, draggedItem.itemData);
+                        activeEquipmentSlot.MyCharacterEquipment().TryAddItemAt(activeEquipmentSlot.EquipSlot(), draggedItem.itemData);
                     }
                 }
                 else if (EventSystem.current.IsPointerOverGameObject() == false)

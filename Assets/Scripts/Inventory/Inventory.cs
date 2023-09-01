@@ -24,7 +24,7 @@ public class Inventory : MonoBehaviour
     {
         CreateSlotCoordinates();
 
-        if (myUnit.CompareTag("Player"))
+        if (myUnit.IsPlayer())
             CreateSlotVisuals();
         else
             SetupItems();

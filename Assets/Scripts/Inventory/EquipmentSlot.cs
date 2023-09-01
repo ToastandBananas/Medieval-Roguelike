@@ -1,7 +1,5 @@
 using UnityEngine;
 
-public enum EquipSlot { LeftHeldItem, RightHeldItem, Helm, BodyArmor, LegArmor, Gloves, Boots, Backpack }
-
 public class EquipmentSlot : Slot
 {
     [Header("Equipment")]
@@ -13,12 +11,15 @@ public class EquipmentSlot : Slot
         inventoryItem.SetMyCharacterEquipment(myCharacterEquipment);
     }
 
-    void Start()
+    public override bool IsFull() 
     {
-        myCharacterEquipment.slots.Add(this);
-    }
+        if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null)
+            return true;
 
-    public override bool IsFull() => inventoryItem.itemData != null && inventoryItem.itemData.Item() != null;
+        if (equipSlot == global::EquipSlot.RightHeldItem && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item() != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item().IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item().Weapon().isTwoHanded)
+            return true;
+        return false;
+    }
 
     public override void ClearItem()
     {
@@ -48,6 +49,8 @@ public class EquipmentSlot : Slot
             return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.LeftHeldItem);
         else if (equipSlot == global::EquipSlot.LeftHeldItem)
             return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.RightHeldItem);
+
+        Debug.LogWarning($"{equipSlot} is not a weapon slot...");
         return null;
     }
 

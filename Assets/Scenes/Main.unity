@@ -6511,7 +6511,8 @@ MonoBehaviour:
   draggedItem: {fileID: 666556619}
   pocketsInventory: {fileID: 1029023059}
   backpackInventory: {fileID: 211806707}
-  playerEquipment: {fileID: 1301393433}
+  playerEquipmentParent: {fileID: 1301393432}
+  npcEquipmentParent: {fileID: 0}
   inventorySlotPrefab: {fileID: 7074852841376672448, guid: f94d8ef5210fb2246920edcba72472ef,
     type: 3}
 --- !u!1 &1113869325
@@ -7584,7 +7585,7 @@ MonoBehaviour:
     accuracyModifier: 0
     blockPower: 0
     hasBeenRandomized: 0
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0

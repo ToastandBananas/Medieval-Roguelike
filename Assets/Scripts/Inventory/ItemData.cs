@@ -15,6 +15,17 @@ public class ItemData
 
     SlotCoordinate inventorySlotCoordinate;
 
+    public ItemData()
+    {
+
+    }
+
+    public ItemData(Item item)
+    {
+        this.item = item;
+        RandomizeData();
+    }
+
     public void RandomizeData()
     {
         if (item != null && hasBeenRandomized == false)
