@@ -1,5 +1,5 @@
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 
 [CustomPropertyDrawer(typeof(NamedArrayAttribute))]
 public class NamedArrayDrawer : PropertyDrawer

@@ -103,7 +103,7 @@ public class MoveAction : BaseAction
         Vector3 nextPathPosition;
         Direction directionToNextPosition;
 
-        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
@@ -257,7 +257,7 @@ public class MoveAction : BaseAction
         unitActionHandler.SetPreviousTargetEnemyGridPosition(unitActionHandler.targetEnemyUnit.gridPosition);
         if (unitActionHandler.selectedAction.IsAttackAction())
             unitActionHandler.SetTargetGridPosition(unitActionHandler.selectedAction.GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
-        else if (unit.RangedWeaponEquipped())
+        else if (unit.CharacterEquipment().RangedWeaponEquipped())
             unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));
         else
             unitActionHandler.SetTargetGridPosition(unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unitActionHandler.targetEnemyUnit));

@@ -30,7 +30,7 @@ public class UnitAnimator : MonoBehaviour
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
 
         // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-        bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
+        bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
         unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
         if (attackBlocked)
@@ -39,7 +39,7 @@ public class UnitAnimator : MonoBehaviour
             targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
 
             if (itemBlockedWith is HeldShield)
-                targetUnit.GetShield().RaiseShield();
+                targetUnit.unitMeshManager.GetShield().RaiseShield();
             else
             {
                 HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
@@ -100,11 +100,11 @@ public class UnitAnimator : MonoBehaviour
         StartCoroutine(Die_RotateHead(diedForward));
         StartCoroutine(Die_RotateBody(diedForward));
 
-        if (unit.leftHeldItem != null)
-            Die_DropHeldItem(unit.leftHeldItem, attackerTransform, diedForward);
+        if (unit.unitMeshManager.leftHeldItem != null)
+            Die_DropHeldItem(unit.unitMeshManager.leftHeldItem, attackerTransform, diedForward);
 
-        if (unit.rightHeldItem != null)
-            Die_DropHeldItem(unit.rightHeldItem, attackerTransform, diedForward);
+        if (unit.unitMeshManager.rightHeldItem != null)
+            Die_DropHeldItem(unit.unitMeshManager.rightHeldItem, attackerTransform, diedForward);
     }
 
     void Die_DropHeldItem(HeldItem heldItem, Transform attackerTransform, bool diedForward)
@@ -128,7 +128,7 @@ public class UnitAnimator : MonoBehaviour
         }
 
         // Remove references to weapon renderers for the dying unit
-        unit.RemoveAllWeaponRenderers();
+        unit.unitMeshManager.RemoveAllWeaponRenderers();
 
         // Get rid of the HeldItem
         Destroy(heldItem.gameObject);

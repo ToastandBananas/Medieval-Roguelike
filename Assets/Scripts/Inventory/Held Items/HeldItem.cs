@@ -23,8 +23,6 @@ public abstract class HeldItem : MonoBehaviour
 
         SetItemPosition();
         SetItemRotation();
-
-        SetUnit();
     }
 
     void SetUnit() => unit = transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
@@ -63,7 +61,7 @@ public abstract class HeldItem : MonoBehaviour
 
     public IEnumerator DelayDoDefaultAttack()
     {
-        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.rightHeldItem.itemData.Item() as Weapon) / 2f) + 0.05f);
+        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item() as Weapon) / 2f) + 0.05f);
         DoDefaultAttack();
     }
 

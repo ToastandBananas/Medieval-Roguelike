@@ -12,7 +12,7 @@ public class HeldMeleeWeapon : HeldItem
         HeldItem itemBlockedWith;
 
         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-        bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
+        bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
         unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
 
         // If the target is successfully blocking the attack
@@ -20,23 +20,23 @@ public class HeldMeleeWeapon : HeldItem
             BlockAttack(targetUnit, itemBlockedWith);
 
         // Determine attack animation based on melee weapon type
-        if (this == unit.rightHeldItem)
+        if (this == unit.unitMeshManager.rightHeldItem)
         {
             if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("DefaultAttack_2H");
             else
                 anim.Play("DefaultAttack_1H_R");
 
-            if (unit.leftHeldItem != null && unit.leftHeldItem.ItemData().Item() is Shield) 
-                unit.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L"); 
+            if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.ItemData().Item() is Shield) 
+                unit.unitMeshManager.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L"); 
         }
-        else if (this == unit.leftHeldItem)
+        else if (this == unit.unitMeshManager.leftHeldItem)
         {
             if (itemData.Item().Weapon().isTwoHanded == false)
                 anim.Play("DefaultAttack_1H_L");
 
-            if (unit.rightHeldItem != null && unit.rightHeldItem.ItemData().Item() is Shield)
-                unit.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
+            if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.ItemData().Item() is Shield)
+                unit.unitMeshManager.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
         }
 
         // Rotate the weapon towards the target, just in case they are above or below this Unit's position
@@ -57,7 +57,7 @@ public class HeldMeleeWeapon : HeldItem
             HeldItem itemBlockedWith;
 
             // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-            bool attackBlocked = targetUnit.TryBlockMeleeAttack(unit);
+            bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
             unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
 
             // If the target is successfully blocking the attack
@@ -77,7 +77,7 @@ public class HeldMeleeWeapon : HeldItem
         // Target Unit rotates towards this Unit & does block animation with shield or weapon
         blockingUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
         if (itemBlockedWith is HeldShield)
-            blockingUnit.GetShield().RaiseShield();
+            blockingUnit.unitMeshManager.GetShield().RaiseShield();
         else
         {
             HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
@@ -87,14 +87,14 @@ public class HeldMeleeWeapon : HeldItem
 
     public void RaiseWeapon()
     {
-        if (unit.rightHeldItem == this)
+        if (unit.unitMeshManager.rightHeldItem == this)
         {
             if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("RaiseWeapon_2H");
             else
                 anim.Play("RaiseWeapon_1H_R");
         }
-        else if (unit.leftHeldItem == this)
+        else if (unit.unitMeshManager.leftHeldItem == this)
         {
             if (itemData.Item().Weapon().isTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
@@ -105,14 +105,14 @@ public class HeldMeleeWeapon : HeldItem
 
     public void LowerWeapon()
     {
-        if (unit.rightHeldItem == this)
+        if (unit.unitMeshManager.rightHeldItem == this)
         {
             if (itemData.Item().Weapon().isTwoHanded)
                 anim.Play("LowerWeapon_2H");
             else
                 anim.Play("LowerWeapon_1H_R");
         }
-        else if (unit.leftHeldItem == this)
+        else if (unit.unitMeshManager.leftHeldItem == this)
         {
             if (itemData.Item().Weapon().isTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
@@ -150,9 +150,9 @@ public class HeldMeleeWeapon : HeldItem
     public int DamageAmount()
     {
         int damageAmount = itemData.Damage();
-        if (unit.IsDualWielding())
+        if (unit.CharacterEquipment().IsDualWielding())
         {
-            if (this == unit.GetRightMeleeWeapon())
+            if (this == unit.unitMeshManager.GetRightMeleeWeapon())
                 damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);
             else
                 damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldSecondaryEfficiency);

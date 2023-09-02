@@ -45,3 +45,7 @@ MonoBehaviour:
   blockChanceAddOn: 2
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
+  idlePosition_Left: {x: 0.23, y: -0.3, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: -0.3, z: -0.23}
+  idleRotation_Left: {x: 0, y: 90, z: 0}
+  idleRotation_Right: {x: 0, y: 90, z: 0}

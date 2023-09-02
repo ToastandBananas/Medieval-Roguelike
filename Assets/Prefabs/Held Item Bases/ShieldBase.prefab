@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 1460794979494802722}
   - component: {fileID: 1460794979494802749}
   - component: {fileID: 5232058871207089144}
-  - component: {fileID: 6256265197158194577}
+  - component: {fileID: 8008415603950332274}
   m_Layer: 0
-  m_Name: Shield_R
+  m_Name: ShieldBase
   m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460794979494802751}
-  m_LocalRotation: {x: 0, y: 0.2588191, z: 0, w: 0.9659258}
+  m_LocalRotation: {x: 0, y: -0.258819, z: 0, w: 0.9659259}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 6556979527315733435}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 30, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -30, z: 0}
 --- !u!95 &1460794979494802749
 Animator:
   serializedVersion: 5
@@ -68,11 +68,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83f3fb465c8f654a9bf16f06d7c8182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idlePosition: {x: -0.23, y: -0.3, z: -0.23}
-  idleRotation: {x: 0, y: 30, z: 0}
+  idlePosition: {x: 0.23, y: -0.3, z: -0.23}
+  idleRotation: {x: 0, y: -30, z: 0}
   itemData:
     item: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177, type: 2}
---- !u!65 &6256265197158194577
+--- !u!65 &8008415603950332274
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

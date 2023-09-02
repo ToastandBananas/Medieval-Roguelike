@@ -141,6 +141,8 @@ public class EquipmentSlot : Slot
         }
     }
 
+    public void SetMyCharacterEquipment(CharacterEquipment characterEquipment) => myCharacterEquipment = characterEquipment;
+
     public override ItemData GetItemData() => inventoryItem.itemData;
 
     public CharacterEquipment MyCharacterEquipment() => myCharacterEquipment;

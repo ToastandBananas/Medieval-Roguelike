@@ -126,7 +126,7 @@ public class Projectile : MonoBehaviour
         // If the shooter is missing
         if (missedTarget)
         {
-            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.GetRangedWeapon().ItemData());
+            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetRangedWeapon().ItemData());
             float minOffset = 0.35f;
             float maxOffset = 1.35f;
             float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
@@ -281,7 +281,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -302,7 +302,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -313,7 +313,7 @@ public class Projectile : MonoBehaviour
             else if (collider.CompareTag("Shield"))
             {
                 Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
-                HeldRangedWeapon rangedWeapon = shooter.leftHeldItem as HeldRangedWeapon;
+                HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);

@@ -22,9 +22,10 @@ MonoBehaviour:
   canUsePartial: 0
   width: 3
   height: 5
-  maxStackSize: 1
   weight: 0.1
   volume: 0.1
+  maxStackSize: 1
+  inventorySprite: {fileID: 0}
   value: {x: 0, y: 0}
   staticValue: 1
   meshes:
@@ -33,6 +34,11 @@ MonoBehaviour:
   - {fileID: 9213754028492527967, guid: ff532bcd02465594e868ee2309ead2fe, type: 3}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
+  equipSlot: 0
   minBlockPower: 4
   maxBlockPower: 9
   blockChanceAddOn: 10
+  idlePosition_Left: {x: 0.23, y: -0.3, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: -0.3, z: -0.23}
+  idleRotation_Left: {x: 0, y: -30, z: 0}
+  idleRotation_Right: {x: 0, y: 30, z: 0}

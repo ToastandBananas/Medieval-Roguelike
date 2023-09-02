@@ -7,9 +7,9 @@ public class Inventory : MonoBehaviour
     [SerializeField] Unit myUnit;
 
     [Header("Slot Counts")]
-    [SerializeField] int amountOfSlots = 24;
-    [SerializeField] int maxSlots = 24;
-    [SerializeField] int maxSlotsPerRow = 12;
+    [SerializeField] int amountOfSlots = 20;
+    [SerializeField] int maxSlots = 20;
+    [SerializeField] int maxSlotsPerRow = 10;
     int maxSlotsPerColumn;
 
     [Header("Items in Inventory")]
@@ -396,8 +396,7 @@ public class Inventory : MonoBehaviour
             if (itemDatas[i].Item() == null)
                 continue;
 
-            if (itemDatas[i].HasBeenInitialized() == false)
-                itemDatas[i].RandomizeData();
+            itemDatas[i].RandomizeData();
 
             if (TryAddItem(itemDatas[i]) == false)
                 Debug.LogError($"{itemDatas[i].Item().name} can't fit in {name} inventory...");

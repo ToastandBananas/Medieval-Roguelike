@@ -14,15 +14,15 @@ public class HeldRangedWeapon : HeldItem
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
 
         // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-        bool attackBlocked = targetUnit.TryBlockRangedAttack(unit);
+        bool attackBlocked = targetUnit.unitActionHandler.TryBlockRangedAttack(unit);
         unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
         if (attackBlocked)
         {
             // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
             targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
-            if (targetUnit.ShieldEquipped())
-                targetUnit.GetShield().RaiseShield();
+            if (targetUnit.CharacterEquipment().ShieldEquipped())
+                targetUnit.unitMeshManager.GetShield().RaiseShield();
         }
 
         isLoaded = false;

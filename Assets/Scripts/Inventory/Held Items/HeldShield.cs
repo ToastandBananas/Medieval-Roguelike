@@ -15,9 +15,9 @@ public class HeldShield : HeldItem
             return;
 
         shieldRaised = true;
-        if (unit.leftHeldItem == this)
+        if (unit.unitMeshManager.leftHeldItem == this)
             anim.Play("RaiseShield_L");
-        else if (unit.rightHeldItem == this)
+        else if (unit.unitMeshManager.rightHeldItem == this)
             anim.Play("RaiseShield_R");
     }
 
@@ -27,9 +27,9 @@ public class HeldShield : HeldItem
             return;
 
         shieldRaised = false;
-        if (unit.leftHeldItem == this)
+        if (unit.unitMeshManager.leftHeldItem == this)
             anim.Play("LowerShield_L");
-        else if (unit.rightHeldItem == this)
+        else if (unit.unitMeshManager.rightHeldItem == this)
             anim.Play("LowerShield_R");
     }
 }

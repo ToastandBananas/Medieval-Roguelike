@@ -15,7 +15,7 @@ public class InteractAction : BaseAction
     {
         TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
-        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
         {
             if (turnAction.IsFacingTarget(targetInteractable.gridPosition) == false)
                 turnAction.RotateTowardsPosition(targetInteractable.gridPosition.WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);

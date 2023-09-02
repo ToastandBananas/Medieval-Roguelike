@@ -3,6 +3,8 @@ using UnityEngine;
 [System.Serializable]
 public class ItemData
 {
+    [SerializeField] string name;
+
     [SerializeField] Item item;
     [SerializeField] int currentStackSize = 1;
 
@@ -26,27 +28,31 @@ public class ItemData
         RandomizeData();
     }
 
-    public void RandomizeData()
+    public void RandomizeData(bool forceRandomization = false)
     {
-        if (item != null && hasBeenRandomized == false)
+        if (item != null)
         {
-            hasBeenRandomized = true;
-
-            if (item.maxStackSize > 1)
-                currentStackSize = Random.Range(1, item.maxStackSize + 1);
-            else
-                currentStackSize = 1;
-
-            if (item.IsWeapon())
+            name = item.name;
+            if (forceRandomization || hasBeenRandomized == false)
             {
-                Weapon weapon = item as Weapon;
-                damage = Random.Range(weapon.minDamage, weapon.maxDamage + 1);
-                accuracyModifier = Random.Range(weapon.minAccuracyModifier, weapon.maxAccuracyModifier);
-            }
-            else if (item.IsShield())
-            {
-                Shield shield = item as Shield;
-                blockPower = Random.Range(shield.minBlockPower, shield.maxBlockPower + 1);
+                hasBeenRandomized = true;
+
+                if (item.maxStackSize > 1)
+                    currentStackSize = Random.Range(1, item.maxStackSize + 1);
+                else
+                    currentStackSize = 1;
+
+                if (item.IsWeapon())
+                {
+                    Weapon weapon = item as Weapon;
+                    damage = Random.Range(weapon.minDamage, weapon.maxDamage + 1);
+                    accuracyModifier = Random.Range(weapon.minAccuracyModifier, weapon.maxAccuracyModifier);
+                }
+                else if (item.IsShield())
+                {
+                    Shield shield = item as Shield;
+                    blockPower = Random.Range(shield.minBlockPower, shield.maxBlockPower + 1);
+                }
             }
         }
     }
@@ -54,6 +60,7 @@ public class ItemData
     public void TransferData(ItemData itemDataToCopy)
     {
         item = itemDataToCopy.item;
+        name = item.name;
         currentStackSize = itemDataToCopy.currentStackSize;
         damage = itemDataToCopy.damage;
         accuracyModifier = itemDataToCopy.accuracyModifier;
@@ -65,12 +72,14 @@ public class ItemData
     {
         ItemData temp = new ItemData();
         temp.item = item;
+        temp.name = item.name;
         temp.currentStackSize = currentStackSize;
         temp.damage = damage;
         temp.accuracyModifier = accuracyModifier;
         temp.blockPower = blockPower;
 
         item = otherItemData.item;
+        name = item.name;
         currentStackSize = otherItemData.currentStackSize;
         damage = otherItemData.damage;
         accuracyModifier = otherItemData.accuracyModifier;
@@ -78,6 +87,7 @@ public class ItemData
         hasBeenRandomized = true;
 
         otherItemData.item = temp.item;
+        otherItemData.name = otherItemData.item.name;
         otherItemData.currentStackSize = temp.currentStackSize;
         otherItemData.damage = temp.damage;
         otherItemData.accuracyModifier = temp.accuracyModifier;
@@ -89,6 +99,7 @@ public class ItemData
     {
         hasBeenRandomized = false;
         item = null;
+        name = "";
         inventorySlotCoordinate = null;
     }
 
@@ -108,6 +119,8 @@ public class ItemData
             currentStackSize = 0;
     }
 
+    public void SetItem(Item newItem) => item = newItem;
+
     public Item Item() => item;
 
     public int CurrentStackSize() => currentStackSize;
@@ -117,8 +130,6 @@ public class ItemData
     public float AccuracyModifier() => accuracyModifier;
 
     public int BlockPower() => blockPower;
-
-    public bool HasBeenInitialized() => hasBeenRandomized;
 
     public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
 

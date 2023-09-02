@@ -20,9 +20,9 @@ public class EquipmentItem : InventoryItem
 
         SetupItemDrop(looseItem, itemData.Item(), dropDirection);
 
-        if (myUnit.GetRangedWeapon().ItemData() == itemData && myUnit.RangedWeaponEquipped())
+        if (myUnit.unitMeshManager.GetRangedWeapon().ItemData() == itemData && myUnit.CharacterEquipment().RangedWeaponEquipped())
         {
-            HeldRangedWeapon heldRangedWeapon = myUnit.GetRangedWeapon();
+            HeldRangedWeapon heldRangedWeapon = myUnit.unitMeshManager.GetRangedWeapon();
             if (heldRangedWeapon.isLoaded)
             {
                 looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();

@@ -27,7 +27,7 @@ public class TurnAction : BaseAction
         SetTargetPosition(targetDirection);
         StartAction();
 
-        if (unit.IsPlayer() || unit.IsVisibleOnScreen())
+        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
             Turn(false);
         else
             Turn(true);

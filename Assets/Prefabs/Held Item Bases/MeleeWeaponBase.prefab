@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2461976759969078192
+--- !u!1 &3056789334274247790
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2787719756862830375}
-  - component: {fileID: 5537472342289871146}
-  - component: {fileID: 7689110273345316694}
+  - component: {fileID: 3381833045798707449}
+  - component: {fileID: 4942800252300895988}
+  - component: {fileID: 7130432324019826824}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -18,36 +18,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2787719756862830375
+--- !u!4 &3381833045798707449
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2461976759969078192}
+  m_GameObject: {fileID: 3056789334274247790}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8416253515466033739}
+  m_Father: {fileID: 8975074405581036949}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5537472342289871146
+--- !u!33 &4942800252300895988
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2461976759969078192}
+  m_GameObject: {fileID: 3056789334274247790}
   m_Mesh: {fileID: 7111655374037333773, guid: 8885308fd742f9b4a8cffc75dcf0ae7f, type: 3}
---- !u!23 &7689110273345316694
+--- !u!23 &7130432324019826824
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2461976759969078192}
+  m_GameObject: {fileID: 3056789334274247790}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -83,7 +83,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &5124515846170899394
+--- !u!1 &5718629689711895580
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,40 +91,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8416253515466033739}
-  - component: {fileID: 56632229250744078}
-  - component: {fileID: 6035926401048058342}
+  - component: {fileID: 8975074405581036949}
+  - component: {fileID: 614853310258866384}
+  - component: {fileID: 6594039996221017656}
   m_Layer: 0
-  m_Name: MeleeWeapon_1H_R
+  m_Name: MeleeWeaponBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8416253515466033739
+--- !u!4 &8975074405581036949
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5124515846170899394}
+  m_GameObject: {fileID: 5718629689711895580}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2787719756862830375}
+  - {fileID: 3381833045798707449}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!95 &56632229250744078
+--- !u!95 &614853310258866384
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5124515846170899394}
+  m_GameObject: {fileID: 5718629689711895580}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 3dee52f60ae42b542ac988ba03ec4693, type: 2}
@@ -138,19 +138,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6035926401048058342
+--- !u!114 &6594039996221017656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5124515846170899394}
+  m_GameObject: {fileID: 5718629689711895580}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b539be34e2a2a33428fa60f56ea2588b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idlePosition: {x: -0.23, y: -0.3, z: -0.23}
+  idlePosition: {x: 0.23, y: -0.3, z: -0.23}
   idleRotation: {x: 0, y: 90, z: 0}
   itemData:
     item: {fileID: 11400000, guid: 6309d4d9498810d4a96aa83da8b12300, type: 2}

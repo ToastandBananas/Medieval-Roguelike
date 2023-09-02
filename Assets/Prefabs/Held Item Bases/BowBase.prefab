@@ -520,7 +520,7 @@ GameObject:
   - component: {fileID: 3287661424985399987}
   - component: {fileID: 8591085824099329560}
   m_Layer: 7
-  m_Name: Bow
+  m_Name: BowBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

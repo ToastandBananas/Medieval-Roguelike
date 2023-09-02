@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor;
 using UnityEngine;
 
 public abstract class UnitActionHandler : MonoBehaviour
@@ -139,14 +141,14 @@ public abstract class UnitActionHandler : MonoBehaviour
     {
         if (selectedAction.IsAttackAction())
             QueueAction(selectedAction, targetAttackGridPosition);
-        else if (unit.RangedWeaponEquipped())
+        else if (unit.CharacterEquipment().RangedWeaponEquipped())
         {
-            if (unit.GetRangedWeapon().isLoaded)
+            if (unit.unitMeshManager.GetRangedWeapon().isLoaded)
                 QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
             else
                 QueueAction(GetAction<ReloadAction>());
         }
-        else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+        else if (unit.CharacterEquipment().MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
             QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
     }
 
@@ -168,6 +170,157 @@ public abstract class UnitActionHandler : MonoBehaviour
                     return true;
             }
         }
+        return false;
+    }
+
+    public bool TryBlockRangedAttack(Unit attackingUnit)
+    {
+        if (unit.CharacterEquipment().ShieldEquipped())
+        {
+            // If the attacker is in front of this Unit (greater chance to block)
+            if (GetAction<TurnAction>().AttackerInFrontOfUnit(attackingUnit))
+            {
+                float random = Random.Range(1f, 100f);
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
+                {
+                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    return true;
+                }
+            }
+            // If the attacker is beside this Unit (less of a chance to block)
+            else if (GetAction<TurnAction>().AttackerBesideUnit(attackingUnit))
+            {
+                float random = Random.Range(1f, 100f);
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
+                {
+                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    return true;
+                }
+            }
+        }
+
+        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+            attackingUnit.unitActionHandler.targetUnits.Add(unit, null);
+        return false;
+    }
+
+    public bool TryBlockMeleeAttack(Unit attackingUnit)
+    {
+        float random;
+        TurnAction targetUnitTurnAction = GetAction<TurnAction>();
+        if (targetUnitTurnAction.AttackerInFrontOfUnit(attackingUnit))
+        {
+            if (unit.CharacterEquipment().ShieldEquipped())
+            {
+                // Try blocking with shield
+                random = Random.Range(1f, 100f);
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
+                {
+                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    return true;
+                }
+
+                // Still have a chance to block with weapon
+                if (unit.CharacterEquipment().MeleeWeaponEquipped())
+                {
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, true))
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+                }
+            }
+            else if (unit.CharacterEquipment().MeleeWeaponEquipped())
+            {
+                if (unit.CharacterEquipment().IsDualWielding())
+                {
+                    // Try blocking with right weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, false) * GameManager.dualWieldPrimaryEfficiency)
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+
+                    // Try blocking with left weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Try blocking with only weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, false))
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+                }
+            }
+        }
+        else if (targetUnitTurnAction.AttackerBesideUnit(attackingUnit))
+        {
+            if (unit.CharacterEquipment().ShieldEquipped())
+            {
+                // Try blocking with shield
+                random = Random.Range(1f, 100f);
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
+                {
+                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    return true;
+                }
+
+                // Still have a chance to block with weapon
+                if (unit.CharacterEquipment().MeleeWeaponEquipped())
+                {
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, true))
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+                }
+            }
+            else if (unit.CharacterEquipment().MeleeWeaponEquipped())
+            {
+                if (unit.CharacterEquipment().IsDualWielding())
+                {
+                    // Try blocking with right weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, false) * GameManager.dualWieldPrimaryEfficiency)
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+
+                    // Try blocking with left weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                        return true;
+                    }
+                }
+                else
+                {
+                    // Try blocking with only weapon
+                    random = Random.Range(1f, 100f);
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, false))
+                    {
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        return true;
+                    }
+                }
+            }
+        }
+
+        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+            attackingUnit.unitActionHandler.targetUnits.Add(unit, null);
         return false;
     }
     #endregion

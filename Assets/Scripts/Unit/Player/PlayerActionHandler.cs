@@ -43,7 +43,7 @@ public class PlayerActionHandler : UnitActionHandler
                             Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                             // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                             {
                                 CancelAction();
                                 return;
@@ -70,10 +70,10 @@ public class PlayerActionHandler : UnitActionHandler
                     }
 
                     // Handle default ranged attack
-                    if (unit.RangedWeaponEquipped())
+                    if (unit.CharacterEquipment().RangedWeaponEquipped())
                     {
                         // If the target enemy is too close, cancel the Player's current action
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.GetRangedWeapon().ItemData().Item().Weapon().minRange)
+                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData().Item().Weapon().minRange)
                         {
                             CancelAction();
                             return;
@@ -82,7 +82,7 @@ public class PlayerActionHandler : UnitActionHandler
                         {
                             // Shoot the target enemy
                             ClearActionQueue(true);
-                            if (unit.GetRangedWeapon().isLoaded)
+                            if (unit.unitMeshManager.GetRangedWeapon().isLoaded)
                                 QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
                             else
                                 QueueAction(GetAction<ReloadAction>());
@@ -91,7 +91,7 @@ public class PlayerActionHandler : UnitActionHandler
                             QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, targetEnemyUnit));
                     }
                     // Handle default melee attack
-                    else if (unit.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                    else if (unit.CharacterEquipment().MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
                     {
                         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                         {

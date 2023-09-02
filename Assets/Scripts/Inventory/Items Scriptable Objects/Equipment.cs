@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class Equipment : Item
 {
-    [Header("Equip Info")]
+    [Header("Equipment Info")]
     [SerializeField] EquipSlot equipSlot;
 
     public abstract override bool IsBag();
