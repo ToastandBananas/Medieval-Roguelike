@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7936540858851661944}
   - component: {fileID: 4547400173215444697}
   - component: {fileID: 5249737081333678070}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Middle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 7971201553951317156}
   - component: {fileID: 959167412578467714}
   - component: {fileID: 1006476885191931687}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Middle Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 2651776215653100854}
   - component: {fileID: 8375927464218931062}
   - component: {fileID: 5703584296827757879}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Middle Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 3235443255443244536}
   - component: {fileID: 8200824569336356858}
   - component: {fileID: 45903741203594410}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 820453845276531490}
   - component: {fileID: 2419888631191152083}
   - component: {fileID: 6865797830848259988}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -424,7 +424,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7943284659802438356}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: String Bottom Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -455,7 +455,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7943284659937730810}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: String Top Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -486,7 +486,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7943284660088151385}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: String Center Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +519,7 @@ GameObject:
   - component: {fileID: 7943284660508324552}
   - component: {fileID: 3287661424985399987}
   - component: {fileID: 8591085824099329560}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: BowBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -580,10 +580,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b16613e676abbae4b87888d82d2c03e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idlePosition: {x: 0, y: -0.05, z: -0.3}
-  idleRotation: {x: 55, y: 270, z: 0}
-  itemData:
-    item: {fileID: 11400000, guid: d69684a3d4635c548be55fbaa0f69acd, type: 2}
+  meshRenderer: {fileID: 0}
+  meshFilter: {fileID: 0}
   bowLineRenderer: {fileID: 7943284661359707032}
 --- !u!1 &7943284661359707045
 GameObject:
@@ -596,7 +594,7 @@ GameObject:
   - component: {fileID: 7943284661359707046}
   - component: {fileID: 7943284661359707047}
   - component: {fileID: 7943284661359707032}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: String Line Renderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

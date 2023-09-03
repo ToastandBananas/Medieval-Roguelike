@@ -48,7 +48,7 @@ public class HeldRangedWeapon : HeldItem
 
     public override IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(IdleRotation());
+        Quaternion defaultRotation = Quaternion.Euler(Vector3.zero);
         Quaternion startRotation = transform.localRotation;
         float time = 0f;
         float duration = 0.25f;
@@ -65,12 +65,13 @@ public class HeldRangedWeapon : HeldItem
     IEnumerator RotateRangedWeapon(GridPosition targetGridPosition)
     {
         ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-        Quaternion targetRotation = Quaternion.Euler(0f, IdleRotation().y, CalculateZRotation(targetGridPosition));
+        Vector3 startRotation = transform.parent.localEulerAngles;
+        Quaternion targetRotation = Quaternion.Euler(startRotation.x, startRotation.y, CalculateZRotation(targetGridPosition));
         float rotateSpeed = 5f;
 
         while (shootAction.isShooting)
         {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
+            transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;
         }
 
@@ -101,5 +102,10 @@ public class HeldRangedWeapon : HeldItem
         float maxRange = itemData.Item().Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
+    }
+
+    public override void SetUpMesh()
+    {
+        
     }
 }

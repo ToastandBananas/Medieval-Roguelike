@@ -4,12 +4,11 @@ using UnityEngine;
 // If a class is abstract, this means that the class cannot be placed on a GameObject
 public abstract class HeldItem : MonoBehaviour
 {
-    [Header("Default Positioning")]
-    [SerializeField] Vector3 idlePosition = new Vector3(-0.23f, -0.3f, -0.23f);
-    [SerializeField] Vector3 idleRotation = new Vector3(0f, 90f, 0f);
+    [Header("Mesh Components")]
+    [SerializeField] MeshRenderer meshRenderer;
+    [SerializeField] MeshFilter meshFilter;
 
-    [Header("Item Data")]
-    [SerializeField] protected ItemData itemData;
+    public ItemData itemData { get; private set; }
 
     public Animator anim { get; private set; }
 
@@ -18,32 +17,18 @@ public abstract class HeldItem : MonoBehaviour
     void Awake()
     {
         anim = GetComponent<Animator>();
-
-        itemData.RandomizeData();
-
-        SetItemPosition();
-        SetItemRotation();
     }
 
-    void SetUnit() => unit = transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
-
-    void SetItemPosition() => transform.parent.localPosition = idlePosition;
-
-    void SetItemRotation() => transform.localEulerAngles = idleRotation;
-
-    public void ResetItemTransform()
-    {
-        SetItemPosition();
-        SetItemRotation();
-    }
-
-    public Vector3 IdlePosition() => idlePosition;
-
-    public Vector3 IdleRotation() => idleRotation;
+    void SetUnit(Unit unit) => this.unit = unit;
 
     public virtual IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(Vector3.zero);
+        Quaternion defaultRotation;
+        if (this == unit.unitMeshManager.leftHeldItem)
+            defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_LeftHand);
+        else
+            defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
         float duration = 0.25f;
@@ -66,4 +51,42 @@ public abstract class HeldItem : MonoBehaviour
     }
 
     public ItemData ItemData() => itemData;
+
+    public void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+    {
+        this.itemData = itemData;
+        this.unit = unit;
+
+        if (equipSlot == EquipSlot.RightHeldItem || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
+        {
+            transform.parent = unit.unitMeshManager.RightHeldItemParent;
+            transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_RightHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+            unit.unitMeshManager.SetRightHeldItem(this);
+        }
+        else
+        {
+            transform.parent = unit.unitMeshManager.LeftHeldItemParent;
+            transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_LeftHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_LeftHand);
+            unit.unitMeshManager.SetLeftHeldItem(this);
+        }
+
+        SetUpMesh();
+
+        transform.localPosition = Vector3.zero;
+        gameObject.SetActive(true);
+    }
+
+    public virtual void SetUpMesh()
+    {
+        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+            meshFilter.mesh = itemData.Item().meshes[0];
+        else
+            HideMesh();
+
+        meshRenderer.material = itemData.Item().meshRendererMaterials[0];
+    }
+
+    public void HideMesh() => meshFilter.mesh = null;
 }

@@ -8,8 +8,8 @@ public class UnitMeshManager : MonoBehaviour
     [SerializeField] Transform rightHeldItemParent;
 
     [Header("Mesh Renderers")]
-    [SerializeField] MeshRenderer baseMesh;
-    [SerializeField] MeshRenderer bodyMesh, headMesh, hairMesh, helmMesh, tunicMesh, bodyArmorMesh;
+    [SerializeField] MeshRenderer baseMeshRenderer;
+    [SerializeField] MeshRenderer bodyMeshRenderer, headMeshRenderer, hairMeshRenderer, helmMeshRenderer, tunicMeshRenderer, bodyArmorMeshRenderer;
     List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
 
     [Header("Mesh Filters")]
@@ -31,23 +31,20 @@ public class UnitMeshManager : MonoBehaviour
     {
         myUnit = GetComponent<Unit>();
 
-        SetLeftHeldItem();
-        SetRightHeldItem();
-
-        if (baseMesh != null)
-            meshRenderers.Add(baseMesh);
-        else if(bodyMesh != null)
-            meshRenderers.Add(bodyMesh);
-        else if (headMesh != null)
-            meshRenderers.Add(headMesh);
-        else if (hairMesh != null)
-            meshRenderers.Add(hairMesh);
-        else if (helmMesh != null)
-            meshRenderers.Add(helmMesh);
-        else if (tunicMesh != null)
-            meshRenderers.Add(tunicMesh);
-        else if (bodyArmorMesh != null)
-            meshRenderers.Add(bodyArmorMesh);
+        if (baseMeshRenderer != null)
+            meshRenderers.Add(baseMeshRenderer);
+        else if(bodyMeshRenderer != null)
+            meshRenderers.Add(bodyMeshRenderer);
+        else if (headMeshRenderer != null)
+            meshRenderers.Add(headMeshRenderer);
+        else if (hairMeshRenderer != null)
+            meshRenderers.Add(hairMeshRenderer);
+        else if (helmMeshRenderer != null)
+            meshRenderers.Add(helmMeshRenderer);
+        else if (tunicMeshRenderer != null)
+            meshRenderers.Add(tunicMeshRenderer);
+        else if (bodyArmorMeshRenderer != null)
+            meshRenderers.Add(bodyArmorMeshRenderer);
     }
 
     void Start()
@@ -146,23 +143,9 @@ public class UnitMeshManager : MonoBehaviour
         bowLineRenderer = null;
     }
 
-    public void SetLeftHeldItem()
-    {
-        if (leftHeldItemParent.childCount > 0)
-        {
-            leftHeldItem = leftHeldItemParent.GetChild(0).GetComponent<HeldItem>();
-            myUnit.unitAnimator.SetLeftHeldItemAnim(leftHeldItem.GetComponent<Animator>());
-        }
-    }
+    public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;
 
-    public void SetRightHeldItem()
-    {
-        if (rightHeldItemParent.childCount > 0)
-        {
-            rightHeldItem = rightHeldItemParent.GetChild(0).GetComponent<HeldItem>();
-            myUnit.unitAnimator.SetRightHeldItemAnim(rightHeldItem.GetComponent<Animator>());
-        }
-    }
+    public void SetRightHeldItem(HeldItem heldItem) => rightHeldItem = heldItem;
 
     public HeldMeleeWeapon GetPrimaryMeleeWeapon()
     {
@@ -198,8 +181,50 @@ public class UnitMeshManager : MonoBehaviour
         return null;
     }
 
+    public void SetupMesh(EquipSlot equipSlot, Equipment equipment)
+    {
+        switch (equipSlot)
+        {
+            case EquipSlot.Helm:
+                helmMeshFilter.mesh = equipment.meshes[0];
+                helmMeshRenderer.material = equipment.meshRendererMaterials[0];
+                break;
+            case EquipSlot.BodyArmor:
+                bodyArmorMeshFilter.mesh = equipment.meshes[0];
+                bodyArmorMeshRenderer.material = equipment.meshRendererMaterials[0];
+                break;
+            default:
+                break;
+        }
 
-    public bool IsVisibleOnScreen() => bodyMesh.isVisible && CanSeeMeshRenderers() && UnitManager.Instance.player.vision.IsKnown(myUnit);
+        if (myUnit.IsPlayer() == false && IsVisibleOnScreen() == false)
+            HideMesh(equipSlot);
+    }
 
-    public bool CanSeeMeshRenderers() => bodyMesh.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
+    public void HideMesh(EquipSlot equipSlot)
+    {
+        switch (equipSlot)
+        {
+            case EquipSlot.LeftHeldItem:
+                leftHeldItem.HideMesh();
+                break;
+            case EquipSlot.RightHeldItem:
+                rightHeldItem.HideMesh();
+                break;
+            case EquipSlot.Helm:
+                helmMeshFilter.mesh = null;
+                break;
+            case EquipSlot.BodyArmor:
+                bodyArmorMeshFilter.mesh = null;
+                break;
+        }
+    }
+
+    public Transform LeftHeldItemParent => leftHeldItemParent;
+
+    public Transform RightHeldItemParent => rightHeldItemParent;
+
+    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && CanSeeMeshRenderers() && UnitManager.Instance.player.vision.IsKnown(myUnit);
+
+    public bool CanSeeMeshRenderers() => bodyMeshRenderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
 }

@@ -134,8 +134,9 @@ public class HeldMeleeWeapon : HeldItem
 
         MeleeAction meleeAction = unit.unitActionHandler.GetAction<MeleeAction>();
         Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
+        Vector3 startRotation = transform.parent.localEulerAngles;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
-        targetRotation = Quaternion.Euler(new Vector3(-targetRotation.eulerAngles.x, 0f, 0f));
+        targetRotation = Quaternion.Euler(new Vector3(startRotation.x, startRotation.y, -targetRotation.eulerAngles.x));
         float rotateSpeed = 10f;
 
         while (meleeAction.isAttacking)

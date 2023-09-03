@@ -393,23 +393,57 @@ public class CharacterEquipment : MonoBehaviour
         {
             EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
             oppositeWeaponSlot.SetFullSlotSprite();
+
+            SetupEquipmentMesh(oppositeWeaponSlot.EquipSlot(), newItemData);
         }
+        else
+            SetupEquipmentMesh(targetSlot.EquipSlot(), newItemData);
     }
 
     void SetupEquipmentMesh(EquipSlot equipSlot, ItemData itemData)
     {
         // We only show meshes for these types of equipment:
-        if (IsHeldItemEquipSlot(equipSlot) && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
+        if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
             return;
 
         if (IsHeldItemEquipSlot(equipSlot))
         {
+            HeldItem heldItem = null;
+            if (itemData.Item().IsMeleeWeapon())
+                heldItem = HeldItemBasePool.Instance.GetMeleeWeaponBaseFromPool();
+            else if (itemData.Item().IsRangedWeapon())
+                heldItem = HeldItemBasePool.Instance.GetRangedWeaponBaseFromPool();
+            else if (itemData.Item().IsShield())
+                heldItem = HeldItemBasePool.Instance.GetShieldBaseFromPool();
 
+            heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
         }
-        else
+        else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
         {
-
+            myUnit.unitMeshManager.SetupMesh(equipSlot, (Equipment)itemData.Item());
         }
+    }
+
+    void RemoveEquipmentMesh(EquipSlot equipSlot)
+    {
+        if (EquipSlotIsFull(equipSlot) == false)
+            return;
+
+        // We only show meshes for these types of equipment:
+        if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
+            return;
+        
+        if (IsHeldItemEquipSlot(equipSlot))
+        {
+            if (equippedItemDatas[(int)equipSlot] == null || equippedItemDatas[(int)equipSlot].Item() == null)
+            {
+                EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
+                if (equippedItemDatas[(int)oppositeWeaponEquipSlot] != null && equippedItemDatas[(int)oppositeWeaponEquipSlot].Item() != null && equippedItemDatas[(int)oppositeWeaponEquipSlot].Item().IsWeapon() && equippedItemDatas[(int)oppositeWeaponEquipSlot].Item().Weapon().isTwoHanded)
+                    equipSlot = oppositeWeaponEquipSlot;
+            }
+        }
+
+        myUnit.unitMeshManager.HideMesh(equipSlot);
     }
 
     public bool IsDualWielding() => equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsMeleeWeapon();

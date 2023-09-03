@@ -1247,13 +1247,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftHeldItemParent: {fileID: 6486341831773549153}
   rightHeldItemParent: {fileID: 3302223880752615606}
-  baseMesh: {fileID: 6782232349530032348}
-  bodyMesh: {fileID: 7032048945693533318}
-  headMesh: {fileID: 1355169749607201287}
-  hairMesh: {fileID: 487088377322257086}
-  helmMesh: {fileID: 7622081336976406461}
-  tunicMesh: {fileID: 4844891633756179713}
-  bodyArmorMesh: {fileID: 626653059070622638}
+  baseMeshRenderer: {fileID: 6782232349530032348}
+  bodyMeshRenderer: {fileID: 7032048945693533318}
+  headMeshRenderer: {fileID: 1355169749607201287}
+  hairMeshRenderer: {fileID: 487088377322257086}
+  helmMeshRenderer: {fileID: 7622081336976406461}
+  tunicMeshRenderer: {fileID: 4844891633756179713}
+  bodyArmorMeshRenderer: {fileID: 626653059070622638}
   baseMeshFilter: {fileID: 2615831470345035244}
   bodyMeshFilter: {fileID: 4190166550476188983}
   headMeshFilter: {fileID: 8428149901202910843}
