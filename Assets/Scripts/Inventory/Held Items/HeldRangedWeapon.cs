@@ -48,25 +48,24 @@ public class HeldRangedWeapon : HeldItem
 
     public override IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(Vector3.zero);
-        Quaternion startRotation = transform.localRotation;
+        Quaternion defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+        Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
         float duration = 0.25f;
         while (time < duration)
         {
-            transform.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);
+            transform.parent.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);
             yield return null;
             time += Time.deltaTime;
         }
 
-        transform.localRotation = defaultRotation;
+        transform.parent.localRotation = defaultRotation;
     }
 
     IEnumerator RotateRangedWeapon(GridPosition targetGridPosition)
     {
         ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-        Vector3 startRotation = transform.parent.localEulerAngles;
-        Quaternion targetRotation = Quaternion.Euler(startRotation.x, startRotation.y, CalculateZRotation(targetGridPosition));
+        Quaternion targetRotation = Quaternion.Euler(0f, -90f, CalculateZRotation(targetGridPosition));
         float rotateSpeed = 5f;
 
         while (shootAction.isShooting)
@@ -75,7 +74,7 @@ public class HeldRangedWeapon : HeldItem
             yield return null;
         }
 
-        transform.localRotation = targetRotation;
+        transform.parent.localRotation = targetRotation;
     }
 
     float CalculateZRotation(GridPosition targetGridPosition)
@@ -102,10 +101,5 @@ public class HeldRangedWeapon : HeldItem
         float maxRange = itemData.Item().Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
-    }
-
-    public override void SetUpMesh()
-    {
-        
     }
 }

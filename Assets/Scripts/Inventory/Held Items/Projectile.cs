@@ -281,7 +281,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -302,7 +302,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -313,7 +313,7 @@ public class Projectile : MonoBehaviour
             else if (collider.CompareTag("Shield"))
             {
                 Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
-                HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.leftHeldItem as HeldRangedWeapon;
+                HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);

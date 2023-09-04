@@ -64,7 +64,7 @@ public class ShootAction : BaseAction
 
             // Rotate towards the target and do the shoot animation
             StartCoroutine(RotateTowardsTarget());
-            unit.unitMeshManager.leftHeldItem.DoDefaultAttack();
+            unit.unitMeshManager.GetRangedWeapon().DoDefaultAttack();
 
             StartCoroutine(WaitToCompleteAction());
         }
@@ -134,8 +134,8 @@ public class ShootAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        if (unit.unitMeshManager.leftHeldItem != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.leftHeldItem.ItemData().Item() as Weapon));
+        if (unit.unitMeshManager.GetRangedWeapon() != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetRangedWeapon().ItemData().Item() as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 

@@ -105,6 +105,8 @@ public class UnitAnimator : MonoBehaviour
 
         if (unit.unitMeshManager.rightHeldItem != null)
             Die_DropHeldItem(unit.unitMeshManager.rightHeldItem, attackerTransform, diedForward);
+
+        unit.unitMeshManager.RemoveAllWeaponRenderers();
     }
 
     void Die_DropHeldItem(HeldItem heldItem, Transform attackerTransform, bool diedForward)

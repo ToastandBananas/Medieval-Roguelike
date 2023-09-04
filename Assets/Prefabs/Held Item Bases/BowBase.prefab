@@ -580,8 +580,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b16613e676abbae4b87888d82d2c03e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 0}
-  meshFilter: {fileID: 0}
+  meshRenderers:
+  - {fileID: 45903741203594410}
+  - {fileID: 1006476885191931687}
+  - {fileID: 5249737081333678070}
+  - {fileID: 5703584296827757879}
+  - {fileID: 6865797830848259988}
+  meshFilters:
+  - {fileID: 8200824569336356858}
+  - {fileID: 959167412578467714}
+  - {fileID: 4547400173215444697}
+  - {fileID: 8375927464218931062}
+  - {fileID: 2419888631191152083}
   bowLineRenderer: {fileID: 7943284661359707032}
 --- !u!1 &7943284661359707045
 GameObject:

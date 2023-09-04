@@ -68,8 +68,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83f3fb465c8f654a9bf16f06d7c8182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 2891151056421828720}
-  meshFilter: {fileID: 2746722378632557615}
+  meshRenderers:
+  - {fileID: 2891151056421828720}
+  meshFilters:
+  - {fileID: 2746722378632557615}
 --- !u!65 &8008415603950332274
 BoxCollider:
   m_ObjectHideFlags: 0

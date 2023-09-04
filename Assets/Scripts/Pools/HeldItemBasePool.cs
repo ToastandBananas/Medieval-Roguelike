@@ -27,19 +27,19 @@ public class HeldItemBasePool : MonoBehaviour
         foreach (HeldMeleeWeapon meleeWeaponBase in FindObjectsOfType<HeldMeleeWeapon>())
         {
             meleeWeaponBases.Add(meleeWeaponBase);
-            meleeWeaponBase.transform.parent = transform;
+            meleeWeaponBase.transform.SetParent(transform);
         }
 
         foreach (HeldRangedWeapon rangedWeaponBase in FindObjectsOfType<HeldRangedWeapon>())
         {
             rangedWeaponBases.Add(rangedWeaponBase);
-            rangedWeaponBase.transform.parent = transform;
+            rangedWeaponBase.transform.SetParent(transform);
         }
 
         foreach (HeldShield shieldBase in FindObjectsOfType<HeldShield>())
         {
             shieldBases.Add(shieldBase);
-            shieldBase.transform.parent = transform;
+            shieldBase.transform.SetParent(transform);
         }
 
         if (Instance != null)

@@ -55,18 +55,18 @@ public class UnitMeshManager : MonoBehaviour
     public void SetHeldItemMeshRenderers()
     {
         if (leftHeldItem != null)
-        {
-            if (leftHeldItem.ItemData().Item().itemType == ItemType.RangedWeapon) // The item is a Bow
-            {
-                bowMeshRenderers = leftHeldItem.GetComponentsInChildren<MeshRenderer>();
-                bowLineRenderer = leftHeldItem.GetComponentInChildren<LineRenderer>();
-            }
-            else
-                leftHeldItemMeshRenderer = leftHeldItem.GetComponentInChildren<MeshRenderer>();
-        }
+            leftHeldItemMeshRenderer = leftHeldItem.GetComponentInChildren<MeshRenderer>();
 
         if (rightHeldItem != null)
-            rightHeldItemMeshRenderer = rightHeldItem.GetComponentInChildren<MeshRenderer>();
+        {
+            if (rightHeldItem.ItemData().Item().IsRangedWeapon()) // The item is a Bow
+            {
+                bowMeshRenderers = rightHeldItem.GetComponentsInChildren<MeshRenderer>();
+                bowLineRenderer = rightHeldItem.GetComponentInChildren<LineRenderer>();
+            }
+            else
+                rightHeldItemMeshRenderer = rightHeldItem.GetComponentInChildren<MeshRenderer>();
+        }
     }
 
     public void ShowMeshRenderers()
@@ -166,7 +166,7 @@ public class UnitMeshManager : MonoBehaviour
         return null;
     }
 
-    public HeldRangedWeapon GetRangedWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldRangedWeapon;
+    public HeldRangedWeapon GetRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
 
     public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
 
@@ -206,10 +206,10 @@ public class UnitMeshManager : MonoBehaviour
         switch (equipSlot)
         {
             case EquipSlot.LeftHeldItem:
-                leftHeldItem.HideMesh();
+                leftHeldItem.HideMeshes();
                 break;
             case EquipSlot.RightHeldItem:
-                rightHeldItem.HideMesh();
+                rightHeldItem.HideMeshes();
                 break;
             case EquipSlot.Helm:
                 helmMeshFilter.mesh = null;

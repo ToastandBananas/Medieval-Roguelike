@@ -446,15 +446,15 @@ public class CharacterEquipment : MonoBehaviour
         myUnit.unitMeshManager.HideMesh(equipSlot);
     }
 
-    public bool IsDualWielding() => equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsMeleeWeapon();
+    public bool IsDualWielding() => equippedItemDatas[(int)EquipSlot.LeftHeldItem] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsMeleeWeapon();
 
-    public bool MeleeWeaponEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsMeleeWeapon()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsMeleeWeapon());
+    public bool MeleeWeaponEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsMeleeWeapon()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsMeleeWeapon());
 
-    public bool RangedWeaponEquipped() => equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsRangedWeapon();
+    public bool RangedWeaponEquipped() => (equippedItemDatas[(int)EquipSlot.RightHeldItem] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsRangedWeapon()) || (equippedItemDatas[(int)EquipSlot.LeftHeldItem] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsRangedWeapon());
 
-    public bool ShieldEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsShield()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsShield());
+    public bool ShieldEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item().IsShield()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item().IsShield());
 
-    public bool IsUnarmed() => equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() == null && equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() == null;
+    public bool IsUnarmed() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem] == null || equippedItemDatas[(int)EquipSlot.LeftHeldItem].Item() == null) && (equippedItemDatas[(int)EquipSlot.RightHeldItem] == null || equippedItemDatas[(int)EquipSlot.RightHeldItem].Item() == null);
 
     public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem || equipSlot == EquipSlot.RightHeldItem;
 

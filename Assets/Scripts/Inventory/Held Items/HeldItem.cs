@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class HeldItem : MonoBehaviour
 {
     [Header("Mesh Components")]
-    [SerializeField] MeshRenderer meshRenderer;
-    [SerializeField] MeshFilter meshFilter;
+    [SerializeField] protected MeshRenderer[] meshRenderers;
+    [SerializeField] protected MeshFilter[] meshFilters;
 
     public ItemData itemData { get; private set; }
 
@@ -59,34 +59,49 @@ public abstract class HeldItem : MonoBehaviour
 
         if (equipSlot == EquipSlot.RightHeldItem || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
         {
-            transform.parent = unit.unitMeshManager.RightHeldItemParent;
+            transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
             transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_RightHand;
             transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
             unit.unitMeshManager.SetRightHeldItem(this);
         }
         else
         {
-            transform.parent = unit.unitMeshManager.LeftHeldItemParent;
+            transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
             transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_LeftHand;
             transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_LeftHand);
             unit.unitMeshManager.SetLeftHeldItem(this);
         }
 
-        SetUpMesh();
+        SetUpMeshes();
 
         transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.Euler(Vector3.zero);
+        transform.localScale = Vector3.one;
+
         gameObject.SetActive(true);
     }
 
-    public virtual void SetUpMesh()
+    public void SetUpMeshes()
     {
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
-            meshFilter.mesh = itemData.Item().meshes[0];
-        else
-            HideMesh();
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+                meshFilters[i].mesh = itemData.Item().meshes[i];
+            else
+            {
+                HideMeshes();
+                break;
+            }
 
-        meshRenderer.material = itemData.Item().meshRendererMaterials[0];
+            meshRenderers[i].material = itemData.Item().meshRendererMaterials[i];
+        }
     }
 
-    public void HideMesh() => meshFilter.mesh = null;
+    public void HideMeshes()
+    {
+        for (int i = 0; i < meshRenderers.Length; i++)
+        {
+            meshFilters[i].mesh = null;
+        }
+    }
 }
