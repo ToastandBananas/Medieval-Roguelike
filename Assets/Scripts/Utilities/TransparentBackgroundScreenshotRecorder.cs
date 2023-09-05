@@ -25,6 +25,7 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
     [Tooltip("How many frames should be captured before quitting")]
     public int framesToCapture = 24;
     public string saveFileName;
+    public bool overwriteFile;
     #endregion
 
     #region private fields
@@ -163,17 +164,20 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
     {
         int count = 0;
         string filePath = Path.Combine(Application.dataPath, folderName, saveFileName + ".png");
-        while (File.Exists(filePath))
+        if (overwriteFile == false)
         {
-            count++;
-            filePath = Path.Combine(Application.dataPath, folderName, saveFileName + count + ".png");
+            while (File.Exists(filePath))
+            {
+                count++;
+                filePath = Path.Combine(Application.dataPath, folderName, saveFileName + count + ".png");
+            }
         }
         
         var pngShot = textureTransparentBackground.EncodeToPNG();
         File.WriteAllBytes(filePath, pngShot);
 
         string relativePath;
-        if (count == 0)
+        if (count == 0 || overwriteFile)
             relativePath = Path.Combine("Assets", folderName, saveFileName + ".png");
         else
             relativePath = Path.Combine("Assets", folderName, saveFileName + count + ".png");
