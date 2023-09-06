@@ -68,9 +68,9 @@ public class EquipmentSlot : Slot
             return;
         }
 
-        if (IsWeaponSlot())
+        if (IsHeldItemSlot())
         {
-            if (inventoryItem.itemData.Item().Weapon().isTwoHanded)
+            if (inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                 if (EquipSlot() == global::EquipSlot.LeftHeldItem)
@@ -91,7 +91,7 @@ public class EquipmentSlot : Slot
             inventoryItem.SetupSprite(true);
     }
 
-    public bool IsWeaponSlot() => equipSlot == global::EquipSlot.LeftHeldItem || equipSlot == global::EquipSlot.RightHeldItem;
+    public bool IsHeldItemSlot() => equipSlot == global::EquipSlot.LeftHeldItem || equipSlot == global::EquipSlot.RightHeldItem;
 
     public override void HighlightSlots()
     {
@@ -128,14 +128,14 @@ public class EquipmentSlot : Slot
     public override void SetupEmptySlotSprites()
     {
         SetEmptySlotSprite();
-        if (IsWeaponSlot() && IsFull())
+        if (IsHeldItemSlot() && IsFull())
         { 
-            if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null && inventoryItem.itemData.Item().Weapon().isTwoHanded)
+            if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null && inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
                 GetOppositeWeaponSlot().SetEmptySlotSprite();
             else
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item() != null && oppositeWeaponSlot.inventoryItem.itemData.Item().Weapon().isTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item() != null && oppositeWeaponSlot.inventoryItem.itemData.Item().IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item().Weapon().isTwoHanded)
                     oppositeWeaponSlot.SetEmptySlotSprite();
             }
         }

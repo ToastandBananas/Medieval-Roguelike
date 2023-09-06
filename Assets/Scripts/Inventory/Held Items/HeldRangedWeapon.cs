@@ -48,7 +48,7 @@ public class HeldRangedWeapon : HeldItem
 
     public override IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+        Quaternion defaultRotation = Quaternion.Euler(itemData.Item().Equipment().IdleRotation_RightHand);
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
         float duration = 0.25f;

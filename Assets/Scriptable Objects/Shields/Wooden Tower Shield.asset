@@ -20,20 +20,22 @@ MonoBehaviour:
   description: 
   isUsable: 1
   canUsePartial: 0
-  width: 3
+  width: 2
   height: 5
   weight: 0.1
   volume: 0.1
   maxStackSize: 1
-  inventorySprite: {fileID: 0}
+  inventorySprite: {fileID: 21300000, guid: d08331c7c33f5964abd578596a2dc371, type: 3}
   value: {x: 0, y: 0}
   staticValue: 1
   meshes:
   - {fileID: -641559033716001411, guid: ff532bcd02465594e868ee2309ead2fe, type: 3}
   meshRendererMaterials:
-  - {fileID: 9213754028492527967, guid: ff532bcd02465594e868ee2309ead2fe, type: 3}
-  pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  - {fileID: 2100000, guid: d8382d6009a40414893258a4a40fe3dd, type: 2}
+  pickupMesh: {fileID: -2432090755550338912, guid: 60cbcea17a870ed44ad6f79f58b847d4,
+    type: 3}
+  pickupMeshRendererMaterial: {fileID: 2100000, guid: 9be73769303d8434fad735062d5758d8,
+    type: 2}
   equipSlot: 0
   minBlockPower: 4
   maxBlockPower: 9

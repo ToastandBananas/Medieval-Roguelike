@@ -389,7 +389,7 @@ public class CharacterEquipment : MonoBehaviour
         targetSlot.ShowSlotImage();
         targetSlot.InventoryItem().UpdateStackSizeText();
 
-        if (targetSlot.IsWeaponSlot() && targetSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+        if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem().itemData.Item().IsWeapon() && targetSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
             oppositeWeaponSlot.SetFullSlotSprite();

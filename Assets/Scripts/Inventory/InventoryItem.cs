@@ -145,7 +145,7 @@ public class InventoryItem : MonoBehaviour
         if ((itemData == null || itemData.Item() == null) && mySlot is EquipmentSlot)
         {
             EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
-            if (myEquipmentSlot.IsWeaponSlot())
+            if (myEquipmentSlot.IsHeldItemSlot())
             {
                 EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
                 spriteItemData = oppositeWeaponSlot.InventoryItem().itemData;

@@ -25,9 +25,9 @@ public abstract class HeldItem : MonoBehaviour
     {
         Quaternion defaultRotation;
         if (this == unit.unitMeshManager.leftHeldItem)
-            defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_LeftHand);
+            defaultRotation = Quaternion.Euler(itemData.Item().Equipment().IdleRotation_LeftHand);
         else
-            defaultRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+            defaultRotation = Quaternion.Euler(itemData.Item().Equipment().IdleRotation_RightHand);
 
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
@@ -60,15 +60,15 @@ public abstract class HeldItem : MonoBehaviour
         if (equipSlot == EquipSlot.RightHeldItem || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
         {
             transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
-            transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_RightHand;
-            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_RightHand);
+            transform.parent.localPosition = itemData.Item().Equipment().IdlePosition_RightHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Equipment().IdleRotation_RightHand);
             unit.unitMeshManager.SetRightHeldItem(this);
         }
         else
         {
             transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
-            transform.parent.localPosition = itemData.Item().Weapon().IdlePosition_LeftHand;
-            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Weapon().IdleRotation_LeftHand);
+            transform.parent.localPosition = itemData.Item().Equipment().IdlePosition_LeftHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item().Equipment().IdleRotation_LeftHand);
             unit.unitMeshManager.SetLeftHeldItem(this);
         }
 
