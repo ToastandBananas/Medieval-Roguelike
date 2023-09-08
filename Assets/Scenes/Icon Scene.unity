@@ -258,8 +258,8 @@ MonoBehaviour:
   iconFolderName: Weapons
   frameRate: 30
   framesToCapture: 1
-  saveFileName: Bow-Shortbow
-  overwriteFile: 1
+  saveFileName: Shield-Tower-Wood-Diamond-Brown
+  overwriteFile: 0
 --- !u!1 &367576692
 GameObject:
   m_ObjectHideFlags: 0

@@ -133,7 +133,10 @@ public class UnitAnimator : MonoBehaviour
         unit.unitMeshManager.RemoveAllWeaponRenderers();
 
         // Get rid of the HeldItem
-        Destroy(heldItem.gameObject);
+        if (heldItem == unit.unitMeshManager.leftHeldItem || (heldItem.itemData.Item().IsWeapon() && heldItem.itemData.Item().Weapon().isTwoHanded))
+            unit.CharacterEquipment().RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
+        else
+            unit.CharacterEquipment().RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
 
         float randomForceMagnitude = Random.Range(100f, 600f);
         float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees

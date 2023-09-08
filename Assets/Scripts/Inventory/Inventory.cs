@@ -100,7 +100,8 @@ public class Inventory : MonoBehaviour
                 if (InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
-                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = newItemData;
+                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot());
+                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = null;
                 }
                 // Remove the item from its original inventory
                 else
@@ -191,6 +192,7 @@ public class Inventory : MonoBehaviour
                 if (InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
+                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot());
                     InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = null;
                 }
                 // Remove the item from its original inventory

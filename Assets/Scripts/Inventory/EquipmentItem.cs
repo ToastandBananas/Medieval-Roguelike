@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class EquipmentItem : InventoryItem
 {
-    
-
     public override void DropItem()
     {
         if (mySlot == null)

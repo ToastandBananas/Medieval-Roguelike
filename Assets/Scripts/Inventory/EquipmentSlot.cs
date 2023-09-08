@@ -4,7 +4,7 @@ public class EquipmentSlot : Slot
 {
     [Header("Equipment")]
     [SerializeField] CharacterEquipment myCharacterEquipment;
-    [SerializeField] EquipSlot equipSlot = global::EquipSlot.RightHeldItem;
+    [SerializeField] EquipSlot equipSlot = global::EquipSlot.RightHeldItem1;
 
     void Awake()
     {
@@ -16,7 +16,7 @@ public class EquipmentSlot : Slot
         if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null)
             return true;
 
-        if (equipSlot == global::EquipSlot.RightHeldItem && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item() != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item().IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item().Weapon().isTwoHanded)
+        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item() != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item().IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item().Weapon().isTwoHanded)
             return true;
         return false;
     }
@@ -45,10 +45,10 @@ public class EquipmentSlot : Slot
 
     public EquipmentSlot GetOppositeWeaponSlot()
     {
-        if (equipSlot == global::EquipSlot.RightHeldItem)
-            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.LeftHeldItem);
-        else if (equipSlot == global::EquipSlot.LeftHeldItem)
-            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.RightHeldItem);
+        if (equipSlot == global::EquipSlot.RightHeldItem1)
+            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.LeftHeldItem1);
+        else if (equipSlot == global::EquipSlot.LeftHeldItem1)
+            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.RightHeldItem1);
 
         Debug.LogWarning($"{equipSlot} is not a weapon slot...");
         return null;
@@ -73,7 +73,7 @@ public class EquipmentSlot : Slot
             if (inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (EquipSlot() == global::EquipSlot.LeftHeldItem)
+                if (EquipSlot() == global::EquipSlot.LeftHeldItem1)
                 {
                     inventoryItem.SetupSprite(true);
                     oppositeWeaponSlot.inventoryItem.SetupSprite(false);
@@ -91,7 +91,7 @@ public class EquipmentSlot : Slot
             inventoryItem.SetupSprite(true);
     }
 
-    public bool IsHeldItemSlot() => equipSlot == global::EquipSlot.LeftHeldItem || equipSlot == global::EquipSlot.RightHeldItem;
+    public bool IsHeldItemSlot() => equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1;
 
     public override void HighlightSlots()
     {
@@ -103,7 +103,7 @@ public class EquipmentSlot : Slot
         {
             if (draggedItem.Equipment().EquipSlot() == equipSlot)
                 validSlot = true;
-            else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem || equipSlot == global::EquipSlot.RightHeldItem))
+            else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1))
                 validSlot = true;
         }
 

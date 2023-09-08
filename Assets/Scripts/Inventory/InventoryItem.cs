@@ -46,7 +46,10 @@ public class InventoryItem : MonoBehaviour
                 equipmentSlot = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
 
             if (equipmentSlot != null)
+            {
+                myCharacterEquipment.RemoveEquipmentMesh(equipmentSlot.EquipSlot());
                 myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlot.EquipSlot()] = null;
+            }
         }
 
         if (mySlot != null)

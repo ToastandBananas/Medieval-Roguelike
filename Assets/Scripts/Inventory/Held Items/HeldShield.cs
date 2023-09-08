@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class HeldShield : HeldItem
 {
+    [SerializeField] MeshCollider meshCollider;
+
     public bool shieldRaised { get; private set; }
 
     public override void DoDefaultAttack()
@@ -31,5 +33,12 @@ public class HeldShield : HeldItem
             anim.Play("LowerShield_L");
         else if (unit.unitMeshManager.rightHeldItem == this)
             anim.Play("LowerShield_R");
+    }
+
+    public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+    {
+        base.SetupHeldItem(itemData, unit, equipSlot);
+
+        meshCollider.sharedMesh = itemData.Item().meshes[0];
     }
 }

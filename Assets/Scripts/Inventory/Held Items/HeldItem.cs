@@ -19,8 +19,6 @@ public abstract class HeldItem : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    void SetUnit(Unit unit) => this.unit = unit;
-
     public virtual IEnumerator ResetToIdleRotation()
     {
         Quaternion defaultRotation;
@@ -52,12 +50,13 @@ public abstract class HeldItem : MonoBehaviour
 
     public ItemData ItemData() => itemData;
 
-    public void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+    public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
     {
         this.itemData = itemData;
         this.unit = unit;
+        name = itemData.Item().name;
 
-        if (equipSlot == EquipSlot.RightHeldItem || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
+        if (equipSlot == EquipSlot.RightHeldItem1 || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
         {
             transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
             transform.parent.localPosition = itemData.Item().Equipment().IdlePosition_RightHand;
@@ -103,5 +102,13 @@ public abstract class HeldItem : MonoBehaviour
         {
             meshFilters[i].mesh = null;
         }
+    }
+
+    public void ResetHeldItem()
+    {
+        unit = null;
+        itemData = null;
+        transform.SetParent(HeldItemBasePool.Instance.transform);
+        gameObject.SetActive(false);
     }
 }

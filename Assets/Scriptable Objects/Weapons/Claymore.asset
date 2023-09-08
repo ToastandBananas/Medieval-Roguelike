@@ -34,7 +34,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
-  equipSlot: 1
+  equipSlot: 0
+  idlePosition_Left: {x: 0.23, y: -0.29, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: -0.29, z: -0.23}
+  idleRotation_Left: {x: 0, y: 90, z: 25}
+  idleRotation_Right: {x: 0, y: 90, z: 25}
   weaponType: 4
   isTwoHanded: 1
   canDualWield: 0
@@ -45,7 +49,3 @@ MonoBehaviour:
   blockChanceAddOn: 1.5
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
-  idlePosition_Left: {x: 0.23, y: -0.3, z: -0.23}
-  idlePosition_Right: {x: -0.23, y: -0.3, z: -0.23}
-  idleRotation_Left: {x: 0, y: 90, z: 25}
-  idleRotation_Right: {x: 0, y: 90, z: 25}

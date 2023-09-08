@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: defaultMat
-    second: {fileID: 2100000, guid: e0d0a512a19231043901c166a71b0a92, type: 2}
+      name: TowerShield_Wooden_Diamond_Brown_Half_Material.001
+    second: {fileID: 2100000, guid: 4042d785bf9bcbb4e8a43a62e750cf81, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -75,7 +75,7 @@ public class InventoryUI : MonoBehaviour
                 else
                 {
                     EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                    if (activeEquipmentSlot.EquipSlot() == EquipSlot.RightHeldItem && (activeEquipmentSlot.InventoryItem().itemData == null || activeEquipmentSlot.InventoryItem().itemData.Item() == null))
+                    if (activeEquipmentSlot.EquipSlot() == EquipSlot.RightHeldItem1 && (activeEquipmentSlot.InventoryItem().itemData == null || activeEquipmentSlot.InventoryItem().itemData.Item() == null))
                     {
                         EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
                         if (oppositeWeaponSlot.InventoryItem().itemData.Item() != null && oppositeWeaponSlot.InventoryItem().itemData.Item().IsWeapon() && oppositeWeaponSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
@@ -90,7 +90,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         SetupDraggedItem(activeEquipmentSlot.InventoryItem().itemData, activeSlot, activeSlot.InventoryItem().myCharacterEquipment);
 
-                        if (activeEquipmentSlot.EquipSlot() == EquipSlot.LeftHeldItem && activeEquipmentSlot.InventoryItem().itemData.Item().IsWeapon() && activeEquipmentSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
+                        if (activeEquipmentSlot.EquipSlot() == EquipSlot.LeftHeldItem1 && activeEquipmentSlot.InventoryItem().itemData.Item().IsWeapon() && activeEquipmentSlot.InventoryItem().itemData.Item().Weapon().isTwoHanded)
                             activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem().DisableSprite();
                     }
                 }

@@ -205,10 +205,10 @@ public class UnitMeshManager : MonoBehaviour
     {
         switch (equipSlot)
         {
-            case EquipSlot.LeftHeldItem:
+            case EquipSlot.LeftHeldItem1:
                 leftHeldItem.HideMeshes();
                 break;
-            case EquipSlot.RightHeldItem:
+            case EquipSlot.RightHeldItem1:
                 rightHeldItem.HideMeshes();
                 break;
             case EquipSlot.Helm:
@@ -218,6 +218,17 @@ public class UnitMeshManager : MonoBehaviour
                 bodyArmorMeshFilter.mesh = null;
                 break;
         }
+    }
+
+    public void ReturnHeldItemToPool(EquipSlot equipSlot)
+    {
+        if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1)
+            return;
+
+        if (equipSlot == EquipSlot.LeftHeldItem1)
+            leftHeldItem.ResetHeldItem();
+        else
+            rightHeldItem.ResetHeldItem();
     }
 
     public Transform LeftHeldItemParent => leftHeldItemParent;
