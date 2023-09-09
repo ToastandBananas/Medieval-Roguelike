@@ -16,12 +16,11 @@ public class UnitMeshManager : MonoBehaviour
     [SerializeField] MeshFilter baseMeshFilter;
     [SerializeField] MeshFilter bodyMeshFilter, headMeshFilter, hairMeshFilter, helmMeshFilter, tunicMeshFilter, bodyArmorMeshFilter;
 
+    [Header("Meshes")]
+    [SerializeField] Mesh baseMesh;
+
     public HeldItem leftHeldItem { get; private set; }
     public HeldItem rightHeldItem { get; private set; }
-
-    MeshRenderer leftHeldItemMeshRenderer, rightHeldItemMeshRenderer;
-    MeshRenderer[] bowMeshRenderers;
-    LineRenderer bowLineRenderer;
 
     public bool meshesHidden { get; private set; }
 
@@ -33,40 +32,18 @@ public class UnitMeshManager : MonoBehaviour
 
         if (baseMeshRenderer != null)
             meshRenderers.Add(baseMeshRenderer);
-        else if(bodyMeshRenderer != null)
+        if(bodyMeshRenderer != null)
             meshRenderers.Add(bodyMeshRenderer);
-        else if (headMeshRenderer != null)
+        if (headMeshRenderer != null)
             meshRenderers.Add(headMeshRenderer);
-        else if (hairMeshRenderer != null)
+        if (hairMeshRenderer != null)
             meshRenderers.Add(hairMeshRenderer);
-        else if (helmMeshRenderer != null)
+        if (helmMeshRenderer != null)
             meshRenderers.Add(helmMeshRenderer);
-        else if (tunicMeshRenderer != null)
+        if (tunicMeshRenderer != null)
             meshRenderers.Add(tunicMeshRenderer);
-        else if (bodyArmorMeshRenderer != null)
+        if (bodyArmorMeshRenderer != null)
             meshRenderers.Add(bodyArmorMeshRenderer);
-    }
-
-    void Start()
-    {
-        SetHeldItemMeshRenderers();
-    }
-
-    public void SetHeldItemMeshRenderers()
-    {
-        if (leftHeldItem != null)
-            leftHeldItemMeshRenderer = leftHeldItem.GetComponentInChildren<MeshRenderer>();
-
-        if (rightHeldItem != null)
-        {
-            if (rightHeldItem.ItemData().Item().IsRangedWeapon()) // The item is a Bow
-            {
-                bowMeshRenderers = rightHeldItem.GetComponentsInChildren<MeshRenderer>();
-                bowLineRenderer = rightHeldItem.GetComponentInChildren<LineRenderer>();
-            }
-            else
-                rightHeldItemMeshRenderer = rightHeldItem.GetComponentInChildren<MeshRenderer>();
-        }
     }
 
     public void ShowMeshRenderers()
@@ -76,30 +53,18 @@ public class UnitMeshManager : MonoBehaviour
 
         meshesHidden = false;
 
-        if (meshRenderers != null)
+        for (int i = 0; i < meshRenderers.Count; i++)
         {
-            for (int i = 0; i < meshRenderers.Count; i++)
-            {
-                meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            }
+            meshRenderers[i].enabled = true;
         }
 
-        if (leftHeldItemMeshRenderer != null)
-            leftHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        baseMeshFilter.mesh = baseMesh;
 
-        if (rightHeldItemMeshRenderer != null)
-            rightHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        if (leftHeldItem != null)
+            leftHeldItem.ShowMeshes();
 
-        if (bowMeshRenderers != null)
-        {
-            for (int i = 0; i < bowMeshRenderers.Length; i++)
-            {
-                bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            }
-
-            if (bowLineRenderer != null)
-                bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        }
+        if (rightHeldItem != null)
+            rightHeldItem.ShowMeshes();
     }
 
     public void HideMeshRenderers()
@@ -109,38 +74,18 @@ public class UnitMeshManager : MonoBehaviour
 
         meshesHidden = true;
 
-        if (meshRenderers != null)
+        for (int i = 0; i < meshRenderers.Count; i++)
         {
-            for (int i = 0; i < meshRenderers.Count; i++)
-            {
-                meshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-            }
+            meshRenderers[i].enabled = false;
         }
 
-        if (leftHeldItemMeshRenderer != null)
-            leftHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        baseMeshFilter.mesh = null;
 
-        if (rightHeldItemMeshRenderer != null)
-            rightHeldItemMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        if (leftHeldItem != null)
+            leftHeldItem.HideMeshes();
 
-        if (bowMeshRenderers != null)
-        {
-            for (int i = 0; i < bowMeshRenderers.Length; i++)
-            {
-                bowMeshRenderers[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-            }
-
-            if (bowLineRenderer != null)
-                bowLineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-        }
-    }
-
-    public void RemoveAllWeaponRenderers()
-    {
-        leftHeldItemMeshRenderer = null;
-        rightHeldItemMeshRenderer = null;
-        bowMeshRenderers = null;
-        bowLineRenderer = null;
+        if (rightHeldItem != null)
+            rightHeldItem.HideMeshes();
     }
 
     public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;
@@ -183,6 +128,9 @@ public class UnitMeshManager : MonoBehaviour
 
     public void SetupMesh(EquipSlot equipSlot, Equipment equipment)
     {
+        if (equipment == null)
+            return;
+
         switch (equipSlot)
         {
             case EquipSlot.Helm:
@@ -205,30 +153,58 @@ public class UnitMeshManager : MonoBehaviour
     {
         switch (equipSlot)
         {
-            case EquipSlot.LeftHeldItem1:
-                leftHeldItem.HideMeshes();
-                break;
-            case EquipSlot.RightHeldItem1:
-                rightHeldItem.HideMeshes();
-                break;
             case EquipSlot.Helm:
-                helmMeshFilter.mesh = null;
+                helmMeshRenderer.enabled = false;
                 break;
             case EquipSlot.BodyArmor:
+                bodyArmorMeshRenderer.enabled = false;
+                break;
+        }
+    }
+
+    public void RemoveMesh(EquipSlot equipSlot)
+    {
+        switch (equipSlot)
+        {
+            case EquipSlot.Helm:
+                helmMeshRenderer.material = null;
+                helmMeshFilter.mesh = null;
+                helmMeshRenderer.enabled = false;
+                break;
+            case EquipSlot.BodyArmor:
+                bodyArmorMeshRenderer.material = null;
                 bodyArmorMeshFilter.mesh = null;
+                bodyArmorMeshRenderer.enabled = false;
                 break;
         }
     }
 
     public void ReturnHeldItemToPool(EquipSlot equipSlot)
     {
-        if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1)
+        if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
             return;
 
-        if (equipSlot == EquipSlot.LeftHeldItem1)
-            leftHeldItem.ResetHeldItem();
-        else
+        if (myUnit.CharacterEquipment().EquipSlotHasItem(equipSlot) == false)
+            return;
+
+        if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
+        {
+            if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment().EquippedItemDatas()[(int)equipSlot])
+            {
+                leftHeldItem.ResetHeldItem();
+                leftHeldItem = null;
+            }
+            else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment().EquippedItemDatas()[(int)equipSlot])
+            {
+                rightHeldItem.ResetHeldItem();
+                rightHeldItem = null;
+            }
+        }
+        else if (rightHeldItem != null)
+        {
             rightHeldItem.ResetHeldItem();
+            rightHeldItem = null;
+        }
     }
 
     public Transform LeftHeldItemParent => leftHeldItemParent;

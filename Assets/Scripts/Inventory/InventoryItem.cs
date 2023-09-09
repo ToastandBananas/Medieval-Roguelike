@@ -142,9 +142,9 @@ public class InventoryItem : MonoBehaviour
         return new Vector2(((-width * slotSize) / 2) + (slotSize / 2), ((height * slotSize) / 2) - (slotSize / 2));
     }
 
-    public void SetupSprite(bool fullyOpaque)
+    public void SetupIconSprite(bool fullyOpaque)
     {
-        ItemData spriteItemData = null;
+        ItemData spriteItemData;
         if ((itemData == null || itemData.Item() == null) && mySlot is EquipmentSlot)
         {
             EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
@@ -178,7 +178,21 @@ public class InventoryItem : MonoBehaviour
             imageColor.a = 0.3f;
 
         iconImage.color = imageColor;
-        iconImage.enabled = true;
+
+        if (mySlot is EquipmentSlot)
+        {
+            EquipmentSlot myEquipmentSlot = (EquipmentSlot)mySlot;
+            if (myEquipmentSlot.MyCharacterEquipment().IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot())
+                && (myEquipmentSlot.MyCharacterEquipment().currentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot() != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot() != EquipSlot.RightHeldItem1)
+                || (myEquipmentSlot.MyCharacterEquipment().currentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot() != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot() != EquipSlot.RightHeldItem2))
+            {
+                DisableIconImage();
+            }
+            else
+                EnableIconImage();
+        }
+        else
+            EnableIconImage();
     }
 
     public void SetupDraggedSprite()
@@ -243,10 +257,18 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    public void DisableSprite()
+    public void RemoveIconSprite() => iconImage.sprite = null;
+
+    public void DisableIconImage()
     {
-        iconImage.sprite = null;
         iconImage.enabled = false;
+        stackSizeText.enabled = false;
+    }
+
+    public void EnableIconImage()
+    {
+        iconImage.enabled = true;
+        stackSizeText.enabled = true;
     }
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;

@@ -57,6 +57,9 @@ public class Projectile : MonoBehaviour
         transform.localEulerAngles = ammunitionItem.AmmunitionRotation();
         transform.localScale = ammunitionItem.AmmunitionScale();
 
+        if (shooter.unitMeshManager.IsVisibleOnScreen() == false)
+            meshRenderer.enabled = false;
+
         gameObject.SetActive(true);
     }
 
@@ -95,6 +98,7 @@ public class Projectile : MonoBehaviour
         transform.parent = ProjectilePool.Instance.transform;
         projectileCollider.enabled = true;
         trailRenderer.enabled = true;
+        meshRenderer.enabled = true;
         moveProjectile = true;
 
         SetupTrail();
@@ -325,4 +329,6 @@ public class Projectile : MonoBehaviour
     }
 
     public ItemData ItemData() => itemData;
+
+    public MeshRenderer MeshRenderer => meshRenderer;
 }

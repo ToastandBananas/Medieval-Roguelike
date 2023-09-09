@@ -593,6 +593,7 @@ MonoBehaviour:
   - {fileID: 8375927464218931062}
   - {fileID: 2419888631191152083}
   bowLineRenderer: {fileID: 7943284661359707032}
+  lineRenderer: {fileID: 7943284661359707047}
 --- !u!1 &7943284661359707045
 GameObject:
   m_ObjectHideFlags: 0

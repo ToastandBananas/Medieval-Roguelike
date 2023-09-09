@@ -269,8 +269,24 @@ MonoBehaviour:
     accuracyModifier: 0
     blockPower: 0
     hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    hasBeenRandomized: 0
   startingEquipment:
-  - {fileID: 11400000, guid: 62d61fdafcd0ff34186a20d052051ef9, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

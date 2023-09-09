@@ -4,7 +4,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, LegArmor, Gloves, Boots, Backpack }
-public enum HeldItemSet { One = 1, Two = 2 }
+public enum WeaponSet { One = 1, Two = 2 }
 
 public class CharacterEquipment : MonoBehaviour
 {
@@ -12,18 +12,20 @@ public class CharacterEquipment : MonoBehaviour
 
     [SerializeField] ItemData[] equippedItemDatas = new ItemData[Enum.GetValues(typeof(EquipSlot)).Length];
 
-    [NamedArray(new string[] { "Left Held Item", "Right Held Item", "Helm", "Body Armor", "Leg Armor", "Gloves", "Boots", "Backpack" })]
+    [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Leg Armor", "Gloves", "Boots", "Backpack" })]
     [SerializeField] Equipment[] startingEquipment = new Equipment[Enum.GetValues(typeof(EquipSlot)).Length];
 
     public List<EquipmentSlot> slots { get; private set; }
 
-    public HeldItemSet currentHeldItemSet { get; private set; }
+    public WeaponSet currentWeaponSet { get; private set; }
 
     bool slotVisualsCreated;
 
     void Awake()
     {
         slots = new List<EquipmentSlot>();
+
+        currentWeaponSet = WeaponSet.One;
 
         // Setup our starting equipment
         for (int i = 0; i < startingEquipment.Length; i++)
@@ -35,8 +37,6 @@ public class CharacterEquipment : MonoBehaviour
             CreateSlotVisuals();
         else
             SetupItems();
-
-        currentHeldItemSet = HeldItemSet.One;
     }
 
     // For testing:
@@ -81,7 +81,12 @@ public class CharacterEquipment : MonoBehaviour
 
         int targetEquipSlotIndex = (int)targetEquipSlot;
         if (newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
-            targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem1;
+        {
+            if (currentWeaponSet == WeaponSet.One)
+                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem1;
+            else
+                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem2;
+        }
 
         // If trying to place the item back into the slot it came from
         if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot((EquipSlot)targetEquipSlotIndex) == InventoryUI.Instance.parentSlotDraggedFrom)
@@ -113,6 +118,8 @@ public class CharacterEquipment : MonoBehaviour
 
             if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
                 equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
+            else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item().IsWeapon() && newItemData.Item().Weapon().isTwoHanded)
+                equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
 
             // Setup the target slot's item data/sprites & the mesh if necessary
             SetupNewItemIcon(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newItemData);
@@ -249,7 +256,7 @@ public class CharacterEquipment : MonoBehaviour
 
             equippedItemDatas[i].RandomizeData();
 
-            if ((i == (int)EquipSlot.LeftHeldItem1 || i == (int)EquipSlot.RightHeldItem1)
+            if (IsHeldItemEquipSlot((EquipSlot)i)
                 && ((equippedItemDatas[i].Item().IsWeapon() && equippedItemDatas[i].Item().Weapon().isTwoHanded && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)] != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item() != null)
                 || (EquipSlotHasItem((int)GetOppositeWeaponEquipSlot((EquipSlot)i)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item().IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item().Weapon().isTwoHanded)))
             {
@@ -262,6 +269,14 @@ public class CharacterEquipment : MonoBehaviour
 
                 SetupNewItemIcon(GetEquipmentSlotFromIndex((int)EquipSlot.LeftHeldItem1), equippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
                 SetupEquipmentMesh(EquipSlot.LeftHeldItem1, equippedItemDatas[i]);
+            }
+            else if (i == (int)EquipSlot.RightHeldItem2 && equippedItemDatas[i].Item().IsWeapon() && equippedItemDatas[i].Item().Weapon().isTwoHanded)
+            {
+                equippedItemDatas[(int)EquipSlot.LeftHeldItem2] = equippedItemDatas[i];
+                equippedItemDatas[i] = null;
+
+                SetupNewItemIcon(GetEquipmentSlotFromIndex((int)EquipSlot.LeftHeldItem2), equippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
+                SetupEquipmentMesh(EquipSlot.LeftHeldItem2, equippedItemDatas[i]);
             }
             else
             {
@@ -359,7 +374,7 @@ public class CharacterEquipment : MonoBehaviour
         if (equippedItemDatas[(int)equipSlot] != null && equippedItemDatas[(int)equipSlot].Item() != null)
             return true;
 
-        if (equipSlot == EquipSlot.RightHeldItem1 && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)] != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item() != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item().IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item().Weapon().isTwoHanded)
+        if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(GetOppositeWeaponEquipSlot(equipSlot)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item().IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item().Weapon().isTwoHanded)
             return true;
         return false;
     }
@@ -375,7 +390,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public EquipSlot GetOppositeWeaponEquipSlot(EquipSlot equipSlot)
     {
-        if (equipSlot == EquipSlot.LeftHeldItem1 && equipSlot == EquipSlot.RightHeldItem1)
+        if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
         {
             Debug.LogWarning($"{equipSlot} is not a weapon slot...");
             return equipSlot;
@@ -383,8 +398,12 @@ public class CharacterEquipment : MonoBehaviour
 
         if (equipSlot == EquipSlot.LeftHeldItem1)
             return EquipSlot.RightHeldItem1;
-        else
+        else if (equipSlot == EquipSlot.RightHeldItem1)
             return EquipSlot.LeftHeldItem1;
+        else if (equipSlot == EquipSlot.LeftHeldItem2)
+            return EquipSlot.RightHeldItem2;
+        else
+            return EquipSlot.LeftHeldItem2;
     }
 
     EquipmentSlot GetEquipmentSlotFromIndex(int index)
@@ -422,6 +441,15 @@ public class CharacterEquipment : MonoBehaviour
         if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
             return;
 
+        if (EquipSlotIsFull(equipSlot) == false || itemData == null || itemData.Item() == null)
+            return;
+
+        if (currentWeaponSet == WeaponSet.One && (equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2))
+            return;
+
+        if (currentWeaponSet == WeaponSet.Two && (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1))
+            return;
+
         if (IsHeldItemEquipSlot(equipSlot))
         {
             HeldItem heldItem = null;
@@ -433,6 +461,8 @@ public class CharacterEquipment : MonoBehaviour
                 heldItem = HeldItemBasePool.Instance.GetShieldBaseFromPool();
 
             heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
+
+            ActionSystemUI.Instance.UpdateActionVisuals();
         }
         else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
         {
@@ -451,41 +481,106 @@ public class CharacterEquipment : MonoBehaviour
 
         if (IsHeldItemEquipSlot(equipSlot))
         {
-            if (equipSlot == EquipSlot.LeftHeldItem1)
+            /*if (equipSlot == EquipSlot.LeftHeldItem1)
             {
                 EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
                 if (equippedItemDatas[(int)equipSlot].Item().IsWeapon() && equippedItemDatas[(int)equipSlot].Item().Weapon().isTwoHanded)
                     equipSlot = oppositeWeaponEquipSlot;
-            }
+            }*/
 
             myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
         }
         else
-            myUnit.unitMeshManager.HideMesh(equipSlot);
+            myUnit.unitMeshManager.RemoveMesh(equipSlot);
     }
 
-    public void ToggleHeldItemSet()
+    public void SwapWeaponSet()
     {
-        // Hide currently held item icons and get rid of held item meshes
+        if (currentWeaponSet == WeaponSet.One)
+        {
+            currentWeaponSet = WeaponSet.Two;
 
-        // Check if the other item set has any equipped items
+            // Remove held item bases for current held items
+            myUnit.unitMeshManager.ReturnHeldItemToPool(EquipSlot.LeftHeldItem1);
+            myUnit.unitMeshManager.ReturnHeldItemToPool(EquipSlot.RightHeldItem1);
 
-            // Show the icons for these items
+            // Create held item bases for the other weapon set
+            SetupEquipmentMesh(EquipSlot.LeftHeldItem2, equippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
+            SetupEquipmentMesh(EquipSlot.RightHeldItem2, equippedItemDatas[(int)EquipSlot.RightHeldItem2]);
 
-            // Create the held item meshes for these items
+            if (slotVisualsCreated)
+            {
+                // Hide current held item icons
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem1).DisableSlotImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem1).InventoryItem().DisableIconImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem1).DisableSlotImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem1).InventoryItem().DisableIconImage();
+
+                // Show held item icons for the other weapon set
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem2).EnableSlotImage();
+                if (myUnit.CharacterEquipment().EquipSlotIsFull(EquipSlot.LeftHeldItem2))
+                    myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem2).InventoryItem().EnableIconImage();
+
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem2).EnableSlotImage();
+                if (myUnit.CharacterEquipment().EquipSlotIsFull(EquipSlot.RightHeldItem2))
+                    myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem2).InventoryItem().EnableIconImage();
+            }
+        }
+        else
+        {
+            currentWeaponSet = WeaponSet.One;
+
+            // Remove held item bases for current held items
+            myUnit.unitMeshManager.ReturnHeldItemToPool(EquipSlot.LeftHeldItem2);
+            myUnit.unitMeshManager.ReturnHeldItemToPool(EquipSlot.RightHeldItem2);
+
+            // Create held item bases for the other weapon set
+            SetupEquipmentMesh(EquipSlot.LeftHeldItem1, equippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
+            SetupEquipmentMesh(EquipSlot.RightHeldItem1, equippedItemDatas[(int)EquipSlot.RightHeldItem1]);
+
+            if (slotVisualsCreated)
+            {
+                // Hide current held item icons
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem2).DisableSlotImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem2).InventoryItem().DisableIconImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem2).DisableSlotImage();
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem2).InventoryItem().DisableIconImage();
+
+                // Show held item icons for the other weapon set
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem1).EnableSlotImage();
+                if (myUnit.CharacterEquipment().EquipSlotIsFull(EquipSlot.LeftHeldItem1))
+                    myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.LeftHeldItem1).InventoryItem().EnableIconImage();
+
+                myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem1).EnableSlotImage();
+                if (myUnit.CharacterEquipment().EquipSlotIsFull(EquipSlot.RightHeldItem1))
+                    myUnit.CharacterEquipment().GetEquipmentSlot(EquipSlot.RightHeldItem1).InventoryItem().EnableIconImage();
+            }
+        }
+
+        ActionSystemUI.Instance.UpdateActionVisuals();
     }
 
-    public bool IsDualWielding() => equippedItemDatas[(int)EquipSlot.LeftHeldItem1] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsMeleeWeapon();
+    public bool IsDualWielding() => 
+        (currentWeaponSet == WeaponSet.One && EquipSlotHasItem(EquipSlot.LeftHeldItem1) && EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsMeleeWeapon())
+        || (currentWeaponSet == WeaponSet.Two && EquipSlotHasItem(EquipSlot.LeftHeldItem2) && EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item().IsMeleeWeapon() && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item().IsMeleeWeapon());
 
-    public bool MeleeWeaponEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem1] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsMeleeWeapon()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem1] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsMeleeWeapon());
+    public bool MeleeWeaponEquipped() => 
+        (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsMeleeWeapon()) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsMeleeWeapon())))
+        || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item().IsMeleeWeapon()) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item().IsMeleeWeapon())));
 
-    public bool RangedWeaponEquipped() => (equippedItemDatas[(int)EquipSlot.RightHeldItem1] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsRangedWeapon()) || (equippedItemDatas[(int)EquipSlot.LeftHeldItem1] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsRangedWeapon());
+    public bool RangedWeaponEquipped() => 
+        (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsRangedWeapon()) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsRangedWeapon())))
+        || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item().IsRangedWeapon()) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item().IsRangedWeapon())));
 
-    public bool ShieldEquipped() => (equippedItemDatas[(int)EquipSlot.LeftHeldItem1] != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsShield()) || (equippedItemDatas[(int)EquipSlot.RightHeldItem1] != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item() != null && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsShield());
+    public bool ShieldEquipped() =>
+        (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsShield()) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsShield())))
+        || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item().IsShield()) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item().IsShield())));
 
-    public bool IsUnarmed() => (EquipSlotHasItem(EquipSlot.LeftHeldItem1) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsWeapon() == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem1) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsWeapon() == false);
+    public bool IsUnarmed() => 
+        (currentWeaponSet == WeaponSet.One && (EquipSlotHasItem(EquipSlot.LeftHeldItem1) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item().IsWeapon() == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem1) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item().IsWeapon() == false))
+        || (currentWeaponSet == WeaponSet.Two && (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item().IsWeapon() == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item().IsWeapon() == false));
 
-    public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1;
+    public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
     public EquipmentSlot GetEquipmentSlot(EquipSlot equipSlot)
     {
@@ -506,8 +601,6 @@ public class CharacterEquipment : MonoBehaviour
         }
         return false;
     }
-
-    public void SetCurrentHeldItemSet(HeldItemSet heldItemSet) => currentHeldItemSet = heldItemSet;
 
     public ItemData[] EquippedItemDatas() => equippedItemDatas;
 

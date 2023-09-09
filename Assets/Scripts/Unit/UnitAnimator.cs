@@ -105,8 +105,6 @@ public class UnitAnimator : MonoBehaviour
 
         if (unit.unitMeshManager.rightHeldItem != null)
             Die_DropHeldItem(unit.unitMeshManager.rightHeldItem, attackerTransform, diedForward);
-
-        unit.unitMeshManager.RemoveAllWeaponRenderers();
     }
 
     void Die_DropHeldItem(HeldItem heldItem, Transform attackerTransform, bool diedForward)
@@ -128,9 +126,6 @@ public class UnitAnimator : MonoBehaviour
                 heldRangedWeapon.loadedProjectile.Disable();
             }
         }
-
-        // Remove references to weapon renderers for the dying unit
-        unit.unitMeshManager.RemoveAllWeaponRenderers();
 
         // Get rid of the HeldItem
         if (heldItem == unit.unitMeshManager.leftHeldItem || (heldItem.itemData.Item().IsWeapon() && heldItem.itemData.Item().Weapon().isTwoHanded))

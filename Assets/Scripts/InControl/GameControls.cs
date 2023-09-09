@@ -23,10 +23,13 @@ public class GameControls : MonoBehaviour
         gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftBumper);
 
         gamePlayActions.skipTurn.AddDefaultBinding(Key.Space);
-        gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Cirle(PS4) / B(Xbox)
+        gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
 
         gamePlayActions.cancelAction.AddDefaultBinding(Key.Space);
-        gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Cirle(PS4) / B(Xbox)
+        gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+
+        gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
+        gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4)/ Y(Xbox)
 
         // Mouse Buttons
         gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);

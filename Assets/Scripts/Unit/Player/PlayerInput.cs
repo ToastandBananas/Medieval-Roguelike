@@ -92,6 +92,9 @@ public class PlayerInput : MonoBehaviour
                 // If the player is trying to perform the Turn Action
                 if (GameControls.gamePlayActions.turnMode.IsPressed || player.unitActionHandler.selectedAction is TurnAction)
                     HandleTurnMode();
+                // If the player is trying to swap their weapon set
+                else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
+                    player.CharacterEquipment().SwapWeaponSet();
                 // If the player selects a grid position to try and perform an action
                 else if (GameControls.gamePlayActions.select.WasPressed)
                     HandleActions();

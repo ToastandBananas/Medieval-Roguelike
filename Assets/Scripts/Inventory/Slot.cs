@@ -28,10 +28,20 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             return;
         }
 
-        inventoryItem.SetupSprite(true);
+        inventoryItem.SetupIconSprite(true);
     }
 
-    public void HideSlotImage() => inventoryItem.DisableSprite();
+    public void EnableSlotImage()
+    {
+        image.enabled = true;
+    }
+
+    public void DisableSlotImage()
+    {
+        image.enabled = false;
+    }
+
+    public void HideSlotImage() => inventoryItem.DisableIconImage();
 
     public void SetFullSlotSprite() => image.sprite = fullSlotSprite;
 

@@ -5,6 +5,7 @@ public class HeldRangedWeapon : HeldItem
 {
     [Header("Line Renderer")]
     [SerializeField] BowLineRenderer bowLineRenderer;
+    [SerializeField] LineRenderer lineRenderer;
 
     public Projectile loadedProjectile { get; private set; }
     public bool isLoaded { get; private set; }
@@ -101,5 +102,36 @@ public class HeldRangedWeapon : HeldItem
         float maxRange = itemData.Item().Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
+    }
+
+    public override void HideMeshes()
+    {
+        base.HideMeshes();
+
+        lineRenderer.enabled = false;
+        if (loadedProjectile != null)
+            loadedProjectile.MeshRenderer.enabled = false;
+    }
+
+    public override void ShowMeshes()
+    {
+        base.ShowMeshes();
+
+        lineRenderer.enabled = true;
+        if (loadedProjectile != null)
+            loadedProjectile.MeshRenderer.enabled = true;
+    }
+
+    public override void ResetHeldItem()
+    {
+        base.ResetHeldItem();
+
+        if (loadedProjectile != null)
+        {
+            // To Do: Send the projectile back into the Unit's quiver (or inventory if they don't have one)
+
+            isLoaded = false;
+            loadedProjectile.Disable();
+        }
     }
 }

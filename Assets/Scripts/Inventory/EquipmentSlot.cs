@@ -49,6 +49,10 @@ public class EquipmentSlot : Slot
             return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.LeftHeldItem1);
         else if (equipSlot == global::EquipSlot.LeftHeldItem1)
             return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.RightHeldItem1);
+        else if (equipSlot == global::EquipSlot.RightHeldItem2)
+            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.LeftHeldItem2);
+        else if (equipSlot == global::EquipSlot.LeftHeldItem2)
+            return myCharacterEquipment.GetEquipmentSlot(global::EquipSlot.RightHeldItem2);
 
         Debug.LogWarning($"{equipSlot} is not a weapon slot...");
         return null;
@@ -73,25 +77,25 @@ public class EquipmentSlot : Slot
             if (inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (EquipSlot() == global::EquipSlot.LeftHeldItem1)
+                if (EquipSlot() == global::EquipSlot.LeftHeldItem1 || EquipSlot() == global::EquipSlot.LeftHeldItem2)
                 {
-                    inventoryItem.SetupSprite(true);
-                    oppositeWeaponSlot.inventoryItem.SetupSprite(false);
+                    inventoryItem.SetupIconSprite(true);
+                    oppositeWeaponSlot.inventoryItem.SetupIconSprite(false);
                 }
                 else
                 {
-                    inventoryItem.SetupSprite(false);
-                    oppositeWeaponSlot.inventoryItem.SetupSprite(true);
+                    inventoryItem.SetupIconSprite(false);
+                    oppositeWeaponSlot.inventoryItem.SetupIconSprite(true);
                 }
             }
             else
-                inventoryItem.SetupSprite(true);
+                inventoryItem.SetupIconSprite(true);
         }
         else
-            inventoryItem.SetupSprite(true);
+            inventoryItem.SetupIconSprite(true);
     }
 
-    public bool IsHeldItemSlot() => equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1;
+    public bool IsHeldItemSlot() => equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2;
 
     public override void HighlightSlots()
     {
@@ -103,7 +107,7 @@ public class EquipmentSlot : Slot
         {
             if (draggedItem.Equipment().EquipSlot() == equipSlot)
                 validSlot = true;
-            else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1))
+            else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2))
                 validSlot = true;
         }
 

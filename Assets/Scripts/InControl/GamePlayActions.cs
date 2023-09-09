@@ -2,7 +2,7 @@
 
 public class GamePlayActions : PlayerActionSet
 {
-    public PlayerAction select, context, turnMode, skipTurn, cancelAction;
+    public PlayerAction select, context, turnMode, skipTurn, cancelAction, swapWeapons;
 
     // Mouse Buttons
     public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
@@ -29,6 +29,7 @@ public class GamePlayActions : PlayerActionSet
         turnMode = CreatePlayerAction("TurnMode");
         skipTurn = CreatePlayerAction("SkipTurn");
         cancelAction = CreatePlayerAction("CancelAction");
+        swapWeapons = CreatePlayerAction("SwapWeapons");
 
         leftMouseClick = CreatePlayerAction("LeftMouseClick");
         rightMouseClick = CreatePlayerAction("RightMouseClick");
