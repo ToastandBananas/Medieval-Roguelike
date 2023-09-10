@@ -4,6 +4,7 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using UnityEditor.AnimatedValues;
 using UnityEngine;
 
 public class Vision : MonoBehaviour
@@ -55,7 +56,7 @@ public class Vision : MonoBehaviour
         if (knownUnits.ContainsKey(unitToCheck) == false)
             return false;
 
-        if (unitToCheck.unitMeshManager.CanSeeMeshRenderers() == false)
+        if (unitToCheck.unitMeshManager.meshesHidden == false)
             return false;
 
         if (IsInLineOfSight_Raycast(unitToCheck) == false)
@@ -96,7 +97,7 @@ public class Vision : MonoBehaviour
     {
         float sphereCastRadius = 0.1f;
         Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight() * 2f;
-        Vector3 shootDir = ((unitToCheck.WorldPosition() + offset) - transform.position).normalized;
+        Vector3 shootDir = (unitToCheck.WorldPosition() + offset - transform.position).normalized;
         float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + offset);
         if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask()))
             return false; // Blocked by an obstacle
@@ -105,7 +106,7 @@ public class Vision : MonoBehaviour
 
     bool IsInLineOfSight_Raycast(Unit unitToCheck)
     {
-        Vector3 dirToTarget = ((unitToCheck.WorldPosition() + yOffset) - transform.position).normalized;
+        Vector3 dirToTarget = (unitToCheck.WorldPosition() + yOffset - transform.position).normalized;
         float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + yOffset);
 
         // If target Unit is in the view angle and no obstacles are in the way
@@ -150,7 +151,7 @@ public class Vision : MonoBehaviour
                 // If the Unit in the view radius is already "known", skip them
                 if (knownUnits.ContainsKey(targetUnit)) continue;
 
-                Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+                Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 
                 // If target Unit is in the view angle
                 if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
@@ -177,7 +178,7 @@ public class Vision : MonoBehaviour
                     if (knownUnit.Key.transform == unitsInViewRadius[j].transform && unitsInViewRadius[j].transform != unit.transform)
                     {
                         // Skip if they're in the view radius and there's no obstacles in the way
-                        Vector3 dirToTarget = ((unitsInViewRadius[j].transform.position + yOffset) - transform.position).normalized;
+                        Vector3 dirToTarget = (unitsInViewRadius[j].transform.position + yOffset - transform.position).normalized;
                         float distToTarget = Vector3.Distance(transform.position, unitsInViewRadius[j].transform.position);
 
                         // If target Unit is in the view angle and no obstacles are in the way
@@ -190,7 +191,7 @@ public class Vision : MonoBehaviour
                 
                 if (shouldHide && knownUnit.Key != unit)
                 {
-                    if (Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
+                    if (knownUnit.Key.unitActionHandler.targetEnemyUnit != unit && Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
                         knownUnit.Key.unitMeshManager.HideMeshRenderers();
                 }
                 else
@@ -239,7 +240,7 @@ public class Vision : MonoBehaviour
                     else
                         unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                    if (unit.IsPlayer()) // Hide the NPC's mesh renderers
+                    if (unit.IsPlayer() && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit) // Hide the NPC's mesh renderers
                         knownUnit.Key.unitMeshManager.HideMeshRenderers();
                 }
                 else // We can still see the Unit, so reset their lose sight time
@@ -257,7 +258,7 @@ public class Vision : MonoBehaviour
                 else
                     unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
+                if (unit.IsPlayer() && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
                     knownUnit.Key.unitMeshManager.HideMeshRenderers();
             }
         }
@@ -297,7 +298,7 @@ public class Vision : MonoBehaviour
             knownUnits[unitToAdd] = loseSightTime;
 
         // If this is the Player's Vision, show the newly visible NPC Unit
-        if (unit.IsPlayer() && unitToAdd.unitMeshManager.CanSeeMeshRenderers() == false)
+        if (unit.IsPlayer())
             unitToAdd.unitMeshManager.ShowMeshRenderers();
     }
 

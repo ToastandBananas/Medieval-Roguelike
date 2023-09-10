@@ -65,6 +65,8 @@ public class UnitMeshManager : MonoBehaviour
 
         if (rightHeldItem != null)
             rightHeldItem.ShowMeshes();
+
+        Debug.Log("Showing " + myUnit.name);
     }
 
     public void HideMeshRenderers()
@@ -86,6 +88,8 @@ public class UnitMeshManager : MonoBehaviour
 
         if (rightHeldItem != null)
             rightHeldItem.HideMeshes();
+
+        Debug.Log("Hiding " + myUnit.name);
     }
 
     public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;
@@ -211,7 +215,5 @@ public class UnitMeshManager : MonoBehaviour
 
     public Transform RightHeldItemParent => rightHeldItemParent;
 
-    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && CanSeeMeshRenderers() && UnitManager.Instance.player.vision.IsKnown(myUnit);
-
-    public bool CanSeeMeshRenderers() => bodyMeshRenderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
+    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.Instance.player.vision.IsKnown(myUnit);
 }
