@@ -3,7 +3,7 @@ using UnityEngine;
 public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, WarHammer, Spear, Polearm }
 
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Item/Weapon")]
-public class Weapon : Equipment
+public class Weapon : HeldEquipment
 {
     [Header("Weapon Info")]
     public WeaponType weaponType = WeaponType.Sword;

@@ -392,6 +392,8 @@ MonoBehaviour:
   helmMeshFilter: {fileID: 1942665837762366662}
   tunicMeshFilter: {fileID: 7129099700918780583}
   bodyArmorMeshFilter: {fileID: 1045981531652197624}
+  baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
+    type: 3}
 --- !u!114 &1918958863613582635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,6 +626,7 @@ Transform:
   m_Children:
   - {fileID: 2363820771724870906}
   - {fileID: 5312395673242293457}
+  - {fileID: 3239361306439021913}
   - {fileID: 5482159175935672585}
   m_Father: {fileID: 1377663264827766488}
   m_RootOrder: 1
@@ -674,8 +677,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotsParent: {fileID: 0}
   myUnit: {fileID: 4471245059765168945}
-  amountOfSlots: 20
-  maxSlots: 20
+  amountOfSlots: 100
+  maxSlots: 100
   maxSlotsPerRow: 10
   itemDatas: []
 --- !u!1 &4629364220367564124
@@ -791,7 +794,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6452321778511306523}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &504428574042382846
 MonoBehaviour:
@@ -1277,7 +1280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5312395673242293457
 Transform:
   m_ObjectHideFlags: 0
@@ -1342,6 +1345,56 @@ Transform:
   m_Father: {fileID: 1377663264438590629}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7806779033871216840
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3239361306439021913}
+  - component: {fileID: 6336911315626969922}
+  m_Layer: 3
+  m_Name: Quiver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &3239361306439021913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7806779033871216840}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6452321778511306523}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6336911315626969922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7806779033871216840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74af82c4837da1549b7223e815a6691e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotsParent: {fileID: 0}
+  myUnit: {fileID: 4471245059765168945}
+  amountOfSlots: 2
+  maxSlots: 6
+  maxSlotsPerRow: 6
+  itemDatas: []
 --- !u!1 &8097862732910161683
 GameObject:
   m_ObjectHideFlags: 0

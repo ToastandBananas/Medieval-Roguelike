@@ -1,14 +1,14 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Shield", menuName = "Inventory/Item/Shield")]
-public class Shield : HeldEquipment
+[CreateAssetMenu(fileName = "New Quiver", menuName = "Inventory/Item/Quiver")]
+public class Quiver : Equipment
 {
-    [Header("Block Power")]
-    public int minBlockPower = 1;
-    public int maxBlockPower = 5;
+    [SerializeField] ProjectileType allowedProjectileType;
+    [SerializeField] int ammoStackCount = 2;
 
-    [Header("Modifiers")]
-    public float blockChanceAddOn = 10f;
+    public int AmmoStackCount => ammoStackCount;
+
+    public ProjectileType AllowedProjectileType => allowedProjectileType;
 
     public override bool IsBag() => false;
 
@@ -22,13 +22,13 @@ public class Shield : HeldEquipment
 
     public override bool IsMeleeWeapon() => false;
 
-    public override bool IsPortableContainer() => false;
+    public override bool IsPortableContainer() => true;
 
     public override bool IsRangedWeapon() => false;
 
     public override bool IsAmmunition() => false;
 
-    public override bool IsShield() => true;
+    public override bool IsShield() => false;
 
     public override bool IsWeapon() => false;
 

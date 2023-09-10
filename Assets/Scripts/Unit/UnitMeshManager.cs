@@ -65,8 +65,6 @@ public class UnitMeshManager : MonoBehaviour
 
         if (rightHeldItem != null)
             rightHeldItem.ShowMeshes();
-
-        Debug.Log("Showing " + myUnit.name);
     }
 
     public void HideMeshRenderers()
@@ -88,8 +86,6 @@ public class UnitMeshManager : MonoBehaviour
 
         if (rightHeldItem != null)
             rightHeldItem.HideMeshes();
-
-        Debug.Log("Hiding " + myUnit.name);
     }
 
     public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;

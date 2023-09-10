@@ -94,6 +94,8 @@ public abstract class Item : ScriptableObject
 
     public Equipment Equipment() => this as Equipment;
 
+    public HeldEquipment HeldEquipment() => this as HeldEquipment;
+
     public Ammunition Ammunition() => this as Ammunition;
 
     public Shield Shield() => this as Shield;
@@ -101,6 +103,8 @@ public abstract class Item : ScriptableObject
     public Weapon Weapon() => this as Weapon;
 
     public Wearable Wearable() => this as Wearable;
+
+    public Quiver Quiver() => this as Quiver;
 
     public abstract bool IsEquipment();
 
