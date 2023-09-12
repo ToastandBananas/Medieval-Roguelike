@@ -134,4 +134,6 @@ public class ItemData
     public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
 
     public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
+
+    public bool HasBeenRandomized => hasBeenRandomized;
 }

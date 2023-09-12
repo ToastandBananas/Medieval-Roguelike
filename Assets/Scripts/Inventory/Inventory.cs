@@ -7,20 +7,18 @@ public class Inventory : MonoBehaviour
     [SerializeField] Unit myUnit;
 
     [Header("Slot Counts")]
-    [SerializeField] int amountOfSlots = 20;
-    [SerializeField] int maxSlots = 20;
-    [SerializeField] int maxSlotsPerRow = 10;
+    [SerializeField] InventoryLayout inventoryLayout;
     int maxSlotsPerColumn;
 
     [Header("Items in Inventory")]
-    [SerializeField] List<ItemData> itemDatas = new List<ItemData>();
+    [SerializeField] protected List<ItemData> itemDatas = new List<ItemData>();
 
     List<InventorySlot> slots = new List<InventorySlot>();
     List<SlotCoordinate> slotCoordinates = new List<SlotCoordinate>();
 
-    bool slotVisualsCreated;
+    protected bool slotVisualsCreated;
 
-    void Awake()
+    public virtual void Awake()
     {
         CreateSlotCoordinates();
 
@@ -30,45 +28,46 @@ public class Inventory : MonoBehaviour
             SetupItems();
     }
 
-    public bool TryAddItem(ItemData newItemData)
+    public virtual bool TryAddItem(ItemData newItemData)
     {
-        if (newItemData.Item() != null)
-        {
-            SlotCoordinate targetSlotCoordinate;
-            if (newItemData.InventorySlotCoordinate() == null)
-            {
-                targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
-                if (targetSlotCoordinate != null)
-                {
-                    newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
-                    targetSlotCoordinate.SetupNewItem(newItemData);
-                }
-            }
-            else
-                targetSlotCoordinate = newItemData.InventorySlotCoordinate();
+        if (newItemData == null || newItemData.Item() == null)
+            return false;
 
+        if (newItemData.HasBeenRandomized == false)
+            newItemData.RandomizeData();
+        
+        SlotCoordinate targetSlotCoordinate;
+
+        // If the item data hasn't been assigned a slot coordinate, do so now
+        if (newItemData.InventorySlotCoordinate() == null)
+        {
+            targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
             if (targetSlotCoordinate != null)
             {
-                if (itemDatas.Contains(newItemData) == false)
-                    itemDatas.Add(newItemData);
-
-                if (slotVisualsCreated)
-                    ShowItemInInventory(newItemData, targetSlotCoordinate);
-
-                return true;
+                newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
+                targetSlotCoordinate.SetupNewItem(newItemData);
             }
         }
-        return false;
-    }
+        else
+            targetSlotCoordinate = newItemData.InventorySlotCoordinate();
 
-    void ShowItemInInventory(ItemData itemData, SlotCoordinate slotCoordinate)
-    {
-        InventorySlot slot = GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y);
-        if (slot != null)
+        if (targetSlotCoordinate != null)
         {
-            // Setup the slot's item data and sprites
-            SetupNewItem(slot, itemData);
+            // Only add the item data if it hasn't been added yet
+            if (itemDatas.Contains(newItemData) == false)
+                itemDatas.Add(newItemData);
+
+            // Show the item's icon in the inventory UI
+            if (slotVisualsCreated)
+            {
+                InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
+                if (targetSlot != null)
+                    SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
+            }
+
+            return true;
         }
+        return false;
     }
 
     public bool TryAddDraggedItemAt(InventorySlot targetSlot, ItemData newItemData)
@@ -223,7 +222,7 @@ public class Inventory : MonoBehaviour
     }
 
     /// <summary>Setup the target slot's item data and sprites.</summary>
-    void SetupNewItem(InventorySlot targetSlot, ItemData newItemData)
+    protected void SetupNewItem(InventorySlot targetSlot, ItemData newItemData)
     {
         targetSlot.InventoryItem().SetItemData(newItemData);
         targetSlot.ShowSlotImage();
@@ -231,7 +230,7 @@ public class Inventory : MonoBehaviour
         targetSlot.InventoryItem().UpdateStackSizeText();
     }
 
-    SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
+    protected SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
     {
         int width = itemData.Item().width;
         int height = itemData.Item().height;
@@ -309,16 +308,16 @@ public class Inventory : MonoBehaviour
 
     public bool ContainsItemData(ItemData itemData) => itemDatas.Contains(itemData);
 
-    void CreateSlotCoordinates()
+    protected void CreateSlotCoordinates()
     {
-        maxSlotsPerColumn = Mathf.CeilToInt(maxSlots / maxSlotsPerRow);
+        maxSlotsPerColumn = Mathf.CeilToInt(inventoryLayout.MaxSlots / inventoryLayout.MaxSlotsPerRow);
 
         int coordinateCount = 0;
         for (int y = 1; y < maxSlotsPerColumn + 1; y++)
         {
-            for (int x = 1; x < maxSlotsPerRow + 1; x++)
+            for (int x = 1; x < inventoryLayout.MaxSlotsPerRow + 1; x++)
             {
-                if (coordinateCount == amountOfSlots)
+                if (coordinateCount == inventoryLayout.AmountOfSlots)
                     return;
 
                 slotCoordinates.Add(new SlotCoordinate(x, y, this));
@@ -329,7 +328,7 @@ public class Inventory : MonoBehaviour
 
     public void UpdateSlotCoordinates()
     {
-        if (slotCoordinates.Count == amountOfSlots) // Slot count didn't change, so no need to do anything
+        if (slotCoordinates.Count == inventoryLayout.AmountOfSlots) // Slot count didn't change, so no need to do anything
             return;
 
         slotCoordinates.Clear();
@@ -371,18 +370,18 @@ public class Inventory : MonoBehaviour
             slots.Clear();
         }
 
-        for (int i = 0; i < amountOfSlots; i++)
+        for (int i = 0; i < inventoryLayout.AmountOfSlots; i++)
         {
             InventorySlot newSlot = Instantiate(InventoryUI.Instance.InventorySlotPrefab(), slotsParent);
 
-            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % maxSlotsPerRow) + 1, Mathf.FloorToInt(i / maxSlotsPerRow) + 1));
+            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % inventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt(i / inventoryLayout.MaxSlotsPerRow) + 1));
             newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
 
             newSlot.SetMyInventory(this);
             newSlot.InventoryItem().SetMyInventory(this);
             slots.Add(newSlot);
 
-            if (i == maxSlots - 1)
+            if (i == inventoryLayout.MaxSlots - 1)
                 break;
         }
 
