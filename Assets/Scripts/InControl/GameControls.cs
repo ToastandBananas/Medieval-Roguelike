@@ -29,7 +29,7 @@ public class GameControls : MonoBehaviour
         gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
 
         gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
-        gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4)/ Y(Xbox)
+        gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4) / Y(Xbox)
 
         // Mouse Buttons
         gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);
@@ -61,7 +61,10 @@ public class GameControls : MonoBehaviour
         gamePlayActions.menuPause.AddDefaultBinding(InputControlType.RightCommand);
 
         gamePlayActions.menuSelect.AddDefaultBinding(Mouse.LeftButton);
-        gamePlayActions.menuSelect.AddDefaultBinding(InputControlType.Action1);
+        gamePlayActions.menuSelect.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
+
+        gamePlayActions.menuContext.AddDefaultBinding(Mouse.RightButton);
+        gamePlayActions.menuContext.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
 
         gamePlayActions.menuUp.AddDefaultBinding(Key.UpArrow);
         gamePlayActions.menuUp.AddDefaultBinding(InputControlType.DPadUp);

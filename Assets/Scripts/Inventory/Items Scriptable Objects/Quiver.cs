@@ -10,7 +10,7 @@ public class Quiver : Equipment
 
     public ProjectileType AllowedProjectileType => allowedProjectileType;
 
-    public override bool IsBag() => false;
+    public override bool IsBackpack() => false;
 
     public override bool IsConsumable() => false;
 

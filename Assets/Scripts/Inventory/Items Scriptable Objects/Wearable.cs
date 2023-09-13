@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Wearable", menuName = "Inventory/Item/Wearable")]
 public class Wearable : Equipment
 {
-    public override bool IsBag() => false;
+    public override bool IsBackpack() => false;
 
     public override bool IsConsumable() => false;
 

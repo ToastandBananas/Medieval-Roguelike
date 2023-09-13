@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     // public Slot parentSlot { get; protected set; }
 
@@ -78,5 +78,32 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         if (InventoryUI.Instance.isDraggingItem)
             RemoveSlotHighlights();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            if (ContextMenu.Instance.IsActive)
+                ContextMenu.Instance.DisableContextMenu();
+            else
+                ContextMenu.Instance.BuildContextMenu();
+        }
+        
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (ContextMenu.Instance.IsActive)
+                ContextMenu.Instance.DisableContextMenu();
+        }
+
+        if (eventData.button == PointerEventData.InputButton.Middle)
+        {
+            if (ContextMenu.Instance.IsActive)
+                ContextMenu.Instance.DisableContextMenu();
+            /*else if (this is InventorySlot)
+                UseItem();
+            else if (this is EquipmentSlot)
+                UnequipItem();*/
+        }
     }
 }

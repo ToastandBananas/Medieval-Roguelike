@@ -14,7 +14,7 @@ public class InventoryItem : MonoBehaviour
     [SerializeField] protected Slot mySlot;
     [SerializeField] protected TextMeshProUGUI stackSizeText;
 
-    readonly int slotSize = 60;
+    public readonly static int slotSize = 60;
 
     public virtual void DropItem()
     {
@@ -269,6 +269,15 @@ public class InventoryItem : MonoBehaviour
     {
         iconImage.enabled = true;
         stackSizeText.enabled = true;
+    }
+
+    public Unit MyUnit()
+    {
+        if (myInventory != null)
+            return myInventory.MyUnit();
+        else if (myCharacterEquipment != null)
+            return myCharacterEquipment.MyUnit();
+        return null;
     }
 
     public void SetMyInventory(Inventory inv) => myInventory = inv;

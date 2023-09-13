@@ -23,7 +23,7 @@ public class Weapon : HeldEquipment
     [Range(-100f, 100f)] public float minAccuracyModifier;
     [Range(-100f, 100f)] public float maxAccuracyModifier;
 
-    public override bool IsBag() => false;
+    public override bool IsBackpack() => false;
 
     public override bool IsConsumable() => false;
 

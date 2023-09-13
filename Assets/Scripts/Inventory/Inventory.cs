@@ -1,29 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+[System.Serializable]
+public class Inventory
 {
-    [SerializeField] Transform slotsParent;
-    [SerializeField] Unit myUnit;
+    [SerializeField] protected Unit myUnit;
+    protected Transform slotsParent;
 
     [Header("Slot Counts")]
-    [SerializeField] InventoryLayout inventoryLayout;
+    [SerializeField] protected InventoryLayout inventoryLayout;
     int maxSlotsPerColumn;
 
     [Header("Items in Inventory")]
     [SerializeField] protected List<ItemData> itemDatas = new List<ItemData>();
 
-    List<InventorySlot> slots = new List<InventorySlot>();
+    protected List<InventorySlot> slots;
     List<SlotCoordinate> slotCoordinates = new List<SlotCoordinate>();
 
     protected bool slotVisualsCreated;
 
-    public virtual void Awake()
+    public virtual void Initialize()
     {
         CreateSlotCoordinates();
-
+        SetSlotsList();
+        
         if (myUnit.IsPlayer())
-            CreateSlotVisuals();
+            InventoryUI.Instance.CreateSlotVisuals(this, slots, slotsParent);
         else
             SetupItems();
     }
@@ -33,9 +35,9 @@ public class Inventory : MonoBehaviour
         if (newItemData == null || newItemData.Item() == null)
             return false;
 
-        if (newItemData.HasBeenRandomized == false)
+        if (newItemData.ShouldRandomize)
             newItemData.RandomizeData();
-        
+
         SlotCoordinate targetSlotCoordinate;
 
         // If the item data hasn't been assigned a slot coordinate, do so now
@@ -335,7 +337,7 @@ public class Inventory : MonoBehaviour
         CreateSlotCoordinates();
 
         if (slots.Count > 0 && slotVisualsCreated == false)
-            CreateSlotVisuals();
+            InventoryUI.Instance.CreateSlotVisuals(this, slots, slotsParent);
     }
 
     public SlotCoordinate GetSlotCoordinate(int xCoord, int yCoord)
@@ -348,46 +350,18 @@ public class Inventory : MonoBehaviour
         return null;
     }
 
-    void CreateSlotVisuals()
+    void SetSlotsList()
     {
-        if (slotVisualsCreated)
+        if (myUnit.IsPlayer())
         {
-            Debug.LogWarning($"Slot visuals for {name}, owned by {myUnit.name}, has already been created...");
-            return;
+            slotsParent = InventoryUI.Instance.PlayerPocketsParent;
+            slots = InventoryUI.Instance.playerPocketsSlots;
         }
-
-        if (slots.Count > 0)
+        else
         {
-            // Clear out any slots already in the list, so we can start from scratch
-            for (int i = 0; i < slots.Count; i++)
-            {
-                slots[i].RemoveSlotHighlights();
-                slots[i].ClearItem();
-                slots[i].SetSlotCoordinate(null);
-                slots[i].gameObject.SetActive(false);
-            }
-
-            slots.Clear();
+            slotsParent = InventoryUI.Instance.NPCPocketsParent;
+            slots = InventoryUI.Instance.npcPocketsSlots;
         }
-
-        for (int i = 0; i < inventoryLayout.AmountOfSlots; i++)
-        {
-            InventorySlot newSlot = Instantiate(InventoryUI.Instance.InventorySlotPrefab(), slotsParent);
-
-            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % inventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt(i / inventoryLayout.MaxSlotsPerRow) + 1));
-            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
-
-            newSlot.SetMyInventory(this);
-            newSlot.InventoryItem().SetMyInventory(this);
-            slots.Add(newSlot);
-
-            if (i == inventoryLayout.MaxSlots - 1)
-                break;
-        }
-
-        slotVisualsCreated = true;
-
-        SetupItems();
     }
 
     public void SetupItems()
@@ -400,11 +374,17 @@ public class Inventory : MonoBehaviour
             itemDatas[i].RandomizeData();
 
             if (TryAddItem(itemDatas[i]) == false)
-                Debug.LogError($"{itemDatas[i].Item().name} can't fit in {name} inventory...");
+                Debug.LogError($"{itemDatas[i].Item().name} can't fit in inventory...");
         }
     }
 
     public List<ItemData> ItemDatas() => itemDatas;
 
     public Unit MyUnit() => myUnit;
+
+    public InventoryLayout InventoryLayout => inventoryLayout;
+
+    public void SetSlotVisualsCreated(bool created) => slotVisualsCreated = created;
+
+    public bool SlotVisualsCreated => slotVisualsCreated;
 }

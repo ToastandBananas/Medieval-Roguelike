@@ -18,7 +18,7 @@ public abstract class HeldEquipment : Equipment
 
     public Vector3 IdleRotation_RightHand => idleRotation_Right;
 
-    public abstract override bool IsBag();
+    public abstract override bool IsBackpack();
 
     public abstract override bool IsConsumable();
 

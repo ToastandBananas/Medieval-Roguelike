@@ -8,8 +8,9 @@ public class Unit : MonoBehaviour
     [SerializeField] float shoulderHeight = 0.25f;
 
     [Header("Inventories")]
-    [SerializeField] Inventory myPocketsInventory;
-    [SerializeField] Inventory myBackpackInventory;
+    [SerializeField] UnitInventoryManager mainInventoryManager;
+    [SerializeField] ContainerInventoryManager backpackInventoryManager;
+    [SerializeField] ContainerInventoryManager quiverInventoryManager;
     [SerializeField] CharacterEquipment myCharacterEquipment;
 
     public bool isMyTurn { get; private set; }
@@ -126,16 +127,30 @@ public class Unit : MonoBehaviour
 
     public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
 
-    public Inventory BackpackInventory() => myBackpackInventory;
+    public ContainerInventory BackpackInventory() => backpackInventoryManager.ParentInventory;
 
-    public Inventory PocketsInventory() => myBackpackInventory;
+    public ContainerInventory QuiverInventory() => quiverInventoryManager.ParentInventory;
+
+    public Inventory MainInventory() => mainInventoryManager.MainInventory;
 
     public CharacterEquipment CharacterEquipment() => myCharacterEquipment;
 
     public bool TryAddItemToInventories(ItemData itemData)
     {
-        if (myPocketsInventory == null && myBackpackInventory == null)
+        if (itemData == null || itemData.Item() == null)
             return false;
-        return myBackpackInventory.TryAddItem(itemData) || myPocketsInventory.TryAddItem(itemData);
+
+        if (CharacterEquipment() != null)
+        {
+            if (quiverInventoryManager != null && itemData.Item().IsAmmunition() && CharacterEquipment().QuiverEquipped() && QuiverInventory().TryAddItem(itemData))
+                return true;
+
+            if (backpackInventoryManager != null && CharacterEquipment().BackpackEquipped() && BackpackInventory().TryAddItem(itemData))
+                return true;
+        }
+
+        if (mainInventoryManager != null && MainInventory().TryAddItem(itemData))
+            return true;
+        return false;
     }
 }

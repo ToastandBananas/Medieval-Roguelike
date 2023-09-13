@@ -59,7 +59,7 @@ public class Ammunition : Item
 
     public override bool IsShield() => false;
 
-    public override bool IsBag() => false;
+    public override bool IsBackpack() => false;
 
     public override bool IsPortableContainer() => false;
 

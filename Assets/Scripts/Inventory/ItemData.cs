@@ -13,14 +13,11 @@ public class ItemData
 
     [SerializeField] int blockPower;
 
-    [SerializeField] bool hasBeenRandomized;
+    [SerializeField] bool shouldRandomize = true;
 
     SlotCoordinate inventorySlotCoordinate;
 
-    public ItemData()
-    {
-
-    }
+    public ItemData() { }
 
     public ItemData(Item item)
     {
@@ -33,9 +30,9 @@ public class ItemData
         if (item != null)
         {
             name = item.name;
-            if (forceRandomization || hasBeenRandomized == false)
+            if (forceRandomization || shouldRandomize)
             {
-                hasBeenRandomized = true;
+                shouldRandomize = true;
 
                 if (item.maxStackSize > 1)
                     currentStackSize = Random.Range(1, item.maxStackSize + 1);
@@ -65,7 +62,7 @@ public class ItemData
         damage = itemDataToCopy.damage;
         accuracyModifier = itemDataToCopy.accuracyModifier;
         blockPower = itemDataToCopy.blockPower;
-        hasBeenRandomized = true;
+        shouldRandomize = true;
     }
 
     public void SwapData(ItemData otherItemData)
@@ -84,7 +81,7 @@ public class ItemData
         damage = otherItemData.damage;
         accuracyModifier = otherItemData.accuracyModifier;
         blockPower = otherItemData.blockPower;
-        hasBeenRandomized = true;
+        shouldRandomize = true;
 
         otherItemData.item = temp.item;
         otherItemData.name = otherItemData.item.name;
@@ -92,12 +89,12 @@ public class ItemData
         otherItemData.damage = temp.damage;
         otherItemData.accuracyModifier = temp.accuracyModifier;
         otherItemData.blockPower = temp.blockPower;
-        otherItemData.hasBeenRandomized = true;
+        otherItemData.shouldRandomize = true;
     }
 
     public void ClearItemData()
     {
-        hasBeenRandomized = false;
+        shouldRandomize = false;
         item = null;
         name = "";
         inventorySlotCoordinate = null;
@@ -135,5 +132,5 @@ public class ItemData
 
     public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
 
-    public bool HasBeenRandomized => hasBeenRandomized;
+    public bool ShouldRandomize => shouldRandomize;
 }

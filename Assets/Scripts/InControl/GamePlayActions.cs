@@ -19,7 +19,7 @@ public class GamePlayActions : PlayerActionSet
     public PlayerAction cameraZoomIn, cameraZoomOut;
 
     // UI Actions
-    public PlayerAction menuPause, menuSelect;
+    public PlayerAction menuPause, menuSelect, menuContext;
     public PlayerAction menuLeft, menuRight, menuUp, menuDown;
 
     public GamePlayActions()
@@ -51,6 +51,7 @@ public class GamePlayActions : PlayerActionSet
         // UI Actions
         menuPause = CreatePlayerAction("MenuPause");
         menuSelect = CreatePlayerAction("MenuSelect");
+        menuContext = CreatePlayerAction("MenuContext");
 
         menuLeft = CreatePlayerAction("MenuLeft");
         menuRight = CreatePlayerAction("MenuRight");

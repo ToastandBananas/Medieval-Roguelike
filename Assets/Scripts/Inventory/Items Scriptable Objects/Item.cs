@@ -30,7 +30,7 @@ public abstract class Item : ScriptableObject
     public Sprite inventorySprite;
 
     [Header("Value")]
-    public Vector2Int value;
+    public Vector2Int valueRange;
     public int staticValue = 1;
 
     [Header("Equipped Mesh")]
@@ -120,7 +120,7 @@ public abstract class Item : ScriptableObject
 
     public abstract bool IsShield();
 
-    public abstract bool IsBag();
+    public abstract bool IsBackpack();
 
     public abstract bool IsPortableContainer();
 

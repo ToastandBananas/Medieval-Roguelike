@@ -361,8 +361,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shoulderHeight: 0.25
-  myPocketsInventory: {fileID: 3953992722389952363}
-  myBackpackInventory: {fileID: 7910907652793583858}
+  mainInventoryManager: {fileID: 2873528818137102224}
+  backpackInventoryManager: {fileID: 2430282970964941548}
+  quiverInventoryManager: {fileID: 478177491740138796}
   myCharacterEquipment: {fileID: 504428574042382846}
 --- !u!114 &8017101318156772015
 MonoBehaviour:
@@ -596,6 +597,82 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2508303573224170723
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340260939284052829}
+  - component: {fileID: 2430282970964941548}
+  m_Layer: 3
+  m_Name: Backpack Inventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &340260939284052829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2508303573224170723}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6452321778511306523}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2430282970964941548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2508303573224170723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentInventory:
+    myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 50
+      maxSlots: 20
+      maxSlotsPerRow: 10
+    itemDatas: []
+  subInventories:
+  - myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 0
+      maxSlots: 0
+      maxSlotsPerRow: 2
+    itemDatas: []
+  - myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 0
+      maxSlots: 0
+      maxSlotsPerRow: 2
+    itemDatas: []
+  - myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 0
+      maxSlots: 0
+      maxSlotsPerRow: 2
+    itemDatas: []
+  - myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 0
+      maxSlots: 0
+      maxSlotsPerRow: 2
+    itemDatas: []
 --- !u!1 &3438072298539403471
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,63 +701,13 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2363820771724870906}
-  - {fileID: 5312395673242293457}
-  - {fileID: 3239361306439021913}
+  - {fileID: 1399477393502689192}
+  - {fileID: 340260939284052829}
+  - {fileID: 5433956466646616075}
   - {fileID: 5482159175935672585}
   m_Father: {fileID: 1377663264827766488}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4059619454905974062
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2363820771724870906}
-  - component: {fileID: 3953992722389952363}
-  m_Layer: 3
-  m_Name: Pockets
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2363820771724870906
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4059619454905974062}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6452321778511306523}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3953992722389952363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4059619454905974062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74af82c4837da1549b7223e815a6691e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slotsParent: {fileID: 0}
-  myUnit: {fileID: 4471245059765168945}
-  amountOfSlots: 100
-  maxSlots: 100
-  maxSlotsPerRow: 10
-  itemDatas: []
 --- !u!1 &4629364220367564124
 GameObject:
   m_ObjectHideFlags: 0
@@ -816,70 +843,70 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   - name: 
     item: {fileID: 0}
     currentStackSize: 1
     damage: 0
     accuracyModifier: 0
     blockPower: 0
-    hasBeenRandomized: 0
+    shouldRandomize: 1
   startingEquipment:
   - {fileID: 0}
   - {fileID: 0}
@@ -1264,56 +1291,6 @@ Transform:
   m_Father: {fileID: 1377663264438590629}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6835273207550238342
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5312395673242293457}
-  - component: {fileID: 7910907652793583858}
-  m_Layer: 3
-  m_Name: Backpack
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &5312395673242293457
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6835273207550238342}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6452321778511306523}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7910907652793583858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6835273207550238342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74af82c4837da1549b7223e815a6691e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slotsParent: {fileID: 0}
-  myUnit: {fileID: 4471245059765168945}
-  amountOfSlots: 20
-  maxSlots: 20
-  maxSlotsPerRow: 10
-  itemDatas: []
 --- !u!1 &6971072271818610213
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,7 +1322,7 @@ Transform:
   m_Father: {fileID: 1377663264438590629}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &7806779033871216840
+--- !u!1 &7723108989472263454
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1353,22 +1330,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3239361306439021913}
-  - component: {fileID: 6336911315626969922}
+  - component: {fileID: 5433956466646616075}
+  - component: {fileID: 478177491740138796}
   m_Layer: 3
-  m_Name: Quiver
+  m_Name: Quiver Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &3239361306439021913
+  m_IsActive: 1
+--- !u!4 &5433956466646616075
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7806779033871216840}
+  m_GameObject: {fileID: 7723108989472263454}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -1377,24 +1354,26 @@ Transform:
   m_Father: {fileID: 6452321778511306523}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6336911315626969922
+--- !u!114 &478177491740138796
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7806779033871216840}
+  m_GameObject: {fileID: 7723108989472263454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74af82c4837da1549b7223e815a6691e, type: 3}
+  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotsParent: {fileID: 0}
-  myUnit: {fileID: 4471245059765168945}
-  amountOfSlots: 2
-  maxSlots: 6
-  maxSlotsPerRow: 6
-  itemDatas: []
+  parentInventory:
+    myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 2
+      maxSlots: 5
+      maxSlotsPerRow: 5
+    itemDatas: []
+  subInventories: []
 --- !u!1 &8097862732910161683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1497,6 +1476,57 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6156940825955743173, guid: 55c8317222d50164babf16a601be1b3c, type: 3}
+--- !u!1 &9181293001617359986
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1399477393502689192}
+  - component: {fileID: 2873528818137102224}
+  m_Layer: 3
+  m_Name: Main Inventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1399477393502689192
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9181293001617359986}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6452321778511306523}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2873528818137102224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9181293001617359986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d195bec6912fcce40b6ae090e27cc030, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainInventory:
+    myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 20
+      maxSlots: 20
+      maxSlotsPerRow: 10
+    itemDatas: []
 --- !u!1 &9200357820980764731
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,7 +1539,7 @@ GameObject:
   - component: {fileID: 7129099700918780583}
   - component: {fileID: 2465539824919590537}
   m_Layer: 0
-  m_Name: Tunic
+  m_Name: Shirt
   m_TagString: Unit Body
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

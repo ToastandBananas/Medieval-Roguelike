@@ -11,8 +11,10 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] InventoryItem draggedItem;
 
     [Header("Inventories")]
-    [SerializeField] Inventory pocketsInventory;
-    [SerializeField] Inventory backpackInventory;
+    [SerializeField] Transform playerPocketsParent;
+    [SerializeField] Transform npcPocketsParent;
+    public List<InventorySlot> playerPocketsSlots { get; private set; }
+    public List<InventorySlot> npcPocketsSlots { get; private set; }
 
     [Header("Player Equipment")]
     [SerializeField] Transform playerEquipmentParent;
@@ -21,6 +23,9 @@ public class InventoryUI : MonoBehaviour
     [Header("NPC Equipment")]
     [SerializeField] Transform npcEquipmentParent;
     public List<EquipmentSlot> npcEquipmentSlots { get; private set; }
+
+    [Header("Container UI")]
+    [SerializeField] ContainerUI[] containerUIs;
 
     [Header("Prefab")]
     [SerializeField] InventorySlot inventorySlotPrefab;
@@ -46,6 +51,9 @@ public class InventoryUI : MonoBehaviour
             return;
         }
         Instance = this;
+
+        playerPocketsSlots = new List<InventorySlot>();
+        npcPocketsSlots = new List<InventorySlot>();
 
         playerEquipmentSlots = playerEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
         // npcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
@@ -266,6 +274,73 @@ public class InventoryUI : MonoBehaviour
         draggedItem.SetItemData(null);
     }
 
+    public void ShowContainerUI(ContainerInventory mainContainerInventory)
+    {
+        ContainerUI containerUI = GetNextAvailableContainerUI();
+        containerUI.ShowContainerInventory(mainContainerInventory, null);
+        containerUI.SetupRectTransform(mainContainerInventory);
+    }
+
+    public void ShowContainerUI(ContainerInventory mainContainerInventory, Item containerItem)
+    {
+        ContainerUI containerUI = GetNextAvailableContainerUI();
+        containerUI.ShowContainerInventory(mainContainerInventory, containerItem);
+        containerUI.SetupRectTransform(mainContainerInventory);
+    }
+
+    ContainerUI GetNextAvailableContainerUI()
+    {
+        for (int i = 0; i < containerUIs.Length; i++)
+        {
+            if (containerUIs[i].gameObject.activeSelf == false)
+                return containerUIs[i];
+        }
+        return containerUIs[0];
+    }
+
+    public void CreateSlotVisuals(Inventory inventory, List<InventorySlot> slots, Transform slotsParent)
+    {
+        if (inventory.SlotVisualsCreated)
+        {
+            Debug.LogWarning($"Slot visuals for {name}, owned by {inventory.MyUnit().name}, has already been created...");
+            return;
+        }
+
+        if (slots.Count > 0)
+        {
+            // Clear out any slots already in the list, so we can start from scratch
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].RemoveSlotHighlights();
+                slots[i].ClearItem();
+                slots[i].SetSlotCoordinate(null);
+                slots[i].SetMyInventory(null);
+                slots[i].gameObject.SetActive(false);
+            }
+
+            slots.Clear();
+        }
+
+        for (int i = 0; i < inventory.InventoryLayout.AmountOfSlots; i++)
+        {
+            InventorySlot newSlot = Instantiate(inventorySlotPrefab, slotsParent);
+
+            newSlot.SetSlotCoordinate(inventory.GetSlotCoordinate((i % inventory.InventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt(i / inventory.InventoryLayout.MaxSlotsPerRow) + 1));
+            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
+
+            newSlot.SetMyInventory(inventory);
+            newSlot.InventoryItem().SetMyInventory(inventory);
+            slots.Add(newSlot);
+
+            if (i == inventory.InventoryLayout.MaxSlots - 1)
+                break;
+        }
+
+        inventory.SetSlotVisualsCreated(true);
+
+        inventory.SetupItems();
+    }
+
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 
     public InventoryItem DraggedItem() => draggedItem;
@@ -273,4 +348,8 @@ public class InventoryUI : MonoBehaviour
     public InventorySlot InventorySlotPrefab() => inventorySlotPrefab;
 
     public void SetValidDragPosition(bool valid) => validDragPosition = valid;
+
+    public Transform PlayerPocketsParent => playerPocketsParent;
+
+    public Transform NPCPocketsParent => npcPocketsParent;
 }
