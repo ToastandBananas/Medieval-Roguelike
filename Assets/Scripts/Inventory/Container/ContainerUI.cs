@@ -1,18 +1,21 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ContainerUI : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI titleText;
     [SerializeField] RectTransform rectTransform;
+    [SerializeField] HorizontalLayoutGroup horizontalLayoutGroup;
 
     [Header("Container Slot Groups")]
     [SerializeField] ContainerSlotGroup mainContainerSlotGroup;
     [SerializeField] ContainerSlotGroup[] subContainerSlotGroups;
 
     [Header("Section RectTransforms")]
-    [SerializeField] RectTransform section1RectTransform;
-    [SerializeField] RectTransform section2RectTransform;
+    [SerializeField] RectTransform leftSectionRectTransform;
+    [SerializeField] RectTransform middleSectionRectTransform;
+    [SerializeField] RectTransform rightSectionRectTransform;
 
     public void ShowContainerInventory(ContainerInventory mainContainerInventory, Item containerItem)
     {
@@ -30,59 +33,110 @@ public class ContainerUI : MonoBehaviour
 
     public void SetupRectTransform(ContainerInventory mainContainerInventory)
     {
-        int newWidth = (mainContainerInventory.ParentInventory.InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize) + InventoryItem.slotSize;
-
+        // Left section
         int leftWidth = 0;
-        int rightWidth = 0;
-
-        int mainHeight = (Mathf.CeilToInt(mainContainerInventory.ParentInventory.InventoryLayout.AmountOfSlots / mainContainerInventory.ParentInventory.InventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize) + InventoryItem.slotSize;
-
         int leftHeight = 0;
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 1 && mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.AmountOfSlots > 0)
         {
-            leftHeight = (Mathf.CeilToInt(mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.AmountOfSlots / mainContainerInventory.SubInventories[0].InventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize) + InventoryItem.slotSize;
-            leftWidth = (mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize) + InventoryItem.slotSize;
+            leftHeight = mainContainerInventory.ParentInventory.SubInventories[0].MaxSlotsPerColumn * InventoryItem.slotSize;
+            leftWidth = mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            subContainerSlotGroups[0].gameObject.SetActive(true);
         }
+        else
+            subContainerSlotGroups[0].gameObject.SetActive(false);
 
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 3 && mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.AmountOfSlots > 0)
         {
-            leftHeight += (Mathf.CeilToInt(mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.AmountOfSlots / mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize) + InventoryItem.slotSize;
-            int widthToCheck = (mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize) + InventoryItem.slotSize;
+            leftHeight += mainContainerInventory.ParentInventory.SubInventories[2].MaxSlotsPerColumn * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
             if (widthToCheck > leftWidth)
                 leftWidth = widthToCheck;
+            subContainerSlotGroups[2].gameObject.SetActive(true);
         }
+        else
+            subContainerSlotGroups[2].gameObject.SetActive(false);
 
+        // Middle section
+        int middleWidth = mainContainerInventory.ParentInventory.InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+        int middleHeight = mainContainerInventory.ParentInventory.MaxSlotsPerColumn * InventoryItem.slotSize;
+        if (mainContainerInventory.ParentInventory.SubInventories.Length >= 5 && mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.AmountOfSlots > 0)
+        {
+            middleHeight += mainContainerInventory.ParentInventory.SubInventories[4].MaxSlotsPerColumn * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            if (widthToCheck > middleWidth)
+                middleWidth = widthToCheck;
+            subContainerSlotGroups[4].gameObject.SetActive(true);
+        }
+        else
+            subContainerSlotGroups[4].gameObject.SetActive(false);
+
+        // Right section
+        int rightWidth = 0;
         int rightHeight = 0;
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 2 && mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.AmountOfSlots > 0)
         {
-            rightHeight = (Mathf.CeilToInt(mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.AmountOfSlots / mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize) + InventoryItem.slotSize;
-            rightWidth = (mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize) + InventoryItem.slotSize;
+            rightHeight = mainContainerInventory.ParentInventory.SubInventories[1].MaxSlotsPerColumn * InventoryItem.slotSize;
+            rightWidth = mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            subContainerSlotGroups[1].gameObject.SetActive(true);
         }
+        else
+            subContainerSlotGroups[1].gameObject.SetActive(false);
 
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 4 && mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.AmountOfSlots > 0)
         {
-            rightHeight += (Mathf.CeilToInt(mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.AmountOfSlots / mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize) + InventoryItem.slotSize;
-            int widthToCheck = (mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize) + InventoryItem.slotSize;
+            rightHeight += mainContainerInventory.ParentInventory.SubInventories[3].MaxSlotsPerColumn * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
             if (widthToCheck > rightWidth)
                 rightWidth = widthToCheck;
+            subContainerSlotGroups[3].gameObject.SetActive(true);
         }
+        else
+            subContainerSlotGroups[3].gameObject.SetActive(false);
 
-        newWidth += leftWidth + rightWidth - (InventoryItem.slotSize / 2);
+        int newWidth = leftWidth + middleWidth + rightWidth;
+        newWidth += horizontalLayoutGroup.padding.left + horizontalLayoutGroup.padding.right;
 
-        int newHeight = mainHeight;
+        if (leftWidth > 0)
+            newWidth += (int)horizontalLayoutGroup.spacing;
+
+        if (rightWidth > 0)
+            newWidth += (int)horizontalLayoutGroup.spacing;
+
+        int newHeight = middleHeight;
         if (leftHeight > newHeight)
             newHeight = leftHeight;
 
         if (rightHeight > newHeight)
             newHeight = rightHeight;
 
-        if (newHeight != mainHeight)
-            newHeight -= InventoryItem.slotSize;
+        newHeight += horizontalLayoutGroup.padding.top + horizontalLayoutGroup.padding.bottom;
+
+        if ((subContainerSlotGroups[0] != null && subContainerSlotGroups[0].gameObject.activeSelf && subContainerSlotGroups[2] != null && subContainerSlotGroups[2].gameObject.activeSelf)
+            || (subContainerSlotGroups[1] != null && subContainerSlotGroups[1].gameObject.activeSelf && subContainerSlotGroups[3] != null && subContainerSlotGroups[3].gameObject.activeSelf)
+            || (subContainerSlotGroups[4] != null && subContainerSlotGroups[4].gameObject.activeSelf))
+        {
+            newHeight += (int)horizontalLayoutGroup.spacing;
+        }
 
         rectTransform.sizeDelta = new Vector2(newWidth, newHeight);
 
-        section1RectTransform.sizeDelta = new Vector2(leftWidth + (InventoryItem.slotSize / 4), section1RectTransform.sizeDelta.y);
-        section2RectTransform.sizeDelta = new Vector2(rightWidth + (InventoryItem.slotSize / 4), section1RectTransform.sizeDelta.y);
+        if (leftWidth > 0)
+        {
+            leftSectionRectTransform.sizeDelta = new Vector2(leftWidth, leftSectionRectTransform.sizeDelta.y);
+            leftSectionRectTransform.gameObject.SetActive(true);
+        }
+        else
+            leftSectionRectTransform.gameObject.SetActive(false);
+
+        middleSectionRectTransform.sizeDelta = new Vector2(middleWidth, middleSectionRectTransform.sizeDelta.y);
+
+        if (rightWidth > 0)
+        {
+            rightSectionRectTransform.sizeDelta = new Vector2(rightWidth, rightSectionRectTransform.sizeDelta.y);
+            rightSectionRectTransform.gameObject.SetActive(true);
+        }
+        else
+            rightSectionRectTransform.gameObject.SetActive(false);
     }
 
     public void TakeAll()

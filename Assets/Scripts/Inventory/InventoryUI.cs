@@ -295,7 +295,7 @@ public class InventoryUI : MonoBehaviour
             if (containerUIs[i].gameObject.activeSelf == false)
                 return containerUIs[i];
         }
-        return containerUIs[0];
+        return containerUIs[1];
     }
 
     public void CreateSlotVisuals(Inventory inventory, List<InventorySlot> slots, Transform slotsParent)
@@ -324,8 +324,7 @@ public class InventoryUI : MonoBehaviour
         for (int i = 0; i < inventory.InventoryLayout.AmountOfSlots; i++)
         {
             InventorySlot newSlot = Instantiate(inventorySlotPrefab, slotsParent);
-
-            newSlot.SetSlotCoordinate(inventory.GetSlotCoordinate((i % inventory.InventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt(i / inventory.InventoryLayout.MaxSlotsPerRow) + 1));
+            newSlot.SetSlotCoordinate(inventory.GetSlotCoordinate((i % inventory.InventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt((float)i / inventory.InventoryLayout.MaxSlotsPerRow) + 1));
             newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
 
             newSlot.SetMyInventory(inventory);

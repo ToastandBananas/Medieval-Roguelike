@@ -13,6 +13,11 @@ public class InventoryLayout
 
     public int MaxSlotsPerRow => maxSlotsPerRow;
 
+    public InventoryLayout()
+    {
+
+    }
+
     public void SetLayoutValues(int amountOfSlots, int maxSlots, int maxSlotsPerRow)
     {
         this.amountOfSlots = amountOfSlots;

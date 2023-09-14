@@ -15,12 +15,13 @@ public class Inventory
     [SerializeField] protected List<ItemData> itemDatas = new List<ItemData>();
 
     protected List<InventorySlot> slots;
-    List<SlotCoordinate> slotCoordinates = new List<SlotCoordinate>();
+    protected List<SlotCoordinate> slotCoordinates;
 
     protected bool slotVisualsCreated;
 
     public virtual void Initialize()
     {
+        slotCoordinates = new List<SlotCoordinate>();
         CreateSlotCoordinates();
         SetSlotsList();
         
@@ -312,14 +313,14 @@ public class Inventory
 
     protected void CreateSlotCoordinates()
     {
-        maxSlotsPerColumn = Mathf.CeilToInt(inventoryLayout.MaxSlots / inventoryLayout.MaxSlotsPerRow);
+        maxSlotsPerColumn = Mathf.CeilToInt((float)inventoryLayout.MaxSlots / inventoryLayout.MaxSlotsPerRow);
 
         int coordinateCount = 0;
         for (int y = 1; y < maxSlotsPerColumn + 1; y++)
         {
             for (int x = 1; x < inventoryLayout.MaxSlotsPerRow + 1; x++)
             {
-                if (coordinateCount == inventoryLayout.AmountOfSlots)
+                if (coordinateCount == inventoryLayout.AmountOfSlots || coordinateCount == inventoryLayout.MaxSlots)
                     return;
 
                 slotCoordinates.Add(new SlotCoordinate(x, y, this));
@@ -383,6 +384,8 @@ public class Inventory
     public Unit MyUnit() => myUnit;
 
     public InventoryLayout InventoryLayout => inventoryLayout;
+
+    public int MaxSlotsPerColumn => maxSlotsPerColumn;
 
     public void SetSlotVisualsCreated(bool created) => slotVisualsCreated = created;
 

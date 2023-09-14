@@ -346,31 +346,7 @@ MonoBehaviour:
       maxSlots: 20
       maxSlotsPerRow: 10
     itemDatas: []
-  subInventories:
-  - myUnit: {fileID: 6440773195933579921}
-    inventoryLayout:
-      amountOfSlots: 0
-      maxSlots: 0
-      maxSlotsPerRow: 2
-    itemDatas: []
-  - myUnit: {fileID: 6440773195933579921}
-    inventoryLayout:
-      amountOfSlots: 0
-      maxSlots: 0
-      maxSlotsPerRow: 2
-    itemDatas: []
-  - myUnit: {fileID: 6440773195933579921}
-    inventoryLayout:
-      amountOfSlots: 0
-      maxSlots: 0
-      maxSlotsPerRow: 2
-    itemDatas: []
-  - myUnit: {fileID: 6440773195933579921}
-    inventoryLayout:
-      amountOfSlots: 0
-      maxSlots: 0
-      maxSlotsPerRow: 2
-    itemDatas: []
+  subInventories: []
 --- !u!1 &2208422553791110067
 GameObject:
   m_ObjectHideFlags: 0

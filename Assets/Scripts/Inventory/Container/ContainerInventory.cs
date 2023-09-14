@@ -1,15 +1,25 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
 public class ContainerInventory : Inventory
 {
-    ContainerInventoryManager containerInventoryManager;
+    public ContainerInventoryManager containerInventoryManager;
+
+    public ContainerInventory(Unit myUnit, ContainerInventoryManager containerInventoryManager)
+    {
+        this.myUnit = myUnit;
+        this.containerInventoryManager = containerInventoryManager;
+
+        inventoryLayout = new InventoryLayout();
+    }
 
     public override void Initialize()
     {
         if (myUnit != null && myUnit.CharacterEquipment().EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment().EquippedItemDatas()[(int)EquipSlot.Back].Item().IsBackpack())
             SetupInventoryLayoutFromBackpack((Backpack)myUnit.CharacterEquipment().EquippedItemDatas()[(int)EquipSlot.Back].Item());
 
+        slotCoordinates = new List<SlotCoordinate>();
         CreateSlotCoordinates();
         SetupItems();
     }
@@ -94,6 +104,9 @@ public class ContainerInventory : Inventory
     {
         if (backpack != null && containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null)
         {
+            if (containerInventoryManager.SubInventories.Length < backpack.InventorySections.Length)
+                containerInventoryManager.IncreaseSubInventoriesArraySize(backpack.InventorySections.Length - 1);
+
             for (int i = 0; i < backpack.InventorySections.Length; i++)
             {
                 if (i == 0)
@@ -102,6 +115,8 @@ public class ContainerInventory : Inventory
                     containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(backpack.InventorySections[i]);
             }
         }
+        else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this)
+            containerInventoryManager.ParentInventory.SetupInventoryLayoutFromBackpack(backpack);
     }
 
     public ContainerInventory ParentInventory => containerInventoryManager.ParentInventory;

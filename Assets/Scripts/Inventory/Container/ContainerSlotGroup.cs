@@ -10,7 +10,7 @@ public class ContainerSlotGroup : MonoBehaviour
     public void SetupRectTransform(InventoryLayout inventoryLayout)
     {
         int newWidth = inventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
-        int newHeight = Mathf.CeilToInt(inventoryLayout.AmountOfSlots / inventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize;
+        int newHeight = Mathf.CeilToInt((float)inventoryLayout.AmountOfSlots / inventoryLayout.MaxSlotsPerRow) * InventoryItem.slotSize;
 
         rectTransform.sizeDelta = new Vector2(newWidth, newHeight);
     }
