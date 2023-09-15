@@ -40,11 +40,11 @@ public class LooseItem : Interactable
         meshCollider.sharedMesh = mesh;
     }
 
-    public ItemData ItemData() => itemData;
+    public ItemData ItemData => itemData;
 
     public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
-    public Rigidbody RigidBody() => rigidBody;
+    public Rigidbody RigidBody => rigidBody;
 
     public MeshCollider MeshCollider() => meshCollider;
 

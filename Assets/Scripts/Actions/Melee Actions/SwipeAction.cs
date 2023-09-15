@@ -107,14 +107,14 @@ public class SwipeAction : BaseAction
                 if (itemBlockedWith != null)
                 {
                     int blockAmount = 0;
-                    if (targetUnit.CharacterEquipment().ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetShield()) // If blocked with shield
+                    if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetShield()) // If blocked with shield
                         blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetShield());
-                    else if (targetUnit.CharacterEquipment().MeleeWeaponEquipped()) // If blocked with melee weapon
+                    else if (targetUnit.CharacterEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
                     {
                         if (itemBlockedWith == targetUnit.unitMeshManager.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
                         {
                             blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetPrimaryMeleeWeapon());
-                            if (unit.CharacterEquipment().IsDualWielding())
+                            if (unit.CharacterEquipment.IsDualWielding())
                             {
                                 if (itemBlockedWith == unit.unitMeshManager.GetRightMeleeWeapon())
                                     blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
@@ -150,7 +150,7 @@ public class SwipeAction : BaseAction
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
+        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().maxRange;
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -213,7 +213,7 @@ public class SwipeAction : BaseAction
             return validGridPositionsList; ;
         }
 
-        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
+        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().maxRange;
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
         nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -369,7 +369,7 @@ public class SwipeAction : BaseAction
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-            float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
+            float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().minRange;
 
             if (distance < minAttackRange)
                 finalActionValue = 0f;
@@ -494,7 +494,7 @@ public class SwipeAction : BaseAction
 
     public override int GetEnergyCost() => 25;
 
-    public override bool IsValidAction() => unit.CharacterEquipment().MeleeWeaponEquipped();
+    public override bool IsValidAction() => unit.CharacterEquipment.MeleeWeaponEquipped();
 
     public override bool IsAttackAction() => true;
 

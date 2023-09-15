@@ -31,7 +31,7 @@ public class ContainerInventoryManager : InventoryManager
         {
             if (subInventories[i] == null)
             {
-                subInventories[i] = new ContainerInventory(parentInventory.MyUnit(), this);
+                subInventories[i] = new ContainerInventory(parentInventory.MyUnit, parentInventory.LooseItem, this);
             }
         }
     }

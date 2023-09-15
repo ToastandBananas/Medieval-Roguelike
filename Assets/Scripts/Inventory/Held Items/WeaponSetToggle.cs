@@ -7,7 +7,7 @@ public class WeaponSetToggle : MonoBehaviour
     void Start()
     {
         if (transform.parent.name == "Player Equipment")
-            characterEquipment = UnitManager.Instance.player.CharacterEquipment();
+            characterEquipment = UnitManager.Instance.player.CharacterEquipment;
     }
 
     public void SwapWeaponSet() => characterEquipment.SwapWeaponSet();

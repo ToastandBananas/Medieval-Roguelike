@@ -118,7 +118,7 @@ public class ItemData
 
     public void SetItem(Item newItem) => item = newItem;
 
-    public Item Item() => item;
+    public Item Item => item;
 
     public int CurrentStackSize() => currentStackSize;
 

@@ -133,24 +133,25 @@ public class Unit : MonoBehaviour
 
     public Inventory MainInventory() => mainInventoryManager.MainInventory;
 
-    public CharacterEquipment CharacterEquipment() => myCharacterEquipment;
+    public CharacterEquipment CharacterEquipment => myCharacterEquipment;
 
     public bool TryAddItemToInventories(ItemData itemData)
     {
-        if (itemData == null || itemData.Item() == null)
+        if (itemData == null || itemData.Item == null)
             return false;
 
-        if (CharacterEquipment() != null)
-        {
-            if (quiverInventoryManager != null && itemData.Item().IsAmmunition() && CharacterEquipment().QuiverEquipped() && QuiverInventory().TryAddItem(itemData))
-                return true;
-
-            if (backpackInventoryManager != null && CharacterEquipment().BackpackEquipped() && BackpackInventory().TryAddItem(itemData))
-                return true;
-        }
+        if (myCharacterEquipment != null && quiverInventoryManager != null && itemData.Item.IsAmmunition() && myCharacterEquipment.QuiverEquipped() && QuiverInventory().TryAddItem(itemData))
+            return true;
 
         if (mainInventoryManager != null && MainInventory().TryAddItem(itemData))
             return true;
+
+        if (myCharacterEquipment != null)
+        {
+            if (backpackInventoryManager != null && myCharacterEquipment.BackpackEquipped() && BackpackInventory().TryAddItem(itemData))
+                return true;
+        }
+
         return false;
     }
 }

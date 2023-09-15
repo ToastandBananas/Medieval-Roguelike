@@ -10,7 +10,7 @@ public class ContextMenuButton : MonoBehaviour
 
     public void SetupOpenContainerButton()
     {
-        gameObject.name = $"Open Container";
+        gameObject.name = "Open";
         buttonText.text = "Open";
         button.onClick.AddListener(OpenContainer);
         gameObject.SetActive(true);
@@ -20,8 +20,32 @@ public class ContextMenuButton : MonoBehaviour
     {
         if (ContextMenu.Instance.TargetSlot != null)
         {
-            if (ContextMenu.Instance.TargetSlot.InventoryItem().myCharacterEquipment != null)
-                InventoryUI.Instance.ShowContainerUI(ContextMenu.Instance.TargetSlot.InventoryItem().MyUnit().BackpackInventory(), ContextMenu.Instance.TargetSlot.GetParentSlot().GetItemData().Item());
+            if (ContextMenu.Instance.TargetSlot.InventoryItem.myCharacterEquipment != null)
+                InventoryUI.Instance.ShowContainerUI(ContextMenu.Instance.TargetSlot.InventoryItem.GetMyUnit().BackpackInventory(), ContextMenu.Instance.TargetSlot.GetParentSlot().GetItemData().Item);
+        }
+
+        ContextMenu.Instance.DisableContextMenu();
+    }
+
+    public void SetupDropItemButton()
+    {
+        gameObject.name = "Drop";
+        buttonText.text = "Drop";
+        button.onClick.AddListener(DropItem);
+        gameObject.SetActive(true);
+    }
+
+    void DropItem()
+    {
+        if (ContextMenu.Instance.TargetSlot != null)
+        {
+            if (ContextMenu.Instance.TargetSlot.InventoryItem.myCharacterEquipment != null)
+            {
+                EquipmentSlot targetEquipmentSlot = ContextMenu.Instance.TargetSlot as EquipmentSlot;
+                DropItemManager.DropItem(ContextMenu.Instance.TargetSlot.InventoryItem.myCharacterEquipment, targetEquipmentSlot.EquipSlot);
+            }
+            else if (ContextMenu.Instance.TargetSlot.InventoryItem.myInventory != null)
+                DropItemManager.DropItem(ContextMenu.Instance.TargetSlot.InventoryItem.GetMyUnit(), ContextMenu.Instance.TargetSlot.InventoryItem.myInventory, ContextMenu.Instance.TargetSlot.GetItemData());
         }
 
         ContextMenu.Instance.DisableContextMenu();

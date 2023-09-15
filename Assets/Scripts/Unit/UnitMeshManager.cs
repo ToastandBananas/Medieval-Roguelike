@@ -94,19 +94,19 @@ public class UnitMeshManager : MonoBehaviour
 
     public HeldMeleeWeapon GetPrimaryMeleeWeapon()
     {
-        if (rightHeldItem != null && rightHeldItem.ItemData().Item().IsMeleeWeapon())
+        if (rightHeldItem != null && rightHeldItem.ItemData.Item.IsMeleeWeapon())
             return rightHeldItem as HeldMeleeWeapon;
-        else if (leftHeldItem != null && leftHeldItem.ItemData().Item().IsMeleeWeapon())
+        else if (leftHeldItem != null && leftHeldItem.ItemData.Item.IsMeleeWeapon())
             return leftHeldItem as HeldMeleeWeapon;
         return null;
     }
 
     public HeldItem GetHeldItemFromItemData(ItemData itemData)
     {
-        if (rightHeldItem.ItemData() == itemData)
+        if (rightHeldItem != null && rightHeldItem.ItemData == itemData)
             return rightHeldItem;
 
-        if (leftHeldItem.ItemData() == itemData)
+        if (leftHeldItem != null && leftHeldItem.ItemData == itemData)
             return leftHeldItem;
         return null;
     }
@@ -119,9 +119,9 @@ public class UnitMeshManager : MonoBehaviour
 
     public HeldShield GetShield()
     {
-        if (leftHeldItem != null && leftHeldItem.ItemData().Item().IsShield())
+        if (leftHeldItem != null && leftHeldItem.ItemData.Item.IsShield())
             return leftHeldItem as HeldShield;
-        else if (rightHeldItem != null && rightHeldItem.ItemData().Item().IsShield())
+        else if (rightHeldItem != null && rightHeldItem.ItemData.Item.IsShield())
             return rightHeldItem as HeldShield;
         return null;
     }
@@ -184,17 +184,17 @@ public class UnitMeshManager : MonoBehaviour
         if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
             return;
 
-        if (myUnit.CharacterEquipment().EquipSlotHasItem(equipSlot) == false)
+        if (myUnit.CharacterEquipment.EquipSlotHasItem(equipSlot) == false)
             return;
 
         if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
         {
-            if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment().EquippedItemDatas()[(int)equipSlot])
+            if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
             {
                 leftHeldItem.ResetHeldItem();
                 leftHeldItem = null;
             }
-            else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment().EquippedItemDatas()[(int)equipSlot])
+            else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
             {
                 rightHeldItem.ResetHeldItem();
                 rightHeldItem = null;

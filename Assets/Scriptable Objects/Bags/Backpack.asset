@@ -39,3 +39,9 @@ MonoBehaviour:
   - amountOfSlots: 16
     maxSlots: 16
     maxSlotsPerRow: 4
+  - amountOfSlots: 4
+    maxSlots: 4
+    maxSlotsPerRow: 2
+  - amountOfSlots: 4
+    maxSlots: 4
+    maxSlotsPerRow: 2

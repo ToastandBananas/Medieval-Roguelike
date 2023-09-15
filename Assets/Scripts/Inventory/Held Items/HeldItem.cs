@@ -23,9 +23,9 @@ public abstract class HeldItem : MonoBehaviour
     {
         Quaternion defaultRotation;
         if (this == unit.unitMeshManager.leftHeldItem)
-            defaultRotation = Quaternion.Euler(itemData.Item().HeldEquipment().IdleRotation_LeftHand);
+            defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_LeftHand);
         else
-            defaultRotation = Quaternion.Euler(itemData.Item().HeldEquipment().IdleRotation_RightHand);
+            defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_RightHand);
 
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
@@ -44,30 +44,30 @@ public abstract class HeldItem : MonoBehaviour
 
     public IEnumerator DelayDoDefaultAttack()
     {
-        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item() as Weapon) / 2f) + 0.05f);
+        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item as Weapon) / 2f) + 0.05f);
         DoDefaultAttack();
     }
 
-    public ItemData ItemData() => itemData;
+    public ItemData ItemData => itemData;
 
     public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
     {
         this.itemData = itemData;
         this.unit = unit;
-        name = itemData.Item().name;
+        name = itemData.Item.name;
 
-        if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item().IsWeapon() && itemData.Item().Weapon().isTwoHanded))
+        if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item.IsWeapon() && itemData.Item.Weapon().isTwoHanded))
         {
             transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
-            transform.parent.localPosition = itemData.Item().HeldEquipment().IdlePosition_RightHand;
-            transform.parent.localRotation = Quaternion.Euler(itemData.Item().HeldEquipment().IdleRotation_RightHand);
+            transform.parent.localPosition = itemData.Item.HeldEquipment().IdlePosition_RightHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_RightHand);
             unit.unitMeshManager.SetRightHeldItem(this);
         }
         else
         {
             transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
-            transform.parent.localPosition = itemData.Item().HeldEquipment().IdlePosition_LeftHand;
-            transform.parent.localRotation = Quaternion.Euler(itemData.Item().HeldEquipment().IdleRotation_LeftHand);
+            transform.parent.localPosition = itemData.Item.HeldEquipment().IdlePosition_LeftHand;
+            transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_LeftHand);
             unit.unitMeshManager.SetLeftHeldItem(this);
         }
 
@@ -84,11 +84,11 @@ public abstract class HeldItem : MonoBehaviour
     {
         for (int i = 0; i < meshRenderers.Length; i++)
         {
-            meshRenderers[i].material = itemData.Item().meshRendererMaterials[i];
+            meshRenderers[i].material = itemData.Item.meshRendererMaterials[i];
 
             if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
             {
-                meshFilters[i].mesh = itemData.Item().meshes[i];
+                meshFilters[i].mesh = itemData.Item.meshes[i];
                 meshRenderers[i].enabled = true;
             }
             else

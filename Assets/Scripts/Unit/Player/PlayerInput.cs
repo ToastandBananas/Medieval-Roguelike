@@ -40,7 +40,7 @@ public class PlayerInput : MonoBehaviour
         if (skipTurnCooldownTimer < skipTurnCooldown)
             skipTurnCooldownTimer += Time.deltaTime;
 
-        if (InventoryUI.Instance.DraggedItem().itemData != null)
+        if (InventoryUI.Instance.DraggedItem.itemData != null)
             return;
 
         if (EventSystem.current.IsPointerOverGameObject())
@@ -94,7 +94,7 @@ public class PlayerInput : MonoBehaviour
                     HandleTurnMode();
                 // If the player is trying to swap their weapon set
                 else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
-                    player.CharacterEquipment().SwapWeaponSet();
+                    player.CharacterEquipment.SwapWeaponSet();
                 // If the player selects a grid position to try and perform an action
                 else if (GameControls.gamePlayActions.select.WasPressed)
                     HandleActions();
@@ -194,7 +194,7 @@ public class PlayerInput : MonoBehaviour
                         }
                     }
                     // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                    else if (player.CharacterEquipment().MeleeWeaponEquipped() || player.CharacterEquipment().IsUnarmed())
+                    else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.CharacterEquipment.IsUnarmed())
                     {
                         // Do nothing if the target unit is dead
                         if (unitAtGridPosition.health.IsDead())
@@ -217,7 +217,7 @@ public class PlayerInput : MonoBehaviour
                         }
                     }
                     // If the player has a ranged weapon equipped and the target enemy is within attack range
-                    else if (player.CharacterEquipment().RangedWeaponEquipped())
+                    else if (player.CharacterEquipment.RangedWeaponEquipped())
                     {
                         // Do nothing if the target unit is dead
                         if (unitAtGridPosition.health.IsDead())
@@ -240,7 +240,7 @@ public class PlayerInput : MonoBehaviour
                     if (player.unitActionHandler.selectedAction.IsAttackAction() == false || player.unitActionHandler.selectedAction.IsDefaultAttackAction())
                     {
                         // If the player has a ranged weapon equipped, find the nearest Shoot Action attack position
-                        if (player.CharacterEquipment().RangedWeaponEquipped())
+                        if (player.CharacterEquipment.RangedWeaponEquipped())
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
                         else // If the player has a melee weapon equipped or is unarmed, find the nearest Melee Action attack position
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
@@ -310,7 +310,7 @@ public class PlayerInput : MonoBehaviour
                 else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsEnemy(unitAtGridPosition) && player.vision.IsVisible(unitAtGridPosition))
                 {
                     highlightedInteractable = null;
-                    if (player.CharacterEquipment().RangedWeaponEquipped())
+                    if (player.CharacterEquipment.RangedWeaponEquipped())
                         WorldMouse.ChangeCursor(CursorState.RangedAttack);
                     else
                         WorldMouse.ChangeCursor(CursorState.MeleeAttack);
@@ -330,7 +330,7 @@ public class PlayerInput : MonoBehaviour
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-                    if (player.CharacterEquipment().RangedWeaponEquipped())
+                    if (player.CharacterEquipment.RangedWeaponEquipped())
                         WorldMouse.ChangeCursor(CursorState.RangedAttack);
                     else
                         WorldMouse.ChangeCursor(CursorState.MeleeAttack);

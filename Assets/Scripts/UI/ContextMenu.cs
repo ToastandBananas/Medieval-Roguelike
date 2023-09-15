@@ -73,6 +73,7 @@ public class ContextMenu : MonoBehaviour
             
             // Create the necessary buttons
             CreateOpenContainerButton();
+            CreateDropItemButton();
         }
     }
 
@@ -83,11 +84,26 @@ public class ContextMenu : MonoBehaviour
             if (targetSlot.GetParentSlot().IsFull() == false)
                 return;
 
-            if (targetSlot.GetParentSlot().GetItemData().Item().IsBackpack() == false)
+            if (targetSlot.GetParentSlot().GetItemData().Item.IsBackpack() == false)
                 return;
         }
+        else
+            return;
 
         GetContextMenuButton().SetupOpenContainerButton();
+    }
+
+    void CreateDropItemButton()
+    {
+        if (targetSlot != null)
+        {
+            if (targetSlot.GetParentSlot().IsFull() == false)
+                return;
+        }
+        else
+            return;
+
+        GetContextMenuButton().SetupDropItemButton();
     }
 
     IEnumerator BuildContextMenuCooldown()

@@ -13,10 +13,10 @@ public class EquipmentSlot : Slot
 
     public override bool IsFull() 
     {
-        if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null)
+        if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null)
             return true;
 
-        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item() != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item().IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item().Weapon().isTwoHanded)
+        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item.IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon().isTwoHanded)
             return true;
         return false;
     }
@@ -29,7 +29,7 @@ public class EquipmentSlot : Slot
         // Setup the empty slot sprite
         SetEmptySlotSprite();
 
-        if (IsFull() && inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
+        if (IsFull() && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
             oppositeWeaponSlot.HideSlotImage();
@@ -60,24 +60,24 @@ public class EquipmentSlot : Slot
 
     public override void ShowSlotImage()
     {
-        if (inventoryItem.itemData == null || inventoryItem.itemData.Item() == null)
+        if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
         {
             Debug.LogWarning("There is no item in this slot...");
             return;
         }
 
-        if (inventoryItem.itemData.Item().inventorySprite == null)
+        if (inventoryItem.itemData.Item.inventorySprite == null)
         {
-            Debug.LogError($"Sprite for {inventoryItem.itemData.Item().name} is not yet set in the item's ScriptableObject");
+            Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;
         }
 
         if (IsHeldItemSlot())
         {
-            if (inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
+            if (inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (EquipSlot() == global::EquipSlot.LeftHeldItem1 || EquipSlot() == global::EquipSlot.LeftHeldItem2)
+                if (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2)
                 {
                     inventoryItem.SetupIconSprite(true);
                     oppositeWeaponSlot.inventoryItem.SetupIconSprite(false);
@@ -100,7 +100,7 @@ public class EquipmentSlot : Slot
     public override void HighlightSlots()
     {
         bool validSlot = false;
-        Item draggedItem = InventoryUI.Instance.DraggedItem().itemData.Item();
+        Item draggedItem = InventoryUI.Instance.DraggedItem.itemData.Item;
         InventoryUI.Instance.DraggedItem_OverlappingMultipleItems();
 
         if (draggedItem.IsEquipment())
@@ -123,7 +123,7 @@ public class EquipmentSlot : Slot
 
     public override void RemoveSlotHighlights()
     {
-        if (IsFull() && InventoryUI.Instance.DraggedItem().itemData != inventoryItem.itemData)
+        if (IsFull() && InventoryUI.Instance.DraggedItem.itemData != inventoryItem.itemData)
             SetFullSlotSprite();
 
         image.color = Color.white;
@@ -134,12 +134,12 @@ public class EquipmentSlot : Slot
         SetEmptySlotSprite();
         if (IsHeldItemSlot() && IsFull())
         { 
-            if (inventoryItem.itemData != null && inventoryItem.itemData.Item() != null && inventoryItem.itemData.Item().IsWeapon() && inventoryItem.itemData.Item().Weapon().isTwoHanded)
+            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
                 GetOppositeWeaponSlot().SetEmptySlotSprite();
             else
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item() != null && oppositeWeaponSlot.inventoryItem.itemData.Item().IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item().Weapon().isTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon().isTwoHanded)
                     oppositeWeaponSlot.SetEmptySlotSprite();
             }
         }
@@ -149,9 +149,9 @@ public class EquipmentSlot : Slot
 
     public override ItemData GetItemData() => inventoryItem.itemData;
 
-    public CharacterEquipment MyCharacterEquipment() => myCharacterEquipment;
+    public CharacterEquipment CharacterEquipment => myCharacterEquipment;
 
-    public EquipSlot EquipSlot() => equipSlot;
+    public EquipSlot EquipSlot => equipSlot;
 
     public override Slot GetParentSlot() => this;
 }

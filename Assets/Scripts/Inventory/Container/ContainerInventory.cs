@@ -4,11 +4,14 @@ using UnityEngine;
 [System.Serializable]
 public class ContainerInventory : Inventory
 {
-    public ContainerInventoryManager containerInventoryManager;
+    [SerializeField] LooseItem looseItem;
 
-    public ContainerInventory(Unit myUnit, ContainerInventoryManager containerInventoryManager)
+    ContainerInventoryManager containerInventoryManager;
+
+    public ContainerInventory(Unit myUnit, LooseItem looseItem, ContainerInventoryManager containerInventoryManager)
     {
         this.myUnit = myUnit;
+        this.looseItem = looseItem;
         this.containerInventoryManager = containerInventoryManager;
 
         inventoryLayout = new InventoryLayout();
@@ -16,8 +19,12 @@ public class ContainerInventory : Inventory
 
     public override void Initialize()
     {
-        if (myUnit != null && myUnit.CharacterEquipment().EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment().EquippedItemDatas()[(int)EquipSlot.Back].Item().IsBackpack())
-            SetupInventoryLayoutFromBackpack((Backpack)myUnit.CharacterEquipment().EquippedItemDatas()[(int)EquipSlot.Back].Item());
+        // TODO: Figure out out to discern between an equipped container vs one that's in a Unit's inventory and then set it up based off its Item
+
+        if (myUnit != null && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBackpack())
+            SetupInventoryLayoutFromItem((Backpack)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+        else if (looseItem != null && looseItem.ItemData != null)
+            SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
 
         slotCoordinates = new List<SlotCoordinate>();
         CreateSlotCoordinates();
@@ -26,7 +33,7 @@ public class ContainerInventory : Inventory
 
     public override bool TryAddItem(ItemData newItemData)
     {
-        if (newItemData == null || newItemData.Item() == null)
+        if (newItemData == null || newItemData.Item == null)
             return false;
 
         if (newItemData.ShouldRandomize)
@@ -100,28 +107,49 @@ public class ContainerInventory : Inventory
 
     public void ClearSlotsListReference() => slots = null;
 
-    public void SetupInventoryLayoutFromBackpack(Backpack backpack)
+    public void SetupInventoryLayoutFromItem(Item item)
     {
-        if (backpack != null && containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null)
+        if (item == null)
         {
-            if (containerInventoryManager.SubInventories.Length < backpack.InventorySections.Length)
-                containerInventoryManager.IncreaseSubInventoriesArraySize(backpack.InventorySections.Length - 1);
+            Debug.LogWarning("Item is null for this container inventory...");
+            return;
+        }
 
-            for (int i = 0; i < backpack.InventorySections.Length; i++)
+        if (containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null)
+        {
+            InventoryLayout[] inventorySections = null;
+            if (item is Backpack)
+            {
+                Backpack backpack = item as Backpack;
+                inventorySections = backpack.InventorySections;
+            }
+
+            if (inventorySections == null)
+            {
+                Debug.LogWarning($"{item.name} is not the type of item that can be used as a container...");
+                return;
+            }
+
+            if (containerInventoryManager.SubInventories.Length < inventorySections.Length)
+                containerInventoryManager.IncreaseSubInventoriesArraySize(inventorySections.Length - 1);
+
+            for (int i = 0; i < inventorySections.Length; i++)
             {
                 if (i == 0)
-                    inventoryLayout.SetLayoutValues(backpack.InventorySections[i]);
+                    inventoryLayout.SetLayoutValues(inventorySections[i]);
                 else
-                    containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(backpack.InventorySections[i]);
+                    containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(inventorySections[i]);
             }
         }
-        else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this)
-            containerInventoryManager.ParentInventory.SetupInventoryLayoutFromBackpack(backpack);
+        else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this) // We only want to run this on the Parent Inventory
+            containerInventoryManager.ParentInventory.SetupInventoryLayoutFromItem(item);
     }
 
     public ContainerInventory ParentInventory => containerInventoryManager.ParentInventory;
 
     public ContainerInventory[] SubInventories => containerInventoryManager.SubInventories;
+
+    public LooseItem LooseItem => looseItem;
 
     public void SetContainerInventoryManager(ContainerInventoryManager manager) => containerInventoryManager = manager;
 }

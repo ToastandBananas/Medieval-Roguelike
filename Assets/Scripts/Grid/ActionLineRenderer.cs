@@ -72,7 +72,7 @@ public class ActionLineRenderer : MonoBehaviour
                         yield break;
                     }
 
-                    if (player.CharacterEquipment().RangedWeaponEquipped())
+                    if (player.CharacterEquipment.RangedWeaponEquipped())
                         targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
                     else
                         targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);

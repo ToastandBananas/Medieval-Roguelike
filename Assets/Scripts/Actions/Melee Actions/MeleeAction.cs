@@ -57,12 +57,12 @@ public class MeleeAction : BaseAction
                 yield return null;
 
             // Play the attack animations and handle blocking for the target
-            if (unit.CharacterEquipment().IsUnarmed())
+            if (unit.CharacterEquipment.IsUnarmed())
             {
                 if (canFightUnarmed)
                     unit.unitAnimator.DoDefaultUnarmedAttack();
             }
-            else if (unit.CharacterEquipment().IsDualWielding())
+            else if (unit.CharacterEquipment.IsDualWielding())
             {
                 // Dual wield attack
                 unit.unitAnimator.StartDualMeleeAttack();
@@ -83,12 +83,12 @@ public class MeleeAction : BaseAction
         {
             // Try to block the attack
             bool attackBlocked = false;
-            if (unit.CharacterEquipment().IsUnarmed())
+            if (unit.CharacterEquipment.IsUnarmed())
             {
                 attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                 DamageTargets(null);
             }
-            else if (unit.CharacterEquipment().IsDualWielding()) // Dual wield attack
+            else if (unit.CharacterEquipment.IsDualWielding()) // Dual wield attack
             {
                 bool mainAttackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                 DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon);
@@ -142,14 +142,14 @@ public class MeleeAction : BaseAction
                 if (itemBlockedWith != null)
                 {
                     int blockAmount = 0;
-                    if (targetUnit.CharacterEquipment().ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetShield()) // If blocked with shield
+                    if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetShield()) // If blocked with shield
                         blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetShield());
-                    else if (targetUnit.CharacterEquipment().MeleeWeaponEquipped()) // If blocked with melee weapon
+                    else if (targetUnit.CharacterEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
                     {
                         if (itemBlockedWith == targetUnit.unitMeshManager.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
                         {
                             blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetPrimaryMeleeWeapon());
-                            if (unit.CharacterEquipment().IsDualWielding())
+                            if (unit.CharacterEquipment.IsDualWielding())
                             {
                                 if (itemBlockedWith == unit.unitMeshManager.GetRightMeleeWeapon())
                                     blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
@@ -183,9 +183,9 @@ public class MeleeAction : BaseAction
             return false;
 
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-        if (unit.CharacterEquipment().MeleeWeaponEquipped())
+        if (unit.CharacterEquipment.MeleeWeaponEquipped())
         {
-            Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon();
+            Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon();
             float maxRangeToTargetPosition = meleeWeapon.maxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
@@ -230,12 +230,12 @@ public class MeleeAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        if (unit.CharacterEquipment().IsUnarmed())
+        if (unit.CharacterEquipment.IsUnarmed())
             yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
-        else if (unit.CharacterEquipment().IsDualWielding())
+        else if (unit.CharacterEquipment.IsDualWielding())
             yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
         else
-            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item() as Weapon));
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item as Weapon));
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -250,8 +250,8 @@ public class MeleeAction : BaseAction
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
             float minAttackRange = 1f;
-            if (unit.CharacterEquipment().MeleeWeaponEquipped())
-                minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
+            if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().minRange;
 
             if (distance < minAttackRange)
                 finalActionValue = 0f;
@@ -330,15 +330,15 @@ public class MeleeAction : BaseAction
         float minRange;
         float maxRange;
 
-        if (unit.CharacterEquipment().IsUnarmed())
+        if (unit.CharacterEquipment.IsUnarmed())
         {
             minRange = 1f;
             maxRange = UnarmedAttackRange(startGridPosition, false);
         }
         else
         {
-            minRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().minRange;
-            maxRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
+            minRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().minRange;
+            maxRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().maxRange;
         }
 
         float boundsDimension = (maxRange * 2) + 0.1f;
@@ -401,8 +401,8 @@ public class MeleeAction : BaseAction
             return validGridPositionsList;
 
         float maxAttackRange;
-        if (unit.CharacterEquipment().MeleeWeaponEquipped())
-            maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData().Item().Weapon().maxRange;
+        if (unit.CharacterEquipment.MeleeWeaponEquipped())
+            maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().maxRange;
         else
             maxAttackRange = unarmedAttackRange;
 
@@ -485,7 +485,7 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit.CharacterEquipment().MeleeWeaponEquipped() || (canFightUnarmed && unit.CharacterEquipment().IsUnarmed()))
+        if (unit.CharacterEquipment.MeleeWeaponEquipped() || (canFightUnarmed && unit.CharacterEquipment.IsUnarmed()))
             return true;
         return false;
     }

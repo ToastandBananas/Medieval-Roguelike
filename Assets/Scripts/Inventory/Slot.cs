@@ -16,15 +16,15 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     
     public virtual void ShowSlotImage()
     {
-        if (inventoryItem.itemData == null || inventoryItem.itemData.Item() == null)
+        if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
         {
             Debug.LogWarning("There is no item in this slot...");
             return;
         }
 
-        if (inventoryItem.itemData.Item().inventorySprite == null)
+        if (inventoryItem.itemData.Item.inventorySprite == null)
         {
-            Debug.LogError($"Sprite for {inventoryItem.itemData.Item().name} is not yet set in the item's ScriptableObject");
+            Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;
         }
 
@@ -47,7 +47,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     protected void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
 
-    public InventoryItem InventoryItem() => inventoryItem;
+    public InventoryItem InventoryItem => inventoryItem;
 
     public abstract ItemData GetItemData();
 

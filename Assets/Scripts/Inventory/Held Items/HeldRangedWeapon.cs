@@ -22,7 +22,7 @@ public class HeldRangedWeapon : HeldItem
         {
             // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
             targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
-            if (targetUnit.CharacterEquipment().ShieldEquipped())
+            if (targetUnit.CharacterEquipment.ShieldEquipped())
                 targetUnit.unitMeshManager.GetShield().RaiseShield();
         }
 
@@ -36,7 +36,7 @@ public class HeldRangedWeapon : HeldItem
     public void LoadProjectile()
     {
         Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-        projectile.Setup(projectile.ItemData(), unit, bowLineRenderer.GetStringCenterTarget(), null);
+        projectile.Setup(projectile.ItemData, unit, bowLineRenderer.GetStringCenterTarget(), null);
         loadedProjectile = projectile;
         isLoaded = true;
     }
@@ -49,7 +49,7 @@ public class HeldRangedWeapon : HeldItem
 
     public override IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(itemData.Item().HeldEquipment().IdleRotation_RightHand);
+        Quaternion defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_RightHand);
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
         float duration = 0.25f;
@@ -97,9 +97,9 @@ public class HeldRangedWeapon : HeldItem
     public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.Item().Weapon().maxRange;
+            return itemData.Item.Weapon().maxRange;
 
-        float maxRange = itemData.Item().Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
+        float maxRange = itemData.Item.Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

@@ -141,14 +141,14 @@ public abstract class UnitActionHandler : MonoBehaviour
     {
         if (selectedAction.IsAttackAction())
             QueueAction(selectedAction, targetAttackGridPosition);
-        else if (unit.CharacterEquipment().RangedWeaponEquipped())
+        else if (unit.CharacterEquipment.RangedWeaponEquipped())
         {
             if (unit.unitMeshManager.GetRangedWeapon().isLoaded)
                 QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
             else
                 QueueAction(GetAction<ReloadAction>());
         }
-        else if (unit.CharacterEquipment().MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+        else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
             QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
     }
 
@@ -175,7 +175,7 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public bool TryBlockRangedAttack(Unit attackingUnit)
     {
-        if (unit.CharacterEquipment().ShieldEquipped())
+        if (unit.CharacterEquipment.ShieldEquipped())
         {
             // If the attacker is in front of this Unit (greater chance to block)
             if (GetAction<TurnAction>().AttackerInFrontOfUnit(attackingUnit))
@@ -210,7 +210,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         TurnAction targetUnitTurnAction = GetAction<TurnAction>();
         if (targetUnitTurnAction.AttackerInFrontOfUnit(attackingUnit))
         {
-            if (unit.CharacterEquipment().ShieldEquipped())
+            if (unit.CharacterEquipment.ShieldEquipped())
             {
                 // Try blocking with shield
                 random = Random.Range(1f, 100f);
@@ -221,7 +221,7 @@ public abstract class UnitActionHandler : MonoBehaviour
                 }
 
                 // Still have a chance to block with weapon
-                if (unit.CharacterEquipment().MeleeWeaponEquipped())
+                if (unit.CharacterEquipment.MeleeWeaponEquipped())
                 {
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, true))
@@ -231,9 +231,9 @@ public abstract class UnitActionHandler : MonoBehaviour
                     }
                 }
             }
-            else if (unit.CharacterEquipment().MeleeWeaponEquipped())
+            else if (unit.CharacterEquipment.MeleeWeaponEquipped())
             {
-                if (unit.CharacterEquipment().IsDualWielding())
+                if (unit.CharacterEquipment.IsDualWielding())
                 {
                     // Try blocking with right weapon
                     random = Random.Range(1f, 100f);
@@ -265,7 +265,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         }
         else if (targetUnitTurnAction.AttackerBesideUnit(attackingUnit))
         {
-            if (unit.CharacterEquipment().ShieldEquipped())
+            if (unit.CharacterEquipment.ShieldEquipped())
             {
                 // Try blocking with shield
                 random = Random.Range(1f, 100f);
@@ -276,7 +276,7 @@ public abstract class UnitActionHandler : MonoBehaviour
                 }
 
                 // Still have a chance to block with weapon
-                if (unit.CharacterEquipment().MeleeWeaponEquipped())
+                if (unit.CharacterEquipment.MeleeWeaponEquipped())
                 {
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, true))
@@ -286,9 +286,9 @@ public abstract class UnitActionHandler : MonoBehaviour
                     }
                 }
             }
-            else if (unit.CharacterEquipment().MeleeWeaponEquipped())
+            else if (unit.CharacterEquipment.MeleeWeaponEquipped())
             {
-                if (unit.CharacterEquipment().IsDualWielding())
+                if (unit.CharacterEquipment.IsDualWielding())
                 {
                     // Try blocking with right weapon
                     random = Random.Range(1f, 100f);

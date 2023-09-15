@@ -33,7 +33,7 @@ public class Inventory
 
     public virtual bool TryAddItem(ItemData newItemData)
     {
-        if (newItemData == null || newItemData.Item() == null)
+        if (newItemData == null || newItemData.Item == null)
             return false;
 
         if (newItemData.ShouldRandomize)
@@ -84,14 +84,14 @@ public class Inventory
         {
             // Get a reference to the overlapped item's data and parent slot before we clear it out
             Slot overlappedItemsParentSlot = InventoryUI.Instance.overlappedItemsParentSlot;
-            ItemData overlappedItemsData = overlappedItemsParentSlot.InventoryItem().itemData;
+            ItemData overlappedItemsData = overlappedItemsParentSlot.InventoryItem.itemData;
             ItemData newDraggedItemData;
 
             // Remove the highlighting
             targetSlot.RemoveSlotHighlights();
 
             // If the slots are in different inventories
-            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem().myInventory)
+            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem.myInventory)
             {
                 // Create a new ItemData and assign it to the new inventory
                 newDraggedItemData = new ItemData();
@@ -102,26 +102,26 @@ public class Inventory
                 if (InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
-                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot());
-                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = null;
+                    InventoryUI.Instance.DraggedItem.myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
+                    InventoryUI.Instance.DraggedItem.myCharacterEquipment.EquippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
                 }
                 // Remove the item from its original inventory
                 else
-                    InventoryUI.Instance.DraggedItem().myInventory.ItemDatas().Remove(newItemData);
+                    InventoryUI.Instance.DraggedItem.myInventory.ItemDatas.Remove(newItemData);
             }
             else // Else, just get a reference to the dragged item's data before we clear it out
                 newDraggedItemData = newItemData;
 
             // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
-            if (overlappedItemsParentSlot == targetSlot && newDraggedItemData.Item() == overlappedItemsData.Item() && newDraggedItemData.Item().maxStackSize > 1 && overlappedItemsData.CurrentStackSize() < overlappedItemsData.Item().maxStackSize)
+            if (overlappedItemsParentSlot == targetSlot && newDraggedItemData.Item == overlappedItemsData.Item && newDraggedItemData.Item.maxStackSize > 1 && overlappedItemsData.CurrentStackSize() < overlappedItemsData.Item.maxStackSize)
             {
                 int remainingStack = newDraggedItemData.CurrentStackSize();
 
                 // If we can't fit the entire stack, add what we can to the overlapped item's stack size
-                if (overlappedItemsData.CurrentStackSize() + remainingStack > overlappedItemsData.Item().maxStackSize)
+                if (overlappedItemsData.CurrentStackSize() + remainingStack > overlappedItemsData.Item.maxStackSize)
                 {
-                    remainingStack -= overlappedItemsData.Item().maxStackSize - overlappedItemsData.CurrentStackSize();
-                    overlappedItemsData.SetCurrentStackSize(overlappedItemsData.Item().maxStackSize);
+                    remainingStack -= overlappedItemsData.Item.maxStackSize - overlappedItemsData.CurrentStackSize();
+                    overlappedItemsData.SetCurrentStackSize(overlappedItemsData.Item.maxStackSize);
                 }
                 else // If we can fit the entire stack, add it to the overlapped item's stack size
                 {
@@ -130,7 +130,7 @@ public class Inventory
                 }
 
                 // Update the overlapped item's stack size text
-                overlappedItemsParentSlot.InventoryItem().UpdateStackSizeText();
+                overlappedItemsParentSlot.InventoryItem.UpdateStackSizeText();
 
                 // If the dragged item has been depleted
                 if (remainingStack == 0)
@@ -145,8 +145,8 @@ public class Inventory
                 else // If there's still some left in the dragged item's stack
                 {
                     // Update the dragged item's stack size and text
-                    InventoryUI.Instance.DraggedItem().itemData.SetCurrentStackSize(remainingStack);
-                    InventoryUI.Instance.DraggedItem().UpdateStackSizeText();
+                    InventoryUI.Instance.DraggedItem.itemData.SetCurrentStackSize(remainingStack);
+                    InventoryUI.Instance.DraggedItem.UpdateStackSizeText();
 
                     // Re-enable the highlighting
                     targetSlot.HighlightSlots();
@@ -183,7 +183,7 @@ public class Inventory
             ItemData newDraggedItemData;
 
             // If the slots are in different inventories
-            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem().myInventory)
+            if (targetSlot.myInventory != InventoryUI.Instance.DraggedItem.myInventory)
             {
                 // Create a new ItemData and assign it to the new inventory
                 newDraggedItemData = new ItemData();
@@ -194,12 +194,12 @@ public class Inventory
                 if (InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
-                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot());
-                    InventoryUI.Instance.DraggedItem().myCharacterEquipment.EquippedItemDatas()[(int)equipmentSlotDraggedFrom.EquipSlot()] = null;
+                    InventoryUI.Instance.DraggedItem.myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
+                    InventoryUI.Instance.DraggedItem.myCharacterEquipment.EquippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
                 }
                 // Remove the item from its original inventory
-                else if (InventoryUI.Instance.DraggedItem().myInventory != null)
-                    InventoryUI.Instance.DraggedItem().myInventory.ItemDatas().Remove(newItemData);
+                else if (InventoryUI.Instance.DraggedItem.myInventory != null)
+                    InventoryUI.Instance.DraggedItem.myInventory.ItemDatas.Remove(newItemData);
             }
             else // Else, just get a reference to the dragged item's data before we clear it out
                 newDraggedItemData = newItemData;
@@ -227,16 +227,16 @@ public class Inventory
     /// <summary>Setup the target slot's item data and sprites.</summary>
     protected void SetupNewItem(InventorySlot targetSlot, ItemData newItemData)
     {
-        targetSlot.InventoryItem().SetItemData(newItemData);
+        targetSlot.InventoryItem.SetItemData(newItemData);
         targetSlot.ShowSlotImage();
         targetSlot.SetupFullSlotSprites();
-        targetSlot.InventoryItem().UpdateStackSizeText();
+        targetSlot.InventoryItem.UpdateStackSizeText();
     }
 
     protected SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
     {
-        int width = itemData.Item().width;
-        int height = itemData.Item().height;
+        int width = itemData.Item.width;
+        int height = itemData.Item.height;
 
         for (int i = 0; i < slotCoordinates.Count; i++)
         {
@@ -262,7 +262,7 @@ public class Inventory
 
             if (isAvailable)
             {
-                // Debug.Log(slotCoordinates[i].name + " is available to place " + itemData.Item().name + " in " + name);
+                // Debug.Log(slotCoordinates[i].name + " is available to place " + itemData.Item.name + " in " + name);
                 return slotCoordinates[i];
             }
         }
@@ -303,7 +303,7 @@ public class Inventory
     {
         for (int i = 0; i < itemDatas.Count; i++)
         {
-            if (itemDatas[i].Item() == item)
+            if (itemDatas[i].Item == item)
                 return true;
         }
         return false;
@@ -369,19 +369,29 @@ public class Inventory
     {
         for (int i = 0; i < itemDatas.Count; i++)
         {
-            if (itemDatas[i].Item() == null)
+            if (itemDatas[i].Item == null)
                 continue;
 
             itemDatas[i].RandomizeData();
 
             if (TryAddItem(itemDatas[i]) == false)
-                Debug.LogError($"{itemDatas[i].Item().name} can't fit in inventory...");
+                Debug.LogError($"{itemDatas[i].Item.name} can't fit in inventory...");
         }
     }
 
-    public List<ItemData> ItemDatas() => itemDatas;
+    public InventorySlot GetSlotFromItemData(ItemData itemDataToDrop)
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].GetItemData() == itemDataToDrop)
+                return slots[i];
+        }
+        return null;
+    }
 
-    public Unit MyUnit() => myUnit;
+    public List<ItemData> ItemDatas => itemDatas;
+
+    public Unit MyUnit => myUnit;
 
     public InventoryLayout InventoryLayout => inventoryLayout;
 

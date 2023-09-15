@@ -101,83 +101,10 @@ public class UnitAnimator : MonoBehaviour
         StartCoroutine(Die_RotateBody(diedForward));
 
         if (unit.unitMeshManager.leftHeldItem != null)
-            Die_DropHeldItem(unit.unitMeshManager.leftHeldItem, attackerTransform, diedForward);
+            DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
 
         if (unit.unitMeshManager.rightHeldItem != null)
-            Die_DropHeldItem(unit.unitMeshManager.rightHeldItem, attackerTransform, diedForward);
-    }
-
-    void Die_DropHeldItem(HeldItem heldItem, Transform attackerTransform, bool diedForward)
-    {
-        LooseItem looseProjectile = null;
-        LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
-        Item item = heldItem.ItemData().Item();
-
-        SetupItemDrop(heldItem.transform, looseWeapon, heldItem.ItemData(), item);
-
-        if (heldItem is HeldRangedWeapon)
-        {
-            HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
-            if (heldRangedWeapon.isLoaded)
-            {
-                looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
-                Item projectileItem = heldRangedWeapon.loadedProjectile.ItemData().Item();
-                SetupItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, heldRangedWeapon.loadedProjectile.ItemData(), projectileItem);
-                heldRangedWeapon.loadedProjectile.Disable();
-            }
-        }
-
-        // Get rid of the HeldItem
-        if (heldItem == unit.unitMeshManager.leftHeldItem || (heldItem.itemData.Item().IsWeapon() && heldItem.itemData.Item().Weapon().isTwoHanded))
-            unit.CharacterEquipment().RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
-        else
-            unit.CharacterEquipment().RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
-
-        float randomForceMagnitude = Random.Range(100f, 600f);
-        float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
-
-        // Get the attacker's position and the character's position
-        Vector3 attackerPosition = attackerTransform.position;
-        Vector3 unitPosition = transform.parent.position;
-
-        // Calculate the force direction (depending on whether they fall forward or backward)
-        Vector3 forceDirection;
-        if (diedForward)
-            forceDirection = (attackerPosition - unitPosition).normalized;
-        else
-            forceDirection = (unitPosition - attackerPosition).normalized;
-
-        // Add some randomness to the force direction
-        Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
-        forceDirection = randomRotation * forceDirection;
-
-        // Get the Rigidbody component(s) and apply force
-        looseWeapon.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
-        if (looseProjectile != null)
-            looseProjectile.RigidBody().AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
-
-        if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
-        {
-            looseWeapon.HideMeshRenderer();
-            if (looseProjectile != null)
-                looseProjectile.HideMeshRenderer();
-        }
-    }
-
-    void SetupItemDrop(Transform itemDropTransform, LooseItem looseItem, ItemData itemData, Item item)
-    {
-        if (item.pickupMesh != null)
-            looseItem.SetupMesh(item.pickupMesh, item.pickupMeshRendererMaterial);
-        else if (item.meshes[0] != null)
-            looseItem.SetupMesh(item.meshes[0], item.meshRendererMaterials[0]);
-        else
-            Debug.LogWarning("Mesh info has not been set on the ScriptableObject for: " + item.name);
-
-        looseItem.SetItemData(itemData);
-
-        // Set the LooseItem's position to match the HeldItem before we add force
-        looseItem.transform.position = itemDropTransform.position;
-        looseItem.gameObject.SetActive(true);
+            DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.rightHeldItem,unit, attackerTransform, diedForward);
     }
 
     IEnumerator Die_RotateHead(bool diedForward)
