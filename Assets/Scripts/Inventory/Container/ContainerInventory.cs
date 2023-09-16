@@ -6,7 +6,7 @@ public class ContainerInventory : Inventory
 {
     [SerializeField] LooseItem looseItem;
 
-    ContainerInventoryManager containerInventoryManager;
+    public ContainerInventoryManager containerInventoryManager { get; private set; }
 
     public ContainerInventory(Unit myUnit, LooseItem looseItem, ContainerInventoryManager containerInventoryManager)
     {
@@ -21,7 +21,7 @@ public class ContainerInventory : Inventory
     {
         // TODO: Figure out out to discern between an equipped container vs one that's in a Unit's inventory and then set it up based off its Item
 
-        if (myUnit != null && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBackpack())
+        if (myUnit != null && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
             SetupInventoryLayoutFromItem((Backpack)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
         else if (looseItem != null && looseItem.ItemData != null)
             SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
@@ -29,6 +29,8 @@ public class ContainerInventory : Inventory
         slotCoordinates = new List<SlotCoordinate>();
         CreateSlotCoordinates();
         SetupItems();
+
+        hasBeenInitialized = true;
     }
 
     public override bool TryAddItem(ItemData newItemData)
@@ -102,10 +104,8 @@ public class ContainerInventory : Inventory
         slots = containerSlotGroup.Slots;
         slotsParent = containerSlotGroup.transform;
         containerSlotGroup.SetupRectTransform(inventoryLayout);
-        InventoryUI.Instance.CreateSlotVisuals(this, slots, slotsParent);
+        CreateSlotVisuals();
     }
-
-    public void ClearSlotsListReference() => slots = null;
 
     public void SetupInventoryLayoutFromItem(Item item)
     {

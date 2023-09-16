@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ public class ContextMenu : MonoBehaviour
     List<ContextMenuButton> contextButtons = new List<ContextMenuButton>();
 
     Canvas canvas;
-    VerticalLayoutGroup verticalLayoutGroup;
     Slot targetSlot;
 
     WaitForSeconds buildContextMenuCooldown = new WaitForSeconds(0.2f);
@@ -30,7 +28,6 @@ public class ContextMenu : MonoBehaviour
         Instance = this;
 
         canvas = GetComponentInParent<Canvas>();
-        verticalLayoutGroup = GetComponent<VerticalLayoutGroup>();
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -79,13 +76,20 @@ public class ContextMenu : MonoBehaviour
 
     void CreateOpenContainerButton()
     {
-        if (targetSlot != null)
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.GetParentSlot().IsFull())
         {
-            if (targetSlot.GetParentSlot().IsFull() == false)
+            ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
+            if (containerEquipmentSlot.containerInventoryManager == null)
+            {
+                Debug.LogWarning($"{containerEquipmentSlot.name} does not have an assigned ContainerInventoryManager...");
                 return;
+            }
 
-            if (targetSlot.GetParentSlot().GetItemData().Item.IsBackpack() == false)
+            if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
+            {
+                CreateCloseContainerButton();
                 return;
+            }
         }
         else
             return;
@@ -93,14 +97,14 @@ public class ContextMenu : MonoBehaviour
         GetContextMenuButton().SetupOpenContainerButton();
     }
 
+    void CreateCloseContainerButton()
+    {
+        GetContextMenuButton().SetupCloseContainerButton();
+    }
+
     void CreateDropItemButton()
     {
-        if (targetSlot != null)
-        {
-            if (targetSlot.GetParentSlot().IsFull() == false)
-                return;
-        }
-        else
+        if (targetSlot == null || targetSlot.GetParentSlot().IsFull() == false)
             return;
 
         GetContextMenuButton().SetupDropItemButton();

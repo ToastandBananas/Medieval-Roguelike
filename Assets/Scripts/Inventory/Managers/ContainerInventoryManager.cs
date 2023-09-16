@@ -3,9 +3,14 @@ using UnityEngine;
 public class ContainerInventoryManager : InventoryManager
 {
     [SerializeField] ContainerInventory parentInventory;
-    [SerializeField] ContainerInventory[] subInventories;
+    [SerializeField] ContainerInventory[] subInventories = new ContainerInventory[5];
 
     void Awake()
+    {
+        Initialize();
+    }
+
+    public void Initialize()
     {
         parentInventory.SetContainerInventoryManager(this);
         parentInventory.Initialize();
@@ -35,6 +40,23 @@ public class ContainerInventoryManager : InventoryManager
             }
         }
     }
+
+    public bool HasAnyItems()
+    {
+        if (parentInventory.ItemDatas.Count > 0)
+            return true;
+
+        for (int i = 0; i < subInventories.Length; i++)
+        {
+            if (subInventories[i].ItemDatas.Count > 0)
+                return true;
+        }
+        return false;
+    }
+
+    public void SetParentInventory(ContainerInventory newParentInventory) => parentInventory = newParentInventory;
+
+    public void SetSubInventories(ContainerInventory[] newSubInventories) => subInventories = newSubInventories;
 
     public ContainerInventory ParentInventory => parentInventory;
 

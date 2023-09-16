@@ -17,18 +17,36 @@ public class ContainerUI : MonoBehaviour
     [SerializeField] RectTransform middleSectionRectTransform;
     [SerializeField] RectTransform rightSectionRectTransform;
 
+    public ContainerInventoryManager containerInventoryManager { get; private set; }
+
     public void ShowContainerInventory(ContainerInventory mainContainerInventory, Item containerItem)
     {
         if (containerItem != null)
             titleText.text = containerItem.name;
 
-        mainContainerInventory.SetupSlots(mainContainerSlotGroup);
-        for (int i = 0; i < mainContainerInventory.SubInventories.Length; i++)
+        containerInventoryManager = mainContainerInventory.ParentInventory.containerInventoryManager;
+        containerInventoryManager.ParentInventory.SetupSlots(mainContainerSlotGroup);
+        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
-            mainContainerInventory.SubInventories[i].SetupSlots(subContainerSlotGroups[i]);
+            containerInventoryManager.SubInventories[i].SetupSlots(subContainerSlotGroups[i]);
         }
 
         gameObject.SetActive(true);
+    }
+
+    public void CloseContainerInventory()
+    {
+        if (gameObject.activeSelf == false)
+            return;
+
+        containerInventoryManager.ParentInventory.RemoveSlots();
+        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+        {
+            containerInventoryManager.SubInventories[i].RemoveSlots();
+        }
+
+        containerInventoryManager = null;
+        gameObject.SetActive(false);
     }
 
     public void SetupRectTransform(ContainerInventory mainContainerInventory)

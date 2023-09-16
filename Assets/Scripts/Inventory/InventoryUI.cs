@@ -257,6 +257,21 @@ public class InventoryUI : MonoBehaviour
 
         this.parentSlotDraggedFrom = parentSlotDraggedFrom;
 
+        if (parentSlotDraggedFrom is ContainerEquipmentSlot)
+        {
+            ContainerEquipmentSlot containerEquipmentSlot = parentSlotDraggedFrom as ContainerEquipmentSlot;
+            if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
+            {
+                if (GetContainerUI(containerEquipmentSlot.containerInventoryManager) != null)
+                    GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
+            }
+            else if (newItemData.Item is Quiver)
+            {
+                if (GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager) != null)
+                    GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
+            }
+        }
+
         draggedItem.SetMyInventory(null);
         draggedItem.SetMyCharacterEquipment(characterEquipmentDraggedFrom);
         draggedItem.SetItemData(newItemData);
@@ -285,18 +300,25 @@ public class InventoryUI : MonoBehaviour
         draggedItem.SetItemData(null);
     }
 
-    public void ShowContainerUI(ContainerInventory mainContainerInventory)
+    public void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)
     {
+        for (int i = 0; i < containerUIs.Length; i++)
+        {
+            if (containerUIs[i].containerInventoryManager == containerInventoryManager)
+                return;
+        }
+
         ContainerUI containerUI = GetNextAvailableContainerUI();
-        containerUI.ShowContainerInventory(mainContainerInventory, null);
-        containerUI.SetupRectTransform(mainContainerInventory);
+        containerUI.ShowContainerInventory(containerInventoryManager.ParentInventory, containerItem);
+        containerUI.SetupRectTransform(containerInventoryManager.ParentInventory);
     }
 
-    public void ShowContainerUI(ContainerInventory mainContainerInventory, Item containerItem)
+    public void CloseAllContainerUI()
     {
-        ContainerUI containerUI = GetNextAvailableContainerUI();
-        containerUI.ShowContainerInventory(mainContainerInventory, containerItem);
-        containerUI.SetupRectTransform(mainContainerInventory);
+        for (int i = 0; i < containerUIs.Length; i++)
+        {
+            containerUIs[i].CloseContainerInventory();
+        }
     }
 
     ContainerUI GetNextAvailableContainerUI()
@@ -309,46 +331,14 @@ public class InventoryUI : MonoBehaviour
         return containerUIs[1];
     }
 
-    public void CreateSlotVisuals(Inventory inventory, List<InventorySlot> slots, Transform slotsParent)
+    public ContainerUI GetContainerUI(ContainerInventoryManager containerInventoryManager)
     {
-        if (inventory.SlotVisualsCreated)
+        for (int i = 0; i < containerUIs.Length; i++)
         {
-            Debug.LogWarning($"Slot visuals for {name}, owned by {inventory.MyUnit.name}, has already been created...");
-            return;
+            if (containerUIs[i].containerInventoryManager == containerInventoryManager)
+                return containerUIs[i];
         }
-
-        if (slots.Count > 0)
-        {
-            // Clear out any slots already in the list, so we can start from scratch
-            for (int i = 0; i < slots.Count; i++)
-            {
-                slots[i].RemoveSlotHighlights();
-                slots[i].ClearItem();
-                slots[i].SetSlotCoordinate(null);
-                slots[i].SetMyInventory(null);
-                slots[i].gameObject.SetActive(false);
-            }
-
-            slots.Clear();
-        }
-
-        for (int i = 0; i < inventory.InventoryLayout.AmountOfSlots; i++)
-        {
-            InventorySlot newSlot = Instantiate(inventorySlotPrefab, slotsParent);
-            newSlot.SetSlotCoordinate(inventory.GetSlotCoordinate((i % inventory.InventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt((float)i / inventory.InventoryLayout.MaxSlotsPerRow) + 1));
-            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
-
-            newSlot.SetMyInventory(inventory);
-            newSlot.InventoryItem.SetMyInventory(inventory);
-            slots.Add(newSlot);
-
-            if (i == inventory.InventoryLayout.MaxSlots - 1)
-                break;
-        }
-
-        inventory.SetSlotVisualsCreated(true);
-
-        inventory.SetupItems();
+        return null;
     }
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;

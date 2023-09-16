@@ -48,6 +48,14 @@ public class MoveAction : BaseAction
         StartCoroutine(Move());
     }
 
+    protected override void StartAction()
+    {
+        base.StartAction();
+
+        if (unit.IsPlayer())
+            InventoryUI.Instance.CloseAllContainerUI();
+    }
+
     IEnumerator Move()
     {
         // If there's no path

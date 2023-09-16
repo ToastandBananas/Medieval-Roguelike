@@ -120,7 +120,7 @@ public abstract class Item : ScriptableObject
 
     public abstract bool IsShield();
 
-    public abstract bool IsBackpack();
+    public abstract bool IsBag();
 
     public abstract bool IsPortableContainer();
 

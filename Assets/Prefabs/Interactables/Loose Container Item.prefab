@@ -26,17 +26,17 @@ PrefabInstance:
     - target: {fileID: 2027487623980987461, guid: 17071e32cebe6024d9a7f365e066b03a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2027487623980987461, guid: 17071e32cebe6024d9a7f365e066b03a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2027487623980987461, guid: 17071e32cebe6024d9a7f365e066b03a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2027487623980987461, guid: 17071e32cebe6024d9a7f365e066b03a,
         type: 3}
@@ -103,7 +103,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Loose Container Item
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1974948824427181876, guid: 17071e32cebe6024d9a7f365e066b03a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 17071e32cebe6024d9a7f365e066b03a, type: 3}
 --- !u!1 &4678453034286018384 stripped
 GameObject:
@@ -130,17 +131,54 @@ MonoBehaviour:
       maxSlots: 20
       maxSlotsPerRow: 10
     itemDatas: []
-    looseItem: {fileID: 8392235782957880744}
+    looseItem: {fileID: 5532644622659377026}
   subInventories: []
---- !u!114 &8392235782957880744 stripped
+--- !u!114 &5532644622659377026
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1974948824427181876, guid: 17071e32cebe6024d9a7f365e066b03a,
-    type: 3}
-  m_PrefabInstance: {fileID: 8007215999114306204}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4678453034286018384}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec949deb910010449afe0d2861dcc946, type: 3}
+  m_Script: {fileID: 11500000, guid: 360a7b440cf5c5345af45aea9a66678c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meshFilter: {fileID: 5416082111288044984}
+  meshRenderer: {fileID: 7873964727953193924}
+  meshCollider: {fileID: 5760482018376053706}
+  rigidBody: {fileID: 6231096709018437190}
+  itemData:
+    name: 
+    item: {fileID: 11400000, guid: 1955efedb2e8ef4458f2d4eb02a16dae, type: 2}
+    currentStackSize: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    hasBeenRandomized: 0
+  containerInventoryManager: {fileID: 2181754334124122026}
+--- !u!33 &5416082111288044984 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: 2609432991551950628, guid: 17071e32cebe6024d9a7f365e066b03a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215999114306204}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &5760482018376053706 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 2372850988380590422, guid: 17071e32cebe6024d9a7f365e066b03a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215999114306204}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &6231096709018437190 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 4136017461024531674, guid: 17071e32cebe6024d9a7f365e066b03a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215999114306204}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7873964727953193924 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 169634531984447832, guid: 17071e32cebe6024d9a7f365e066b03a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8007215999114306204}
+  m_PrefabAsset: {fileID: 0}

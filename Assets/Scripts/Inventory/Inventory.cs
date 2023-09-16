@@ -18,6 +18,7 @@ public class Inventory
     protected List<SlotCoordinate> slotCoordinates;
 
     protected bool slotVisualsCreated;
+    protected bool hasBeenInitialized;
 
     public virtual void Initialize()
     {
@@ -26,9 +27,11 @@ public class Inventory
         SetSlotsList();
         
         if (myUnit.IsPlayer())
-            InventoryUI.Instance.CreateSlotVisuals(this, slots, slotsParent);
+            CreateSlotVisuals();
         else
             SetupItems();
+
+        hasBeenInitialized = true;
     }
 
     public virtual bool TryAddItem(ItemData newItemData)
@@ -273,7 +276,7 @@ public class Inventory
     {
         if (xCoord <= 0 || yCoord <= 0)
             return null;
-
+        
         for (int i = 0; i < slots.Count; i++)
         {
             if (slots[i].slotCoordinate.coordinate.x == xCoord && slots[i].slotCoordinate.coordinate.y == yCoord)
@@ -338,7 +341,7 @@ public class Inventory
         CreateSlotCoordinates();
 
         if (slots.Count > 0 && slotVisualsCreated == false)
-            InventoryUI.Instance.CreateSlotVisuals(this, slots, slotsParent);
+            CreateSlotVisuals();
     }
 
     public SlotCoordinate GetSlotCoordinate(int xCoord, int yCoord)
@@ -349,6 +352,38 @@ public class Inventory
                 return slotCoordinates[i];
         }
         return null;
+    }
+
+    protected void CreateSlotVisuals()
+    {
+        if (slotVisualsCreated)
+        {
+            Debug.LogWarning($"Slot visuals for inventory, owned by {MyUnit.name}, has already been created...");
+            return;
+        }
+
+        // Clear out any slots already in the list, so we can start from scratch
+        RemoveSlots();
+
+        for (int i = 0; i < inventoryLayout.AmountOfSlots; i++)
+        {
+            InventorySlot newSlot = InventorySlotPool.Instance.GetSlotFromPool();
+            newSlot.transform.SetParent(slotsParent);
+            newSlot.SetSlotCoordinate(GetSlotCoordinate((i % inventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt((float)i / inventoryLayout.MaxSlotsPerRow) + 1));
+            newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
+
+            newSlot.SetMyInventory(this);
+            newSlot.InventoryItem.SetMyInventory(this);
+            slots.Add(newSlot);
+
+            newSlot.gameObject.SetActive(true);
+
+            if (i == inventoryLayout.MaxSlots - 1)
+                break;
+        }
+
+        slotVisualsCreated = true;
+        SetupItems();
     }
 
     void SetSlotsList()
@@ -363,6 +398,17 @@ public class Inventory
             slotsParent = InventoryUI.Instance.NPCPocketsParent;
             slots = InventoryUI.Instance.npcPocketsSlots;
         }
+    }
+
+    public void RemoveSlots()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            InventorySlotPool.Instance.ReturnToPool(slots[i]);
+        }
+
+        slots.Clear();
+        slotVisualsCreated = false;
     }
 
     public void SetupItems()
@@ -400,4 +446,6 @@ public class Inventory
     public void SetSlotVisualsCreated(bool created) => slotVisualsCreated = created;
 
     public bool SlotVisualsCreated => slotVisualsCreated;
+
+    public bool HasBeenInitialized => hasBeenInitialized;
 }

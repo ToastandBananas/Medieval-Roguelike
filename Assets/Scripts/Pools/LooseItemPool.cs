@@ -20,7 +20,7 @@ public class LooseItemPool : MonoBehaviour
     {
         foreach(LooseItem looseItem in FindObjectsOfType<LooseItem>())
         {
-            if (looseItem.ItemData.Item.IsBackpack() || looseItem.ItemData.Item.IsPortableContainer())
+            if (looseItem.ItemData.Item.IsBag() || looseItem.ItemData.Item.IsPortableContainer())
                 looseContainerItems.Add(looseItem);
             else
                 looseItems.Add(looseItem);

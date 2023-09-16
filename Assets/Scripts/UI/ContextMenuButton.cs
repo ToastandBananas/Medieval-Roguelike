@@ -8,32 +8,36 @@ public class ContextMenuButton : MonoBehaviour
     [SerializeField] TextMeshProUGUI buttonText;
     [SerializeField] RectTransform rectTransform;
 
-    public void SetupOpenContainerButton()
-    {
-        gameObject.name = "Open";
-        buttonText.text = "Open";
-        button.onClick.AddListener(OpenContainer);
-        gameObject.SetActive(true);
-    }
+    public void SetupOpenContainerButton() => SetupButton("Open", OpenContainer);
 
     void OpenContainer()
     {
         if (ContextMenu.Instance.TargetSlot != null)
         {
-            if (ContextMenu.Instance.TargetSlot.InventoryItem.myCharacterEquipment != null)
-                InventoryUI.Instance.ShowContainerUI(ContextMenu.Instance.TargetSlot.InventoryItem.GetMyUnit().BackpackInventory(), ContextMenu.Instance.TargetSlot.GetParentSlot().GetItemData().Item);
+            if (ContextMenu.Instance.TargetSlot is ContainerEquipmentSlot)
+            {
+                ContainerEquipmentSlot containerEquipmentSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
+                InventoryUI.Instance.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.GetParentSlot().GetItemData().Item);
+            }
         }
 
         ContextMenu.Instance.DisableContextMenu();
     }
 
-    public void SetupDropItemButton()
+    public void SetupCloseContainerButton() => SetupButton("Close", CloseContainer);
+
+    void CloseContainer()
     {
-        gameObject.name = "Drop";
-        buttonText.text = "Drop";
-        button.onClick.AddListener(DropItem);
-        gameObject.SetActive(true);
+        if (ContextMenu.Instance.TargetSlot != null)
+        {
+            ContainerEquipmentSlot containerEquipmentSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
+            InventoryUI.Instance.GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
+        }
+
+        ContextMenu.Instance.DisableContextMenu();
     }
+
+    public void SetupDropItemButton() => SetupButton("Drop", DropItem);
 
     void DropItem()
     {
@@ -49,6 +53,14 @@ public class ContextMenuButton : MonoBehaviour
         }
 
         ContextMenu.Instance.DisableContextMenu();
+    }
+
+    void SetupButton(string buttonText, UnityEngine.Events.UnityAction action)
+    {
+        gameObject.name = buttonText;
+        this.buttonText.text = buttonText;
+        button.onClick.AddListener(action);
+        gameObject.SetActive(true);
     }
 
     public void Disable()

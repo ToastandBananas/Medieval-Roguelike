@@ -3,8 +3,8 @@ using UnityEngine;
 public class EquipmentSlot : Slot
 {
     [Header("Equipment")]
-    [SerializeField] CharacterEquipment myCharacterEquipment;
     [SerializeField] EquipSlot equipSlot = global::EquipSlot.RightHeldItem1;
+    CharacterEquipment myCharacterEquipment;
 
     void Awake()
     {

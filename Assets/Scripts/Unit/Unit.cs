@@ -127,6 +127,12 @@ public class Unit : MonoBehaviour
 
     public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
 
+    public UnitInventoryManager MainInventoryManager => mainInventoryManager;
+
+    public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;
+
+    public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
+
     public ContainerInventory BackpackInventory() => backpackInventoryManager.ParentInventory;
 
     public ContainerInventory QuiverInventory() => quiverInventoryManager.ParentInventory;

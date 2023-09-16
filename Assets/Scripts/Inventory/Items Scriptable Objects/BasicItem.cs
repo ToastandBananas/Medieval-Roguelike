@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Basic Item", menuName = "Inventory/Item/BasicItem")]
 public class BasicItem : Item
 {
-    public override bool IsBackpack() => false;
+    public override bool IsBag() => false;
 
     public override bool IsConsumable() => false;
 

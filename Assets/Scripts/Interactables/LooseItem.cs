@@ -7,7 +7,7 @@ public class LooseItem : Interactable
     [SerializeField] MeshCollider meshCollider;
     [SerializeField] Rigidbody rigidBody;
 
-    [SerializeField] ItemData itemData;
+    [SerializeField] protected ItemData itemData;
 
     public override void Awake()
     {

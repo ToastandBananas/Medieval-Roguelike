@@ -10,7 +10,7 @@ public class Shield : HeldEquipment
     [Header("Modifiers")]
     public float blockChanceAddOn = 10f;
 
-    public override bool IsBackpack() => false;
+    public override bool IsBag() => false;
 
     public override bool IsConsumable() => false;
 

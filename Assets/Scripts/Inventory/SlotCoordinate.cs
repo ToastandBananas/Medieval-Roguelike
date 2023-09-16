@@ -38,13 +38,14 @@ public class SlotCoordinate
 
     public void ClearItem()
     {
+        Inventory inventory = myInventory;
         int width = parentSlotCoordinate.itemData.Item.width;
         int height = parentSlotCoordinate.itemData.Item.height;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                SlotCoordinate slotCoordinateToSetup = myInventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
+                SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
                 slotCoordinateToSetup.SetParentSlotCoordinate(null);
                 slotCoordinateToSetup.itemData = null;
                 slotCoordinateToSetup.isFull = false;
@@ -61,4 +62,6 @@ public class SlotCoordinate
         SetSlotCoordinate(xCoord, yCoord);
         myInventory = inventory;
     }
+
+    void SetInventory(Inventory inventory) => myInventory = inventory;
 }

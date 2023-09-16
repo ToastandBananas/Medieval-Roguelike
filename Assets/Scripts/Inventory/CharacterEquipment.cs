@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back }
 public enum WeaponSet { One = 1, Two = 2 }
@@ -197,6 +196,25 @@ public class CharacterEquipment : MonoBehaviour
     {
         if (EquipSlotHasItem(equipSlot) == false)
             return;
+        
+        if (GetEquipmentSlot(equipSlot) != InventoryUI.Instance.parentSlotDraggedFrom)
+        {
+            // If this is the Unit's equipped backpack
+            if (equipSlot == EquipSlot.Back && equippedItemDatas[(int)equipSlot].Item.IsBag() && myUnit.BackpackInventoryManager.HasAnyItems())
+            {
+                if (InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager) != null)
+                    InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
+
+                DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
+            }
+            else if (equippedItemDatas[(int)equipSlot].Item is Quiver && myUnit.QuiverInventoryManager.HasAnyItems())
+            {
+                if (InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager) != null)
+                    InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
+
+                DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
+            }
+        }
 
         // Try adding the item to the character's inventory
         if (myUnit.TryAddItemToInventories(equippedItemDatas[(int)equipSlot]))
@@ -240,6 +258,12 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < slots.Count; i++)
         {
             slots[i].SetMyCharacterEquipment(this);
+            if (slots[i] is ContainerEquipmentSlot)
+            {
+                ContainerEquipmentSlot containerEquipmentSlot = slots[i] as ContainerEquipmentSlot;
+                if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
+                    containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.CharacterEquipment.MyUnit.BackpackInventoryManager);
+            }
         }
 
         slotVisualsCreated = true;
@@ -499,7 +523,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
-    public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item.IsBackpack();
+    public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item.IsBag();
 
     public bool QuiverEquipped() => (currentWeaponSet == WeaponSet.One && EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.IsPortableContainer()) 
         || (currentWeaponSet == WeaponSet.Two && EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.IsPortableContainer());
@@ -509,7 +533,11 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < slots.Count; i++)
         {
             if (slots[i].EquipSlot == equipSlot)
+            {
+                if (slots[i] is ContainerEquipmentSlot)
+                    return slots[i] as ContainerEquipmentSlot;
                 return slots[i];
+            }
         }
         return null;
     }

@@ -5,7 +5,7 @@ public abstract class Equipment : Item
     [Header("Equipment Info")]
     [SerializeField] EquipSlot equipSlot;
 
-    public abstract override bool IsBackpack();
+    public abstract override bool IsBag();
 
     public abstract override bool IsConsumable();
 
