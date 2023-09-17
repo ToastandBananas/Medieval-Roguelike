@@ -25,6 +25,9 @@ public class InventorySlot : Slot
 
     public override void SetupEmptySlotSprites()
     {
+        if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+            return;
+
         int width = inventoryItem.itemData.Item.width;
         int height = inventoryItem.itemData.Item.height;
         for (int x = 0; x < width; x++)
@@ -36,7 +39,7 @@ public class InventorySlot : Slot
         }
     }
 
-    public override void ClearItem()
+    public override void ClearSlotVisuals()
     {
         InventorySlot parentSlot = myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate.coordinate.x, slotCoordinate.parentSlotCoordinate.coordinate.y);
 
@@ -49,11 +52,16 @@ public class InventorySlot : Slot
         // Clear the stack size text
         parentSlot.inventoryItem.ClearStackSizeText();
 
-        // Remove parent slot references
-        parentSlot.slotCoordinate.ClearItem();
-
         // Clear out the slot's item data
         parentSlot.inventoryItem.SetItemData(null);
+    }
+
+    public override void ClearItem()
+    {
+        ClearSlotVisuals();
+
+        // Clear the slot coordinates
+        myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate.coordinate.x, slotCoordinate.parentSlotCoordinate.coordinate.y).slotCoordinate.ClearItem();
     }
 
     public override bool IsFull() => slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
@@ -65,6 +73,13 @@ public class InventorySlot : Slot
         bool validSlot = !InventoryUI.Instance.DraggedItem_OverlappingMultipleItems();
         if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0)
             validSlot = false;
+
+        if (InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
+        {
+            ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as ContainerEquipmentSlot;
+            if (containerEquipmentSlotDraggedFrom.containerInventoryManager.HasAnyItems())
+                validSlot = false;
+        }
 
         InventoryUI.Instance.SetValidDragPosition(validSlot);
 

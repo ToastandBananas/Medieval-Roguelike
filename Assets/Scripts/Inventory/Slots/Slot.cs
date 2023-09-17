@@ -51,6 +51,8 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public abstract ItemData GetItemData();
 
+    public abstract void ClearSlotVisuals();
+
     public abstract void ClearItem();
 
     public abstract bool IsFull();

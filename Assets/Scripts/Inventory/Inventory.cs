@@ -22,7 +22,9 @@ public class Inventory
 
     public virtual void Initialize()
     {
-        slotCoordinates = new List<SlotCoordinate>();
+        if (slotCoordinates == null)
+            slotCoordinates = new List<SlotCoordinate>();
+
         CreateSlotCoordinates();
         SetSlotsList();
         
@@ -316,6 +318,7 @@ public class Inventory
 
     protected void CreateSlotCoordinates()
     {
+        slotCoordinates.Clear();
         maxSlotsPerColumn = Mathf.CeilToInt((float)inventoryLayout.MaxSlots / inventoryLayout.MaxSlotsPerRow);
 
         int coordinateCount = 0;
@@ -438,6 +441,8 @@ public class Inventory
     public List<ItemData> ItemDatas => itemDatas;
 
     public Unit MyUnit => myUnit;
+
+    public void SetUnit(Unit newUnit) => myUnit = newUnit;
 
     public InventoryLayout InventoryLayout => inventoryLayout;
 

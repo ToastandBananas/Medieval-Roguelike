@@ -21,7 +21,7 @@ public class EquipmentSlot : Slot
         return false;
     }
 
-    public override void ClearItem()
+    public override void ClearSlotVisuals()
     {
         // Hide the item's sprite
         HideSlotImage();
@@ -42,6 +42,8 @@ public class EquipmentSlot : Slot
         // Clear out the slot's item data
         inventoryItem.SetItemData(null);
     }
+
+    public override void ClearItem() => ClearSlotVisuals();
 
     public EquipmentSlot GetOppositeWeaponSlot()
     {

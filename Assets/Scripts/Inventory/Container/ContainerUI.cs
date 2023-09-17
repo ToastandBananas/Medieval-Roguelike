@@ -21,8 +21,7 @@ public class ContainerUI : MonoBehaviour
 
     public void ShowContainerInventory(ContainerInventory mainContainerInventory, Item containerItem)
     {
-        if (containerItem != null)
-            titleText.text = containerItem.name;
+        SetTitleText(mainContainerInventory, containerItem);
 
         containerInventoryManager = mainContainerInventory.ParentInventory.containerInventoryManager;
         containerInventoryManager.ParentInventory.SetupSlots(mainContainerSlotGroup);
@@ -34,9 +33,25 @@ public class ContainerUI : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    void SetTitleText(ContainerInventory mainContainerInventory, Item containerItem)
+    {
+        if (containerItem != null)
+        {
+            if (mainContainerInventory.MyUnit != null)
+            {
+                if (mainContainerInventory.MyUnit.IsPlayer())
+                    titleText.text = $"Your {containerItem.name}";
+                else
+                    titleText.text = $"{mainContainerInventory.MyUnit.name}'s {containerItem.name}";
+            }
+            else
+                titleText.text = containerItem.name;
+        }
+    }
+
     public void CloseContainerInventory()
     {
-        if (gameObject.activeSelf == false)
+        if (gameObject.activeSelf == false || containerInventoryManager == null)
             return;
 
         containerInventoryManager.ParentInventory.RemoveSlots();

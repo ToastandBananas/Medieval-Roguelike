@@ -50,11 +50,10 @@ public class InventorySlotPool : MonoBehaviour
 
     public void ReturnToPool(InventorySlot slot)
     {
-        //if (slot.slotCoordinate.parentSlotCoordinate != null)
-            //slot.GetParentSlot().ClearItem();
+        if (slot.GetParentSlot() != null)
+            slot.GetParentSlot().ClearSlotVisuals();
 
         slot.SetMyInventory(null);
-        slot.SetSlotCoordinate(null);
         slot.transform.SetParent(transform);
         slot.gameObject.SetActive(false);
     }

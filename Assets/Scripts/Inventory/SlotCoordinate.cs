@@ -46,7 +46,7 @@ public class SlotCoordinate
             for (int y = 0; y < height; y++)
             {
                 SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
-                slotCoordinateToSetup.SetParentSlotCoordinate(null);
+                slotCoordinateToSetup.SetParentSlotCoordinate(slotCoordinateToSetup);
                 slotCoordinateToSetup.itemData = null;
                 slotCoordinateToSetup.isFull = false;
             }
@@ -61,6 +61,7 @@ public class SlotCoordinate
     {
         SetSlotCoordinate(xCoord, yCoord);
         myInventory = inventory;
+        parentSlotCoordinate = this;
     }
 
     void SetInventory(Inventory inventory) => myInventory = inventory;

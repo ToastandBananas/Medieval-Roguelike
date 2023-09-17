@@ -25,8 +25,10 @@ public class ContainerInventory : Inventory
             SetupInventoryLayoutFromItem((Backpack)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
         else if (looseItem != null && looseItem.ItemData != null)
             SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
+        
+        if (slotCoordinates == null)
+            slotCoordinates = new List<SlotCoordinate>();
 
-        slotCoordinates = new List<SlotCoordinate>();
         CreateSlotCoordinates();
         SetupItems();
 
@@ -140,6 +142,13 @@ public class ContainerInventory : Inventory
                 else
                     containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(inventorySections[i]);
             }
+
+            Debug.Log(containerInventoryManager.gameObject.name);
+            for (int i = containerInventoryManager.SubInventories.Length; i >= 0; i--)
+            {
+                if (i >= inventorySections.Length)
+                    containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(0, 0, 2);
+            }
         }
         else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this) // We only want to run this on the Parent Inventory
             containerInventoryManager.ParentInventory.SetupInventoryLayoutFromItem(item);
@@ -150,6 +159,8 @@ public class ContainerInventory : Inventory
     public ContainerInventory[] SubInventories => containerInventoryManager.SubInventories;
 
     public LooseItem LooseItem => looseItem;
+
+    public void SetLooseItem(LooseItem newLooseItem) => looseItem = newLooseItem;
 
     public void SetContainerInventoryManager(ContainerInventoryManager manager) => containerInventoryManager = manager;
 }

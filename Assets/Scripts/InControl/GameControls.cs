@@ -72,14 +72,17 @@ public class GameControls : MonoBehaviour
 
         gamePlayActions.menuDown.AddDefaultBinding(Key.DownArrow);
         gamePlayActions.menuDown.AddDefaultBinding(InputControlType.DPadDown);
-        gamePlayActions.menuUp.AddDefaultBinding(InputControlType.LeftStickDown);
+        gamePlayActions.menuDown.AddDefaultBinding(InputControlType.LeftStickDown);
 
         gamePlayActions.menuLeft.AddDefaultBinding(Key.LeftArrow);
         gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.DPadLeft);
-        gamePlayActions.menuUp.AddDefaultBinding(InputControlType.LeftStickLeft);
+        gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
 
         gamePlayActions.menuRight.AddDefaultBinding(Key.RightArrow);
         gamePlayActions.menuRight.AddDefaultBinding(InputControlType.DPadRight);
-        gamePlayActions.menuUp.AddDefaultBinding(InputControlType.LeftStickRight);
+        gamePlayActions.menuRight.AddDefaultBinding(InputControlType.LeftStickRight);
+
+        gamePlayActions.toggleInventory.AddDefaultBinding(Key.I);
+        gamePlayActions.toggleInventory.AddDefaultBinding(InputControlType.Select);
     }
 }

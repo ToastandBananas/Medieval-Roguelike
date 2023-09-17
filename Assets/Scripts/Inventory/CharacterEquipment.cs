@@ -115,6 +115,11 @@ public class CharacterEquipment : MonoBehaviour
             // Assign the data
             equippedItemDatas[targetEquipSlotIndex] = newItemData;
 
+            if (targetEquipSlot == EquipSlot.Back && newItemData.Item.IsBag())
+                myUnit.BackpackInventoryManager.Initialize();
+            else if (newItemData.Item is Quiver)
+                myUnit.QuiverInventoryManager.Initialize();
+
             if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
                 equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
             else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
@@ -130,6 +135,9 @@ public class CharacterEquipment : MonoBehaviour
                 if (InventoryUI.Instance.DraggedItem.myCharacterEquipment != null)
                 {
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
+                    if (equipmentSlotDraggedFrom.IsHeldItemSlot())
+                        equipmentSlotDraggedFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
+
                     InventoryUI.Instance.DraggedItem.myCharacterEquipment.equippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
                 }
                 else if (InventoryUI.Instance.DraggedItem.myInventory != null)
@@ -162,6 +170,11 @@ public class CharacterEquipment : MonoBehaviour
 
             // Assign the data
             equippedItemDatas[targetEquipSlotIndex] = newItemData;
+
+            if (targetEquipSlot == EquipSlot.Back && newItemData.Item.IsBag())
+                myUnit.BackpackInventoryManager.Initialize();
+            else if (newItemData.Item is Quiver)
+                myUnit.QuiverInventoryManager.Initialize();
 
             // Setup the target slot's item data/sprites and mesh if necessary
             SetupNewItemIcon(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newItemData);

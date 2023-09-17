@@ -10,25 +10,27 @@ public class InventoryUI : MonoBehaviour
 
     [SerializeField] InventoryItem draggedItem;
 
-    [Header("Inventories")]
+    [Header("Prefab")]
+    [SerializeField] InventorySlot inventorySlotPrefab;
+
+    [Header("Inventory Parents")]
+    [SerializeField] GameObject playerInventoryUIParent;
+    [SerializeField] GameObject npcInventoryUIParent;
+
+    [Header("Pocket Inventory Parents")]
     [SerializeField] Transform playerPocketsParent;
     [SerializeField] Transform npcPocketsParent;
     public List<InventorySlot> playerPocketsSlots { get; private set; }
     public List<InventorySlot> npcPocketsSlots { get; private set; }
 
-    [Header("Player Equipment")]
+    [Header("Equipment Parents")]
     [SerializeField] Transform playerEquipmentParent;
-    public List<EquipmentSlot> playerEquipmentSlots { get; private set; }
-
-    [Header("NPC Equipment")]
     [SerializeField] Transform npcEquipmentParent;
+    public List<EquipmentSlot> playerEquipmentSlots { get; private set; }
     public List<EquipmentSlot> npcEquipmentSlots { get; private set; }
 
     [Header("Container UI")]
     [SerializeField] ContainerUI[] containerUIs;
-
-    [Header("Prefab")]
-    [SerializeField] InventorySlot inventorySlotPrefab;
 
     public Slot activeSlot { get; private set; }
 
@@ -56,7 +58,7 @@ public class InventoryUI : MonoBehaviour
         npcPocketsSlots = new List<InventorySlot>();
 
         playerEquipmentSlots = playerEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
-        // npcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
+        npcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
 
         rectTransform = GetComponent<RectTransform>();
 
@@ -65,6 +67,9 @@ public class InventoryUI : MonoBehaviour
 
     void Update()
     {
+        if (GameControls.gamePlayActions.toggleInventory.WasPressed)
+            TogglePlayerInventory();
+
         // If we're not already dragging an item
         if (isDraggingItem == false)
         {
@@ -136,7 +141,11 @@ public class InventoryUI : MonoBehaviour
                 }
                 else if (EventSystem.current.IsPointerOverGameObject() == false)
                 {
-                    if (parentSlotDraggedFrom is EquipmentSlot) 
+                    if (parentSlotDraggedFrom == null)
+                    {
+                        DropItemManager.DropItem(draggedItem.myInventory.MyUnit, draggedItem.myInventory, draggedItem.itemData);
+                    }
+                    else if (parentSlotDraggedFrom is EquipmentSlot) 
                     {
                         EquipmentSlot equipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
                         DropItemManager.DropItem(equipmentSlotDraggedFrom.CharacterEquipment, equipmentSlotDraggedFrom.EquipSlot);
@@ -300,6 +309,32 @@ public class InventoryUI : MonoBehaviour
         draggedItem.SetItemData(null);
     }
 
+    public void TogglePlayerInventory()
+    {
+        if (isDraggingItem)
+            ReplaceDraggedItem();
+
+        playerInventoryUIParent.SetActive(!playerInventoryUIParent.activeSelf);
+
+        if (playerInventoryUIParent.activeSelf == false)
+        {
+            CloseAllContainerUI();
+            if (npcInventoryUIParent.activeSelf)
+                ToggleNPCInventory();
+        }
+    }
+
+    public void ToggleNPCInventory()
+    {
+        if (isDraggingItem)
+            ReplaceDraggedItem();
+
+        npcInventoryUIParent.SetActive(!npcInventoryUIParent.activeSelf);
+
+        if (playerInventoryUIParent.activeSelf == false)
+            CloseAllContainerUI();
+    }
+
     public void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)
     {
         for (int i = 0; i < containerUIs.Length; i++)
@@ -315,6 +350,9 @@ public class InventoryUI : MonoBehaviour
 
     public void CloseAllContainerUI()
     {
+        if (isDraggingItem)
+            ReplaceDraggedItem();
+
         for (int i = 0; i < containerUIs.Length; i++)
         {
             containerUIs[i].CloseContainerInventory();

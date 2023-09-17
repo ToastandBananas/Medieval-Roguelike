@@ -21,6 +21,7 @@ public class GamePlayActions : PlayerActionSet
     // UI Actions
     public PlayerAction menuPause, menuSelect, menuContext;
     public PlayerAction menuLeft, menuRight, menuUp, menuDown;
+    public PlayerAction toggleInventory;
 
     public GamePlayActions()
     {
@@ -57,5 +58,7 @@ public class GamePlayActions : PlayerActionSet
         menuRight = CreatePlayerAction("MenuRight");
         menuUp = CreatePlayerAction("MenuUp");
         menuDown = CreatePlayerAction("MenuDown");
+
+        toggleInventory = CreatePlayerAction("ToggleInventory");
     }
 }
