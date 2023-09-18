@@ -107,7 +107,7 @@ public class EquipmentSlot : Slot
 
         if (draggedItem.IsEquipment())
         {
-            if (draggedItem.Equipment().EquipSlot() == equipSlot)
+            if (draggedItem.Equipment().EquipSlot == equipSlot)
                 validSlot = true;
             else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2))
                 validSlot = true;
@@ -155,5 +155,5 @@ public class EquipmentSlot : Slot
 
     public EquipSlot EquipSlot => equipSlot;
 
-    public override Slot GetParentSlot() => this;
+    public override Slot ParentSlot() => this;
 }

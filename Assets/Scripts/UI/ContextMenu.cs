@@ -13,6 +13,7 @@ public class ContextMenu : MonoBehaviour
 
     Canvas canvas;
     Slot targetSlot;
+    Interactable targetInteractable;
 
     WaitForSeconds buildContextMenuCooldown = new WaitForSeconds(0.2f);
     bool onCooldown, isActive;
@@ -52,7 +53,8 @@ public class ContextMenu : MonoBehaviour
         if (onCooldown == false)
         {
             isActive = true;
-            targetSlot = InventoryUI.Instance.activeSlot;
+            targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
+            targetInteractable = PlayerInput.Instance.highlightedInteractable;
 
             StartCoroutine(BuildContextMenuCooldown());
 
@@ -70,13 +72,27 @@ public class ContextMenu : MonoBehaviour
             
             // Create the necessary buttons
             CreateOpenContainerButton();
+            CreateUseItemButton();
             CreateDropItemButton();
+
+            int buttonCount = 0;
+            for (int i = 0; i < contextButtons.Count; i++)
+            {
+                if (contextButtons[i].gameObject.activeSelf)
+                {
+                    buttonCount++;
+                    break;
+                }
+            }
+
+            if (buttonCount == 0)
+                isActive = false;
         }
     }
 
     void CreateOpenContainerButton()
     {
-        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.GetParentSlot().IsFull())
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.ParentSlot().IsFull())
         {
             ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
             if (containerEquipmentSlot.containerInventoryManager == null)
@@ -97,14 +113,67 @@ public class ContextMenu : MonoBehaviour
         GetContextMenuButton().SetupOpenContainerButton();
     }
 
-    void CreateCloseContainerButton()
+    void CreateCloseContainerButton() => GetContextMenuButton().SetupCloseContainerButton();
+
+    void CreateUseItemButton()
     {
-        GetContextMenuButton().SetupCloseContainerButton();
+        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            return;
+
+        ItemData itemData = null;
+        if (targetSlot != null)
+            itemData = targetSlot.GetItemData();
+        else if (targetInteractable != null && targetInteractable is LooseItem)
+        {
+            LooseItem targetLooseItem = targetInteractable as LooseItem;
+            itemData = targetLooseItem.ItemData;
+        }
+
+        if (itemData == null || itemData.Item == null || itemData.Item.isUsable == false)
+            return;
+
+        if (itemData.Item.maxUses > 1)
+        {
+            GetContextMenuButton().SetupUseItemButton(itemData, itemData.RemainingUses); // Use all
+
+            if (itemData.RemainingUses >= 4)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.75f)); // Use 3/4
+
+            if (itemData.RemainingUses >= 2)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.5f)); // Use 1/2
+
+            if (itemData.RemainingUses >= 4)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.25f)); // Use 1/4
+
+            if (itemData.RemainingUses >= 10)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
+        }
+        else if (itemData.Item.maxStackSize > 1)
+        {
+            GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
+
+            if (itemData.CurrentStackSize >= 4)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.75f)); // Use 3/4
+
+            if (itemData.CurrentStackSize >= 2)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.5f)); // Use 1/2
+
+            if (itemData.CurrentStackSize >= 4)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.25f)); // Use 1/4
+
+            if (itemData.CurrentStackSize >= 10)
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.1f)); // Use 1/10
+
+            if (Mathf.FloorToInt(itemData.CurrentStackSize * 0.1f) > 1)
+                GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
+        }
+        else
+            GetContextMenuButton().SetupUseItemButton(itemData, 1);
     }
 
     void CreateDropItemButton()
     {
-        if (targetSlot == null || targetSlot.GetParentSlot().IsFull() == false)
+        if (targetSlot == null || targetSlot.ParentSlot().IsFull() == false)
             return;
 
         GetContextMenuButton().SetupDropItemButton();
@@ -125,18 +194,11 @@ public class ContextMenu : MonoBehaviour
         if (onCooldown) return;
         
         isActive = false;
-        targetSlot = null;
 
         for (int i = 0; i < contextButtons.Count; i++)
         {
             contextButtons[i].Disable();
         }
-    }
-
-    public IEnumerator DelayDisableContextMenu()
-    {
-        yield return buildContextMenuCooldown;
-        DisableContextMenu();
     }
 
     ContextMenuButton GetContextMenuButton()
@@ -159,6 +221,8 @@ public class ContextMenu : MonoBehaviour
     }
 
     public Slot TargetSlot => targetSlot;
+
+    public Interactable TargetInteractable => targetInteractable;
 
     public bool IsActive => isActive;
 }

@@ -118,14 +118,14 @@ public class Inventory
                 newDraggedItemData = newItemData;
 
             // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
-            if (overlappedItemsParentSlot == targetSlot && newDraggedItemData.Item == overlappedItemsData.Item && newDraggedItemData.Item.maxStackSize > 1 && overlappedItemsData.CurrentStackSize() < overlappedItemsData.Item.maxStackSize)
+            if (overlappedItemsParentSlot == targetSlot && newDraggedItemData.Item == overlappedItemsData.Item && newDraggedItemData.Item.maxStackSize > 1 && overlappedItemsData.CurrentStackSize < overlappedItemsData.Item.maxStackSize)
             {
-                int remainingStack = newDraggedItemData.CurrentStackSize();
+                int remainingStack = newDraggedItemData.CurrentStackSize;
 
                 // If we can't fit the entire stack, add what we can to the overlapped item's stack size
-                if (overlappedItemsData.CurrentStackSize() + remainingStack > overlappedItemsData.Item.maxStackSize)
+                if (overlappedItemsData.CurrentStackSize + remainingStack > overlappedItemsData.Item.maxStackSize)
                 {
-                    remainingStack -= overlappedItemsData.Item.maxStackSize - overlappedItemsData.CurrentStackSize();
+                    remainingStack -= overlappedItemsData.Item.maxStackSize - overlappedItemsData.CurrentStackSize;
                     overlappedItemsData.SetCurrentStackSize(overlappedItemsData.Item.maxStackSize);
                 }
                 else // If we can fit the entire stack, add it to the overlapped item's stack size

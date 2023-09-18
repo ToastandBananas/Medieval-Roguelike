@@ -143,7 +143,6 @@ public class ContainerInventory : Inventory
                     containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(inventorySections[i]);
             }
 
-            Debug.Log(containerInventoryManager.gameObject.name);
             for (int i = containerInventoryManager.SubInventories.Length; i >= 0; i--)
             {
                 if (i >= inventorySections.Length)

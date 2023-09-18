@@ -275,7 +275,7 @@ public class Stats : MonoBehaviour
         return blockChance;
     }
 
-    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.ItemData.BlockPower();
+    public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.ItemData.BlockPower;
 
     public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
     {
@@ -289,7 +289,7 @@ public class Stats : MonoBehaviour
         if (rangedWeaponItemData.Item.Weapon().weaponType == WeaponType.Bow)
         {
             accuracy = bowSkill.GetValue() * 4f;
-            accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier()) * 100f) / 100f;
+            accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier) * 100f) / 100f;
         }
 
         if (accuracy < 0f) accuracy = 0f;

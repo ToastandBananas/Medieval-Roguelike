@@ -129,7 +129,7 @@ public class InventorySlot : Slot
             return slotCoordinate.parentSlotCoordinate.itemData;
     }
 
-    public override Slot GetParentSlot()
+    public override Slot ParentSlot()
     {
         if (slotCoordinate == null || slotCoordinate.parentSlotCoordinate == null)
             return this;

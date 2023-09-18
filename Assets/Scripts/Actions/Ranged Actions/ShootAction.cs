@@ -97,7 +97,7 @@ public class ShootAction : BaseAction
             HeldItem itemBlockedWith = target.Value;
             if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
-                int damageAmount = heldRangedWeapon.ItemData.Damage();
+                int damageAmount = heldRangedWeapon.ItemData.Damage;
                 int armorAbsorbAmount = 0;
 
                 // If the attack was blocked

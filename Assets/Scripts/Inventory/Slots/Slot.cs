@@ -57,7 +57,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public abstract bool IsFull();
 
-    public abstract Slot GetParentSlot();
+    public abstract Slot ParentSlot();
 
     public abstract void HighlightSlots();
 

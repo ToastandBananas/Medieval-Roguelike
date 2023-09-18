@@ -7,6 +7,7 @@ public class ItemData
 
     [SerializeField] Item item;
     [SerializeField] int currentStackSize = 1;
+    [SerializeField] int remainingUses = 1;
 
     [SerializeField] int damage;
     [SerializeField] float accuracyModifier;
@@ -39,6 +40,11 @@ public class ItemData
                 else
                     currentStackSize = 1;
 
+                if (item.maxUses > 1 && item.maxStackSize == 1)
+                    remainingUses = Random.Range(1, item.maxUses + 1);
+                else
+                    remainingUses = 1;
+
                 if (item.IsWeapon())
                 {
                     Weapon weapon = item as Weapon;
@@ -58,11 +64,14 @@ public class ItemData
     {
         item = itemDataToCopy.item;
         name = item.name;
+        hasBeenRandomized = itemDataToCopy.hasBeenRandomized;
+
         currentStackSize = itemDataToCopy.currentStackSize;
+        remainingUses = itemDataToCopy.remainingUses;
+
         damage = itemDataToCopy.damage;
         accuracyModifier = itemDataToCopy.accuracyModifier;
         blockPower = itemDataToCopy.blockPower;
-        hasBeenRandomized = itemDataToCopy.hasBeenRandomized;
     }
 
     public void SwapData(ItemData otherItemData)
@@ -71,13 +80,16 @@ public class ItemData
         temp.item = item;
         temp.name = item.name;
         temp.currentStackSize = currentStackSize;
+        temp.remainingUses = remainingUses;
         temp.damage = damage;
         temp.accuracyModifier = accuracyModifier;
         temp.blockPower = blockPower;
+        temp.hasBeenRandomized = hasBeenRandomized;
 
         item = otherItemData.item;
         name = item.name;
         currentStackSize = otherItemData.currentStackSize;
+        remainingUses = otherItemData.remainingUses;
         damage = otherItemData.damage;
         accuracyModifier = otherItemData.accuracyModifier;
         blockPower = otherItemData.blockPower;
@@ -86,6 +98,7 @@ public class ItemData
         otherItemData.item = temp.item;
         otherItemData.name = otherItemData.item.name;
         otherItemData.currentStackSize = temp.currentStackSize;
+        otherItemData.remainingUses = temp.remainingUses;
         otherItemData.damage = temp.damage;
         otherItemData.accuracyModifier = temp.accuracyModifier;
         otherItemData.blockPower = temp.blockPower;
@@ -96,7 +109,6 @@ public class ItemData
     {
         hasBeenRandomized = false;
         item = null;
-        name = "";
         inventorySlotCoordinate = null;
     }
 
@@ -116,17 +128,25 @@ public class ItemData
             currentStackSize = 0;
     }
 
+    public void Use(int uses) => remainingUses -= uses;
+
+    public void AddToUses(int uses) => remainingUses += uses;
+
+    public void ReplenishUses() => remainingUses = item.maxUses;
+
     public void SetItem(Item newItem) => item = newItem;
 
     public Item Item => item;
 
-    public int CurrentStackSize() => currentStackSize;
+    public int CurrentStackSize => currentStackSize;
 
-    public int Damage() => damage;
+    public int Damage => damage;
 
-    public float AccuracyModifier() => accuracyModifier;
+    public float AccuracyModifier => accuracyModifier;
 
-    public int BlockPower() => blockPower;
+    public int BlockPower => blockPower;
+
+    public int RemainingUses => remainingUses;
 
     public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
 

@@ -50,8 +50,8 @@ public class InventorySlotPool : MonoBehaviour
 
     public void ReturnToPool(InventorySlot slot)
     {
-        if (slot.GetParentSlot() != null)
-            slot.GetParentSlot().ClearSlotVisuals();
+        if (slot.ParentSlot() != null)
+            slot.ParentSlot().ClearSlotVisuals();
 
         slot.SetMyInventory(null);
         slot.transform.SetParent(transform);

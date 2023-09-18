@@ -83,7 +83,7 @@ public class InventoryUI : MonoBehaviour
                 if (activeSlot is InventorySlot)
                 {
                     InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                    SetupDraggedItem(activeInventorySlot.slotCoordinate.parentSlotCoordinate.itemData, activeInventorySlot.GetParentSlot(), activeInventorySlot.myInventory);
+                    SetupDraggedItem(activeInventorySlot.slotCoordinate.parentSlotCoordinate.itemData, activeInventorySlot.ParentSlot(), activeInventorySlot.myInventory);
                 }
                 else
                 {
@@ -108,9 +108,9 @@ public class InventoryUI : MonoBehaviour
                     }
                 }
 
-                activeSlot.GetParentSlot().SetupEmptySlotSprites();
-                activeSlot.GetParentSlot().InventoryItem.DisableIconImage();
-                activeSlot.GetParentSlot().InventoryItem.ClearStackSizeText();
+                activeSlot.ParentSlot().SetupEmptySlotSprites();
+                activeSlot.ParentSlot().InventoryItem.DisableIconImage();
+                activeSlot.ParentSlot().InventoryItem.ClearStackSizeText();
 
                 activeSlot.HighlightSlots();
             }
@@ -192,7 +192,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         if (slotToCheck is InventorySlot)
                         {
-                            overlappedItemsParentSlot = slotToCheck.GetParentSlot();
+                            overlappedItemsParentSlot = slotToCheck.ParentSlot();
                             overlappedItemData = slotToCheck.GetItemData();
                             draggedItemOverlapCount++;
                         }

@@ -53,7 +53,7 @@ public class LooseContainerItem : LooseItem
         containerInventoryManagerToCopy.SetSubInventories(currentSubInventories);
 
         // Set ContainerInventoryManager references for each ContainerInventory
-        /*containerInventoryManager.ParentInventory.SetContainerInventoryManager(containerInventoryManager);
+        containerInventoryManager.ParentInventory.SetContainerInventoryManager(containerInventoryManager);
         for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
             containerInventoryManager.SubInventories[i].SetContainerInventoryManager(containerInventoryManager);
@@ -63,7 +63,7 @@ public class LooseContainerItem : LooseItem
         for (int i = 0; i < containerInventoryManagerToCopy.SubInventories.Length; i++)
         {
             containerInventoryManagerToCopy.SubInventories[i].SetContainerInventoryManager(containerInventoryManagerToCopy);
-        }*/
+        }
 
         //if (containerInventoryManager.ParentInventory.HasBeenInitialized == false)
             containerInventoryManager.Initialize();

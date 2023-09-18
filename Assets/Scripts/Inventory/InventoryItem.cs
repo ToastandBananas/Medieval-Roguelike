@@ -95,31 +95,31 @@ public class InventoryItem : MonoBehaviour
     {
         if (mySlot == null)
         {
-            if (itemData.CurrentStackSize() == 1)
+            if (itemData.CurrentStackSize == 1)
                 stackSizeText.text = "";
             else
-                stackSizeText.text = itemData.CurrentStackSize().ToString();
+                stackSizeText.text = itemData.CurrentStackSize.ToString();
         }
         else
         {
             if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.GetParentSlot() == null)
+                if (myInventorySlot.ParentSlot() == null)
                     return;
 
-                if (myInventorySlot.GetParentSlot().InventoryItem.itemData.CurrentStackSize() == 1)
-                    myInventorySlot.GetParentSlot().InventoryItem.stackSizeText.text = "";
+                if (myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize == 1)
+                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = "";
                 else
-                    myInventorySlot.GetParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.GetParentSlot().InventoryItem.itemData.CurrentStackSize().ToString();
+                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize.ToString();
             }
             else
             {
                 EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
-                if (myEquipmentSlot.InventoryItem.itemData.CurrentStackSize() == 1)
+                if (myEquipmentSlot.InventoryItem.itemData.CurrentStackSize == 1)
                     myEquipmentSlot.InventoryItem.stackSizeText.text = "";
                 else
-                    myEquipmentSlot.InventoryItem.stackSizeText.text = myEquipmentSlot.InventoryItem.itemData.CurrentStackSize().ToString();
+                    myEquipmentSlot.InventoryItem.stackSizeText.text = myEquipmentSlot.InventoryItem.itemData.CurrentStackSize.ToString();
             }
         }
     }
@@ -133,10 +133,10 @@ public class InventoryItem : MonoBehaviour
             if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.GetParentSlot() == null)
+                if (myInventorySlot.ParentSlot() == null)
                     return;
 
-                myInventorySlot.GetParentSlot().InventoryItem.stackSizeText.text = "";
+                myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = "";
             }
             else
             {

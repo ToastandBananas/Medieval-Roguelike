@@ -150,7 +150,7 @@ public class HeldMeleeWeapon : HeldItem
 
     public int DamageAmount()
     {
-        int damageAmount = itemData.Damage();
+        int damageAmount = itemData.Damage;
         if (unit.CharacterEquipment.IsDualWielding())
         {
             if (this == unit.unitMeshManager.GetRightMeleeWeapon())

@@ -27,5 +27,5 @@ public abstract class Equipment : Item
 
     public abstract override bool IsWearable();
 
-    public EquipSlot EquipSlot() => equipSlot;
+    public EquipSlot EquipSlot => equipSlot;
 }
