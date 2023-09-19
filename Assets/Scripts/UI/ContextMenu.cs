@@ -44,7 +44,7 @@ public class ContextMenu : MonoBehaviour
             DisableContextMenu();
         }
 
-        if (isActive == false && GameControls.gamePlayActions.menuContext.WasPressed && InventoryUI.Instance.activeSlot != null)
+        if (isActive == false && GameControls.gamePlayActions.menuContext.WasPressed && (InventoryUI.Instance.activeSlot != null || PlayerInput.Instance.highlightedInteractable != null))
             BuildContextMenu();
     }
 
@@ -53,8 +53,10 @@ public class ContextMenu : MonoBehaviour
         if (onCooldown == false)
         {
             isActive = true;
-            targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
+
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
+            if (InventoryUI.Instance.activeSlot != null)
+                targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
 
             StartCoroutine(BuildContextMenuCooldown());
 
@@ -68,9 +70,10 @@ public class ContextMenu : MonoBehaviour
 
             // If this slot is on the far right of the inventory menu
             //if (thisInvSlot != null && thisInvSlot.slotCoordinate.x == invUI.maxInventoryWidth)
-              //  contextMenu.transform.position += new Vector3(-2, 0, 0);
-            
+            //  contextMenu.transform.position += new Vector3(-2, 0, 0);
+
             // Create the necessary buttons
+            CreateTakeItemButton();
             CreateOpenContainerButton();
             CreateUseItemButton();
             CreateDropItemButton();
@@ -88,6 +91,41 @@ public class ContextMenu : MonoBehaviour
             if (buttonCount == 0)
                 isActive = false;
         }
+    }
+
+    void CreateTakeItemButton()
+    {
+        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            return; 
+        
+        ItemData itemData = null;
+        if (targetSlot != null)
+        {
+            if (targetSlot is EquipmentSlot)
+            {
+                EquipmentSlot targetEquipmentSlot = targetSlot as EquipmentSlot;
+                if (targetEquipmentSlot.CharacterEquipment == UnitManager.Instance.player.CharacterEquipment)
+                    return;
+            }
+            else if (targetSlot is InventorySlot)
+            {
+                InventorySlot targetInventorySlot = targetSlot as InventorySlot;
+                if (targetInventorySlot.myInventory.MyUnit == UnitManager.Instance.player)
+                    return;
+            }
+
+            itemData = targetSlot.GetItemData();
+        }
+        else if (targetInteractable != null && targetInteractable is LooseItem)
+        {
+            LooseItem targetLooseItem = targetInteractable as LooseItem;
+            itemData = targetLooseItem.ItemData;
+        }
+
+        if (itemData == null || itemData.Item == null)
+            return;
+
+        GetContextMenuButton().SetupTakeItemButton(itemData);
     }
 
     void CreateOpenContainerButton()
@@ -137,34 +175,34 @@ public class ContextMenu : MonoBehaviour
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.RemainingUses); // Use all
 
             if (itemData.RemainingUses >= 4)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.75f)); // Use 3/4
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.75f)); // Use 3/4
 
             if (itemData.RemainingUses >= 2)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.5f)); // Use 1/2
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.5f)); // Use 1/2
 
             if (itemData.RemainingUses >= 4)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.25f)); // Use 1/4
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.25f)); // Use 1/4
 
             if (itemData.RemainingUses >= 10)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
         }
         else if (itemData.Item.maxStackSize > 1)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 
             if (itemData.CurrentStackSize >= 4)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.75f)); // Use 3/4
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f)); // Use 3/4
 
             if (itemData.CurrentStackSize >= 2)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.5f)); // Use 1/2
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f)); // Use 1/2
 
             if (itemData.CurrentStackSize >= 4)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.25f)); // Use 1/4
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f)); // Use 1/4
 
             if (itemData.CurrentStackSize >= 10)
-                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.FloorToInt(itemData.CurrentStackSize * 0.1f)); // Use 1/10
+                GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f)); // Use 1/10
 
-            if (Mathf.FloorToInt(itemData.CurrentStackSize * 0.1f) > 1)
+            if (Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
         }
         else
@@ -194,6 +232,8 @@ public class ContextMenu : MonoBehaviour
         if (onCooldown) return;
         
         isActive = false;
+        targetSlot = null;
+        targetInteractable = null;
 
         for (int i = 0; i < contextButtons.Count; i++)
         {

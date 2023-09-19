@@ -107,7 +107,7 @@ public class CharacterEquipment : MonoBehaviour
             InventoryUI.Instance.ReplaceDraggedItem();
         }
         // If there's an item already in the target slot
-        else if ((InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.draggedItemOverlapCount == 1) || EquipSlotIsFull(targetEquipSlot) || (newItemData.Item.Equipment().IsWeapon() && newItemData.Item.Weapon().isTwoHanded && EquipSlotIsFull(GetOppositeWeaponEquipSlot(targetEquipSlot))))
+        else if (EquipSlotIsFull(targetEquipSlot) || (newItemData.Item.Equipment().IsWeapon() && newItemData.Item.Weapon().isTwoHanded && EquipSlotIsFull(GetOppositeWeaponEquipSlot(targetEquipSlot))))
         {
             // Clear out the item from it's original slot
             RemoveItemFromOrigin(newItemData);
@@ -181,6 +181,28 @@ public class CharacterEquipment : MonoBehaviour
         return true;
     }
 
+    public void RemoveItem(ItemData itemData)
+    {
+        int targetEquipSlotIndex = -1;
+        for (int i = 0; i < equippedItemDatas.Length; i++)
+        {
+            if (equippedItemDatas[i] == itemData)
+            {
+                targetEquipSlotIndex = i;
+                break;
+            }
+        }
+
+        if (targetEquipSlotIndex != -1)
+        {
+            if (slotVisualsCreated)
+                GetEquipmentSlotFromIndex(targetEquipSlotIndex).ClearItem();
+
+            RemoveEquipmentMesh((EquipSlot)targetEquipSlotIndex);
+            equippedItemDatas[targetEquipSlotIndex] = null;
+        }
+    }
+
     void InitializeInventories(EquipSlot targetEquipSlot, ItemData newItemData)
     {
         if (targetEquipSlot == EquipSlot.Back && newItemData.Item.IsBag())
@@ -211,7 +233,6 @@ public class CharacterEquipment : MonoBehaviour
         }
         else if (itemDataToRemove.InventorySlotCoordinate() != null && itemDataToRemove.InventorySlotCoordinate().myInventory.ContainsItemData(itemDataToRemove))
         {
-            itemDataToRemove.InventorySlotCoordinate().myInventory.GetSlotFromCoordinate(itemDataToRemove.InventorySlotCoordinate()).ClearItem();
             itemDataToRemove.InventorySlotCoordinate().myInventory.RemoveItem(itemDataToRemove);
         }
         else if (ContextMenu.Instance.TargetSlot != null)

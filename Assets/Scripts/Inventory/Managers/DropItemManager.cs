@@ -36,14 +36,7 @@ public class DropItemManager : MonoBehaviour
         inventory.RemoveItem(itemDataToDrop);
 
         if (itemDataToDrop == InventoryUI.Instance.DraggedItem.itemData)
-        {
-            if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-                InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
-
             InventoryUI.Instance.DisableDraggedItem();
-        }
-        else if (inventory.SlotVisualsCreated)
-            inventory.GetSlotFromItemData(itemDataToDrop).ClearItem();
     }
 
     public static void DropItem(CharacterEquipment characterEquipment, EquipSlot equipSlot)

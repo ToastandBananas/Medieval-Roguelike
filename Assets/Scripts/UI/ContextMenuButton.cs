@@ -12,14 +12,25 @@ public class ContextMenuButton : MonoBehaviour
 
     StringBuilder stringBuilder = new StringBuilder();
 
-    public void SetupTakeItemButton()
+    public void SetupTakeItemButton(ItemData itemData)
     {
-
+        UnityAction takeItemAction = () => { TakeItem(itemData); };
+        SetupButton("Take", takeItemAction);
     }
 
-    void TakeItem()
+    void TakeItem(ItemData itemData)
     {
+        if (UnitManager.Instance.player.TryAddItemToInventories(itemData))
+        {
+            if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
+                InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveItem(itemData);
+            else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+            {
+                
+            }
+        }
 
+        ContextMenu.Instance.DisableContextMenu();
     }
 
     public void SetupUseItemButton(ItemData itemData, int amountToUse = 1)
@@ -62,13 +73,13 @@ public class ContextMenuButton : MonoBehaviour
                             stringBuilder.Append(" All");
                     }
                 }
-                else if (amountToUse == Mathf.FloorToInt(itemData.RemainingUses * 0.75f))
+                else if (itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.75f))
                     stringBuilder.Append(" Three Quarters");
-                else if (amountToUse == Mathf.FloorToInt(itemData.RemainingUses * 0.5f))
+                else if (itemData.RemainingUses >= 2 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.5f))
                     stringBuilder.Append(" Half");
-                else if (amountToUse == Mathf.FloorToInt(itemData.RemainingUses * 0.25f))
+                else if (itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.25f))
                     stringBuilder.Append(" a Quarter");
-                else if (amountToUse == Mathf.FloorToInt(itemData.RemainingUses * 0.1f))
+                else if (itemData.RemainingUses >= 10 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.1f))
                     stringBuilder.Append(" a Little Bit");
             }
             else if (itemData.Item.maxStackSize > 1)
@@ -83,13 +94,13 @@ public class ContextMenuButton : MonoBehaviour
                             stringBuilder.Append(" All");
                     }
                 }
-                else if (amountToUse == Mathf.FloorToInt(itemData.CurrentStackSize * 0.75f))
+                else if (itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f))
                     stringBuilder.Append(" Three Quarters");
-                else if (amountToUse == Mathf.FloorToInt(itemData.CurrentStackSize * 0.5f))
+                else if (itemData.CurrentStackSize >= 2 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f))
                     stringBuilder.Append(" Half");
-                else if (amountToUse == Mathf.FloorToInt(itemData.CurrentStackSize * 0.25f))
+                else if (itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f))
                     stringBuilder.Append(" a Quarter");
-                else if (amountToUse > 1 && amountToUse == Mathf.FloorToInt(itemData.CurrentStackSize * 0.1f))
+                else if (itemData.CurrentStackSize >= 10 && amountToUse > 1 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f))
                     stringBuilder.Append(" a Little Bit");
                 else if (amountToUse == 1)
                     stringBuilder.Append(" One");

@@ -148,9 +148,11 @@ public class ItemData
 
     public int RemainingUses => remainingUses;
 
+    public bool ShouldRandomize => hasBeenRandomized;
+
     public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
 
     public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
 
-    public bool ShouldRandomize => hasBeenRandomized;
+    public Inventory MyInventory() => inventorySlotCoordinate != null && inventorySlotCoordinate.myInventory != null ? inventorySlotCoordinate.myInventory : null;
 }

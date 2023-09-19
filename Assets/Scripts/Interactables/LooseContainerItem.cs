@@ -21,20 +21,21 @@ public class LooseContainerItem : LooseItem
 
     public void TransferInventory(ContainerInventoryManager containerInventoryManagerToCopy)
     {
+        containerInventoryManager.ParentInventory.RemoveSlots();
+        containerInventoryManagerToCopy.ParentInventory.RemoveSlots();
+
         ContainerInventory currentParentInventory = containerInventoryManager.ParentInventory;
         ContainerInventory[] currentSubInventories = containerInventoryManager.SubInventories;
-        Unit currentUnit = containerInventoryManager.ParentInventory.MyUnit;
-        Unit otherContainerUnit = containerInventoryManagerToCopy.ParentInventory.MyUnit;
         LooseItem currentLooseItem = containerInventoryManager.ParentInventory.LooseItem;
-        LooseItem otherLooseItem = containerInventoryManagerToCopy.ParentInventory.LooseItem;
+        Unit currentUnit = containerInventoryManager.ParentInventory.MyUnit;
 
         // Set Unit & LooseItem references
-        containerInventoryManager.ParentInventory.SetUnit(otherContainerUnit);
-        containerInventoryManager.ParentInventory.SetLooseItem(otherLooseItem);
+        containerInventoryManager.ParentInventory.SetUnit(containerInventoryManagerToCopy.ParentInventory.MyUnit);
+        containerInventoryManager.ParentInventory.SetLooseItem(containerInventoryManagerToCopy.ParentInventory.LooseItem);
         for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
-            containerInventoryManager.SubInventories[i].SetUnit(otherContainerUnit);
-            containerInventoryManager.SubInventories[i].SetLooseItem(otherLooseItem);
+            containerInventoryManager.SubInventories[i].SetUnit(containerInventoryManagerToCopy.ParentInventory.MyUnit);
+            containerInventoryManager.SubInventories[i].SetLooseItem(containerInventoryManagerToCopy.ParentInventory.LooseItem);
         }
 
         containerInventoryManagerToCopy.ParentInventory.SetUnit(currentUnit);
@@ -51,25 +52,46 @@ public class LooseContainerItem : LooseItem
 
         containerInventoryManagerToCopy.SetParentInventory(currentParentInventory);
         containerInventoryManagerToCopy.SetSubInventories(currentSubInventories);
-
-        // Set ContainerInventoryManager references for each ContainerInventory
-        containerInventoryManager.ParentInventory.SetContainerInventoryManager(containerInventoryManager);
-        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
-        {
-            containerInventoryManager.SubInventories[i].SetContainerInventoryManager(containerInventoryManager);
-        }
-
-        containerInventoryManagerToCopy.ParentInventory.SetContainerInventoryManager(containerInventoryManagerToCopy);
-        for (int i = 0; i < containerInventoryManagerToCopy.SubInventories.Length; i++)
-        {
-            containerInventoryManagerToCopy.SubInventories[i].SetContainerInventoryManager(containerInventoryManagerToCopy);
-        }
-
-        //if (containerInventoryManager.ParentInventory.HasBeenInitialized == false)
+        
+        // Initialize if needed
+        if (containerInventoryManager.ParentInventory.HasBeenInitialized == false)
             containerInventoryManager.Initialize();
+        else
+        {
+            // Set ContainerInventoryManager references
+            containerInventoryManager.ParentInventory.SetContainerInventoryManager(containerInventoryManager);
+            for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+            {
+                containerInventoryManager.SubInventories[i].SetContainerInventoryManager(containerInventoryManager);
+            }
 
-        //if (containerInventoryManagerToCopy.ParentInventory.HasBeenInitialized == false)
+            // Setup the items (sets up slot coordinates and item datas
+            containerInventoryManager.ParentInventory.SetupItems();
+            for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+            {
+                containerInventoryManager.SubInventories[i].SetupItems();
+            }
+        }
+
+        // Initialize if needed
+        if (containerInventoryManagerToCopy.ParentInventory.HasBeenInitialized == false)
             containerInventoryManagerToCopy.Initialize();
+        else
+        {
+            // Set ContainerInventoryManager references
+            containerInventoryManagerToCopy.ParentInventory.SetContainerInventoryManager(containerInventoryManagerToCopy);
+            for (int i = 0; i < containerInventoryManagerToCopy.SubInventories.Length; i++)
+            {
+                containerInventoryManagerToCopy.SubInventories[i].SetContainerInventoryManager(containerInventoryManagerToCopy);
+            }
+
+            // Setup the items (sets up slot coordinates and item datas
+            containerInventoryManagerToCopy.ParentInventory.SetupItems();
+            for (int i = 0; i < containerInventoryManagerToCopy.SubInventories.Length; i++)
+            {
+                containerInventoryManagerToCopy.SubInventories[i].SetupItems();
+            }
+        }
     }
 
     public ContainerInventoryManager ContainerInventoryManager => containerInventoryManager;

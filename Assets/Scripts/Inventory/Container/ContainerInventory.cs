@@ -64,43 +64,6 @@ public class ContainerInventory : Inventory
         return itemAdded;
     }
 
-    bool AddItem(ItemData newItemData)
-    {
-        SlotCoordinate targetSlotCoordinate;
-
-        // If the item data hasn't been assigned a slot coordinate, do so now
-        if (newItemData.InventorySlotCoordinate() == null)
-        {
-            targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
-            if (targetSlotCoordinate != null)
-            {
-                newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
-                targetSlotCoordinate.SetupNewItem(newItemData);
-            }
-        }
-        else
-            targetSlotCoordinate = newItemData.InventorySlotCoordinate();
-
-        if (targetSlotCoordinate != null)
-        {
-            // Only add the item data if it hasn't been added yet
-            if (itemDatas.Contains(newItemData) == false)
-                itemDatas.Add(newItemData);
-
-            // Show the item's icon in the inventory UI
-            if (slotVisualsCreated)
-            {
-                InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
-                if (targetSlot != null)
-                    SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     public void SetupSlots(ContainerSlotGroup containerSlotGroup)
     {
         slots = containerSlotGroup.Slots;

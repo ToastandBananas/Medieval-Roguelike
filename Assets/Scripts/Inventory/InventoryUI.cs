@@ -36,9 +36,9 @@ public class InventoryUI : MonoBehaviour
 
     public bool isDraggingItem { get; private set; }
     public bool validDragPosition { get; private set; }
-    public int draggedItemOverlapCount { get; private set; }
+    //public int draggedItemOverlapCount { get; private set; }
     public Slot parentSlotDraggedFrom { get; private set; }
-    public Slot overlappedItemsParentSlot { get; private set; }
+    //public Slot overlappedItemsParentSlot { get; private set; }
 
     RectTransform rectTransform;
 
@@ -131,7 +131,7 @@ public class InventoryUI : MonoBehaviour
                     if (activeSlot is InventorySlot)
                     {
                         InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                        activeInventorySlot.myInventory.TryAddDraggedItemAt(activeInventorySlot, draggedItem.itemData);
+                        activeInventorySlot.myInventory.TryAddItemAt(activeInventorySlot.slotCoordinate, draggedItem.itemData);
                     }
                     else
                     {
@@ -160,52 +160,52 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    public bool DraggedItem_OverlappingMultipleItems()
+    public bool OverlappingMultipleItems(SlotCoordinate focusedSlotCoordinate, ItemData itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount)
     {
-        int width = draggedItem.itemData.Item.width;
-        int height = draggedItem.itemData.Item.height;
+        int width = itemData.Item.width;
+        int height = itemData.Item.height;
         ItemData overlappedItemData = null;
-        draggedItemOverlapCount = 0;
+        overlappedItemsParentSlotCoordinate = null;
+        overlappedItemCount = 0;
 
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                Slot slotToCheck;
-                if (activeSlot is InventorySlot)
+                SlotCoordinate slotCoordinateToCheck;
+                if (focusedSlotCoordinate.myInventory != null)
                 {
-                    InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                    slotToCheck = activeInventorySlot.myInventory.GetSlotFromCoordinate(activeInventorySlot.slotCoordinate.coordinate.x - x, activeInventorySlot.slotCoordinate.coordinate.y - y);
+                    slotCoordinateToCheck = focusedSlotCoordinate.myInventory.GetSlotCoordinate(focusedSlotCoordinate.coordinate.x - x, focusedSlotCoordinate.coordinate.y - y);
                 }
                 else
-                    slotToCheck = activeSlot;
+                    slotCoordinateToCheck = focusedSlotCoordinate;
 
-                if (slotToCheck == null)
+                if (slotCoordinateToCheck == null)
                     continue;
 
-                if (slotToCheck.IsFull())
+                if (slotCoordinateToCheck.isFull)
                 {
-                    if (slotToCheck.GetItemData() == draggedItem.itemData)
+                    if (slotCoordinateToCheck.parentSlotCoordinate.itemData == itemData)
                         continue;
 
                     if (overlappedItemData == null)
                     {
-                        if (slotToCheck is InventorySlot)
+                        if (slotCoordinateToCheck.myInventory != null)
                         {
-                            overlappedItemsParentSlot = slotToCheck.ParentSlot();
-                            overlappedItemData = slotToCheck.GetItemData();
-                            draggedItemOverlapCount++;
+                            overlappedItemsParentSlotCoordinate = slotCoordinateToCheck.parentSlotCoordinate;
+                            overlappedItemData = slotCoordinateToCheck.parentSlotCoordinate.itemData;
+                            overlappedItemCount++;
                         }
                         else
                         {
-                            overlappedItemsParentSlot = slotToCheck;
-                            draggedItemOverlapCount++;
+                            overlappedItemsParentSlotCoordinate = slotCoordinateToCheck;
+                            overlappedItemCount++;
                             return false;
                         }
                     }
-                    else if (overlappedItemData != slotToCheck.GetItemData())
+                    else if (overlappedItemData != slotCoordinateToCheck.parentSlotCoordinate.itemData)
                     {
-                        draggedItemOverlapCount++;
+                        overlappedItemCount++;
                         return true;
                     }
                 }
@@ -296,7 +296,8 @@ public class InventoryUI : MonoBehaviour
         Cursor.visible = true;
         isDraggingItem = false;
         parentSlotDraggedFrom = null;
-        draggedItemOverlapCount = 0;
+        draggedItem.SetItemData(null);
+        //draggedItemOverlapCount = 0;
 
         StartCoroutine(DelayStopDraggingItem());
         draggedItem.DisableIconImage();
@@ -378,6 +379,8 @@ public class InventoryUI : MonoBehaviour
         }
         return null;
     }
+
+    public void ClearParentSlotDraggedFrom() => parentSlotDraggedFrom = null;
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 

@@ -1,7 +1,6 @@
 using UnityEngine;
 
 public enum ItemSize { ExtraSmall, VerySmall, Small, Medium, Large, VeryLarge, ExtraLarge }
-//public enum PartialAmount { Whole, ThreeQuarters, Half, Quarter }
 public enum ItemType { BasicItem, MeleeWeapon, RangedWeapon, Ammo, Clothing, Armor, Shield, Medical, Food, Drink, Ingredient, Seed, Readable, Key, QuestItem, Bag, Container }
 public enum ItemMaterial
 {
@@ -18,9 +17,6 @@ public abstract class Item : ScriptableObject
     public ItemMaterial mainMaterial;
     public ItemSize itemSize;
     public string description;
-    public int maxUses = 1;
-    public bool isUsable = true;
-    public bool canUsePartial;
 
     [Header("Inventory")]
     public int width = 1;
@@ -42,27 +38,20 @@ public abstract class Item : ScriptableObject
     public Mesh pickupMesh;
     public Material pickupMeshRendererMaterial;
 
+    [Header("Multiple Uses?")]
+    public int maxUses = 1;
+    public bool isUsable = true;
+
     public virtual void Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {
         itemData.Use(amountToUse);
-        Debug.Log("Using " + name);
-    }
 
-    /// <summary>Returns partialAmount as a whole number percent.</summary>
-    /*public int GetPartialAmountsPercentage(PartialAmount partialAmount)
-    {
-        switch (partialAmount)
+        if (itemData.RemainingUses <= 0)
         {
-            case PartialAmount.Whole:
-                return 100;
-            case PartialAmount.Half:
-                return 50;
-            case PartialAmount.Quarter:
-                return 25;
-            default:
-                return 100;
+            if (itemData.MyInventory() != null)
+                itemData.MyInventory().RemoveItem(itemData);
         }
-    }*/
+    }
 
     /// <summary>Used to determine how much a character can carry in their hands, based off of ItemSize.</summary>
     public float GetSizeFactor()

@@ -61,16 +61,31 @@ public class InventorySlot : Slot
         ClearSlotVisuals();
 
         // Clear the slot coordinates
-        myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate.coordinate.x, slotCoordinate.parentSlotCoordinate.coordinate.y).slotCoordinate.ClearItem();
+        myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate).slotCoordinate.ClearItem();
     }
 
-    public override bool IsFull() => slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
+    public override bool IsFull()
+    {
+        /*Debug.Log(slotCoordinate.coordinate + " | Parent: " + slotCoordinate.parentSlotCoordinate.coordinate);
+
+        if (slotCoordinate.parentSlotCoordinate.itemData != null)
+            Debug.Log("itemdata: " + slotCoordinate.parentSlotCoordinate.itemData);
+        else
+            Debug.Log("itemdata: null");
+
+        if (slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null)
+            Debug.Log("item: " + slotCoordinate.parentSlotCoordinate.itemData.Item);
+        else
+            Debug.Log("item: null");*/
+
+        return slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
+    }
 
     public override void HighlightSlots()
     {
         int width = InventoryUI.Instance.DraggedItem.itemData.Item.width;
         int height = InventoryUI.Instance.DraggedItem.itemData.Item.height;
-        bool validSlot = !InventoryUI.Instance.DraggedItem_OverlappingMultipleItems();
+        bool validSlot = !InventoryUI.Instance.OverlappingMultipleItems(slotCoordinate, InventoryUI.Instance.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
         if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0)
             validSlot = false;
 
