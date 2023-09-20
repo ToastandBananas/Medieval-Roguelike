@@ -40,7 +40,7 @@ public class PlayerInput : MonoBehaviour
         if (skipTurnCooldownTimer < skipTurnCooldown)
             skipTurnCooldownTimer += Time.deltaTime;
 
-        if (InventoryUI.Instance.DraggedItem.itemData != null)
+        if (InventoryUI.Instance.isDraggingItem)
             return;
 
         if (EventSystem.current.IsPointerOverGameObject())

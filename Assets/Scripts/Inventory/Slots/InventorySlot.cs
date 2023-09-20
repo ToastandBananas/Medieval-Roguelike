@@ -92,7 +92,7 @@ public class InventorySlot : Slot
         if (InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
         {
             ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as ContainerEquipmentSlot;
-            if (containerEquipmentSlotDraggedFrom.containerInventoryManager.HasAnyItems())
+            if (containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
                 validSlot = false;
         }
 

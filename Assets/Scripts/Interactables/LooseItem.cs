@@ -25,7 +25,7 @@ public class LooseItem : Interactable
     public override void Interact(Unit unitPickingUpItem)
     {
         if (unitPickingUpItem.TryAddItemToInventories(itemData))
-            gameObject.SetActive(false);
+            LooseItemPool.Instance.ReturnToPool(this);
     }
 
     public override void UpdateGridPosition()

@@ -6,10 +6,12 @@ public class LooseItemPool : MonoBehaviour
     public static LooseItemPool Instance;
 
     [Header("Default Loose Item")]
+    [SerializeField] Transform looseItemParent;
     [SerializeField] LooseItem looseItemPrefab;
     [SerializeField] int amountLooseItemsToPool = 40;
 
     [Header("Loose Container Item")]
+    [SerializeField] Transform looseContainerItemParent;
     [SerializeField] LooseItem looseContainerItemPrefab;
     [SerializeField] int amountLooseContainerItemsToPool = 3;
 
@@ -20,12 +22,16 @@ public class LooseItemPool : MonoBehaviour
     {
         foreach(LooseItem looseItem in FindObjectsOfType<LooseItem>())
         {
-            if (looseItem.ItemData.Item.IsBag() || looseItem.ItemData.Item.IsPortableContainer())
+            if (looseItem is LooseContainerItem)
+            {
                 looseContainerItems.Add(looseItem);
+                looseItem.transform.SetParent(looseContainerItemParent);
+            }
             else
+            {
                 looseItems.Add(looseItem);
-
-            looseItem.transform.parent = transform;
+                looseItem.transform.SetParent(looseItemParent);
+            }
         }
 
         if (Instance != null)
@@ -65,7 +71,7 @@ public class LooseItemPool : MonoBehaviour
 
     LooseItem CreateNewLooseItem()
     {
-        LooseItem newLooseItem = Instantiate(looseItemPrefab, transform).GetComponent<LooseItem>();
+        LooseItem newLooseItem = Instantiate(looseItemPrefab, looseItemParent).GetComponent<LooseItem>();
         looseItems.Add(newLooseItem);
         return newLooseItem;
     }
@@ -83,8 +89,26 @@ public class LooseItemPool : MonoBehaviour
 
     LooseItem CreateNewLooseContainerItem()
     {
-        LooseItem newLooseContainerItem = Instantiate(looseContainerItemPrefab, transform).GetComponent<LooseItem>();
+        LooseItem newLooseContainerItem = Instantiate(looseContainerItemPrefab, looseContainerItemParent).GetComponent<LooseItem>();
         looseContainerItems.Add(newLooseContainerItem);
         return newLooseContainerItem;
+    }
+
+    public void ReturnToPool(LooseItem looseItem)
+    {
+        if (looseItem is LooseContainerItem)
+        {
+            LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
+            if (InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager) != null)
+                InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
+
+            looseContainerItem.SetContainerInventoryManager(null);
+            looseItem.transform.SetParent(looseContainerItemParent);
+        }
+        else
+            looseItem.transform.SetParent(looseItemParent);
+
+        looseItem.SetItemData(null);
+        looseItem.gameObject.SetActive(false);
     }
 }

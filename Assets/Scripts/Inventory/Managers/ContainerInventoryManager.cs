@@ -41,7 +41,7 @@ public class ContainerInventoryManager : InventoryManager
         }
     }
 
-    public bool HasAnyItems()
+    public bool ContainsAnyItems()
     {
         if (parentInventory.ItemDatas.Count > 0)
             return true;

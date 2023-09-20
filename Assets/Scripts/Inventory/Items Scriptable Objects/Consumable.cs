@@ -13,10 +13,7 @@ public class Consumable : Item
         {
             if (itemData.MyInventory() != null)
             {
-                Debug.Log((itemData.MyInventory().GetSlotCoordinateFromItemData(itemData).coordinate.x - width + 1).ToString() + ", " + (itemData.MyInventory().GetSlotCoordinateFromItemData(itemData).coordinate.y - height + 1).ToString());
-
                 SlotCoordinate originalTargetSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
-
                 itemData.MyInventory().RemoveItem(itemData);
                 itemData.SetItem(newThreshold.NewItem);
                 itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(originalTargetSlotCoordinate.coordinate.x - width + newThreshold.NewItem.width, originalTargetSlotCoordinate.coordinate.y - height + newThreshold.NewItem.height), itemData);
@@ -27,17 +24,16 @@ public class Consumable : Item
     public bool ThresholdReached(ItemData itemData, bool usedSome, out ItemChangeThreshold newThreshold)
     {
         newThreshold = null;
-        int count = 0;
         float percentRemaining = 1;
 
         if (maxUses > 1) 
         {
-            count = itemData.RemainingUses;
+            int count = itemData.RemainingUses;
             percentRemaining = Mathf.RoundToInt(((float)count / maxUses) * 100f);
         }
         else if (maxStackSize > 1) 
         {
-            count = itemData.CurrentStackSize;
+            int count = itemData.CurrentStackSize;
             percentRemaining = Mathf.RoundToInt(((float)count / maxStackSize) * 100f);
         }
 

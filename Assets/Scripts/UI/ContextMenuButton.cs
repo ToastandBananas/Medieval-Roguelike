@@ -25,9 +25,7 @@ public class ContextMenuButton : MonoBehaviour
             if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
                 InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveItem(itemData);
             else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
-            {
-                
-            }
+                LooseItemPool.Instance.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
         }
 
         ContextMenu.Instance.DisableContextMenu();
@@ -120,7 +118,12 @@ public class ContextMenuButton : MonoBehaviour
     void EquipItem(ItemData itemData)
     {
         CharacterEquipment characterEquipment = UnitManager.Instance.player.CharacterEquipment;
-        characterEquipment.TryAddItemAt(itemData.Item.Equipment().EquipSlot, itemData);
+        if (characterEquipment.TryAddItemAt(itemData.Item.Equipment().EquipSlot, itemData))
+        {
+            if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+                LooseItemPool.Instance.ReturnToPool(ContextMenu.Instance.TargetInteractable as LooseItem);
+        }
+
         ContextMenu.Instance.DisableContextMenu();
     }
 
@@ -135,13 +138,15 @@ public class ContextMenuButton : MonoBehaviour
 
     void OpenContainer()
     {
-        if (ContextMenu.Instance.TargetSlot != null)
+        if (ContextMenu.Instance.TargetSlot != null && ContextMenu.Instance.TargetSlot is ContainerEquipmentSlot)
         {
-            if (ContextMenu.Instance.TargetSlot is ContainerEquipmentSlot)
-            {
-                ContainerEquipmentSlot containerEquipmentSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
-                InventoryUI.Instance.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.ParentSlot().GetItemData().Item);
-            }
+            ContainerEquipmentSlot containerEquipmentSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
+            InventoryUI.Instance.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.ParentSlot().GetItemData().Item);
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseContainerItem)
+        {
+            LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
+            InventoryUI.Instance.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
         }
 
         ContextMenu.Instance.DisableContextMenu();
@@ -155,6 +160,11 @@ public class ContextMenuButton : MonoBehaviour
         {
             ContainerEquipmentSlot containerEquipmentSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
             InventoryUI.Instance.GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null)
+        {
+            LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
+            InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
         }
 
         ContextMenu.Instance.DisableContextMenu();

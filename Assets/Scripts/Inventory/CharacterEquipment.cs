@@ -269,14 +269,14 @@ public class CharacterEquipment : MonoBehaviour
         if (GetEquipmentSlot(equipSlot) != InventoryUI.Instance.parentSlotDraggedFrom)
         {
             // If this is the Unit's equipped backpack
-            if (equipSlot == EquipSlot.Back && equippedItemDatas[(int)equipSlot].Item.IsBag() && myUnit.BackpackInventoryManager.HasAnyItems())
+            if (equipSlot == EquipSlot.Back && equippedItemDatas[(int)equipSlot].Item.IsBag() && myUnit.BackpackInventoryManager.ContainsAnyItems())
             {
                 if (InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager) != null)
                     InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
                 DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
             }
-            else if (equippedItemDatas[(int)equipSlot].Item is Quiver && myUnit.QuiverInventoryManager.HasAnyItems())
+            else if (equippedItemDatas[(int)equipSlot].Item is Quiver && myUnit.QuiverInventoryManager.ContainsAnyItems())
             {
                 if (InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager) != null)
                     InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();

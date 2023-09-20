@@ -103,7 +103,6 @@ public class EquipmentSlot : Slot
     {
         bool validSlot = false;
         Item draggedItem = InventoryUI.Instance.DraggedItem.itemData.Item;
-        //InventoryUI.Instance.OverlappingMultipleItems(this, InventoryUI.Instance.DraggedItem.itemData, out Slot overlappedItemsParentSlot);
 
         if (draggedItem.IsEquipment())
         {

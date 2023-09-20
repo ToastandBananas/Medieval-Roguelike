@@ -51,7 +51,7 @@ public class ContainerUI : MonoBehaviour
 
     public void CloseContainerInventory()
     {
-        if (/*gameObject.activeSelf == false ||*/ containerInventoryManager == null)
+        if (gameObject.activeSelf == false || containerInventoryManager == null)
             return;
 
         containerInventoryManager.ParentInventory.RemoveSlots();

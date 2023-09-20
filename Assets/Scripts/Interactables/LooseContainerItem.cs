@@ -7,15 +7,15 @@ public class LooseContainerItem : LooseItem
 
     public override void Interact(Unit unitPickingUpItem)
     {
-        if (containerInventoryManager.HasAnyItems())
+        if (containerInventoryManager.ContainsAnyItems())
             InventoryUI.Instance.ShowContainerUI(containerInventoryManager, itemData.Item);
         else
         {
             if (InventoryUI.Instance.GetContainerUI(containerInventoryManager) != null)
                 InventoryUI.Instance.GetContainerUI(containerInventoryManager).CloseContainerInventory();
-            
+
             if (unitPickingUpItem.TryAddItemToInventories(itemData))
-                gameObject.SetActive(false);
+                LooseItemPool.Instance.ReturnToPool(this);
         }
     }
 

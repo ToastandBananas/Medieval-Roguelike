@@ -104,7 +104,6 @@ public class LevelGrid : MonoBehaviour
     public void AddInteractableAtGridPosition(GridPosition gridPosition, Interactable interactable)
     {
         interactableObjects.Add(gridPosition, interactable);
-        // Debug.Log(interactable.name + " added to position: " + gridPosition.ToString());
     }
 
     public Interactable GetInteractableAtGridPosition(GridPosition gridPosition)
@@ -115,8 +114,6 @@ public class LevelGrid : MonoBehaviour
 
     public void RemoveInteractableAtGridPosition(GridPosition gridPosition)
     {
-        // interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
-        // Debug.Log(interactable.name + " removed from position: " + gridPosition.ToString());
         interactableObjects.Remove(gridPosition);
     }
 

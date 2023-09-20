@@ -52,8 +52,6 @@ public class ContextMenu : MonoBehaviour
     {
         if (onCooldown == false)
         {
-            isActive = true;
-
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
             if (InventoryUI.Instance.activeSlot != null)
                 targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
@@ -72,11 +70,20 @@ public class ContextMenu : MonoBehaviour
             //if (thisInvSlot != null && thisInvSlot.slotCoordinate.x == invUI.maxInventoryWidth)
             //  contextMenu.transform.position += new Vector3(-2, 0, 0);
 
-            // Create the necessary buttons
-            CreateTakeItemButton();
-            CreateOpenContainerButton();
-            CreateUseItemButton();
-            CreateDropItemButton();
+            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
+            {
+                CreateMoveToButton(targetInteractable.gridPosition);
+            }
+            else
+            {
+                // Create the necessary buttons
+                CreateTakeItemButton();
+                CreateOpenContainerButton();
+                CreateUseItemButton();
+                CreateDropItemButton();
+                
+                
+            }
 
             int buttonCount = 0;
             for (int i = 0; i < contextButtons.Count; i++)
@@ -88,9 +95,14 @@ public class ContextMenu : MonoBehaviour
                 }
             }
 
-            if (buttonCount == 0)
-                isActive = false;
+            if (buttonCount > 0)
+                isActive = true;
         }
+    }
+
+    void CreateMoveToButton(GridPosition gridPosition)
+    {
+
     }
 
     void CreateTakeItemButton()
@@ -119,6 +131,13 @@ public class ContextMenu : MonoBehaviour
         else if (targetInteractable != null && targetInteractable is LooseItem)
         {
             LooseItem targetLooseItem = targetInteractable as LooseItem;
+            if (targetLooseItem is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
+                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
+                    return;
+            }
+
             itemData = targetLooseItem.ItemData;
         }
 
@@ -145,7 +164,16 @@ public class ContextMenu : MonoBehaviour
                 return;
             }
         }
-        else
+        else if (targetInteractable != null && targetInteractable is LooseContainerItem)
+        {
+            LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+            if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+            {
+                CreateCloseContainerButton();
+                return;
+            }
+        }
+        else 
             return;
 
         GetContextMenuButton().SetupOpenContainerButton();
@@ -155,17 +183,12 @@ public class ContextMenu : MonoBehaviour
 
     void CreateUseItemButton()
     {
-        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem))
             return;
 
         ItemData itemData = null;
         if (targetSlot != null)
             itemData = targetSlot.GetItemData();
-        else if (targetInteractable != null && targetInteractable is LooseItem)
-        {
-            LooseItem targetLooseItem = targetInteractable as LooseItem;
-            itemData = targetLooseItem.ItemData;
-        }
 
         if (itemData == null || itemData.Item == null || itemData.Item.isUsable == false)
             return;
