@@ -104,7 +104,7 @@ public class UnitAnimator : MonoBehaviour
             DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
 
         if (unit.unitMeshManager.rightHeldItem != null)
-            DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.rightHeldItem,unit, attackerTransform, diedForward);
+            DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
     }
 
     IEnumerator Die_RotateHead(bool diedForward)

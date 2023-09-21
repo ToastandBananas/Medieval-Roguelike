@@ -83,13 +83,22 @@ public class LooseItem : Interactable
 
     public Rigidbody RigidBody => rigidBody;
 
-    public MeshCollider MeshCollider() => meshCollider;
+    public MeshCollider MeshCollider => meshCollider;
 
-    public void ShowMeshRenderer() => meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+    public void ShowMeshRenderer()
+    {
+        if (itemData == null || itemData.Item == null)
+            return;
 
-    public void HideMeshRenderer() => meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        if (itemData.Item.pickupMesh != null)
+            meshFilter.mesh = itemData.Item.pickupMesh;
+        else
+            meshFilter.mesh = itemData.Item.meshes[0];
+    }
 
-    public bool CanSeeMeshRenderer() => meshRenderer.shadowCastingMode == UnityEngine.Rendering.ShadowCastingMode.On;
+    public void HideMeshRenderer() => meshFilter.mesh = null;
+
+    public bool CanSeeMeshRenderer() => meshFilter.mesh != null;
 
     public override bool CanInteractAtMyGridPosition() => true;
 }

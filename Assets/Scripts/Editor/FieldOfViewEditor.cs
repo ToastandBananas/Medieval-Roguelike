@@ -34,7 +34,7 @@ public class FieldOfViewEditor : Editor
 
                 fov.looseItemsInViewRadius[i].TryGetComponent(out LooseItem looseItem);
                 if (looseItem != null)
-                    Handles.DrawLine(fov.transform.position, looseItem.MeshCollider().bounds.center);
+                    Handles.DrawLine(fov.transform.position, looseItem.MeshCollider.bounds.center);
             }
         }
     }

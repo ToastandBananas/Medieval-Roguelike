@@ -130,33 +130,36 @@ public class DropItemManager : MonoBehaviour
         if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
             looseWeapon.HideMeshRenderer();
 
+        EquipSlot equipSlot = heldItem.itemData.Item.Equipment().EquipSlot;
+
         // Get rid of the HeldItem
-        if (heldItem == unit.unitMeshManager.rightHeldItem || (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().isTwoHanded))
+        if (heldItem == unit.unitMeshManager.rightHeldItem)
         {
             if (unit.CharacterEquipment.currentWeaponSet == WeaponSet.One)
             {
-                unit.CharacterEquipment.RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
-                unit.CharacterEquipment.RemoveEquipment(EquipSlot.RightHeldItem1);
+                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().isTwoHanded)
+                    equipSlot = EquipSlot.LeftHeldItem1;
+                else
+                    equipSlot = EquipSlot.RightHeldItem1;
             }
             else
             {
-                unit.CharacterEquipment.RemoveEquipmentMesh(EquipSlot.RightHeldItem2);
-                unit.CharacterEquipment.RemoveEquipment(EquipSlot.RightHeldItem2);
+                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().isTwoHanded)
+                    equipSlot = EquipSlot.LeftHeldItem2;
+                else
+                    equipSlot = EquipSlot.RightHeldItem2;
             }
         }
         else
         {
             if (unit.CharacterEquipment.currentWeaponSet == WeaponSet.One)
-            {
-                unit.CharacterEquipment.RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
-                unit.CharacterEquipment.RemoveEquipment(EquipSlot.LeftHeldItem1);
-            }
+                equipSlot = EquipSlot.LeftHeldItem1;
             else
-            {
-                unit.CharacterEquipment.RemoveEquipmentMesh(EquipSlot.LeftHeldItem2);
-                unit.CharacterEquipment.RemoveEquipment(EquipSlot.LeftHeldItem2);
-            }
+                equipSlot = EquipSlot.LeftHeldItem2;
         }
+
+        unit.CharacterEquipment.RemoveEquipmentMesh(equipSlot);
+        unit.CharacterEquipment.RemoveEquipment(equipSlot);
     }
 
     static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)

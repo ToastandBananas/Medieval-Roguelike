@@ -56,7 +56,7 @@ public class Vision : MonoBehaviour
         if (knownUnits.ContainsKey(unitToCheck) == false)
             return false;
 
-        if (unitToCheck.unitMeshManager.meshesHidden == false)
+        if (unitToCheck.unitMeshManager.meshesHidden)
             return false;
 
         if (IsInLineOfSight_Raycast(unitToCheck) == false)
@@ -117,8 +117,8 @@ public class Vision : MonoBehaviour
 
     bool IsInLineOfSight_Raycast(LooseItem looseItem)
     {
-        Vector3 dirToTarget = (looseItem.MeshCollider().bounds.center - transform.position).normalized;
-        float distToTarget = Vector3.Distance(transform.position, looseItem.MeshCollider().bounds.center);
+        Vector3 dirToTarget = (looseItem.MeshCollider.bounds.center - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, looseItem.MeshCollider.bounds.center);
 
         // If target Unit is in the view angle and no obstacles are in the way
         if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
@@ -370,25 +370,24 @@ public class Vision : MonoBehaviour
                 continue;
 
             looseItemsInViewRadius[i].transform.TryGetComponent(out LooseItem looseItem);
-            if (looseItem != null)
+
+            // If the LooseItem in the view radius is already "known", skip it
+            if (looseItem == null || knownLooseItems.ContainsKey(looseItem)) 
+                continue;
+
+            Vector3 looseItemCenter = looseItem.MeshCollider.bounds.center;
+            Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
+
+            // If target LooseItem is in the view angle
+            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
-                // If the LooseItem in the view radius is already "known", skip it
-                if (knownLooseItems.ContainsKey(looseItem)) continue;
+                float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
-                Vector3 looseItemCenter = looseItem.MeshCollider().bounds.center;
-                Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
-
-                // If target LooseItem is in the view angle
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
-                {
-                    float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
-
-                    // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
-                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
-                        AddVisibleLooseItem(looseItem);
-                    else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
-                        looseItem.HideMeshRenderer();
-                }
+                // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
+                if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
+                    AddVisibleLooseItem(looseItem);
+                else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
+                    looseItem.HideMeshRenderer();
             }
         }
 
@@ -403,7 +402,7 @@ public class Vision : MonoBehaviour
                     if (looseItem.Key.transform == looseItemsInViewRadius[j].transform)
                     {
                         // Skip if it's in the view radius and there's no obstacles in the way
-                        Vector3 looseItemCenter = looseItem.Key.MeshCollider().bounds.center;
+                        Vector3 looseItemCenter = looseItem.Key.MeshCollider.bounds.center;
                         Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
                         float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
@@ -416,7 +415,7 @@ public class Vision : MonoBehaviour
                 }
 
                 // Only hide it if it's outside of the player's perception distance
-                if (shouldHide && Vector3.Distance(unit.transform.position, looseItem.Key.MeshCollider().bounds.center) > playerPerceptionDistance) 
+                if (shouldHide && Vector3.Distance(unit.transform.position, looseItem.Key.MeshCollider.bounds.center) > playerPerceptionDistance) 
                     looseItem.Key.HideMeshRenderer(); 
                 else 
                     looseItem.Key.ShowMeshRenderer();
@@ -431,7 +430,7 @@ public class Vision : MonoBehaviour
         // Check if LooseItems that were in sight are now out of sight
         foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
         {
-            Vector3 looseItemCenter = looseItem.Key.MeshCollider().bounds.center;
+            Vector3 looseItemCenter = looseItem.Key.MeshCollider.bounds.center;
             Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
             // If target LooseItem is in the view angle
@@ -510,7 +509,7 @@ public class Vision : MonoBehaviour
         float closestLooseItemDistance = 1000000;
         foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
         {
-            float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.MeshCollider().bounds.center);
+            float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.MeshCollider.bounds.center);
             if (distToLooseItem < closestLooseItemDistance)
             {
                 closestLooseItem = knownLooseItem.Key;

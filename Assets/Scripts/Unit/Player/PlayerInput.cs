@@ -293,7 +293,7 @@ public class PlayerInput : MonoBehaviour
         {
             if (player.unitActionHandler.selectedAction is MoveAction)
             {
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition()); 
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, interactableMask))
                 {
                     if (highlightedInteractable == null || highlightedInteractable.gameObject != hit.transform.gameObject)

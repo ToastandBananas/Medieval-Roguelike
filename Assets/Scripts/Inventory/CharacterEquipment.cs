@@ -267,6 +267,7 @@ public class CharacterEquipment : MonoBehaviour
             {
                 slots[i].RemoveSlotHighlights();
                 slots[i].ClearItem();
+                slots[i].SetMyCharacterEquipment(null);
             }
 
             slots.Clear();
@@ -444,10 +445,18 @@ public class CharacterEquipment : MonoBehaviour
 
         if (IsHeldItemEquipSlot(equipSlot))
         {
-            if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
+            // If the right held item equipSlot was passed in and it's empty, check if the left held item slot has a two hander. If so, that's the item we need to drop.
+            if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(equipSlot) == false)
             {
-                if (equippedItemDatas[(int)equipSlot].Item.IsWeapon() && equippedItemDatas[(int)equipSlot].Item.Weapon().isTwoHanded)
-                    equipSlot = GetOppositeWeaponEquipSlot(equipSlot);
+                EquipSlot oppositeEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
+                if (EquipSlotHasItem(oppositeEquipSlot) == false)
+                {
+                    Debug.LogWarning("Opposite Equip Slot has no Item...");
+                    return;
+                }    
+
+                if (equippedItemDatas[(int)oppositeEquipSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeEquipSlot].Item.Weapon().isTwoHanded)
+                    equipSlot = oppositeEquipSlot;
             }
 
             myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
