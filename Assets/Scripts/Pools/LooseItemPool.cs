@@ -102,7 +102,6 @@ public class LooseItemPool : MonoBehaviour
             if (InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager) != null)
                 InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
-            looseContainerItem.SetContainerInventoryManager(null);
             looseItem.transform.SetParent(looseContainerItemParent);
         }
         else

@@ -94,6 +94,34 @@ MonoBehaviour:
   image: {fileID: 5301632360201378781}
   emptySlotSprite: {fileID: 21300000, guid: 07a9bfc0ab50fc84e82229befb20e724, type: 3}
   fullSlotSprite: {fileID: 21300000, guid: 027ad9dd91b4445488e43999a8e3ed44, type: 3}
+  centerFullSlotSprite: {fileID: 21300000, guid: 0eef05951971631429960133208f53fd,
+    type: 3}
+  topFullSlotSprite: {fileID: 21300000, guid: 39cb3766b119d8a4aab561a2d0456e2c, type: 3}
+  bottomFullSlotSprite: {fileID: 21300000, guid: fafffc8d08e273642a27285ec401949c,
+    type: 3}
+  leftFullSlotSprite: {fileID: 21300000, guid: 009ae78a104464a4f9117aa2e4bad51b, type: 3}
+  rightFullSlotSprite: {fileID: 21300000, guid: 95d53b65eeef6424e99d48b0826aea1c,
+    type: 3}
+  topLeftFullSlotSprite: {fileID: 21300000, guid: 988196ba2fa5fbe4aa6caba8771da30c,
+    type: 3}
+  topRightFullSlotSprite: {fileID: 21300000, guid: 9e93748307642d2449dd96f21c223f96,
+    type: 3}
+  bottomLeftFullSlotSprite: {fileID: 21300000, guid: 8ba8e25ae02b40e4ab1edd82240e01b5,
+    type: 3}
+  bottomRightFullSlotSprite: {fileID: 21300000, guid: 2ea7ac8c811fda2499eb30ed7ac5f1d8,
+    type: 3}
+  topHalfFullSlotSprite: {fileID: 21300000, guid: a3df2a6f4e2872c428cc061e7fa35374,
+    type: 3}
+  bottomHalfFullSlotSprite: {fileID: 21300000, guid: 198e09a8331a553499b9e4e9f3adfa5d,
+    type: 3}
+  leftHalfFullSlotSprite: {fileID: 21300000, guid: f1cc5988457bcc7478e95af91bc28385,
+    type: 3}
+  rightHalfFullSlotSprite: {fileID: 21300000, guid: 05e1f06ab1e8b134d8d4248762a586fc,
+    type: 3}
+  horizontalHalfFullSlotSprite: {fileID: 21300000, guid: 3f9ea000c80bb0447971bff55c8126fe,
+    type: 3}
+  verticalHalfFullSlotSprite: {fileID: 21300000, guid: b738b05caf2a0224d849248688081865,
+    type: 3}
 --- !u!1001 &4068299717922396027
 PrefabInstance:
   m_ObjectHideFlags: 0

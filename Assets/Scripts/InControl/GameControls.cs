@@ -16,9 +16,6 @@ public class GameControls : MonoBehaviour
         gamePlayActions.select.AddDefaultBinding(Mouse.LeftButton);
         gamePlayActions.select.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
 
-        gamePlayActions.context.AddDefaultBinding(Mouse.RightButton);
-        gamePlayActions.context.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
-
         gamePlayActions.turnMode.AddDefaultBinding(Key.LeftShift);
         gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftBumper);
 
@@ -65,6 +62,9 @@ public class GameControls : MonoBehaviour
 
         gamePlayActions.menuContext.AddDefaultBinding(Mouse.RightButton);
         gamePlayActions.menuContext.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
+
+        gamePlayActions.menuQuickUse.AddDefaultBinding(Mouse.MiddleButton);
+        gamePlayActions.menuQuickUse.AddDefaultBinding(InputControlType.RightBumper);
 
         gamePlayActions.menuUp.AddDefaultBinding(Key.UpArrow);
         gamePlayActions.menuUp.AddDefaultBinding(InputControlType.DPadUp);

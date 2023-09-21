@@ -18,14 +18,12 @@ MonoBehaviour:
   mainMaterial: 23
   itemSize: 4
   description: A leather backpack with 2 pockets.
-  isUsable: 1
-  canUsePartial: 0
   width: 2
   height: 4
   weight: 4
   volume: 4
   maxStackSize: 1
-  inventorySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
   valueRange: {x: 0, y: 0}
   staticValue: 150
   meshes:
@@ -34,6 +32,8 @@ MonoBehaviour:
   - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
+  maxUses: 1
+  isUsable: 1
   equipSlot: 9
   inventorySections:
   - amountOfSlots: 16

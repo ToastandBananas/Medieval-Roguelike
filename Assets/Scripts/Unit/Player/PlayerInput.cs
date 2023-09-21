@@ -302,7 +302,20 @@ public class PlayerInput : MonoBehaviour
                     if (highlightedInteractable != null)
                     {
                         if (highlightedInteractable is LooseItem)
+                        {
+                            if (highlightedInteractable is LooseContainerItem) 
+                            {
+                                LooseContainerItem highlightedContainer = highlightedInteractable as LooseContainerItem;
+                                if (highlightedContainer.ContainerInventoryManager != null && highlightedContainer.ContainerInventoryManager.ContainsAnyItems())
+                                {
+                                    WorldMouse.ChangeCursor(CursorState.LootBag);
+                                    return;
+                                }
+                            }
+                            
                             WorldMouse.ChangeCursor(CursorState.PickupItem);
+
+                        }
                         else if (highlightedInteractable is Door)
                             WorldMouse.ChangeCursor(CursorState.UseDoor);
                     }

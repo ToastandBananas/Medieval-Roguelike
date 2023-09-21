@@ -2,7 +2,7 @@
 
 public class GamePlayActions : PlayerActionSet
 {
-    public PlayerAction select, context, turnMode, skipTurn, cancelAction, swapWeapons;
+    public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons;
 
     // Mouse Buttons
     public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
@@ -19,14 +19,13 @@ public class GamePlayActions : PlayerActionSet
     public PlayerAction cameraZoomIn, cameraZoomOut;
 
     // UI Actions
-    public PlayerAction menuPause, menuSelect, menuContext;
+    public PlayerAction menuPause, menuSelect, menuContext, menuQuickUse;
     public PlayerAction menuLeft, menuRight, menuUp, menuDown;
     public PlayerAction toggleInventory;
 
     public GamePlayActions()
     {
         select = CreatePlayerAction("Select");
-        context = CreatePlayerAction("Context");
         turnMode = CreatePlayerAction("TurnMode");
         skipTurn = CreatePlayerAction("SkipTurn");
         cancelAction = CreatePlayerAction("CancelAction");
@@ -53,6 +52,7 @@ public class GamePlayActions : PlayerActionSet
         menuPause = CreatePlayerAction("MenuPause");
         menuSelect = CreatePlayerAction("MenuSelect");
         menuContext = CreatePlayerAction("MenuContext");
+        menuQuickUse = CreatePlayerAction("MenuQuickUse");
 
         menuLeft = CreatePlayerAction("MenuLeft");
         menuRight = CreatePlayerAction("MenuRight");

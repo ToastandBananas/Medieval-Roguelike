@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back }
+public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver }
 public enum WeaponSet { One = 1, Two = 2 }
 
 public class CharacterEquipment : MonoBehaviour
@@ -11,7 +11,7 @@ public class CharacterEquipment : MonoBehaviour
 
     [SerializeField] ItemData[] equippedItemDatas = new ItemData[Enum.GetValues(typeof(EquipSlot)).Length];
 
-    [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back" })]
+    [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back", "Quiver" })]
     [SerializeField] Equipment[] startingEquipment = new Equipment[Enum.GetValues(typeof(EquipSlot)).Length];
 
     public List<EquipmentSlot> slots { get; private set; }
@@ -76,13 +76,7 @@ public class CharacterEquipment : MonoBehaviour
             }
         }
 
-        if (TryAddItemAt(targetEquipSlot, newItemData))
-        {
-            SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), newItemData);
-            SetupEquipmentMesh(targetEquipSlot, newItemData);
-            return true;
-        }
-        return false;
+        return TryAddItemAt(targetEquipSlot, newItemData);
     }
 
     public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
@@ -91,94 +85,61 @@ public class CharacterEquipment : MonoBehaviour
         if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.validDragPosition == false)
             return false;
 
-        int targetEquipSlotIndex = (int)targetEquipSlot;
         if (newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
         {
             if (currentWeaponSet == WeaponSet.One)
-                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem1;
+                targetEquipSlot = EquipSlot.LeftHeldItem1;
             else
-                targetEquipSlotIndex = (int)EquipSlot.LeftHeldItem2;
+                targetEquipSlot = EquipSlot.LeftHeldItem2;
         }
 
         // If trying to place the item back into the slot it came from
-        if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot((EquipSlot)targetEquipSlotIndex) == InventoryUI.Instance.parentSlotDraggedFrom)
+        if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.Instance.parentSlotDraggedFrom)
         {
             // Place the dragged item back to where it came from
             InventoryUI.Instance.ReplaceDraggedItem();
         }
         // If there's an item already in the target slot
-        else if (EquipSlotIsFull(targetEquipSlot) || (newItemData.Item.Equipment().IsWeapon() && newItemData.Item.Weapon().isTwoHanded && EquipSlotIsFull(GetOppositeWeaponEquipSlot(targetEquipSlot))))
-        {
-            // Clear out the item from it's original slot
-            RemoveItemFromOrigin(newItemData);
-
-            if (IsHeldItemEquipSlot(targetEquipSlot))
-            {
-                EquipSlot oppositeWeaponSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
-
-                // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
-                if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon().isTwoHanded)))
-                    UnequipItem(oppositeWeaponSlot);
-            }
-
-            // Unequip any item already in the target equip slot
-            UnequipItem(targetEquipSlot);
-
-            // Assign the data
-            equippedItemDatas[targetEquipSlotIndex] = newItemData;
-
-            InitializeInventories(targetEquipSlot, newItemData);
-
-            if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
-            else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
-
-            // Setup the target slot's item data/sprites & the mesh if necessary
-            SetupNewItemIcon(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newItemData);
-            SetupEquipmentMesh(targetEquipSlot, newItemData);
-
-            // Hide the dragged item
-            if (InventoryUI.Instance.isDraggingItem)
-                InventoryUI.Instance.DisableDraggedItem();
-        }
-        else // If there's no items in the way
-        {
-            // Clear out the item from it's original slot
-            RemoveItemFromOrigin(newItemData);
-
-            if (IsHeldItemEquipSlot(targetEquipSlot))
-            {
-                EquipSlot oppositeWeaponSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
-
-                // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
-                if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon().isTwoHanded)))
-                    UnequipItem(oppositeWeaponSlot);
-            }
-
-            // Unequip any item already in the target equip slot
-            UnequipItem(targetEquipSlot);
-
-            // Assign the data
-            equippedItemDatas[targetEquipSlotIndex] = newItemData;
-
-            InitializeInventories(targetEquipSlot, newItemData); 
-            
-            if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
-            else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
-
-            // Setup the target slot's item data/sprites and mesh if necessary
-            SetupNewItemIcon(GetEquipmentSlotFromIndex(targetEquipSlotIndex), newItemData);
-            SetupEquipmentMesh(targetEquipSlot, newItemData);
-
-            // Hide the dragged item
-            if (InventoryUI.Instance.isDraggingItem)
-                InventoryUI.Instance.DisableDraggedItem();
-        }
+        else
+            Equip(newItemData, targetEquipSlot);
 
         return true;
+    }
+
+    void Equip(ItemData newItemData, EquipSlot targetEquipSlot)
+    {
+        // Clear out the item from it's original slot
+        RemoveItemFromOrigin(newItemData);
+
+        if (IsHeldItemEquipSlot(targetEquipSlot))
+        {
+            EquipSlot oppositeWeaponSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
+
+            // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
+            if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon().isTwoHanded)))
+                UnequipItem(oppositeWeaponSlot);
+        }
+
+        // Unequip any item already in the target equip slot
+        UnequipItem(targetEquipSlot);
+
+        // Assign the data
+        equippedItemDatas[(int)targetEquipSlot] = newItemData;
+
+        InitializeInventories(targetEquipSlot, newItemData);
+
+        if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
+            equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
+        else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
+            equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
+
+        // Setup the target slot's item data/sprites and mesh if necessary
+        SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), newItemData);
+        SetupEquipmentMesh(targetEquipSlot, newItemData);
+
+        // Hide the dragged item
+        if (InventoryUI.Instance.isDraggingItem)
+            InventoryUI.Instance.DisableDraggedItem();
     }
 
     public void RemoveItem(ItemData itemData)
@@ -207,24 +168,19 @@ public class CharacterEquipment : MonoBehaviour
     {
         if (targetEquipSlot == EquipSlot.Back && newItemData.Item.IsBag())
             myUnit.BackpackInventoryManager.Initialize();
-        else if (newItemData.Item is Quiver)
+        else if (targetEquipSlot == EquipSlot.Quiver)
             myUnit.QuiverInventoryManager.Initialize();
     }
 
     void RemoveItemFromOrigin(ItemData itemDataToRemove)
     {
-        // Clear out the dragged item's original slot
-        if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-            InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
-
         // Remove the item from its original character equipment or inventory
         if (InventoryUI.Instance.isDraggingItem)
         {
             if (InventoryUI.Instance.DraggedItem.myCharacterEquipment != null)
             {
                 EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
-                if (equipmentSlotDraggedFrom.IsHeldItemSlot())
-                    equipmentSlotDraggedFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
+                equipmentSlotDraggedFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
 
                 InventoryUI.Instance.DraggedItem.myCharacterEquipment.equippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
             }
@@ -241,8 +197,7 @@ public class CharacterEquipment : MonoBehaviour
             if (targetInventoryItem.myCharacterEquipment != null)
             {
                 EquipmentSlot equipmentSlotTakenFrom = ContextMenu.Instance.TargetSlot.ParentSlot() as EquipmentSlot;
-                if (equipmentSlotTakenFrom.IsHeldItemSlot())
-                    equipmentSlotTakenFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotTakenFrom.EquipSlot);
+                equipmentSlotTakenFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotTakenFrom.EquipSlot);
 
                 targetInventoryItem.myCharacterEquipment.equippedItemDatas[(int)equipmentSlotTakenFrom.EquipSlot] = null;
                 ContextMenu.Instance.TargetSlot.ParentSlot().ClearItem();
@@ -253,12 +208,10 @@ public class CharacterEquipment : MonoBehaviour
                 ContextMenu.Instance.TargetSlot.ParentSlot().ClearItem();
             }
         }
-        else // If equipping a LooseItem
-        {
-            Debug.Log("Equipping loose item.");
-            //LooseItem looseItem = PlayerInput.Instance.highlightedInteractable as LooseItem;
-            //LooseItemPool.Instance.ReturnToPool(looseItem);
-        }
+
+        // Clear out the dragged item's original slot
+        if (InventoryUI.Instance.parentSlotDraggedFrom != null)
+            InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
     }
 
     public void UnequipItem(EquipSlot equipSlot)
@@ -276,7 +229,7 @@ public class CharacterEquipment : MonoBehaviour
 
                 DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
             }
-            else if (equippedItemDatas[(int)equipSlot].Item is Quiver && myUnit.QuiverInventoryManager.ContainsAnyItems())
+            else if (equipSlot == EquipSlot.Quiver && myUnit.QuiverInventoryManager.ContainsAnyItems())
             {
                 if (InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager) != null)
                     InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
@@ -332,6 +285,8 @@ public class CharacterEquipment : MonoBehaviour
                 ContainerEquipmentSlot containerEquipmentSlot = slots[i] as ContainerEquipmentSlot;
                 if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
                     containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.CharacterEquipment.MyUnit.BackpackInventoryManager);
+                else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
+                    containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.CharacterEquipment.MyUnit.QuiverInventoryManager);
             }
         }
 
@@ -381,7 +336,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public bool EquipSlotIsFull(EquipSlot equipSlot)
     {
-        if (equippedItemDatas[(int)equipSlot] != null && equippedItemDatas[(int)equipSlot].Item != null)
+        if (EquipSlotHasItem(equipSlot))
             return true;
 
         if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(GetOppositeWeaponEquipSlot(equipSlot)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.Weapon().isTwoHanded)
@@ -469,7 +424,7 @@ public class CharacterEquipment : MonoBehaviour
                 heldItem = HeldItemBasePool.Instance.GetShieldBaseFromPool();
 
             heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
-
+            
             ActionSystemUI.Instance.UpdateActionVisuals();
         }
         else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
@@ -491,9 +446,8 @@ public class CharacterEquipment : MonoBehaviour
         {
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
             {
-                EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
                 if (equippedItemDatas[(int)equipSlot].Item.IsWeapon() && equippedItemDatas[(int)equipSlot].Item.Weapon().isTwoHanded)
-                    equipSlot = oppositeWeaponEquipSlot;
+                    equipSlot = GetOppositeWeaponEquipSlot(equipSlot);
             }
 
             myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);

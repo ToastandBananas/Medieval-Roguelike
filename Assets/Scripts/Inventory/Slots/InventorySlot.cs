@@ -6,6 +6,28 @@ public class InventorySlot : Slot
 
     public SlotCoordinate slotCoordinate { get; private set; }
 
+    [SerializeField] Sprite centerFullSlotSprite;
+
+    [Header("Edge Sprites")]
+    [SerializeField] Sprite topFullSlotSprite;
+    [SerializeField] Sprite bottomFullSlotSprite;
+    [SerializeField] Sprite leftFullSlotSprite;
+    [SerializeField] Sprite rightFullSlotSprite;
+
+    [Header("Corner Sprites")]
+    [SerializeField] Sprite topLeftFullSlotSprite;
+    [SerializeField] Sprite topRightFullSlotSprite;
+    [SerializeField] Sprite bottomLeftFullSlotSprite;
+    [SerializeField] Sprite bottomRightFullSlotSprite; // Done
+
+    [Header("Half Sprites")]
+    [SerializeField] Sprite topHalfFullSlotSprite;
+    [SerializeField] Sprite bottomHalfFullSlotSprite; // Done
+    [SerializeField] Sprite leftHalfFullSlotSprite;
+    [SerializeField] Sprite rightHalfFullSlotSprite; // Done
+    [SerializeField] Sprite horizontalHalfFullSlotSprite;
+    [SerializeField] Sprite verticalHalfFullSlotSprite;
+
     public void SetupFullSlotSprites()
     {
         int width = inventoryItem.itemData.Item.width;
@@ -15,12 +37,76 @@ public class InventorySlot : Slot
             for (int y = 0; y < height; y++)
             {
                 InventorySlot slotToSetup = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
-                slotToSetup.SetFullSlotSprite();
+                if (width == 1 && height == 1) // Single slot item
+                    slotToSetup.SetFullSlotSprite(fullSlotSprite);
+                else if (x == 0 & y == 0) // Bottom Right
+                {
+                    if (width == 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(bottomHalfFullSlotSprite);
+                    else if (width > 1 && height == 1)
+                        slotToSetup.SetFullSlotSprite(rightHalfFullSlotSprite);
+                    else if (width > 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(bottomRightFullSlotSprite);
+                }
+                else if (width > 2 && height > 2 && x > 0 && x < width - 1 && y > 0 && y < height - 1) // Center
+                {
+                    slotToSetup.SetFullSlotSprite(centerFullSlotSprite);
+                }
+                else if (x == 0 && y == height - 1) // Top Right
+                {
+                    if (width == 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(topHalfFullSlotSprite);
+                    else if (width > 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(topRightFullSlotSprite);
+                }
+                else if (x == width - 1 && y == 0) // Bottom Left
+                {
+                    if (width > 1 && height == 1)
+                        slotToSetup.SetFullSlotSprite(leftHalfFullSlotSprite);
+                    else if (width > 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(bottomLeftFullSlotSprite);
+                }
+                else if (x == width - 1 && y == height - 1) // Top Left
+                {
+                    if (width == 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(topHalfFullSlotSprite);
+                    else if (width > 1 && height == 1)
+                        slotToSetup.SetFullSlotSprite(leftHalfFullSlotSprite);
+                    else if (width > 1 && height > 1)
+                        slotToSetup.SetFullSlotSprite(topLeftFullSlotSprite);
+                }
+                else if (x == width - 1) // Left Edge
+                {
+                    if (width == 1 && height > 2 && y > 0 && y < height - 1)
+                        slotToSetup.SetFullSlotSprite(verticalHalfFullSlotSprite);
+                    else
+                        slotToSetup.SetFullSlotSprite(leftFullSlotSprite);
+                }
+                else if (x == 0) // Right Edge
+                {
+                    if (width == 1 && height > 2 && y > 0 && y < height - 1)
+                        slotToSetup.SetFullSlotSprite(verticalHalfFullSlotSprite);
+                    else
+                        slotToSetup.SetFullSlotSprite(rightFullSlotSprite);
+                }
+                else if (y == 0) // Bottom Edge
+                {
+                    if (height == 1 && width > 2 && x > 0 && x < width - 1)
+                        slotToSetup.SetFullSlotSprite(horizontalHalfFullSlotSprite);
+                    else
+                        slotToSetup.SetFullSlotSprite(bottomFullSlotSprite);
+                }
+                else if (y == height - 1) // Top Edge
+                {
+                    if (height == 1 && width > 2 && x > 0 && x < width - 1)
+                        slotToSetup.SetFullSlotSprite(horizontalHalfFullSlotSprite);
+                    else
+                        slotToSetup.SetFullSlotSprite(topFullSlotSprite);
+                }
+                else // Fallback
+                    slotToSetup.SetFullSlotSprite(centerFullSlotSprite);
             }
         }
-
-        // slotCoordinate.SetParentSlotCoordinate(slotCoordinate);
-        SetFullSlotSprite();
     }
 
     public override void SetupEmptySlotSprites()
@@ -64,22 +150,7 @@ public class InventorySlot : Slot
         myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate).slotCoordinate.ClearItem();
     }
 
-    public override bool IsFull()
-    {
-        /*Debug.Log(slotCoordinate.coordinate + " | Parent: " + slotCoordinate.parentSlotCoordinate.coordinate);
-
-        if (slotCoordinate.parentSlotCoordinate.itemData != null)
-            Debug.Log("itemdata: " + slotCoordinate.parentSlotCoordinate.itemData);
-        else
-            Debug.Log("itemdata: null");
-
-        if (slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null)
-            Debug.Log("item: " + slotCoordinate.parentSlotCoordinate.itemData.Item);
-        else
-            Debug.Log("item: null");*/
-
-        return slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
-    }
+    public override bool IsFull() => slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
 
     public override void HighlightSlots()
     {
@@ -106,8 +177,6 @@ public class InventorySlot : Slot
                 if (slotToHighlight == null)
                     continue;
 
-                slotToHighlight.SetEmptySlotSprite();
-
                 if (validSlot)
                     slotToHighlight.image.color = Color.green;
                 else
@@ -127,9 +196,6 @@ public class InventorySlot : Slot
                 InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
                 if (slotToHighlight == null)
                     continue;
-
-                if (slotToHighlight.IsFull() && slotToHighlight.slotCoordinate.parentSlotCoordinate.itemData != InventoryUI.Instance.DraggedItem.itemData)
-                    slotToHighlight.SetFullSlotSprite();
 
                 slotToHighlight.image.color = Color.white;
             }

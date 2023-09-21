@@ -36,9 +36,7 @@ public class InventoryUI : MonoBehaviour
 
     public bool isDraggingItem { get; private set; }
     public bool validDragPosition { get; private set; }
-    //public int draggedItemOverlapCount { get; private set; }
     public Slot parentSlotDraggedFrom { get; private set; }
-    //public Slot overlappedItemsParentSlot { get; private set; }
 
     RectTransform rectTransform;
 
@@ -247,6 +245,9 @@ public class InventoryUI : MonoBehaviour
 
     public void SetupDraggedItem(ItemData newItemData, Slot parentSlotDraggedFrom, Inventory inventoryDraggedFrom)
     {
+        if (ContextMenu.Instance.IsActive)
+            ContextMenu.Instance.DisableContextMenu(true);
+
         Cursor.visible = false;
         isDraggingItem = true;
 
@@ -274,7 +275,7 @@ public class InventoryUI : MonoBehaviour
                 if (GetContainerUI(containerEquipmentSlot.containerInventoryManager) != null)
                     GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
             }
-            else if (newItemData.Item is Quiver)
+            else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
             {
                 if (GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager) != null)
                     GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();

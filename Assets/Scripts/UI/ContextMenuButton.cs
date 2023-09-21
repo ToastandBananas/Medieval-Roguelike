@@ -12,11 +12,17 @@ public class ContextMenuButton : MonoBehaviour
 
     StringBuilder stringBuilder = new StringBuilder();
 
-    public void SetupTakeItemButton(ItemData itemData)
+    public void SetupMoveToButton(GridPosition targetGridPosition) => SetupButton("Move To", delegate { MoveTo(targetGridPosition); }); 
+
+    void MoveTo(GridPosition targetGridPosition)
     {
-        UnityAction takeItemAction = () => { TakeItem(itemData); };
-        SetupButton("Take", takeItemAction);
+        UnitManager.Instance.player.unitActionHandler.SetTargetGridPosition(targetGridPosition);
+        UnitManager.Instance.player.unitActionHandler.QueueAction(UnitManager.Instance.player.unitActionHandler.GetAction<MoveAction>());
+
+        ContextMenu.Instance.DisableContextMenu();
     }
+
+    public void SetupTakeItemButton(ItemData itemData) => SetupButton("Take", delegate { TakeItem(itemData); });
 
     void TakeItem(ItemData itemData)
     {
@@ -36,12 +42,20 @@ public class ContextMenuButton : MonoBehaviour
         if (itemData.Item.IsEquipment())
         {
             if (UnitManager.Instance.player.CharacterEquipment.ItemDataEquipped(itemData))
-                SetupButton("Unequip", UnequipItem);
-            else if (ContextMenu.Instance.TargetInteractable != null || (ContextMenu.Instance.TargetSlot != null && ContextMenu.Instance.TargetSlot is EquipmentSlot == false))
             {
-                UnityAction equipItemAction = () => { EquipItem(itemData); };
-                SetupButton("Equip", equipItemAction);
+                stringBuilder.Clear();
+                stringBuilder.Append("Unequip");
+                if (ContextMenu.Instance.TargetSlot is ContainerEquipmentSlot)
+                {
+                    ContainerEquipmentSlot containerSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
+                    if (containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
+                        stringBuilder.Append(" & Drop");
+                }
+
+                SetupButton(stringBuilder.ToString(), UnequipItem);
             }
+            else if (ContextMenu.Instance.TargetInteractable != null || (ContextMenu.Instance.TargetSlot != null && ContextMenu.Instance.TargetSlot is EquipmentSlot == false))
+                SetupButton("Equip", delegate { EquipItem(itemData); });
         }
         else
         {
@@ -104,8 +118,7 @@ public class ContextMenuButton : MonoBehaviour
                     stringBuilder.Append(" One");
             }
 
-            UnityAction useItemAction = () => { UseItem(itemData, amountToUse); };
-            SetupButton(stringBuilder.ToString(), useItemAction);
+            SetupButton(stringBuilder.ToString(), delegate { UseItem(itemData, amountToUse); });
         }
     }
 
@@ -117,9 +130,24 @@ public class ContextMenuButton : MonoBehaviour
 
     void EquipItem(ItemData itemData)
     {
-        CharacterEquipment characterEquipment = UnitManager.Instance.player.CharacterEquipment;
-        if (characterEquipment.TryAddItemAt(itemData.Item.Equipment().EquipSlot, itemData))
+        if (UnitManager.Instance.player.CharacterEquipment.TryEquipItem(itemData))
         {
+            if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
+                if (itemData.Item.Equipment().EquipSlot == EquipSlot.Quiver)
+                    UnitManager.Instance.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+                else  if (itemData.Item.Equipment().EquipSlot == EquipSlot.Back)
+                    UnitManager.Instance.player.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+            }
+            else if (ContextMenu.Instance.TargetSlot != null)
+            {
+                if (itemData.Item.Equipment().EquipSlot == EquipSlot.Quiver)
+                    UnitManager.Instance.player.QuiverInventoryManager.Initialize();
+                else if (itemData.Item.Equipment().EquipSlot == EquipSlot.Back)
+                    UnitManager.Instance.player.BackpackInventoryManager.Initialize();
+            }
+
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
                 LooseItemPool.Instance.ReturnToPool(ContextMenu.Instance.TargetInteractable as LooseItem);
         }
@@ -188,7 +216,7 @@ public class ContextMenuButton : MonoBehaviour
         ContextMenu.Instance.DisableContextMenu();
     }
 
-    void SetupButton(string buttonText, UnityEngine.Events.UnityAction action)
+    void SetupButton(string buttonText, UnityAction action)
     {
         gameObject.name = buttonText;
         this.buttonText.text = buttonText;
@@ -201,4 +229,8 @@ public class ContextMenuButton : MonoBehaviour
         button.onClick.RemoveAllListeners();
         gameObject.SetActive(false);
     }
+
+    public TextMeshProUGUI ButtonText => buttonText;
+
+    public RectTransform RectTransform => rectTransform;
 }

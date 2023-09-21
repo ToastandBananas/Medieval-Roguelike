@@ -7,16 +7,21 @@ public class ContextMenu : MonoBehaviour
 {
     public static ContextMenu Instance { get; private set; }
 
-    public GameObject contextMenuButtonPrefab;
+    [SerializeField] GameObject contextMenuButtonPrefab;
 
     List<ContextMenuButton> contextButtons = new List<ContextMenuButton>();
+    RectTransform rectTransform;
 
-    Canvas canvas;
     Slot targetSlot;
     Interactable targetInteractable;
 
     WaitForSeconds buildContextMenuCooldown = new WaitForSeconds(0.2f);
+    WaitForSeconds disableContextMenuDelay = new WaitForSeconds(0.1f);
     bool onCooldown, isActive;
+
+    float contextMenuHoldTimer;
+    readonly float maxContextMenuHoldTime = 0.125f;
+    readonly float minButtonWidth = 100;
 
     void Awake()
     {
@@ -28,7 +33,7 @@ public class ContextMenu : MonoBehaviour
         }
         Instance = this;
 
-        canvas = GetComponentInParent<Canvas>();
+        rectTransform = GetComponent<RectTransform>();
 
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -38,14 +43,22 @@ public class ContextMenu : MonoBehaviour
 
     void Update()
     {
-        if (isActive && EventSystem.current.IsPointerOverGameObject() == false
-            && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed || Input.GetMouseButtonDown(2)))
+        if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable)
+            && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed)))
         {
-            DisableContextMenu();
+            StartCoroutine(DelayDisableContextMenu());
         }
 
-        if (isActive == false && GameControls.gamePlayActions.menuContext.WasPressed && (InventoryUI.Instance.activeSlot != null || PlayerInput.Instance.highlightedInteractable != null))
-            BuildContextMenu();
+        if (contextMenuHoldTimer < maxContextMenuHoldTime && GameControls.gamePlayActions.menuContext.IsPressed)
+            contextMenuHoldTimer += Time.deltaTime;
+
+        if (GameControls.gamePlayActions.menuContext.WasReleased)
+        {
+            if (isActive == false && contextMenuHoldTimer < maxContextMenuHoldTime)
+                BuildContextMenu();
+
+            contextMenuHoldTimer = 0;
+        }
     }
 
     public void BuildContextMenu()
@@ -58,21 +71,9 @@ public class ContextMenu : MonoBehaviour
 
             StartCoroutine(BuildContextMenuCooldown());
 
-            // Set our context menu's position
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out Vector2 pos);
-            transform.position = canvas.transform.TransformPoint(pos) + new Vector3(1, -0.5f, 0);
-
-            // If this slot is on the very bottom of the screen
-            if (pos.y < -420f)
-                transform.position += new Vector3(0, 1.5f, 0);
-
-            // If this slot is on the far right of the inventory menu
-            //if (thisInvSlot != null && thisInvSlot.slotCoordinate.x == invUI.maxInventoryWidth)
-            //  contextMenu.transform.position += new Vector3(-2, 0, 0);
-
             if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
             {
-                CreateMoveToButton(targetInteractable.gridPosition);
+                CreateMoveToButton();
             }
             else
             {
@@ -81,8 +82,9 @@ public class ContextMenu : MonoBehaviour
                 CreateOpenContainerButton();
                 CreateUseItemButton();
                 CreateDropItemButton();
-                
-                
+
+                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
+                    CreateMoveToButton();  
             }
 
             int buttonCount = 0;
@@ -96,13 +98,26 @@ public class ContextMenu : MonoBehaviour
             }
 
             if (buttonCount > 0)
+            {
                 isActive = true;
+                SetupMenuSize();
+                SetupMenuPosition();
+            }
         }
     }
 
-    void CreateMoveToButton(GridPosition gridPosition)
+    void CreateMoveToButton()
     {
-
+        GridPosition targetGridPosition;
+        if (targetInteractable != null)
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+        else
+            targetGridPosition = WorldMouse.GetCurrentGridPosition();
+        
+        if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
+            return;
+        
+        GetContextMenuButton().SetupMoveToButton(targetGridPosition);
     }
 
     void CreateTakeItemButton()
@@ -183,16 +198,24 @@ public class ContextMenu : MonoBehaviour
 
     void CreateUseItemButton()
     {
-        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem))
+        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
             return;
 
         ItemData itemData = null;
         if (targetSlot != null)
             itemData = targetSlot.GetItemData();
+        else if (targetInteractable != null)
+        {
+            LooseItem looseItem = targetInteractable as LooseItem;
+            itemData = looseItem.ItemData;
+
+            if (itemData.Item.IsEquipment() == false)
+                return;
+        }
 
         if (itemData == null || itemData.Item == null || itemData.Item.isUsable == false)
             return;
-
+        
         if (itemData.Item.maxUses > 1)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.RemainingUses); // Use all
@@ -237,6 +260,13 @@ public class ContextMenu : MonoBehaviour
         if (targetSlot == null || targetSlot.ParentSlot().IsFull() == false)
             return;
 
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot)
+        {
+            ContainerEquipmentSlot containerSlot = targetSlot as ContainerEquipmentSlot;
+            if (containerSlot.containerInventoryManager.ContainsAnyItems())
+                return;
+        }
+
         GetContextMenuButton().SetupDropItemButton();
     }
 
@@ -250,9 +280,9 @@ public class ContextMenu : MonoBehaviour
         }
     }
 
-    public void DisableContextMenu()
+    public void DisableContextMenu(bool forceDisable = false)
     {
-        if (onCooldown) return;
+        if (forceDisable == false && onCooldown) return;
         
         isActive = false;
         targetSlot = null;
@@ -262,6 +292,12 @@ public class ContextMenu : MonoBehaviour
         {
             contextButtons[i].Disable();
         }
+    }
+
+    IEnumerator DelayDisableContextMenu(bool forceDisable = false)
+    {
+        yield return disableContextMenuDelay;
+        DisableContextMenu();
     }
 
     ContextMenuButton GetContextMenuButton()
@@ -281,6 +317,54 @@ public class ContextMenu : MonoBehaviour
         contextButtons.Add(contextButton);
         contextButton.gameObject.SetActive(false);
         return contextButton;
+    }
+
+    void SetupMenuSize()
+    {
+        float width = minButtonWidth;
+        float heigth = 0f;
+
+        for (int i = 0; i < contextButtons.Count; i++)
+        {
+            if (contextButtons[i].gameObject.activeSelf == false)
+                continue;
+
+            // Get the width of the button with the largest amount of text
+            contextButtons[i].ButtonText.ForceMeshUpdate();
+            if (width < contextButtons[i].ButtonText.textBounds.size.x)
+                width = contextButtons[i].ButtonText.textBounds.size.x;
+
+            heigth += contextButtons[i].RectTransform.sizeDelta.y;
+        }
+
+        if (width > minButtonWidth)
+            width += 40;
+
+        rectTransform.sizeDelta = new Vector2(width, heigth);
+    }
+
+    void SetupMenuPosition()
+    {
+        int activeButtonCount = 0;
+        for (int i = 0; i < contextButtons.Count; i++)
+        {
+            if (contextButtons[i].gameObject.activeSelf)
+                activeButtonCount++;
+        }
+
+        float xPosAddon = rectTransform.sizeDelta.x - (rectTransform.sizeDelta.x / 2f);
+        float yPosAddon = (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
+
+        // Get the desired position:
+        // If the mouse position is too close to the top of the screen
+        if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y * 2)))
+            yPosAddon = (-activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
+
+        // If the mouse position is too far to the right of the screen
+        if (Input.mousePosition.x >= (Screen.width - (rectTransform.sizeDelta.x * 2)))
+            xPosAddon = -rectTransform.sizeDelta.x / 2f;
+
+        transform.position = Input.mousePosition + new Vector3(xPosAddon, yPosAddon);
     }
 
     public Slot TargetSlot => targetSlot;

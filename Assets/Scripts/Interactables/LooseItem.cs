@@ -24,8 +24,45 @@ public class LooseItem : Interactable
 
     public override void Interact(Unit unitPickingUpItem)
     {
-        if (unitPickingUpItem.TryAddItemToInventories(itemData))
+        // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
+        if (TryEquipItemOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
             LooseItemPool.Instance.ReturnToPool(this);
+    }
+
+    protected bool TryEquipItemOnPickup(Unit unitPickingUpItem)
+    {
+        bool equipped = false;
+        if (itemData.Item.IsEquipment())
+        {
+            EquipSlot targetEquipSlot = itemData.Item.Equipment().EquipSlot;
+            if (unitPickingUpItem.CharacterEquipment.currentWeaponSet == WeaponSet.Two)
+            {
+                if (targetEquipSlot == EquipSlot.LeftHeldItem1)
+                    targetEquipSlot = EquipSlot.LeftHeldItem2;
+                else if (targetEquipSlot == EquipSlot.RightHeldItem1)
+                    targetEquipSlot = EquipSlot.RightHeldItem2;
+            }
+
+            if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot))
+            {
+                if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
+                    equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
+            }
+            else
+                equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
+
+            // Transfer inventory from loose container item if applicable
+            /*if (equipped && this is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = this as LooseContainerItem;
+                if (targetEquipSlot == EquipSlot.Back)
+                    unitPickingUpItem.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+                else if (itemData.Item is Quiver)
+                    unitPickingUpItem.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+            }*/
+        }
+
+        return equipped;
     }
 
     public override void UpdateGridPosition()

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
+public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     // public Slot parentSlot { get; protected set; }
 
@@ -12,7 +12,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     [Header("Sprites")]
     [SerializeField] Sprite emptySlotSprite;
-    [SerializeField] Sprite fullSlotSprite;
+    [SerializeField] protected Sprite fullSlotSprite;
     
     public virtual void ShowSlotImage()
     {
@@ -43,7 +43,13 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void HideSlotImage() => inventoryItem.DisableIconImage();
 
-    public void SetFullSlotSprite() => image.sprite = fullSlotSprite;
+    public void SetFullSlotSprite(Sprite sprite = null)
+    {
+        if (sprite == null)
+            image.sprite = fullSlotSprite;
+        else
+            image.sprite = sprite;
+    }
 
     protected void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
 
@@ -80,32 +86,5 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         if (InventoryUI.Instance.isDraggingItem)
             RemoveSlotHighlights();
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            if (ContextMenu.Instance.IsActive)
-                ContextMenu.Instance.DisableContextMenu();
-            else
-                ContextMenu.Instance.BuildContextMenu();
-        }
-        
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            if (ContextMenu.Instance.IsActive)
-                ContextMenu.Instance.DisableContextMenu();
-        }
-
-        if (eventData.button == PointerEventData.InputButton.Middle)
-        {
-            if (ContextMenu.Instance.IsActive)
-                ContextMenu.Instance.DisableContextMenu();
-            /*else if (this is InventorySlot)
-                UseItem();
-            else if (this is EquipmentSlot)
-                UnequipItem();*/
-        }
     }
 }
