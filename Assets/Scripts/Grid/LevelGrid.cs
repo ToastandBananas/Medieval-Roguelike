@@ -15,6 +15,8 @@ public class LevelGrid : MonoBehaviour
     List<SingleNodeBlocker> unitSingleNodeBlockers = new List<SingleNodeBlocker>();
     BlockManager.TraversalProvider defaultTraversalProvider;
 
+    [SerializeField] LayerMask groundMask;
+
     Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Unit> deadUnits = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
@@ -359,4 +361,6 @@ public class LevelGrid : MonoBehaviour
     public void AddSingleNodeBlockerToList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Add(singleNodeBlocker);
 
     public void RemoveSingleNodeBlockerFromList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Remove(singleNodeBlocker);
+
+    public LayerMask GroundMask => groundMask;
 }

@@ -41,7 +41,7 @@ public class ActionLineRenderer : MonoBehaviour
         mainLineRenderer.enabled = true;
         GridPosition targetGridPosition = WorldMouse.currentGridPosition;
 
-        if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.gridPosition != currentInteractableGridPosition) || WorldMouse.currentGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
+        if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.GridPosition() != currentInteractableGridPosition) || WorldMouse.currentGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
         {
             currentMouseGridPosition = WorldMouse.currentGridPosition;
             currentPlayerPosition = player.gridPosition;
@@ -55,9 +55,9 @@ public class ActionLineRenderer : MonoBehaviour
 
             if (PlayerInput.Instance.highlightedInteractable != null)
             {
-                currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.gridPosition;
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.gridPosition) > LevelGrid.diaganolDistance)
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
+                currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.gridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
                 else
                 {
                     HideLineRenderers();
@@ -107,11 +107,11 @@ public class ActionLineRenderer : MonoBehaviour
             player.BlockCurrentPosition();
 
             ResetLineRenderers();
-
+            
             if (path.error || path == null)
                 yield break;
 
-            if (LevelGrid.IsValidGridPosition(currentMouseGridPosition) == false || AstarPath.active.GetNearest(currentMouseGridPosition.WorldPosition()).node.Walkable == false)
+            if (LevelGrid.IsValidGridPosition(targetGridPosition) == false || AstarPath.active.GetNearest(targetGridPosition.WorldPosition()).node.Walkable == false)
                 yield break;
 
             // Re-block the unit's position, in case it was unblocked

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class PlayerActionHandler : UnitActionHandler
 {
@@ -24,7 +23,7 @@ public class PlayerActionHandler : UnitActionHandler
             }
             else if (targetInteractable != null)
             {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetInteractable.gridPosition) <= 1.4f)
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetInteractable.GridPosition()) <= 1.4f)
                 {
                     GetAction<InteractAction>().SetTargetInteractable(targetInteractable);
                     QueueAction(GetAction<InteractAction>());
@@ -149,5 +148,13 @@ public class PlayerActionHandler : UnitActionHandler
     {
         base.SetSelectedAction(action);
         OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public void OnClick_SetSelectedAction(BaseAction action)
+    {
+        if (InventoryUI.Instance.isDraggingItem)
+            return;
+
+        SetSelectedAction(action);
     }
 }

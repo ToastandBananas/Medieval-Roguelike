@@ -2,6 +2,8 @@ using UnityEngine;
 
 public abstract class Interactable : MonoBehaviour
 {
+    protected GridPosition gridPosition;
+
     public virtual void Awake()
     {
         UpdateGridPosition();
@@ -13,7 +15,7 @@ public abstract class Interactable : MonoBehaviour
         LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
     }
 
-    public GridPosition gridPosition { get; protected set; }
+    public virtual GridPosition GridPosition() => gridPosition;
 
     public abstract void Interact(Unit unit);
 

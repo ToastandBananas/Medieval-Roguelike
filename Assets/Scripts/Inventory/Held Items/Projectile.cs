@@ -19,9 +19,10 @@ public class Projectile : MonoBehaviour
 
     Unit shooter;
 
-    Vector3 targetPosition;
+    Vector3 targetPosition, movementDirection;
 
     int speed;
+    float currentVelocity;
     bool moveProjectile;
 
     Action onProjectileBehaviourComplete;
@@ -32,6 +33,7 @@ public class Projectile : MonoBehaviour
         trailRenderer.enabled = false;
 
         itemData.RandomizeData();
+        itemData.SetCurrentStackSize(1);
     }
 
     public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
@@ -42,22 +44,22 @@ public class Projectile : MonoBehaviour
         this.itemData = itemData;
         Ammunition ammunitionItem = this.itemData.Item.Ammunition();
 
-        speed = ammunitionItem.Speed();
+        speed = ammunitionItem.Speed;
 
-        meshFilter.mesh = ammunitionItem.AmmunitionMesh();
-        meshRenderer.material = ammunitionItem.AmmunitionMaterial();
+        meshFilter.mesh = ammunitionItem.AmmunitionMesh;
+        meshRenderer.material = ammunitionItem.AmmunitionMaterial;
 
-        projectileCollider.center = ammunitionItem.CapsuleColliderCenter();
-        projectileCollider.radius = ammunitionItem.CapsuleColliderRadius();
-        projectileCollider.height = ammunitionItem.CapsuleColliderHeight();
-        projectileCollider.direction = ammunitionItem.CapsuleColliderDirection();
+        projectileCollider.center = ammunitionItem.CapsuleColliderCenter;
+        projectileCollider.radius = ammunitionItem.CapsuleColliderRadius;
+        projectileCollider.height = ammunitionItem.CapsuleColliderHeight;
+        projectileCollider.direction = ammunitionItem.CapsuleColliderDirection;
 
         transform.parent = parentTransform;
-        transform.localPosition = ammunitionItem.AmmunitionPositionOffset();
-        transform.localEulerAngles = ammunitionItem.AmmunitionRotation();
-        transform.localScale = ammunitionItem.AmmunitionScale();
+        transform.localPosition = ammunitionItem.AmmunitionPositionOffset;
+        transform.localEulerAngles = ammunitionItem.AmmunitionRotation;
+        transform.localScale = ammunitionItem.AmmunitionScale;
 
-        if (shooter.unitMeshManager.IsVisibleOnScreen() == false)
+        if (shooter.IsPlayer() == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
             meshRenderer.enabled = false;
 
         gameObject.SetActive(true);
@@ -72,13 +74,16 @@ public class Projectile : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
 
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item.Ammunition().ArcMultiplier();
+        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item.Ammunition().ArcMultiplier;
         float animationTime = 0f;
 
         while (moveProjectile)
         {
             animationTime += speed * Time.deltaTime;
             Vector3 nextPosition = MathParabola.Parabola(startPos, targetUnit.transform.position + offset, arcHeight, animationTime / 5f);
+            float displacement = Vector3.Distance(transform.position, nextPosition);
+            currentVelocity = displacement / Time.deltaTime;
+            movementDirection = (nextPosition - transform.position).normalized;
 
             RotateTowardsNextPosition(nextPosition);
 
@@ -176,18 +181,29 @@ public class Projectile : MonoBehaviour
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
 
-        ProjectileType projectileType = itemData.Item.Ammunition().ProjectileType();
+        ProjectileType projectileType = itemData.Item.Ammunition().ProjectileType;
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
-            //if (collisionTransform != null)
-                //transform.SetParent(collisionTransform, true);
+            if (collisionTransform != null)
+                transform.SetParent(collisionTransform, true);
+            else
+            {
+                SetupNewLooseItem(true, out LooseItem looseProjectile);
+                Disable();
+            }
 
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
         }
         else if (projectileType == ProjectileType.BluntObject)
         {
+            SetupNewLooseItem(false, out LooseItem looseProjectile);
+            float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
+            Debug.Log("Current velocity: " + currentVelocity);
+            looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
+            Disable();
+
             if (onProjectileBehaviourComplete != null)
                 onProjectileBehaviourComplete();
         }
@@ -233,9 +249,27 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    public void SetupNewLooseItem(bool preventMovement, out LooseItem looseProjectile)
+    {
+        looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
+        looseProjectile.SetItemData(itemData);
+        looseProjectile.SetupMesh();
+        looseProjectile.name = itemData.Item.name;
+        looseProjectile.transform.position = transform.position;
+        looseProjectile.transform.rotation = Quaternion.Euler(transform.eulerAngles + meshFilter.transform.localEulerAngles);
+
+        if (preventMovement)
+        {
+            looseProjectile.RigidBody.isKinematic = true;
+            looseProjectile.RigidBody.useGravity = false;
+        }
+
+        looseProjectile.gameObject.SetActive(true);
+    }
+
     void SetupTrail()
     {
-        switch (itemData.Item.Ammunition().ProjectileType())
+        switch (itemData.Item.Ammunition().ProjectileType)
         {
             case ProjectileType.Arrow:
                 trailRenderer.time = 0.065f;
@@ -290,7 +324,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
-                    Disable();
+                    //Disable();
                 }
             }
             else if (collider.CompareTag("Unit Head"))
@@ -311,7 +345,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
-                    Disable();
+                    //Disable();
                 }
             }
             else if (collider.CompareTag("Shield"))
@@ -321,7 +355,7 @@ public class Projectile : MonoBehaviour
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);
-                Disable();
+                //Disable();
             }
             else
                 Arrived(null);

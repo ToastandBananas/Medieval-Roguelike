@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Quiver", menuName = "Inventory/Item/Quiver")]
+[CreateAssetMenu(fileName = "New Quiver", menuName = "Inventory/Quiver")]
 public class Quiver : Equipment
 {
     [SerializeField] ProjectileType allowedProjectileType;

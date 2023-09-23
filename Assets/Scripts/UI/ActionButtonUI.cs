@@ -11,11 +11,11 @@ public class ActionButtonUI : MonoBehaviour
 
     BaseAction baseAction;
 
-    UnitActionHandler playerActionHandler;
+    PlayerActionHandler playerActionHandler;
 
     void Awake()
     {
-        playerActionHandler = GameObject.FindGameObjectWithTag("Player").GetComponent<UnitActionHandler>();
+        playerActionHandler = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerActionHandler>();
     }
 
     public void SetBaseAction(BaseAction baseAction)
@@ -28,7 +28,7 @@ public class ActionButtonUI : MonoBehaviour
         button.onClick.AddListener(() =>
         {
             if (playerActionHandler.queuedAction == null)
-                playerActionHandler.SetSelectedAction(baseAction);
+                playerActionHandler.OnClick_SetSelectedAction(baseAction);
         });
     }
 

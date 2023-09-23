@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEditor;
 using UnityEngine;
 
 public abstract class UnitActionHandler : MonoBehaviour
@@ -367,11 +365,7 @@ public abstract class UnitActionHandler : MonoBehaviour
             queuedAttack = null;
     }
 
-    public virtual void SetSelectedAction(BaseAction action)
-    {
-        if (InventoryUI.Instance.isDraggingItem == false)
-            selectedAction = action;
-    }
+    public virtual void SetSelectedAction(BaseAction action) => selectedAction = action; 
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 

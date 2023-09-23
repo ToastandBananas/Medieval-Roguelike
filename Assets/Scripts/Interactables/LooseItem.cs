@@ -11,15 +11,9 @@ public class LooseItem : Interactable
 
     public override void Awake()
     {
-        gridPosition = LevelGrid.GetGridPosition(transform.position);
+        UpdateGridPosition();
 
         itemData.RandomizeData();
-    }
-
-    public void FixedUpdate()
-    {
-        if (rigidBody.velocity.magnitude >= 0.01f)
-            UpdateGridPosition();
     }
 
     public override void Interact(Unit unitPickingUpItem)
@@ -67,14 +61,34 @@ public class LooseItem : Interactable
 
     public override void UpdateGridPosition()
     {
-        gridPosition = LevelGrid.GetGridPosition(meshCollider.bounds.center);
+        if (Physics.Raycast(meshCollider.bounds.center, Vector3.down, out RaycastHit hit, 100f, LevelGrid.Instance.GroundMask))
+            gridPosition = LevelGrid.GetGridPosition(hit.point);
+        else
+            gridPosition = LevelGrid.GetGridPosition(meshCollider.bounds.center);
     }
 
-    public void SetupMesh(Mesh mesh, Material material)
+    public override GridPosition GridPosition()
     {
-        meshFilter.mesh = mesh;
-        meshRenderer.material = material;
-        meshCollider.sharedMesh = mesh;
+        UpdateGridPosition();
+        return gridPosition;
+    }
+
+    public void SetupMesh()
+    {
+        if (itemData.Item.pickupMesh != null)
+        {
+            meshFilter.mesh = itemData.Item.pickupMesh;
+            meshRenderer.material = itemData.Item.pickupMeshRendererMaterial;
+            meshCollider.sharedMesh = itemData.Item.pickupMesh;
+        }
+        else if (itemData.Item.meshes[0] != null)
+        {
+            meshFilter.mesh = itemData.Item.meshes[0];
+            meshRenderer.material = itemData.Item.meshRendererMaterials[0];
+            meshCollider.sharedMesh = itemData.Item.meshes[0];
+        }
+        else
+            Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
     }
 
     public ItemData ItemData => itemData;

@@ -71,7 +71,7 @@ public class ContextMenu : MonoBehaviour
 
             StartCoroutine(BuildContextMenuCooldown());
 
-            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
+            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
             {
                 CreateMoveToButton();
             }
@@ -83,7 +83,7 @@ public class ContextMenu : MonoBehaviour
                 CreateUseItemButton();
                 CreateDropItemButton();
 
-                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
+                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
                     CreateMoveToButton();  
             }
 
@@ -110,7 +110,7 @@ public class ContextMenu : MonoBehaviour
     {
         GridPosition targetGridPosition;
         if (targetInteractable != null)
-            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.gridPosition, UnitManager.Instance.player.gridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
         else
             targetGridPosition = WorldMouse.GetCurrentGridPosition();
         

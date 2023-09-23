@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, WarHammer, Spear, Polearm }
 
-[CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Item/Weapon")]
+[CreateAssetMenu(fileName = "New Weapon", menuName = "Inventory/Weapon")]
 public class Weapon : HeldEquipment
 {
     [Header("Weapon Info")]

@@ -109,7 +109,7 @@ public class ActionSystemUI : MonoBehaviour
 
     public bool SelectedActionValid() => playerActionHandler.selectedAction.IsValidAction();
 
-    void UpdateSelectedVisual()
+    public void UpdateSelectedVisual()
     {
         for (int i = 0; i < actionButtons.Count; i++)
         {

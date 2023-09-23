@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Wearable", menuName = "Inventory/Item/Wearable")]
+[CreateAssetMenu(fileName = "New Wearable", menuName = "Inventory/Wearable")]
 public class Wearable : Equipment
 {
     public override bool IsBag() => false;

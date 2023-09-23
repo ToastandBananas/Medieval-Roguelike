@@ -114,10 +114,7 @@ public class DropItemManager : MonoBehaviour
             HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
             if (heldRangedWeapon.isLoaded)
             {
-                LooseItem looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
-                SetupHeldItemDrop(heldRangedWeapon.loadedProjectile.transform, looseProjectile, heldRangedWeapon.loadedProjectile.ItemData);
-                heldRangedWeapon.loadedProjectile.Disable();
-
+                heldRangedWeapon.loadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
                 looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
                 if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
                     looseProjectile.HideMeshRenderer();
@@ -130,9 +127,8 @@ public class DropItemManager : MonoBehaviour
         if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
             looseWeapon.HideMeshRenderer();
 
-        EquipSlot equipSlot = heldItem.itemData.Item.Equipment().EquipSlot;
-
         // Get rid of the HeldItem
+        EquipSlot equipSlot;
         if (heldItem == unit.unitMeshManager.rightHeldItem)
         {
             if (unit.CharacterEquipment.currentWeaponSet == WeaponSet.One)
@@ -208,14 +204,8 @@ public class DropItemManager : MonoBehaviour
 
     static void SetupLooseItem(LooseItem looseItem, ItemData itemData)
     {
-        if (itemData.Item.pickupMesh != null)
-            looseItem.SetupMesh(itemData.Item.pickupMesh, itemData.Item.pickupMeshRendererMaterial);
-        else if (itemData.Item.meshes[0] != null)
-            looseItem.SetupMesh(itemData.Item.meshes[0], itemData.Item.meshRendererMaterials[0]);
-        else
-            Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
-
         looseItem.SetItemData(itemData);
+        looseItem.SetupMesh();
         looseItem.name = itemData.Item.name;
         itemData.SetInventorySlotCoordinate(null);
     }

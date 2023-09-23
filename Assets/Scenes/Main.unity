@@ -1584,7 +1584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 9134640562095437968, guid: b4be781cd84dd0f42ae41c81b3d02029,
     type: 3}
-  amountToPool: 40
+  amountToPool: 4
   arrow: {fileID: 11400000, guid: 1e901ed2726598740843f609cc4e89ff, type: 2}
   bomb: {fileID: 11400000, guid: e6f7873ad46f2394fb484f27634fb81d, type: 2}
 --- !u!1 &199037029
@@ -2604,7 +2604,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2923,7 +2923,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7367,10 +7367,10 @@ RectTransform:
   m_Father: {fileID: 1036967290}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 328, y: -433.65}
+  m_SizeDelta: {x: 600, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1029023058
 MonoBehaviour:
@@ -9130,11 +9130,11 @@ MonoBehaviour:
   looseItemParent: {fileID: 1703330945}
   looseItemPrefab: {fileID: 1974948824427181876, guid: 17071e32cebe6024d9a7f365e066b03a,
     type: 3}
-  amountLooseItemsToPool: 40
+  amountLooseItemsToPool: 10
   looseContainerItemParent: {fileID: 1945501046}
   looseContainerItemPrefab: {fileID: 5532644622659377026, guid: b706dff836e5bfe4696906afaa83e86d,
     type: 3}
-  amountLooseContainerItemsToPool: 3
+  amountLooseContainerItemsToPool: 2
 --- !u!1 &1264688031
 GameObject:
   m_ObjectHideFlags: 0
@@ -9450,10 +9450,10 @@ RectTransform:
   m_Father: {fileID: 1036967290}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 407.65}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 328, y: -229.825}
+  m_SizeDelta: {x: 600, y: 407.65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1303584834
 PrefabInstance:
@@ -10459,6 +10459,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockManager: {fileID: 671623199}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4067264
 --- !u!1 &1453487297
 GameObject:
   m_ObjectHideFlags: 0
@@ -14883,7 +14886,7 @@ PrefabInstance:
     - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: bowSkill.baseValue
-      value: 100
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3857642008309237419, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}

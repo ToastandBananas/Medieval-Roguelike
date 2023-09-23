@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Bag", menuName = "Inventory/Item/Backpack")]
+[CreateAssetMenu(fileName = "New Bag", menuName = "Inventory/Backpack")]
 public class Backpack : Wearable
 {
     [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[6];

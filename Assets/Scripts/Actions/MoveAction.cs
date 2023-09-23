@@ -220,7 +220,7 @@ public class MoveAction : BaseAction
         if (unit.IsPlayer())
         {
             // If the Player has a target Interactable
-            if (unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, unitActionHandler.targetInteractable.gridPosition) <= 1.4f)
+            if (unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, unitActionHandler.targetInteractable.GridPosition()) <= 1.4f)
             {
                 unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(unitActionHandler.targetInteractable);
                 unitActionHandler.QueueAction(unitActionHandler.GetAction<InteractAction>());

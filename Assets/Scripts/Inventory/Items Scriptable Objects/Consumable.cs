@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Consumable", menuName = "Inventory/Item/Consumable")]
+[CreateAssetMenu(fileName = "New Consumable", menuName = "Inventory/Consumable")]
 public class Consumable : Item
 {
     [SerializeField] ItemChangeThreshold[] itemChangeThresholds;

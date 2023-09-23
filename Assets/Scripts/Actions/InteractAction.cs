@@ -17,14 +17,14 @@ public class InteractAction : BaseAction
 
         if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
         {
-            if (turnAction.IsFacingTarget(targetInteractable.gridPosition) == false)
-                turnAction.RotateTowardsPosition(targetInteractable.gridPosition.WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
+            if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
+                turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
 
             while (turnAction.isRotating)
                 yield return null;
         }
         else
-            turnAction.RotateTowardsPosition(targetInteractable.gridPosition.WorldPosition(), true);
+            turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), true);
 
         // Do the interaction
         targetInteractable.Interact(unit);

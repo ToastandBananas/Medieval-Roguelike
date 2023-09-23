@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Shield", menuName = "Inventory/Item/Shield")]
+[CreateAssetMenu(fileName = "New Shield", menuName = "Inventory/Shield")]
 public class Shield : HeldEquipment
 {
     [Header("Block Power")]

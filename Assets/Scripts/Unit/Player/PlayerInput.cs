@@ -132,17 +132,17 @@ public class PlayerInput : MonoBehaviour
         if (highlightedInteractable != null)
         {
             // Do nothing if the player is in the same grid position as the interactable (such as an open door)
-            if (player.gridPosition == highlightedInteractable.gridPosition && highlightedInteractable is LooseItem == false)
+            if (player.gridPosition == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
                 return;
 
             // Set the target Interactable
             player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
 
             // If the player is too far away from the Interactable to interact with it
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.gridPosition) > LevelGrid.diaganolDistance)
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
             {
                 // Queue a Move Action towards the Interactable
-                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.gridPosition, player.gridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.gridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
             }
             else

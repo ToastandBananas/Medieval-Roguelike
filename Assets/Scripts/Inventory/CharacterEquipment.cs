@@ -85,6 +85,7 @@ public class CharacterEquipment : MonoBehaviour
         if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.validDragPosition == false)
             return false;
 
+        // If the item is a two-handed weapon, assign the left held item equip slot
         if (newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
         {
             if (currentWeaponSet == WeaponSet.One)
@@ -99,7 +100,6 @@ public class CharacterEquipment : MonoBehaviour
             // Place the dragged item back to where it came from
             InventoryUI.Instance.ReplaceDraggedItem();
         }
-        // If there's an item already in the target slot
         else
             Equip(newItemData, targetEquipSlot);
 
@@ -425,8 +425,14 @@ public class CharacterEquipment : MonoBehaviour
                 heldItem = HeldItemBasePool.Instance.GetShieldBaseFromPool();
 
             heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
-            
-            ActionSystemUI.Instance.UpdateActionVisuals();
+
+            if (myUnit.IsPlayer())
+            {
+                myUnit.unitActionHandler.SetSelectedAction(myUnit.unitActionHandler.GetAction<MoveAction>());
+                Debug.Log(myUnit.unitActionHandler.selectedAction);
+                //ActionSystemUI.Instance.UpdateSelectedVisual();
+                ActionSystemUI.Instance.UpdateActionVisuals();
+            }
         }
         else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
         {

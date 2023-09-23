@@ -107,6 +107,8 @@ public class LooseItemPool : MonoBehaviour
         else
             looseItem.transform.SetParent(looseItemParent);
 
+        looseItem.RigidBody.isKinematic = false;
+        looseItem.RigidBody.useGravity = true;
         looseItem.SetItemData(null);
         looseItem.gameObject.SetActive(false);
     }
