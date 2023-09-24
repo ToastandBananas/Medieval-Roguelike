@@ -429,8 +429,6 @@ public class CharacterEquipment : MonoBehaviour
             if (myUnit.IsPlayer())
             {
                 myUnit.unitActionHandler.SetSelectedAction(myUnit.unitActionHandler.GetAction<MoveAction>());
-                Debug.Log(myUnit.unitActionHandler.selectedAction);
-                //ActionSystemUI.Instance.UpdateSelectedVisual();
                 ActionSystemUI.Instance.UpdateActionVisuals();
             }
         }
@@ -466,6 +464,12 @@ public class CharacterEquipment : MonoBehaviour
             }
 
             myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
+
+            if (myUnit.IsPlayer())
+            {
+                myUnit.unitActionHandler.SetSelectedAction(myUnit.unitActionHandler.GetAction<MoveAction>());
+                ActionSystemUI.Instance.UpdateActionVisuals();
+            }
         }
         else
             myUnit.unitMeshManager.RemoveMesh(equipSlot);

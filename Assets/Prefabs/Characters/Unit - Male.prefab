@@ -424,6 +424,9 @@ MonoBehaviour:
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
+  moveObstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
   maxChaseDistance: 25
   defaultFleeDistance: 20
   shouldAlwaysFleeCombat: 0

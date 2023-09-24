@@ -99,7 +99,7 @@ public class Vision : MonoBehaviour
         Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight() * 2f;
         Vector3 shootDir = (unitToCheck.WorldPosition() + offset - transform.position).normalized;
         float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + offset);
-        if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask()))
+        if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask))
             return false; // Blocked by an obstacle
         return true;
     }

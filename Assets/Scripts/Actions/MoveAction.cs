@@ -13,8 +13,6 @@ public class MoveAction : BaseAction
 
     public bool isMoving { get; private set; }
 
-    [SerializeField] LayerMask moveObstaclesMask;
-
     UnitActionHandler unitActionHandler;
 
     List<Vector3> positionList;
@@ -547,8 +545,6 @@ public class MoveAction : BaseAction
     public override bool IsRangedAttackAction() => false;
 
     public override int GetEnergyCost() => 0;
-
-    public LayerMask MoveObstaclesMask() => moveObstaclesMask;
 
     public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition)
     {

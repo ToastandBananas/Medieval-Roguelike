@@ -70,7 +70,7 @@ public class Sound
                 bool soundHeard = true;
                 Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight())) - (soundPosition + (Vector3.up * unit.ShoulderHeight()));
                 float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
-                RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.unitActionHandler.AttackObstacleMask());
+                RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.unitActionHandler.AttackObstacleMask);
                 if (hits.Length > 0)
                 {
                     float soundMuffle = hits.Length * muffleAmountPerObstacle;

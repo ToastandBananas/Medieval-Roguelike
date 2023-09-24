@@ -174,7 +174,7 @@ public class SwipeAction : BaseAction
             // Check for obstacles
             float sphereCastRadius = 0.1f;
             Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask()))
+            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask))
                 continue;
 
             validGridPositionsList.Add(nodeGridPosition);
@@ -207,7 +207,7 @@ public class SwipeAction : BaseAction
         // Check for obstacles
         float sphereCastRadius = 0.1f;
         Vector3 heightOffset = Vector3.up * unit.ShoulderHeight() * 2f;
-        if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask()))
+        if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask))
         {
             // Debug.Log(targetGridPosition.WorldPosition() + " (the target position) is blocked by " + hit.collider.name);
             return validGridPositionsList; ;
@@ -248,7 +248,7 @@ public class SwipeAction : BaseAction
 
             // Check for obstacles
             Vector3 directionToAttackPosition = ((nodeGridPosition.WorldPosition() + heightOffset) - (unit.WorldPosition() + heightOffset)).normalized;
-            if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask()))
+            if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask))
             {
                 // Debug.Log(nodeGridPosition.WorldPosition() + " is blocked by " + hit.collider.name);
                 continue;

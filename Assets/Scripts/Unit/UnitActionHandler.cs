@@ -25,6 +25,7 @@ public abstract class UnitActionHandler : MonoBehaviour
     public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
     [SerializeField] LayerMask attackObstacleMask;
+    [SerializeField] LayerMask moveObstacleMask;
 
     public bool isPerformingAction { get; protected set; }
     public bool canPerformActions { get; protected set; }
@@ -371,5 +372,7 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public bool IsAttacking() => GetAction<MeleeAction>().isAttacking || GetAction<ShootAction>().isShooting;
 
-    public LayerMask AttackObstacleMask() => attackObstacleMask;
+    public LayerMask AttackObstacleMask => attackObstacleMask;
+
+    public LayerMask MoveObstacleMask => moveObstacleMask;
 }

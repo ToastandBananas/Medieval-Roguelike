@@ -1292,6 +1292,9 @@ MonoBehaviour:
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
+  moveObstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &3331432482388386438
 MonoBehaviour:
   m_ObjectHideFlags: 0

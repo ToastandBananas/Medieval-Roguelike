@@ -214,16 +214,16 @@ public class DropItemManager : MonoBehaviour
     {
         Vector3 forceDirection = unit.transform.forward; // In front of Unit
         float raycastDistance = 1.2f;
-        if (Physics.Raycast(unit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask()))
+        if (Physics.Raycast(unit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
         {
             forceDirection = -unit.transform.forward; // Behind Unit
-            if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask()))
+            if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
             {
                 forceDirection = unit.transform.right; // Right of Unit
-                if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask()))
+                if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
                 {
                     forceDirection = -unit.transform.right; // Left of Unit
-                    if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask()))
+                    if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
                         forceDirection = unit.transform.up; // Above Unit
                 }
             }

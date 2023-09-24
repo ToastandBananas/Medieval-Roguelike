@@ -162,7 +162,7 @@ public class LevelGrid : MonoBehaviour
             if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
             if (collisionsCheckArray.Length > 0)
                 continue;
 
@@ -213,11 +213,11 @@ public class LevelGrid : MonoBehaviour
             {
                 float sphereCastRadius = 0.1f;
                 Vector3 shootDir = ((nodeGridPosition.WorldPosition() + Vector3.up) - (startingGridPosition.WorldPosition() + Vector3.up)).normalized;
-                if (Physics.SphereCast(startingGridPosition.WorldPosition() + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + Vector3.up, startingGridPosition.WorldPosition() + Vector3.up), unit.unitActionHandler.AttackObstacleMask()))
+                if (Physics.SphereCast(startingGridPosition.WorldPosition() + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + Vector3.up, startingGridPosition.WorldPosition() + Vector3.up), unit.unitActionHandler.AttackObstacleMask))
                     continue; // Blocked by an obstacle
             }
 
-            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
             if (collisionsCheckArray.Length > 0)
                 continue;
 
@@ -267,7 +267,7 @@ public class LevelGrid : MonoBehaviour
             if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                 continue;
 
-            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.GetAction<MoveAction>().MoveObstaclesMask());
+            collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
             if (collisionsCheckArray.Length > 0)
                 continue;
 

@@ -133,6 +133,8 @@ public abstract class BaseAction : MonoBehaviour
         return null;
     }
 
+    public void SetUnit(Unit unit) => this.unit = unit;
+
     public bool IsActive() => isActive;
 
     public bool IsDefaultAttackAction() => this is MeleeAction || this is ShootAction;
