@@ -53,11 +53,11 @@ public class PlayerInput : MonoBehaviour
         if (player.health.IsDead() == false)
         {
             // If the player was holding the button for turn mode (the Turn Action) and then they release it
-            if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedAction == player.unitActionHandler.GetAction<TurnAction>())
+            if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedActionType == player.unitActionHandler.GetAction<TurnAction>())
             {
                 // Reset the line renderer and go back to the Move Action
                 ActionLineRenderer.Instance.ResetCurrentPositions();
-                player.unitActionHandler.SetSelectedAction(player.unitActionHandler.GetAction<MoveAction>());
+                player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
             }
             
             // If the player is trying to cancel their current action
@@ -67,7 +67,7 @@ public class PlayerInput : MonoBehaviour
                 ActionLineRenderer.Instance.ResetCurrentPositions();
             }
             // If it's time for the player to choose an action
-            else if (player.isMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.GetAction<MoveAction>().isMoving == false)
+            else if (player.isMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
             {
                 // If the player wants to skip their turn
                 if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
@@ -82,7 +82,8 @@ public class PlayerInput : MonoBehaviour
                 SetupCursorAndLineRenderer();
 
                 // If the player has an attack action selected
-                if (player.unitActionHandler.selectedAction.IsAttackAction())
+                BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+                if (selectedAction.IsAttackAction())
                 {
                     // Set the target attack grid position to the mouse grid position and update the visuals
                     player.unitActionHandler.SetTargetAttackGridPosition(WorldMouse.GetCurrentGridPosition());
@@ -90,7 +91,7 @@ public class PlayerInput : MonoBehaviour
                 }
 
                 // If the player is trying to perform the Turn Action
-                if (GameControls.gamePlayActions.turnMode.IsPressed || player.unitActionHandler.selectedAction is TurnAction)
+                if (GameControls.gamePlayActions.turnMode.IsPressed || selectedAction is TurnAction)
                     HandleTurnMode();
                 // If the player is trying to swap their weapon set
                 else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
@@ -99,7 +100,7 @@ public class PlayerInput : MonoBehaviour
                 else if (GameControls.gamePlayActions.select.WasPressed)
                     HandleActions();
             }
-            else if(player.unitActionHandler.queuedAction != null || player.unitActionHandler.GetAction<MoveAction>().isMoving)
+            else if(player.unitActionHandler.queuedAction != null || player.unitActionHandler.isMoving)
             {
                 ActionLineRenderer.Instance.HideLineRenderers();
                 WorldMouse.ChangeCursor(CursorState.Default);
@@ -115,7 +116,8 @@ public class PlayerInput : MonoBehaviour
     void HandleTurnMode()
     {
         TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
-        player.unitActionHandler.SetSelectedAction(turnAction);
+        Debug.Log(turnAction.GetType().Name);
+        player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
         turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
         WorldMouse.ChangeCursor(CursorState.Default);
 
@@ -160,6 +162,7 @@ public class PlayerInput : MonoBehaviour
         // Make sure the mouse grid position is a valid position to perform an action
         else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
         {
+            BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
             bool unitIsVisible = true;
             if (unitAtGridPosition != null)
@@ -169,16 +172,16 @@ public class PlayerInput : MonoBehaviour
             if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unitIsVisible)
             {
                 // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && player.unitActionHandler.selectedAction.IsAttackAction())))
+                if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction.IsAttackAction())))
                 {
                     // Set the Unit as the target enemy
                     player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
 
                     // If the player has an attack action selected
-                    if (player.unitActionHandler.selectedAction.IsAttackAction())
+                    if (selectedAction.IsAttackAction())
                     {
                         // If the target is in attack range
-                        if (player.unitActionHandler.selectedAction.IsInAttackRange(unitAtGridPosition))
+                        if (selectedAction.IsInAttackRange(unitAtGridPosition))
                         {
                             // If the target enemy unit is already completely surrounded by other units or other obstructions
                             if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
@@ -237,7 +240,7 @@ public class PlayerInput : MonoBehaviour
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction (or if one of these actions is already selected)
-                    if (player.unitActionHandler.selectedAction.IsAttackAction() == false || player.unitActionHandler.selectedAction.IsDefaultAttackAction())
+                    if (selectedAction.IsAttackAction() == false || selectedAction.IsDefaultAttackAction())
                     {
                         // If the player has a ranged weapon equipped, find the nearest Shoot Action attack position
                         if (player.CharacterEquipment.RangedWeaponEquipped())
@@ -257,28 +260,28 @@ public class PlayerInput : MonoBehaviour
                 else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                 {
                     // Set the selected action to Move if the Player doesn't have enough energy for their selected action
-                    if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) == false)
-                        player.unitActionHandler.SetSelectedAction(player.unitActionHandler.GetAction<MoveAction>());
+                    if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
+                        player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
 
                     player.unitActionHandler.SetTargetEnemyUnit(null);
                 }
             }
             // If there's no unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
-            else if (player.unitActionHandler.selectedAction.IsAttackAction())
+            else if (selectedAction.IsAttackAction())
             {
                 // Make sure the Player has enough energy for the attack
-                if (player.stats.HasEnoughEnergy(player.unitActionHandler.selectedAction.GetEnergyCost()) == false)
+                if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
                     return;
 
                 // If there's any enemy or neutral unit within the attack positions
-                if (player.unitActionHandler.selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition) == false)
+                if (selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition) == false)
                     return;
                 
                 // Turn towards and attack the target enemy
-                player.unitActionHandler.SetQueuedAttack(player.unitActionHandler.selectedAction);
+                player.unitActionHandler.SetQueuedAttack(selectedAction);
                 player.unitActionHandler.AttackTarget();
             }
-            else if (player.unitActionHandler.selectedAction is MoveAction)
+            else if (selectedAction is MoveAction)
             {
                 player.unitActionHandler.SetTargetEnemyUnit(null);
                 player.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
@@ -289,9 +292,10 @@ public class PlayerInput : MonoBehaviour
 
     void SetupCursorAndLineRenderer()
     {
-        if (player.unitActionHandler.selectedAction != null)
+        BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+        if (selectedAction != null)
         {
-            if (player.unitActionHandler.selectedAction is MoveAction)
+            if (selectedAction is MoveAction)
             {
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, interactableMask))
@@ -336,7 +340,7 @@ public class PlayerInput : MonoBehaviour
 
                 StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
             }
-            else if (player.unitActionHandler.selectedAction.IsAttackAction())
+            else if (selectedAction.IsAttackAction())
             {
                 highlightedInteractable = null;
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
@@ -354,7 +358,7 @@ public class PlayerInput : MonoBehaviour
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }
             }
-            else if (player.unitActionHandler.selectedAction is TurnAction)
+            else if (selectedAction is TurnAction)
             {
                 highlightedInteractable = null;
                 ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
@@ -363,7 +367,7 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    bool AttackActionSelected() => player.unitActionHandler.selectedAction.IsAttackAction();
+    bool AttackActionSelected() => player.unitActionHandler.selectedActionType.GetAction(player).IsAttackAction();
 
     public void SetAutoAttack(bool shouldAutoAttack) => autoAttack = shouldAutoAttack;
 }

@@ -10,11 +10,9 @@ public class ShootAction : BaseAction
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-    public bool isShooting { get; private set; }
-
     public override void TakeAction(GridPosition gridPosition)
     {
-        if (isShooting) return;
+        if (unit.unitActionHandler.isAttacking) return;
 
         if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
@@ -59,7 +57,7 @@ public class ShootAction : BaseAction
                 turnAction.RotateTowards_Unit(targetUnit, false);
 
             // Wait to finish any rotations already in progress
-            while (turnAction.isRotating)
+            while (unit.unitActionHandler.isRotating)
                 yield return null;
 
             // Rotate towards the target and do the shoot animation
@@ -145,7 +143,7 @@ public class ShootAction : BaseAction
     IEnumerator RotateTowardsTarget()
     {
         Vector3 targetPos = unit.unitActionHandler.targetEnemyUnit.WorldPosition();
-        while (isShooting)
+        while (unit.unitActionHandler.isAttacking)
         {
             float rotateSpeed = 10f;
             Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - unit.WorldPosition()).normalized;
@@ -178,7 +176,7 @@ public class ShootAction : BaseAction
     protected override void StartAction()
     {
         base.StartAction();
-        isShooting = true;
+        unit.unitActionHandler.SetIsAttacking(true);
     }
 
     public override void CompleteAction()
@@ -186,7 +184,8 @@ public class ShootAction : BaseAction
         base.CompleteAction();
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
-        isShooting = false;
+
+        unit.unitActionHandler.SetIsAttacking(false);
         unit.unitActionHandler.FinishAction();
     }
 

@@ -65,11 +65,10 @@ public class HeldRangedWeapon : HeldItem
 
     IEnumerator RotateRangedWeapon(GridPosition targetGridPosition)
     {
-        ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
         Quaternion targetRotation = Quaternion.Euler(0f, -90f, CalculateZRotation(targetGridPosition));
         float rotateSpeed = 5f;
 
-        while (shootAction.isShooting)
+        while (unit.unitActionHandler.isAttacking)
         {
             transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;

@@ -48,12 +48,11 @@ public class ActionSystemUI : MonoBehaviour
     {
         HideActionButtons();
 
-        BaseAction[] baseActionArray = playerActionHandler.baseActionArray;
-        for (int i = 0; i < baseActionArray.Length; i++)
+        for (int i = 0; i < playerActionHandler.AvailableActionTypes.Count; i++)
         {
             ActionButtonUI newActionButton = GetActionButtonFromPool();
+            newActionButton.SetActionType(playerActionHandler.AvailableActionTypes[i]);
             newActionButton.gameObject.SetActive(true);
-            newActionButton.SetBaseAction(baseActionArray[i]);
         }
 
         UpdateActionVisuals();
@@ -61,8 +60,9 @@ public class ActionSystemUI : MonoBehaviour
 
     void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
     {
-        if (playerActionHandler.selectedAction.ActionIsUsedInstantly())
-            playerActionHandler.QueueAction(playerActionHandler.selectedAction);
+        BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
+        if (selectedAction.ActionIsUsedInstantly())
+            playerActionHandler.QueueAction(selectedAction);
         else
         {
             UpdateSelectedVisual();
@@ -107,7 +107,7 @@ public class ActionSystemUI : MonoBehaviour
 
     public List<ActionButtonUI> GetActionButtonsList() => actionButtons;
 
-    public bool SelectedActionValid() => playerActionHandler.selectedAction.IsValidAction();
+    public bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
 
     public void UpdateSelectedVisual()
     {

@@ -5,6 +5,13 @@ public abstract class Equipment : Item
     [Header("Equipment Info")]
     [SerializeField] EquipSlot equipSlot;
 
+    [Header("Actions")]
+    [SerializeField] ActionType[] actionTypes;
+
+    public EquipSlot EquipSlot => equipSlot;
+
+    public ActionType[] ActionTypes => actionTypes;
+
     public abstract override bool IsBag();
 
     public abstract override bool IsConsumable();
@@ -26,6 +33,4 @@ public abstract class Equipment : Item
     public abstract override bool IsWeapon();
 
     public abstract override bool IsWearable();
-
-    public EquipSlot EquipSlot => equipSlot;
 }

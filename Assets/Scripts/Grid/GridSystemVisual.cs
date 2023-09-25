@@ -131,11 +131,12 @@ public class GridSystemVisual : MonoBehaviour
 
         if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null || Instance.player.unitActionHandler.targetEnemyUnit != null)
             return;
-        
-        if (Instance.player.unitActionHandler.selectedAction.IsAttackAction() == false || Instance.player.CharacterEquipment.RangedWeaponEquipped() == false)
+
+        BaseAction selectedAction = Instance.player.unitActionHandler.selectedActionType.GetAction(Instance.player);
+        if (selectedAction.IsAttackAction() == false || Instance.player.CharacterEquipment.RangedWeaponEquipped() == false)
             return;
 
-        Instance.ShowAttackRange(Instance.player.unitActionHandler.selectedAction, Instance.player.gridPosition, GridVisualType.RedSoft);
+        Instance.ShowAttackRange(selectedAction, Instance.player.gridPosition, GridVisualType.RedSoft);
     }
 
     public static void UpdateAttackGridVisual()
@@ -145,7 +146,7 @@ public class GridSystemVisual : MonoBehaviour
         if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null || Instance.player.unitActionHandler.targetEnemyUnit != null)
             return;
 
-        BaseAction selectedAction = Instance.player.unitActionHandler.selectedAction;
+        BaseAction selectedAction = Instance.player.unitActionHandler.selectedActionType.GetAction(Instance.player);
         if (selectedAction.IsAttackAction())
             Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
     }

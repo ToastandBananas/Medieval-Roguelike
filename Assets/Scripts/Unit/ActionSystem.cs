@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 public class ActionSystem : MonoBehaviour
@@ -38,14 +37,22 @@ public class ActionSystem : MonoBehaviour
         }
     }
 
-    public static BaseAction GetAction(BaseAction action)
+    public static BaseAction GetAction(Type type, Unit unit)
     {
+        // Find an available action of the specified type
         for (int i = 0; i < actions.Count; i++)
         {
-            if (actions[i].gameObject.activeSelf == false && actions[i].GetType() == action.GetType())
+            if (actions[i].gameObject.activeSelf == false && actions[i].GetType() == type)
+            {
+                actions[i].SetUnit(unit);
                 return actions[i];
+            }
         }
-        return CreateNewAction(action.GetType());
+
+        // If no available action of the specified type is found, create a new one
+        BaseAction newAction = CreateNewAction(type);
+        newAction.SetUnit(unit);
+        return newAction;
     }
 
     static BaseAction CreateNewAction(Type type)
@@ -59,13 +66,16 @@ public class ActionSystem : MonoBehaviour
 
     List<Type> FindDerivedTypes<T>()
     {
-        // Get all assemblies in the current domain
-        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
         // Search for types derived from T in all assemblies
-        return assemblies
+        return AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => typeof(T).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
             .ToList();
+    }
+
+    public static void ReturnToPool(BaseAction action)
+    {
+        // action.SetUnit(null);
+        action.gameObject.SetActive(false);
     }
 }

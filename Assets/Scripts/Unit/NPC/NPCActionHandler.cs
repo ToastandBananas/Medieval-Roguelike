@@ -93,8 +93,6 @@ public class NPCActionHandler : UnitActionHandler
                 // If so, queue the attack and return out of this method
                 if (canAttack)
                 {
-                    if (unit.name == "Bandit - Male (1)")
-                        Debug.Log("Queuing action: " + queuedAttack.ToString());
                     QueueAction(queuedAttack, targetAttackGridPosition);
                     return;
                 }
@@ -181,6 +179,7 @@ public class NPCActionHandler : UnitActionHandler
                 if (queuedAction != null) // This can become null after a time tick update
                 {
                     isPerformingAction = true;
+                    queuedAction.gameObject.SetActive(true);
                     queuedAction.TakeAction(targetGridPosition);
                 }
                 else
@@ -304,19 +303,20 @@ public class NPCActionHandler : UnitActionHandler
         npcAIActions.Clear();
 
         // Loop through all combat actions
-        for (int i = 0; i < combatActions.Count; i++)
+        for (int i = 0; i < availableCombatActions.Count; i++)
         {
-            if (combatActions[i].IsValidAction() == false)
+            BaseAction combatAction = availableCombatActions[i].GetAction(unit);
+            if (combatAction.IsValidAction() == false)
                 continue;
 
-            if (unit.stats.HasEnoughEnergy(combatActions[i].GetEnergyCost()) == false)
+            if (unit.stats.HasEnoughEnergy(combatAction.GetEnergyCost()) == false)
                 continue;
 
             // Loop through every grid position in range of the combat action
-            foreach (GridPosition gridPositionInRange in combatActions[i].GetActionGridPositionsInRange(unit.gridPosition))
+            foreach (GridPosition gridPositionInRange in combatAction.GetActionGridPositionsInRange(unit.gridPosition))
             {
                 // For each of these grid positions, get the best one for this combat action
-                npcAIActions.Add(combatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
+                npcAIActions.Add(combatAction.GetNPCAIAction_ActionGridPosition(gridPositionInRange));
             }
         }
 
@@ -557,7 +557,7 @@ public class NPCActionHandler : UnitActionHandler
 
         if (Vector3.Distance(transform.position, leader.WorldPosition()) <= stopFollowDistance)
             TurnManager.Instance.FinishTurn(unit);
-        else if (GetAction<MoveAction>().isMoving == false)
+        else if (isMoving == false)
         {
             SetTargetGridPosition(leader.unitActionHandler.GetAction<TurnAction>().GetGridPositionBehindUnit());
             QueueAction(GetAction<MoveAction>());
@@ -571,7 +571,7 @@ public class NPCActionHandler : UnitActionHandler
     public void SetShouldFollowLeader(bool shouldFollowLeader) => this.shouldFollowLeader = shouldFollowLeader;
     #endregion
 
-    #region Inpect Sound
+    #region Inspect Sound
     void InspectSound()
     {
         if (needsNewSoundInspectPosition)
@@ -596,7 +596,7 @@ public class NPCActionHandler : UnitActionHandler
             needsNewSoundInspectPosition = true;
             InspectSound();
         }
-        else if (GetAction<MoveAction>().isMoving == false)
+        else if (isMoving == false)
         {
             // Get a new Inspect Sound Position if there's now another Unit or obstruction there
             if (LevelGrid.Instance.GridPositionObstructed(inspectSoundGridPosition))
@@ -685,7 +685,7 @@ public class NPCActionHandler : UnitActionHandler
             }
 
             // Queue the Move Action if the Unit isn't already moving
-            if (GetAction<MoveAction>().isMoving == false)
+            if (isMoving == false)
                 QueueAction(GetAction<MoveAction>());
         }
         else // If no Patrol Points set
@@ -759,7 +759,7 @@ public class NPCActionHandler : UnitActionHandler
             }
 
             // Queue the Move Action if the Unit isn't already moving
-            if (GetAction<MoveAction>().isMoving == false)
+            if (isMoving == false)
                 QueueAction(GetAction<MoveAction>());
         }
         // If the NPC has arrived at their destination
@@ -769,7 +769,7 @@ public class NPCActionHandler : UnitActionHandler
             wanderPositionSet = false;
             Wander();
         }
-        else if (GetAction<MoveAction>().isMoving == false)
+        else if (isMoving == false)
         {
             // Get a new Wander Position if there's now another Unit or obstruction there
             if (LevelGrid.Instance.GridPositionObstructed(wanderGridPosition))

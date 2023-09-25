@@ -6,14 +6,12 @@ using UnityEngine;
 
 public class SwipeAction : BaseAction
 {
-    public bool isAttacking { get; private set; }
-
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
     public override void TakeAction(GridPosition gridPosition)
     {
-        if (isAttacking) return;
+        if (unit.unitActionHandler.isAttacking) return;
 
         if (IsValidUnitInActionArea(gridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
         {
@@ -48,7 +46,7 @@ public class SwipeAction : BaseAction
                 turnAction.RotateTowardsPosition(unit.unitActionHandler.targetAttackGridPosition.WorldPosition(), false);
 
             // Wait to finish any rotations already in progress
-            while (turnAction.isRotating)
+            while (unit.unitActionHandler.isRotating)
                 yield return null;
 
             // Play the attack animations and handle blocking for each target
@@ -469,7 +467,7 @@ public class SwipeAction : BaseAction
     protected override void StartAction()
     {
         base.StartAction();
-        isAttacking = true;
+        unit.unitActionHandler.SetIsAttacking(true);
         unit.stats.UseEnergy(GetEnergyCost());
     }
 
@@ -477,7 +475,7 @@ public class SwipeAction : BaseAction
     {
         base.CompleteAction();
 
-        isAttacking = false;
+        unit.unitActionHandler.SetIsAttacking(false);
         if (unit.IsPlayer())
             unit.unitActionHandler.SetTargetEnemyUnit(null);
 

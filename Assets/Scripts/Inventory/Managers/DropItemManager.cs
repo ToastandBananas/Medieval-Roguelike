@@ -82,6 +82,7 @@ public class DropItemManager : MonoBehaviour
         else if (characterEquipment.SlotVisualsCreated)
             characterEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
+        characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         characterEquipment.EquippedItemDatas[(int)equipSlot] = null;
     }
 
@@ -154,6 +155,7 @@ public class DropItemManager : MonoBehaviour
                 equipSlot = EquipSlot.LeftHeldItem2;
         }
 
+        unit.CharacterEquipment.RemoveActions(unit.CharacterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         unit.CharacterEquipment.RemoveEquipmentMesh(equipSlot);
         unit.CharacterEquipment.RemoveEquipment(equipSlot);
     }

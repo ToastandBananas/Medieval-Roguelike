@@ -31,8 +31,13 @@ public class Stats : MonoBehaviour
     [SerializeField] IntStat throwingSkill;
     [SerializeField] IntStat warHammerSkill;
 
-    Unit unit;
+    [Header("Unarmed Combat")]
+    [SerializeField] bool canFightUnarmed = true;
+    [SerializeField] float unarmedAttackRange = 1.4f;
+    [SerializeField] int baseUnarmedDamage = 5;
 
+    Unit unit;
+    
     void Awake()
     {
         unit = GetComponent<Unit>();
@@ -199,7 +204,8 @@ public class Stats : MonoBehaviour
         unit.vision.UpdateVision();
 
         // We already are running this after the Move and Turn actions are complete, so no need to run it again
-        if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
+        BaseAction lastQueuedAction = unit.unitActionHandler.lastQueuedActionType.GetAction(unit);
+        if (lastQueuedAction is MoveAction == false && lastQueuedAction is TurnAction == false)
             unit.vision.FindVisibleUnitsAndObjects();
 
         RegenerateEnergy();
@@ -358,4 +364,10 @@ public class Stats : MonoBehaviour
                 return 0f;
         }
     }
+
+    public bool CanFightUnarmed => canFightUnarmed;
+
+    public float UnarmedAttackRange => unarmedAttackRange;
+
+    public int BaseUnarmedDamage => baseUnarmedDamage;
 }

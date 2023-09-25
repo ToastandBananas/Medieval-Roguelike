@@ -31,7 +31,7 @@ public class ReloadAction : BaseAction
         base.CompleteAction();
         isReloading = false;
         if (unit.IsPlayer())
-            unit.unitActionHandler.SetSelectedAction(unit.unitActionHandler.GetAction<ShootAction>());
+            unit.unitActionHandler.SetSelectedActionType(unit.unitActionHandler.FindActionTypeByName("ShootAction"));
         unit.unitActionHandler.FinishAction();
     }
 

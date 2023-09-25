@@ -8,6 +8,9 @@ public class PlayerActionHandler : UnitActionHandler
     {
         canPerformActions = true;
         base.Awake();
+
+        // Default to the MoveAction
+        SetSelectedActionType(FindActionTypeByName("MoveAction"));
     }
 
     public override void TakeTurn()
@@ -116,7 +119,7 @@ public class PlayerActionHandler : UnitActionHandler
 
     public override void SkipTurn()
     {
-        lastQueuedAction = null;
+        lastQueuedActionType = null;
         unit.stats.UseAP(unit.stats.APUntilTimeTick);
         TurnManager.Instance.FinishTurn(unit);
     }
@@ -137,6 +140,7 @@ public class PlayerActionHandler : UnitActionHandler
             if (queuedAction != null) // This can become null after a time tick update
             {
                 isPerformingAction = true;
+                queuedAction.gameObject.SetActive(true);
                 queuedAction.TakeAction(targetGridPosition);
             }
             else
@@ -144,17 +148,17 @@ public class PlayerActionHandler : UnitActionHandler
         }
     }
 
-    public override void SetSelectedAction(BaseAction action)
+    public override void SetSelectedActionType(ActionType actionType)
     {
-        base.SetSelectedAction(action);
+        base.SetSelectedActionType(actionType);
         OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public void OnClick_SetSelectedAction(BaseAction action)
+    public void OnClick_SetSelectedActionType(ActionType actionType)
     {
         if (InventoryUI.Instance.isDraggingItem)
             return;
 
-        SetSelectedAction(action);
+        SetSelectedActionType(actionType);
     }
 }

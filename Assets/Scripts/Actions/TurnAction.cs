@@ -12,8 +12,6 @@ public class TurnAction : BaseAction
     readonly float defaultRotateSpeed = 10f;
     readonly int singleTurnSegmentAPCost = 25;
 
-    public bool isRotating { get; private set; }
-
     void Start()
     {
         SetCurrentDirection();
@@ -48,6 +46,7 @@ public class TurnAction : BaseAction
 
     public void RotateTowards_CurrentTargetPosition(bool rotateInstantly)
     {
+        gameObject.SetActive(true);
         StartCoroutine(Rotate(targetPosition, rotateInstantly));
     }
 
@@ -59,6 +58,7 @@ public class TurnAction : BaseAction
 
     public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
     {
+        gameObject.SetActive(true);
         StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
     }
 
@@ -74,6 +74,7 @@ public class TurnAction : BaseAction
 
         if (rotateInstantly == false)
         {
+            unit.unitActionHandler.SetIsRotating(true);
             while (true)
             {
                 if (rotateTargetPosition != targetPosition)
@@ -88,11 +89,12 @@ public class TurnAction : BaseAction
             }
         }
 
-        isRotating = false;
+        unit.unitActionHandler.SetIsRotating(false);
         transform.rotation = targetRotation;
         SetCurrentDirection();
 
         unit.vision.FindVisibleUnitsAndObjects();
+        gameObject.SetActive(false);
     }
 
     public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)

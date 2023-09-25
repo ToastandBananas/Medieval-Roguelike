@@ -7,11 +7,6 @@ public abstract class BaseAction : MonoBehaviour
 
     protected bool isActive;
 
-    public virtual void Awake()
-    {
-        unit = GetComponent<Unit>();
-    }
-
     public abstract void TakeAction(GridPosition gridPosition); 
     
     protected virtual void StartAction()

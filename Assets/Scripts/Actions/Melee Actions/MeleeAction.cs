@@ -6,19 +6,12 @@ using UnityEngine;
 
 public class MeleeAction : BaseAction
 {
-    [Header("Unarmed Combat")]
-    [SerializeField] bool canFightUnarmed;
-    [SerializeField] float unarmedAttackRange = 1.4f;
-    [SerializeField] int baseUnarmedDamage = 5;
-
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
     List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-    public bool isAttacking { get; private set; }
-
     public override void TakeAction(GridPosition gridPosition)
     {
-        if (isAttacking) return;
+        if (unit.unitActionHandler.isAttacking) return;
 
         if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
@@ -53,13 +46,13 @@ public class MeleeAction : BaseAction
                 turnAction.RotateTowards_Unit(targetUnit, false);
 
             // Wait to finish any rotations already in progress
-            while (turnAction.isRotating)
+            while (unit.unitActionHandler.isRotating)
                 yield return null;
 
             // Play the attack animations and handle blocking for the target
             if (unit.CharacterEquipment.IsUnarmed())
             {
-                if (canFightUnarmed)
+                if (unit.stats.CanFightUnarmed)
                     unit.unitAnimator.DoDefaultUnarmedAttack();
             }
             else if (unit.CharacterEquipment.IsDualWielding())
@@ -194,7 +187,7 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            float maxRangeToTargetPosition = unarmedAttackRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
+            float maxRangeToTargetPosition = unit.stats.UnarmedAttackRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
             if (distance > maxRangeToTargetPosition || distance < 1f)
@@ -208,20 +201,20 @@ public class MeleeAction : BaseAction
 
     public int UnarmedDamage()
     {
-        return baseUnarmedDamage;
+        return unit.stats.BaseUnarmedDamage;
     }
 
     protected override void StartAction()
     {
         base.StartAction();
-        isAttacking = true;
+        unit.unitActionHandler.SetIsAttacking(true);
     }
 
     public override void CompleteAction()
     {
         base.CompleteAction();
 
-        isAttacking = false;
+        unit.unitActionHandler.SetIsAttacking(false);
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SetTargetEnemyUnit(null);
 
@@ -404,7 +397,7 @@ public class MeleeAction : BaseAction
         if (unit.CharacterEquipment.MeleeWeaponEquipped())
             maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().maxRange;
         else
-            maxAttackRange = unarmedAttackRange;
+            maxAttackRange = unit.stats.UnarmedAttackRange;
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -485,7 +478,7 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit.CharacterEquipment.MeleeWeaponEquipped() || (canFightUnarmed && unit.CharacterEquipment.IsUnarmed()))
+        if (unit.CharacterEquipment.MeleeWeaponEquipped() || (unit.stats.CanFightUnarmed && unit.CharacterEquipment.IsUnarmed()))
             return true;
         return false;
     }
@@ -498,13 +491,14 @@ public class MeleeAction : BaseAction
 
     public override int GetEnergyCost() => 0;
 
-    public bool CanFightUnarmed() => canFightUnarmed;
+    public bool CanFightUnarmed() => unit.stats.CanFightUnarmed;
 
     public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return unarmedAttackRange;
-        float maxRange = unarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.gridPosition.y);
+            return unit.stats.UnarmedAttackRange;
+
+        float maxRange = unit.stats.UnarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.gridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

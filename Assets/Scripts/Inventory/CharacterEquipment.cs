@@ -94,12 +94,9 @@ public class CharacterEquipment : MonoBehaviour
                 targetEquipSlot = EquipSlot.LeftHeldItem2;
         }
 
-        // If trying to place the item back into the slot it came from
+        // If trying to place the item back into the slot it came from, place the dragged item back to where it came from
         if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.Instance.parentSlotDraggedFrom)
-        {
-            // Place the dragged item back to where it came from
-            InventoryUI.Instance.ReplaceDraggedItem();
-        }
+            InventoryUI.Instance.ReplaceDraggedItem(); 
         else
             Equip(newItemData, targetEquipSlot);
 
@@ -140,6 +137,8 @@ public class CharacterEquipment : MonoBehaviour
         // Hide the dragged item
         if (InventoryUI.Instance.isDraggingItem)
             InventoryUI.Instance.DisableDraggedItem();
+
+        AddActions(newItemData.Item as Equipment);
     }
 
     public void RemoveItem(ItemData itemData)
@@ -249,6 +248,7 @@ public class CharacterEquipment : MonoBehaviour
         else // Else, drop the item
             DropItemManager.DropItem(this, equipSlot);
 
+        RemoveActions(equippedItemDatas[(int)equipSlot].Item as Equipment);
         equippedItemDatas[(int)equipSlot] = null;
     }
 
@@ -332,7 +332,39 @@ public class CharacterEquipment : MonoBehaviour
                 SetupNewItemIcon(GetEquipmentSlotFromIndex(i), equippedItemDatas[i]);
                 SetupEquipmentMesh((EquipSlot)i, equippedItemDatas[i]);
             }
+
+            AddActions(equippedItemDatas[i].Item as Equipment);
         }
+    }
+
+    void AddActions(Equipment equipment)
+    {
+        for (int i = 0; i < equipment.ActionTypes.Length; i++)
+        {
+            if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
+                return;
+
+            myUnit.unitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
+            if (equipment.ActionTypes[i].GetAction(myUnit).IsAttackAction())
+                myUnit.unitActionHandler.AvailableCombatActions.Add(equipment.ActionTypes[i]);
+        }
+
+        ActionSystemUI.Instance.UpdateActionVisuals();
+    }
+
+    public void RemoveActions(Equipment equipment)
+    {
+        for (int i = 0; i < equipment.ActionTypes.Length; i++)
+        {
+            if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (equipment.ActionTypes[i].GetAction(myUnit) is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
+                return;
+
+            myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
+            if (myUnit.unitActionHandler.AvailableCombatActions.Contains(equipment.ActionTypes[i]))
+                myUnit.unitActionHandler.AvailableCombatActions.Remove(equipment.ActionTypes[i]);
+        }
+
+        ActionSystemUI.Instance.UpdateActionVisuals();
     }
 
     public bool EquipSlotIsFull(EquipSlot equipSlot)
@@ -428,7 +460,7 @@ public class CharacterEquipment : MonoBehaviour
 
             if (myUnit.IsPlayer())
             {
-                myUnit.unitActionHandler.SetSelectedAction(myUnit.unitActionHandler.GetAction<MoveAction>());
+                myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
                 ActionSystemUI.Instance.UpdateActionVisuals();
             }
         }
@@ -467,7 +499,7 @@ public class CharacterEquipment : MonoBehaviour
 
             if (myUnit.IsPlayer())
             {
-                myUnit.unitActionHandler.SetSelectedAction(myUnit.unitActionHandler.GetAction<MoveAction>());
+                myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
                 ActionSystemUI.Instance.UpdateActionVisuals();
             }
         }

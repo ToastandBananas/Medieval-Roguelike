@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public abstract class UnitActionHandler : MonoBehaviour
 {
@@ -13,10 +15,11 @@ public abstract class UnitActionHandler : MonoBehaviour
     public BaseAction queuedAttack { get; private set; }
     public int queuedAP { get; protected set; }
 
-    public BaseAction[] baseActionArray { get; private set; }
-    public List<BaseAction> combatActions = new List<BaseAction>();
-    public BaseAction selectedAction { get; private set; }
-    public BaseAction lastQueuedAction { get; protected set; }
+    [Header("Actions")]
+    [SerializeField] List<ActionType> availableActionTypes = new List<ActionType>();
+    protected List<ActionType> availableCombatActions = new List<ActionType>();
+    public ActionType selectedActionType { get; private set; }
+    public ActionType lastQueuedActionType { get; protected set; }
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
@@ -24,32 +27,57 @@ public abstract class UnitActionHandler : MonoBehaviour
     public Interactable targetInteractable { get; protected set; }
     public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
+    [Header("Layer Masks")]
     [SerializeField] LayerMask attackObstacleMask;
     [SerializeField] LayerMask moveObstacleMask;
 
+    public bool isMoving { get; private set; }
+    public bool isAttacking { get; private set; }
+    public bool isRotating { get; private set; }
     public bool isPerformingAction { get; protected set; }
     public bool canPerformActions { get; protected set; }
 
+    public GridPosition finalTargetGridPosition { get; private set; }
+    public GridPosition nextTargetGridPosition { get; private set; }
+
     public virtual void Awake()
     {
-        unit = GetComponent<Unit>(); 
-        baseActionArray = GetComponents<BaseAction>();
+        unit = GetComponent<Unit>();
 
         // Determine which BaseActions are combat actions and add them to the combatActions list
-        for (int i = 0; i < baseActionArray.Length; i++)
+        for (int i = 0; i < availableActionTypes.Count; i++)
         {
-            if (baseActionArray[i].IsAttackAction())
-                combatActions.Add(baseActionArray[i]);
+            BaseAction action = availableActionTypes[i].GetAction(unit);
+            if (action.IsAttackAction())
+                availableCombatActions.Add(availableActionTypes[i]);
         }
 
         targetGridPosition = LevelGrid.GetGridPosition(transform.position);
         targetUnits = new Dictionary<Unit, HeldItem>();
-
-        // Default to the MoveAction
-        SetSelectedAction(GetAction<MoveAction>());
     }
 
     #region Action Queue
+    public void QueueAction(ActionType actionType, GridPosition targetGridPosition)
+    {
+        SetTargetGridPosition(targetGridPosition);
+        QueueAction(actionType);
+    }
+
+    public void QueueAction(ActionType actionType)
+    {
+        if (actionType == null)
+        {
+            Debug.LogWarning("ActionType is null. Cannot queue action.");
+            return;
+        }
+
+        BaseAction actionInstance = actionType.GetAction(unit);
+        if (actionInstance != null)
+            QueueAction(actionInstance);
+        else
+            Debug.LogWarning("Failed to obtain an action of type " + actionType.GetActionType().Name);
+    }
+
     public void QueueAction(BaseAction action, GridPosition targetGridPosition)
     {
         SetTargetGridPosition(targetGridPosition);
@@ -60,14 +88,25 @@ public abstract class UnitActionHandler : MonoBehaviour
     {
         GridSystemVisual.HideGridVisual();
 
+        if (queuedAction != null)
+        {
+            ActionSystem.ReturnToPool(queuedAction);
+            queuedAction = null;
+            queuedAttack = null;
+        }
+
         // if (unit.IsPlayer()) Debug.Log(name + " queued " + action);
         queuedAction = action;
-        lastQueuedAction = action;
+        queuedAction.gameObject.SetActive(true);
+        lastQueuedActionType = FindActionTypeByName(action.GetType().Name);
         queuedAP = action.GetActionPointsCost();
 
         // If the action changed while getting the action point cost (such as when running into a door)
         if (action != queuedAction)
+        {
+            ActionSystem.ReturnToPool(action);
             return;
+        }
 
         if (action.IsAttackAction())
             unit.unitAnimator.StopMovingForward();
@@ -76,11 +115,11 @@ public abstract class UnitActionHandler : MonoBehaviour
         {
             if (canPerformActions == false)
                 TurnManager.Instance.FinishTurn(unit);
-            else if (GetAction<MoveAction>().isMoving == false)
+            else if (isMoving == false)
                 GetNextQueuedAction();
         }
 
-        SetSelectedAction(GetAction<MoveAction>());
+        SetSelectedActionType(FindActionTypeByName("MoveAction"));
     }
 
     public abstract void GetNextQueuedAction();
@@ -93,12 +132,19 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public IEnumerator CancelAction()
     {
-        MoveAction moveAction = GetAction<MoveAction>();
-        if (queuedAction != moveAction)
+        if (queuedAction is MoveAction == false)
         {
             while (isPerformingAction)
             {
                 yield return null;
+            }
+        }
+        else
+        {
+            if (finalTargetGridPosition != unit.gridPosition)
+            {
+                targetGridPosition = nextTargetGridPosition;
+                finalTargetGridPosition = nextTargetGridPosition;
             }
         }
 
@@ -106,13 +152,6 @@ public abstract class UnitActionHandler : MonoBehaviour
         SetTargetInteractable(null);
         SetTargetEnemyUnit(null);
         SetQueuedAttack(null);
-
-        if (moveAction.finalTargetGridPosition != unit.gridPosition)
-        {
-            SetTargetGridPosition(moveAction.nextTargetGridPosition);
-            moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
-        }
-
 
         GridSystemVisual.UpdateGridVisual();
     }
@@ -123,12 +162,17 @@ public abstract class UnitActionHandler : MonoBehaviour
             queuedAttack = null;
 
         // Debug.Log("Clearing action queue");
-        queuedAction = null;
+        if (queuedAction != null)
+        {
+            ActionSystem.ReturnToPool(queuedAction);
+            queuedAction = null;
+        }
+
         queuedAP = 0;
         isPerformingAction = false;
 
         // If the Unit isn't moving, they might still be in a move animation, so cancel that
-        if (stopMoveAnimation && GetAction<MoveAction>().isMoving == false)
+        if (stopMoveAnimation && isMoving == false)
             unit.unitAnimator.StopMovingForward();
     }
 
@@ -138,8 +182,9 @@ public abstract class UnitActionHandler : MonoBehaviour
     #region Combat
     public void AttackTarget()
     {
+        BaseAction selectedAction = selectedActionType.GetAction(unit);
         if (selectedAction.IsAttackAction())
-            QueueAction(selectedAction, targetAttackGridPosition);
+            QueueAction(selectedActionType, targetAttackGridPosition);
         else if (unit.CharacterEquipment.RangedWeaponEquipped())
         {
             if (unit.unitMeshManager.GetRangedWeapon().isLoaded)
@@ -163,9 +208,10 @@ public abstract class UnitActionHandler : MonoBehaviour
         }
         else 
         {
-            for (int i = 0; i < combatActions.Count; i++)
+            for (int i = 0; i < availableCombatActions.Count; i++)
             {
-                if (combatActions[i].IsValidAction() && unit.stats.HasEnoughEnergy(combatActions[i].GetEnergyCost()) && combatActions[i].IsInAttackRange(targetUnit))
+                BaseAction action = availableCombatActions[i].GetAction(unit);
+                if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.GetEnergyCost()) && action.IsInAttackRange(targetUnit))
                     return true;
             }
         }
@@ -326,11 +372,24 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public T GetAction<T>() where T : BaseAction
     {
-        foreach (BaseAction baseAction in baseActionArray)
+        foreach (ActionType actionType in availableActionTypes)
         {
-            if (baseAction is T)
-                return (T)baseAction;
+            Type targetType = actionType.GetActionType();
+            if (typeof(T) == targetType)
+                return ActionSystem.GetAction(targetType, unit) as T;
         }
+        return null;
+    }
+
+    public ActionType FindActionTypeByName(string actionName)
+    {
+        foreach (ActionType actionType in availableActionTypes)
+        {
+            if (actionType.ActionTypeName == actionName)
+                return actionType;
+        }
+
+        Debug.LogWarning("ActionType with name " + actionName + " not found.");
         return null;
     }
 
@@ -366,13 +425,25 @@ public abstract class UnitActionHandler : MonoBehaviour
             queuedAttack = null;
     }
 
-    public virtual void SetSelectedAction(BaseAction action) => selectedAction = action; 
+    public virtual void SetSelectedActionType(ActionType actionType) => selectedActionType = actionType;
+
+    public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
+
+    public void SetIsAttacking(bool isAttacking) => this.isAttacking = isAttacking;
+
+    public void SetIsRotating(bool isRotating) => this.isRotating = isRotating;
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
-    public bool IsAttacking() => GetAction<MeleeAction>().isAttacking || GetAction<ShootAction>().isShooting;
+    public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
+
+    public void SetNextTargetGridPosition(GridPosition nextGridPosition) => nextTargetGridPosition = nextGridPosition;
 
     public LayerMask AttackObstacleMask => attackObstacleMask;
 
     public LayerMask MoveObstacleMask => moveObstacleMask;
+
+    public List<ActionType> AvailableActionTypes => availableActionTypes;
+
+    public List<ActionType> AvailableCombatActions => availableCombatActions;
 }

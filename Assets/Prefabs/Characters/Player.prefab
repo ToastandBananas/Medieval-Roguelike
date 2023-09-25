@@ -1001,12 +1001,6 @@ GameObject:
   - component: {fileID: 6440773195933579921}
   - component: {fileID: 942902502714962659}
   - component: {fileID: 2894362986920051941}
-  - component: {fileID: 3331432482388386438}
-  - component: {fileID: 4910889609817399986}
-  - component: {fileID: 6094857115427304514}
-  - component: {fileID: 2290977517188116833}
-  - component: {fileID: 8022252570378685524}
-  - component: {fileID: 233180922898052485}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1215,6 +1209,9 @@ MonoBehaviour:
     minValue: 1
     modifiers: 
     percentModifiers: []
+  canFightUnarmed: 1
+  unarmedAttackRange: 1.4
+  baseUnarmedDamage: 5
 --- !u!114 &809617103822942843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1288,91 +1285,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57954ad8252b5354f8bbfe88b73792d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combatActions: []
+  availableActionTypes:
+  - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
+  - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
+  - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
+  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   attackObstacleMask:
     serializedVersion: 2
     m_Bits: 2151550912
   moveObstacleMask:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &3331432482388386438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ff3bf5f40f69194b83f055f18effc4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4910889609817399986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8f117d204a5d64f9064b851a6da5c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveObstaclesMask:
-    serializedVersion: 2
-    m_Bits: 64
---- !u!114 &6094857115427304514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9cc9d719c7e9ae438728e606d23a461, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &2290977517188116833
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7f9f785eba16144286a42972fd12bde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canFightUnarmed: 1
-  unarmedAttackRange: 1.4
-  baseUnarmedDamage: 5
---- !u!114 &8022252570378685524
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8da8435b8db01541ada4dcd133b260b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &233180922898052485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f55ed04e5a326c4a95254ab62271707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8220662913851074348
 GameObject:
   m_ObjectHideFlags: 0

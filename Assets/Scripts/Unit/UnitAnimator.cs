@@ -81,7 +81,7 @@ public class UnitAnimator : MonoBehaviour
         elapsedTime = 0;
 
         // Return to original position
-        while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.GetAction<MoveAction>().isMoving == false)
+        while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.isMoving == false)
         {
             elapsedTime += Time.deltaTime;
             unit.transform.position = Vector3.Lerp(knockbackTargetPosition, originalPosition, elapsedTime / returnDuration);

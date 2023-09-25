@@ -124,7 +124,8 @@ public class HeldMeleeWeapon : HeldItem
     // Used in animation Key Frame
     void DamageTargetUnits()
     {
-        unit.unitActionHandler.lastQueuedAction.DamageTargets(this);
+        BaseAction action = unit.unitActionHandler.lastQueuedActionType.GetAction(unit);
+        action.DamageTargets(this);
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
@@ -132,14 +133,13 @@ public class HeldMeleeWeapon : HeldItem
         if (targetGridPosition.y == unit.gridPosition.y)
             yield break;
 
-        MeleeAction meleeAction = unit.unitActionHandler.GetAction<MeleeAction>();
         Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
         Vector3 startRotation = transform.parent.localEulerAngles;
         Quaternion targetRotation = Quaternion.LookRotation(lookPos);
         targetRotation = Quaternion.Euler(new Vector3(startRotation.x, startRotation.y, -targetRotation.eulerAngles.x));
         float rotateSpeed = 10f;
 
-        while (meleeAction.isAttacking)
+        while (unit.unitActionHandler.isAttacking)
         {
             transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
             yield return null;
