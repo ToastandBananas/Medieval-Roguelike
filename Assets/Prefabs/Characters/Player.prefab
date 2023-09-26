@@ -64,7 +64,7 @@ Transform:
   - {fileID: 6705474999395802024}
   - {fileID: 2796106821343976387}
   m_Father: {fileID: 8220662913183796560}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1255021526028014747
 GameObject:
@@ -314,6 +314,37 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!1 &1699470690288252681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6202983556206637106}
+  m_Layer: 3
+  m_Name: Actions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6202983556206637106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1699470690288252681}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8220662913183796560}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1714767048958128504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1021,6 +1052,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5473232442869408558}
+  - {fileID: 6202983556206637106}
   - {fileID: 5297897813893617721}
   - {fileID: 3678734075053237888}
   m_Father: {fileID: 0}
@@ -1238,6 +1270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9d1716ce9c529438c79b913443c156, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionsParent: {fileID: 6202983556206637106}
   shoulderHeight: 0.25
   mainInventoryManager: {fileID: 7995056210117479334}
   backpackInventoryManager: {fileID: 7264128157382338334}
@@ -1555,7 +1588,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8220662913183796560}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &6374548418887829567
 SphereCollider:

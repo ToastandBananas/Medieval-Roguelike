@@ -204,8 +204,7 @@ public class Stats : MonoBehaviour
         unit.vision.UpdateVision();
 
         // We already are running this after the Move and Turn actions are complete, so no need to run it again
-        BaseAction lastQueuedAction = unit.unitActionHandler.lastQueuedActionType.GetAction(unit);
-        if (lastQueuedAction is MoveAction == false && lastQueuedAction is TurnAction == false)
+        if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
             unit.vision.FindVisibleUnitsAndObjects();
 
         RegenerateEnergy();
@@ -258,9 +257,10 @@ public class Stats : MonoBehaviour
         float blockChance = shieldSkill.GetValue() * 2f;
         blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield().blockChanceAddOn) * 100f) / 100f;
 
+        // If attacker is directly beside the Unit
         if (attackerBesideUnit)
             blockChance *= 0.5f;
-
+        
         if (blockChance < 0f) blockChance = 0f;
         return blockChance;
     }
@@ -274,6 +274,7 @@ public class Stats : MonoBehaviour
         if (shieldEquipped)
             blockChance *= 0.65f;
 
+        // If attacker is directly beside the Unit
         if (attackerBesideUnit)
             blockChance *= 0.5f;
         

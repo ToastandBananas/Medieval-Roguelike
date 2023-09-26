@@ -1,3 +1,4 @@
+using UnityEngine;
 using System.Collections;
 
 public class InteractAction : BaseAction
@@ -26,9 +27,8 @@ public class InteractAction : BaseAction
         else
             turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), true);
 
-        // Do the interaction
+        // Perform the interaction
         targetInteractable.Interact(unit);
-
         CompleteAction();
         unit.unitActionHandler.SetTargetInteractable(null);
         TurnManager.Instance.StartNextUnitsTurn(unit);

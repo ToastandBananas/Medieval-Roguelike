@@ -13,13 +13,14 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public BaseAction queuedAction { get; private set; }
     public BaseAction queuedAttack { get; private set; }
+    public BaseAction lastQueuedAction { get; protected set; }
     public int queuedAP { get; protected set; }
 
     [Header("Actions")]
     [SerializeField] List<ActionType> availableActionTypes = new List<ActionType>();
-    protected List<ActionType> availableCombatActions = new List<ActionType>();
+    protected List<BaseAction> availableActions = new List<BaseAction>();
+    protected List<BaseAction> availableCombatActions = new List<BaseAction>();
     public ActionType selectedActionType { get; private set; }
-    public ActionType lastQueuedActionType { get; protected set; }
 
     public Unit unit { get; private set; }
     public Unit targetEnemyUnit { get; protected set; }
@@ -37,9 +38,6 @@ public abstract class UnitActionHandler : MonoBehaviour
     public bool isPerformingAction { get; protected set; }
     public bool canPerformActions { get; protected set; }
 
-    public GridPosition finalTargetGridPosition { get; private set; }
-    public GridPosition nextTargetGridPosition { get; private set; }
-
     public virtual void Awake()
     {
         unit = GetComponent<Unit>();
@@ -47,9 +45,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         // Determine which BaseActions are combat actions and add them to the combatActions list
         for (int i = 0; i < availableActionTypes.Count; i++)
         {
-            BaseAction action = availableActionTypes[i].GetAction(unit);
-            if (action.IsAttackAction())
-                availableCombatActions.Add(availableActionTypes[i]);
+            availableActionTypes[i].GetAction(unit);
         }
 
         targetGridPosition = LevelGrid.GetGridPosition(transform.position);
@@ -88,23 +84,23 @@ public abstract class UnitActionHandler : MonoBehaviour
     {
         GridSystemVisual.HideGridVisual();
 
-        if (queuedAction != null)
-        {
-            ActionSystem.ReturnToPool(queuedAction);
-            queuedAction = null;
-            queuedAttack = null;
-        }
+        //if (queuedAction != null)
+        //{
+        //ActionSystem.ReturnToPool(queuedAction);
+        //queuedAction = null;
+        //}
 
         // if (unit.IsPlayer()) Debug.Log(name + " queued " + action);
+        queuedAttack = null;
         queuedAction = action;
         queuedAction.gameObject.SetActive(true);
-        lastQueuedActionType = FindActionTypeByName(action.GetType().Name);
+        lastQueuedAction = action;
         queuedAP = action.GetActionPointsCost();
 
         // If the action changed while getting the action point cost (such as when running into a door)
         if (action != queuedAction)
         {
-            ActionSystem.ReturnToPool(action);
+            //ActionSystem.ReturnToPool(action);
             return;
         }
 
@@ -141,10 +137,11 @@ public abstract class UnitActionHandler : MonoBehaviour
         }
         else
         {
-            if (finalTargetGridPosition != unit.gridPosition)
+            MoveAction moveAction = GetAction<MoveAction>();
+            if (moveAction.finalTargetGridPosition != unit.gridPosition)
             {
-                targetGridPosition = nextTargetGridPosition;
-                finalTargetGridPosition = nextTargetGridPosition;
+                targetGridPosition = moveAction.nextTargetGridPosition;
+                moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
             }
         }
 
@@ -162,12 +159,12 @@ public abstract class UnitActionHandler : MonoBehaviour
             queuedAttack = null;
 
         // Debug.Log("Clearing action queue");
-        if (queuedAction != null)
-        {
-            ActionSystem.ReturnToPool(queuedAction);
-            queuedAction = null;
-        }
+        //if (queuedAction != null)
+        //{
+        //ActionSystem.ReturnToPool(queuedAction);
+        //}
 
+        queuedAction = null;
         queuedAP = 0;
         isPerformingAction = false;
 
@@ -200,7 +197,7 @@ public abstract class UnitActionHandler : MonoBehaviour
     {
         if (defaultCombatActionsOnly)
         {
-            if (GetAction<ShootAction>().IsValidAction() && GetAction<ShootAction>().IsInAttackRange(targetUnit))
+            if (unit.CharacterEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && GetAction<ShootAction>().IsInAttackRange(targetUnit))
                 return true;
 
             if (GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
@@ -210,7 +207,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         {
             for (int i = 0; i < availableCombatActions.Count; i++)
             {
-                BaseAction action = availableCombatActions[i].GetAction(unit);
+                BaseAction action = availableCombatActions[i];
                 if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.GetEnergyCost()) && action.IsInAttackRange(targetUnit))
                     return true;
             }
@@ -228,7 +225,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                 float random = Random.Range(1f, 100f);
                 if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
                 {
-                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
                     return true;
                 }
             }
@@ -238,7 +236,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                 float random = Random.Range(1f, 100f);
                 if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
                 {
-                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
                     return true;
                 }
             }
@@ -261,7 +260,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                 random = Random.Range(1f, 100f);
                 if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
                 {
-                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
                     return true;
                 }
 
@@ -271,7 +271,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, true))
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
                 }
@@ -284,7 +285,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
 
@@ -292,7 +294,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
                         return true;
                     }
                 }
@@ -302,7 +305,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, false))
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
                 }
@@ -316,7 +320,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                 random = Random.Range(1f, 100f);
                 if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
                 {
-                    attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                    if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
                     return true;
                 }
 
@@ -326,7 +331,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, true))
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
                 }
@@ -339,7 +345,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, false) * GameManager.dualWieldPrimaryEfficiency)
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
 
@@ -347,7 +354,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
                         return true;
                     }
                 }
@@ -357,7 +365,8 @@ public abstract class UnitActionHandler : MonoBehaviour
                     random = Random.Range(1f, 100f);
                     if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, false))
                     {
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryMeleeWeapon());
                         return true;
                     }
                 }
@@ -435,15 +444,13 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 
-    public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
-
-    public void SetNextTargetGridPosition(GridPosition nextGridPosition) => nextTargetGridPosition = nextGridPosition;
-
     public LayerMask AttackObstacleMask => attackObstacleMask;
 
     public LayerMask MoveObstacleMask => moveObstacleMask;
 
     public List<ActionType> AvailableActionTypes => availableActionTypes;
 
-    public List<ActionType> AvailableCombatActions => availableCombatActions;
+    public List<BaseAction> AvailableActions => availableActions;
+
+    public List<BaseAction> AvailableCombatActions => availableCombatActions;
 }

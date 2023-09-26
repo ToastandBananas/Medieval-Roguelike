@@ -305,18 +305,17 @@ public class NPCActionHandler : UnitActionHandler
         // Loop through all combat actions
         for (int i = 0; i < availableCombatActions.Count; i++)
         {
-            BaseAction combatAction = availableCombatActions[i].GetAction(unit);
-            if (combatAction.IsValidAction() == false)
+            if (availableCombatActions[i].IsValidAction() == false)
                 continue;
 
-            if (unit.stats.HasEnoughEnergy(combatAction.GetEnergyCost()) == false)
+            if (unit.stats.HasEnoughEnergy(availableCombatActions[i].GetEnergyCost()) == false)
                 continue;
 
             // Loop through every grid position in range of the combat action
-            foreach (GridPosition gridPositionInRange in combatAction.GetActionGridPositionsInRange(unit.gridPosition))
+            foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.gridPosition))
             {
                 // For each of these grid positions, get the best one for this combat action
-                npcAIActions.Add(combatAction.GetNPCAIAction_ActionGridPosition(gridPositionInRange));
+                npcAIActions.Add(availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
             }
         }
 

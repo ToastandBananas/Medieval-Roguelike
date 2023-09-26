@@ -11,11 +11,11 @@ public class HeldItemBasePool : MonoBehaviour
     [SerializeField] Transform shieldsParent;
 
     [Header("Prefabs")]
-    [SerializeField] int meleeWeaponBasesToPool = 40;
+    [SerializeField] int meleeWeaponBasesToPool = 5;
     [SerializeField] HeldMeleeWeapon meleeWeaponBasePrefab;
-    [SerializeField] int rangedWeaponBasesToPool = 40;
+    [SerializeField] int rangedWeaponBasesToPool = 5;
     [SerializeField] HeldRangedWeapon rangedWeaponBasePrefab;
-    [SerializeField] int shieldBasesToPool = 40;
+    [SerializeField] int shieldBasesToPool = 5;
     [SerializeField] HeldShield shieldBasePrefab;
 
     List<HeldMeleeWeapon> meleeWeaponBases = new List<HeldMeleeWeapon>();
@@ -124,5 +124,17 @@ public class HeldItemBasePool : MonoBehaviour
         HeldShield newShieldBase = Instantiate(shieldBasePrefab, shieldsParent).GetComponent<HeldShield>();
         shieldBases.Add(newShieldBase);
         return newShieldBase;
+    }
+
+    public static void ReturnToPool(HeldItem heldItem)
+    {
+        if (heldItem is HeldMeleeWeapon)
+            heldItem.transform.SetParent(Instance.meleeWeaponsParent);
+        else if (heldItem is HeldRangedWeapon)
+            heldItem.transform.SetParent(Instance.rangedWeaponsParent);
+        else if (heldItem is HeldShield)
+            heldItem.transform.SetParent(Instance.shieldsParent);
+
+        heldItem.gameObject.SetActive(false);
     }
 }

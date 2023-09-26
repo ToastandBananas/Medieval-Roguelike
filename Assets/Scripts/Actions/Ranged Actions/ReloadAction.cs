@@ -2,7 +2,7 @@ public class ReloadAction : BaseAction
 {
     bool isReloading;
 
-    public override bool IsValidAction() => unit.CharacterEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetRangedWeapon().isLoaded == false;
+    public override bool IsValidAction() => unit != null && unit.CharacterEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetRangedWeapon().isLoaded == false;
 
     public override void TakeAction(GridPosition gridPosition)
     {

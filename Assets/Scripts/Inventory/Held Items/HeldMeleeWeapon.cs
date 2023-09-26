@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class HeldMeleeWeapon : HeldItem
 {
+    public bool weaponRaised { get; private set; }
+
     public override void DoDefaultAttack()
     {
         if (anim == null)
@@ -87,6 +89,10 @@ public class HeldMeleeWeapon : HeldItem
 
     public void RaiseWeapon()
     {
+        if (weaponRaised)
+            return;
+
+        weaponRaised = true;
         if (unit.unitMeshManager.rightHeldItem == this)
         {
             if (itemData.Item.Weapon().isTwoHanded)
@@ -105,6 +111,10 @@ public class HeldMeleeWeapon : HeldItem
 
     public void LowerWeapon()
     {
+        if (weaponRaised == false)
+            return;
+
+        weaponRaised = false;
         if (unit.unitMeshManager.rightHeldItem == this)
         {
             if (itemData.Item.Weapon().isTwoHanded)
@@ -124,8 +134,7 @@ public class HeldMeleeWeapon : HeldItem
     // Used in animation Key Frame
     void DamageTargetUnits()
     {
-        BaseAction action = unit.unitActionHandler.lastQueuedActionType.GetAction(unit);
-        action.DamageTargets(this);
+        unit.unitActionHandler.lastQueuedAction.DamageTargets(this);
     }
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

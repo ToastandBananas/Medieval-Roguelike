@@ -29,20 +29,27 @@ public class LooseItem : Interactable
         if (itemData.Item.IsEquipment())
         {
             EquipSlot targetEquipSlot = itemData.Item.Equipment().EquipSlot;
-            if (unitPickingUpItem.CharacterEquipment.currentWeaponSet == WeaponSet.Two)
+            if (unitPickingUpItem.CharacterEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
-                if (targetEquipSlot == EquipSlot.LeftHeldItem1)
-                    targetEquipSlot = EquipSlot.LeftHeldItem2;
-                else if (targetEquipSlot == EquipSlot.RightHeldItem1)
-                    targetEquipSlot = EquipSlot.RightHeldItem2;
-            }
+                if (unitPickingUpItem.CharacterEquipment.currentWeaponSet == WeaponSet.Two)
+                {
+                    if (targetEquipSlot == EquipSlot.LeftHeldItem1)
+                        targetEquipSlot = EquipSlot.LeftHeldItem2;
+                    else if (targetEquipSlot == EquipSlot.RightHeldItem1)
+                        targetEquipSlot = EquipSlot.RightHeldItem2;
+                }
 
-            if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot))
-            {
-                if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
-                    equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
+                if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot))
+                {
+                    EquipSlot oppositeEquipSlot = unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
+                    
+                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)       
+                        equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
+                }
+                else
+                    equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(targetEquipSlot, itemData);
             }
-            else
+            else if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot) == false)
                 equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
 
             // Transfer inventory from loose container item if applicable

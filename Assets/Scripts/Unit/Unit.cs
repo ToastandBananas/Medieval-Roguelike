@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    [Header("Transforms")]
+    [SerializeField] Transform actionsParent;
+
     [Header("Unit Info")]
     [SerializeField] float shoulderHeight = 0.25f;
 
@@ -142,6 +145,8 @@ public class Unit : MonoBehaviour
     public Inventory MainInventory() => mainInventoryManager.MainInventory;
 
     public CharacterEquipment CharacterEquipment => myCharacterEquipment;
+
+    public Transform ActionsParent => actionsParent;
 
     public bool TryAddItemToInventories(ItemData itemData)
     {

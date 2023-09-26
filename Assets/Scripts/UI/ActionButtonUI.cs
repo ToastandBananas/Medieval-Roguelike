@@ -53,16 +53,21 @@ public class ActionButtonUI : MonoBehaviour
         }
 
         // Show the invalid action visual if the Action assigned to this button is an invalid action
-        BaseAction action = actionType.GetAction(playerActionHandler.unit);
-        if (action == null || action.IsValidAction() == false)
+        if (playerActionHandler.AvailableActionTypes.Contains(actionType) == false)
             transform.gameObject.SetActive(false);
         else
         {
-            transform.gameObject.SetActive(true);
-            if (playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
-                ActivateButton();
+            BaseAction action = actionType.GetAction(playerActionHandler.unit);
+            if (action == null || action.IsValidAction() == false)
+                transform.gameObject.SetActive(false);
             else
-                DeactivateButton();
+            {
+                transform.gameObject.SetActive(true);
+                if (playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
+                    ActivateButton();
+                else
+                    DeactivateButton();
+            }
         }
     }
 

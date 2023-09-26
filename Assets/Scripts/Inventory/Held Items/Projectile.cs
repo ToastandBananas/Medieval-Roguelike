@@ -25,8 +25,6 @@ public class Projectile : MonoBehaviour
     float currentVelocity;
     bool moveProjectile;
 
-    Action onProjectileBehaviourComplete;
-
     void Awake()
     {
         projectileCollider.enabled = false;
@@ -39,7 +37,6 @@ public class Projectile : MonoBehaviour
     public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
     {
         this.shooter = shooter;
-        this.onProjectileBehaviourComplete = onProjectileBehaviourComplete;
 
         this.itemData = itemData;
         Ammunition ammunitionItem = this.itemData.Item.Ammunition();
@@ -173,6 +170,9 @@ public class Projectile : MonoBehaviour
 
     void Arrived(Transform collisionTransform)
     {
+        if (shooter.unitActionHandler.targetEnemyUnit != null)
+            shooter.unitActionHandler.targetEnemyUnit.unitAnimator.StopBlocking();
+
         shooter.unitActionHandler.targetUnits.Clear();
 
         TurnManager.Instance.StartNextUnitsTurn(shooter);
@@ -185,27 +185,19 @@ public class Projectile : MonoBehaviour
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
+            SetupNewLooseItem(true, out LooseItem looseProjectile);
             if (collisionTransform != null)
-                transform.SetParent(collisionTransform, true);
-            else
-            {
-                SetupNewLooseItem(true, out LooseItem looseProjectile);
-                Disable();
-            }
+                looseProjectile.transform.SetParent(collisionTransform, true);
 
-            if (onProjectileBehaviourComplete != null)
-                onProjectileBehaviourComplete();
+            Disable();
         }
         else if (projectileType == ProjectileType.BluntObject)
         {
             SetupNewLooseItem(false, out LooseItem looseProjectile);
             float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
-            Debug.Log("Current velocity: " + currentVelocity);
             looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
-            Disable();
 
-            if (onProjectileBehaviourComplete != null)
-                onProjectileBehaviourComplete();
+            Disable();
         }
         else if (projectileType == ProjectileType.Explosive)
         {
@@ -242,8 +234,6 @@ public class Projectile : MonoBehaviour
             OnExplosion?.Invoke(this, EventArgs.Empty);
 
             // Throw Action: CompleteAction()
-            if (onProjectileBehaviourComplete != null)
-                onProjectileBehaviourComplete();
 
             Disable();
         }
@@ -252,9 +242,13 @@ public class Projectile : MonoBehaviour
     public void SetupNewLooseItem(bool preventMovement, out LooseItem looseProjectile)
     {
         looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
-        looseProjectile.SetItemData(itemData);
+
+        ItemData newItemData = new ItemData();
+        newItemData.TransferData(itemData);
+        looseProjectile.SetItemData(newItemData);
+
         looseProjectile.SetupMesh();
-        looseProjectile.name = itemData.Item.name;
+        looseProjectile.name = newItemData.Item.name;
         looseProjectile.transform.position = transform.position;
         looseProjectile.transform.rotation = Quaternion.Euler(transform.eulerAngles + meshFilter.transform.localEulerAngles);
 
@@ -298,8 +292,7 @@ public class Projectile : MonoBehaviour
         shooter = null;
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
-        transform.parent = ProjectilePool.Instance.transform;
-        gameObject.SetActive(false);
+        ProjectilePool.ReturnToPool(this);
     }
 
     void OnTriggerEnter(Collider collider)
@@ -324,7 +317,6 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
-                    //Disable();
                 }
             }
             else if (collider.CompareTag("Unit Head"))
@@ -345,7 +337,6 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                     Arrived(collider.transform);
-                    //Disable();
                 }
             }
             else if (collider.CompareTag("Shield"))
@@ -355,7 +346,6 @@ public class Projectile : MonoBehaviour
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);
-                //Disable();
             }
             else
                 Arrived(null);

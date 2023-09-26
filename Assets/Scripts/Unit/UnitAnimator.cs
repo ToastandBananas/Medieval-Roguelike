@@ -89,6 +89,40 @@ public class UnitAnimator : MonoBehaviour
         }
     }
 
+    public void StopBlocking()
+    {
+        if (unit.unitMeshManager.leftHeldItem != null)
+        {
+            if (unit.unitMeshManager.leftHeldItem is HeldShield)
+            {
+                HeldShield leftShield = unit.unitMeshManager.leftHeldItem as HeldShield;
+                if (leftShield.shieldRaised)
+                    leftShield.LowerShield();
+            }
+            else if (unit.unitMeshManager.leftHeldItem is HeldMeleeWeapon)
+            {
+                HeldMeleeWeapon leftHeldMeleeWeapon = unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon;
+                if (leftHeldMeleeWeapon.weaponRaised)
+                    leftHeldMeleeWeapon.LowerWeapon();
+            }
+        }
+        else if (unit.unitMeshManager.rightHeldItem != null)
+        {
+            if (unit.unitMeshManager.rightHeldItem is HeldShield)
+            {
+                HeldShield rightShield = unit.unitMeshManager.rightHeldItem as HeldShield;
+                if (rightShield.shieldRaised)
+                    rightShield.LowerShield();
+            }
+            else if (unit.unitMeshManager.rightHeldItem is HeldMeleeWeapon)
+            {
+                HeldMeleeWeapon rightHeldMeleeWeapon = unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon;
+                if (rightHeldMeleeWeapon.weaponRaised)
+                    rightHeldMeleeWeapon.LowerWeapon();
+            }
+        }
+    }
+
     public void Die(Transform attackerTransform)
     {
         bool diedForward = Random.value <= 0.5f;

@@ -53,7 +53,7 @@ public class PlayerInput : MonoBehaviour
         if (player.health.IsDead() == false)
         {
             // If the player was holding the button for turn mode (the Turn Action) and then they release it
-            if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedActionType == player.unitActionHandler.GetAction<TurnAction>())
+            if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedActionType.GetAction(player) is TurnAction)
             {
                 // Reset the line renderer and go back to the Move Action
                 ActionLineRenderer.Instance.ResetCurrentPositions();
@@ -116,11 +116,10 @@ public class PlayerInput : MonoBehaviour
     void HandleTurnMode()
     {
         TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
-        Debug.Log(turnAction.GetType().Name);
         player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
         turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
         WorldMouse.ChangeCursor(CursorState.Default);
-
+        
         if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.gridPosition && turnAction.targetDirection != turnAction.currentDirection)
             player.unitActionHandler.QueueAction(turnAction);
     }

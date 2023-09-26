@@ -419,7 +419,7 @@ public class ShootAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit.CharacterEquipment.RangedWeaponEquipped())
+        if (unit != null && unit.CharacterEquipment.RangedWeaponEquipped())
             return true;
         return false;
     }

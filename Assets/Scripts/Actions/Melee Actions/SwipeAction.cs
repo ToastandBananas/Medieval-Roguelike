@@ -492,7 +492,7 @@ public class SwipeAction : BaseAction
 
     public override int GetEnergyCost() => 25;
 
-    public override bool IsValidAction() => unit.CharacterEquipment.MeleeWeaponEquipped();
+    public override bool IsValidAction() => unit != null && unit.CharacterEquipment.MeleeWeaponEquipped();
 
     public override bool IsAttackAction() => true;
 

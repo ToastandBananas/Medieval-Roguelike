@@ -46,7 +46,6 @@ public class TurnAction : BaseAction
 
     public void RotateTowards_CurrentTargetPosition(bool rotateInstantly)
     {
-        gameObject.SetActive(true);
         StartCoroutine(Rotate(targetPosition, rotateInstantly));
     }
 
@@ -58,13 +57,12 @@ public class TurnAction : BaseAction
 
     public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
     {
-        gameObject.SetActive(true);
         StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
     }
 
-    IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
+    public IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
     {
-        Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - transform.position).normalized;
+        Vector3 lookPos = (new Vector3(targetPos.x, unit.transform.position.y, targetPos.z) - unit.transform.position).normalized;
         if (lookPos == Vector3.zero)
             yield break;
 
@@ -77,12 +75,13 @@ public class TurnAction : BaseAction
             unit.unitActionHandler.SetIsRotating(true);
             while (true)
             {
+                // Just in case the targetPosition changes from another call to one of the rotation methods
                 if (rotateTargetPosition != targetPosition)
                     break;
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+                unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 
-                if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+                if (Quaternion.Angle(unit.transform.rotation, targetRotation) < 0.1f)
                     break;
 
                 yield return null;
@@ -90,11 +89,10 @@ public class TurnAction : BaseAction
         }
 
         unit.unitActionHandler.SetIsRotating(false);
-        transform.rotation = targetRotation;
+        unit.transform.rotation = targetRotation;
         SetCurrentDirection();
 
         unit.vision.FindVisibleUnitsAndObjects();
-        gameObject.SetActive(false);
     }
 
     public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
@@ -159,28 +157,28 @@ public class TurnAction : BaseAction
         switch (targetDirection)
         {
             case Direction.North:
-                targetPosition = transform.position + new Vector3(0, 0, 1);
+                targetPosition = unit.transform.position + new Vector3(0, 0, 1);
                 break;
             case Direction.East:
-                targetPosition = transform.position + new Vector3(1, 0, 0);
+                targetPosition = unit.transform.position + new Vector3(1, 0, 0);
                 break;
             case Direction.South:
-                targetPosition = transform.position + new Vector3(0, 0, -1);
+                targetPosition = unit.transform.position + new Vector3(0, 0, -1);
                 break;
             case Direction.West:
-                targetPosition = transform.position + new Vector3(-1, 0, 0);
+                targetPosition = unit.transform.position + new Vector3(-1, 0, 0);
                 break;
             case Direction.NorthWest:
-                targetPosition = transform.position + new Vector3(-1, 0, 1);
+                targetPosition = unit.transform.position + new Vector3(-1, 0, 1);
                 break;
             case Direction.NorthEast:
-                targetPosition = transform.position + new Vector3(1, 0, 1);
+                targetPosition = unit.transform.position + new Vector3(1, 0, 1);
                 break;
             case Direction.SouthWest:
-                targetPosition = transform.position + new Vector3(-1, 0, -1);
+                targetPosition = unit.transform.position + new Vector3(-1, 0, -1);
                 break;
             case Direction.SouthEast:
-                targetPosition = transform.position + new Vector3(1, 0, -1);
+                targetPosition = unit.transform.position + new Vector3(1, 0, -1);
                 break;
             case Direction.Center:
                 targetPosition = Vector3.zero;

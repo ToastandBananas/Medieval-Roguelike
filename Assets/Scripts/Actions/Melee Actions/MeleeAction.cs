@@ -478,7 +478,7 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit.CharacterEquipment.MeleeWeaponEquipped() || (unit.stats.CanFightUnarmed && unit.CharacterEquipment.IsUnarmed()))
+        if (unit != null && (unit.CharacterEquipment.MeleeWeaponEquipped() || (unit.stats.CanFightUnarmed && unit.CharacterEquipment.IsUnarmed())))
             return true;
         return false;
     }

@@ -342,11 +342,10 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < equipment.ActionTypes.Length; i++)
         {
             if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
-                return;
+                continue;
 
             myUnit.unitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
-            if (equipment.ActionTypes[i].GetAction(myUnit).IsAttackAction())
-                myUnit.unitActionHandler.AvailableCombatActions.Add(equipment.ActionTypes[i]);
+            equipment.ActionTypes[i].GetAction(myUnit);
         }
 
         ActionSystemUI.Instance.UpdateActionVisuals();
@@ -357,11 +356,10 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < equipment.ActionTypes.Length; i++)
         {
             if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (equipment.ActionTypes[i].GetAction(myUnit) is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
-                return;
+                continue;
 
+            ActionSystem.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
             myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
-            if (myUnit.unitActionHandler.AvailableCombatActions.Contains(equipment.ActionTypes[i]))
-                myUnit.unitActionHandler.AvailableCombatActions.Remove(equipment.ActionTypes[i]);
         }
 
         ActionSystemUI.Instance.UpdateActionVisuals();
@@ -461,7 +459,6 @@ public class CharacterEquipment : MonoBehaviour
             if (myUnit.IsPlayer())
             {
                 myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
-                ActionSystemUI.Instance.UpdateActionVisuals();
             }
         }
         else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
@@ -500,7 +497,6 @@ public class CharacterEquipment : MonoBehaviour
             if (myUnit.IsPlayer())
             {
                 myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
-                ActionSystemUI.Instance.UpdateActionVisuals();
             }
         }
         else

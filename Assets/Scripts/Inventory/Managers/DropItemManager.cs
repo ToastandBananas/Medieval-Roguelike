@@ -65,6 +65,7 @@ public class DropItemManager : MonoBehaviour
         else
             SetupItemDrop(looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
 
+        characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         characterEquipment.RemoveEquipmentMesh(equipSlot);
 
         float randomForceMagnitude = Random.Range(50f, 300f);
@@ -82,7 +83,6 @@ public class DropItemManager : MonoBehaviour
         else if (characterEquipment.SlotVisualsCreated)
             characterEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
-        characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         characterEquipment.EquippedItemDatas[(int)equipSlot] = null;
     }
 
@@ -194,13 +194,24 @@ public class DropItemManager : MonoBehaviour
         }
     }
 
-    static void SetupHeldItemDrop(Transform itemDropTransform, LooseItem looseItem, ItemData itemData)
+    static void SetupHeldItemDrop(Transform heldItemTransform, LooseItem looseItem, ItemData itemData)
     {
         SetupLooseItem(looseItem, itemData);
 
+        if (itemData.Item.IsShield() && heldItemTransform.childCount > 1)
+        {
+            for (int i = heldItemTransform.childCount - 1; i > 0; i--)
+            {
+                if (heldItemTransform.GetChild(i).CompareTag("Loose Item") == false)
+                    continue;
+
+                SetupLooseProjectile(heldItemTransform.GetChild(i), looseItem);
+            }
+        }
+
         // Set the LooseItem's position to match the HeldItem before we add force
-        looseItem.transform.position = itemDropTransform.position;
-        looseItem.transform.rotation = itemDropTransform.rotation;
+        looseItem.transform.position = heldItemTransform.position;
+        looseItem.transform.rotation = heldItemTransform.rotation;
         looseItem.gameObject.SetActive(true);
     }
 
@@ -210,6 +221,17 @@ public class DropItemManager : MonoBehaviour
         looseItem.SetupMesh();
         looseItem.name = itemData.Item.name;
         itemData.SetInventorySlotCoordinate(null);
+    }
+
+    static void SetupLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem)
+    {
+        Vector3 projectilePosition = looseProjectileTransform.localPosition;
+        Quaternion projectileRotation = looseProjectileTransform.localRotation;
+        LooseItem looseProjectile = looseProjectileTransform.GetComponent<LooseItem>();
+        looseProjectile.MeshCollider.enabled = false;
+        looseProjectileTransform.SetParent(looseItem.transform);
+        looseProjectileTransform.transform.localPosition = projectilePosition;
+        looseProjectileTransform.transform.localRotation = projectileRotation;
     }
 
     static Vector3 GetDropDirection(Unit unit)

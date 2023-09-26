@@ -119,7 +119,7 @@ public class PlayerActionHandler : UnitActionHandler
 
     public override void SkipTurn()
     {
-        lastQueuedActionType = null;
+        lastQueuedAction = null;
         unit.stats.UseAP(unit.stats.APUntilTimeTick);
         TurnManager.Instance.FinishTurn(unit);
     }

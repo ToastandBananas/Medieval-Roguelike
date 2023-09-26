@@ -119,7 +119,6 @@ public abstract class HeldItem : MonoBehaviour
     {
         unit = null;
         itemData = null;
-        transform.SetParent(HeldItemBasePool.Instance.transform);
-        gameObject.SetActive(false);
+        HeldItemBasePool.ReturnToPool(this);
     }
 }

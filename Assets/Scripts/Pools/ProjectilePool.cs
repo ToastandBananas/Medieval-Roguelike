@@ -52,6 +52,12 @@ public class ProjectilePool : MonoBehaviour
         return newProjectile;
     }
 
+    public static void ReturnToPool(Projectile projectile)
+    {
+        projectile.transform.SetParent(Instance.transform);
+        projectile.gameObject.SetActive(false);
+    }
+
     public Ammunition Arrow_SO() => arrow;
 
     public Ammunition Bomb_SO() => bomb;

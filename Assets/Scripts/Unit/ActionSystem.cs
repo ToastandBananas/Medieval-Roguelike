@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class ActionSystem : MonoBehaviour
 {
@@ -39,20 +41,40 @@ public class ActionSystem : MonoBehaviour
 
     public static BaseAction GetAction(Type type, Unit unit)
     {
+        for (int i = 0; i < unit.unitActionHandler.AvailableActions.Count; i++)
+        {
+            if (unit.unitActionHandler.AvailableActions[i].GetType() == type)
+                return unit.unitActionHandler.AvailableActions[i];
+        }
+
         // Find an available action of the specified type
         for (int i = 0; i < actions.Count; i++)
         {
-            if (actions[i].gameObject.activeSelf == false && actions[i].GetType() == type)
-            {
-                actions[i].SetUnit(unit);
-                return actions[i];
-            }
+            if (actions[i].GetType() != type)
+                continue;
+            
+            BaseAction action = actions[i];
+            SetupAction(action, unit);
+            return action;
         }
 
         // If no available action of the specified type is found, create a new one
         BaseAction newAction = CreateNewAction(type);
-        newAction.SetUnit(unit);
+        SetupAction(newAction, unit);
         return newAction;
+    }
+
+    static void SetupAction(BaseAction action, Unit unit)
+    {
+        action.SetUnit(unit);
+
+        unit.unitActionHandler.AvailableActions.Add(action);
+        if (action.IsAttackAction())
+            unit.unitActionHandler.AvailableCombatActions.Add(action);
+
+        action.transform.SetParent(unit.ActionsParent);
+        action.gameObject.SetActive(true);
+        actions.Remove(action);
     }
 
     static BaseAction CreateNewAction(Type type)
@@ -75,7 +97,13 @@ public class ActionSystem : MonoBehaviour
 
     public static void ReturnToPool(BaseAction action)
     {
-        // action.SetUnit(null);
+        action.unit.unitActionHandler.AvailableActions.Remove(action);
+        if (action.unit.unitActionHandler.AvailableCombatActions.Contains(action))
+            action.unit.unitActionHandler.AvailableCombatActions.Remove(action);
+
+        action.SetUnit(null);
+        action.transform.SetParent(Instance.transform);
+        actions.Add(action);
         action.gameObject.SetActive(false);
     }
 }

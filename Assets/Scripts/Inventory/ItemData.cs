@@ -60,6 +60,13 @@ public class ItemData
         }
     }
 
+    public bool IsEqual(ItemData otherItemData)
+    {
+        if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower)
+            return true;
+        return false;
+    }
+
     public void TransferData(ItemData itemDataToCopy)
     {
         item = itemDataToCopy.item;

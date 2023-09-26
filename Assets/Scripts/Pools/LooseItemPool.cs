@@ -109,6 +109,7 @@ public class LooseItemPool : MonoBehaviour
 
         looseItem.RigidBody.isKinematic = false;
         looseItem.RigidBody.useGravity = true;
+        looseItem.MeshCollider.enabled = true;
         looseItem.SetItemData(null);
         looseItem.gameObject.SetActive(false);
     }

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class MoveAction : BaseAction
 {
+    public GridPosition finalTargetGridPosition { get; private set; }
+    public GridPosition nextTargetGridPosition { get; private set; }
     Vector3 nextTargetPosition;
 
     List<Vector3> positionList = new List<Vector3>();
@@ -40,7 +42,7 @@ public class MoveAction : BaseAction
     IEnumerator Move()
     {
         // If there's no path
-        if (positionList.Count == 0 || unit.unitActionHandler.finalTargetGridPosition == unit.gridPosition)
+        if (positionList.Count == 0 || finalTargetGridPosition == unit.gridPosition)
         {
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -48,10 +50,10 @@ public class MoveAction : BaseAction
         }
 
         // If the next position is obstructed
-        if (LevelGrid.Instance.GridPositionObstructed(unit.unitActionHandler.nextTargetGridPosition))
+        if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
         {
             // Get a new path to the target position
-            GetPathToTargetPosition(unit.unitActionHandler.finalTargetGridPosition);
+            GetPathToTargetPosition(finalTargetGridPosition);
 
             // If we still can't find a path, just finish the action
             if (positionList.Count == 0) 
@@ -62,7 +64,7 @@ public class MoveAction : BaseAction
             }
 
             nextTargetPosition = GetNextTargetPosition();
-            unit.unitActionHandler.SetNextTargetGridPosition(LevelGrid.GetGridPosition(nextTargetPosition));
+            nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
         }
 
         if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(nextTargetPosition)))
@@ -125,7 +127,7 @@ public class MoveAction : BaseAction
             Vector3 unitPosition = unit.transform.position;
             Vector3 targetPosition = unitPosition;
 
-            while (Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)//unit.transform.position != nextPathPosition)
+            while (Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
             {
                 unitPosition = unit.transform.position;
 
@@ -159,7 +161,7 @@ public class MoveAction : BaseAction
                 // Determine if the Unit should stop their move animation
                 if (unit.unitActionHandler.targetEnemyUnit == null)
                 {
-                    float distanceToFinalPosition = Vector3.Distance(unitPosition, LevelGrid.GetWorldPosition(unit.unitActionHandler.finalTargetGridPosition));
+                    float distanceToFinalPosition = Vector3.Distance(unitPosition, LevelGrid.GetWorldPosition(finalTargetGridPosition));
                     if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
                         unit.unitAnimator.StopMovingForward();
                 }
@@ -185,7 +187,7 @@ public class MoveAction : BaseAction
         unit.transform.position = nextPathPosition;
 
         // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
-        if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != unit.unitActionHandler.finalTargetGridPosition.WorldPosition())
+        if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
             positionIndex++;
 
         CompleteAction();
@@ -219,7 +221,7 @@ public class MoveAction : BaseAction
             else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
                 QueueMoveToTargetEnemy();
             // If the Player hasn't reached their destination, add the next move to the queue
-            else if (unit.gridPosition != unit.unitActionHandler.finalTargetGridPosition)
+            else if (unit.gridPosition != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this);
         }
         else // If NPC
@@ -253,7 +255,7 @@ public class MoveAction : BaseAction
         else
             unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit));
 
-        unit.unitActionHandler.QueueAction(this);
+        unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
@@ -266,7 +268,7 @@ public class MoveAction : BaseAction
             targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition, LevelGrid.diaganolDistance, false);
         }
 
-        unit.unitActionHandler.SetFinalTargetGridPosition(targetGridPosition);
+        finalTargetGridPosition = targetGridPosition;
 
         unit.UnblockCurrentPosition();
 
@@ -287,7 +289,7 @@ public class MoveAction : BaseAction
                 GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
                 npcActionHandler.IncreasePatrolPointIndex();
                 npcActionHandler.SetTargetGridPosition(patrolPointGridPosition);
-                unit.unitActionHandler.SetFinalTargetGridPosition(patrolPointGridPosition);
+                finalTargetGridPosition = patrolPointGridPosition;
             }
 
             TurnManager.Instance.FinishTurn(unit);
@@ -324,7 +326,7 @@ public class MoveAction : BaseAction
             positionIndex = positionList.Count - 1;
 
         // Only calculate a new path if the Unit's target position changed or if their path becomes obstructed
-        if (unit.unitActionHandler.targetGridPosition != unit.unitActionHandler.finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
+        if (unit.unitActionHandler.targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
             GetPathToTargetPosition(unit.unitActionHandler.targetGridPosition);
 
         if (positionList.Count == 0)
@@ -362,7 +364,7 @@ public class MoveAction : BaseAction
 
         // Get the next Move position
         nextTargetPosition = GetNextTargetPosition();
-        unit.unitActionHandler.SetNextTargetGridPosition(LevelGrid.GetGridPosition(nextTargetPosition));
+        nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
 
         float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
 
@@ -372,7 +374,7 @@ public class MoveAction : BaseAction
 
         cost = Mathf.RoundToInt(floatCost);
 
-        if (nextTargetPosition == transform.position)
+        if (nextTargetPosition == unit.transform.position)
         {
             unit.unitActionHandler.SetTargetGridPosition(unit.gridPosition);
 
@@ -440,7 +442,7 @@ public class MoveAction : BaseAction
         else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // NorthWest
             nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1); 
         else // Debug.LogWarning("Next Position is " + unit.name + "'s current position...");
-            nextTargetPosition = transform.position;
+            nextTargetPosition = unit.transform.position;
         nextTargetPosition = new Vector3(Mathf.RoundToInt(nextTargetPosition.x), nextTargetPosition.y, Mathf.RoundToInt(nextTargetPosition.z));
         return nextTargetPosition;
     }
@@ -512,6 +514,8 @@ public class MoveAction : BaseAction
         else
             moveSpeed = Mathf.FloorToInt((((float)pooledAP) / defaultTileMoveCost) * defaultMoveSpeed);
     }
+
+    public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
 
     public override string GetActionName() => "Move";
 
