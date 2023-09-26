@@ -20,7 +20,33 @@ public class LooseItem : Interactable
     {
         // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
         if (TryEquipItemOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
-            LooseItemPool.Instance.ReturnToPool(this);
+        {
+            TryTakeStuckProjectiles(unitPickingUpItem);
+            LooseItemPool.ReturnToPool(this);
+        }
+    }
+
+    void TryTakeStuckProjectiles(Unit unitPickingUpItem)
+    {
+        if (itemData.Item.IsShield() && transform.childCount > 1)
+        {
+            for (int i = transform.childCount - 1; i > 0; i--)
+            {
+                if (transform.GetChild(i).CompareTag("Loose Item") == false)
+                    continue;
+
+                LooseItem looseProjectile = transform.GetChild(i).GetComponent<LooseItem>();
+                if (unitPickingUpItem.TryAddItemToInventories(looseProjectile.itemData))
+                    LooseItemPool.ReturnToPool(looseProjectile);
+                else
+                {
+                    looseProjectile.transform.SetParent(LooseItemPool.Instance.LooseItemParent);
+                    looseProjectile.meshCollider.enabled = true;
+                    looseProjectile.rigidBody.useGravity = true;
+                    looseProjectile.rigidBody.isKinematic = false;
+                }
+            }
+        }
     }
 
     protected bool TryEquipItemOnPickup(Unit unitPickingUpItem)

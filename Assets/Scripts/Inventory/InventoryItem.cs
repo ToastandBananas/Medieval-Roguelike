@@ -105,7 +105,7 @@ public class InventoryItem : MonoBehaviour
             if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.ParentSlot() == null)
+                if (myInventorySlot.ParentSlot() == null || myInventorySlot.ParentSlot().InventoryItem.itemData == null)
                     return;
 
                 if (myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize == 1)

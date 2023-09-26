@@ -14,6 +14,9 @@ public class HeldRangedWeapon : HeldItem
     {
         Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
 
+        // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
+        loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetUnit); });
+
         // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
         bool attackBlocked = targetUnit.unitActionHandler.TryBlockRangedAttack(unit);
         unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
@@ -36,9 +39,15 @@ public class HeldRangedWeapon : HeldItem
     public void LoadProjectile()
     {
         Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-        projectile.Setup(projectile.ItemData, unit, bowLineRenderer.GetStringCenterTarget(), null);
+        projectile.Setup(projectile.ItemData, unit, bowLineRenderer.GetStringCenterTarget());
         loadedProjectile = projectile;
         isLoaded = true;
+    }
+
+    void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
+    {
+        if (targetUnit != null && targetUnit.health.IsDead() == false)
+            targetUnit.unitAnimator.StopBlocking();
     }
 
     public void ShootProjectile()

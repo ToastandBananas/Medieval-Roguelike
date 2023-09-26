@@ -9,7 +9,7 @@ public enum ProjectileType
 };
 
 [CreateAssetMenu(fileName = "New Ammunition", menuName = "Inventory/Ammunition")]
-public class Ammunition : Item
+public class Ammunition : Equipment
 {
     [Header("Collider Info")]
     [SerializeField] Vector3 capsuleColliderCenter;

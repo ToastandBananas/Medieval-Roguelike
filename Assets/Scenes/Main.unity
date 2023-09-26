@@ -2604,7 +2604,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2923,7 +2923,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268346, y: -0.000000015896623, z: 0.0000000065845964, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268346, y: 0.000000015896623, z: -0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 4, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7176,6 +7176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d36a141ef96166c4f91b52c0daa7b487, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  amountToPool: 0
 --- !u!1 &917109233
 GameObject:
   m_ObjectHideFlags: 0
@@ -14932,6 +14933,11 @@ PrefabInstance:
         type: 3}
       propertyPath: bowSkill.baseValue
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: shieldSkill.baseValue
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 3857642008309237419, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}

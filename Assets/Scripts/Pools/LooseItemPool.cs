@@ -94,7 +94,7 @@ public class LooseItemPool : MonoBehaviour
         return newLooseContainerItem;
     }
 
-    public void ReturnToPool(LooseItem looseItem)
+    public static void ReturnToPool(LooseItem looseItem)
     {
         if (looseItem is LooseContainerItem)
         {
@@ -102,10 +102,10 @@ public class LooseItemPool : MonoBehaviour
             if (InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager) != null)
                 InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
-            looseItem.transform.SetParent(looseContainerItemParent);
+            looseItem.transform.SetParent(Instance.looseContainerItemParent);
         }
         else
-            looseItem.transform.SetParent(looseItemParent);
+            looseItem.transform.SetParent(Instance.looseItemParent);
 
         looseItem.RigidBody.isKinematic = false;
         looseItem.RigidBody.useGravity = true;
@@ -113,4 +113,6 @@ public class LooseItemPool : MonoBehaviour
         looseItem.SetItemData(null);
         looseItem.gameObject.SetActive(false);
     }
+
+    public Transform LooseItemParent => looseItemParent;
 }

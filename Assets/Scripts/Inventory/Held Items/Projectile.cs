@@ -25,6 +25,8 @@ public class Projectile : MonoBehaviour
     float currentVelocity;
     bool moveProjectile;
 
+    Action onProjectileBehaviourComplete;
+
     void Awake()
     {
         projectileCollider.enabled = false;
@@ -34,7 +36,7 @@ public class Projectile : MonoBehaviour
         itemData.SetCurrentStackSize(1);
     }
 
-    public void Setup(ItemData itemData, Unit shooter, Transform parentTransform, Action onProjectileBehaviourComplete)
+    public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
     {
         this.shooter = shooter;
 
@@ -61,6 +63,8 @@ public class Projectile : MonoBehaviour
 
         gameObject.SetActive(true);
     }
+
+    public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
     public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool missedTarget)
     {
@@ -170,9 +174,6 @@ public class Projectile : MonoBehaviour
 
     void Arrived(Transform collisionTransform)
     {
-        if (shooter.unitActionHandler.targetEnemyUnit != null)
-            shooter.unitActionHandler.targetEnemyUnit.unitAnimator.StopBlocking();
-
         shooter.unitActionHandler.targetUnits.Clear();
 
         TurnManager.Instance.StartNextUnitsTurn(shooter);
@@ -188,16 +189,12 @@ public class Projectile : MonoBehaviour
             SetupNewLooseItem(true, out LooseItem looseProjectile);
             if (collisionTransform != null)
                 looseProjectile.transform.SetParent(collisionTransform, true);
-
-            Disable();
         }
         else if (projectileType == ProjectileType.BluntObject)
         {
             SetupNewLooseItem(false, out LooseItem looseProjectile);
             float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
             looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
-
-            Disable();
         }
         else if (projectileType == ProjectileType.Explosive)
         {
@@ -234,9 +231,9 @@ public class Projectile : MonoBehaviour
             OnExplosion?.Invoke(this, EventArgs.Empty);
 
             // Throw Action: CompleteAction()
-
-            Disable();
         }
+
+        Disable();
     }
 
     public void SetupNewLooseItem(bool preventMovement, out LooseItem looseProjectile)
@@ -288,6 +285,9 @@ public class Projectile : MonoBehaviour
 
     public void Disable()
     {
+        onProjectileBehaviourComplete?.Invoke();
+        onProjectileBehaviourComplete = null;
+
         moveProjectile = false;
         shooter = null;
         projectileCollider.enabled = false;
@@ -341,13 +341,13 @@ public class Projectile : MonoBehaviour
             }
             else if (collider.CompareTag("Shield"))
             {
-                Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
+                // Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
                 HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);
             }
-            else
+            else if (collider.CompareTag("Loose Item") == false)
                 Arrived(null);
         }
     }

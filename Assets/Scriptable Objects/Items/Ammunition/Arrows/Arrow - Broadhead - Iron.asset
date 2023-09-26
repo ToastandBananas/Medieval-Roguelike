@@ -35,7 +35,9 @@ MonoBehaviour:
   pickupMeshRendererMaterial: {fileID: 0}
   maxUses: 1
   isUsable: 1
-  capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.3}
+  equipSlot: 10
+  actionTypes: []
+  capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4
   capsuleColliderDirection: 2

@@ -237,7 +237,6 @@ public class CharacterEquipment : MonoBehaviour
             }
         }
 
-        // Try adding the item to the character's inventory
         if (myUnit.TryAddItemToInventories(equippedItemDatas[(int)equipSlot]))
         {
             if (slotVisualsCreated)

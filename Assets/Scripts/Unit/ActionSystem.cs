@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 public class ActionSystem : MonoBehaviour
 {
@@ -11,7 +9,7 @@ public class ActionSystem : MonoBehaviour
 
     static List<BaseAction> actions = new List<BaseAction>();
 
-    readonly int amountToPool = 1;
+    [SerializeField] int amountToPool = 0;
 
     void Awake()
     {
@@ -26,9 +24,11 @@ public class ActionSystem : MonoBehaviour
         else
             Instance = this;
 
+        if (amountToPool == 0)
+            return;
+
         // Use reflection to find all types that inherit from BaseAction
         List<Type> actionTypes = FindDerivedTypes<BaseAction>();
-        
         foreach (Type type in actionTypes)
         {
             for (int i = 0; i < amountToPool; i++)

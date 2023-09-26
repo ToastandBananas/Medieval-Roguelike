@@ -31,7 +31,7 @@ public class ContextMenuButton : MonoBehaviour
             if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
                 InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveItem(itemData);
             else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
-                LooseItemPool.Instance.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
+                LooseItemPool.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
         }
 
         ContextMenu.Instance.DisableContextMenu();
@@ -149,7 +149,7 @@ public class ContextMenuButton : MonoBehaviour
             }
 
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
-                LooseItemPool.Instance.ReturnToPool(ContextMenu.Instance.TargetInteractable as LooseItem);
+                LooseItemPool.ReturnToPool(ContextMenu.Instance.TargetInteractable as LooseItem);
         }
 
         ContextMenu.Instance.DisableContextMenu();
