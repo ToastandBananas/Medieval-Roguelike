@@ -381,8 +381,6 @@ public class InventoryUI : MonoBehaviour
         return null;
     }
 
-    public void ClearParentSlotDraggedFrom() => parentSlotDraggedFrom = null;
-
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 
     public InventoryItem DraggedItem => draggedItem;

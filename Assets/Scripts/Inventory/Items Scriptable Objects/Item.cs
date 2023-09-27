@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public enum ItemSize { ExtraSmall, VerySmall, Small, Medium, Large, VeryLarge, ExtraLarge }
-public enum ItemType { BasicItem, MeleeWeapon, RangedWeapon, Ammo, Clothing, Armor, Shield, Medical, Food, Drink, Ingredient, Seed, Readable, Key, QuestItem, Bag, Container }
+public enum ItemType { BasicItem, MeleeWeapon, RangedWeapon, Ammo, Clothing, Armor, Shield, Medical, Food, Drink, Ingredient, Seed, Readable, Key, QuestItem, Bag, Container, Quiver }
 public enum ItemMaterial
 {
     Liquid, ViscousLiquid, Meat, Bone, Food, Fat, Bug, Leaf, Charcoal, Wood, Bark, Paper, Hair, Linen, QuiltedLinen, Cotton, Wool, QuiltedWool, Silk, Hemp, Fur,
@@ -22,7 +22,6 @@ public abstract class Item : ScriptableObject
     public int width = 1;
     public int height = 1;
     public float weight = 0.1f;
-    public float volume = 0.1f;
     public int maxStackSize = 1;
     public Sprite inventorySprite;
 

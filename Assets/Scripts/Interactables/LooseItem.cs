@@ -68,8 +68,8 @@ public class LooseItem : Interactable
                 if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot))
                 {
                     EquipSlot oppositeEquipSlot = unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
-                    
-                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)       
+
+                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
                         equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
                 }
                 else
@@ -77,6 +77,8 @@ public class LooseItem : Interactable
             }
             else if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot) == false)
                 equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
+            else if (itemData.Item.IsAmmunition() && itemData.IsEqual(unitPickingUpItem.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
+                equipped = unitPickingUpItem.CharacterEquipment.TryAddToEquippedAmmunition(itemData);
 
             // Transfer inventory from loose container item if applicable
             /*if (equipped && this is LooseContainerItem)

@@ -1,10 +1,14 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Quiver", menuName = "Inventory/Quiver")]
-public class Quiver : Equipment
+public class Quiver : Wearable
 {
     [SerializeField] ProjectileType allowedProjectileType;
     [SerializeField] int ammoStackCount = 2;
+
+    [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[6];
+
+    public InventoryLayout[] InventorySections => inventorySections;
 
     public int AmmoStackCount => ammoStackCount;
 

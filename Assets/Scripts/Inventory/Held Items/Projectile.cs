@@ -56,7 +56,6 @@ public class Projectile : MonoBehaviour
         transform.parent = parentTransform;
         transform.localPosition = ammunitionItem.AmmunitionPositionOffset;
         transform.localEulerAngles = ammunitionItem.AmmunitionRotation;
-        transform.localScale = ammunitionItem.AmmunitionScale;
 
         if (shooter.IsPlayer() == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
             meshRenderer.enabled = false;

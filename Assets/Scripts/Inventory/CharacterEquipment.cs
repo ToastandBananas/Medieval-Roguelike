@@ -81,9 +81,28 @@ public class CharacterEquipment : MonoBehaviour
 
     public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
     {
+        if (targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item.IsBag())
+        { 
+            if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
+            {
+                if (InventoryUI.Instance.isDraggingItem)
+                    InventoryUI.Instance.DisableDraggedItem();
+                return true;
+            }
+            else
+            {
+                if (InventoryUI.Instance.isDraggingItem)
+                    InventoryUI.Instance.ReplaceDraggedItem();
+                return false;
+            }
+        }
+
         // Check if the position is invalid
         if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.validDragPosition == false)
+        {
+            InventoryUI.Instance.ReplaceDraggedItem();
             return false;
+        }
 
         // If the item is a two-handed weapon, assign the left held item equip slot
         if (newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
@@ -96,7 +115,10 @@ public class CharacterEquipment : MonoBehaviour
 
         // If trying to place the item back into the slot it came from, place the dragged item back to where it came from
         if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.Instance.parentSlotDraggedFrom)
-            InventoryUI.Instance.ReplaceDraggedItem(); 
+            InventoryUI.Instance.ReplaceDraggedItem();
+        // If trying to place ammo on a Quiver slot that has a Quiver equipped
+        else if (newItemData.Item.IsAmmunition() && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && newItemData.Item.Ammunition().ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver().AllowedProjectileType)))
+            TryAddToEquippedAmmunition(newItemData);
         else
             Equip(newItemData, targetEquipSlot);
 
@@ -139,6 +161,74 @@ public class CharacterEquipment : MonoBehaviour
             InventoryUI.Instance.DisableDraggedItem();
 
         AddActions(newItemData.Item as Equipment);
+    }
+
+    public bool TryAddToEquippedAmmunition(ItemData ammoItemData)
+    {
+        if (EquipSlotHasItem(EquipSlot.Quiver) == false || ammoItemData.Item.IsAmmunition() == false)
+            return false;
+        
+        if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory() == myUnit.QuiverInventoryManager.ParentInventory)
+        {
+            if (InventoryUI.Instance.isDraggingItem)
+                InventoryUI.Instance.ReplaceDraggedItem();
+
+            return false;
+        }
+
+        // If trying to add to a stack of ammo
+        if (ammoItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]))
+        {
+            int roomInStack = equippedItemDatas[(int)EquipSlot.Quiver].Item.maxStackSize - equippedItemDatas[(int)EquipSlot.Quiver].CurrentStackSize;
+
+            // If there's more room in the stack than the new item's current stack size, add it all to the stack
+            if (ammoItemData.CurrentStackSize <= roomInStack)
+            {
+                equippedItemDatas[(int)EquipSlot.Quiver].AdjustCurrentStackSize(ammoItemData.CurrentStackSize);
+                ammoItemData.SetCurrentStackSize(0);
+            }
+            else // If the new item's stack size is greater than the amount of room in the other item's stack, add what we can
+            {
+                equippedItemDatas[(int)EquipSlot.Quiver].AdjustCurrentStackSize(roomInStack);
+                ammoItemData.AdjustCurrentStackSize(-roomInStack);
+            }
+
+            GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeText();
+
+            if (ammoItemData.CurrentStackSize <= 0)
+            {
+                RemoveItemFromOrigin(ammoItemData);
+                if (InventoryUI.Instance.isDraggingItem)
+                    InventoryUI.Instance.DisableDraggedItem();
+
+                return true;
+            }
+            else
+            {
+                // Update the stack size text for the ammo since it wasn't all equipped
+                if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().SlotVisualsCreated)
+                {
+                    InventorySlot slot = ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData);
+                    slot.InventoryItem.UpdateStackSizeText();
+                }
+            }
+        }
+        // If there's a quiver we can add the ammo to
+        else if (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && ammoItemData.Item.Ammunition().ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver().AllowedProjectileType)
+        {
+            if (myUnit.QuiverInventoryManager.ParentInventory.TryAddItem(ammoItemData))
+            {
+                if (InventoryUI.Instance.isDraggingItem)
+                    InventoryUI.Instance.DisableDraggedItem();
+
+                return true;
+            }
+        }
+
+        if (InventoryUI.Instance.isDraggingItem)
+            InventoryUI.Instance.ReplaceDraggedItem();
+
+        return false;
     }
 
     public void RemoveItem(ItemData itemData)
@@ -217,23 +307,26 @@ public class CharacterEquipment : MonoBehaviour
     {
         if (EquipSlotHasItem(equipSlot) == false)
             return;
-        
+
+        Equipment equipment = equippedItemDatas[(int)equipSlot].Item as Equipment;
         if (GetEquipmentSlot(equipSlot) != InventoryUI.Instance.parentSlotDraggedFrom)
         {
             // If this is the Unit's equipped backpack
-            if (equipSlot == EquipSlot.Back && equippedItemDatas[(int)equipSlot].Item.IsBag() && myUnit.BackpackInventoryManager.ContainsAnyItems())
+            if (equipSlot == EquipSlot.Back && equipment.IsBag())
             {
                 if (InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager) != null)
                     InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
-                DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
+                if (myUnit.BackpackInventoryManager.ContainsAnyItems())
+                    DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
             }
-            else if (equipSlot == EquipSlot.Quiver && myUnit.QuiverInventoryManager.ContainsAnyItems())
+            else if (equipSlot == EquipSlot.Quiver && equipment is Quiver)
             {
                 if (InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager) != null)
                     InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
 
-                DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
+                if (myUnit.QuiverInventoryManager.ContainsAnyItems())
+                    DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
             }
         }
 
@@ -247,7 +340,7 @@ public class CharacterEquipment : MonoBehaviour
         else // Else, drop the item
             DropItemManager.DropItem(this, equipSlot);
 
-        RemoveActions(equippedItemDatas[(int)equipSlot].Item as Equipment);
+        RemoveActions(equipment);
         equippedItemDatas[(int)equipSlot] = null;
     }
 
@@ -592,8 +685,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item.IsBag();
 
-    public bool QuiverEquipped() => (currentWeaponSet == WeaponSet.One && EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.IsPortableContainer()) 
-        || (currentWeaponSet == WeaponSet.Two && EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.IsPortableContainer());
+    public bool QuiverEquipped() => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver;
 
     public EquipmentSlot GetEquipmentSlot(EquipSlot equipSlot)
     {

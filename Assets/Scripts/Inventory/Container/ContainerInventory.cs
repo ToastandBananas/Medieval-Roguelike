@@ -21,8 +21,10 @@ public class ContainerInventory : Inventory
     {
         // TODO: Figure out out to discern between an equipped container vs one that's in a Unit's inventory and then set it up based off its Item
 
-        if (myUnit != null && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+        if (myUnit != null && containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
             SetupInventoryLayoutFromItem((Backpack)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+        else if (myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+            SetupInventoryLayoutFromItem((Quiver)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
         else if (looseItem != null && looseItem.ItemData != null)
             SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
         
@@ -87,6 +89,11 @@ public class ContainerInventory : Inventory
             {
                 Backpack backpack = item as Backpack;
                 inventorySections = backpack.InventorySections;
+            }
+            else if (item is Quiver)
+            {
+                Quiver quiver = item as Quiver;
+                inventorySections = quiver.InventorySections;
             }
 
             if (inventorySections == null)

@@ -88,7 +88,7 @@ public class InventoryItem : MonoBehaviour
     {
         iconImage.sprite = itemData.Item.inventorySprite;
         rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.width, slotSize * itemData.Item.height);
-        iconImage.enabled = true;
+        EnableIconImage();
     }
 
     public void UpdateStackSizeText()

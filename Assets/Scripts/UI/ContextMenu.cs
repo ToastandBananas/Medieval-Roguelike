@@ -67,7 +67,15 @@ public class ContextMenu : MonoBehaviour
         {
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
             if (InventoryUI.Instance.activeSlot != null)
+            {
                 targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
+                if (targetSlot is EquipmentSlot)
+                {
+                    EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
+                    if (equipmentSlot.CharacterEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.CharacterEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
+                        targetSlot = equipmentSlot.CharacterEquipment.GetEquipmentSlot(equipmentSlot.CharacterEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
+                }
+            }
 
             StartCoroutine(BuildContextMenuCooldown());
 
@@ -164,7 +172,7 @@ public class ContextMenu : MonoBehaviour
 
     void CreateOpenContainerButton()
     {
-        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.ParentSlot().IsFull())
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.ParentSlot().IsFull() && (targetSlot.GetItemData().Item.IsBag() || targetSlot.GetItemData().Item is Quiver))
         {
             ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
             if (containerEquipmentSlot.containerInventoryManager == null)
@@ -232,7 +240,7 @@ public class ContextMenu : MonoBehaviour
             if (itemData.RemainingUses >= 10)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
         }
-        else if (itemData.Item.maxStackSize > 1)
+        else if (itemData.Item.maxStackSize > 1 && itemData.Item.IsAmmunition() == false)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 

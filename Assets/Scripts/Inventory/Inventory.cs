@@ -71,6 +71,12 @@ public class Inventory
                 {
                     InventorySlot targetSlot = GetSlotFromItemData(itemDatas[i]);
                     targetSlot.InventoryItem.UpdateStackSizeText();
+
+                    if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
+                    {
+                        InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
+                        slot.InventoryItem.UpdateStackSizeText();
+                    }
                 }
             }
         }
@@ -141,13 +147,24 @@ public class Inventory
                 GetSlotFromCoordinate(targetSlotCoordinate).RemoveSlotHighlights();
 
             // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
-            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.maxStackSize > 1 && overlappedItemsData.CurrentStackSize < overlappedItemsData.Item.maxStackSize && newItemData.IsEqual(overlappedItemsData))
+            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.maxStackSize > 1 && newItemData.IsEqual(overlappedItemsData))
             {
+                if (overlappedItemsData.CurrentStackSize >= overlappedItemsData.Item.maxStackSize)
+                    return false;
+
                 CombineStacks(newItemData, overlappedItemsData);
 
                 // Update the overlapped item's stack size text
                 if (slotVisualsCreated)
+                {
                     GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).InventoryItem.UpdateStackSizeText();
+
+                    if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
+                    {
+                        InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
+                        slot.InventoryItem.UpdateStackSizeText();
+                    }
+                }
 
                 if (InventoryUI.Instance.isDraggingItem)
                 {
@@ -226,7 +243,7 @@ public class Inventory
                 InventoryUI.Instance.DisableDraggedItem();
         }
 
-        InventoryUI.Instance.ClearParentSlotDraggedFrom();
+        // InventoryUI.Instance.ClearParentSlotDraggedFrom();
         return true;
     }
 

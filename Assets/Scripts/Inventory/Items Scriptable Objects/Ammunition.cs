@@ -29,7 +29,20 @@ public class Ammunition : Equipment
     [Header("Transform")]
     [SerializeField] Vector3 ammunitionPositionOffset;
     [SerializeField] Vector3 ammunitionRotation;
-    [SerializeField] Vector3 ammunitionScale = Vector3.one;
+
+    public override void Use(Unit unit, ItemData itemData, int amountToUse = 1)
+    {
+        if (unit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+        {
+            Quiver quiver = unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
+            if (quiver.AllowedProjectileType == projectileType)
+                unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
+            else
+                unit.CharacterEquipment.TryEquipItem(itemData);
+        }
+        else
+            unit.CharacterEquipment.TryEquipItem(itemData);
+    }
 
     public Mesh AmmunitionMesh => meshes[0];
     public Material AmmunitionMaterial => meshRendererMaterials[0];
@@ -45,9 +58,8 @@ public class Ammunition : Equipment
 
     public Vector3 AmmunitionPositionOffset => ammunitionPositionOffset;
     public Vector3 AmmunitionRotation => ammunitionRotation;
-    public Vector3 AmmunitionScale => ammunitionScale;
 
-    public override bool IsEquipment() => false;
+    public override bool IsEquipment() => true;
 
     public override bool IsWeapon() => false;
 

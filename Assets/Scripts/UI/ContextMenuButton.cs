@@ -51,11 +51,22 @@ public class ContextMenuButton : MonoBehaviour
                     if (containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
                         stringBuilder.Append(" & Drop");
                 }
-
+                
                 SetupButton(stringBuilder.ToString(), UnequipItem);
             }
             else if (ContextMenu.Instance.TargetInteractable != null || (ContextMenu.Instance.TargetSlot != null && ContextMenu.Instance.TargetSlot is EquipmentSlot == false))
-                SetupButton("Equip", delegate { EquipItem(itemData); });
+            {
+                if (itemData.Item is Ammunition && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+                {
+                    Quiver quiver = UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
+                    if (quiver.AllowedProjectileType == itemData.Item.Ammunition().ProjectileType)
+                        SetupButton("Add to Quiver", delegate { UseItem(itemData); });
+                    else
+                        SetupButton("Equip", delegate { EquipItem(itemData); });
+                }
+                else
+                    SetupButton("Equip", delegate { EquipItem(itemData); });
+            }
         }
         else
         {
@@ -122,7 +133,7 @@ public class ContextMenuButton : MonoBehaviour
         }
     }
 
-    void UseItem(ItemData itemData, int amountToUse)
+    void UseItem(ItemData itemData, int amountToUse = 1)
     {
         itemData.Item.Use(UnitManager.Instance.player, itemData, amountToUse);
         ContextMenu.Instance.DisableContextMenu();

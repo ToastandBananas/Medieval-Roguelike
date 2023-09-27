@@ -151,8 +151,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7895380748443772649, guid: a3a899b27765e2143bc4df3cf14c65c2,
         type: 3}
+      propertyPath: m_margin.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7895380748443772649, guid: a3a899b27765e2143bc4df3cf14c65c2,
+        type: 3}
       propertyPath: m_margin.y
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7895380748443772649, guid: a3a899b27765e2143bc4df3cf14c65c2,
         type: 3}
