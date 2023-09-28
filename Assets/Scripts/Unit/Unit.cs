@@ -138,10 +138,6 @@ public class Unit : MonoBehaviour
 
     public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
 
-    public ContainerInventory BackpackInventory() => backpackInventoryManager.ParentInventory;
-
-    public ContainerInventory QuiverInventory() => quiverInventoryManager.ParentInventory;
-
     public Inventory MainInventory() => mainInventoryManager.MainInventory;
 
     public CharacterEquipment CharacterEquipment => myCharacterEquipment;
@@ -153,7 +149,7 @@ public class Unit : MonoBehaviour
         if (itemData == null || itemData.Item == null)
             return false;
 
-        if (myCharacterEquipment != null && quiverInventoryManager != null && itemData.Item.IsAmmunition() && myCharacterEquipment.QuiverEquipped() && QuiverInventory().TryAddItem(itemData))
+        if (itemData.Item.IsAmmunition() && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
             return true;
 
         if (mainInventoryManager != null && MainInventory().TryAddItem(itemData))
@@ -161,7 +157,7 @@ public class Unit : MonoBehaviour
 
         if (myCharacterEquipment != null)
         {
-            if (backpackInventoryManager != null && myCharacterEquipment.BackpackEquipped() && BackpackInventory().TryAddItem(itemData))
+            if (backpackInventoryManager != null && myCharacterEquipment.BackpackEquipped() && backpackInventoryManager.TryAddItem(itemData))
                 return true;
         }
 

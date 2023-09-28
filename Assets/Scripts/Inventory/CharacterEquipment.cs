@@ -81,7 +81,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
     {
-        if (targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item.IsBag())
+        if ((newItemData.Item.IsEquipment() == false || newItemData.Item.Equipment().EquipSlot != EquipSlot.Back) && targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item.IsBag())
         { 
             if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
             {

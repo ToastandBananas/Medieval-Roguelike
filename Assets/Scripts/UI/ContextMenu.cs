@@ -34,16 +34,11 @@ public class ContextMenu : MonoBehaviour
         Instance = this;
 
         rectTransform = GetComponent<RectTransform>();
-
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            contextButtons[i] = transform.GetChild(i).GetComponent<ContextMenuButton>();
-        }
     }
 
     void Update()
     {
-        if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable)
+        if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable) && (InventoryUI.Instance.activeSlot == null || InventoryUI.Instance.activeSlot.ParentSlot().IsFull() == false)
             && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed)))
         {
             StartCoroutine(DelayDisableContextMenu());
@@ -54,7 +49,7 @@ public class ContextMenu : MonoBehaviour
 
         if (GameControls.gamePlayActions.menuContext.WasReleased)
         {
-            if (isActive == false && contextMenuHoldTimer < maxContextMenuHoldTime)
+            if (contextMenuHoldTimer < maxContextMenuHoldTime)
                 BuildContextMenu();
 
             contextMenuHoldTimer = 0;
@@ -63,54 +58,57 @@ public class ContextMenu : MonoBehaviour
 
     public void BuildContextMenu()
     {
-        if (onCooldown == false)
-        {
-            targetInteractable = PlayerInput.Instance.highlightedInteractable;
-            if (InventoryUI.Instance.activeSlot != null)
-            {
-                targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
-                if (targetSlot is EquipmentSlot)
-                {
-                    EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
-                    if (equipmentSlot.CharacterEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.CharacterEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
-                        targetSlot = equipmentSlot.CharacterEquipment.GetEquipmentSlot(equipmentSlot.CharacterEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
-                }
-            }
+        if (onCooldown)
+            return;
+        
+        DisableContextMenu(true);
 
+        targetInteractable = PlayerInput.Instance.highlightedInteractable;
+        if (InventoryUI.Instance.activeSlot != null)
+        {
+            targetSlot = InventoryUI.Instance.activeSlot.ParentSlot();
+            if (targetSlot is EquipmentSlot)
+            {
+                EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
+                if (equipmentSlot.CharacterEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.CharacterEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
+                    targetSlot = equipmentSlot.CharacterEquipment.GetEquipmentSlot(equipmentSlot.CharacterEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
+            }
+        }
+
+        if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
+        {
+            CreateMoveToButton();
+        }
+        else
+        {
+            // Create the necessary buttons
+            CreateTakeItemButton();
+            CreateAddToBagButtons();
+            CreateOpenContainerButton();
+            CreateUseItemButtons();
+            CreateDropItemButton();
+
+            if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
+                CreateMoveToButton();  
+        }
+
+        int buttonCount = 0;
+        for (int i = 0; i < contextButtons.Count; i++)
+        {
+            if (contextButtons[i].gameObject.activeSelf)
+            {
+                buttonCount++;
+                break;
+            }
+        }
+
+        if (buttonCount > 0)
+        {
+            isActive = true;
             StartCoroutine(BuildContextMenuCooldown());
 
-            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
-            {
-                CreateMoveToButton();
-            }
-            else
-            {
-                // Create the necessary buttons
-                CreateTakeItemButton();
-                CreateOpenContainerButton();
-                CreateUseItemButton();
-                CreateDropItemButton();
-
-                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
-                    CreateMoveToButton();  
-            }
-
-            int buttonCount = 0;
-            for (int i = 0; i < contextButtons.Count; i++)
-            {
-                if (contextButtons[i].gameObject.activeSelf)
-                {
-                    buttonCount++;
-                    break;
-                }
-            }
-
-            if (buttonCount > 0)
-            {
-                isActive = true;
-                SetupMenuSize();
-                SetupMenuPosition();
-            }
+            SetupMenuSize();
+            SetupMenuPosition();
         }
     }
 
@@ -126,6 +124,51 @@ public class ContextMenu : MonoBehaviour
             return;
         
         GetContextMenuButton().SetupMoveToButton(targetGridPosition);
+    }
+
+    void CreateAddToBagButtons()
+    {
+        if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            return;
+
+        ItemData itemData = null;
+        if (targetSlot != null)
+        {
+            if (targetSlot is EquipmentSlot)
+                return;
+
+            itemData = targetSlot.GetItemData();
+        }
+        else if (targetInteractable != null && targetInteractable is LooseItem)
+        {
+            LooseItem targetLooseItem = targetInteractable as LooseItem;
+            if (targetLooseItem is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
+                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
+                    return;
+            }
+
+            itemData = targetLooseItem.ItemData;
+        }
+
+        if (itemData == null || itemData.Item == null)
+            return;
+
+        if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+        {
+            ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+            if (containerInventory.containerInventoryManager != UnitManager.Instance.player.BackpackInventoryManager && UnitManager.Instance.player.BackpackInventoryManager != null 
+                && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+            {
+                GetContextMenuButton().SetupAddToBackpackButton(itemData);
+            }
+        }
+        else
+        {
+            if (UnitManager.Instance.player.BackpackInventoryManager != null && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+                GetContextMenuButton().SetupAddToBackpackButton(itemData);
+        }
     }
 
     void CreateTakeItemButton()
@@ -145,7 +188,7 @@ public class ContextMenu : MonoBehaviour
             else if (targetSlot is InventorySlot)
             {
                 InventorySlot targetInventorySlot = targetSlot as InventorySlot;
-                if (targetInventorySlot.myInventory.MyUnit == UnitManager.Instance.player)
+                if (targetInventorySlot.myInventory == UnitManager.Instance.player.MainInventory())
                     return;
             }
 
@@ -204,7 +247,7 @@ public class ContextMenu : MonoBehaviour
 
     void CreateCloseContainerButton() => GetContextMenuButton().SetupCloseContainerButton();
 
-    void CreateUseItemButton()
+    void CreateUseItemButtons()
     {
         if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
             return;
@@ -222,6 +265,9 @@ public class ContextMenu : MonoBehaviour
         }
 
         if (itemData == null || itemData.Item == null || itemData.Item.isUsable == false)
+            return;
+
+        if (itemData.Item.IsAmmunition() && UnitManager.Instance.player.QuiverInventoryManager.Contains(itemData))
             return;
         
         if (itemData.Item.maxUses > 1)

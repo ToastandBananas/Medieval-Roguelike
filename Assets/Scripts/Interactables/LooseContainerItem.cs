@@ -17,6 +17,8 @@ public class LooseContainerItem : LooseItem
             // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
             if (TryEquipItemOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
                 LooseItemPool.ReturnToPool(this);
+            else
+                FumbleItem();
         }
     }
 

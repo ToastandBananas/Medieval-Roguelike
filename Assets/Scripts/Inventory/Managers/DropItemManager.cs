@@ -28,7 +28,7 @@ public class DropItemManager : MonoBehaviour
 
         SetupItemDrop(looseItem, itemDataToDrop, unit, dropDirection);
 
-        float randomForceMagnitude = Random.Range(50f, 300f);
+        float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);
 
         // Apply force to the dropped item
         looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
@@ -59,7 +59,7 @@ public class DropItemManager : MonoBehaviour
         Vector3 dropDirection = GetDropDirection(characterEquipment.MyUnit);
 
         if (characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsWeapon() || characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsShield())
-            SetupHeldItemDrop(characterEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(characterEquipment.EquippedItemDatas[(int)equipSlot]).transform, looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot]);
+            SetupHeldItemDrop(characterEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(characterEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
         else if ((equipSlot == EquipSlot.Back && characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsBag()) || equipSlot == EquipSlot.Quiver)
             SetupContainerItemDrop(characterEquipment, equipSlot, looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
         else
@@ -68,7 +68,7 @@ public class DropItemManager : MonoBehaviour
         characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         characterEquipment.RemoveEquipmentMesh(equipSlot);
 
-        float randomForceMagnitude = Random.Range(50f, 300f);
+        float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);
 
         // Apply force to the dropped item
         looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
@@ -90,7 +90,7 @@ public class DropItemManager : MonoBehaviour
     {
         LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
 
-        float randomForceMagnitude = Random.Range(100f, 600f);
+        float randomForceMagnitude = Random.Range(looseWeapon.RigidBody.mass, looseWeapon.RigidBody.mass * 6f);
         float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
 
         // Get the attacker's position and the character's position
@@ -108,7 +108,7 @@ public class DropItemManager : MonoBehaviour
         Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
         forceDirection = randomRotation * forceDirection;
 
-        SetupHeldItemDrop(heldItem.transform, looseWeapon, heldItem.ItemData);
+        SetupHeldItemDrop(heldItem, looseWeapon);
 
         if (heldItem is HeldRangedWeapon)
         {
@@ -194,26 +194,30 @@ public class DropItemManager : MonoBehaviour
         }
     }
 
-    static void SetupHeldItemDrop(Transform heldItemTransform, LooseItem looseItem, ItemData itemData)
+    static void SetupHeldItemDrop(HeldItem heldItem, LooseItem looseItem)
     {
-        SetupLooseItem(looseItem, itemData);
+        SetupLooseItem(looseItem, heldItem.itemData);
 
-        if (itemData.Item.IsShield() && heldItemTransform.childCount > 1)
+        if (heldItem.itemData.Item.IsShield() && heldItem.transform.childCount > 1)
         {
-            for (int i = heldItemTransform.childCount - 1; i > 0; i--)
+            HeldShield heldShield = heldItem as HeldShield;
+            Vector3 yOffset = new Vector3(0f, FindHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
+
+            for (int i = heldItem.transform.childCount - 1; i > 0; i--)
             {
-                if (heldItemTransform.GetChild(i).CompareTag("Loose Item") == false)
+                if (heldItem.transform.GetChild(i).CompareTag("Loose Item") == false)
                     continue;
 
-                SetupLooseProjectile(heldItemTransform.GetChild(i), looseItem);
+                SetupLooseProjectile(heldItem.transform.GetChild(i), looseItem, yOffset);
             }
         }
 
         // Set the LooseItem's position to match the HeldItem before we add force
-        looseItem.transform.position = heldItemTransform.position;
-        looseItem.transform.rotation = heldItemTransform.rotation;
-        looseItem.gameObject.SetActive(true);
+        looseItem.transform.position = heldItem.transform.position;
+        looseItem.transform.rotation = heldItem.transform.rotation;
     }
+
+    static float FindHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f; 
 
     static void SetupLooseItem(LooseItem looseItem, ItemData itemData)
     {
@@ -221,16 +225,17 @@ public class DropItemManager : MonoBehaviour
         looseItem.SetupMesh();
         looseItem.name = itemData.Item.name;
         itemData.SetInventorySlotCoordinate(null);
+        looseItem.gameObject.SetActive(true);
     }
 
-    static void SetupLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem)
+    static void SetupLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem, Vector3 yOffset)
     {
         Vector3 projectilePosition = looseProjectileTransform.localPosition;
         Quaternion projectileRotation = looseProjectileTransform.localRotation;
         LooseItem looseProjectile = looseProjectileTransform.GetComponent<LooseItem>();
         looseProjectile.MeshCollider.enabled = false;
         looseProjectileTransform.SetParent(looseItem.transform);
-        looseProjectileTransform.transform.localPosition = projectilePosition;
+        looseProjectileTransform.transform.localPosition = projectilePosition + yOffset;
         looseProjectileTransform.transform.localRotation = projectileRotation;
     }
 

@@ -30,18 +30,18 @@ public class Ammunition : Equipment
     [SerializeField] Vector3 ammunitionPositionOffset;
     [SerializeField] Vector3 ammunitionRotation;
 
-    public override void Use(Unit unit, ItemData itemData, int amountToUse = 1)
+    public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {
         if (unit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
         {
             Quiver quiver = unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
             if (quiver.AllowedProjectileType == projectileType)
-                unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
+                return unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
             else
-                unit.CharacterEquipment.TryEquipItem(itemData);
+                return unit.CharacterEquipment.TryEquipItem(itemData);
         }
         else
-            unit.CharacterEquipment.TryEquipItem(itemData);
+            return unit.CharacterEquipment.TryEquipItem(itemData);
     }
 
     public Mesh AmmunitionMesh => meshes[0];

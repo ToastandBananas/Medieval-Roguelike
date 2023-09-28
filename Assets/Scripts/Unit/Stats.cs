@@ -6,7 +6,7 @@ public class Stats : MonoBehaviour
     public int pooledAP { get; private set; }
     public int APUntilTimeTick { get; private set; }
     public int lastUsedAP { get; private set; }
-    readonly int baseAP = 60;
+    readonly int baseAP_PerSecond = 60;
 
     public int currentEnergy { get; private set; }
     readonly int baseEnergy = 20;
@@ -53,7 +53,7 @@ public class Stats : MonoBehaviour
         ActionSystemUI.Instance.UpdateActionPointsText();
     }
 
-    public int MaxAP() => Mathf.RoundToInt(baseAP + (speed.GetValue() * 5f));
+    public int MaxAP() => Mathf.RoundToInt((baseAP_PerSecond * TimeSystem.defaultTimeTickInSeconds) + (speed.GetValue() * 5f));
 
     public void UseAP(int amount)
     {

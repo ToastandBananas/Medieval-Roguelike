@@ -5,7 +5,7 @@ public class Consumable : Item
 {
     [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
 
-    public override void Use(Unit unit, ItemData itemData, int amountToUse = 1)
+    public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {
         base.Use(unit, itemData, amountToUse);
 
@@ -19,6 +19,8 @@ public class Consumable : Item
                 itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(originalTargetSlotCoordinate.coordinate.x - width + newThreshold.NewItem.width, originalTargetSlotCoordinate.coordinate.y - height + newThreshold.NewItem.height), itemData);
             }
         }
+
+        return true;
     }
 
     public bool ThresholdReached(ItemData itemData, bool usedSome, out ItemChangeThreshold newThreshold)

@@ -24,6 +24,8 @@ public class LooseItem : Interactable
             TryTakeStuckProjectiles(unitPickingUpItem);
             LooseItemPool.ReturnToPool(this);
         }
+        else
+            FumbleItem();
     }
 
     void TryTakeStuckProjectiles(Unit unitPickingUpItem)
@@ -44,6 +46,7 @@ public class LooseItem : Interactable
                     looseProjectile.meshCollider.enabled = true;
                     looseProjectile.rigidBody.useGravity = true;
                     looseProjectile.rigidBody.isKinematic = false;
+                    looseProjectile.FumbleItem();
                 }
             }
         }
@@ -94,6 +97,42 @@ public class LooseItem : Interactable
         return equipped;
     }
 
+    public void FumbleItem()
+    {
+        float fumbleForceMin = rigidBody.mass * 0.8f;   // Minimum force magnitude
+        float fumbleForceMax = rigidBody.mass * 2.25f;  // Maximum force magnitude
+        float fumbleAngleMax = 65f;                     // Maximum angle for randomization in degrees
+        float fumbleAngleAwayFromPlayer = 30f;          // Maximum angle away from the player in degrees
+        float fumbleTorqueMin = rigidBody.mass * 0.25f; // Minimum torque magnitude
+        float fumbleTorqueMax = rigidBody.mass * 1.25f; // Maximum torque magnitude
+
+        // Generate a random force magnitude
+        float fumbleForceMagnitude = Random.Range(fumbleForceMin, fumbleForceMax);
+
+        // Generate a random rotation angle
+        float randomAngle = Random.Range(0f, fumbleAngleMax);
+
+        // Generate a random angle away from the player
+        float randomAngleAwayFromPlayer = Random.Range(-fumbleAngleAwayFromPlayer, fumbleAngleAwayFromPlayer);
+
+        // Calculate a random direction within the cone defined by the angle
+        Vector3 randomDirection = Quaternion.Euler(randomAngle, Random.Range(0f, 360f), randomAngleAwayFromPlayer) * Vector3.up;
+
+        // Apply the random force in the random direction
+        Vector3 randomForce = randomDirection.normalized * fumbleForceMagnitude;
+        rigidBody.AddForce(randomForce, ForceMode.Impulse);
+
+        // Generate a random torque magnitude
+        float fumbleTorqueMagnitude = Random.Range(fumbleTorqueMin, fumbleTorqueMax);
+
+        // Generate a random torque axis
+        Vector3 randomTorqueAxis = new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+
+        // Apply the random torque in the random axis
+        Vector3 randomTorque = randomTorqueAxis.normalized * fumbleTorqueMagnitude;
+        rigidBody.AddTorque(randomTorque, ForceMode.Impulse);
+    }
+
     public override void UpdateGridPosition()
     {
         if (Physics.Raycast(meshCollider.bounds.center, Vector3.down, out RaycastHit hit, 100f, LevelGrid.Instance.GroundMask))
@@ -133,6 +172,8 @@ public class LooseItem : Interactable
     public Rigidbody RigidBody => rigidBody;
 
     public MeshCollider MeshCollider => meshCollider;
+
+    public MeshFilter MeshFilter => meshFilter;
 
     public void ShowMeshRenderer()
     {

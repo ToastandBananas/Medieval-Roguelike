@@ -22,16 +22,65 @@ public class ContextMenuButton : MonoBehaviour
         ContextMenu.Instance.DisableContextMenu();
     }
 
-    public void SetupTakeItemButton(ItemData itemData) => SetupButton("Take", delegate { TakeItem(itemData); });
+    public void SetupAddToBackpackButton(ItemData itemData)
+    {
+        stringBuilder.Clear();
+        stringBuilder.Append("Put in ");
+        if (UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+            stringBuilder.Append("Bag");
+
+        SetupButton(stringBuilder.ToString(), delegate { AddToBackpack(itemData); });
+    }
+
+    void AddToBackpack(ItemData itemData) 
+    {
+        if (UnitManager.Instance.player.BackpackInventoryManager.TryAddItem(itemData))
+        {
+            if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+                LooseItemPool.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+        {
+            LooseItem looseItem = ContextMenu.Instance.TargetInteractable as LooseItem;
+            looseItem.FumbleItem();
+        }
+
+        ContextMenu.Instance.DisableContextMenu();
+    }
+
+    public void SetupTakeItemButton(ItemData itemData)
+    {
+        stringBuilder.Clear();
+        stringBuilder.Append("Take");
+        if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+        {
+            ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+            if (containerInventory.containerInventoryManager == UnitManager.Instance.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.Instance.player.QuiverInventoryManager)
+                stringBuilder.Append(" Out");
+        }
+
+        SetupButton(stringBuilder.ToString(), delegate { TakeItem(itemData); });
+    }
 
     void TakeItem(ItemData itemData)
     {
-        if (UnitManager.Instance.player.TryAddItemToInventories(itemData))
+        if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+        {
+            ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+            if (containerInventory.containerInventoryManager == UnitManager.Instance.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.Instance.player.QuiverInventoryManager)
+                UnitManager.Instance.player.MainInventory().TryAddItem(itemData);
+        }
+        else if (UnitManager.Instance.player.TryAddItemToInventories(itemData))
         {
             if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
                 InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveItem(itemData);
             else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
                 LooseItemPool.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+        {
+            LooseItem looseItem = ContextMenu.Instance.TargetInteractable as LooseItem;
+            looseItem.FumbleItem();
         }
 
         ContextMenu.Instance.DisableContextMenu();
@@ -135,7 +184,17 @@ public class ContextMenuButton : MonoBehaviour
 
     void UseItem(ItemData itemData, int amountToUse = 1)
     {
-        itemData.Item.Use(UnitManager.Instance.player, itemData, amountToUse);
+        if (itemData.Item.Use(UnitManager.Instance.player, itemData, amountToUse))
+        {
+            if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+                LooseItemPool.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+        {
+            LooseItem looseItem = ContextMenu.Instance.TargetInteractable as LooseItem;
+            looseItem.FumbleItem();
+        }
+
         ContextMenu.Instance.DisableContextMenu();
     }
 
@@ -161,6 +220,11 @@ public class ContextMenuButton : MonoBehaviour
 
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
                 LooseItemPool.ReturnToPool(ContextMenu.Instance.TargetInteractable as LooseItem);
+        }
+        else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
+        {
+            LooseItem looseItem = ContextMenu.Instance.TargetInteractable as LooseItem;
+            looseItem.FumbleItem();
         }
 
         ContextMenu.Instance.DisableContextMenu();

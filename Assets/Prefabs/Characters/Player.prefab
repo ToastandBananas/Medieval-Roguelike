@@ -1023,15 +1023,15 @@ GameObject:
   - component: {fileID: 8220662913183796560}
   - component: {fileID: 1265669891623408967}
   - component: {fileID: 6440773195933579920}
-  - component: {fileID: 3489051163152912302}
-  - component: {fileID: 1195297390364979018}
-  - component: {fileID: 7077269047116504926}
   - component: {fileID: 6974571770984074728}
-  - component: {fileID: 3713523194178401732}
   - component: {fileID: 809617103822942843}
+  - component: {fileID: 2894362986920051941}
+  - component: {fileID: 7077269047116504926}
+  - component: {fileID: 1195297390364979018}
+  - component: {fileID: 3489051163152912302}
+  - component: {fileID: 3713523194178401732}
   - component: {fileID: 6440773195933579921}
   - component: {fileID: 942902502714962659}
-  - component: {fileID: 2894362986920051941}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1087,7 +1087,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.30000004
   m_Center: {x: 0, y: 0.19, z: 0}
---- !u!114 &3489051163152912302
+--- !u!114 &6974571770984074728
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1096,11 +1096,64 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b45e20632f1604fc6bb73e0e79cd7368, type: 3}
+  m_Script: {fileID: 11500000, guid: aaa1ac96f9107fc499ef6f684bf454d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 1
-  manager: {fileID: 0}
+  currentFaction: 0
+  alliedFactions: 
+  enemyFactions: 140000001e000000280000003200000033000000
+--- !u!114 &809617103822942843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 10000
+  currentHealth: 0
+--- !u!114 &2894362986920051941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57954ad8252b5354f8bbfe88b73792d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableActionTypes:
+  - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
+  - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
+  - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
+  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
+  attackObstacleMask:
+    serializedVersion: 2
+    m_Bits: 2151550912
+  moveObstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
+--- !u!114 &7077269047116504926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8220662913183796567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 2147483648
 --- !u!114 &1195297390364979018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1129,7 +1182,7 @@ MonoBehaviour:
   tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d00700004c040000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
     value: -1
---- !u!114 &7077269047116504926
+--- !u!114 &3489051163152912302
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1138,27 +1191,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64dfe88b6300de349a5bc47a328f0d60, type: 3}
+  m_Script: {fileID: 11500000, guid: b45e20632f1604fc6bb73e0e79cd7368, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactableMask:
-    serializedVersion: 2
-    m_Bits: 2147483648
---- !u!114 &6974571770984074728
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaa1ac96f9107fc499ef6f684bf454d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentFaction: 0
-  alliedFactions: 
-  enemyFactions: 140000001e000000280000003200000033000000
+  version: 1
+  manager: {fileID: 0}
 --- !u!114 &3713523194178401732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1244,20 +1281,6 @@ MonoBehaviour:
   canFightUnarmed: 1
   unarmedAttackRange: 1.4
   baseUnarmedDamage: 5
---- !u!114 &809617103822942843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 10000
-  currentHealth: 0
 --- !u!114 &6440773195933579921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1306,29 +1329,6 @@ MonoBehaviour:
   bodyArmorMeshFilter: {fileID: 8038866530934077296}
   baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
     type: 3}
---- !u!114 &2894362986920051941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8220662913183796567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57954ad8252b5354f8bbfe88b73792d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  availableActionTypes:
-  - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
-  - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
-  - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
-  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
-  attackObstacleMask:
-    serializedVersion: 2
-    m_Bits: 2151550912
-  moveObstacleMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!1 &8220662913851074348
 GameObject:
   m_ObjectHideFlags: 0

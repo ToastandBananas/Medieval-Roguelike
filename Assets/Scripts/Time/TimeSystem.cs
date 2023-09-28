@@ -6,7 +6,8 @@ public class TimeSystem : MonoBehaviour
     public static int currentMinute;
     public static int currentSecond;
 
-    public const int defaultTimeTickInSeconds = 1;
+    /// <summary>When calculating a Unit's MaxAP in Stats.cs, their BaseAP is multiplied by this number before calculating additional AP from a Unit's Speed. This is also how much time passes when each full "Turn" is complete.</summary>
+    public const int defaultTimeTickInSeconds = 3;
 
     #region Singleton
     public static TimeSystem Instance;

@@ -288,37 +288,35 @@ public class Inventory
 
     void TryTakeStuckProjectiles(ItemData newItemData)
     {
-        if (newItemData.Item.IsShield() == false)
+        if (newItemData.Item.IsShield() == false || myUnit == null || myUnit.CharacterEquipment == null || myUnit.CharacterEquipment.ItemDataEquipped(newItemData) == false)
             return;
 
         // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them
-        if (myUnit.CharacterEquipment != null && myUnit.CharacterEquipment.ItemDataEquipped(newItemData))
+        HeldShield heldShield = null;
+        if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem.itemData == newItemData)
+            heldShield = myUnit.unitMeshManager.leftHeldItem as HeldShield;
+        else if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem.itemData == newItemData)
+            heldShield = myUnit.unitMeshManager.rightHeldItem as HeldShield;
+
+        if (heldShield != null && heldShield.transform.childCount > 1)
         {
-            HeldShield heldShield = null;
-            if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem.itemData == newItemData)
-                heldShield = myUnit.unitMeshManager.leftHeldItem as HeldShield;
-            else if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem.itemData == newItemData)
-                heldShield = myUnit.unitMeshManager.rightHeldItem as HeldShield;
-
-            if (heldShield != null && heldShield.transform.childCount > 1)
+            for (int i = heldShield.transform.childCount - 1; i > 0; i--)
             {
-                for (int i = heldShield.transform.childCount - 1; i > 0; i--)
+                if (heldShield.transform.GetChild(i).CompareTag("Loose Item") == false)
+                    continue;
+
+                LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<LooseItem>();
+                if (myUnit.TryAddItemToInventories(looseProjectile.ItemData))
+                    LooseItemPool.ReturnToPool(looseProjectile);
+                else
                 {
-                    if (heldShield.transform.GetChild(i).CompareTag("Loose Item") == false)
-                        continue;
-
-                    LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<LooseItem>();
-                    if (myUnit.TryAddItemToInventories(looseProjectile.ItemData))
-                        LooseItemPool.ReturnToPool(looseProjectile);
-                    else
-                    {
-                        looseProjectile.transform.SetParent(LooseItemPool.Instance.LooseItemParent);
-                        looseProjectile.MeshCollider.enabled = true;
-                        looseProjectile.RigidBody.useGravity = true;
-                        looseProjectile.RigidBody.isKinematic = false;
-                    }
-
+                    looseProjectile.transform.SetParent(LooseItemPool.Instance.LooseItemParent);
+                    looseProjectile.MeshCollider.enabled = true;
+                    looseProjectile.RigidBody.useGravity = true;
+                    looseProjectile.RigidBody.isKinematic = false;
+                    looseProjectile.FumbleItem();
                 }
+
             }
         }
     }

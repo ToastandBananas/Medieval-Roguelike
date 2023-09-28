@@ -54,6 +54,32 @@ public class ContainerInventoryManager : InventoryManager
         return false;
     }
 
+    public bool Contains(ItemData itemData)
+    {
+        if (parentInventory.ItemDatas.Contains(itemData))
+            return true;
+
+        for (int i = 0; i < subInventories.Length; i++)
+        {
+            if (subInventories[i].ItemDatas.Contains(itemData))
+                return true;
+        }
+        return false;
+    }
+
+    public bool TryAddItem(ItemData itemData)
+    {
+        if (parentInventory.TryAddItem(itemData))
+            return true;
+
+        for (int i = 0; i < subInventories.Length; i++)
+        {
+            if (subInventories[i].TryAddItem(itemData))
+                return true;
+        }
+        return false;
+    }
+
     public void TransferInventory(ContainerInventoryManager containerInventoryManagerToCopy)
     {
         parentInventory.RemoveSlots();

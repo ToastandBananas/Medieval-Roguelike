@@ -19,6 +19,8 @@ public class ContainerUI : MonoBehaviour
 
     public ContainerInventoryManager containerInventoryManager { get; private set; }
 
+    readonly int minWidth = 260;
+
     public void ShowContainerInventory(ContainerInventory mainContainerInventory, Item containerItem)
     {
         SetTitleText(mainContainerInventory, containerItem);
@@ -150,6 +152,9 @@ public class ContainerUI : MonoBehaviour
         {
             newHeight += (int)horizontalLayoutGroup.spacing;
         }
+
+        if (newWidth < minWidth)
+            newWidth = minWidth;
 
         rectTransform.sizeDelta = new Vector2(newWidth, newHeight);
 

@@ -41,4 +41,6 @@ public class HeldShield : HeldItem
 
         meshCollider.sharedMesh = itemData.Item.meshes[0];
     }
+
+    public MeshCollider MeshCollider => meshCollider;
 }

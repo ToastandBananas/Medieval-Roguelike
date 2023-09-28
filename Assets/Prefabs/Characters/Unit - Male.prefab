@@ -127,15 +127,15 @@ GameObject:
   - component: {fileID: 1377663264827766488}
   - component: {fileID: 1187724221168157814}
   - component: {fileID: 4065027757248069912}
-  - component: {fileID: 5863758878478513190}
-  - component: {fileID: 8186792645671146690}
   - component: {fileID: 126505681558484576}
-  - component: {fileID: 1716772551159210589}
   - component: {fileID: 2337304120404066741}
+  - component: {fileID: 3566344150296233335}
+  - component: {fileID: 8186792645671146690}
+  - component: {fileID: 5863758878478513190}
+  - component: {fileID: 1918958863613582635}
+  - component: {fileID: 1716772551159210589}
   - component: {fileID: 4471245059765168945}
   - component: {fileID: 8017101318156772015}
-  - component: {fileID: 1918958863613582635}
-  - component: {fileID: 3566344150296233335}
   m_Layer: 3
   m_Name: Unit - Male
   m_TagString: Untagged
@@ -190,7 +190,7 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.30000004
   m_Center: {x: 0, y: 0.19, z: 0}
---- !u!114 &5863758878478513190
+--- !u!114 &126505681558484576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -199,11 +199,61 @@ MonoBehaviour:
   m_GameObject: {fileID: 1377663264827766495}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b45e20632f1604fc6bb73e0e79cd7368, type: 3}
+  m_Script: {fileID: 11500000, guid: aaa1ac96f9107fc499ef6f684bf454d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 1
-  manager: {fileID: 0}
+  currentFaction: 0
+  alliedFactions: 0a000000
+  enemyFactions: 140000001e000000280000003200000033000000
+--- !u!114 &2337304120404066741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  currentHealth: 0
+--- !u!114 &3566344150296233335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableActionTypes:
+  - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
+  - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
+  - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
+  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
+  attackObstacleMask:
+    serializedVersion: 2
+    m_Bits: 2151550912
+  moveObstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
+  maxChaseDistance: 25
+  defaultFleeDistance: 20
+  shouldAlwaysFleeCombat: 0
+  unitToFleeFrom: {fileID: 0}
+  stopFollowDistance: 3
+  leader: {fileID: 0}
+  patrolPoints:
+  - {x: 8, y: 1.5, z: 8}
+  - {x: 3, y: 0, z: 3}
+  defaultPosition: {x: 0, y: 0, z: 0}
+  minWanderDistance: 5
+  maxWanderDistance: 100
 --- !u!114 &8186792645671146690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,7 +282,7 @@ MonoBehaviour:
   tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d00700004c040000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
     value: 1
---- !u!114 &126505681558484576
+--- !u!114 &5863758878478513190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -241,12 +291,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1377663264827766495}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aaa1ac96f9107fc499ef6f684bf454d3, type: 3}
+  m_Script: {fileID: 11500000, guid: b45e20632f1604fc6bb73e0e79cd7368, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentFaction: 0
-  alliedFactions: 0a000000
-  enemyFactions: 140000001e000000280000003200000033000000
+  version: 1
+  manager: {fileID: 0}
+--- !u!114 &1918958863613582635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecdc00288b3da124f88440c2e31054ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultState: 2
 --- !u!114 &1716772551159210589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,20 +394,6 @@ MonoBehaviour:
   canFightUnarmed: 1
   unarmedAttackRange: 1.4
   baseUnarmedDamage: 5
---- !u!114 &2337304120404066741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663264827766495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 0
 --- !u!114 &4471245059765168945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,54 +442,6 @@ MonoBehaviour:
   bodyArmorMeshFilter: {fileID: 1045981531652197624}
   baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
     type: 3}
---- !u!114 &1918958863613582635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663264827766495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecdc00288b3da124f88440c2e31054ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultState: 2
---- !u!114 &3566344150296233335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663264827766495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  availableActionTypes:
-  - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
-  - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
-  - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
-  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
-  attackObstacleMask:
-    serializedVersion: 2
-    m_Bits: 2151550912
-  moveObstacleMask:
-    serializedVersion: 2
-    m_Bits: 64
-  maxChaseDistance: 25
-  defaultFleeDistance: 20
-  shouldAlwaysFleeCombat: 0
-  unitToFleeFrom: {fileID: 0}
-  stopFollowDistance: 3
-  leader: {fileID: 0}
-  patrolPoints:
-  - {x: 8, y: 1.5, z: 8}
-  - {x: 3, y: 0, z: 3}
-  defaultPosition: {x: 0, y: 0, z: 0}
-  minWanderDistance: 5
-  maxWanderDistance: 100
 --- !u!1 &2147645918628440969
 GameObject:
   m_ObjectHideFlags: 0

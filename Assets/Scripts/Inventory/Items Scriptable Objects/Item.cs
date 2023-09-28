@@ -41,7 +41,7 @@ public abstract class Item : ScriptableObject
     public int maxUses = 1;
     public bool isUsable = true;
 
-    public virtual void Use(Unit unit, ItemData itemData, int amountToUse = 1)
+    public virtual bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {
         itemData.Use(amountToUse);
 
@@ -50,6 +50,7 @@ public abstract class Item : ScriptableObject
             if (itemData.MyInventory() != null)
                 itemData.MyInventory().RemoveItem(itemData);
         }
+        return true;
     }
 
     /// <summary>Used to determine how much a character can carry in their hands, based off of ItemSize.</summary>
