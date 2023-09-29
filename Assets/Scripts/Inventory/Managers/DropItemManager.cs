@@ -4,13 +4,14 @@ public class DropItemManager : MonoBehaviour
 {
     public static void DropItem(Unit unit, Inventory inventory, ItemData itemDataToDrop)
     {
-        if (inventory.ItemDatas.Contains(itemDataToDrop) == false)
+        if (inventory != null && inventory.ItemDatas.Contains(itemDataToDrop) == false)
             return;
 
         if (itemDataToDrop.Item == null)
         {
             Debug.LogWarning("Item you're trying to drop from inventory is null...");
-            inventory.RemoveItem(itemDataToDrop);
+            if (inventory != null)
+                inventory.RemoveItem(itemDataToDrop);
             return;
         }
 
@@ -33,7 +34,8 @@ public class DropItemManager : MonoBehaviour
         // Apply force to the dropped item
         looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        inventory.RemoveItem(itemDataToDrop);
+        if (inventory != null)
+            inventory.RemoveItem(itemDataToDrop);
 
         if (itemDataToDrop == InventoryUI.Instance.DraggedItem.itemData)
             InventoryUI.Instance.DisableDraggedItem();
@@ -134,14 +136,14 @@ public class DropItemManager : MonoBehaviour
         {
             if (unit.CharacterEquipment.currentWeaponSet == WeaponSet.One)
             {
-                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().isTwoHanded)
+                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().IsTwoHanded)
                     equipSlot = EquipSlot.LeftHeldItem1;
                 else
                     equipSlot = EquipSlot.RightHeldItem1;
             }
             else
             {
-                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().isTwoHanded)
+                if (heldItem.itemData.Item.IsWeapon() && heldItem.itemData.Item.Weapon().IsTwoHanded)
                     equipSlot = EquipSlot.LeftHeldItem2;
                 else
                     equipSlot = EquipSlot.RightHeldItem2;
@@ -156,8 +158,7 @@ public class DropItemManager : MonoBehaviour
         }
 
         unit.CharacterEquipment.RemoveActions(unit.CharacterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
-        unit.CharacterEquipment.RemoveEquipmentMesh(equipSlot);
-        unit.CharacterEquipment.RemoveEquipment(equipSlot);
+        unit.CharacterEquipment.RemoveEquipment(unit.CharacterEquipment.EquippedItemDatas[(int)equipSlot]);
     }
 
     static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)

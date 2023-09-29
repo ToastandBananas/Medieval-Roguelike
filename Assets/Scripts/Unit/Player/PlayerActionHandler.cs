@@ -45,7 +45,7 @@ public class PlayerActionHandler : UnitActionHandler
                             Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                             // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().minRange)
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetAttackGridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MinRange)
                             {
                                 CancelAction();
                                 return;
@@ -75,7 +75,7 @@ public class PlayerActionHandler : UnitActionHandler
                     if (unit.CharacterEquipment.RangedWeaponEquipped())
                     {
                         // If the target enemy is too close, cancel the Player's current action
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().minRange)
+                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetEnemyUnit.gridPosition) < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MinRange)
                         {
                             CancelAction();
                             return;

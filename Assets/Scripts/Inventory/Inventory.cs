@@ -36,7 +36,7 @@ public class Inventory
         hasBeenInitialized = true;
     }
 
-    public virtual bool TryAddItem(ItemData newItemData)
+    public virtual bool TryAddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
     {
         if (newItemData == null || newItemData.Item == null)
             return false;
@@ -44,10 +44,10 @@ public class Inventory
         if (newItemData.ShouldRandomize)
             newItemData.RandomizeData();
 
-        return AddItem(newItemData);
+        return AddItem(newItemData, tryAddToExistingStacks);
     }
 
-    protected bool AddItem(ItemData newItemData)
+    protected bool AddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
     {
         Inventory originalInventory = newItemData.MyInventory();
 
@@ -55,7 +55,7 @@ public class Inventory
         TryTakeStuckProjectiles(newItemData);
 
         // Combine stacks if possible
-        if (newItemData.Item.maxStackSize > 1)
+        if (newItemData.Item.MaxStackSize > 1 && tryAddToExistingStacks)
         {
             for (int i = 0; i < itemDatas.Count; i++)
             {
@@ -79,50 +79,49 @@ public class Inventory
                     }
                 }
             }
-        }
-        // If the item was stackable and the entire stack was combined with another stack
-        if (newItemData.CurrentStackSize <= 0)
-        {
-            if (originalInventory != null && originalInventory != this)
-                originalInventory.RemoveItem(newItemData);
-
-            return true;
-        }
-        else
-        {
-            // If the item data hasn't been assigned a slot coordinate, do so now
-            SlotCoordinate targetSlotCoordinate;
-            if (newItemData.InventorySlotCoordinate() == null || newItemData.InventorySlotCoordinate().myInventory != this)
-            {
-                targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
-                if (targetSlotCoordinate != null)
-                {
-                    newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
-                    targetSlotCoordinate.SetupNewItem(newItemData);
-                }
-            }
-            else
-                targetSlotCoordinate = newItemData.InventorySlotCoordinate();
-
-            if (targetSlotCoordinate != null)
+            
+            // If the entire stack was combined with another stack
+            if (newItemData.CurrentStackSize <= 0)
             {
                 if (originalInventory != null && originalInventory != this)
                     originalInventory.RemoveItem(newItemData);
 
-                // Only add the item data if it hasn't been added yet
-                if (itemDatas.Contains(newItemData) == false)
-                    itemDatas.Add(newItemData);
-
-                // Show the item's icon in the inventory UI
-                if (slotVisualsCreated)
-                {
-                    InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
-                    if (targetSlot != null)
-                        SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
-                }
-
                 return true;
             }
+        }
+
+        // If the item data hasn't been assigned a slot coordinate, do so now
+        SlotCoordinate targetSlotCoordinate;
+        if (newItemData.InventorySlotCoordinate() == null || newItemData.InventorySlotCoordinate().myInventory != this)
+        {
+            targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
+            if (targetSlotCoordinate != null)
+            {
+                newItemData.SetInventorySlotCoordinate(targetSlotCoordinate);
+                targetSlotCoordinate.SetupNewItem(newItemData);
+            }
+        }
+        else
+            targetSlotCoordinate = newItemData.InventorySlotCoordinate();
+
+        if (targetSlotCoordinate != null)
+        {
+            if (originalInventory != null && originalInventory != this)
+                originalInventory.RemoveItem(newItemData);
+
+            // Only add the item data if it hasn't been added yet
+            if (itemDatas.Contains(newItemData) == false)
+                itemDatas.Add(newItemData);
+
+            // Show the item's icon in the inventory UI
+            if (slotVisualsCreated)
+            {
+                InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
+                if (targetSlot != null)
+                    SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
+            }
+
+            return true;
         }
 
         return false;
@@ -147,9 +146,9 @@ public class Inventory
                 GetSlotFromCoordinate(targetSlotCoordinate).RemoveSlotHighlights();
 
             // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
-            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.maxStackSize > 1 && newItemData.IsEqual(overlappedItemsData))
+            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.MaxStackSize > 1 && newItemData.IsEqual(overlappedItemsData))
             {
-                if (overlappedItemsData.CurrentStackSize >= overlappedItemsData.Item.maxStackSize)
+                if (overlappedItemsData.CurrentStackSize >= overlappedItemsData.Item.MaxStackSize)
                     return false;
 
                 CombineStacks(newItemData, overlappedItemsData);
@@ -249,7 +248,7 @@ public class Inventory
 
     void CombineStacks(ItemData itemDataToTakeFrom, ItemData itemDataToCombineWith)
     {
-        int roomInStack = itemDataToCombineWith.Item.maxStackSize - itemDataToCombineWith.CurrentStackSize;
+        int roomInStack = itemDataToCombineWith.Item.MaxStackSize - itemDataToCombineWith.CurrentStackSize;
 
         // If there's more room in the stack than the new item's current stack size, add it all to the stack
         if (itemDataToTakeFrom.CurrentStackSize <= roomInStack)
@@ -326,9 +325,9 @@ public class Inventory
         if (itemDatas.Contains(itemDataToRemove) == false)
             return;
 
-        if (slotVisualsCreated)
+        if (slotVisualsCreated && GetSlotFromItemData(itemDataToRemove) != null)
             GetSlotFromItemData(itemDataToRemove).ClearItem();
-        else
+        else if (GetSlotCoordinateFromItemData(itemDataToRemove) != null)
             GetSlotCoordinateFromItemData(itemDataToRemove).ClearItem();
 
         itemDatas.Remove(itemDataToRemove);
@@ -345,8 +344,8 @@ public class Inventory
 
     protected SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
     {
-        int width = itemData.Item.width;
-        int height = itemData.Item.height;
+        int width = itemData.Item.Width;
+        int height = itemData.Item.Height;
 
         for (int i = 0; i < slotCoordinates.Count; i++)
         {
@@ -535,7 +534,7 @@ public class Inventory
 
     public void SetupItems()
     {
-        for (int i = 0; i < itemDatas.Count; i++)
+        for (int i = itemDatas.Count - 1; i >= 0; i--)
         {
             if (itemDatas[i].Item == null)
                 continue;
@@ -543,7 +542,10 @@ public class Inventory
             itemDatas[i].RandomizeData();
 
             if (TryAddItem(itemDatas[i]) == false)
-                Debug.LogError($"{itemDatas[i].Item.name} can't fit in inventory...");
+            {
+                Debug.LogWarning($"{itemDatas[i].Item.name} can't fit in inventory...");
+                itemDatas.Remove(itemDatas[i]);
+            }
         }
     }
 

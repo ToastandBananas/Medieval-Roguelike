@@ -255,7 +255,7 @@ public class Stats : MonoBehaviour
     public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
     {
         float blockChance = shieldSkill.GetValue() * 2f;
-        blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield().blockChanceAddOn) * 100f) / 100f;
+        blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield().BlockChanceAddOn) * 100f) / 100f;
 
         // If attacker is directly beside the Unit
         if (attackerBesideUnit)
@@ -269,7 +269,7 @@ public class Stats : MonoBehaviour
     {
         Weapon weapon = heldWeapon.ItemData.Item.Weapon();
         float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
-        blockChance = Mathf.RoundToInt((blockChance + weapon.blockChanceAddOn) * 100f) / 100f;
+        blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
 
         if (shieldEquipped)
             blockChance *= 0.65f;
@@ -287,13 +287,13 @@ public class Stats : MonoBehaviour
     public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
     {
         Weapon weapon = heldWeapon.ItemData.Item.Weapon();
-        return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.weaponType) * 2)) * WeaponBlockModifier(weapon));
+        return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
     }
 
     public float RangedAccuracy(ItemData rangedWeaponItemData)
     {
         float accuracy = 0f;
-        if (rangedWeaponItemData.Item.Weapon().weaponType == WeaponType.Bow)
+        if (rangedWeaponItemData.Item.Weapon().WeaponType == WeaponType.Bow)
         {
             accuracy = bowSkill.GetValue() * 4f;
             accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier) * 100f) / 100f;
@@ -335,26 +335,26 @@ public class Stats : MonoBehaviour
 
     public float WeaponBlockModifier(Weapon weapon)
     {
-        switch (weapon.weaponType)
+        switch (weapon.WeaponType)
         {
             case WeaponType.Throwing:
                 return 0.2f;
             case WeaponType.Dagger:
                 return 0.4f;
             case WeaponType.Sword:
-                if (weapon.isTwoHanded)
+                if (weapon.IsTwoHanded)
                     return 1.45f;
                 return 1.3f;
             case WeaponType.Axe:
-                if (weapon.isTwoHanded)
+                if (weapon.IsTwoHanded)
                     return 0.9f;
                 return 0.8f;
             case WeaponType.Mace:
-                if (weapon.isTwoHanded)
+                if (weapon.IsTwoHanded)
                     return 1.2f;
                 return 1.1f;
             case WeaponType.WarHammer:
-                if (weapon.isTwoHanded)
+                if (weapon.IsTwoHanded)
                     return 0.8f;
                 return 0.65f;
             case WeaponType.Spear:

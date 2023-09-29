@@ -56,7 +56,7 @@ public abstract class HeldItem : MonoBehaviour
         this.unit = unit;
         name = itemData.Item.name;
 
-        if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item.IsWeapon() && itemData.Item.Weapon().isTwoHanded))
+        if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item.IsWeapon() && itemData.Item.Weapon().IsTwoHanded))
         {
             transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
             transform.parent.localPosition = itemData.Item.HeldEquipment().IdlePosition_RightHand;
@@ -84,11 +84,11 @@ public abstract class HeldItem : MonoBehaviour
     {
         for (int i = 0; i < meshRenderers.Length; i++)
         {
-            meshRenderers[i].material = itemData.Item.meshRendererMaterials[i];
+            meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
 
             if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
             {
-                meshFilters[i].mesh = itemData.Item.meshes[i];
+                meshFilters[i].mesh = itemData.Item.Meshes[i];
                 meshRenderers[i].enabled = true;
             }
             else

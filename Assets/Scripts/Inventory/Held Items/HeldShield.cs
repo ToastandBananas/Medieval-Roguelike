@@ -39,7 +39,7 @@ public class HeldShield : HeldItem
     {
         base.SetupHeldItem(itemData, unit, equipSlot);
 
-        meshCollider.sharedMesh = itemData.Item.meshes[0];
+        meshCollider.sharedMesh = itemData.Item.Meshes[0];
     }
 
     public MeshCollider MeshCollider => meshCollider;

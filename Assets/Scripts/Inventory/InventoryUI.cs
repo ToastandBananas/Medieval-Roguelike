@@ -89,7 +89,7 @@ public class InventoryUI : MonoBehaviour
                     if ((activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem2) && (activeEquipmentSlot.InventoryItem.itemData == null || activeEquipmentSlot.InventoryItem.itemData.Item == null))
                     {
                         EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
-                        if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon().isTwoHanded)
+                        if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
                         {
                             SetupDraggedItem(oppositeWeaponSlot.InventoryItem.itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem.myCharacterEquipment);
                             oppositeWeaponSlot.InventoryItem.DisableIconImage();
@@ -101,7 +101,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myCharacterEquipment);
 
-                        if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item.IsWeapon() && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon().isTwoHanded)
+                        if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item.IsWeapon() && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
                             activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem.DisableIconImage();
                     }
                 }
@@ -141,7 +141,11 @@ public class InventoryUI : MonoBehaviour
                 {
                     if (parentSlotDraggedFrom == null)
                     {
-                        DropItemManager.DropItem(draggedItem.myInventory.MyUnit, draggedItem.myInventory, draggedItem.itemData);
+                        Unit unit = null;
+                        if (draggedItem.myInventory != null)
+                            unit = draggedItem.myInventory.MyUnit;
+
+                        DropItemManager.DropItem(unit, draggedItem.myInventory, draggedItem.itemData);
                     }
                     else if (parentSlotDraggedFrom is EquipmentSlot) 
                     {
@@ -160,15 +164,13 @@ public class InventoryUI : MonoBehaviour
 
     public bool OverlappingMultipleItems(SlotCoordinate focusedSlotCoordinate, ItemData itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount)
     {
-        int width = itemData.Item.width;
-        int height = itemData.Item.height;
         ItemData overlappedItemData = null;
         overlappedItemsParentSlotCoordinate = null;
         overlappedItemCount = 0;
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < itemData.Item.Width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < itemData.Item.Height; y++)
             {
                 SlotCoordinate slotCoordinateToCheck;
                 if (focusedSlotCoordinate.myInventory != null)
@@ -230,7 +232,7 @@ public class InventoryUI : MonoBehaviour
             EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
             parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
 
-            if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.IsWeapon() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon().isTwoHanded)
+            if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.IsWeapon() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
                 oppositeWeaponSlot.SetFullSlotSprite();
@@ -245,8 +247,8 @@ public class InventoryUI : MonoBehaviour
 
     public void SetupDraggedItem(ItemData newItemData, Slot parentSlotDraggedFrom, Inventory inventoryDraggedFrom)
     {
-        if (ContextMenu.Instance.IsActive)
-            ContextMenu.Instance.DisableContextMenu(true);
+        SplitStack.Instance.Close();
+        ContextMenu.Instance.DisableContextMenu(true);
 
         Cursor.visible = false;
         isDraggingItem = true;
@@ -262,6 +264,9 @@ public class InventoryUI : MonoBehaviour
 
     public void SetupDraggedItem(ItemData newItemData, Slot parentSlotDraggedFrom, CharacterEquipment characterEquipmentDraggedFrom)
     {
+        SplitStack.Instance.Close();
+        ContextMenu.Instance.DisableContextMenu(true);
+
         Cursor.visible = false;
         isDraggingItem = true;
 
@@ -320,7 +325,10 @@ public class InventoryUI : MonoBehaviour
 
         if (playerInventoryUIParent.activeSelf == false)
         {
+            ContextMenu.Instance.DisableContextMenu();
+            SplitStack.Instance.Close();
             CloseAllContainerUI();
+
             if (npcInventoryUIParent.activeSelf)
                 ToggleNPCInventory();
         }
@@ -334,7 +342,11 @@ public class InventoryUI : MonoBehaviour
         npcInventoryUIParent.SetActive(!npcInventoryUIParent.activeSelf);
 
         if (playerInventoryUIParent.activeSelf == false)
+        {
+            ContextMenu.Instance.DisableContextMenu();
+            SplitStack.Instance.Close();
             CloseAllContainerUI();
+        }
     }
 
     public void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)

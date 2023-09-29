@@ -16,7 +16,7 @@ public class Consumable : Item
                 SlotCoordinate originalTargetSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
                 itemData.MyInventory().RemoveItem(itemData);
                 itemData.SetItem(newThreshold.NewItem);
-                itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(originalTargetSlotCoordinate.coordinate.x - width + newThreshold.NewItem.width, originalTargetSlotCoordinate.coordinate.y - height + newThreshold.NewItem.height), itemData);
+                itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(originalTargetSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, originalTargetSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData);
             }
         }
 

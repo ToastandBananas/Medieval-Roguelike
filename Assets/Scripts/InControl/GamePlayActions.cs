@@ -21,7 +21,7 @@ public class GamePlayActions : PlayerActionSet
     // UI Actions
     public PlayerAction menuPause, menuSelect, menuContext, menuQuickUse;
     public PlayerAction menuLeft, menuRight, menuUp, menuDown;
-    public PlayerAction toggleInventory;
+    public PlayerAction toggleInventory, splitStackEnter, splitStackDelete;
 
     public GamePlayActions()
     {
@@ -60,5 +60,7 @@ public class GamePlayActions : PlayerActionSet
         menuDown = CreatePlayerAction("MenuDown");
 
         toggleInventory = CreatePlayerAction("ToggleInventory");
+        splitStackEnter = CreatePlayerAction("SplitStackEnter");
+        splitStackDelete = CreatePlayerAction("SplitStackDelete");
     }
 }

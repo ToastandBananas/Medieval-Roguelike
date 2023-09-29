@@ -37,7 +37,7 @@ public class ContainerInventory : Inventory
         hasBeenInitialized = true;
     }
 
-    public override bool TryAddItem(ItemData newItemData)
+    public override bool TryAddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
     {
         if (newItemData == null || newItemData.Item == null)
             return false;
@@ -48,7 +48,7 @@ public class ContainerInventory : Inventory
         bool itemAdded;
         if (containerInventoryManager.ParentInventory == this || containerInventoryManager.SubInventories.Length == 0 || containerInventoryManager.SubInventories[0] == null)
         {
-            itemAdded = AddItem(newItemData);
+            itemAdded = AddItem(newItemData, tryAddToExistingStacks);
             if (itemAdded == false)
             {
                 for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
@@ -56,12 +56,12 @@ public class ContainerInventory : Inventory
                     if (itemAdded) 
                         continue;
 
-                    itemAdded = containerInventoryManager.SubInventories[i].AddItem(newItemData);
+                    itemAdded = containerInventoryManager.SubInventories[i].AddItem(newItemData, tryAddToExistingStacks);
                 }
             }
         }
         else
-            itemAdded = AddItem(newItemData);
+            itemAdded = AddItem(newItemData, tryAddToExistingStacks);
 
         return itemAdded;
     }

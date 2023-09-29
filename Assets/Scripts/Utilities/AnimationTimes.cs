@@ -110,7 +110,7 @@ public class AnimationTimes : MonoBehaviour
     {
         if (weapon.IsMeleeWeapon())
         {
-            if (weapon.isTwoHanded)
+            if (weapon.IsTwoHanded)
                 return defaultAttack_2H_Time;
             else
                 return defaultAttack_1H_Time;

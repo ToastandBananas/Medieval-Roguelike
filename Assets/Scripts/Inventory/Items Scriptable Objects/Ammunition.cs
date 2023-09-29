@@ -44,8 +44,8 @@ public class Ammunition : Equipment
             return unit.CharacterEquipment.TryEquipItem(itemData);
     }
 
-    public Mesh AmmunitionMesh => meshes[0];
-    public Material AmmunitionMaterial => meshRendererMaterials[0];
+    public Mesh AmmunitionMesh => Meshes[0];
+    public Material AmmunitionMaterial => MeshRendererMaterials[0];
 
     public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
     public float CapsuleColliderRadius => capsuleColliderRadius;

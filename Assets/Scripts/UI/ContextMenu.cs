@@ -60,7 +60,8 @@ public class ContextMenu : MonoBehaviour
     {
         if (onCooldown)
             return;
-        
+
+        SplitStack.Instance.Close();
         DisableContextMenu(true);
 
         targetInteractable = PlayerInput.Instance.highlightedInteractable;
@@ -86,6 +87,7 @@ public class ContextMenu : MonoBehaviour
             CreateAddToBagButtons();
             CreateOpenContainerButton();
             CreateUseItemButtons();
+            CreateSplitStackButton();
             CreateDropItemButton();
 
             if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
@@ -215,7 +217,7 @@ public class ContextMenu : MonoBehaviour
 
     void CreateOpenContainerButton()
     {
-        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.ParentSlot().IsFull() && (targetSlot.GetItemData().Item.IsBag() || targetSlot.GetItemData().Item is Quiver))
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && (targetSlot.GetItemData().Item.IsBag() || targetSlot.GetItemData().Item is Quiver))
         {
             ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
             if (containerEquipmentSlot.containerInventoryManager == null)
@@ -264,13 +266,13 @@ public class ContextMenu : MonoBehaviour
                 return;
         }
 
-        if (itemData == null || itemData.Item == null || itemData.Item.isUsable == false)
+        if (itemData == null || itemData.Item == null || itemData.Item.IsUsable == false)
             return;
 
         if (itemData.Item.IsAmmunition() && UnitManager.Instance.player.QuiverInventoryManager.Contains(itemData))
             return;
         
-        if (itemData.Item.maxUses > 1)
+        if (itemData.Item.MaxUses > 1)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.RemainingUses); // Use all
 
@@ -286,7 +288,7 @@ public class ContextMenu : MonoBehaviour
             if (itemData.RemainingUses >= 10)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
         }
-        else if (itemData.Item.maxStackSize > 1 && itemData.Item.IsAmmunition() == false)
+        else if (itemData.Item.MaxStackSize > 1 && itemData.Item.IsAmmunition() == false)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 
@@ -309,9 +311,20 @@ public class ContextMenu : MonoBehaviour
             GetContextMenuButton().SetupUseItemButton(itemData, 1);
     }
 
+    void CreateSplitStackButton()
+    {
+        if (targetSlot == null || targetSlot.IsFull() == false)
+            return;
+
+        if (targetSlot.GetItemData().Item.MaxStackSize <= 1 || targetSlot.GetItemData().CurrentStackSize <= 1)
+            return;
+
+        GetContextMenuButton().SetupSplitStackButton(targetSlot.GetItemData());
+    }
+
     void CreateDropItemButton()
     {
-        if (targetSlot == null || targetSlot.ParentSlot().IsFull() == false)
+        if (targetSlot == null || targetSlot.IsFull() == false)
             return;
 
         if (targetSlot != null && targetSlot is ContainerEquipmentSlot)
@@ -336,7 +349,11 @@ public class ContextMenu : MonoBehaviour
 
     public void DisableContextMenu(bool forceDisable = false)
     {
-        if (forceDisable == false && onCooldown) return;
+        if (isActive == false)
+            return;
+
+        if (forceDisable == false && onCooldown) 
+            return;
         
         isActive = false;
         targetSlot = null;
@@ -406,7 +423,7 @@ public class ContextMenu : MonoBehaviour
                 activeButtonCount++;
         }
 
-        float xPosAddon = rectTransform.sizeDelta.x - (rectTransform.sizeDelta.x / 2f);
+        float xPosAddon = rectTransform.sizeDelta.x / 2f;
         float yPosAddon = (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
 
         // Get the desired position:

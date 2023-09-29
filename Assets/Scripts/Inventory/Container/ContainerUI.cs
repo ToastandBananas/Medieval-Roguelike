@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class ContainerUI : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI titleText;
+    [SerializeField] TextMeshProUGUI takeAllText;
     [SerializeField] RectTransform rectTransform;
     [SerializeField] HorizontalLayoutGroup horizontalLayoutGroup;
 
@@ -32,6 +33,7 @@ public class ContainerUI : MonoBehaviour
             containerInventoryManager.SubInventories[i].SetupSlots(subContainerSlotGroups[i]);
         }
 
+        SetTakeAllText();
         gameObject.SetActive(true);
     }
 
@@ -49,6 +51,14 @@ public class ContainerUI : MonoBehaviour
             else
                 titleText.text = containerItem.name;
         }
+    }
+
+    void SetTakeAllText()
+    {
+        if (containerInventoryManager.IsEquippedByPlayer())
+            takeAllText.text = "Remove All";
+        else
+            takeAllText.text = "Take All";
     }
 
     public void CloseContainerInventory()
@@ -179,6 +189,66 @@ public class ContainerUI : MonoBehaviour
 
     public void TakeAll()
     {
-        Debug.Log("Taking all from " + name);
+        if (containerInventoryManager.IsEquippedByPlayer())
+        {
+            RemoveAll();
+            return;
+        }
+
+        for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0 ; i--)
+        {
+            UnitManager.Instance.player.TryAddItemToInventories(containerInventoryManager.ParentInventory.ItemDatas[i]);
+        }
+
+        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+        {
+            for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0 ; j--)
+            {
+                UnitManager.Instance.player.TryAddItemToInventories(containerInventoryManager.SubInventories[i].ItemDatas[j]);
+            }
+        }
+
+        if (containerInventoryManager.ContainsAnyItems() == false)
+            CloseContainerInventory();
+    }
+
+    void RemoveAll()
+    {
+        for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0; i--)
+        {
+            if (UnitManager.Instance.player.MainInventory().TryAddItem(containerInventoryManager.ParentInventory.ItemDatas[i]) == false)
+                DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
+        }
+
+        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+        {
+            for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0; j--)
+            {
+                if (UnitManager.Instance.player.MainInventory().TryAddItem(containerInventoryManager.SubInventories[i].ItemDatas[j]) == false)
+                    DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
+            }
+        }
+
+        if (containerInventoryManager.ContainsAnyItems() == false)
+            CloseContainerInventory();
+    }
+
+    public void DropAll()
+    {
+        for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0; i--)
+        {
+            DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
+        }
+
+        for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
+        {
+            for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0; j--)
+            {
+                DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
+            }
+        }
+
+        if (containerInventoryManager.ContainsAnyItems() == false)
+            CloseContainerInventory();
     }
 }

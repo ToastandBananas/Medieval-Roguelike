@@ -22,7 +22,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             return;
         }
 
-        if (inventoryItem.itemData.Item.inventorySprite == null)
+        if (inventoryItem.itemData.Item.InventorySprite == null)
         {
             Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;

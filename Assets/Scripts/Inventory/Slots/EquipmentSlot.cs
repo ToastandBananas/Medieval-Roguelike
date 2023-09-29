@@ -16,7 +16,7 @@ public class EquipmentSlot : Slot
         if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null)
             return true;
 
-        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item.IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon().isTwoHanded)
+        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item.IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon().IsTwoHanded)
             return true;
         return false;
     }
@@ -29,7 +29,7 @@ public class EquipmentSlot : Slot
         // Setup the empty slot sprite
         SetEmptySlotSprite();
 
-        if (IsFull() && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
+        if (IsFull() && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
             oppositeWeaponSlot.HideSlotImage();
@@ -68,7 +68,7 @@ public class EquipmentSlot : Slot
             return;
         }
 
-        if (inventoryItem.itemData.Item.inventorySprite == null)
+        if (inventoryItem.itemData.Item.InventorySprite == null)
         {
             Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;
@@ -76,7 +76,7 @@ public class EquipmentSlot : Slot
 
         if (IsHeldItemSlot())
         {
-            if (inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
+            if (inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                 if (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2)
@@ -135,12 +135,12 @@ public class EquipmentSlot : Slot
         SetEmptySlotSprite();
         if (IsHeldItemSlot() && IsFull())
         { 
-            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().isTwoHanded)
+            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
                 GetOppositeWeaponSlot().SetEmptySlotSprite();
             else
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon().isTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon().IsTwoHanded)
                     oppositeWeaponSlot.SetEmptySlotSprite();
             }
         }

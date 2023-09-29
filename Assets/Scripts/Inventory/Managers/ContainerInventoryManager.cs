@@ -155,6 +155,8 @@ public class ContainerInventoryManager : InventoryManager
         }
     }
 
+    public bool IsEquippedByPlayer() => this == UnitManager.Instance.player.BackpackInventoryManager || this == UnitManager.Instance.player.QuiverInventoryManager;
+
     public void SetParentInventory(ContainerInventory newParentInventory) => parentInventory = newParentInventory;
 
     public void SetSubInventories(ContainerInventory[] newSubInventories) => subInventories = newSubInventories;

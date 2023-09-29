@@ -72,7 +72,7 @@ public class LooseItem : Interactable
                 {
                     EquipSlot oppositeEquipSlot = unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
 
-                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().isTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
+                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().IsTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
                         equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
                 }
                 else
@@ -149,17 +149,17 @@ public class LooseItem : Interactable
 
     public void SetupMesh()
     {
-        if (itemData.Item.pickupMesh != null)
+        if (itemData.Item.PickupMesh != null)
         {
-            meshFilter.mesh = itemData.Item.pickupMesh;
-            meshRenderer.material = itemData.Item.pickupMeshRendererMaterial;
-            meshCollider.sharedMesh = itemData.Item.pickupMesh;
+            meshFilter.mesh = itemData.Item.PickupMesh;
+            meshRenderer.material = itemData.Item.PickupMeshRendererMaterial;
+            meshCollider.sharedMesh = itemData.Item.PickupMesh;
         }
-        else if (itemData.Item.meshes[0] != null)
+        else if (itemData.Item.Meshes[0] != null)
         {
-            meshFilter.mesh = itemData.Item.meshes[0];
-            meshRenderer.material = itemData.Item.meshRendererMaterials[0];
-            meshCollider.sharedMesh = itemData.Item.meshes[0];
+            meshFilter.mesh = itemData.Item.Meshes[0];
+            meshRenderer.material = itemData.Item.MeshRendererMaterials[0];
+            meshCollider.sharedMesh = itemData.Item.Meshes[0];
         }
         else
             Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
@@ -180,10 +180,10 @@ public class LooseItem : Interactable
         if (itemData == null || itemData.Item == null)
             return;
 
-        if (itemData.Item.pickupMesh != null)
-            meshFilter.mesh = itemData.Item.pickupMesh;
+        if (itemData.Item.PickupMesh != null)
+            meshFilter.mesh = itemData.Item.PickupMesh;
         else
-            meshFilter.mesh = itemData.Item.meshes[0];
+            meshFilter.mesh = itemData.Item.Meshes[0];
     }
 
     public void HideMeshRenderer() => meshFilter.mesh = null;

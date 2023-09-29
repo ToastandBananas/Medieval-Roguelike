@@ -84,5 +84,13 @@ public class GameControls : MonoBehaviour
 
         gamePlayActions.toggleInventory.AddDefaultBinding(Key.I);
         gamePlayActions.toggleInventory.AddDefaultBinding(InputControlType.Select);
+
+        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Return);
+        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.PadEnter);
+        gamePlayActions.splitStackEnter.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
+
+        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Backspace);
+        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Delete);
+        gamePlayActions.splitStackDelete.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
     }
 }

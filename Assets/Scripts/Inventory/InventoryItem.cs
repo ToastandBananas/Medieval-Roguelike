@@ -16,20 +16,9 @@ public class InventoryItem : MonoBehaviour
 
     public readonly static int slotSize = 60;
 
-    public Vector2 GetInventoryItemOffset()
-    {
-        int width = itemData.Item.width;
-        int height = itemData.Item.height;
-        return new Vector2((-0.5f * (width - 1)) * rectTransform.rect.width, (0.5f * (height - 1))) * rectTransform.rect.height;
-    }
+    public Vector2 GetInventoryItemOffset() => new Vector2((-0.5f * (itemData.Item.Width - 1)) * rectTransform.rect.width, (0.5f * (itemData.Item.Height - 1))) * rectTransform.rect.height;
 
-    public Vector2 GetDraggedItemOffset()
-    {
-        int width = itemData.Item.width;
-        int height = itemData.Item.height;
-
-        return new Vector2(((-width * slotSize) / 2) + (slotSize / 2), ((height * slotSize) / 2) - (slotSize / 2));
-    }
+    public Vector2 GetDraggedItemOffset() => new Vector2(((-itemData.Item.Width * slotSize) / 2) + (slotSize / 2), ((itemData.Item.Height * slotSize) / 2) - (slotSize / 2));
 
     public void SetupIconSprite(bool fullyOpaque)
     {
@@ -41,7 +30,7 @@ public class InventoryItem : MonoBehaviour
             {
                 EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
                 spriteItemData = oppositeWeaponSlot.InventoryItem.itemData;
-                iconImage.sprite = oppositeWeaponSlot.InventoryItem.itemData.Item.inventorySprite;
+                iconImage.sprite = oppositeWeaponSlot.InventoryItem.itemData.Item.InventorySprite;
             }
             else
                 return;
@@ -49,16 +38,16 @@ public class InventoryItem : MonoBehaviour
         else
         {
             spriteItemData = itemData;
-            iconImage.sprite = spriteItemData.Item.inventorySprite;
+            iconImage.sprite = spriteItemData.Item.InventorySprite;
         }
 
         if (mySlot is InventorySlot)
         {
-            rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.width - 1), 0);
-            rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.height - 1));
+            rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.Width - 1), 0);
+            rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.Height - 1));
         }
         else
-            rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.width, slotSize * spriteItemData.Item.height);
+            rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
 
         Color imageColor = iconImage.color;
         if (fullyOpaque)
@@ -86,8 +75,8 @@ public class InventoryItem : MonoBehaviour
 
     public void SetupDraggedSprite()
     {
-        iconImage.sprite = itemData.Item.inventorySprite;
-        rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.width, slotSize * itemData.Item.height);
+        iconImage.sprite = itemData.Item.InventorySprite;
+        rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.Width, slotSize * itemData.Item.Height);
         EnableIconImage();
     }
 

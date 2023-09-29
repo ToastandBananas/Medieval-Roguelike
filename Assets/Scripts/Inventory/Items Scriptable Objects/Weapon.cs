@@ -6,22 +6,36 @@ public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, WarH
 public class Weapon : HeldEquipment
 {
     [Header("Weapon Info")]
-    public WeaponType weaponType = WeaponType.Sword;
-    public bool isTwoHanded;
-    public bool canDualWield;
+    [SerializeField] WeaponType weaponType = WeaponType.Sword;
+    [SerializeField] bool isTwoHanded;
+    [SerializeField] bool canDualWield;
 
     [Header("Range")]
-    public float minRange = 1f;
-    public float maxRange = 1.4f;
+    [SerializeField] float minRange = 1f;
+    [SerializeField] float maxRange = 1.4f;
 
     [Header("Damage")]
-    public int minDamage = 1;
-    public int maxDamage = 5;
+    [SerializeField] int minDamage = 1;
+    [SerializeField] int maxDamage = 5;
 
     [Header("Modifiers")]
-    public float blockChanceAddOn;
-    [Range(-100f, 100f)] public float minAccuracyModifier;
-    [Range(-100f, 100f)] public float maxAccuracyModifier;
+    [SerializeField] float blockChanceAddOn;
+    [Range(-100f, 100f)][SerializeField] float minAccuracyModifier;
+    [Range(-100f, 100f)][SerializeField] float maxAccuracyModifier;
+
+    public WeaponType WeaponType => weaponType;
+    public bool IsTwoHanded => isTwoHanded;
+    public bool CanDualWield => canDualWield;
+
+    public float MinRange => minRange;
+    public float MaxRange => maxRange;
+
+    public int MinDamage => minDamage;
+    public int MaxDamage => maxDamage;
+
+    public float BlockChanceAddOn => blockChanceAddOn;
+    public float MinAccuracyModifier => minAccuracyModifier;
+    public float MaxAccuracyModifier => maxAccuracyModifier;
 
     public override bool IsBag() => false;
 

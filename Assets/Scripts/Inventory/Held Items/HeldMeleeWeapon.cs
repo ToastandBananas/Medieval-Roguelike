@@ -24,7 +24,7 @@ public class HeldMeleeWeapon : HeldItem
         // Determine attack animation based on melee weapon type
         if (this == unit.unitMeshManager.rightHeldItem)
         {
-            if (itemData.Item.Weapon().isTwoHanded)
+            if (itemData.Item.Weapon().IsTwoHanded)
                 anim.Play("DefaultAttack_2H");
             else
                 anim.Play("DefaultAttack_1H_R");
@@ -34,7 +34,7 @@ public class HeldMeleeWeapon : HeldItem
         }
         else if (this == unit.unitMeshManager.leftHeldItem)
         {
-            if (itemData.Item.Weapon().isTwoHanded == false)
+            if (itemData.Item.Weapon().IsTwoHanded == false)
                 anim.Play("DefaultAttack_1H_L");
 
             if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.ItemData.Item is Shield)
@@ -95,14 +95,14 @@ public class HeldMeleeWeapon : HeldItem
         weaponRaised = true;
         if (unit.unitMeshManager.rightHeldItem == this)
         {
-            if (itemData.Item.Weapon().isTwoHanded)
+            if (itemData.Item.Weapon().IsTwoHanded)
                 anim.Play("RaiseWeapon_2H");
             else
                 anim.Play("RaiseWeapon_1H_R");
         }
         else if (unit.unitMeshManager.leftHeldItem == this)
         {
-            if (itemData.Item.Weapon().isTwoHanded)
+            if (itemData.Item.Weapon().IsTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
             else
                 anim.Play("RaiseWeapon_1H_L");
@@ -117,14 +117,14 @@ public class HeldMeleeWeapon : HeldItem
         weaponRaised = false;
         if (unit.unitMeshManager.rightHeldItem == this)
         {
-            if (itemData.Item.Weapon().isTwoHanded)
+            if (itemData.Item.Weapon().IsTwoHanded)
                 anim.Play("LowerWeapon_2H");
             else
                 anim.Play("LowerWeapon_1H_R");
         }
         else if (unit.unitMeshManager.leftHeldItem == this)
         {
-            if (itemData.Item.Weapon().isTwoHanded)
+            if (itemData.Item.Weapon().IsTwoHanded)
                 Debug.LogWarning("Animation not created yet.");
             else
                 anim.Play("LowerWeapon_1H_L");
@@ -174,9 +174,9 @@ public class HeldMeleeWeapon : HeldItem
     public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.Item.Weapon().maxRange;
+            return itemData.Item.Weapon().MaxRange;
 
-        float maxRange = itemData.Item.Weapon().maxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
+        float maxRange = itemData.Item.Weapon().MaxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

@@ -61,7 +61,7 @@ public class CharacterEquipment : MonoBehaviour
 
         if (newItemData.Item.IsWeapon())
         {
-            if (newItemData.Item.Weapon().isTwoHanded)
+            if (newItemData.Item.Weapon().IsTwoHanded)
             {
                 if (currentWeaponSet == WeaponSet.One)
                     targetEquipSlot = EquipSlot.LeftHeldItem1;
@@ -85,6 +85,9 @@ public class CharacterEquipment : MonoBehaviour
         { 
             if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
             {
+                if (ItemDataEquipped(newItemData))
+                    RemoveEquipment(GetEquipmentFromItemData(newItemData));
+
                 if (InventoryUI.Instance.isDraggingItem)
                     InventoryUI.Instance.DisableDraggedItem();
                 return true;
@@ -105,7 +108,7 @@ public class CharacterEquipment : MonoBehaviour
         }
 
         // If the item is a two-handed weapon, assign the left held item equip slot
-        if (newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
+        if (newItemData.Item.IsWeapon() && newItemData.Item.Weapon().IsTwoHanded)
         {
             if (currentWeaponSet == WeaponSet.One)
                 targetEquipSlot = EquipSlot.LeftHeldItem1;
@@ -135,7 +138,7 @@ public class CharacterEquipment : MonoBehaviour
             EquipSlot oppositeWeaponSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
 
             // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
-            if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon().isTwoHanded)))
+            if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item.IsWeapon() && newItemData.Item.Weapon().IsTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon().IsTwoHanded)))
                 UnequipItem(oppositeWeaponSlot);
         }
 
@@ -147,9 +150,9 @@ public class CharacterEquipment : MonoBehaviour
 
         InitializeInventories(targetEquipSlot, newItemData);
 
-        if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
+        if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().IsTwoHanded)
             equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
-        else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().isTwoHanded)
+        else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item.IsWeapon() && newItemData.Item.Weapon().IsTwoHanded)
             equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
 
         // Setup the target slot's item data/sprites and mesh if necessary
@@ -179,7 +182,7 @@ public class CharacterEquipment : MonoBehaviour
         // If trying to add to a stack of ammo
         if (ammoItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]))
         {
-            int roomInStack = equippedItemDatas[(int)EquipSlot.Quiver].Item.maxStackSize - equippedItemDatas[(int)EquipSlot.Quiver].CurrentStackSize;
+            int roomInStack = equippedItemDatas[(int)EquipSlot.Quiver].Item.MaxStackSize - equippedItemDatas[(int)EquipSlot.Quiver].CurrentStackSize;
 
             // If there's more room in the stack than the new item's current stack size, add it all to the stack
             if (ammoItemData.CurrentStackSize <= roomInStack)
@@ -231,7 +234,7 @@ public class CharacterEquipment : MonoBehaviour
         return false;
     }
 
-    public void RemoveItem(ItemData itemData)
+    public void RemoveEquipment(ItemData itemData)
     {
         int targetEquipSlotIndex = -1;
         for (int i = 0; i < equippedItemDatas.Length; i++)
@@ -398,12 +401,12 @@ public class CharacterEquipment : MonoBehaviour
             equippedItemDatas[i].RandomizeData();
 
             if (IsHeldItemEquipSlot((EquipSlot)i)
-                && ((equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().isTwoHanded && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)] != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item != null)
-                || (EquipSlotHasItem((int)GetOppositeWeaponEquipSlot((EquipSlot)i)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item.IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item.Weapon().isTwoHanded)))
+                && ((equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().IsTwoHanded && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)] != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item != null)
+                || (EquipSlotHasItem((int)GetOppositeWeaponEquipSlot((EquipSlot)i)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item.IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot((EquipSlot)i)].Item.Weapon().IsTwoHanded)))
             {
                 Debug.LogError($"{myUnit} has 2 two-handed weapons equipped, or a two-handed weapon and a one-handed weapon equipped. That's too many weapons!");
             }
-            else if (i == (int)EquipSlot.RightHeldItem1 && equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().isTwoHanded)
+            else if (i == (int)EquipSlot.RightHeldItem1 && equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().IsTwoHanded)
             {
                 equippedItemDatas[(int)EquipSlot.LeftHeldItem1] = equippedItemDatas[i];
                 equippedItemDatas[i] = null;
@@ -411,7 +414,7 @@ public class CharacterEquipment : MonoBehaviour
                 SetupNewItemIcon(GetEquipmentSlotFromIndex((int)EquipSlot.LeftHeldItem1), equippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
                 SetupEquipmentMesh(EquipSlot.LeftHeldItem1, equippedItemDatas[i]);
             }
-            else if (i == (int)EquipSlot.RightHeldItem2 && equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().isTwoHanded)
+            else if (i == (int)EquipSlot.RightHeldItem2 && equippedItemDatas[i].Item.IsWeapon() && equippedItemDatas[i].Item.Weapon().IsTwoHanded)
             {
                 equippedItemDatas[(int)EquipSlot.LeftHeldItem2] = equippedItemDatas[i];
                 equippedItemDatas[i] = null;
@@ -462,7 +465,7 @@ public class CharacterEquipment : MonoBehaviour
         if (EquipSlotHasItem(equipSlot))
             return true;
 
-        if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(GetOppositeWeaponEquipSlot(equipSlot)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.Weapon().isTwoHanded)
+        if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(GetOppositeWeaponEquipSlot(equipSlot)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.IsWeapon() && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(equipSlot)].Item.Weapon().IsTwoHanded)
             return true;
         return false;
     }
@@ -516,7 +519,7 @@ public class CharacterEquipment : MonoBehaviour
         targetSlot.ShowSlotImage();
         targetSlot.InventoryItem.UpdateStackSizeText();
 
-        if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem.itemData.Item.IsWeapon() && targetSlot.InventoryItem.itemData.Item.Weapon().isTwoHanded)
+        if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem.itemData.Item.IsWeapon() && targetSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
             oppositeWeaponSlot.SetFullSlotSprite();
@@ -580,7 +583,7 @@ public class CharacterEquipment : MonoBehaviour
                     return;
                 }    
 
-                if (equippedItemDatas[(int)oppositeEquipSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeEquipSlot].Item.Weapon().isTwoHanded)
+                if (equippedItemDatas[(int)oppositeEquipSlot].Item.IsWeapon() && equippedItemDatas[(int)oppositeEquipSlot].Item.Weapon().IsTwoHanded)
                     equipSlot = oppositeEquipSlot;
             }
 
@@ -710,8 +713,16 @@ public class CharacterEquipment : MonoBehaviour
         }
         return false;
     }
-
-    public void RemoveEquipment(EquipSlot equipSlot) => equippedItemDatas[(int)equipSlot] = null;
+    
+    public ItemData GetEquipmentFromItemData(ItemData itemData)
+    {
+        for (int i = 0; i < equippedItemDatas.Length; i++)
+        {
+            if (equippedItemDatas[i] == itemData)
+                return equippedItemDatas[i];
+        }
+        return null;
+    }
 
     public ItemData[] EquippedItemDatas => equippedItemDatas;
 

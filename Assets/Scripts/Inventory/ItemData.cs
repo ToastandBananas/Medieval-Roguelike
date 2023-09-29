@@ -26,6 +26,11 @@ public class ItemData
         RandomizeData();
     }
 
+    public ItemData(ItemData itemDataToCopy)
+    {
+        TransferData(itemDataToCopy);
+    }
+
     public void RandomizeData(bool forceRandomization = false)
     {
         if (item != null)
@@ -35,26 +40,26 @@ public class ItemData
             {
                 hasBeenRandomized = true;
 
-                if (item.maxStackSize > 1)
-                    currentStackSize = Random.Range(1, item.maxStackSize + 1);
+                if (item.MaxStackSize > 1)
+                    currentStackSize = Random.Range(1, item.MaxStackSize + 1);
                 else
                     currentStackSize = 1;
 
-                if (item.maxUses > 1 && item.maxStackSize == 1)
-                    remainingUses = Random.Range(1, item.maxUses + 1);
+                if (item.MaxUses > 1 && item.MaxStackSize == 1)
+                    remainingUses = Random.Range(1, item.MaxUses + 1);
                 else
                     remainingUses = 1;
 
                 if (item.IsWeapon())
                 {
                     Weapon weapon = item as Weapon;
-                    damage = Random.Range(weapon.minDamage, weapon.maxDamage + 1);
-                    accuracyModifier = Random.Range(weapon.minAccuracyModifier, weapon.maxAccuracyModifier);
+                    damage = Random.Range(weapon.MinDamage, weapon.MaxDamage + 1);
+                    accuracyModifier = Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier);
                 }
                 else if (item.IsShield())
                 {
                     Shield shield = item as Shield;
-                    blockPower = Random.Range(shield.minBlockPower, shield.maxBlockPower + 1);
+                    blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
                 }
             }
         }
@@ -122,24 +127,39 @@ public class ItemData
     public void SetCurrentStackSize(int stackSize)
     {
         currentStackSize = stackSize;
-        if (currentStackSize > item.maxStackSize)
-            currentStackSize = item.maxStackSize;
+        if (currentStackSize > item.MaxStackSize)
+            currentStackSize = item.MaxStackSize;
     }
 
     public void AdjustCurrentStackSize(int adjustmentAmount)
     {
         currentStackSize += adjustmentAmount;
-        if (currentStackSize > item.maxStackSize)
-            currentStackSize = item.maxStackSize;
+        if (currentStackSize > item.MaxStackSize)
+            currentStackSize = item.MaxStackSize;
         else if (currentStackSize < 0)
             currentStackSize = 0;
+    }
+
+    public string Name()
+    {
+        if (item == null)
+            return "";
+
+        if (currentStackSize > 1)
+        {
+            if (item.PluralName != "")
+                return item.PluralName;
+            return $"{item.name}s";
+        }
+
+        return item.name;
     }
 
     public void Use(int uses) => remainingUses -= uses;
 
     public void AddToUses(int uses) => remainingUses += uses;
 
-    public void ReplenishUses() => remainingUses = item.maxUses;
+    public void ReplenishUses() => remainingUses = item.MaxUses;
 
     public void SetItem(Item newItem) => item = newItem;
 

@@ -23,8 +23,8 @@ public class SlotCoordinate
         itemData = newItemData;
         itemData.SetInventorySlotCoordinate(this);
 
-        int width = itemData.Item.width;
-        int height = itemData.Item.height;
+        int width = itemData.Item.Width;
+        int height = itemData.Item.Height;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -39,8 +39,8 @@ public class SlotCoordinate
     public void ClearItem()
     {
         Inventory inventory = myInventory;
-        int width = parentSlotCoordinate.itemData.Item.width;
-        int height = parentSlotCoordinate.itemData.Item.height;
+        int width = parentSlotCoordinate.itemData.Item.Width;
+        int height = parentSlotCoordinate.itemData.Item.Height;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)

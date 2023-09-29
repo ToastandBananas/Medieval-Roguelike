@@ -4,11 +4,16 @@ using UnityEngine;
 public class Shield : HeldEquipment
 {
     [Header("Block Power")]
-    public int minBlockPower = 1;
-    public int maxBlockPower = 5;
+    [SerializeField] int minBlockPower = 1;
+    [SerializeField] int maxBlockPower = 5;
 
     [Header("Modifiers")]
-    public float blockChanceAddOn = 10f;
+    [SerializeField] float blockChanceAddOn = 10f;
+
+    public int MinBlockPower => minBlockPower;
+    public int MaxBlockPower => maxBlockPower;
+
+    public float BlockChanceAddOn => blockChanceAddOn;
 
     public override bool IsBag() => false;
 

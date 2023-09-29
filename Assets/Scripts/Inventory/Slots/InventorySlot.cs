@@ -30,8 +30,8 @@ public class InventorySlot : Slot
 
     public void SetupFullSlotSprites()
     {
-        int width = inventoryItem.itemData.Item.width;
-        int height = inventoryItem.itemData.Item.height;
+        int width = inventoryItem.itemData.Item.Width;
+        int height = inventoryItem.itemData.Item.Height;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -114,11 +114,9 @@ public class InventorySlot : Slot
         if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
             return;
 
-        int width = inventoryItem.itemData.Item.width;
-        int height = inventoryItem.itemData.Item.height;
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < inventoryItem.itemData.Item.Width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < inventoryItem.itemData.Item.Height; y++)
             {
                 myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y).SetEmptySlotSprite();
             }
@@ -154,8 +152,8 @@ public class InventorySlot : Slot
 
     public override void HighlightSlots()
     {
-        int width = InventoryUI.Instance.DraggedItem.itemData.Item.width;
-        int height = InventoryUI.Instance.DraggedItem.itemData.Item.height;
+        int width = InventoryUI.Instance.DraggedItem.itemData.Item.Width;
+        int height = InventoryUI.Instance.DraggedItem.itemData.Item.Height;
         bool validSlot = !InventoryUI.Instance.OverlappingMultipleItems(slotCoordinate, InventoryUI.Instance.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
         if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0)
             validSlot = false;
@@ -187,11 +185,9 @@ public class InventorySlot : Slot
 
     public override void RemoveSlotHighlights()
     {
-        int width = InventoryUI.Instance.DraggedItem.itemData.Item.width;
-        int height = InventoryUI.Instance.DraggedItem.itemData.Item.height;
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < InventoryUI.Instance.DraggedItem.itemData.Item.Width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < InventoryUI.Instance.DraggedItem.itemData.Item.Height; y++)
             {
                 InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
                 if (slotToHighlight == null)

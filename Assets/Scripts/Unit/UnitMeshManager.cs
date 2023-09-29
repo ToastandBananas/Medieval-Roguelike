@@ -134,12 +134,12 @@ public class UnitMeshManager : MonoBehaviour
         switch (equipSlot)
         {
             case EquipSlot.Helm:
-                helmMeshFilter.mesh = equipment.meshes[0];
-                helmMeshRenderer.material = equipment.meshRendererMaterials[0];
+                helmMeshFilter.mesh = equipment.Meshes[0];
+                helmMeshRenderer.material = equipment.MeshRendererMaterials[0];
                 break;
             case EquipSlot.BodyArmor:
-                bodyArmorMeshFilter.mesh = equipment.meshes[0];
-                bodyArmorMeshRenderer.material = equipment.meshRendererMaterials[0];
+                bodyArmorMeshFilter.mesh = equipment.Meshes[0];
+                bodyArmorMeshRenderer.material = equipment.MeshRendererMaterials[0];
                 break;
             default:
                 break;

@@ -11,35 +11,60 @@ public enum ItemMaterial
 public abstract class Item : ScriptableObject
 {
     [Header("General Item Info")]
-    new public string name = "New Item";
-    public string pluralName;
-    public ItemType itemType;
-    public ItemMaterial mainMaterial;
-    public ItemSize itemSize;
-    public string description;
+    [SerializeField] new string name = "New Item";
+    [SerializeField] string pluralName;
+    [SerializeField] string description;
+    [SerializeField] protected ItemType itemType;
+    [SerializeField] ItemMaterial mainMaterial;
+    [SerializeField] ItemSize itemSize;
 
     [Header("Inventory")]
-    public int width = 1;
-    public int height = 1;
-    public float weight = 0.1f;
-    public int maxStackSize = 1;
-    public Sprite inventorySprite;
-
-    [Header("Value")]
-    public Vector2Int valueRange;
-    public int staticValue = 1;
-
-    [Header("Equipped Mesh")]
-    public Mesh[] meshes;
-    public Material[] meshRendererMaterials;
-
-    [Header("Pickup Mesh")]
-    public Mesh pickupMesh;
-    public Material pickupMeshRendererMaterial;
+    [SerializeField] protected int width = 1;
+    [SerializeField] protected int height = 1;
+    [SerializeField] float weight = 0.1f;
+    [SerializeField] protected int maxStackSize = 1;
+    [SerializeField] Sprite inventorySprite;
 
     [Header("Multiple Uses?")]
-    public int maxUses = 1;
-    public bool isUsable = true;
+    [SerializeField] protected int maxUses = 1;
+    [SerializeField] bool isUsable = true;
+
+    [Header("Value")]
+    [SerializeField] Vector2Int valueRange;
+    [SerializeField] int staticValue = 1;
+
+    [Header("Equipped Mesh")]
+    [SerializeField] Mesh[] meshes;
+    [SerializeField] Material[] meshRendererMaterials;
+
+    [Header("Pickup Mesh")]
+    [SerializeField] Mesh pickupMesh;
+    [SerializeField] Material pickupMeshRendererMaterial;
+
+    public string Name => name;
+    public string PluralName => pluralName;
+    public string Description => description;
+    public ItemType ItemType => itemType;
+    public ItemMaterial MainMaterial => mainMaterial;
+    public ItemSize ItemSize => itemSize;
+
+    public int Width => width;
+    public int Height => height;
+    public float Weight => weight;
+    public int MaxStackSize => maxStackSize;
+    public Sprite InventorySprite => inventorySprite;
+
+    public Vector2Int ValueRange => valueRange;
+    public int StaticValue => staticValue;
+
+    public Mesh[] Meshes => meshes;
+    public Material[] MeshRendererMaterials => meshRendererMaterials;
+
+    public Mesh PickupMesh => pickupMesh;
+    public Material PickupMeshRendererMaterial => pickupMeshRendererMaterial;
+
+    public int MaxUses => maxUses;
+    public bool IsUsable => isUsable;
 
     public virtual bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {

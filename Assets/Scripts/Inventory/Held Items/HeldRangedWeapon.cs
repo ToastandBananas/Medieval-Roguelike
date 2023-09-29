@@ -105,9 +105,9 @@ public class HeldRangedWeapon : HeldItem
     public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.Item.Weapon().maxRange;
+            return itemData.Item.Weapon().MaxRange;
 
-        float maxRange = itemData.Item.Weapon().maxRange + (shooterGridPosition.y - targetGridPosition.y);
+        float maxRange = itemData.Item.Weapon().MaxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

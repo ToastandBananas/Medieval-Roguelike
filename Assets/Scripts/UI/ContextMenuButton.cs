@@ -73,7 +73,7 @@ public class ContextMenuButton : MonoBehaviour
         else if (UnitManager.Instance.player.TryAddItemToInventories(itemData))
         {
             if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
-                InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveItem(itemData);
+                InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.RemoveEquipment(itemData);
             else if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseItem)
                 LooseItemPool.ReturnToPool((LooseItem)ContextMenu.Instance.TargetInteractable);
         }
@@ -125,7 +125,7 @@ public class ContextMenuButton : MonoBehaviour
             {
                 Consumable consumable = itemData.Item as Consumable;
 
-                if (consumable.itemType == ItemType.Food)
+                if (consumable.ItemType == ItemType.Food)
                     stringBuilder.Append("Eat");
                 else
                     stringBuilder.Append("Drink");
@@ -133,13 +133,13 @@ public class ContextMenuButton : MonoBehaviour
             else
                 stringBuilder.Append("Use");
 
-            if (itemData.Item.maxUses > 1)
+            if (itemData.Item.MaxUses > 1)
             {
                 if (amountToUse == itemData.RemainingUses)
                 {
                     if (itemData.RemainingUses > 1)
                     {
-                        if (itemData.RemainingUses < itemData.Item.maxUses)
+                        if (itemData.RemainingUses < itemData.Item.MaxUses)
                             stringBuilder.Append(" Remaining");
                         else
                             stringBuilder.Append(" All");
@@ -154,13 +154,13 @@ public class ContextMenuButton : MonoBehaviour
                 else if (itemData.RemainingUses >= 10 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.1f))
                     stringBuilder.Append(" a Little Bit");
             }
-            else if (itemData.Item.maxStackSize > 1)
+            else if (itemData.Item.MaxStackSize > 1)
             {
                 if (amountToUse == itemData.CurrentStackSize)
                 {
                     if (itemData.CurrentStackSize > 1)
                     {
-                        if (itemData.CurrentStackSize < itemData.Item.maxStackSize)
+                        if (itemData.CurrentStackSize < itemData.Item.MaxStackSize)
                             stringBuilder.Append(" Remaining");
                         else
                             stringBuilder.Append(" All");
@@ -270,6 +270,14 @@ public class ContextMenuButton : MonoBehaviour
             InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
         }
 
+        ContextMenu.Instance.DisableContextMenu();
+    }
+
+    public void SetupSplitStackButton(ItemData itemData) => SetupButton("Split Stack", delegate { OpenSplitStackUI(itemData); });
+
+    void OpenSplitStackUI(ItemData itemData)
+    {
+        SplitStack.Instance.Open(itemData);
         ContextMenu.Instance.DisableContextMenu();
     }
 
