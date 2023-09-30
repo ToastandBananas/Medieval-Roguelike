@@ -14,15 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Leather Quiver
   pluralName: 
-  itemType: 17
+  description: Holds 2 bundles of arrows.
+  itemType: 70
   mainMaterial: 23
   itemSize: 4
-  description: Holds 2 bundles of arrows.
   width: 2
   height: 4
   weight: 1
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
+  maxUses: 1
+  isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 200
   meshes: []
@@ -30,13 +32,14 @@ MonoBehaviour:
   pickupMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   pickupMeshRendererMaterial: {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4,
     type: 2}
-  maxUses: 1
-  isUsable: 1
   equipSlot: 10
   actionTypes: []
   allowedProjectileType: 0
-  ammoStackCount: 2
   inventorySections:
-  - amountOfSlots: 8
-    maxSlots: 8
+  - amountOfSlots: 2
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 4
+    placeholderSprite: {fileID: 21300000, guid: efe441717fc1b1a4aa67f4bdba515ca4,
+      type: 3}
+    allowedItemTypes: 32000000

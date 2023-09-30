@@ -15,8 +15,7 @@ public class InventoryItem : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI stackSizeText;
 
     public readonly static int slotSize = 60;
-
-    public Vector2 GetInventoryItemOffset() => new Vector2((-0.5f * (itemData.Item.Width - 1)) * rectTransform.rect.width, (0.5f * (itemData.Item.Height - 1))) * rectTransform.rect.height;
+    public readonly static float placeholderIconSizeFactor = 5f / 6f;
 
     public Vector2 GetDraggedItemOffset() => new Vector2(((-itemData.Item.Width * slotSize) / 2) + (slotSize / 2), ((itemData.Item.Height * slotSize) / 2) - (slotSize / 2));
 
@@ -30,7 +29,7 @@ public class InventoryItem : MonoBehaviour
             {
                 EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
                 spriteItemData = oppositeWeaponSlot.InventoryItem.itemData;
-                iconImage.sprite = oppositeWeaponSlot.InventoryItem.itemData.Item.InventorySprite;
+                iconImage.sprite = oppositeWeaponSlot.InventoryItem.itemData.Item.InventorySprite(spriteItemData);
             }
             else
                 return;
@@ -38,16 +37,25 @@ public class InventoryItem : MonoBehaviour
         else
         {
             spriteItemData = itemData;
-            iconImage.sprite = spriteItemData.Item.InventorySprite;
+            iconImage.sprite = spriteItemData.Item.InventorySprite(spriteItemData);
         }
 
+        // Setup icon size
         if (mySlot is InventorySlot)
         {
-            rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.Width - 1), 0);
-            rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.Height - 1));
+            if (myInventory.InventoryLayout.HasStandardSlotSize())
+            {
+                rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.Width - 1), 0);
+                rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.Height - 1));
+            }
+            else
+            {
+                rectTransform.offsetMin = Vector2.zero;
+                rectTransform.offsetMax = Vector2.zero;
+            }
         }
-        else
-            rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
+
+        iconImage.rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
 
         Color imageColor = iconImage.color;
         if (fullyOpaque)
@@ -67,16 +75,42 @@ public class InventoryItem : MonoBehaviour
                 DisableIconImage();
             }
             else
+            {
+                myEquipmentSlot.PlaceholderImage.enabled = false;
                 EnableIconImage();
+            }
         }
         else
             EnableIconImage();
     }
 
+    public void ShowPlaceholderIcon()
+    {
+        if (myInventory != null && myInventory.InventoryLayout.PlaceholderSprite != null)
+        {
+            iconImage.sprite = myInventory.InventoryLayout.PlaceholderSprite;
+            iconImage.rectTransform.sizeDelta = new Vector2(slotSize * myInventory.InventoryLayout.SlotWidth * placeholderIconSizeFactor, slotSize * myInventory.InventoryLayout.SlotHeight * placeholderIconSizeFactor);
+
+            // Setup opacity
+            Color imageColor = iconImage.color;
+            imageColor.a = 0.5f;
+            iconImage.color = imageColor;
+        }
+        else if (myCharacterEquipment != null && mySlot != null)
+        {
+            EquipmentSlot equipmentSlot = mySlot as EquipmentSlot;
+            equipmentSlot.PlaceholderImage.enabled = true;
+            iconImage.enabled = false;
+        }
+        else
+            iconImage.enabled = false;
+    }
+
     public void SetupDraggedSprite()
     {
-        iconImage.sprite = itemData.Item.InventorySprite;
+        iconImage.sprite = itemData.Item.InventorySprite(itemData);
         rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.Width, slotSize * itemData.Item.Height);
+        iconImage.rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.Width, slotSize * itemData.Item.Height);
         EnableIconImage();
     }
 
@@ -135,11 +169,13 @@ public class InventoryItem : MonoBehaviour
         }
     }
 
-    public void RemoveIconSprite() => iconImage.sprite = null;
-
     public void DisableIconImage()
     {
-        iconImage.enabled = false;
+        if (InventoryUI.Instance.DraggedItem == this)
+            iconImage.enabled = false;
+        else
+            ShowPlaceholderIcon();
+
         stackSizeText.enabled = false;
     }
 

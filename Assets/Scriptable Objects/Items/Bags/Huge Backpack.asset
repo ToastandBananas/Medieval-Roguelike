@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Huge Backpack
   pluralName: 
-  itemType: 15
+  description: A large leather backpack with 5 pockets.
+  itemType: 140
   mainMaterial: 23
   itemSize: 4
-  description: A large leather backpack with 5 pockets.
   width: 2
   height: 4
   weight: 8
-  volume: 8
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
+  maxUses: 1
+  isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 1600
   meshes:
@@ -32,25 +33,36 @@ MonoBehaviour:
   - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
-  maxUses: 1
-  isUsable: 1
   equipSlot: 9
+  actionTypes: []
   inventorySections:
   - amountOfSlots: 20
-    maxSlots: 20
     maxSlotsPerRow: 5
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 4
-    maxSlots: 4
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 4
-    maxSlots: 4
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 6
-    maxSlots: 6
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 6
-    maxSlots: 6
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 5
-    maxSlots: 5
     maxSlotsPerRow: 5
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 

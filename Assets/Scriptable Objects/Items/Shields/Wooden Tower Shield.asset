@@ -14,19 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Wooden Tower Shield
   pluralName: 
-  itemType: 6
+  description: 
+  itemType: 20
   mainMaterial: 9
   itemSize: 4
-  description: 
-  isUsable: 1
-  canUsePartial: 0
   width: 2
   height: 4
   weight: 0.1
-  volume: 0.1
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: 09faf35f3b20db347b4a26b9d1704148, type: 3}
-  value: {x: 0, y: 0}
+  maxUses: 1
+  isUsable: 1
+  valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
   - {fileID: -2432090755550338912, guid: 0a01197b67bc4c244b48a54ceb75c570, type: 3}
@@ -37,6 +36,7 @@ MonoBehaviour:
   pickupMeshRendererMaterial: {fileID: 2100000, guid: b71f7cb3cae30884194493f76e5bff6d,
     type: 2}
   equipSlot: 0
+  actionTypes: []
   idlePosition_Left: {x: 0.23, y: -0.29, z: -0.23}
   idlePosition_Right: {x: -0.23, y: -0.29, z: -0.23}
   idleRotation_Left: {x: 0, y: -30, z: 0}

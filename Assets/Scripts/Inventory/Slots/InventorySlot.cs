@@ -28,8 +28,17 @@ public class InventorySlot : Slot
     [SerializeField] Sprite horizontalHalfFullSlotSprite;
     [SerializeField] Sprite verticalHalfFullSlotSprite;
 
+    [Header("Other Components")]
+    [SerializeField] RectTransform rectTransform;
+
     public void SetupFullSlotSprites()
     {
+        if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+        {
+            myInventory.GetSlotFromCoordinate(slotCoordinate).SetFullSlotSprite(fullSlotSprite);
+            return;
+        }
+
         int width = inventoryItem.itemData.Item.Width;
         int height = inventoryItem.itemData.Item.Height;
         for (int x = 0; x < width; x++)
@@ -114,6 +123,12 @@ public class InventorySlot : Slot
         if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
             return;
 
+        if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+        {
+            myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y).SetEmptySlotSprite();
+            return;
+        }
+
         for (int x = 0; x < inventoryItem.itemData.Item.Width; x++)
         {
             for (int y = 0; y < inventoryItem.itemData.Item.Height; y++)
@@ -128,7 +143,7 @@ public class InventorySlot : Slot
         InventorySlot parentSlot = myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate.coordinate.x, slotCoordinate.parentSlotCoordinate.coordinate.y);
 
         // Hide the item's sprite
-        parentSlot.HideSlotImage();
+        parentSlot.HideItemIcon();
 
         // Setup the empty slot sprites
         parentSlot.SetupEmptySlotSprites();
@@ -154,9 +169,21 @@ public class InventorySlot : Slot
     {
         int width = InventoryUI.Instance.DraggedItem.itemData.Item.Width;
         int height = InventoryUI.Instance.DraggedItem.itemData.Item.Height;
+
         bool validSlot = !InventoryUI.Instance.OverlappingMultipleItems(slotCoordinate, InventoryUI.Instance.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
-        if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0)
-            validSlot = false;
+
+        if (validSlot)
+        {
+            if (myInventory.ItemTypeAllowed(InventoryUI.Instance.DraggedItem.itemData.Item.ItemType))
+            {
+                if (myInventory.InventoryLayout.HasStandardSlotSize() == false) // Non-standard slot size
+                    validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.Instance.DraggedItem.itemData.Item);
+                else if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0) // Standard slot size
+                    validSlot = false;
+            }
+            else
+                validSlot = false;
+        }
 
         if (InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
         {
@@ -166,6 +193,18 @@ public class InventorySlot : Slot
         }
 
         InventoryUI.Instance.SetValidDragPosition(validSlot);
+        
+        if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+        {
+            InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y);
+
+            if (validSlot)
+                slotToHighlight.image.color = Color.green;
+            else
+                slotToHighlight.image.color = Color.red;
+
+            return;
+        }
 
         for (int x = 0; x < width; x++)
         {
@@ -185,6 +224,12 @@ public class InventorySlot : Slot
 
     public override void RemoveSlotHighlights()
     {
+        if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+        {
+            myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y).image.color = Color.white;
+            return;
+        }
+
         for (int x = 0; x < InventoryUI.Instance.DraggedItem.itemData.Item.Width; x++)
         {
             for (int y = 0; y < InventoryUI.Instance.DraggedItem.itemData.Item.Height; y++)
@@ -217,4 +262,6 @@ public class InventorySlot : Slot
     public void SetMyInventory(Inventory inv) => myInventory = inv;
 
     public void SetSlotCoordinate(SlotCoordinate coordinate) => slotCoordinate = coordinate;
+
+    public RectTransform RectTransform => rectTransform;
 }

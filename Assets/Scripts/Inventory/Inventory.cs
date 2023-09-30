@@ -5,9 +5,8 @@ using UnityEngine;
 public class Inventory
 {
     [SerializeField] protected Unit myUnit;
-    protected Transform slotsParent;
 
-    [Header("Slot Counts")]
+    [Header("Slot Info")]
     [SerializeField] protected InventoryLayout inventoryLayout;
     int maxSlotsPerColumn;
 
@@ -17,6 +16,7 @@ public class Inventory
     protected List<InventorySlot> slots;
     protected List<SlotCoordinate> slotCoordinates;
 
+    protected Transform slotsParent;
     protected bool slotVisualsCreated;
     protected bool hasBeenInitialized;
 
@@ -39,6 +39,9 @@ public class Inventory
     public virtual bool TryAddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
     {
         if (newItemData == null || newItemData.Item == null)
+            return false;
+
+        if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
             return false;
 
         if (newItemData.ShouldRandomize)
@@ -89,7 +92,7 @@ public class Inventory
                 return true;
             }
         }
-
+        
         // If the item data hasn't been assigned a slot coordinate, do so now
         SlotCoordinate targetSlotCoordinate;
         if (newItemData.InventorySlotCoordinate() == null || newItemData.InventorySlotCoordinate().myInventory != this)
@@ -129,6 +132,9 @@ public class Inventory
 
     public bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
     {
+        if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
+            return false;
+
         InventoryUI.Instance.OverlappingMultipleItems(targetSlotCoordinate, newItemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
 
         // Check if there's multiple items in the way or if the position is invalid
@@ -146,11 +152,8 @@ public class Inventory
                 GetSlotFromCoordinate(targetSlotCoordinate).RemoveSlotHighlights();
 
             // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
-            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.MaxStackSize > 1 && newItemData.IsEqual(overlappedItemsData))
+            if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.MaxStackSize > 1 && overlappedItemsData.CurrentStackSize < overlappedItemsData.Item.MaxStackSize && newItemData.IsEqual(overlappedItemsData))
             {
-                if (overlappedItemsData.CurrentStackSize >= overlappedItemsData.Item.MaxStackSize)
-                    return false;
-
                 CombineStacks(newItemData, overlappedItemsData);
 
                 // Update the overlapped item's stack size text
@@ -161,7 +164,8 @@ public class Inventory
                     if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
                     {
                         InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
-                        slot.InventoryItem.UpdateStackSizeText();
+                        if (slot != null)
+                            slot.InventoryItem.UpdateStackSizeText();
                     }
                 }
 
@@ -206,6 +210,9 @@ public class Inventory
                 // If the slots are in different inventories
                 RemoveFromPreviousInventoryOrEquipment(targetSlotCoordinate, newItemData);
 
+                if (itemDatas.Contains(newItemData) == false)
+                    itemDatas.Add(newItemData);
+
                 // Setup the dragged item's data and sprite and start dragging the new item
                 InventoryUI.Instance.SetupDraggedItem(overlappedItemsData, null, this);
 
@@ -237,6 +244,9 @@ public class Inventory
             // If the slots are in different inventories
             RemoveFromPreviousInventoryOrEquipment(targetSlotCoordinate, newItemData);
 
+            if (itemDatas.Contains(newItemData) == false)
+                itemDatas.Add(newItemData);
+
             // Hide the dragged item
             if (InventoryUI.Instance.isDraggingItem)
                 InventoryUI.Instance.DisableDraggedItem();
@@ -267,8 +277,6 @@ public class Inventory
     {
         if (targetSlotCoordinate.myInventory != InventoryUI.Instance.DraggedItem.myInventory)
         {
-            itemDatas.Add(newItemData);
-
             if (InventoryUI.Instance.isDraggingItem)
             {
                 // Remove the item from its original character equipment
@@ -347,27 +355,34 @@ public class Inventory
         int width = itemData.Item.Width;
         int height = itemData.Item.Height;
 
+        // Loop through every slot coordinate and check if it will work as the parent slot for the new Item
         for (int i = 0; i < slotCoordinates.Count; i++)
         {
             if (slotCoordinates[i].isFull || slotCoordinates[i].parentSlotCoordinate.isFull)
                 continue;
 
             bool isAvailable = true;
-            for (int y = 0; y < height; y++)
+            if (inventoryLayout.HasStandardSlotSize())
             {
-                for (int x = 0; x < width; x++)
+                // Check for empty slots within the item's dimensions
+                for (int y = 0; y < height; y++)
                 {
-                    SlotCoordinate slotCoordinateToCheck = GetSlotCoordinate(slotCoordinates[i].coordinate.x - x, slotCoordinates[i].coordinate.y - y);
-                    if (slotCoordinateToCheck == null || slotCoordinateToCheck.isFull || slotCoordinateToCheck.parentSlotCoordinate.isFull)
+                    for (int x = 0; x < width; x++)
                     {
-                        isAvailable = false;
-                        break;
+                        SlotCoordinate slotCoordinateToCheck = GetSlotCoordinate(slotCoordinates[i].coordinate.x - x, slotCoordinates[i].coordinate.y - y);
+                        if (slotCoordinateToCheck == null || slotCoordinateToCheck.isFull || slotCoordinateToCheck.parentSlotCoordinate.isFull)
+                        {
+                            isAvailable = false;
+                            break;
+                        }
                     }
 
                     if (isAvailable == false)
                         break;
                 }
             }
+            else if (ItemFitsInSingleSlot(itemData.Item) == false) // For non-standard slot sizes
+                isAvailable = false;
 
             if (isAvailable)
             {
@@ -443,14 +458,14 @@ public class Inventory
     protected void CreateSlotCoordinates()
     {
         slotCoordinates.Clear();
-        maxSlotsPerColumn = Mathf.CeilToInt((float)inventoryLayout.MaxSlots / inventoryLayout.MaxSlotsPerRow);
+        maxSlotsPerColumn = Mathf.CeilToInt((float)inventoryLayout.AmountOfSlots / inventoryLayout.MaxSlotsPerRow);
 
         int coordinateCount = 0;
         for (int y = 1; y < maxSlotsPerColumn + 1; y++)
         {
             for (int x = 1; x < inventoryLayout.MaxSlotsPerRow + 1; x++)
             {
-                if (coordinateCount == inventoryLayout.AmountOfSlots || coordinateCount == inventoryLayout.MaxSlots)
+                if (coordinateCount == inventoryLayout.AmountOfSlots)
                     return;
 
                 slotCoordinates.Add(new SlotCoordinate(x, y, this));
@@ -493,10 +508,13 @@ public class Inventory
             newSlot.InventoryItem.SetMyInventory(this);
             slots.Add(newSlot);
 
-            newSlot.gameObject.SetActive(true);
+            if (InventoryLayout.HasStandardSlotSize() == false)
+            {
+                newSlot.InventoryItem.EnableIconImage();
+                newSlot.HideItemIcon(); // Shows the placeholder image
+            }
 
-            if (i == inventoryLayout.MaxSlots - 1)
-                break;
+            newSlot.gameObject.SetActive(true);
         }
 
         slotVisualsCreated = true;
@@ -549,15 +567,30 @@ public class Inventory
         }
     }
 
-    public InventorySlot GetSlotFromItemData(ItemData itemDataToDrop)
+    public InventorySlot GetSlotFromItemData(ItemData itemData)
     {
         for (int i = 0; i < slots.Count; i++)
         {
-            if (slots[i].GetItemData() == itemDataToDrop)
+            if (slots[i].GetItemData() == itemData)
                 return slots[i];
         }
         return null;
     }
+
+    public bool ItemTypeAllowed(ItemType itemType)
+    {
+        if (inventoryLayout.AllowedItemTypes.Length == 0)
+            return true;
+
+        for (int i = 0; i < inventoryLayout.AllowedItemTypes.Length; i++)
+        {
+            if (itemType == inventoryLayout.AllowedItemTypes[i])
+                return true;
+        }
+        return false;
+    }
+
+    public bool ItemFitsInSingleSlot(Item item) => item.Width <= inventoryLayout.SlotWidth && item.Height <= inventoryLayout.SlotHeight;
 
     public List<ItemData> ItemDatas => itemDatas;
 

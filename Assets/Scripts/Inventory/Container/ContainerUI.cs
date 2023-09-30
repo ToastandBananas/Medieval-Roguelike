@@ -83,8 +83,8 @@ public class ContainerUI : MonoBehaviour
         int leftHeight = 0;
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 1 && mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.AmountOfSlots > 0)
         {
-            leftHeight = mainContainerInventory.ParentInventory.SubInventories[0].MaxSlotsPerColumn * InventoryItem.slotSize;
-            leftWidth = mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            leftHeight = mainContainerInventory.ParentInventory.SubInventories[0].MaxSlotsPerColumn * mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.SlotHeight * InventoryItem.slotSize;
+            leftWidth = mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.SubInventories[0].InventoryLayout.SlotWidth * InventoryItem.slotSize;
             subContainerSlotGroups[0].gameObject.SetActive(true);
         }
         else
@@ -92,8 +92,8 @@ public class ContainerUI : MonoBehaviour
 
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 3 && mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.AmountOfSlots > 0)
         {
-            leftHeight += mainContainerInventory.ParentInventory.SubInventories[2].MaxSlotsPerColumn * InventoryItem.slotSize;
-            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            leftHeight += mainContainerInventory.ParentInventory.SubInventories[2].MaxSlotsPerColumn * mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.SlotHeight * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.SubInventories[2].InventoryLayout.SlotWidth * InventoryItem.slotSize;
             if (widthToCheck > leftWidth)
                 leftWidth = widthToCheck;
             subContainerSlotGroups[2].gameObject.SetActive(true);
@@ -102,12 +102,12 @@ public class ContainerUI : MonoBehaviour
             subContainerSlotGroups[2].gameObject.SetActive(false);
 
         // Middle section
-        int middleWidth = mainContainerInventory.ParentInventory.InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
-        int middleHeight = mainContainerInventory.ParentInventory.MaxSlotsPerColumn * InventoryItem.slotSize;
+        int middleWidth = mainContainerInventory.ParentInventory.InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.InventoryLayout.SlotWidth * InventoryItem.slotSize;
+        int middleHeight = mainContainerInventory.ParentInventory.MaxSlotsPerColumn * mainContainerInventory.ParentInventory.InventoryLayout.SlotHeight * InventoryItem.slotSize;
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 5 && mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.AmountOfSlots > 0)
         {
-            middleHeight += mainContainerInventory.ParentInventory.SubInventories[4].MaxSlotsPerColumn * InventoryItem.slotSize;
-            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            middleHeight += mainContainerInventory.ParentInventory.SubInventories[4].MaxSlotsPerColumn * mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.SlotHeight * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.SubInventories[4].InventoryLayout.SlotWidth * InventoryItem.slotSize;
             if (widthToCheck > middleWidth)
                 middleWidth = widthToCheck;
             subContainerSlotGroups[4].gameObject.SetActive(true);
@@ -120,8 +120,8 @@ public class ContainerUI : MonoBehaviour
         int rightHeight = 0;
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 2 && mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.AmountOfSlots > 0)
         {
-            rightHeight = mainContainerInventory.ParentInventory.SubInventories[1].MaxSlotsPerColumn * InventoryItem.slotSize;
-            rightWidth = mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            rightHeight = mainContainerInventory.ParentInventory.SubInventories[1].MaxSlotsPerColumn * mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.SlotHeight * InventoryItem.slotSize;
+            rightWidth = mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.SubInventories[1].InventoryLayout.SlotWidth * InventoryItem.slotSize;
             subContainerSlotGroups[1].gameObject.SetActive(true);
         }
         else
@@ -129,8 +129,8 @@ public class ContainerUI : MonoBehaviour
 
         if (mainContainerInventory.ParentInventory.SubInventories.Length >= 4 && mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.AmountOfSlots > 0)
         {
-            rightHeight += mainContainerInventory.ParentInventory.SubInventories[3].MaxSlotsPerColumn * InventoryItem.slotSize;
-            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.MaxSlotsPerRow * InventoryItem.slotSize;
+            rightHeight += mainContainerInventory.ParentInventory.SubInventories[3].MaxSlotsPerColumn * mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.SlotHeight * InventoryItem.slotSize;
+            int widthToCheck = mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.MaxSlotsPerRow * mainContainerInventory.ParentInventory.SubInventories[3].InventoryLayout.SlotWidth * InventoryItem.slotSize;
             if (widthToCheck > rightWidth)
                 rightWidth = widthToCheck;
             subContainerSlotGroups[3].gameObject.SetActive(true);

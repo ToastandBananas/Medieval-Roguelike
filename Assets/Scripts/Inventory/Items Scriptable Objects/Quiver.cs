@@ -4,13 +4,10 @@ using UnityEngine;
 public class Quiver : Wearable
 {
     [SerializeField] ProjectileType allowedProjectileType;
-    [SerializeField] int ammoStackCount = 2;
 
-    [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[6];
+    [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[1];
 
     public InventoryLayout[] InventorySections => inventorySections;
-
-    public int AmmoStackCount => ammoStackCount;
 
     public ProjectileType AllowedProjectileType => allowedProjectileType;
 

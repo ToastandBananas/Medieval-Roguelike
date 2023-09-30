@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Backpack
   pluralName: 
-  itemType: 15
+  description: A leather backpack with 2 pockets.
+  itemType: 140
   mainMaterial: 23
   itemSize: 4
-  description: A leather backpack with 2 pockets.
   width: 2
   height: 4
   weight: 4
-  volume: 4
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
+  maxUses: 1
+  isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 150
   meshes:
@@ -32,16 +33,21 @@ MonoBehaviour:
   - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
-  maxUses: 1
-  isUsable: 1
   equipSlot: 9
+  actionTypes: []
   inventorySections:
   - amountOfSlots: 16
-    maxSlots: 16
     maxSlotsPerRow: 4
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 4
-    maxSlots: 4
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 
   - amountOfSlots: 4
-    maxSlots: 4
     maxSlotsPerRow: 2
+    slotWidth: 1
+    slotHeight: 1
+    allowedItemTypes: 

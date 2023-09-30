@@ -22,7 +22,7 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             return;
         }
 
-        if (inventoryItem.itemData.Item.InventorySprite == null)
+        if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
         {
             Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;
@@ -41,7 +41,10 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         image.enabled = false;
     }
 
-    public void HideSlotImage() => inventoryItem.DisableIconImage();
+    public void HideItemIcon()
+    {
+        inventoryItem.DisableIconImage();
+    }
 
     public void SetFullSlotSprite(Sprite sprite = null)
     {

@@ -164,10 +164,18 @@ public class InventoryUI : MonoBehaviour
 
     public bool OverlappingMultipleItems(SlotCoordinate focusedSlotCoordinate, ItemData itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount)
     {
-        ItemData overlappedItemData = null;
         overlappedItemsParentSlotCoordinate = null;
         overlappedItemCount = 0;
 
+        if (focusedSlotCoordinate.myInventory.InventoryLayout.HasStandardSlotSize() == false)
+        {
+            overlappedItemsParentSlotCoordinate = focusedSlotCoordinate.myInventory.GetSlotCoordinate(focusedSlotCoordinate.coordinate.x, focusedSlotCoordinate.coordinate.y);
+            if (overlappedItemsParentSlotCoordinate.isFull && overlappedItemsParentSlotCoordinate.itemData != itemData)
+                overlappedItemCount++;
+            return false;
+        }
+
+        ItemData overlappedItemData = null;
         for (int x = 0; x < itemData.Item.Width; x++)
         {
             for (int y = 0; y < itemData.Item.Height; y++)
@@ -303,7 +311,7 @@ public class InventoryUI : MonoBehaviour
         isDraggingItem = false;
         parentSlotDraggedFrom = null;
         draggedItem.SetItemData(null);
-        //draggedItemOverlapCount = 0;
+        draggedItem.SetMyInventory(null);
 
         StartCoroutine(DelayStopDraggingItem());
         draggedItem.DisableIconImage();
@@ -319,12 +327,21 @@ public class InventoryUI : MonoBehaviour
     public void TogglePlayerInventory()
     {
         if (isDraggingItem)
-            ReplaceDraggedItem();
+        {
+            if (parentSlotDraggedFrom != null)
+                ReplaceDraggedItem();
+            else
+            {
+                DropItemManager.DropItem(UnitManager.Instance.player, null, draggedItem.itemData);
+                DisableDraggedItem();
+            }
+        }
 
         playerInventoryUIParent.SetActive(!playerInventoryUIParent.activeSelf);
 
         if (playerInventoryUIParent.activeSelf == false)
         {
+            activeSlot = null;
             ContextMenu.Instance.DisableContextMenu();
             SplitStack.Instance.Close();
             CloseAllContainerUI();
@@ -343,6 +360,7 @@ public class InventoryUI : MonoBehaviour
 
         if (playerInventoryUIParent.activeSelf == false)
         {
+            activeSlot = null;
             ContextMenu.Instance.DisableContextMenu();
             SplitStack.Instance.Close();
             CloseAllContainerUI();
@@ -392,6 +410,8 @@ public class InventoryUI : MonoBehaviour
         }
         return null;
     }
+
+    public void SetParentSlotDraggedFrom(Slot parentSlotDraggedFrom) => this.parentSlotDraggedFrom = parentSlotDraggedFrom;
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 

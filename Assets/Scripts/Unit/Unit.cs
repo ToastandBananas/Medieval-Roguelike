@@ -148,7 +148,7 @@ public class Unit : MonoBehaviour
     {
         if (itemData == null || itemData.Item == null)
             return false;
-
+        
         if (itemData.Item.IsAmmunition() && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
             return true;
 

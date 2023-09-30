@@ -122,6 +122,7 @@ MonoBehaviour:
     type: 3}
   verticalHalfFullSlotSprite: {fileID: 21300000, guid: b738b05caf2a0224d849248688081865,
     type: 3}
+  rectTransform: {fileID: 5301632360201378780}
 --- !u!1001 &4068299717922396027
 PrefabInstance:
   m_ObjectHideFlags: 0

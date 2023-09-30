@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Claymore
   pluralName: 
+  description: 
   itemType: 1
   mainMaterial: 35
-  itemSize: 4
-  description: 
+  itemSize: 5
   width: 2
   height: 5
   weight: 0.1
-  volume: 0.1
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: 54cdcffc7dfb1e54e88a8a0f29f4af48, type: 3}
+  maxUses: 1
+  isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
@@ -32,8 +33,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterial: {fileID: 0}
-  maxUses: 1
-  isUsable: 1
   equipSlot: 0
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}

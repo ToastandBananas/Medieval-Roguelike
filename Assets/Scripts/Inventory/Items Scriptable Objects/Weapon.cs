@@ -51,7 +51,7 @@ public class Weapon : HeldEquipment
 
     public override bool IsPortableContainer() => false;
 
-    public override bool IsRangedWeapon() => itemType == ItemType.RangedWeapon;
+    public override bool IsRangedWeapon() => itemType == ItemType.Bow;
 
     public override bool IsAmmunition() => false;
 

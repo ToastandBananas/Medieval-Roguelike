@@ -1,15 +1,15 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EquipmentSlot : Slot
 {
     [Header("Equipment")]
     [SerializeField] EquipSlot equipSlot = global::EquipSlot.RightHeldItem1;
-    CharacterEquipment myCharacterEquipment;
 
-    void Awake()
-    {
-        inventoryItem.SetMyCharacterEquipment(myCharacterEquipment);
-    }
+    [Header("Placeholder Icon")]
+    [SerializeField] Image placeholderImage;
+
+    CharacterEquipment myCharacterEquipment;
 
     public override bool IsFull() 
     {
@@ -24,7 +24,7 @@ public class EquipmentSlot : Slot
     public override void ClearSlotVisuals()
     {
         // Hide the item's sprite
-        HideSlotImage();
+        HideItemIcon();
 
         // Setup the empty slot sprite
         SetEmptySlotSprite();
@@ -32,7 +32,7 @@ public class EquipmentSlot : Slot
         if (IsFull() && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-            oppositeWeaponSlot.HideSlotImage();
+            oppositeWeaponSlot.HideItemIcon();
             oppositeWeaponSlot.SetEmptySlotSprite();
         }
 
@@ -68,7 +68,7 @@ public class EquipmentSlot : Slot
             return;
         }
 
-        if (inventoryItem.itemData.Item.InventorySprite == null)
+        if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
         {
             Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
             return;
@@ -151,6 +151,8 @@ public class EquipmentSlot : Slot
     public override ItemData GetItemData() => inventoryItem.itemData;
 
     public CharacterEquipment CharacterEquipment => myCharacterEquipment;
+
+    public Image PlaceholderImage => placeholderImage;
 
     public EquipSlot EquipSlot => equipSlot;
 

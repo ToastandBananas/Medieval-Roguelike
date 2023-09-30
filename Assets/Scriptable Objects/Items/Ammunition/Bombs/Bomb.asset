@@ -12,8 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e724c628a682061469b14a57d938e03e, type: 3}
   m_Name: Bomb
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-  material: {fileID: 2100000, guid: df6bfe6cecaaff64b8acbcbea4a2ef9d, type: 2}
+  name: New Item
+  pluralName: 
+  description: 
+  itemType: 45
+  mainMaterial: 0
+  itemSize: 0
+  width: 1
+  height: 1
+  weight: 0.1
+  maxStackSize: 1
+  inventorySprite: {fileID: 0}
+  maxUses: 1
+  isUsable: 1
+  valueRange: {x: 0, y: 0}
+  staticValue: 1
+  meshes: []
+  meshRendererMaterials: []
+  pickupMesh: {fileID: 0}
+  pickupMeshRendererMaterial: {fileID: 0}
+  equipSlot: 0
+  actionTypes: []
   capsuleColliderCenter: {x: 0, y: 0, z: 0}
   capsuleColliderRadius: 0.5
   capsuleColliderHeight: 1
@@ -21,6 +40,5 @@ MonoBehaviour:
   projectileType: 30
   speed: 8
   arcMultiplier: 2.5
-  projectilePositionOffset: {x: 0, y: 0, z: 0}
-  projectileRotation: {x: 0, y: 0, z: 0}
-  projectileScale: {x: 0.1, y: 0.1, z: 0.1}
+  ammunitionPositionOffset: {x: 0, y: 0, z: 0}
+  ammunitionRotation: {x: 0, y: 0, z: 0}

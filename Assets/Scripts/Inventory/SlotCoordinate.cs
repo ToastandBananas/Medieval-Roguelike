@@ -23,33 +23,51 @@ public class SlotCoordinate
         itemData = newItemData;
         itemData.SetInventorySlotCoordinate(this);
 
-        int width = itemData.Item.Width;
-        int height = itemData.Item.Height;
-        for (int x = 0; x < width; x++)
+        if (myInventory.InventoryLayout.HasStandardSlotSize())
         {
-            for (int y = 0; y < height; y++)
+            int width = itemData.Item.Width;
+            int height = itemData.Item.Height;
+            for (int x = 0; x < width; x++)
             {
-                SlotCoordinate slotCoordinateToSetup = myInventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
-                slotCoordinateToSetup.SetParentSlotCoordinate(this);
-                slotCoordinateToSetup.isFull = true;
+                for (int y = 0; y < height; y++)
+                {
+                    SlotCoordinate slotCoordinateToSetup = myInventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
+                    slotCoordinateToSetup.SetParentSlotCoordinate(this);
+                    slotCoordinateToSetup.isFull = true;
+                }
             }
+        }
+        else
+        {
+            SetParentSlotCoordinate(this);
+            isFull = true;
         }
     }
 
     public void ClearItem()
     {
         Inventory inventory = myInventory;
-        int width = parentSlotCoordinate.itemData.Item.Width;
-        int height = parentSlotCoordinate.itemData.Item.Height;
-        for (int x = 0; x < width; x++)
+
+        if (myInventory.InventoryLayout.HasStandardSlotSize())
         {
-            for (int y = 0; y < height; y++)
+            int width = parentSlotCoordinate.itemData.Item.Width;
+            int height = parentSlotCoordinate.itemData.Item.Height;
+            for (int x = 0; x < width; x++)
             {
-                SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
-                slotCoordinateToSetup.SetParentSlotCoordinate(slotCoordinateToSetup);
-                slotCoordinateToSetup.itemData = null;
-                slotCoordinateToSetup.isFull = false;
+                for (int y = 0; y < height; y++)
+                {
+                    SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
+                    slotCoordinateToSetup.SetParentSlotCoordinate(slotCoordinateToSetup);
+                    slotCoordinateToSetup.itemData = null;
+                    slotCoordinateToSetup.isFull = false;
+                }
             }
+        }
+        else
+        {
+            SetParentSlotCoordinate(this);
+            itemData = null;
+            isFull = false;
         }
     }
 

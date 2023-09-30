@@ -42,6 +42,9 @@ public class ContainerInventory : Inventory
         if (newItemData == null || newItemData.Item == null)
             return false;
 
+        if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
+            return false;
+
         if (newItemData.ShouldRandomize)
             newItemData.RandomizeData();
 
@@ -116,7 +119,7 @@ public class ContainerInventory : Inventory
             for (int i = containerInventoryManager.SubInventories.Length; i >= 0; i--)
             {
                 if (i >= inventorySections.Length)
-                    containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(0, 0, 2);
+                    containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(0, 2, 1, 1, null, null);
             }
         }
         else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this) // We only want to run this on the Parent Inventory

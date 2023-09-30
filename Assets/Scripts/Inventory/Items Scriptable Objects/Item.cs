@@ -1,7 +1,13 @@
 using UnityEngine;
 
 public enum ItemSize { ExtraSmall, VerySmall, Small, Medium, Large, VeryLarge, ExtraLarge }
-public enum ItemType { BasicItem, MeleeWeapon, RangedWeapon, Ammo, Clothing, Armor, Shield, Medical, Food, Drink, Ingredient, Seed, Readable, Key, QuestItem, Bag, Container, Quiver }
+
+public enum ItemType 
+{ 
+    BasicItem = 0, MeleeWeapon = 1, Shield = 20, Bow = 30, Crossbow = 40, Bomb = 45, Arrow = 50, CrossbowBolt = 60, Quiver = 70, Clothing = 80, Armor = 90, Helm = 100, Boots = 110, Gloves = 120, Belt = 130, BeltPouch = 131, Backpack = 140, Cape = 150, PortableContainer = 160, 
+    MedicalSupply = 170, Herb = 180, Food = 190, Drink = 200, Potion = 210, Ingredient = 220, Seed = 230, Readable = 240, Key = 250, QuestItem = 260 
+}
+
 public enum ItemMaterial
 {
     Liquid, ViscousLiquid, Meat, Bone, Food, Fat, Bug, Leaf, Charcoal, Wood, Bark, Paper, Hair, Linen, QuiltedLinen, Cotton, Wool, QuiltedWool, Silk, Hemp, Fur,
@@ -52,7 +58,7 @@ public abstract class Item : ScriptableObject
     public int Height => height;
     public float Weight => weight;
     public int MaxStackSize => maxStackSize;
-    public Sprite InventorySprite => inventorySprite;
+    public virtual Sprite InventorySprite(ItemData itemData = null) => inventorySprite;
 
     public Vector2Int ValueRange => valueRange;
     public int StaticValue => staticValue;

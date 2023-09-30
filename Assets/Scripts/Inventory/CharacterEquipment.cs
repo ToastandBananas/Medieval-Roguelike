@@ -376,6 +376,8 @@ public class CharacterEquipment : MonoBehaviour
         for (int i = 0; i < slots.Count; i++)
         {
             slots[i].SetMyCharacterEquipment(this);
+            slots[i].InventoryItem.SetMyCharacterEquipment(this);
+
             if (slots[i] is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerEquipmentSlot = slots[i] as ContainerEquipmentSlot;
@@ -617,17 +619,30 @@ public class CharacterEquipment : MonoBehaviour
                 // Hide current held item icons
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).DisableSlotImage();
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).InventoryItem.DisableIconImage();
+                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = false;
+
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).DisableSlotImage();
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).InventoryItem.DisableIconImage();
+                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).PlaceholderImage.enabled = false;
 
                 // Show held item icons for the other weapon set
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).EnableSlotImage();
                 if (myUnit.CharacterEquipment.EquipSlotIsFull(EquipSlot.LeftHeldItem2))
+                {
                     myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).InventoryItem.EnableIconImage();
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = false;
+                }
+                else
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = true;
 
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).EnableSlotImage();
                 if (myUnit.CharacterEquipment.EquipSlotIsFull(EquipSlot.RightHeldItem2))
+                {
                     myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).InventoryItem.EnableIconImage();
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).PlaceholderImage.enabled = false;
+                }
+                else
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).PlaceholderImage.enabled = true;
             }
         }
         else
@@ -647,17 +662,30 @@ public class CharacterEquipment : MonoBehaviour
                 // Hide current held item icons
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).DisableSlotImage();
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).InventoryItem.DisableIconImage();
+                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = false;
+
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).DisableSlotImage();
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).InventoryItem.DisableIconImage();
+                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2).PlaceholderImage.enabled = false;
 
                 // Show held item icons for the other weapon set
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).EnableSlotImage();
                 if (myUnit.CharacterEquipment.EquipSlotIsFull(EquipSlot.LeftHeldItem1))
+                {
                     myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).InventoryItem.EnableIconImage();
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = false;
+                }
+                else
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = true;
 
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).EnableSlotImage();
                 if (myUnit.CharacterEquipment.EquipSlotIsFull(EquipSlot.RightHeldItem1))
+                {
                     myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).InventoryItem.EnableIconImage();
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).PlaceholderImage.enabled = false;
+                }
+                else
+                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1).PlaceholderImage.enabled = true;
             }
         }
 

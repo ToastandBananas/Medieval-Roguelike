@@ -692,6 +692,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050007115057650}
+  gridLayoutGroup: {fileID: 7531050007115057651}
 --- !u!1 &7531050007232102659
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,6 +768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050007232102656}
+  gridLayoutGroup: {fileID: 7531050007232102657}
 --- !u!1 &7531050007454830977
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,6 +909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050007768326556}
+  gridLayoutGroup: {fileID: 7531050007768326557}
 --- !u!1 &7531050007813171895
 GameObject:
   m_ObjectHideFlags: 0
@@ -982,6 +985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050007813171892}
+  gridLayoutGroup: {fileID: 7531050007813171893}
 --- !u!1 &7531050007824239428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,6 +1572,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050008208329058}
+  gridLayoutGroup: {fileID: 7531050008208329059}
 --- !u!1 &7531050008363711087
 GameObject:
   m_ObjectHideFlags: 0
@@ -1708,6 +1713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7531050008697425700}
+  gridLayoutGroup: {fileID: 7531050008697425701}
 --- !u!1 &7531050008772174506
 GameObject:
   m_ObjectHideFlags: 0

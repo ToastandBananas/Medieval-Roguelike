@@ -38,7 +38,7 @@ public class ContextMenu : MonoBehaviour
 
     void Update()
     {
-        if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable) && (InventoryUI.Instance.activeSlot == null || InventoryUI.Instance.activeSlot.ParentSlot().IsFull() == false)
+        if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable) && (InventoryUI.Instance.activeSlot == null || (InventoryUI.Instance.activeSlot.ParentSlot() != null && InventoryUI.Instance.activeSlot.ParentSlot().IsFull() == false))
             && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed)))
         {
             StartCoroutine(DelayDisableContextMenu());
