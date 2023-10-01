@@ -12,6 +12,7 @@ public class SplitStack : MonoBehaviour
     [SerializeField] TMP_InputField inputField;
 
     ItemData targetItemData;
+    Slot targetParentSlot;
 
     StringBuilder stringBuilder = new StringBuilder();
 
@@ -86,14 +87,15 @@ public class SplitStack : MonoBehaviour
         newItemData.SetCurrentStackSize(splitAmount);
         targetItemData.AdjustCurrentStackSize(-splitAmount);
 
+        targetParentSlot.InventoryItem.UpdateStackSizeVisuals();
+
         if (targetItemData.MyInventory() != null)
         {
-            if (targetItemData.MyInventory().SlotVisualsCreated)
-                targetItemData.MyInventory().GetSlotFromItemData(targetItemData).InventoryItem.UpdateStackSizeText();
-
             if (targetItemData.MyInventory().TryAddItem(newItemData, false) == false)
-                InventoryUI.Instance.SetupDraggedItem(newItemData, null, (Inventory)null);
+                InventoryUI.Instance.SetupDraggedItem(newItemData, targetParentSlot, (Inventory)null);
         }
+        else
+            InventoryUI.Instance.SetupDraggedItem(newItemData, null, (Inventory)null);
 
         Close();
     }
@@ -105,15 +107,17 @@ public class SplitStack : MonoBehaviour
 
         transform.GetChild(0).gameObject.SetActive(false);
         targetItemData = null;
+        targetParentSlot = null;
         Clear();
     }
 
-    public void Open(ItemData targetItemData)
+    public void Open(ItemData targetItemData, Slot targetSlot)
     {
         if (transform.GetChild(0).gameObject.activeSelf)
             return;
 
         this.targetItemData = targetItemData;
+        targetParentSlot = targetSlot.ParentSlot();
         titleText.text = targetItemData.Name();
 
         SetupMenuPosition();

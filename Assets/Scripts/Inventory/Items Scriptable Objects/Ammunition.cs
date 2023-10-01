@@ -11,6 +11,9 @@ public enum ProjectileType
 [CreateAssetMenu(fileName = "New Ammunition", menuName = "Inventory/Ammunition")]
 public class Ammunition : Equipment
 {
+    [Header("Sprite Change Thresholds")]
+    [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
+
     [Header("Collider Info")]
     [SerializeField] Vector3 capsuleColliderCenter;
     [SerializeField] float capsuleColliderRadius;
@@ -42,6 +45,17 @@ public class Ammunition : Equipment
         }
         else
             return unit.CharacterEquipment.TryEquipItem(itemData);
+    }
+
+    public override Sprite InventorySprite(ItemData itemData = null)
+    {
+        if (itemData == null)
+            return base.InventorySprite();
+
+        ItemChangeThreshold itemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
+        if (itemChangeThreshold != null && itemChangeThreshold.NewSprite != null)
+            return itemChangeThreshold.NewSprite;
+        return base.InventorySprite();
     }
 
     public Mesh AmmunitionMesh => Meshes[0];

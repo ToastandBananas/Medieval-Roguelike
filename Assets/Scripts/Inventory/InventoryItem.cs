@@ -114,37 +114,28 @@ public class InventoryItem : MonoBehaviour
         EnableIconImage();
     }
 
-    public void UpdateStackSizeText()
+    public void UpdateStackSizeVisuals()
     {
-        if (mySlot == null)
+        if (mySlot == null || mySlot is EquipmentSlot)
         {
             if (itemData.CurrentStackSize == 1)
                 stackSizeText.text = "";
             else
                 stackSizeText.text = itemData.CurrentStackSize.ToString();
         }
-        else
+        else if (mySlot is InventorySlot)
         {
-            if (mySlot is InventorySlot)
-            {
-                InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.ParentSlot() == null || myInventorySlot.ParentSlot().InventoryItem.itemData == null)
-                    return;
+            InventorySlot myInventorySlot = mySlot as InventorySlot;
+            if (myInventorySlot.ParentSlot() == null || myInventorySlot.ParentSlot().InventoryItem.itemData == null)
+                return;
 
-                if (myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize == 1)
-                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = "";
-                else
-                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize.ToString();
-            }
+            if (myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize == 1)
+                myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = "";
             else
-            {
-                EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
-                if (myEquipmentSlot.InventoryItem.itemData.CurrentStackSize == 1)
-                    myEquipmentSlot.InventoryItem.stackSizeText.text = "";
-                else
-                    myEquipmentSlot.InventoryItem.stackSizeText.text = myEquipmentSlot.InventoryItem.itemData.CurrentStackSize.ToString();
-            }
+                myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize.ToString();
         }
+
+        SetupIconSprite(true);
     }
 
     public void ClearStackSizeText()

@@ -228,28 +228,55 @@ public class InventoryUI : MonoBehaviour
         if (activeSlot != null)
             activeSlot.RemoveSlotHighlights();
 
-        parentSlotDraggedFrom.ShowSlotImage();
-
-        if (parentSlotDraggedFrom is InventorySlot)
+        if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() != draggedItem.itemData && draggedItem.itemData.IsEqual(parentSlotDraggedFrom.GetItemData()))
         {
-            InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
-            parentInventorySlotDraggedFrom.SetupFullSlotSprites();
+            if (parentSlotDraggedFrom is InventorySlot)
+            {
+                if (parentSlotDraggedFrom.InventoryItem.myInventory.TryAddItemAt(parentSlotDraggedFrom.InventoryItem.myInventory.GetSlotCoordinateFromItemData(parentSlotDraggedFrom.GetItemData()), draggedItem.itemData) == false)
+                {
+                    if (parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.TryAddItemToInventories(draggedItem.itemData) == false)
+                        DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
+                }
+            }
+            else
+            {
+                EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
+                if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.TryAddItemAt(equipmentSlot.EquipSlot, draggedItem.itemData) == false)
+                {
+                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.MyUnit.TryAddItemToInventories(draggedItem.itemData) == false)
+                        DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
+                }
+            }
+        }
+        else if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() == draggedItem.itemData)
+        {
+            parentSlotDraggedFrom.ShowSlotImage();
+
+            if (parentSlotDraggedFrom is InventorySlot)
+            {
+                InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
+                parentInventorySlotDraggedFrom.SetupFullSlotSprites();
+            }
+            else
+            {
+                EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
+                parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
+
+                if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.IsWeapon() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
+                {
+                    EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
+                    oppositeWeaponSlot.SetFullSlotSprite();
+                }
+            }
+
+            parentSlotDraggedFrom.InventoryItem.UpdateStackSizeVisuals();
         }
         else
         {
-            EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
-            parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
-
-            if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.IsWeapon() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
-            {
-                EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
-                oppositeWeaponSlot.SetFullSlotSprite();
-            }
+            if (UnitManager.Instance.player.TryAddItemToInventories(draggedItem.itemData) == false)
+                DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
         }
 
-        parentSlotDraggedFrom.InventoryItem.UpdateStackSizeText();
-
-        // Hide the dragged item
         DisableDraggedItem();
     }
 
@@ -262,11 +289,13 @@ public class InventoryUI : MonoBehaviour
         isDraggingItem = true;
 
         this.parentSlotDraggedFrom = parentSlotDraggedFrom;
+        if (parentSlotDraggedFrom == null)
+            newItemData.SetInventorySlotCoordinate(null);
 
         draggedItem.SetMyInventory(inventoryDraggedFrom);
         draggedItem.SetMyCharacterEquipment(null);
         draggedItem.SetItemData(newItemData);
-        draggedItem.UpdateStackSizeText();
+        draggedItem.UpdateStackSizeVisuals();
         draggedItem.SetupDraggedSprite();
     }
 
@@ -298,12 +327,15 @@ public class InventoryUI : MonoBehaviour
         draggedItem.SetMyInventory(null);
         draggedItem.SetMyCharacterEquipment(characterEquipmentDraggedFrom);
         draggedItem.SetItemData(newItemData);
-        draggedItem.UpdateStackSizeText();
+        draggedItem.UpdateStackSizeVisuals();
         draggedItem.SetupDraggedSprite();
     }
 
     public void DisableDraggedItem()
     {
+        if (isDraggingItem == false)
+            return;
+
         if (activeSlot != null)
             activeSlot.RemoveSlotHighlights();
 
@@ -327,15 +359,7 @@ public class InventoryUI : MonoBehaviour
     public void TogglePlayerInventory()
     {
         if (isDraggingItem)
-        {
-            if (parentSlotDraggedFrom != null)
-                ReplaceDraggedItem();
-            else
-            {
-                DropItemManager.DropItem(UnitManager.Instance.player, null, draggedItem.itemData);
-                DisableDraggedItem();
-            }
-        }
+            ReplaceDraggedItem();
 
         playerInventoryUIParent.SetActive(!playerInventoryUIParent.activeSelf);
 
@@ -410,8 +434,6 @@ public class InventoryUI : MonoBehaviour
         }
         return null;
     }
-
-    public void SetParentSlotDraggedFrom(Slot parentSlotDraggedFrom) => this.parentSlotDraggedFrom = parentSlotDraggedFrom;
 
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 

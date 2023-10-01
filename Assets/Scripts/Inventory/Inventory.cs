@@ -73,12 +73,12 @@ public class Inventory
                 if (slotVisualsCreated)
                 {
                     InventorySlot targetSlot = GetSlotFromItemData(itemDatas[i]);
-                    targetSlot.InventoryItem.UpdateStackSizeText();
+                    targetSlot.InventoryItem.UpdateStackSizeVisuals();
 
                     if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
                     {
                         InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
-                        slot.InventoryItem.UpdateStackSizeText();
+                        slot.InventoryItem.UpdateStackSizeVisuals();
                     }
                 }
             }
@@ -159,13 +159,13 @@ public class Inventory
                 // Update the overlapped item's stack size text
                 if (slotVisualsCreated)
                 {
-                    GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).InventoryItem.UpdateStackSizeText();
+                    GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).InventoryItem.UpdateStackSizeVisuals();
 
                     if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
                     {
                         InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
                         if (slot != null)
-                            slot.InventoryItem.UpdateStackSizeText();
+                            slot.InventoryItem.UpdateStackSizeVisuals();
                     }
                 }
 
@@ -184,21 +184,30 @@ public class Inventory
                     else // If there's still some left in the dragged item's stack
                     {
                         // Update the dragged item's stack size and text
-                        InventoryUI.Instance.DraggedItem.UpdateStackSizeText();
+                        InventoryUI.Instance.DraggedItem.UpdateStackSizeVisuals();
 
                         // Re-enable the highlighting
                         GetSlotFromCoordinate(targetSlotCoordinate).HighlightSlots();
                     }
                 }
             }
-            else // If we're placing the item partially on top of another item
+            else // If we're placing the item on top of another item
             {
                 // Clear out the overlapped item
-                GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).ClearItem();
+                Slot overlappedParentSlot = GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate);
+                if (overlappedParentSlot.InventoryItem.myInventory != null)
+                    overlappedParentSlot.InventoryItem.myInventory.RemoveItem(overlappedItemsData);
+                else if (overlappedParentSlot.InventoryItem.myCharacterEquipment != null)
+                    overlappedParentSlot.InventoryItem.myCharacterEquipment.RemoveEquipment(overlappedItemsData);
 
                 // Clear out the dragged item
                 if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-                    InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+                {
+                    if (InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory != null)
+                        InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(InventoryUI.Instance.DraggedItem.itemData);
+                    else if (InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment != null)
+                        InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.RemoveEquipment(InventoryUI.Instance.DraggedItem.itemData);
+                }
 
                 // Setup the target slot's item data and sprites
                 SetupNewItem(GetSlotFromCoordinate(targetSlotCoordinate), newItemData);
@@ -206,9 +215,6 @@ public class Inventory
 
                 // If the new Item is a Shield, remove any projectiles and try to add them to the Unit's Inventories
                 TryTakeStuckProjectiles(newItemData);
-
-                // If the slots are in different inventories
-                RemoveFromPreviousInventoryOrEquipment(targetSlotCoordinate, newItemData);
 
                 if (itemDatas.Contains(newItemData) == false)
                     itemDatas.Add(newItemData);
@@ -252,7 +258,6 @@ public class Inventory
                 InventoryUI.Instance.DisableDraggedItem();
         }
 
-        // InventoryUI.Instance.ClearParentSlotDraggedFrom();
         return true;
     }
 
@@ -347,7 +352,7 @@ public class Inventory
         targetSlot.InventoryItem.SetItemData(newItemData);
         targetSlot.ShowSlotImage();
         targetSlot.SetupFullSlotSprites();
-        targetSlot.InventoryItem.UpdateStackSizeText();
+        targetSlot.InventoryItem.UpdateStackSizeVisuals();
     }
 
     protected SlotCoordinate GetNextAvailableSlotCoordinate(ItemData itemData)
@@ -572,7 +577,7 @@ public class Inventory
         for (int i = 0; i < slots.Count; i++)
         {
             if (slots[i].GetItemData() == itemData)
-                return slots[i];
+                return slots[i].ParentSlot() as InventorySlot;
         }
         return null;
     }

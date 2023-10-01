@@ -273,11 +273,11 @@ public class ContextMenuButton : MonoBehaviour
         ContextMenu.Instance.DisableContextMenu();
     }
 
-    public void SetupSplitStackButton(ItemData itemData) => SetupButton("Split Stack", delegate { OpenSplitStackUI(itemData); });
+    public void SetupSplitStackButton(ItemData itemData) => SetupButton("Split Stack", delegate { OpenSplitStackUI(itemData, ContextMenu.Instance.TargetSlot); });
 
-    void OpenSplitStackUI(ItemData itemData)
+    void OpenSplitStackUI(ItemData itemData, Slot targetSlot)
     {
-        SplitStack.Instance.Open(itemData);
+        SplitStack.Instance.Open(itemData, targetSlot);
         ContextMenu.Instance.DisableContextMenu();
     }
 

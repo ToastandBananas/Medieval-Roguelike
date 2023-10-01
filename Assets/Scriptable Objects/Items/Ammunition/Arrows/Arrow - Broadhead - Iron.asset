@@ -36,6 +36,22 @@ MonoBehaviour:
   pickupMeshRendererMaterial: {fileID: 0}
   equipSlot: 10
   actionTypes: []
+  itemChangeThresholds:
+  - thresholdPercentage: 5
+    newItem: {fileID: 11400000}
+    newSprite: {fileID: 21300000, guid: c25b98996d259ad41bd44627ff2fe666, type: 3}
+  - thresholdPercentage: 10
+    newItem: {fileID: 11400000}
+    newSprite: {fileID: 21300000, guid: be553cd6f85913042926c317c1cbe48c, type: 3}
+  - thresholdPercentage: 15
+    newItem: {fileID: 11400000}
+    newSprite: {fileID: 21300000, guid: fd1ce2a7d8f5fdf4eab2cc400c35b95a, type: 3}
+  - thresholdPercentage: 20
+    newItem: {fileID: 11400000}
+    newSprite: {fileID: 21300000, guid: fc169a7d1409fd04b841762500ee7bf8, type: 3}
+  - thresholdPercentage: 25
+    newItem: {fileID: 11400000}
+    newSprite: {fileID: 21300000, guid: 6cba8d92abcf58a499e0b8275072e9de, type: 3}
   capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4

@@ -196,7 +196,7 @@ public class CharacterEquipment : MonoBehaviour
                 ammoItemData.AdjustCurrentStackSize(-roomInStack);
             }
 
-            GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeText();
+            GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
 
             if (ammoItemData.CurrentStackSize <= 0)
             {
@@ -212,7 +212,7 @@ public class CharacterEquipment : MonoBehaviour
                 if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().SlotVisualsCreated)
                 {
                     InventorySlot slot = ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData);
-                    slot.InventoryItem.UpdateStackSizeText();
+                    slot.InventoryItem.UpdateStackSizeVisuals();
                 }
             }
         }
@@ -519,7 +519,7 @@ public class CharacterEquipment : MonoBehaviour
         targetSlot.InventoryItem.SetItemData(newItemData);
         targetSlot.SetFullSlotSprite();
         targetSlot.ShowSlotImage();
-        targetSlot.InventoryItem.UpdateStackSizeText();
+        targetSlot.InventoryItem.UpdateStackSizeVisuals();
 
         if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem.itemData.Item.IsWeapon() && targetSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
         {
@@ -602,6 +602,9 @@ public class CharacterEquipment : MonoBehaviour
 
     public void SwapWeaponSet()
     {
+        if (InventoryUI.Instance.isDraggingItem)
+            InventoryUI.Instance.ReplaceDraggedItem();
+
         if (currentWeaponSet == WeaponSet.One)
         {
             currentWeaponSet = WeaponSet.Two;

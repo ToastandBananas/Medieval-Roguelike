@@ -4,9 +4,6 @@ public class DropItemManager : MonoBehaviour
 {
     public static void DropItem(Unit unit, Inventory inventory, ItemData itemDataToDrop)
     {
-        if (inventory != null && inventory.ItemDatas.Contains(itemDataToDrop) == false)
-            return;
-
         if (itemDataToDrop.Item == null)
         {
             Debug.LogWarning("Item you're trying to drop from inventory is null...");
@@ -62,7 +59,7 @@ public class DropItemManager : MonoBehaviour
 
         if (characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsWeapon() || characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsShield())
             SetupHeldItemDrop(characterEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(characterEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
-        else if ((equipSlot == EquipSlot.Back && characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsBag()) || equipSlot == EquipSlot.Quiver)
+        else if ((equipSlot == EquipSlot.Back && characterEquipment.EquippedItemDatas[(int)equipSlot].Item.IsBag()) || (equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver))
             SetupContainerItemDrop(characterEquipment, equipSlot, looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
         else
             SetupItemDrop(looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
