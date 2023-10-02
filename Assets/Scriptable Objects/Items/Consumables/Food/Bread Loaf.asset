@@ -23,7 +23,7 @@ MonoBehaviour:
   weight: 0.4
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
-  maxUses: 4
+  maxUses: 10
   isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 1
@@ -32,7 +32,7 @@ MonoBehaviour:
   meshRendererMaterials:
   - {fileID: 2100000, guid: c2a8fc70a2a8bd94baa3cb3786761a30, type: 2}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  pickupMeshRendererMaterials: []
   itemChangeThresholds:
   - thresholdPercentage: 100
     newItem: {fileID: 11400000}

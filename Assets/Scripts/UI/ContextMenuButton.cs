@@ -125,6 +125,9 @@ public class ContextMenuButton : MonoBehaviour
             {
                 Consumable consumable = itemData.Item as Consumable;
 
+                if ((itemData.Item.MaxUses > 1 && amountToUse != itemData.RemainingUses) || (itemData.Item.MaxStackSize > 1 && amountToUse != itemData.CurrentStackSize))
+                    stringBuilder.Append("    ");
+
                 if (consumable.ItemType == ItemType.Food)
                     stringBuilder.Append("Eat");
                 else
@@ -145,14 +148,16 @@ public class ContextMenuButton : MonoBehaviour
                             stringBuilder.Append(" All");
                     }
                 }
-                else if (itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.75f))
-                    stringBuilder.Append(" Three Quarters");
-                else if (itemData.RemainingUses >= 2 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.5f))
-                    stringBuilder.Append(" Half");
-                else if (itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.25f))
-                    stringBuilder.Append(" a Quarter");
-                else if (itemData.RemainingUses >= 10 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.1f))
-                    stringBuilder.Append(" a Little Bit");
+                else if (amountToUse > 1 && itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.75f))
+                    stringBuilder.Append($" Three Quarters ({Mathf.CeilToInt(itemData.RemainingUses * 0.75f)})");
+                else if (amountToUse > 1 && itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.5f))
+                    stringBuilder.Append($" Half ({Mathf.CeilToInt(itemData.RemainingUses * 0.5f)})");
+                else if (amountToUse > 1 && itemData.RemainingUses >= 4 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.25f))
+                    stringBuilder.Append($" a Quarter ({Mathf.CeilToInt(itemData.RemainingUses * 0.25f)})");
+                else if (amountToUse > 1 && itemData.RemainingUses >= 10 && amountToUse == Mathf.CeilToInt(itemData.RemainingUses * 0.1f))
+                    stringBuilder.Append($" a Little Bit ({Mathf.CeilToInt(itemData.RemainingUses * 0.1f)})");
+                else if (amountToUse == 1)
+                    stringBuilder.Append(" One Portion");
             }
             else if (itemData.Item.MaxStackSize > 1)
             {
@@ -166,14 +171,14 @@ public class ContextMenuButton : MonoBehaviour
                             stringBuilder.Append(" All");
                     }
                 }
-                else if (itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f))
-                    stringBuilder.Append(" Three Quarters");
-                else if (itemData.CurrentStackSize >= 2 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f))
-                    stringBuilder.Append(" Half");
-                else if (itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f))
-                    stringBuilder.Append(" a Quarter");
-                else if (itemData.CurrentStackSize >= 10 && amountToUse > 1 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f))
-                    stringBuilder.Append(" a Little Bit");
+                else if (amountToUse > 1 && itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f))
+                    stringBuilder.Append($" Three Quarters ({Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f)})");
+                else if (amountToUse > 1 && itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f))
+                    stringBuilder.Append($" Half ({Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f)})");
+                else if (amountToUse > 1 && itemData.CurrentStackSize >= 4 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f))
+                    stringBuilder.Append($" a Quarter ({Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f)})");
+                else if (amountToUse > 1 && itemData.CurrentStackSize >= 10 && amountToUse == Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f))
+                    stringBuilder.Append($" a Little Bit ({Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f)})");
                 else if (amountToUse == 1)
                     stringBuilder.Append(" One");
             }

@@ -84,6 +84,15 @@ public abstract class Item : ScriptableObject
         return true;
     }
 
+    public ItemChangeThreshold[] GetItemChangeThresholds()
+    {
+        if (this is Ammunition)
+            return Ammunition().ItemChangeThresholds;
+        else if (this is Consumable)
+            return Consumable().ItemChangeThresholds;
+        return null;
+    }
+
     /// <summary>Used to determine how much a character can carry in their hands, based off of ItemSize.</summary>
     public float GetSizeFactor()
     {

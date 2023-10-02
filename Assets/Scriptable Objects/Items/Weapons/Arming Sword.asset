@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Arming Sword
   pluralName: 
+  description: 
   itemType: 1
   mainMaterial: 35
   itemSize: 4
-  description: 
   width: 1
   height: 4
   weight: 0.1
-  volume: 0.1
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: 08dc93c0a3709d940bf8d4ee7ce9df5b, type: 3}
+  maxUses: 1
+  isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
@@ -31,9 +32,7 @@ MonoBehaviour:
   meshRendererMaterials:
   - {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
-  maxUses: 1
-  isUsable: 1
+  pickupMeshRendererMaterials: []
   equipSlot: 1
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}

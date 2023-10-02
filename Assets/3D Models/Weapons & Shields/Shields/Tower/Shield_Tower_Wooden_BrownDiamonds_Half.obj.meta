@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0a01197b67bc4c244b48a54ceb75c570
+guid: 50c800bcecc87c64282516b74f8e3b85
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: TowerShield_Wooden_Diamond_Brown_Half_Material.001
-    second: {fileID: 2100000, guid: 4042d785bf9bcbb4e8a43a62e750cf81, type: 2}
+      name: Shield_Tower_Material
+    second: {fileID: 2100000, guid: d706111214f92d2488032ad9a4fda96f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shield_Tower_Metallic_Material
+    second: {fileID: 2100000, guid: faab919d05c83814aad7366d0aa7357a, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

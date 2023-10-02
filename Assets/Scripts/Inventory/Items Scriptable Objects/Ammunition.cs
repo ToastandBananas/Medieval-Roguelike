@@ -58,6 +58,8 @@ public class Ammunition : Equipment
         return base.InventorySprite();
     }
 
+    public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
+
     public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
     public float CapsuleColliderRadius => capsuleColliderRadius;
     public float CapsuleColliderHeight => capsuleColliderHeight;

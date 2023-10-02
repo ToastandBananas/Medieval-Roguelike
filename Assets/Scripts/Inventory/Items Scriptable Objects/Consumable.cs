@@ -45,6 +45,8 @@ public class Consumable : Item
         return base.InventorySprite();
     }
 
+    public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
+
     public override bool IsBag() => false;
 
     public override bool IsConsumable() => true;

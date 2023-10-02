@@ -28,13 +28,15 @@ MonoBehaviour:
   valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
-  - {fileID: -2432090755550338912, guid: 0a01197b67bc4c244b48a54ceb75c570, type: 3}
+  - {fileID: -2432090755550338912, guid: 50c800bcecc87c64282516b74f8e3b85, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: 4042d785bf9bcbb4e8a43a62e750cf81, type: 2}
-  pickupMesh: {fileID: -2432090755550338912, guid: 531df258193212b4799df5202410e319,
+  - {fileID: 2100000, guid: d706111214f92d2488032ad9a4fda96f, type: 2}
+  - {fileID: 2100000, guid: faab919d05c83814aad7366d0aa7357a, type: 2}
+  pickupMesh: {fileID: -2432090755550338912, guid: 8e7bc138b2beaeb429553502bddbfcae,
     type: 3}
   pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: b71f7cb3cae30884194493f76e5bff6d, type: 2}
+  - {fileID: 2100000, guid: 056a2c88228ca0743a696b8caa6b89f5, type: 2}
+  - {fileID: 2100000, guid: 85852df1f6c4f754884016641c9d340c, type: 2}
   equipSlot: 0
   actionTypes: []
   idlePosition_Left: {x: 0.23, y: -0.29, z: -0.23}

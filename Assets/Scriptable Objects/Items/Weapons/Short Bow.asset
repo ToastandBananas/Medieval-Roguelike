@@ -41,8 +41,8 @@ MonoBehaviour:
   - {fileID: -7085867950720389769, guid: f86f0040792db3e46a4f2cb377fd37f9, type: 3}
   pickupMesh: {fileID: -2432090755550338912, guid: 5d0f19d750f7fe44e8eed22e33a1f53d,
     type: 3}
-  pickupMeshRendererMaterial: {fileID: 2100000, guid: 2bf507bdc9a801645bd7e735644c8a5a,
-    type: 2}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: 2bf507bdc9a801645bd7e735644c8a5a, type: 2}
   equipSlot: 0
   actionTypes:
   - {fileID: 11400000, guid: 44ecde231a7e0124fbec7df445b93ecc, type: 2}

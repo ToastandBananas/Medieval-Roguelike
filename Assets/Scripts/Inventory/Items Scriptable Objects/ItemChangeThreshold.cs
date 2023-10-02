@@ -52,15 +52,9 @@ public class ItemChangeThreshold
         float percentRemaining = 100;
 
         if (itemData.Item.MaxUses > 1)
-        {
-            int count = itemData.RemainingUses;
-            percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxUses) * 100f);
-        }
+            percentRemaining = Mathf.RoundToInt(((float)itemData.RemainingUses / itemData.Item.MaxUses) * 100f);
         else if (itemData.Item.MaxStackSize > 1)
-        {
-            int count = itemData.CurrentStackSize;
-            percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxStackSize) * 100f);
-        }
+            percentRemaining = Mathf.RoundToInt(((float)itemData.CurrentStackSize / itemData.Item.MaxStackSize) * 100f);
 
         if (percentRemaining != 0)
         {

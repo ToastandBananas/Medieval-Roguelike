@@ -48,9 +48,12 @@ public class Projectile : MonoBehaviour
         meshFilter.mesh = ammunitionItem.Meshes[0];
 
         Material[] materials = meshRenderer.materials;
-        for (int i = 0; i < ammunitionItem.MeshRendererMaterials.Length; i++)
+        for (int i = 0; i < materials.Length; i++)
         {
-            materials[i] = ammunitionItem.MeshRendererMaterials[i];
+            if (i > ammunitionItem.MeshRendererMaterials.Length - 1)
+                materials[i] = null;
+            else
+                materials[i] = ammunitionItem.MeshRendererMaterials[i];
         }
 
         meshRenderer.materials = materials;

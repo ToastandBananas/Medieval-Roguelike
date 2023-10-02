@@ -272,43 +272,44 @@ public class ContextMenu : MonoBehaviour
         if (itemData.Item.IsAmmunition() && UnitManager.Instance.player.QuiverInventoryManager.Contains(itemData))
             return;
         
-        if (itemData.Item.MaxUses > 1)
+        if (itemData.Item.MaxUses > 1 && itemData.RemainingUses > 1)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.RemainingUses); // Use all
 
-            if (itemData.RemainingUses >= 4)
+            if (itemData.RemainingUses >= 4 && Mathf.CeilToInt(itemData.RemainingUses * 0.75f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.75f)); // Use 3/4
 
-            if (itemData.RemainingUses >= 2)
+            if (itemData.RemainingUses >= 4 && Mathf.CeilToInt(itemData.RemainingUses * 0.5f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.5f)); // Use 1/2
 
-            if (itemData.RemainingUses >= 4)
+            if (itemData.RemainingUses >= 4 && Mathf.CeilToInt(itemData.RemainingUses * 0.25f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.25f)); // Use 1/4
 
-            if (itemData.RemainingUses >= 10)
+            if (itemData.RemainingUses >= 10 && Mathf.CeilToInt(itemData.RemainingUses * 0.1f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.RemainingUses * 0.1f)); // Use 1/10
+
+            GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
         }
-        else if (itemData.Item.MaxStackSize > 1 && itemData.Item.IsAmmunition() == false)
+        else if (itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize > 1 && itemData.Item.IsAmmunition() == false)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 
-            if (itemData.CurrentStackSize >= 4)
+            if (itemData.CurrentStackSize >= 4 && Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.75f)); // Use 3/4
 
-            if (itemData.CurrentStackSize >= 2)
+            if (itemData.CurrentStackSize >= 4 && Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.5f)); // Use 1/2
 
-            if (itemData.CurrentStackSize >= 4)
+            if (itemData.CurrentStackSize >= 4 && Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.25f)); // Use 1/4
 
-            if (itemData.CurrentStackSize >= 10)
+            if (itemData.CurrentStackSize >= 10 && Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f) > 1)
                 GetContextMenuButton().SetupUseItemButton(itemData, Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f)); // Use 1/10
 
-            if (Mathf.CeilToInt(itemData.CurrentStackSize * 0.1f) > 1)
-                GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
+            GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
         }
         else
-            GetContextMenuButton().SetupUseItemButton(itemData, 1);
+            GetContextMenuButton().SetupUseItemButton(itemData, 1); // There's only 1 left or can only have 1 use/stack size
     }
 
     void CreateSplitStackButton()
@@ -428,11 +429,11 @@ public class ContextMenu : MonoBehaviour
 
         // Get the desired position:
         // If the mouse position is too close to the top of the screen
-        if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y * 2)))
+        if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y * 1.2f)))
             yPosAddon = (-activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
 
         // If the mouse position is too far to the right of the screen
-        if (Input.mousePosition.x >= (Screen.width - (rectTransform.sizeDelta.x * 2)))
+        if (Input.mousePosition.x >= (Screen.width - (rectTransform.sizeDelta.x * 1.2f)))
             xPosAddon = -rectTransform.sizeDelta.x / 2f;
 
         transform.position = Input.mousePosition + new Vector3(xPosAddon, yPosAddon);

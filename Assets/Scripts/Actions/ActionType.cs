@@ -9,9 +9,7 @@ public class ActionType : ScriptableObject
     [SerializeField] Sprite actionIcon;
 
     public string ActionName => actionName;
-
     public string ActionTypeName => actionTypeName;
-
     public Sprite ActionIcon => actionIcon;
 
     // Convert the stored string back to a Type

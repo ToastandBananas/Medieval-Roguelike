@@ -87,9 +87,12 @@ public abstract class HeldItem : MonoBehaviour
             if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
             {
                 Material[] materials = meshRenderers[i].materials;
-                for (int j = 0; j < itemData.Item.MeshRendererMaterials.Length; j++)
+                for (int j = 0; j < materials.Length; j++)
                 {
-                    materials[j] = itemData.Item.MeshRendererMaterials[j];
+                    if (j > itemData.Item.MeshRendererMaterials.Length - 1)
+                        materials[j] = null;
+                    else
+                        materials[j] = itemData.Item.MeshRendererMaterials[j];
                 }
 
                 meshRenderers[i].materials = materials;

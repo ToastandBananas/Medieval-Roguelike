@@ -13,13 +13,16 @@ public class LooseItem : Interactable
     {
         UpdateGridPosition();
 
+        Item startingItem = itemData.Item;
         itemData.RandomizeData();
+        if (itemData.Item != startingItem) // If an Item Change Threshold was reached and the Item changed, we will need to update the mesh
+            SetupMesh();
     }
 
     public override void Interact(Unit unitPickingUpItem)
     {
         // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
-        if (TryEquipItemOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
+        if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
         {
             TryTakeStuckProjectiles(unitPickingUpItem);
             LooseItemPool.ReturnToPool(this);
@@ -52,11 +55,14 @@ public class LooseItem : Interactable
         }
     }
 
-    protected bool TryEquipItemOnPickup(Unit unitPickingUpItem)
+    protected bool TryEquipOnPickup(Unit unitPickingUpItem)
     {
         bool equipped = false;
         if (itemData.Item.IsEquipment())
         {
+            if (itemData.Item.Equipment().IsShield() && unitPickingUpItem.CharacterEquipment.ShieldEquipped())
+                return false;
+
             EquipSlot targetEquipSlot = itemData.Item.Equipment().EquipSlot;
             if (unitPickingUpItem.CharacterEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
@@ -153,10 +159,17 @@ public class LooseItem : Interactable
         {
             meshFilter.mesh = itemData.Item.PickupMesh;
             meshCollider.sharedMesh = itemData.Item.PickupMesh;
-            for (int i = 0; i < itemData.Item.PickupMeshRendererMaterials.Length; i++)
+
+            Material[] materials = meshRenderer.materials;
+            for (int i = 0; i < materials.Length; i++)
             {
-                meshRenderer.materials[i] = itemData.Item.PickupMeshRendererMaterials[i];
+                if (i > itemData.Item.PickupMeshRendererMaterials.Length - 1)
+                    materials[i] = null;
+                else
+                    materials[i] = itemData.Item.PickupMeshRendererMaterials[i];
             }
+
+            meshRenderer.materials = materials;
         }
         else if (itemData.Item.Meshes[0] != null)
         {
@@ -164,9 +177,12 @@ public class LooseItem : Interactable
             meshCollider.sharedMesh = itemData.Item.Meshes[0];
 
             Material[] materials = meshRenderer.materials;
-            for (int i = 0; i < itemData.Item.MeshRendererMaterials.Length; i++)
+            for (int i = 0; i < materials.Length; i++)
             {
-                materials[i] = itemData.Item.MeshRendererMaterials[i];
+                if (i > itemData.Item.MeshRendererMaterials.Length - 1)
+                    materials[i] = null;
+                else
+                    materials[i] = itemData.Item.MeshRendererMaterials[i];
             }
 
             meshRenderer.materials = materials;

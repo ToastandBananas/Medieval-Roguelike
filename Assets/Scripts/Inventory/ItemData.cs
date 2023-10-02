@@ -41,12 +41,36 @@ public class ItemData
                 hasBeenRandomized = true;
 
                 if (item.MaxStackSize > 1)
-                    currentStackSize = Random.Range(1, item.MaxStackSize + 1);
+                {
+                    if (item.GetItemChangeThresholds().Length > 0)
+                    {
+                        currentStackSize = Random.Range(1, Mathf.RoundToInt((item.GetItemChangeThresholds()[0].ThresholdPercentage / 100f) * item.MaxStackSize) + 1);
+                        if (ItemChangeThreshold.ThresholdReached(this, true, item.GetItemChangeThresholds()[0], item.GetItemChangeThresholds(), out ItemChangeThreshold newThreshold))
+                        {
+                            item = newThreshold.NewItem;
+                            name = item.name;
+                        }
+                    }
+                    else
+                        currentStackSize = Random.Range(1, item.MaxStackSize + 1);
+                }
                 else
                     currentStackSize = 1;
 
                 if (item.MaxUses > 1 && item.MaxStackSize == 1)
-                    remainingUses = Random.Range(1, item.MaxUses + 1);
+                {
+                    if (item.GetItemChangeThresholds().Length > 0)
+                    {
+                        remainingUses = Random.Range(1, Mathf.RoundToInt((item.GetItemChangeThresholds()[0].ThresholdPercentage / 100f) * item.MaxUses) + 1);
+                        if (ItemChangeThreshold.ThresholdReached(this, true, item.GetItemChangeThresholds()[0], item.GetItemChangeThresholds(), out ItemChangeThreshold newThreshold))
+                        {
+                            item = newThreshold.NewItem;
+                            name = item.name;
+                        }
+                    }
+                    else
+                        remainingUses = Random.Range(1, item.MaxUses);
+                }
                 else
                     remainingUses = 1;
 

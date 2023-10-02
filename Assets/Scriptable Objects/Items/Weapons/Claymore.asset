@@ -32,7 +32,7 @@ MonoBehaviour:
   meshRendererMaterials:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  pickupMeshRendererMaterials: []
   equipSlot: 0
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}

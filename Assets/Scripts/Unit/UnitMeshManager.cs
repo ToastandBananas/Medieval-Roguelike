@@ -152,9 +152,12 @@ public class UnitMeshManager : MonoBehaviour
         meshFilter.mesh = equipment.Meshes[0];
 
         Material[] materials = meshRenderer.materials;
-        for (int i = 0; i < equipment.MeshRendererMaterials.Length; i++)
+        for (int i = 0; i < materials.Length; i++)
         {
-            materials[i] = equipment.MeshRendererMaterials[i];
+            if (i > equipment.MeshRendererMaterials.Length - 1)
+                materials[i] = null;
+            else
+                materials[i] = equipment.MeshRendererMaterials[i];
         }
 
         meshRenderer.materials = materials;
