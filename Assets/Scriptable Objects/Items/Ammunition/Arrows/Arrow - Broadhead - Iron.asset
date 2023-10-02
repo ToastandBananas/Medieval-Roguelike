@@ -29,11 +29,12 @@ MonoBehaviour:
   valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
-  - {fileID: 314023484990756521, guid: 02c3d204eac64a3459bece5895fcc48f, type: 3}
+  - {fileID: -2432090755550338912, guid: e067b50d25447e9418821b344716ab0b, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4, type: 2}
+  - {fileID: 2100000, guid: bb0e6650972dfeb4c98f702829b75ca8, type: 2}
+  - {fileID: 2100000, guid: f86769aef65de6f43bdbb523ca501843, type: 2}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  pickupMeshRendererMaterials: []
   equipSlot: 10
   actionTypes: []
   itemChangeThresholds:

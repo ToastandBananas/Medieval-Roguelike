@@ -45,8 +45,15 @@ public class Projectile : MonoBehaviour
 
         speed = ammunitionItem.Speed;
 
-        meshFilter.mesh = ammunitionItem.AmmunitionMesh;
-        meshRenderer.material = ammunitionItem.AmmunitionMaterial;
+        meshFilter.mesh = ammunitionItem.Meshes[0];
+
+        Material[] materials = meshRenderer.materials;
+        for (int i = 0; i < ammunitionItem.MeshRendererMaterials.Length; i++)
+        {
+            materials[i] = ammunitionItem.MeshRendererMaterials[i];
+        }
+
+        meshRenderer.materials = materials;
 
         projectileCollider.center = ammunitionItem.CapsuleColliderCenter;
         projectileCollider.radius = ammunitionItem.CapsuleColliderRadius;

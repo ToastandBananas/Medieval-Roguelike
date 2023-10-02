@@ -1,7 +1,0 @@
-newmtl Arrow_Broadhead
-	Ka 1 1 1
-	Kd 1 1 1
-	Ks 1 1 1
-	Ns 500
-	map_Ka Textures\Arrow_Broadhead.png
-	map_Kd Textures\Arrow_Broadhead.png

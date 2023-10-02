@@ -134,12 +134,10 @@ public class UnitMeshManager : MonoBehaviour
         switch (equipSlot)
         {
             case EquipSlot.Helm:
-                helmMeshFilter.mesh = equipment.Meshes[0];
-                helmMeshRenderer.material = equipment.MeshRendererMaterials[0];
+                AssignMeshAndMaterials(helmMeshFilter, helmMeshRenderer, equipment);
                 break;
             case EquipSlot.BodyArmor:
-                bodyArmorMeshFilter.mesh = equipment.Meshes[0];
-                bodyArmorMeshRenderer.material = equipment.MeshRendererMaterials[0];
+                AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, equipment);
                 break;
             default:
                 break;
@@ -147,6 +145,19 @@ public class UnitMeshManager : MonoBehaviour
 
         if (myUnit.IsPlayer() == false && IsVisibleOnScreen() == false)
             HideMesh(equipSlot);
+    }
+
+    void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Equipment equipment)
+    {
+        meshFilter.mesh = equipment.Meshes[0];
+
+        Material[] materials = meshRenderer.materials;
+        for (int i = 0; i < equipment.MeshRendererMaterials.Length; i++)
+        {
+            materials[i] = equipment.MeshRendererMaterials[i];
+        }
+
+        meshRenderer.materials = materials;
     }
 
     public void HideMesh(EquipSlot equipSlot)

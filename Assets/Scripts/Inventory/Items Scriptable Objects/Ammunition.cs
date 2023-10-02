@@ -58,9 +58,6 @@ public class Ammunition : Equipment
         return base.InventorySprite();
     }
 
-    public Mesh AmmunitionMesh => Meshes[0];
-    public Material AmmunitionMaterial => MeshRendererMaterials[0];
-
     public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
     public float CapsuleColliderRadius => capsuleColliderRadius;
     public float CapsuleColliderHeight => capsuleColliderHeight;

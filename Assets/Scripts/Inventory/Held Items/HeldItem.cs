@@ -84,7 +84,18 @@ public abstract class HeldItem : MonoBehaviour
     {
         for (int i = 0; i < meshRenderers.Length; i++)
         {
-            meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
+            if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
+            {
+                Material[] materials = meshRenderers[i].materials;
+                for (int j = 0; j < itemData.Item.MeshRendererMaterials.Length; j++)
+                {
+                    materials[j] = itemData.Item.MeshRendererMaterials[j];
+                }
+
+                meshRenderers[i].materials = materials;
+            }
+            else // For items like the bow that consist of multiple meshes
+                meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
 
             if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
             {

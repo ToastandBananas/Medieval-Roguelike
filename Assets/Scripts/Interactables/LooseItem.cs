@@ -152,14 +152,24 @@ public class LooseItem : Interactable
         if (itemData.Item.PickupMesh != null)
         {
             meshFilter.mesh = itemData.Item.PickupMesh;
-            meshRenderer.material = itemData.Item.PickupMeshRendererMaterial;
             meshCollider.sharedMesh = itemData.Item.PickupMesh;
+            for (int i = 0; i < itemData.Item.PickupMeshRendererMaterials.Length; i++)
+            {
+                meshRenderer.materials[i] = itemData.Item.PickupMeshRendererMaterials[i];
+            }
         }
         else if (itemData.Item.Meshes[0] != null)
         {
             meshFilter.mesh = itemData.Item.Meshes[0];
-            meshRenderer.material = itemData.Item.MeshRendererMaterials[0];
             meshCollider.sharedMesh = itemData.Item.Meshes[0];
+
+            Material[] materials = meshRenderer.materials;
+            for (int i = 0; i < itemData.Item.MeshRendererMaterials.Length; i++)
+            {
+                materials[i] = itemData.Item.MeshRendererMaterials[i];
+            }
+
+            meshRenderer.materials = materials;
         }
         else
             Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 02c3d204eac64a3459bece5895fcc48f
+guid: e067b50d25447e9418821b344716ab0b
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Arrow_Broadhead
-    second: {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4, type: 2}
+      name: Arrow_Head_Broadhead_Material
+    second: {fileID: 2100000, guid: f86769aef65de6f43bdbb523ca501843, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Arrow_BroadheadMat
-    second: {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4, type: 2}
+      name: default_Material
+    second: {fileID: 2100000, guid: bb0e6650972dfeb4c98f702829b75ca8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -45,7 +45,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.004
+    globalScale: 0.4
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -98,7 +98,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.004
+    globalScale: 0.4
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

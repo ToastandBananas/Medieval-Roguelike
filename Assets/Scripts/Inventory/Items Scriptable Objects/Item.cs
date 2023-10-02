@@ -45,7 +45,7 @@ public abstract class Item : ScriptableObject
 
     [Header("Pickup Mesh")]
     [SerializeField] Mesh pickupMesh;
-    [SerializeField] Material pickupMeshRendererMaterial;
+    [SerializeField] Material[] pickupMeshRendererMaterials;
 
     public string Name => name;
     public string PluralName => pluralName;
@@ -67,7 +67,7 @@ public abstract class Item : ScriptableObject
     public Material[] MeshRendererMaterials => meshRendererMaterials;
 
     public Mesh PickupMesh => pickupMesh;
-    public Material PickupMeshRendererMaterial => pickupMeshRendererMaterial;
+    public Material[] PickupMeshRendererMaterials => pickupMeshRendererMaterials;
 
     public int MaxUses => maxUses;
     public bool IsUsable => isUsable;

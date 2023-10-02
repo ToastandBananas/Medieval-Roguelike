@@ -81,6 +81,15 @@ MonoBehaviour:
   meshRenderer: {fileID: 169634531984447832}
   meshCollider: {fileID: 2372850988380590422}
   rigidBody: {fileID: 4136017461024531674}
+  itemData:
+    name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    remainingUses: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    hasBeenRandomized: 0
 --- !u!1 &5387763566216881598
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,6 +152,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
