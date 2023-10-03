@@ -29,9 +29,10 @@ MonoBehaviour:
   staticValue: 200
   meshes: []
   meshRendererMaterials: []
-  pickupMesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
-  pickupMeshRendererMaterial: {fileID: 2100000, guid: 550b53a3aff1e274f81604dd07d2a9b4,
-    type: 2}
+  pickupMesh: {fileID: -2432090755550338912, guid: c74b109bba855cd40b9af61c344411fc,
+    type: 3}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: bfbcfdf55c4b39c458c7128df41bd3da, type: 2}
   equipSlot: 10
   actionTypes: []
   allowedProjectileType: 0

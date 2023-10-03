@@ -234,6 +234,7 @@ public class ContextMenu : MonoBehaviour
         }
         else if (targetInteractable != null && targetInteractable is LooseContainerItem)
         {
+            Debug.Log(targetInteractable);
             LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
             if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
             {

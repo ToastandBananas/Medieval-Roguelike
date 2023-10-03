@@ -210,6 +210,8 @@ public class ContextMenuButton : MonoBehaviour
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseContainerItem)
             {
                 LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
+                InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
+
                 if (itemData.Item.Equipment().EquipSlot == EquipSlot.Quiver)
                     UnitManager.Instance.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
                 else  if (itemData.Item.Equipment().EquipSlot == EquipSlot.Back)
