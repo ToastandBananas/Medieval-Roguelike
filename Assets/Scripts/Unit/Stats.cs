@@ -50,7 +50,7 @@ public class Stats : MonoBehaviour
     public void SetLastUsedAP(int amountUsed)
     {
         lastUsedAP = amountUsed;
-        ActionSystemUI.Instance.UpdateActionPointsText();
+        ActionSystemUI.UpdateActionPointsText();
     }
 
     public int MaxAP() => Mathf.RoundToInt((baseAP_PerSecond * TimeSystem.defaultTimeTickInSeconds) + (speed.GetValue() * 5f));
@@ -161,7 +161,7 @@ public class Stats : MonoBehaviour
         }
 
         if (unit.IsPlayer())
-            ActionSystemUI.Instance.UpdateEnergyText();
+            ActionSystemUI.UpdateEnergyText();
     }
 
     public void ReplenishEnergy()
@@ -169,7 +169,7 @@ public class Stats : MonoBehaviour
         currentEnergy = MaxEnergy();
 
         if (unit.IsPlayer())
-            ActionSystemUI.Instance.UpdateEnergyText();
+            ActionSystemUI.UpdateEnergyText();
     }
 
     public void AddToCurrentEnergy(int amountToAdd)
@@ -179,7 +179,7 @@ public class Stats : MonoBehaviour
             currentEnergy = MaxEnergy();
 
         if (unit.IsPlayer())
-            ActionSystemUI.Instance.UpdateEnergyText();
+            ActionSystemUI.UpdateEnergyText();
     }
 
     void RegenerateEnergy()
@@ -255,7 +255,7 @@ public class Stats : MonoBehaviour
     public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
     {
         float blockChance = shieldSkill.GetValue() * 2f;
-        blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield().BlockChanceAddOn) * 100f) / 100f;
+        blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
 
         // If attacker is directly beside the Unit
         if (attackerBesideUnit)
@@ -267,7 +267,7 @@ public class Stats : MonoBehaviour
 
     public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
     {
-        Weapon weapon = heldWeapon.ItemData.Item.Weapon();
+        Weapon weapon = heldWeapon.ItemData.Item.Weapon;
         float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
         blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
 
@@ -286,14 +286,14 @@ public class Stats : MonoBehaviour
 
     public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
     {
-        Weapon weapon = heldWeapon.ItemData.Item.Weapon();
+        Weapon weapon = heldWeapon.ItemData.Item.Weapon;
         return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
     }
 
     public float RangedAccuracy(ItemData rangedWeaponItemData)
     {
         float accuracy = 0f;
-        if (rangedWeaponItemData.Item.Weapon().WeaponType == WeaponType.Bow)
+        if (rangedWeaponItemData.Item.Weapon.WeaponType == WeaponType.Bow)
         {
             accuracy = bowSkill.GetValue() * 4f;
             accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier) * 100f) / 100f;

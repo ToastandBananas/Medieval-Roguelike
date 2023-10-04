@@ -53,6 +53,17 @@ MonoBehaviour:
   - thresholdPercentage: 25
     newItem: {fileID: 11400000}
     newSprite: {fileID: 21300000, guid: 6cba8d92abcf58a499e0b8275072e9de, type: 3}
+  quiverSprites:
+  - {fileID: 21300000, guid: 0fff3178a4bf04045b1562c39a1382c1, type: 3}
+  - {fileID: 21300000, guid: fb03ffbe831ea724cacd2839f0bf6f4f, type: 3}
+  - {fileID: 21300000, guid: 7188c1b91d6d675439a2eb879e492867, type: 3}
+  - {fileID: 21300000, guid: d8c472f6502d6b345a740d1e2d240aa8, type: 3}
+  - {fileID: 21300000, guid: 9cd26519b1cdeb34db9cf3919bee493b, type: 3}
+  - {fileID: 21300000, guid: 6efca732bce6ee7478475603845f4c15, type: 3}
+  - {fileID: 21300000, guid: 365b0b7f4e45be94689b6f1233d28c13, type: 3}
+  - {fileID: 21300000, guid: e2cee2610068a6e4fb5e2f4c1e1f4f0d, type: 3}
+  - {fileID: 21300000, guid: 1626c6c220305cd458203b1e05af4cc2, type: 3}
+  - {fileID: 21300000, guid: a9c131e4da78b99429925a15816588c7, type: 3}
   capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4

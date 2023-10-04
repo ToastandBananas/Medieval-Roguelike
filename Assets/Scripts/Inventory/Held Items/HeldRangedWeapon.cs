@@ -26,7 +26,7 @@ public class HeldRangedWeapon : HeldItem
             // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
             targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
             if (targetUnit.CharacterEquipment.ShieldEquipped())
-                targetUnit.unitMeshManager.GetShield().RaiseShield();
+                targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
         }
 
         isLoaded = false;
@@ -38,10 +38,30 @@ public class HeldRangedWeapon : HeldItem
 
     public void LoadProjectile()
     {
+        if (unit.CharacterEquipment.HasValidAmmunitionEquipped() == false)
+            return;
+
         Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-        projectile.Setup(projectile.ItemData, unit, bowLineRenderer.GetStringCenterTarget());
+        ItemData projectileItemData = unit.CharacterEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
+        projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
+
+        // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0
+        unit.CharacterEquipment.OnReloadProjectile(projectileItemData);
+
         loadedProjectile = projectile;
         isLoaded = true;
+    }
+
+    public void UnloadProjectile()
+    {
+        if (unit.TryAddItemToInventories(loadedProjectile.ItemData) == false)
+            DropItemManager.DropItem(unit, null, loadedProjectile.ItemData);
+
+        loadedProjectile.Disable();
+        loadedProjectile = null;
+        isLoaded = false;
+
+        ActionSystemUI.UpdateActionVisuals();
     }
 
     void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
@@ -58,7 +78,7 @@ public class HeldRangedWeapon : HeldItem
 
     public override IEnumerator ResetToIdleRotation()
     {
-        Quaternion defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment().IdleRotation_RightHand);
+        Quaternion defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
         Quaternion startRotation = transform.parent.localRotation;
         float time = 0f;
         float duration = 0.25f;
@@ -105,9 +125,9 @@ public class HeldRangedWeapon : HeldItem
     public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
     {
         if (accountForHeight == false)
-            return itemData.Item.Weapon().MaxRange;
+            return itemData.Item.Weapon.MaxRange;
 
-        float maxRange = itemData.Item.Weapon().MaxRange + (shooterGridPosition.y - targetGridPosition.y);
+        float maxRange = itemData.Item.Weapon.MaxRange + (shooterGridPosition.y - targetGridPosition.y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }
@@ -132,14 +152,9 @@ public class HeldRangedWeapon : HeldItem
 
     public override void ResetHeldItem()
     {
-        base.ResetHeldItem();
-
         if (loadedProjectile != null)
-        {
-            // To Do: Send the projectile back into the Unit's quiver (or inventory if they don't have one)
+            UnloadProjectile();
 
-            isLoaded = false;
-            loadedProjectile.Disable();
-        }
+        base.ResetHeldItem();
     }
 }

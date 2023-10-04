@@ -58,6 +58,10 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public InventoryItem InventoryItem => inventoryItem;
 
+    public InventorySlot InventorySlot => this as InventorySlot;
+
+    public EquipmentSlot EquipmentSlot => this as EquipmentSlot;
+
     public abstract ItemData GetItemData();
 
     public abstract void ClearSlotVisuals();

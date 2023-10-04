@@ -27,7 +27,7 @@ public class HealthSystem : MonoBehaviour
             currentHealth = 0;
 
         if (unit.IsPlayer())
-            ActionSystemUI.Instance.UpdateHealthText();
+            ActionSystemUI.UpdateHealthText();
 
         // SpawnBlood(attackerTransform);
 
@@ -44,7 +44,7 @@ public class HealthSystem : MonoBehaviour
             currentHealth = maxHealth;
 
         if (unit.IsPlayer())
-            ActionSystemUI.Instance.UpdateHealthText();
+            ActionSystemUI.UpdateHealthText();
     }
 
     void SpawnBlood(Transform attackerTransform)

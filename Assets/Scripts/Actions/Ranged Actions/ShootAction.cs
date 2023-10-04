@@ -62,7 +62,7 @@ public class ShootAction : BaseAction
 
             // Rotate towards the target and do the shoot animation
             StartCoroutine(RotateTowardsTarget());
-            unit.unitMeshManager.GetRangedWeapon().DoDefaultAttack();
+            unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack();
 
             StartCoroutine(WaitToCompleteAction());
         }
@@ -71,7 +71,7 @@ public class ShootAction : BaseAction
             bool missedTarget = MissedTarget();
             bool attackBlocked = targetUnit.unitActionHandler.TryBlockRangedAttack(unit);
             if (missedTarget == false)
-                DamageTargets(unit.unitMeshManager.GetRangedWeapon());
+                DamageTargets(unit.unitMeshManager.GetHeldRangedWeapon());
 
             // Rotate towards the target
             if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
@@ -103,12 +103,12 @@ public class ShootAction : BaseAction
                 {
                     int blockAmount = 0;
                     if (targetUnit.CharacterEquipment.ShieldEquipped())
-                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetShield());
+                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
 
                     targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit.transform);
 
                     if (targetUnit.CharacterEquipment.ShieldEquipped())
-                        targetUnit.unitMeshManager.GetShield().LowerShield();
+                        targetUnit.unitMeshManager.GetHeldShield().LowerShield();
                 }
                 else
                     targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
@@ -124,7 +124,7 @@ public class ShootAction : BaseAction
     public bool MissedTarget()
     {
         float random = Random.Range(0f, 100f);
-        float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetRangedWeapon().ItemData);
+        float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().ItemData);
         if (random > rangedAccuracy)
             return true;
         return false;
@@ -132,8 +132,8 @@ public class ShootAction : BaseAction
 
     IEnumerator WaitToCompleteAction()
     {
-        if (unit.unitMeshManager.GetRangedWeapon() != null)
-            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetRangedWeapon().ItemData.Item as Weapon));
+        if (unit.unitMeshManager.GetHeldRangedWeapon() != null)
+            yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item as Weapon));
         else
             yield return new WaitForSeconds(0.5f);
 
@@ -162,7 +162,7 @@ public class ShootAction : BaseAction
             return false;
 
         float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-        Weapon rangedWeapon = unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon();
+        Weapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon;
         float maxRangeToTargetPosition = rangedWeapon.MaxRange + (startGridPosition.y - targetGridPosition.y);
         if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
@@ -201,8 +201,8 @@ public class ShootAction : BaseAction
 
     public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
     {
-        float minRange = unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MinRange;
-        float maxRange = unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MaxRange;
+        float minRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
+        float maxRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
         float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
 
         validGridPositionsList.Clear();
@@ -262,7 +262,7 @@ public class ShootAction : BaseAction
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MaxRange;
+        float maxAttackRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
         float boundsDimension = ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -342,7 +342,7 @@ public class ShootAction : BaseAction
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-            if (distance < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MinRange)
+            if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                 finalActionValue = 0f;
             else
                 finalActionValue -= distance * 10f;
@@ -385,7 +385,7 @@ public class ShootAction : BaseAction
                     finalActionValue += 15f; 
                 
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, actionGridPosition);
-                if (distance < unit.unitMeshManager.GetRangedWeapon().ItemData.Item.Weapon().MinRange)
+                if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                     finalActionValue = -1f;
                 else
                     finalActionValue -= distance * 1.5f;
@@ -419,14 +419,14 @@ public class ShootAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit != null && unit.CharacterEquipment.RangedWeaponEquipped())
+        if (unit != null && unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
             return true;
         return false;
     }
 
     public override int GetEnergyCost() => 0;
 
-    public bool RangedWeaponIsLoaded() => unit.unitMeshManager.GetRangedWeapon().isLoaded; 
+    public bool RangedWeaponIsLoaded() => unit.unitMeshManager.GetHeldRangedWeapon().isLoaded; 
 
     public override bool ActionIsUsedInstantly() => false;
 

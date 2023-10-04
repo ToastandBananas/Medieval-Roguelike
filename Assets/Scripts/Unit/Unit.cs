@@ -100,7 +100,7 @@ public class Unit : MonoBehaviour
     public float GetAttackRange(bool accountForHeight)
     {
         if (myCharacterEquipment.RangedWeaponEquipped())
-            return unitMeshManager.GetRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
+            return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
         else if (myCharacterEquipment.MeleeWeaponEquipped())
             return unitMeshManager.GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
         else
@@ -148,9 +148,14 @@ public class Unit : MonoBehaviour
     {
         if (itemData == null || itemData.Item == null)
             return false;
-        
-        if (itemData.Item.IsAmmunition() && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+
+        if (itemData.Item is Ammunition && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+        {
+            if (myCharacterEquipment.SlotVisualsCreated)
+                myCharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+
             return true;
+        }
 
         if (mainInventoryManager != null && MainInventory().TryAddItem(itemData))
             return true;

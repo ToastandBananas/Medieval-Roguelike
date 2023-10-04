@@ -6,6 +6,4 @@ public class Backpack : Wearable
     [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[6];
 
     public InventoryLayout[] InventorySections => inventorySections;
-
-    public override bool IsBag() => true;
 }

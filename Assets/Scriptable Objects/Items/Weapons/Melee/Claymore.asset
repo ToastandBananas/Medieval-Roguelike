@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30d44321003fdc44da9528d2c6da3438, type: 3}
+  m_Name: Claymore
+  m_EditorClassIdentifier: 
+  name: Claymore
+  pluralName: 
+  description: 
+  itemType: 1
+  mainMaterial: 35
+  itemSize: 5
+  width: 2
+  height: 5
+  weight: 20
+  maxStackSize: 1
+  inventorySprite: {fileID: 21300000, guid: 54cdcffc7dfb1e54e88a8a0f29f4af48, type: 3}
+  maxUses: 1
+  isUsable: 1
+  valueRange: {x: 0, y: 0}
+  staticValue: 1
+  meshes:
+  - {fileID: -84310869803615449, guid: d9e7c5c5772014945977b91ffef2bd6f, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
+  pickupMesh: {fileID: 0}
+  pickupMeshRendererMaterials: []
+  equipSlot: 0
+  actionTypes:
+  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
+  - {fileID: 11400000, guid: 4a8c6127ccbd3d74f940e7fc6b52c543, type: 2}
+  idlePosition_Left: {x: 0.23, y: -0.29, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: -0.29, z: -0.23}
+  idleRotation_Left: {x: 0, y: 90, z: 25}
+  idleRotation_Right: {x: 0, y: 90, z: 25}
+  weaponType: 4
+  isTwoHanded: 1
+  canDualWield: 0
+  minRange: 1
+  maxRange: 2.2
+  minDamage: 10
+  maxDamage: 15
+  blockChanceAddOn: 1.5
+  minAccuracyModifier: 0
+  maxAccuracyModifier: 0

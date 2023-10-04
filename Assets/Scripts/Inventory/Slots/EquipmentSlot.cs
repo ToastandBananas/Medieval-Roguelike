@@ -16,7 +16,7 @@ public class EquipmentSlot : Slot
         if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null)
             return true;
 
-        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item.IsWeapon() && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon().IsTwoHanded)
+        if (equipSlot == global::EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item is Weapon && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon.IsTwoHanded)
             return true;
         return false;
     }
@@ -29,7 +29,7 @@ public class EquipmentSlot : Slot
         // Setup the empty slot sprite
         SetEmptySlotSprite();
 
-        if (IsFull() && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
+        if (IsFull() && inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
         {
             EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
             oppositeWeaponSlot.HideItemIcon();
@@ -76,7 +76,7 @@ public class EquipmentSlot : Slot
 
         if (IsHeldItemSlot())
         {
-            if (inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
+            if (inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                 if (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2)
@@ -104,11 +104,11 @@ public class EquipmentSlot : Slot
         bool validSlot = false;
         Item draggedItem = InventoryUI.Instance.DraggedItem.itemData.Item;
 
-        if (draggedItem.IsEquipment())
+        if (draggedItem is Equipment)
         {
-            if (draggedItem.Equipment().EquipSlot == equipSlot)
+            if (draggedItem.Equipment.EquipSlot == equipSlot)
                 validSlot = true;
-            else if ((draggedItem.IsWeapon() || draggedItem.IsShield()) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2))
+            else if ((draggedItem is Weapon || draggedItem is Shield) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2))
                 validSlot = true;
         }
 
@@ -135,12 +135,12 @@ public class EquipmentSlot : Slot
         SetEmptySlotSprite();
         if (IsHeldItemSlot() && IsFull())
         { 
-            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item.IsWeapon() && inventoryItem.itemData.Item.Weapon().IsTwoHanded)
+            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                 GetOppositeWeaponSlot().SetEmptySlotSprite();
             else
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon().IsTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                     oppositeWeaponSlot.SetEmptySlotSprite();
             }
         }

@@ -290,6 +290,8 @@ public class Inventory
                     EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
                     InventoryUI.Instance.DraggedItem.myCharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
                     InventoryUI.Instance.DraggedItem.myCharacterEquipment.EquippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
+
+                    ActionSystemUI.UpdateActionVisuals();
                 }
                 // Remove the item from its original inventory
                 else if (InventoryUI.Instance.DraggedItem.myInventory != null)
@@ -300,7 +302,7 @@ public class Inventory
 
     void TryTakeStuckProjectiles(ItemData newItemData)
     {
-        if (newItemData.Item.IsShield() == false || myUnit == null || myUnit.CharacterEquipment == null || myUnit.CharacterEquipment.ItemDataEquipped(newItemData) == false)
+        if (newItemData.Item is Shield == false || myUnit == null || myUnit.CharacterEquipment == null || myUnit.CharacterEquipment.ItemDataEquipped(newItemData) == false)
             return;
 
         // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them

@@ -2,7 +2,7 @@ public class ReloadAction : BaseAction
 {
     bool isReloading;
 
-    public override bool IsValidAction() => unit != null && unit.CharacterEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetRangedWeapon().isLoaded == false;
+    public override bool IsValidAction() => unit != null && unit.CharacterEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.CharacterEquipment.HasValidAmmunitionEquipped();
 
     public override void TakeAction(GridPosition gridPosition)
     {
@@ -15,7 +15,7 @@ public class ReloadAction : BaseAction
     void Reload()
     {
         // StartCoroutine(StartReloadTimer());
-        unit.unitMeshManager.GetRangedWeapon().LoadProjectile();
+        unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile();
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
     }

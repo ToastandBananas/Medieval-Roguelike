@@ -77,7 +77,12 @@ public class ActionLineRenderer : MonoBehaviour
                     }
 
                     if (player.CharacterEquipment.RangedWeaponEquipped())
-                        targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
+                    {
+                        if (player.CharacterEquipment.HasValidAmmunitionEquipped())
+                            targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
+                        else
+                            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(currentMouseGridPosition, player.gridPosition, LevelGrid.diaganolDistance, false);
+                    }
                     else
                         targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
                 }

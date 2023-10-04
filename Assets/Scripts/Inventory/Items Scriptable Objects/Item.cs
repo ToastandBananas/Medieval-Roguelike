@@ -87,9 +87,9 @@ public abstract class Item : ScriptableObject
     public ItemChangeThreshold[] GetItemChangeThresholds()
     {
         if (this is Ammunition)
-            return Ammunition().ItemChangeThresholds;
+            return Ammunition.ItemChangeThresholds;
         else if (this is Consumable)
-            return Consumable().ItemChangeThresholds;
+            return Consumable.ItemChangeThresholds;
         return null;
     }
 
@@ -117,45 +117,25 @@ public abstract class Item : ScriptableObject
         }
     }
 
-    public BasicItem BasicItem() => this as BasicItem;
+    public BasicItem BasicItem => this as BasicItem;
 
-    public Consumable Consumable() => this as Consumable;
+    public Consumable Consumable => this as Consumable;
 
-    public Equipment Equipment() => this as Equipment;
+    public Equipment Equipment => this as Equipment;
 
-    public HeldEquipment HeldEquipment() => this as HeldEquipment;
+    public HeldEquipment HeldEquipment => this as HeldEquipment;
 
-    public Ammunition Ammunition() => this as Ammunition;
+    public Ammunition Ammunition => this as Ammunition;
 
-    public Shield Shield() => this as Shield;
+    public Shield Shield => this as Shield;
 
-    public Weapon Weapon() => this as Weapon;
+    public Weapon Weapon => this as Weapon;
 
-    public Wearable Wearable() => this as Wearable;
+    public MeleeWeapon MeleeWeapon => this as MeleeWeapon;
 
-    public Quiver Quiver() => this as Quiver;
+    public RangedWeapon RangedWeapon => this as RangedWeapon;
 
-    public abstract bool IsEquipment();
+    public Wearable Wearable => this as Wearable;
 
-    public abstract bool IsWeapon();
-
-    public abstract bool IsMeleeWeapon();
-
-    public abstract bool IsRangedWeapon();
-
-    public abstract bool IsAmmunition();
-
-    public abstract bool IsWearable();
-
-    public abstract bool IsShield();
-
-    public abstract bool IsBag();
-
-    public abstract bool IsPortableContainer();
-
-    public abstract bool IsConsumable();
-
-    public abstract bool IsMedicalSupply();
-
-    public abstract bool IsKey();
+    public Quiver Quiver => this as Quiver;
 }

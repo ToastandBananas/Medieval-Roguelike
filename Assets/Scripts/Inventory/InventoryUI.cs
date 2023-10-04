@@ -89,7 +89,7 @@ public class InventoryUI : MonoBehaviour
                     if ((activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem2) && (activeEquipmentSlot.InventoryItem.itemData == null || activeEquipmentSlot.InventoryItem.itemData.Item == null))
                     {
                         EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
-                        if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item.IsWeapon() && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
+                        if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                         {
                             SetupDraggedItem(oppositeWeaponSlot.InventoryItem.itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem.myCharacterEquipment);
                             oppositeWeaponSlot.InventoryItem.DisableIconImage();
@@ -101,7 +101,7 @@ public class InventoryUI : MonoBehaviour
                     {
                         SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myCharacterEquipment);
 
-                        if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item.IsWeapon() && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
+                        if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item is Weapon && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                             activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem.DisableIconImage();
                     }
                 }
@@ -243,7 +243,7 @@ public class InventoryUI : MonoBehaviour
                 EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
                 if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.TryAddItemAt(equipmentSlot.EquipSlot, draggedItem.itemData) == false)
                 {
-                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.MyUnit.TryAddItemToInventories(draggedItem.itemData) == false)
+                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.Unit.TryAddItemToInventories(draggedItem.itemData) == false)
                         DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
                 }
             }
@@ -262,7 +262,7 @@ public class InventoryUI : MonoBehaviour
                 EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
                 parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
 
-                if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.IsWeapon() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon().IsTwoHanded)
+                if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item is Weapon && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                 {
                     EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
                     oppositeWeaponSlot.SetFullSlotSprite();
@@ -319,8 +319,8 @@ public class InventoryUI : MonoBehaviour
             }
             else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
             {
-                if (GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager) != null)
-                    GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
+                if (GetContainerUI(characterEquipmentDraggedFrom.Unit.QuiverInventoryManager) != null)
+                    GetContainerUI(characterEquipmentDraggedFrom.Unit.QuiverInventoryManager).CloseContainerInventory();
             }
         }
 
@@ -435,15 +435,13 @@ public class InventoryUI : MonoBehaviour
         return null;
     }
 
+    public void SetValidDragPosition(bool valid) => validDragPosition = valid;
+
     public void SetActiveSlot(Slot slot) => activeSlot = slot;
 
     public InventoryItem DraggedItem => draggedItem;
-
     public InventorySlot InventorySlotPrefab => inventorySlotPrefab;
 
-    public void SetValidDragPosition(bool valid) => validDragPosition = valid;
-
     public Transform PlayerPocketsParent => playerPocketsParent;
-
     public Transform NPCPocketsParent => npcPocketsParent;
 }

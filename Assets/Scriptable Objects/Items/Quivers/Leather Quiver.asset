@@ -19,10 +19,10 @@ MonoBehaviour:
   mainMaterial: 23
   itemSize: 4
   width: 2
-  height: 4
+  height: 3
   weight: 1
   maxStackSize: 1
-  inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
+  inventorySprite: {fileID: 21300000, guid: da97dd2b08a13d548a6d56b47742a64e, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
@@ -35,6 +35,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: bfbcfdf55c4b39c458c7128df41bd3da, type: 2}
   equipSlot: 10
   actionTypes: []
+  equippedSprite: {fileID: 21300000, guid: 05a8d25aa1ffc6f4fa3b6e13bfdc7004, type: 3}
   allowedProjectileType: 0
   inventorySections:
   - amountOfSlots: 2

@@ -94,9 +94,9 @@ public class UnitMeshManager : MonoBehaviour
 
     public HeldMeleeWeapon GetPrimaryMeleeWeapon()
     {
-        if (rightHeldItem != null && rightHeldItem.ItemData.Item.IsMeleeWeapon())
+        if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
             return rightHeldItem as HeldMeleeWeapon;
-        else if (leftHeldItem != null && leftHeldItem.ItemData.Item.IsMeleeWeapon())
+        else if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
             return leftHeldItem as HeldMeleeWeapon;
         return null;
     }
@@ -111,17 +111,17 @@ public class UnitMeshManager : MonoBehaviour
         return null;
     }
 
-    public HeldRangedWeapon GetRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
+    public HeldRangedWeapon GetHeldRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
 
-    public HeldMeleeWeapon GetLeftMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
+    public HeldMeleeWeapon GetLeftHeldMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
 
-    public HeldMeleeWeapon GetRightMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
+    public HeldMeleeWeapon GetRightHeldMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
 
-    public HeldShield GetShield()
+    public HeldShield GetHeldShield()
     {
-        if (leftHeldItem != null && leftHeldItem.ItemData.Item.IsShield())
+        if (leftHeldItem != null && leftHeldItem.ItemData.Item is Shield)
             return leftHeldItem as HeldShield;
-        else if (rightHeldItem != null && rightHeldItem.ItemData.Item.IsShield())
+        else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Shield)
             return rightHeldItem as HeldShield;
         return null;
     }

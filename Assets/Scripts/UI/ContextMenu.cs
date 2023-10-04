@@ -161,14 +161,14 @@ public class ContextMenu : MonoBehaviour
         {
             ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
             if (containerInventory.containerInventoryManager != UnitManager.Instance.player.BackpackInventoryManager && UnitManager.Instance.player.BackpackInventoryManager != null 
-                && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+                && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
             {
                 GetContextMenuButton().SetupAddToBackpackButton(itemData);
             }
         }
         else
         {
-            if (UnitManager.Instance.player.BackpackInventoryManager != null && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+            if (UnitManager.Instance.player.BackpackInventoryManager != null && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
                 GetContextMenuButton().SetupAddToBackpackButton(itemData);
         }
     }
@@ -217,7 +217,7 @@ public class ContextMenu : MonoBehaviour
 
     void CreateOpenContainerButton()
     {
-        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && (targetSlot.GetItemData().Item.IsBag() || targetSlot.GetItemData().Item is Quiver))
+        if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && (targetSlot.GetItemData().Item is Backpack || targetSlot.GetItemData().Item is Quiver))
         {
             ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
             if (containerEquipmentSlot.containerInventoryManager == null)
@@ -263,14 +263,14 @@ public class ContextMenu : MonoBehaviour
             LooseItem looseItem = targetInteractable as LooseItem;
             itemData = looseItem.ItemData;
 
-            if (itemData.Item.IsEquipment() == false)
+            if (itemData.Item is Equipment == false)
                 return;
         }
 
         if (itemData == null || itemData.Item == null || itemData.Item.IsUsable == false)
             return;
 
-        if (itemData.Item.IsAmmunition() && UnitManager.Instance.player.QuiverInventoryManager.Contains(itemData))
+        if (itemData.Item is Ammunition && UnitManager.Instance.player.QuiverInventoryManager.Contains(itemData))
             return;
         
         if (itemData.Item.MaxUses > 1 && itemData.RemainingUses > 1)
@@ -291,7 +291,7 @@ public class ContextMenu : MonoBehaviour
 
             GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
         }
-        else if (itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize > 1 && itemData.Item.IsAmmunition() == false)
+        else if (itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize > 1 && itemData.Item is Ammunition == false)
         {
             GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 

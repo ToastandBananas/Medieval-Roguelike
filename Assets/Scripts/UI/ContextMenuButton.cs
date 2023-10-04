@@ -26,7 +26,7 @@ public class ContextMenuButton : MonoBehaviour
     {
         stringBuilder.Clear();
         stringBuilder.Append("Put in ");
-        if (UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item.IsBag())
+        if (UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
             stringBuilder.Append("Bag");
 
         SetupButton(stringBuilder.ToString(), delegate { AddToBackpack(itemData); });
@@ -88,7 +88,7 @@ public class ContextMenuButton : MonoBehaviour
 
     public void SetupUseItemButton(ItemData itemData, int amountToUse = 1)
     {
-        if (itemData.Item.IsEquipment())
+        if (itemData.Item is Equipment)
         {
             if (UnitManager.Instance.player.CharacterEquipment.ItemDataEquipped(itemData))
             {
@@ -108,7 +108,7 @@ public class ContextMenuButton : MonoBehaviour
                 if (itemData.Item is Ammunition && UnitManager.Instance.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
                 {
                     Quiver quiver = UnitManager.Instance.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
-                    if (quiver.AllowedProjectileType == itemData.Item.Ammunition().ProjectileType)
+                    if (quiver.AllowedProjectileType == itemData.Item.Ammunition.ProjectileType)
                         SetupButton("Add to Quiver", delegate { UseItem(itemData); });
                     else
                         SetupButton("Equip", delegate { EquipItem(itemData); });
@@ -212,16 +212,16 @@ public class ContextMenuButton : MonoBehaviour
                 LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
                 InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
-                if (itemData.Item.Equipment().EquipSlot == EquipSlot.Quiver)
+                if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                     UnitManager.Instance.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                else  if (itemData.Item.Equipment().EquipSlot == EquipSlot.Back)
+                else  if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                     UnitManager.Instance.player.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
             }
             else if (ContextMenu.Instance.TargetSlot != null)
             {
-                if (itemData.Item.Equipment().EquipSlot == EquipSlot.Quiver)
+                if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                     UnitManager.Instance.player.QuiverInventoryManager.Initialize();
-                else if (itemData.Item.Equipment().EquipSlot == EquipSlot.Back)
+                else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                     UnitManager.Instance.player.BackpackInventoryManager.Initialize();
             }
 

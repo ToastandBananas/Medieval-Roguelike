@@ -40,8 +40,10 @@ public class Projectile : MonoBehaviour
     {
         this.shooter = shooter;
 
-        this.itemData = itemData;
-        Ammunition ammunitionItem = this.itemData.Item.Ammunition();
+        this.itemData = new ItemData(itemData);
+        this.itemData.SetCurrentStackSize(1);
+
+        Ammunition ammunitionItem = this.itemData.Item.Ammunition;
 
         speed = ammunitionItem.Speed;
 
@@ -84,7 +86,7 @@ public class Projectile : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
 
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item.Ammunition().ArcMultiplier;
+        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item.Ammunition.ArcMultiplier;
         float animationTime = 0f;
 
         while (moveProjectile)
@@ -145,7 +147,7 @@ public class Projectile : MonoBehaviour
         // If the shooter is missing
         if (missedTarget)
         {
-            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetRangedWeapon().ItemData);
+            float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().ItemData);
             float minOffset = 0.35f;
             float maxOffset = 1.35f;
             float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
@@ -191,7 +193,7 @@ public class Projectile : MonoBehaviour
         projectileCollider.enabled = false;
         trailRenderer.enabled = false;
 
-        ProjectileType projectileType = itemData.Item.Ammunition().ProjectileType;
+        ProjectileType projectileType = itemData.Item.Ammunition.ProjectileType;
         if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
         {
             // Debug.Log(collisionTransform.name + " hit by projectile");
@@ -269,7 +271,7 @@ public class Projectile : MonoBehaviour
 
     void SetupTrail()
     {
-        switch (itemData.Item.Ammunition().ProjectileType)
+        switch (itemData.Item.Ammunition.ProjectileType)
         {
             case ProjectileType.Arrow:
                 trailRenderer.time = 0.065f;
@@ -321,7 +323,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -341,7 +343,7 @@ public class Projectile : MonoBehaviour
                             attackBlocked = true;
                     }
 
-                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
+                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
                     if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
                         shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
@@ -351,7 +353,7 @@ public class Projectile : MonoBehaviour
             else if (collider.CompareTag("Shield"))
             {
                 // Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
-                HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetRangedWeapon();
+                HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
                 shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
 
                 Arrived(collider.transform);

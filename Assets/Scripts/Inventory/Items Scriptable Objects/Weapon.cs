@@ -36,28 +36,4 @@ public class Weapon : HeldEquipment
     public float BlockChanceAddOn => blockChanceAddOn;
     public float MinAccuracyModifier => minAccuracyModifier;
     public float MaxAccuracyModifier => maxAccuracyModifier;
-
-    public override bool IsBag() => false;
-
-    public override bool IsConsumable() => false;
-
-    public override bool IsEquipment() => true;
-
-    public override bool IsKey() => false;
-
-    public override bool IsMedicalSupply() => false;
-
-    public override bool IsMeleeWeapon() => itemType == ItemType.MeleeWeapon;
-
-    public override bool IsPortableContainer() => false;
-
-    public override bool IsRangedWeapon() => itemType == ItemType.Bow;
-
-    public override bool IsAmmunition() => false;
-
-    public override bool IsShield() => false;
-
-    public override bool IsWeapon() => true;
-
-    public override bool IsWearable() => false;
 }

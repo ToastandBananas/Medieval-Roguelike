@@ -39,7 +39,7 @@ public class UnitAnimator : MonoBehaviour
             targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
 
             if (itemBlockedWith is HeldShield)
-                targetUnit.unitMeshManager.GetShield().RaiseShield();
+                targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
             else
             {
                 HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;

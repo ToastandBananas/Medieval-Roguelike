@@ -80,13 +80,13 @@ public class ItemData
                 else
                     remainingUses = 1;
 
-                if (item.IsWeapon())
+                if (item is Weapon)
                 {
                     Weapon weapon = item as Weapon;
                     damage = Random.Range(weapon.MinDamage, weapon.MaxDamage + 1);
                     accuracyModifier = Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier);
                 }
-                else if (item.IsShield())
+                else if (item is Shield)
                 {
                     Shield shield = item as Shield;
                     blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);

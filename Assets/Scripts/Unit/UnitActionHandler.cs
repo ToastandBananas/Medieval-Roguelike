@@ -184,7 +184,7 @@ public abstract class UnitActionHandler : MonoBehaviour
             QueueAction(selectedActionType, targetAttackGridPosition);
         else if (unit.CharacterEquipment.RangedWeaponEquipped())
         {
-            if (unit.unitMeshManager.GetRangedWeapon().isLoaded)
+            if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
             else
                 QueueAction(GetAction<ReloadAction>());
@@ -223,10 +223,10 @@ public abstract class UnitActionHandler : MonoBehaviour
             if (GetAction<TurnAction>().AttackerInFrontOfUnit(attackingUnit))
             {
                 float random = Random.Range(1f, 100f);
-                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), false))
                 {
                     if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
                     return true;
                 }
             }
@@ -234,10 +234,10 @@ public abstract class UnitActionHandler : MonoBehaviour
             else if (GetAction<TurnAction>().AttackerBesideUnit(attackingUnit))
             {
                 float random = Random.Range(1f, 100f);
-                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), true))
                 {
                     if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
                     return true;
                 }
             }
@@ -258,10 +258,10 @@ public abstract class UnitActionHandler : MonoBehaviour
             {
                 // Try blocking with shield
                 random = Random.Range(1f, 100f);
-                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), false))
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), false))
                 {
                     if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
                     return true;
                 }
 
@@ -292,10 +292,10 @@ public abstract class UnitActionHandler : MonoBehaviour
 
                     // Try blocking with left weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), false, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon());
                         return true;
                     }
                 }
@@ -318,10 +318,10 @@ public abstract class UnitActionHandler : MonoBehaviour
             {
                 // Try blocking with shield
                 random = Random.Range(1f, 100f);
-                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetShield(), true))
+                if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), true))
                 {
                     if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetShield());
+                        attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
                     return true;
                 }
 
@@ -352,10 +352,10 @@ public abstract class UnitActionHandler : MonoBehaviour
 
                     // Try blocking with left weapon
                     random = Random.Range(1f, 100f);
-                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
+                    if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), true, false) * GameManager.dualWieldSecondaryEfficiency)
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftMeleeWeapon());
+                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon());
                         return true;
                     }
                 }

@@ -219,7 +219,7 @@ public class PlayerInput : MonoBehaviour
                         }
                     }
                     // If the player has a ranged weapon equipped and the target enemy is within attack range
-                    else if (player.CharacterEquipment.RangedWeaponEquipped())
+                    else if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped())
                     {
                         // Do nothing if the target unit is dead
                         if (unitAtGridPosition.health.IsDead())
@@ -327,7 +327,12 @@ public class PlayerInput : MonoBehaviour
                 {
                     highlightedInteractable = null;
                     if (player.CharacterEquipment.RangedWeaponEquipped())
-                        WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                    {
+                        if (player.CharacterEquipment.HasValidAmmunitionEquipped())
+                            WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                        else
+                            WorldMouse.ChangeCursor(CursorState.Default);
+                    }
                     else
                         WorldMouse.ChangeCursor(CursorState.MeleeAttack);
                 }

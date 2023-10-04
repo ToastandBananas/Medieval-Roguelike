@@ -105,29 +105,29 @@ public class ActionSystemUI : MonoBehaviour
         return newActionButton;
     }
 
-    public List<ActionButtonUI> GetActionButtonsList() => actionButtons;
+    public static List<ActionButtonUI> GetActionButtonsList() => Instance.actionButtons;
 
-    public bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
+    public static bool SelectedActionValid() => Instance.playerActionHandler.selectedActionType.GetAction(Instance.playerActionHandler.unit).IsValidAction();
 
-    public void UpdateSelectedVisual()
+    public static void UpdateSelectedVisual()
     {
-        for (int i = 0; i < actionButtons.Count; i++)
+        for (int i = 0; i < Instance.actionButtons.Count; i++)
         {
-            actionButtons[i].UpdateSelectedVisual();
+            Instance.actionButtons[i].UpdateSelectedVisual();
         }
     }
 
-    public void UpdateActionVisuals()
+    public static void UpdateActionVisuals()
     {
-        for (int i = 0; i < actionButtons.Count; i++)
+        for (int i = 0; i < Instance.actionButtons.Count; i++)
         {
-            actionButtons[i].UpdateActionVisual();
+            Instance.actionButtons[i].UpdateActionVisual();
         }
     }
 
-    public void UpdateActionPointsText() => actionPointsText.text = $"Last Used AP: {playerActionHandler.unit.stats.lastUsedAP}";
+    public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {Instance.playerActionHandler.unit.stats.lastUsedAP}";
 
-    public void UpdateEnergyText() => energyText.text = $"Energy: {playerActionHandler.unit.stats.currentEnergy}";
+    public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {Instance.playerActionHandler.unit.stats.currentEnergy}";
 
-    public void UpdateHealthText() => healthText.text = $"Health: {playerActionHandler.unit.health.CurrentHealth()}";
+    public static void UpdateHealthText() => Instance.healthText.text = $"Health: {Instance.playerActionHandler.unit.health.CurrentHealth()}";
 }

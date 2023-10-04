@@ -14,6 +14,9 @@ public class Ammunition : Equipment
     [Header("Sprite Change Thresholds")]
     [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
 
+    [Header("Quiver Sprites")]
+    [SerializeField] Sprite[] quiverSprites;
+
     [Header("Collider Info")]
     [SerializeField] Vector3 capsuleColliderCenter;
     [SerializeField] float capsuleColliderRadius;
@@ -59,6 +62,7 @@ public class Ammunition : Equipment
     }
 
     public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
+    public Sprite[] QuiverSprites => quiverSprites;
 
     public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
     public float CapsuleColliderRadius => capsuleColliderRadius;
@@ -71,28 +75,4 @@ public class Ammunition : Equipment
 
     public Vector3 AmmunitionPositionOffset => ammunitionPositionOffset;
     public Vector3 AmmunitionRotation => ammunitionRotation;
-
-    public override bool IsEquipment() => true;
-
-    public override bool IsWeapon() => false;
-
-    public override bool IsMeleeWeapon() => false;
-
-    public override bool IsRangedWeapon() => false;
-
-    public override bool IsWearable() => false;
-
-    public override bool IsShield() => false;
-
-    public override bool IsBag() => false;
-
-    public override bool IsPortableContainer() => false;
-
-    public override bool IsConsumable() => false;
-
-    public override bool IsMedicalSupply() => false;
-
-    public override bool IsKey() => false;
-
-    public override bool IsAmmunition() => true;
 }

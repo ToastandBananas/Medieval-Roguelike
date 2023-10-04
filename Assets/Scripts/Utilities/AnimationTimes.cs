@@ -108,14 +108,14 @@ public class AnimationTimes : MonoBehaviour
 
     public float DefaultWeaponAttackTime(Weapon weapon)
     {
-        if (weapon.IsMeleeWeapon())
+        if (weapon is MeleeWeapon)
         {
             if (weapon.IsTwoHanded)
                 return defaultAttack_2H_Time;
             else
                 return defaultAttack_1H_Time;
         }
-        else if (weapon.IsRangedWeapon())
+        else if (weapon is RangedWeapon)
         {
             return defaultShoot_Time;
         }

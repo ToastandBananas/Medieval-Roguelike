@@ -33,7 +33,7 @@ public class LooseItem : Interactable
 
     void TryTakeStuckProjectiles(Unit unitPickingUpItem)
     {
-        if (itemData.Item.IsShield() && transform.childCount > 1)
+        if (itemData.Item is Shield && transform.childCount > 1)
         {
             for (int i = transform.childCount - 1; i > 0; i--)
             {
@@ -58,12 +58,12 @@ public class LooseItem : Interactable
     protected bool TryEquipOnPickup(Unit unitPickingUpItem)
     {
         bool equipped = false;
-        if (itemData.Item.IsEquipment())
+        if (itemData.Item is Equipment)
         {
-            if (itemData.Item.Equipment().IsShield() && unitPickingUpItem.CharacterEquipment.ShieldEquipped())
+            if (itemData.Item.Equipment is Shield && unitPickingUpItem.CharacterEquipment.ShieldEquipped())
                 return false;
 
-            EquipSlot targetEquipSlot = itemData.Item.Equipment().EquipSlot;
+            EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
             if (unitPickingUpItem.CharacterEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
                 if (unitPickingUpItem.CharacterEquipment.currentWeaponSet == WeaponSet.Two)
@@ -78,7 +78,7 @@ public class LooseItem : Interactable
                 {
                     EquipSlot oppositeEquipSlot = unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
 
-                    if ((itemData.Item.IsWeapon() == false || itemData.Item.Weapon().IsTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
+                    if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
                         equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
                 }
                 else
@@ -86,7 +86,7 @@ public class LooseItem : Interactable
             }
             else if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot) == false)
                 equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
-            else if (itemData.Item.IsAmmunition() && itemData.IsEqual(unitPickingUpItem.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
+            else if (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
                 equipped = unitPickingUpItem.CharacterEquipment.TryAddToEquippedAmmunition(itemData);
 
             // Transfer inventory from loose container item if applicable

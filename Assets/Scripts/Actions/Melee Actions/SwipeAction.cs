@@ -105,8 +105,8 @@ public class SwipeAction : BaseAction
                 if (itemBlockedWith != null)
                 {
                     int blockAmount = 0;
-                    if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetShield()) // If blocked with shield
-                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetShield());
+                    if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetHeldShield()) // If blocked with shield
+                        blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
                     else if (targetUnit.CharacterEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
                     {
                         if (itemBlockedWith == targetUnit.unitMeshManager.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
@@ -114,18 +114,18 @@ public class SwipeAction : BaseAction
                             blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetPrimaryMeleeWeapon());
                             if (unit.CharacterEquipment.IsDualWielding())
                             {
-                                if (itemBlockedWith == unit.unitMeshManager.GetRightMeleeWeapon())
+                                if (itemBlockedWith == unit.unitMeshManager.GetRightHeldMeleeWeapon())
                                     blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
                             }
                         }
                         else // If blocked with dual wield left hand weapon
-                            blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetLeftMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
+                            blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetLeftHeldMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
 
                     targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit.transform);
 
                     if (itemBlockedWith is HeldShield)
-                        targetUnit.unitMeshManager.GetShield().LowerShield();
+                        targetUnit.unitMeshManager.GetHeldShield().LowerShield();
                     else
                     {
                         HeldMeleeWeapon blockingWeapon = itemBlockedWith as HeldMeleeWeapon;
@@ -148,7 +148,7 @@ public class SwipeAction : BaseAction
         if (targetUnit == null)
             return validGridPositionsList;
 
-        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().MaxRange;
+        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -211,7 +211,7 @@ public class SwipeAction : BaseAction
             return validGridPositionsList; ;
         }
 
-        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().MaxRange;
+        float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
         nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -367,7 +367,7 @@ public class SwipeAction : BaseAction
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
-            float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon().MinRange;
+            float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
             if (distance < minAttackRange)
                 finalActionValue = 0f;

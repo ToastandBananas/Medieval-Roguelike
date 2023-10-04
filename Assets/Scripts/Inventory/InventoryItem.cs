@@ -37,7 +37,11 @@ public class InventoryItem : MonoBehaviour
         else
         {
             spriteItemData = itemData;
-            iconImage.sprite = spriteItemData.Item.InventorySprite(spriteItemData);
+
+            if (mySlot is EquipmentSlot && spriteItemData.Item is Quiver)
+                iconImage.sprite = spriteItemData.Item.Quiver.EquippedSprite;
+            else
+                iconImage.sprite = spriteItemData.Item.InventorySprite(spriteItemData);
         }
 
         // Setup icon size
@@ -55,7 +59,10 @@ public class InventoryItem : MonoBehaviour
             }
         }
 
-        iconImage.rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
+        if (mySlot is EquipmentSlot && mySlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
+            QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * (spriteItemData.Item.Height + 1));
+        else
+            iconImage.rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
 
         Color imageColor = iconImage.color;
         if (fullyOpaque)
@@ -181,7 +188,7 @@ public class InventoryItem : MonoBehaviour
         if (myInventory != null)
             return myInventory.MyUnit;
         else if (myCharacterEquipment != null)
-            return myCharacterEquipment.MyUnit;
+            return myCharacterEquipment.Unit;
         return null;
     }
 
@@ -192,4 +199,6 @@ public class InventoryItem : MonoBehaviour
     public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
     public RectTransform RectTransform() => rectTransform;
+
+    public QuiverInventoryItem QuiverInventoryItem => this as QuiverInventoryItem;
 }
