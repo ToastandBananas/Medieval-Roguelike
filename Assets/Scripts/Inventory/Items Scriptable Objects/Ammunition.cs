@@ -42,7 +42,13 @@ public class Ammunition : Equipment
         {
             Quiver quiver = unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
             if (quiver.AllowedProjectileType == projectileType)
-                return unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
+            {
+                bool itemAdded = unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
+                if (unit.CharacterEquipment.SlotVisualsCreated)
+                    unit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+
+                return itemAdded;
+            }
             else
                 return unit.CharacterEquipment.TryEquipItem(itemData);
         }

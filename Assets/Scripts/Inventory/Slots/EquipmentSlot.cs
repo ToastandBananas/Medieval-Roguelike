@@ -29,11 +29,16 @@ public class EquipmentSlot : Slot
         // Setup the empty slot sprite
         SetEmptySlotSprite();
 
-        if (IsFull() && inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+        if (IsFull())
         {
-            EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-            oppositeWeaponSlot.HideItemIcon();
-            oppositeWeaponSlot.SetEmptySlotSprite();
+            if (inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+            {
+                EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
+                oppositeWeaponSlot.HideItemIcon();
+                oppositeWeaponSlot.SetEmptySlotSprite();
+            }
+            else if (inventoryItem.itemData.Item is Quiver)
+                inventoryItem.QuiverInventoryItem.HideQuiverSprites();
         }
 
         // Clear the stack size text

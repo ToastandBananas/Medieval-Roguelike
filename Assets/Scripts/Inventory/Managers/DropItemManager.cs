@@ -45,7 +45,7 @@ public class DropItemManager : MonoBehaviour
 
         if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.DraggedItem.itemData == characterEquipment.EquippedItemDatas[(int)equipSlot] && (characterEquipment.EquippedItemDatas[(int)equipSlot] == null || characterEquipment.EquippedItemDatas[(int)equipSlot].Item == null))
         {
-            Debug.LogWarning($"Item you're trying to drop from {characterEquipment.Unit.name}'s equipment is null...");
+            Debug.LogWarning($"Item you're trying to drop from {characterEquipment.MyUnit.name}'s equipment is null...");
             return;
         }
 
@@ -55,14 +55,17 @@ public class DropItemManager : MonoBehaviour
         else
             looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
 
-        Vector3 dropDirection = GetDropDirection(characterEquipment.Unit);
+        Vector3 dropDirection = GetDropDirection(characterEquipment.MyUnit);
 
         if (characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield)
-            SetupHeldItemDrop(characterEquipment.Unit.unitMeshManager.GetHeldItemFromItemData(characterEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
+            SetupHeldItemDrop(characterEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(characterEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
         else if ((equipSlot == EquipSlot.Back && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver))
-            SetupContainerItemDrop(characterEquipment, equipSlot, looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.Unit, dropDirection);
+            SetupContainerItemDrop(characterEquipment, equipSlot, looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
         else
-            SetupItemDrop(looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.Unit, dropDirection);
+            SetupItemDrop(looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
+
+        //if (characterEquipment.SlotVisualsCreated && equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
+            //characterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
 
         characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
         characterEquipment.RemoveEquipmentMesh(equipSlot);
@@ -178,19 +181,19 @@ public class DropItemManager : MonoBehaviour
 
         if (equipSlot == EquipSlot.Back && itemData.Item is Backpack)
         {
-            if (InventoryUI.Instance.GetContainerUI(characterEquipment.Unit.BackpackInventoryManager) != null)
-                InventoryUI.Instance.GetContainerUI(characterEquipment.Unit.BackpackInventoryManager).CloseContainerInventory();
+            if (characterEquipment.MyUnit.BackpackInventoryManager.ParentInventory.SlotVisualsCreated)
+                InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
             LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
-            looseContainerItem.ContainerInventoryManager.TransferInventory(characterEquipment.Unit.BackpackInventoryManager);
+            looseContainerItem.ContainerInventoryManager.TransferInventory(characterEquipment.MyUnit.BackpackInventoryManager);
         }
         else if (equipSlot == EquipSlot.Quiver)
         {
-            if (InventoryUI.Instance.GetContainerUI(characterEquipment.Unit.QuiverInventoryManager) != null)
-                InventoryUI.Instance.GetContainerUI(characterEquipment.Unit.QuiverInventoryManager).CloseContainerInventory();
+            if (characterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+                InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
             LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
-            looseContainerItem.ContainerInventoryManager.TransferInventory(characterEquipment.Unit.QuiverInventoryManager);
+            looseContainerItem.ContainerInventoryManager.TransferInventory(characterEquipment.MyUnit.QuiverInventoryManager);
         }
     }
 

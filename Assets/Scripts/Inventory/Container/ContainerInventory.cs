@@ -69,6 +69,16 @@ public class ContainerInventory : Inventory
         return itemAdded;
     }
 
+    public override bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
+    {
+        bool added = base.TryAddItemAt(targetSlotCoordinate, newItemData);
+
+        if (slotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
+            myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+
+        return added;
+    }
+
     public void SetupSlots(ContainerSlotGroup containerSlotGroup)
     {
         slots = containerSlotGroup.Slots;

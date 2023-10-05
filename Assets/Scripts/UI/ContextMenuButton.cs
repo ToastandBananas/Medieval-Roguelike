@@ -210,17 +210,26 @@ public class ContextMenuButton : MonoBehaviour
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseContainerItem)
             {
                 LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
-                InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+                    InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
                 if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
+                {
                     UnitManager.Instance.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                else  if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
+                    if (UnitManager.Instance.player.CharacterEquipment.SlotVisualsCreated && itemData.Item is Quiver)
+                        UnitManager.Instance.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                }
+                else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                     UnitManager.Instance.player.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
             }
             else if (ContextMenu.Instance.TargetSlot != null)
             {
                 if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
+                {
                     UnitManager.Instance.player.QuiverInventoryManager.Initialize();
+                    if (UnitManager.Instance.player.CharacterEquipment.SlotVisualsCreated && itemData.Item is Quiver)
+                        UnitManager.Instance.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                }
                 else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                     UnitManager.Instance.player.BackpackInventoryManager.Initialize();
             }

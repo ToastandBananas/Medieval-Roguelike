@@ -228,6 +228,7 @@ public class InventoryUI : MonoBehaviour
         if (activeSlot != null)
             activeSlot.RemoveSlotHighlights();
 
+        // If replacing a split stack
         if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() != draggedItem.itemData && draggedItem.itemData.IsEqual(parentSlotDraggedFrom.GetItemData()))
         {
             if (parentSlotDraggedFrom is InventorySlot)
@@ -243,11 +244,12 @@ public class InventoryUI : MonoBehaviour
                 EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
                 if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.TryAddItemAt(equipmentSlot.EquipSlot, draggedItem.itemData) == false)
                 {
-                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.Unit.TryAddItemToInventories(draggedItem.itemData) == false)
+                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.MyUnit.TryAddItemToInventories(draggedItem.itemData) == false)
                         DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
                 }
             }
         }
+        // If replacing the item normally is possible
         else if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() == draggedItem.itemData)
         {
             parentSlotDraggedFrom.ShowSlotImage();
@@ -267,11 +269,13 @@ public class InventoryUI : MonoBehaviour
                     EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
                     oppositeWeaponSlot.SetFullSlotSprite();
                 }
+                else if (parentEquipmentSlotDraggedFrom.EquipSlot == EquipSlot.Quiver && draggedItem.itemData.Item is Quiver)
+                    parentEquipmentSlotDraggedFrom.InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
             }
 
             parentSlotDraggedFrom.InventoryItem.UpdateStackSizeVisuals();
         }
-        else
+        else // Otherwise just try to add it to one of the Unit's inventories
         {
             if (UnitManager.Instance.player.TryAddItemToInventories(draggedItem.itemData) == false)
                 DropItemManager.DropItem(UnitManager.Instance.player, draggedItem.myInventory, draggedItem.itemData);
@@ -314,13 +318,15 @@ public class InventoryUI : MonoBehaviour
             ContainerEquipmentSlot containerEquipmentSlot = parentSlotDraggedFrom as ContainerEquipmentSlot;
             if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
             {
-                if (GetContainerUI(containerEquipmentSlot.containerInventoryManager) != null)
+                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                     GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
             }
             else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
             {
-                if (GetContainerUI(characterEquipmentDraggedFrom.Unit.QuiverInventoryManager) != null)
-                    GetContainerUI(characterEquipmentDraggedFrom.Unit.QuiverInventoryManager).CloseContainerInventory();
+                if (characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+                    GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
+
+                characterEquipmentDraggedFrom.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
             }
         }
 

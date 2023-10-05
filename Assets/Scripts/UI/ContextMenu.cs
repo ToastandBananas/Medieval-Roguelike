@@ -62,6 +62,14 @@ public class ContextMenu : MonoBehaviour
             return;
 
         SplitStack.Instance.Close();
+
+        int activeCount = 0;
+        for (int i = 0; i < contextButtons.Count; i++)
+        {
+            if (contextButtons[i].gameObject.activeSelf)
+                activeCount++;
+        }
+
         DisableContextMenu(true);
 
         targetInteractable = PlayerInput.Instance.highlightedInteractable;
@@ -90,7 +98,7 @@ public class ContextMenu : MonoBehaviour
             CreateSplitStackButton();
             CreateDropItemButton();
 
-            if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
+            if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
                 CreateMoveToButton();  
         }
 
@@ -234,7 +242,6 @@ public class ContextMenu : MonoBehaviour
         }
         else if (targetInteractable != null && targetInteractable is LooseContainerItem)
         {
-            Debug.Log(targetInteractable);
             LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
             if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
             {

@@ -60,7 +60,12 @@ public class InventoryItem : MonoBehaviour
         }
 
         if (mySlot is EquipmentSlot && mySlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
-            QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * (spriteItemData.Item.Height + 1));
+        {
+            if (spriteItemData.Item is Quiver)
+                QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * (spriteItemData.Item.Height + 1));
+            else
+                QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
+        }
         else
             iconImage.rectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);
 
@@ -188,7 +193,7 @@ public class InventoryItem : MonoBehaviour
         if (myInventory != null)
             return myInventory.MyUnit;
         else if (myCharacterEquipment != null)
-            return myCharacterEquipment.Unit;
+            return myCharacterEquipment.MyUnit;
         return null;
     }
 

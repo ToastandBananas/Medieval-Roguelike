@@ -130,7 +130,7 @@ public class Inventory
         return false;
     }
 
-    public bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
+    public virtual bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
     {
         if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
             return false;
@@ -295,7 +295,11 @@ public class Inventory
                 }
                 // Remove the item from its original inventory
                 else if (InventoryUI.Instance.DraggedItem.myInventory != null)
+                {
                     InventoryUI.Instance.DraggedItem.myInventory.ItemDatas.Remove(newItemData);
+                    if (InventoryUI.Instance.DraggedItem.myInventory is ContainerInventory && InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.Instance.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated)
+                        InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                }
             }
         }
     }
@@ -346,6 +350,9 @@ public class Inventory
             GetSlotCoordinateFromItemData(itemDataToRemove).ClearItem();
 
         itemDatas.Remove(itemDataToRemove);
+
+        if (this is ContainerInventory && ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.SlotVisualsCreated)
+            myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
     }
 
     /// <summary>Setup the target slot's item data and sprites.</summary>
@@ -598,6 +605,8 @@ public class Inventory
     }
 
     public bool ItemFitsInSingleSlot(Item item) => item.Width <= inventoryLayout.SlotWidth && item.Height <= inventoryLayout.SlotHeight;
+
+    public ContainerInventory ContainerInventory => this as ContainerInventory;
 
     public List<ItemData> ItemDatas => itemDatas;
 
