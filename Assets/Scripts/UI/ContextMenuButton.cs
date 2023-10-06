@@ -97,7 +97,7 @@ public class ContextMenuButton : MonoBehaviour
                 if (ContextMenu.Instance.TargetSlot is ContainerEquipmentSlot)
                 {
                     ContainerEquipmentSlot containerSlot = ContextMenu.Instance.TargetSlot as ContainerEquipmentSlot;
-                    if (containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
+                    if ((containerSlot.EquipSlot != EquipSlot.Quiver || containerSlot.GetItemData().Item is Quiver) && containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
                         stringBuilder.Append(" & Drop");
                 }
                 

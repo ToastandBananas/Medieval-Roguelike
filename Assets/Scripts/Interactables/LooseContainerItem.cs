@@ -5,6 +5,13 @@ public class LooseContainerItem : LooseItem
     [Header("Container Info")]
     [SerializeField] ContainerInventoryManager containerInventoryManager;
 
+    public override void Awake()
+    {
+        base.Awake();
+
+        containerInventoryManager.SetLooseItem(this);
+    }
+
     public override void Interact(Unit unitPickingUpItem)
     {
         if (containerInventoryManager.ContainsAnyItems())

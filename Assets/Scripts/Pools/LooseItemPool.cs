@@ -8,21 +8,40 @@ public class LooseItemPool : MonoBehaviour
     [Header("Default Loose Item")]
     [SerializeField] Transform looseItemParent;
     [SerializeField] LooseItem looseItemPrefab;
-    [SerializeField] int amountLooseItemsToPool = 40;
+    [SerializeField] int amountLooseItemsToPool = 10;
 
     [Header("Loose Container Item")]
     [SerializeField] Transform looseContainerItemParent;
     [SerializeField] LooseItem looseContainerItemPrefab;
-    [SerializeField] int amountLooseContainerItemsToPool = 3;
+    [SerializeField] int amountLooseContainerItemsToPool = 2;
+
+    [Header("Loose Quivers")]
+    [SerializeField] Transform looseQuiverItemParent;
+    [SerializeField] LooseItem looseQuiverPrefab;
+    [SerializeField] int amountLooseQuiversToPool = 1;
 
     List<LooseItem> looseItems = new List<LooseItem>();
     List<LooseItem> looseContainerItems = new List<LooseItem>();
+    List<LooseItem> looseQuivers = new List<LooseItem>();
 
     void Awake()
     {
-        foreach(LooseItem looseItem in FindObjectsOfType<LooseItem>())
+        if (Instance != null)
         {
-            if (looseItem is LooseContainerItem)
+            Debug.LogError("There's more than one LooseItemPool! " + transform + " - " + Instance);
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
+        foreach (LooseItem looseItem in FindObjectsOfType<LooseItem>())
+        {
+            if (looseItem is LooseQuiverItem)
+            {
+                looseQuivers.Add(looseItem);
+                looseItem.transform.SetParent(looseQuiverItemParent);
+            }
+            else if (looseItem is LooseContainerItem)
             {
                 looseContainerItems.Add(looseItem);
                 looseItem.transform.SetParent(looseContainerItemParent);
@@ -33,14 +52,6 @@ public class LooseItemPool : MonoBehaviour
                 looseItem.transform.SetParent(looseItemParent);
             }
         }
-
-        if (Instance != null)
-        {
-            Debug.LogError("There's more than one LooseItemPool! " + transform + " - " + Instance);
-            Destroy(gameObject);
-            return;
-        }
-        Instance = this;
     }
 
     void Start()
@@ -54,6 +65,12 @@ public class LooseItemPool : MonoBehaviour
         for (int i = 0; i < amountLooseContainerItemsToPool; i++)
         {
             LooseItem newLooseItem = CreateNewLooseContainerItem();
+            newLooseItem.gameObject.SetActive(false);
+        }
+
+        for (int i = 0; i < amountLooseQuiversToPool; i++)
+        {
+            LooseItem newLooseItem = CreateNewLooseQuiver();
             newLooseItem.gameObject.SetActive(false);
         }
     }
@@ -94,15 +111,42 @@ public class LooseItemPool : MonoBehaviour
         return newLooseContainerItem;
     }
 
+    public LooseItem GetLooseQuiverItemFromPool()
+    {
+        for (int i = 0; i < looseQuivers.Count; i++)
+        {
+            if (looseQuivers[i].gameObject.activeSelf == false)
+                return looseQuivers[i];
+        }
+
+        return CreateNewLooseQuiver();
+    }
+
+    LooseItem CreateNewLooseQuiver()
+    {
+        LooseItem newLooseQuiver = Instantiate(looseQuiverPrefab, looseQuiverItemParent).GetComponent<LooseItem>();
+        looseQuivers.Add(newLooseQuiver);
+        return newLooseQuiver;
+    }
+
     public static void ReturnToPool(LooseItem looseItem)
     {
-        if (looseItem is LooseContainerItem)
+        if (looseItem is LooseQuiverItem)
+        {
+            LooseQuiverItem looseQuiver = (LooseQuiverItem)looseItem;
+            if (looseQuiver.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+                InventoryUI.Instance.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
+
+            looseQuiver.transform.SetParent(Instance.looseQuiverItemParent);
+            looseQuiver.HideArrowMeshes();
+        }
+        else if (looseItem is LooseContainerItem)
         {
             LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
-            if (InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager) != null)
+            if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                 InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
-            looseItem.transform.SetParent(Instance.looseContainerItemParent);
+            looseContainerItem.transform.SetParent(Instance.looseContainerItemParent);
         }
         else
             looseItem.transform.SetParent(Instance.looseItemParent);

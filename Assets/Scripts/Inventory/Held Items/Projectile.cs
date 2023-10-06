@@ -66,8 +66,8 @@ public class Projectile : MonoBehaviour
         projectileCollider.direction = ammunitionItem.CapsuleColliderDirection;
 
         transform.parent = parentTransform;
-        transform.localPosition = ammunitionItem.AmmunitionPositionOffset;
-        transform.localEulerAngles = ammunitionItem.AmmunitionRotation;
+        transform.localPosition = Vector3.zero;
+        transform.localEulerAngles = Vector3.zero;
 
         if (shooter.IsPlayer() == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
             meshRenderer.enabled = false;

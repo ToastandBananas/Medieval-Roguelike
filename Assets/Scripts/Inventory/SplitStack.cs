@@ -95,7 +95,9 @@ public class SplitStack : MonoBehaviour
             if (myInventory.TryAddItem(newItemData, false) == false)
                 InventoryUI.Instance.SetupDraggedItem(newItemData, targetParentSlot, (Inventory)null);
 
-            if (myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated && myInventory is ContainerInventory && myInventory.ContainerInventory.containerInventoryManager == myInventory.MyUnit.QuiverInventoryManager)
+            if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+            else if (myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated && myInventory is ContainerInventory && myInventory.ContainerInventory.containerInventoryManager == myInventory.MyUnit.QuiverInventoryManager)
                 myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
         }
         else

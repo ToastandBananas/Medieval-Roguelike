@@ -153,6 +153,15 @@ public class ContainerInventoryManager : InventoryManager
         }
     }
 
+    public void SetLooseItem(LooseItem looseItem)
+    {
+        parentInventory.SetLooseItem(looseItem);
+        for (int i = 0; i < subInventories.Length; i++)
+        {
+            subInventories[i].SetLooseItem(looseItem);
+        }
+    }
+
     public bool IsEquippedByPlayer() => this == UnitManager.Instance.player.BackpackInventoryManager || this == UnitManager.Instance.player.QuiverInventoryManager;
 
     public void SetParentInventory(ContainerInventory newParentInventory) => parentInventory = newParentInventory;

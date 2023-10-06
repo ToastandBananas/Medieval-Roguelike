@@ -87,7 +87,7 @@ public class CharacterEquipment : MonoBehaviour
             if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
             {
                 if (ItemDataEquipped(newItemData))
-                    RemoveEquipment(GetEquipmentFromItemData(newItemData));
+                    RemoveEquipment(newItemData);
 
                 if (InventoryUI.Instance.isDraggingItem)
                     InventoryUI.Instance.DisableDraggedItem();
@@ -225,10 +225,11 @@ public class CharacterEquipment : MonoBehaviour
             {
                 // Update the stack size text for the ammo since it wasn't all equipped
                 if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().SlotVisualsCreated)
-                {
-                    InventorySlot slot = ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData);
-                    slot.InventoryItem.UpdateStackSizeVisuals();
-                }
+                    ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData).InventoryItem.UpdateStackSizeVisuals();
+                else if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.slotVisualsCreated && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(ammoItemData))
+                    InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
+                else if (slotVisualsCreated && ItemDataEquipped(ammoItemData))
+                    GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
             }
         }
 
@@ -822,16 +823,6 @@ public class CharacterEquipment : MonoBehaviour
                 return true;
         }
         return false;
-    }
-    
-    public ItemData GetEquipmentFromItemData(ItemData itemData)
-    {
-        for (int i = 0; i < equippedItemDatas.Length; i++)
-        {
-            if (equippedItemDatas[i] == itemData)
-                return equippedItemDatas[i];
-        }
-        return null;
     }
 
     public ItemData[] EquippedItemDatas => equippedItemDatas;

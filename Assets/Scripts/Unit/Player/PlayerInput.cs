@@ -47,6 +47,7 @@ public class PlayerInput : MonoBehaviour
         {
             ActionLineRenderer.Instance.HideLineRenderers();
             WorldMouse.ChangeCursor(CursorState.Default);
+            highlightedInteractable = null;
             return;
         }
 

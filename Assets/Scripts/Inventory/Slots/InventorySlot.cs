@@ -188,7 +188,7 @@ public class InventorySlot : Slot
         if (InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
         {
             ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as ContainerEquipmentSlot;
-            if (containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
+            if (InventoryUI.Instance.DraggedItem.itemData.Item is Quiver && containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
                 validSlot = false;
         }
 

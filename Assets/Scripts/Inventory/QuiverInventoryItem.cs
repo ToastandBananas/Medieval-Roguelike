@@ -63,6 +63,9 @@ public class QuiverInventoryItem : InventoryItem
 
     public void HideQuiverSprites()
     {
+        if (quiverAmmoImages[0].enabled == false) // Already hidden
+            return;
+
         for (int i = 0; i < quiverAmmoImages.Length; i++)
         {
             quiverAmmoImages[i].enabled = false;

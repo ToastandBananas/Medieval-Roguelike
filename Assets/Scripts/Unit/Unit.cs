@@ -149,10 +149,14 @@ public class Unit : MonoBehaviour
         if (itemData == null || itemData.Item == null)
             return false;
 
+        Inventory itemDatasInventory = itemData.MyInventory();
         if (itemData.Item is Ammunition && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
         {
             if (myCharacterEquipment.SlotVisualsCreated)
                 myCharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+
+            if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
             return true;
         }

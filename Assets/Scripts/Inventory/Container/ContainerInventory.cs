@@ -73,7 +73,9 @@ public class ContainerInventory : Inventory
     {
         bool added = base.TryAddItemAt(targetSlotCoordinate, newItemData);
 
-        if (slotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
+        if (looseItem != null && looseItem is LooseQuiverItem)
+            looseItem.LooseQuiverItem.UpdateArrowMeshes();
+        else if (slotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
             myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
         return added;

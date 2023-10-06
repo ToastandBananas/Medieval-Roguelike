@@ -176,7 +176,12 @@ public class Inventory
                     {
                         // Clear out the parent slot the item was dragged from, if it exists
                         if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-                            InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
+                        {
+                            if (InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory != null)
+                                InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
+                            else if (InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment != null)
+                                InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.RemoveEquipment(newItemData);
+                        }
 
                         // Hide the dragged item
                         InventoryUI.Instance.DisableDraggedItem();
@@ -297,8 +302,15 @@ public class Inventory
                 else if (InventoryUI.Instance.DraggedItem.myInventory != null)
                 {
                     InventoryUI.Instance.DraggedItem.myInventory.ItemDatas.Remove(newItemData);
-                    if (InventoryUI.Instance.DraggedItem.myInventory is ContainerInventory && InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.Instance.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated)
-                        InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                    if (InventoryUI.Instance.DraggedItem.myInventory is ContainerInventory)
+                    {
+                        // If we drag arrows out of a Loose Quiver
+                        if (InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem != null && InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                            InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+                        // If we drag arrows out of a Unit's equipped Quiver
+                        else if (InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.Instance.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated)
+                            InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                    }
                 }
             }
         }
@@ -351,8 +363,15 @@ public class Inventory
 
         itemDatas.Remove(itemDataToRemove);
 
-        if (this is ContainerInventory && ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.SlotVisualsCreated)
-            myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+        if (this is ContainerInventory)
+        {
+            // If arrows are being removed from a Loose Quiver
+            if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is LooseQuiverItem)
+                ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+            // If arrows are being removed from an equipped Quiver
+            else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.SlotVisualsCreated)
+                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+        }
     }
 
     /// <summary>Setup the target slot's item data and sprites.</summary>

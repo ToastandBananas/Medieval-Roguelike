@@ -17,6 +17,10 @@ public class Ammunition : Equipment
     [Header("Quiver Sprites")]
     [SerializeField] Sprite[] quiverSprites;
 
+    [Header("Loose Quiver Mesh")]
+    [SerializeField] Mesh looseQuiverMesh;
+    [SerializeField] Material looseQuiverMaterial;
+
     [Header("Collider Info")]
     [SerializeField] Vector3 capsuleColliderCenter;
     [SerializeField] float capsuleColliderRadius;
@@ -32,10 +36,6 @@ public class Ammunition : Equipment
     [Tooltip("Amount the arc height will be multiplied by. (0 = no arc)")]
     [SerializeField] float arcMultiplier = 1f;
 
-    [Header("Transform")]
-    [SerializeField] Vector3 ammunitionPositionOffset;
-    [SerializeField] Vector3 ammunitionRotation;
-
     public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
     {
         if (unit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
@@ -43,9 +43,14 @@ public class Ammunition : Equipment
             Quiver quiver = unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
             if (quiver.AllowedProjectileType == projectileType)
             {
+                Inventory itemDatasInventory = itemData.MyInventory();
+
                 bool itemAdded = unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
                 if (unit.CharacterEquipment.SlotVisualsCreated)
                     unit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+
+                if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                    itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
                 return itemAdded;
             }
@@ -70,6 +75,9 @@ public class Ammunition : Equipment
     public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
     public Sprite[] QuiverSprites => quiverSprites;
 
+    public Mesh LooseQuiverMesh => looseQuiverMesh;
+    public Material LooseQuiverMaterial => looseQuiverMaterial;
+
     public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
     public float CapsuleColliderRadius => capsuleColliderRadius;
     public float CapsuleColliderHeight => capsuleColliderHeight;
@@ -78,7 +86,4 @@ public class Ammunition : Equipment
     public ProjectileType ProjectileType => projectileType;
     public int Speed => speed;
     public float ArcMultiplier => arcMultiplier;
-
-    public Vector3 AmmunitionPositionOffset => ammunitionPositionOffset;
-    public Vector3 AmmunitionRotation => ammunitionRotation;
 }

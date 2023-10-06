@@ -191,14 +191,15 @@ public class LooseItem : Interactable
             Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
     }
 
+    public LooseContainerItem LooseContainerItem => this as LooseContainerItem;
+    public LooseQuiverItem LooseQuiverItem => this as LooseQuiverItem;
+
     public ItemData ItemData => itemData;
 
     public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
     public Rigidbody RigidBody => rigidBody;
-
     public MeshCollider MeshCollider => meshCollider;
-
     public MeshFilter MeshFilter => meshFilter;
 
     public void ShowMeshRenderer()

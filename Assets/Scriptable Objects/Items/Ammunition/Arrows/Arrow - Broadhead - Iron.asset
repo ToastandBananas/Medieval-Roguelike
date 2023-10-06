@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Iron Broadhead Arrow
   pluralName: 
-  description: Designed for combat, this arrow inflicts devastating wounds with its
-    twin razor-sharp blades, causing profuse bleeding in its wake.
+  description: Designed for combat and hunting, this arrow inflicts devastating wounds
+    with its twin razor-sharp blades, causing profuse bleeding in its wake.
   itemType: 50
   mainMaterial: 9
   itemSize: 3
@@ -29,10 +29,10 @@ MonoBehaviour:
   valueRange: {x: 0, y: 0}
   staticValue: 1
   meshes:
-  - {fileID: -2432090755550338912, guid: e067b50d25447e9418821b344716ab0b, type: 3}
+  - {fileID: -2432090755550338912, guid: 764c7485f705dbc4db8f1e92ec6dcb1d, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: bb0e6650972dfeb4c98f702829b75ca8, type: 2}
-  - {fileID: 2100000, guid: f86769aef65de6f43bdbb523ca501843, type: 2}
+  - {fileID: 2100000, guid: 69ccf7874fad05b4d998e3f8423bf61e, type: 2}
+  - {fileID: 2100000, guid: 1d081e5b3f5fe624daa839561ca74752, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   equipSlot: 10
@@ -64,6 +64,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e2cee2610068a6e4fb5e2f4c1e1f4f0d, type: 3}
   - {fileID: 21300000, guid: 1626c6c220305cd458203b1e05af4cc2, type: 3}
   - {fileID: 21300000, guid: a9c131e4da78b99429925a15816588c7, type: 3}
+  looseQuiverMesh: {fileID: -2432090755550338912, guid: 73300c9f489b252418fd7488ad3e0cff,
+    type: 3}
+  looseQuiverMaterial: {fileID: 2100000, guid: aecc544f4b9fa2243a60916aaf1503f1, type: 2}
   capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4
@@ -71,5 +74,3 @@ MonoBehaviour:
   projectileType: 0
   speed: 15
   arcMultiplier: 1
-  ammunitionPositionOffset: {x: 0.005, y: 0, z: 0}
-  ammunitionRotation: {x: 0, y: 0, z: 90}
