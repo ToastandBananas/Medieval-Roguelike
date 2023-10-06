@@ -93,7 +93,7 @@ public class SplitStack : MonoBehaviour
         {
             Inventory myInventory = targetItemData.MyInventory();
             if (myInventory.TryAddItem(newItemData, false) == false)
-                InventoryUI.Instance.SetupDraggedItem(newItemData, targetParentSlot, (Inventory)null);
+                InventoryUI.Instance.SetupDraggedItem(newItemData, null, (Inventory)null);
 
             if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                 myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();

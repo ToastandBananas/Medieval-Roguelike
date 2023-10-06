@@ -30,9 +30,6 @@ public class LooseQuiverItem : LooseContainerItem
         int meshIndex = 0;
         for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
         {
-            if (meshIndex >= arrowCount)
-                break;
-
             if (ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh == null)
             {
                 Debug.LogWarning(ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.name + " doesn't have an assigned Loose Quiver Mesh in its Scriptable Object");
@@ -47,6 +44,9 @@ public class LooseQuiverItem : LooseContainerItem
 
             float ammoPercent = (float)ContainerInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize / totalAmmoCount;
             int thisAmmosSpriteCount = Mathf.RoundToInt(arrowCount * ammoPercent);
+            if (thisAmmosSpriteCount == 0 && ammoPercent > 0f)
+                thisAmmosSpriteCount = 1;
+
             for (int j = 0; j < thisAmmosSpriteCount; j++)
             {
                 if (meshIndex >= arrowCount)

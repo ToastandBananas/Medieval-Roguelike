@@ -30,16 +30,11 @@ public class QuiverInventoryItem : InventoryItem
         int iconIndex = 0;
         for (int i = 0; i < myCharacterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
         {
-            if (iconIndex >= spriteCount)
-                break;
-            else if (iconIndex >= myCharacterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.QuiverSprites.Length)
-            {
-                Debug.LogWarning($"Not enough Quiver Sprites for {myCharacterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.ItemDatas[i].Item.name}");
-                break;
-            }
-
             float ammoPercent = (float)myCharacterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize / totalAmmoCount;
             int thisAmmosSpriteCount = Mathf.RoundToInt(spriteCount * ammoPercent);
+            if (thisAmmosSpriteCount == 0 && ammoPercent > 0f)
+                thisAmmosSpriteCount = 1;
+
             for (int j = 0; j < thisAmmosSpriteCount; j++)
             {
                 if (iconIndex >= spriteCount)
