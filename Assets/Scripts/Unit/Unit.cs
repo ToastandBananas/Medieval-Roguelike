@@ -19,12 +19,11 @@ public class Unit : MonoBehaviour
     public bool isMyTurn { get; private set; }
     public bool hasStartedTurn { get; private set; }
 
-    public GridPosition gridPosition { get; private set; }
-
     public SingleNodeBlocker singleNodeBlocker { get; private set; }
 
     public Alliance alliance { get; private set; }
-    public HealthSystem health { get; private set; }
+    public DeadUnit deadUnit { get; private set; }
+    public Health health { get; private set; }
     public Hearing hearing { get; private set; }
     public Seeker seeker { get; private set; }
     public StateController stateController { get; private set; }
@@ -34,6 +33,8 @@ public class Unit : MonoBehaviour
     public UnitMeshManager unitMeshManager { get; private set; }
     public Vision vision { get; private set; }
 
+    GridPosition gridPosition;
+
     void Awake()
     {
         // Center the Unit's position on whatever tile they're on
@@ -41,7 +42,9 @@ public class Unit : MonoBehaviour
         
         singleNodeBlocker = GetComponent<SingleNodeBlocker>();
         alliance = GetComponent<Alliance>();
-        health = GetComponent<HealthSystem>();
+        if (TryGetComponent(out DeadUnit deadUnit))
+            this.deadUnit = deadUnit;
+        health = GetComponent<Health>();
         hearing = GetComponentInChildren<Hearing>();
         seeker = GetComponent<Seeker>();
         stateController = GetComponent<StateController>();
@@ -59,7 +62,15 @@ public class Unit : MonoBehaviour
 
         if (IsNPC())
         {
-            BlockCurrentPosition();
+            if (health.IsDead())
+            {
+                UnblockCurrentPosition();
+                if (deadUnit != null)
+                    deadUnit.enabled = true;
+            }
+            else
+                BlockCurrentPosition();
+
             unitMeshManager.HideMeshRenderers();
         }
 
@@ -152,7 +163,7 @@ public class Unit : MonoBehaviour
         Inventory itemDatasInventory = itemData.MyInventory();
         if (itemData.Item is Ammunition && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
         {
-            if (myCharacterEquipment.SlotVisualsCreated)
+            if (myCharacterEquipment.slotVisualsCreated)
                 myCharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
             if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
@@ -171,5 +182,11 @@ public class Unit : MonoBehaviour
         }
 
         return false;
+    }
+
+    public GridPosition GridPosition()
+    {
+        UpdateGridPosition();
+        return gridPosition;
     }
 }

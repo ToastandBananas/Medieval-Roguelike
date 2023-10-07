@@ -68,7 +68,7 @@ public class DropItemManager : MonoBehaviour
         else
             SetupItemDrop(looseItem, characterEquipment.EquippedItemDatas[(int)equipSlot], characterEquipment.MyUnit, dropDirection);
 
-        //if (characterEquipment.SlotVisualsCreated && equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
+        //if (characterEquipment.slotVisualsCreated && equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
             //characterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
 
         characterEquipment.RemoveActions(characterEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
@@ -86,7 +86,7 @@ public class DropItemManager : MonoBehaviour
 
             InventoryUI.Instance.DisableDraggedItem();
         }
-        else if (characterEquipment.SlotVisualsCreated)
+        else if (characterEquipment.slotVisualsCreated)
             characterEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
         characterEquipment.EquippedItemDatas[(int)equipSlot] = null;
@@ -185,7 +185,7 @@ public class DropItemManager : MonoBehaviour
 
         if (equipSlot == EquipSlot.Back)
         {
-            if (characterEquipment.MyUnit.BackpackInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (characterEquipment.MyUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
                 InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
             LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
@@ -193,7 +193,7 @@ public class DropItemManager : MonoBehaviour
         }
         else if (equipSlot == EquipSlot.Quiver)
         {
-            if (characterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (characterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
                 InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
             LooseQuiverItem looseQuiverItem = looseItem as LooseQuiverItem;

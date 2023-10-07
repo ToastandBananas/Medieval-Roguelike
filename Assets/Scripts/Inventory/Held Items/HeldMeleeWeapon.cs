@@ -42,7 +42,7 @@ public class HeldMeleeWeapon : HeldItem
         }
 
         // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-        StartCoroutine(RotateWeaponTowardsTarget(targetUnit.gridPosition));
+        StartCoroutine(RotateWeaponTowardsTarget(targetUnit.GridPosition()));
     }
 
     public void DoSwipeAttack()
@@ -139,7 +139,7 @@ public class HeldMeleeWeapon : HeldItem
 
     IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
     {
-        if (targetGridPosition.y == unit.gridPosition.y)
+        if (targetGridPosition.y == unit.GridPosition().y)
             yield break;
 
         Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;

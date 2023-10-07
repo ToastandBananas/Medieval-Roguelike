@@ -6,8 +6,10 @@ public class PlayerInput : MonoBehaviour
     public static PlayerInput Instance;
 
     [SerializeField] LayerMask interactableMask;
+    [SerializeField] LayerMask unitMask;
 
     public Interactable highlightedInteractable { get; private set; }
+    public Unit highlightedUnit { get; private set; }
     public bool autoAttack { get; private set; }
 
     Unit player;
@@ -57,7 +59,7 @@ public class PlayerInput : MonoBehaviour
             if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedActionType.GetAction(player) is TurnAction)
             {
                 // Reset the line renderer and go back to the Move Action
-                ActionLineRenderer.Instance.ResetCurrentPositions();
+                ActionLineRenderer.ResetCurrentPositions();
                 player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
             }
             
@@ -65,7 +67,7 @@ public class PlayerInput : MonoBehaviour
             if (GameControls.gamePlayActions.cancelAction.WasPressed)
             {
                 StartCoroutine(player.unitActionHandler.CancelAction());
-                ActionLineRenderer.Instance.ResetCurrentPositions();
+                ActionLineRenderer.ResetCurrentPositions();
             }
             // If it's time for the player to choose an action
             else if (player.isMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
@@ -121,7 +123,7 @@ public class PlayerInput : MonoBehaviour
         turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
         WorldMouse.ChangeCursor(CursorState.Default);
         
-        if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.gridPosition && turnAction.targetDirection != turnAction.currentDirection)
+        if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition() && turnAction.targetDirection != turnAction.currentDirection)
             player.unitActionHandler.QueueAction(turnAction);
     }
 
@@ -134,17 +136,17 @@ public class PlayerInput : MonoBehaviour
         if (highlightedInteractable != null)
         {
             // Do nothing if the player is in the same grid position as the interactable (such as an open door)
-            if (player.gridPosition == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
+            if (player.GridPosition() == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
                 return;
 
             // Set the target Interactable
             player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
 
             // If the player is too far away from the Interactable to interact with it
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition(), highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
             {
                 // Queue a Move Action towards the Interactable
-                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.gridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
             }
             else
@@ -155,27 +157,44 @@ public class PlayerInput : MonoBehaviour
             }
         }
         // If the player is trying to perform an action on themselves
-        else if (mouseGridPosition == player.gridPosition)
+        else if (mouseGridPosition == player.GridPosition())
         {
             // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
+        }
+        // If the mouse is hovering over a dead Unit
+        else if (highlightedUnit != null && highlightedUnit.health.IsDead())
+        {
+            // Set the target Interactable
+            player.unitActionHandler.SetTargetInteractable(highlightedUnit.deadUnit);
+
+            // If the player is too far away from the Interactable to interact with it
+            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition(), highlightedUnit.GridPosition()) > LevelGrid.diaganolDistance)
+            {
+                // Queue a Move Action towards the Interactable
+                player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, highlightedUnit.deadUnit.CanInteractAtMyGridPosition()));
+                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+            }
+            else
+            {
+                // Queue the Interact Action with the Interactable
+                player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.deadUnit);
+                player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+            }
         }
         // Make sure the mouse grid position is a valid position to perform an action
         else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
         {
             BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
             Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
-            bool unitIsVisible = true;
-            if (unitAtGridPosition != null)
-                unitIsVisible = player.vision.IsVisible(unitAtGridPosition);
 
-            // If the mouse is hovering over a unit that's in the player's Vision
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unitIsVisible)
+            // If the mouse is hovering over a living unit that's in the player's Vision
+            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
             {
                 // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
                 if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction.IsAttackAction())))
                 {
                     // Set the Unit as the target enemy
-                    player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                    player.unitActionHandler.SettargetEnemyUnit(unitAtGridPosition);
 
                     // If the player has an attack action selected
                     if (selectedAction.IsAttackAction())
@@ -187,7 +206,7 @@ public class PlayerInput : MonoBehaviour
                             if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
                             {
                                 // Remove the unit as the target enemy
-                                player.unitActionHandler.SetTargetEnemyUnit(null);
+                                player.unitActionHandler.SettargetEnemyUnit(null);
                                 return;
                             }
 
@@ -210,7 +229,7 @@ public class PlayerInput : MonoBehaviour
                             if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
                             {
                                 // Remove the unit as the target enemy
-                                player.unitActionHandler.SetTargetEnemyUnit(null);
+                                player.unitActionHandler.SettargetEnemyUnit(null);
                                 return;
                             }
 
@@ -244,18 +263,18 @@ public class PlayerInput : MonoBehaviour
                     {
                         // If the player has a ranged weapon equipped, find the nearest Shoot Action attack position
                         if (player.CharacterEquipment.RangedWeaponEquipped())
-                            player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
+                            player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
                         else // If the player has a melee weapon equipped or is unarmed, find the nearest Melee Action attack position
-                            player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtGridPosition));
+                            player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
 
                         // Set the target attack position to the target unit's position
-                        player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.gridPosition);
+                        player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.GridPosition());
 
                         // Move towards the nearest attack position
                         player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
                     }
                     else // The player either doesn't have an attack action selected or has a non-default attack action selected
-                        player.unitActionHandler.SetTargetEnemyUnit(null);
+                        player.unitActionHandler.SettargetEnemyUnit(null);
                 }
                 else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                 {
@@ -263,10 +282,10 @@ public class PlayerInput : MonoBehaviour
                     if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
                         player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
 
-                    player.unitActionHandler.SetTargetEnemyUnit(null);
+                    player.unitActionHandler.SettargetEnemyUnit(null);
                 }
             }
-            // If there's no unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
+            // If there's no unit or a dead unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
             else if (selectedAction.IsAttackAction())
             {
                 // Make sure the Player has enough energy for the attack
@@ -281,9 +300,10 @@ public class PlayerInput : MonoBehaviour
                 player.unitActionHandler.SetQueuedAttack(selectedAction);
                 player.unitActionHandler.AttackTarget();
             }
+            // If there's no unit or a dead unit at the mouse position & move action is selected
             else if (selectedAction is MoveAction)
             {
-                player.unitActionHandler.SetTargetEnemyUnit(null);
+                player.unitActionHandler.SettargetEnemyUnit(null);
                 player.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
                 player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
             }
@@ -292,55 +312,95 @@ public class PlayerInput : MonoBehaviour
 
     void SetupCursorAndLineRenderer()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            highlightedInteractable = null;
+            highlightedUnit = null;
+            WorldMouse.ChangeCursor(CursorState.Default);
+            return;
+        }
+
         BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
         if (selectedAction != null)
         {
             if (selectedAction is MoveAction)
             {
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 1000, interactableMask))
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit interactableHit, 1000, interactableMask))
                 {
-                    if (highlightedInteractable == null || highlightedInteractable.gameObject != hit.transform.gameObject)
-                        highlightedInteractable = hit.transform.GetComponent<Interactable>();
-                    
-                    if (highlightedInteractable != null)
+                    highlightedUnit = null;
+                    if (highlightedInteractable == null || highlightedInteractable.gameObject != interactableHit.transform.gameObject)
                     {
-                        if (highlightedInteractable is LooseItem)
+                        if (interactableHit.transform.TryGetComponent(out Interactable interactable))
+                            highlightedInteractable = interactable;
+                    }
+
+                    if (highlightedInteractable == null)
+                        WorldMouse.ChangeCursor(CursorState.Default);
+                    else if (highlightedInteractable is LooseItem)
+                    {
+                        if (highlightedInteractable is LooseContainerItem) 
                         {
-                            if (highlightedInteractable is LooseContainerItem) 
-                            {
-                                LooseContainerItem highlightedContainer = highlightedInteractable as LooseContainerItem;
-                                if (highlightedContainer.ContainerInventoryManager != null && highlightedContainer.ContainerInventoryManager.ContainsAnyItems())
-                                {
-                                    WorldMouse.ChangeCursor(CursorState.LootBag);
-                                    return;
-                                }
-                            }
-                            
+                            LooseContainerItem highlightedContainer = highlightedInteractable as LooseContainerItem;
+                            if (highlightedContainer.ContainerInventoryManager != null && highlightedContainer.ContainerInventoryManager.ContainsAnyItems())
+                                WorldMouse.ChangeCursor(CursorState.LootBag);
+                        }
+                        else
                             WorldMouse.ChangeCursor(CursorState.PickupItem);
 
-                        }
-                        else if (highlightedInteractable is Door)
-                            WorldMouse.ChangeCursor(CursorState.UseDoor);
                     }
+                    else if (highlightedInteractable is Door)
+                        WorldMouse.ChangeCursor(CursorState.UseDoor);
                 }
-                else if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsEnemy(unitAtGridPosition) && player.vision.IsVisible(unitAtGridPosition))
+                else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit unitHit, 1000, unitMask))
                 {
                     highlightedInteractable = null;
-                    if (player.CharacterEquipment.RangedWeaponEquipped())
+                    if (highlightedUnit == null || highlightedUnit.gameObject != unitHit.transform.gameObject)
                     {
-                        if (player.CharacterEquipment.HasValidAmmunitionEquipped())
-                            WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                        if (unitHit.transform.TryGetComponent(out Unit unit))
+                            highlightedUnit = unit;
+                    }
+                    
+                    if (highlightedUnit == null)
+                        WorldMouse.ChangeCursor(CursorState.Default);
+                    else if (highlightedUnit.health.IsDead())
+                        WorldMouse.ChangeCursor(CursorState.LootBag);
+                    else if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
+                    {
+                        if (player.CharacterEquipment.RangedWeaponEquipped())
+                        {
+                            if (player.CharacterEquipment.HasValidAmmunitionEquipped())
+                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                            else
+                                WorldMouse.ChangeCursor(CursorState.Default);
+                        }
                         else
-                            WorldMouse.ChangeCursor(CursorState.Default);
+                            WorldMouse.ChangeCursor(CursorState.MeleeAttack);
                     }
                     else
-                        WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                        WorldMouse.ChangeCursor(CursorState.Default);
                 }
                 else
                 {
-                    highlightedInteractable = null;
-                    WorldMouse.ChangeCursor(CursorState.Default);
+                    Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                    if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
+                    {
+                        highlightedInteractable = null;
+                        if (player.CharacterEquipment.RangedWeaponEquipped())
+                        {
+                            if (player.CharacterEquipment.HasValidAmmunitionEquipped())
+                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                            else
+                                WorldMouse.ChangeCursor(CursorState.Default);
+                        }
+                        else
+                            WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                    }
+                    else
+                    {
+                        highlightedInteractable = null;
+                        highlightedUnit = null;
+                        WorldMouse.ChangeCursor(CursorState.Default);
+                    }
                 }
 
                 StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
@@ -349,6 +409,8 @@ public class PlayerInput : MonoBehaviour
             {
                 highlightedInteractable = null;
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                highlightedUnit = unitAtGridPosition;
+
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
@@ -366,6 +428,7 @@ public class PlayerInput : MonoBehaviour
             else if (selectedAction is TurnAction)
             {
                 highlightedInteractable = null;
+                highlightedUnit = null;
                 ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
                 WorldMouse.ChangeCursor(CursorState.Default);
             }

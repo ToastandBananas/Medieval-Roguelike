@@ -113,7 +113,7 @@ public class ContainerInventoryManager : InventoryManager
         containerInventoryManagerToCopy.SetSubInventories(currentSubInventories);
 
         // Initialize if needed
-        if (parentInventory.HasBeenInitialized == false)
+        if (parentInventory.hasBeenInitialized == false)
             Initialize();
         else
         {
@@ -133,7 +133,7 @@ public class ContainerInventoryManager : InventoryManager
         }
 
         // Initialize if needed
-        if (containerInventoryManagerToCopy.ParentInventory.HasBeenInitialized == false)
+        if (containerInventoryManagerToCopy.ParentInventory.hasBeenInitialized == false)
             containerInventoryManagerToCopy.Initialize();
         else
         {

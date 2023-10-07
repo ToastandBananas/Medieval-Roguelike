@@ -24,8 +24,8 @@ public class LooseQuiverItem : LooseContainerItem
         }
         
         int totalAmmoCount = arrowCount;
-        if (arrowCount > 5)
-            arrowCount = 5;
+        if (arrowCount > 10)
+            arrowCount = 10;
 
         int meshIndex = 0;
         for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)

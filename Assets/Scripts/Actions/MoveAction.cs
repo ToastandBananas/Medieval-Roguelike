@@ -42,7 +42,7 @@ public class MoveAction : BaseAction
     IEnumerator Move()
     {
         // If there's no path
-        if (positionList.Count == 0 || finalTargetGridPosition == unit.gridPosition)
+        if (positionList.Count == 0 || finalTargetGridPosition == unit.GridPosition())
         {
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -82,7 +82,7 @@ public class MoveAction : BaseAction
         unit.BlockAtPosition(nextTargetPosition);
 
         // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
-        LevelGrid.Instance.RemoveUnitAtGridPosition(unit.gridPosition);
+        LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition());
         LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.GetGridPosition(nextTargetPosition), unit);
 
         // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
@@ -203,7 +203,7 @@ public class MoveAction : BaseAction
         if (unit.IsPlayer())
         {
             // If the Player has a target Interactable
-            if (unit.unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, unit.unitActionHandler.targetInteractable.GridPosition()) <= 1.4f)
+            if (unit.unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), unit.unitActionHandler.targetInteractable.GridPosition()) <= 1.4f)
             {
                 unit.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(unit.unitActionHandler.targetInteractable);
                 unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<InteractAction>());
@@ -218,10 +218,10 @@ public class MoveAction : BaseAction
                 unit.unitActionHandler.AttackTarget();
             }
             // If the enemy moved positions, set the target position to the nearest possible attack position
-            else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
+            else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition())
                 QueueMoveToTargetEnemy();
             // If the Player hasn't reached their destination, add the next move to the queue
-            else if (unit.gridPosition != finalTargetGridPosition)
+            else if (unit.GridPosition() != finalTargetGridPosition)
                 unit.unitActionHandler.QueueAction(this);
         }
         else // If NPC
@@ -237,7 +237,7 @@ public class MoveAction : BaseAction
                     npcActionHandler.ChooseCombatAction();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
-                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead() == false && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.gridPosition)
+                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead() == false && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition())
                     QueueMoveToTargetEnemy();
             }
         }
@@ -245,27 +245,26 @@ public class MoveAction : BaseAction
 
     void QueueMoveToTargetEnemy()
     {
-        unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.gridPosition);
+        unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.GridPosition());
 
         BaseAction action = unit.unitActionHandler.selectedActionType.GetAction(unit);
         if (action.IsAttackAction())
-            unit.unitActionHandler.SetTargetGridPosition(action.GetNearestAttackPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit));
+            unit.unitActionHandler.SetTargetGridPosition(action.GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
         else if (unit.CharacterEquipment.RangedWeaponEquipped())
-            unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit));
+            unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
         else
-            unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.gridPosition, unit.unitActionHandler.targetEnemyUnit));
+            unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
 
         unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
     }
 
     void GetPathToTargetPosition(GridPosition targetGridPosition)
     {
-        Unit unitAtTargetGridPosition = null;
-        if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+        Unit unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+        if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead() == false)
         {
-            unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
             unitAtTargetGridPosition.UnblockCurrentPosition();
-            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.gridPosition, LevelGrid.diaganolDistance, false);
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition(), LevelGrid.diaganolDistance, false);
         }
 
         finalTargetGridPosition = targetGridPosition;
@@ -306,7 +305,7 @@ public class MoveAction : BaseAction
         }
 
         unit.BlockCurrentPosition();
-        if (unitAtTargetGridPosition != null)
+        if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead() == false)
             unitAtTargetGridPosition.BlockCurrentPosition();
     }
 
@@ -376,7 +375,7 @@ public class MoveAction : BaseAction
 
         if (nextTargetPosition == unit.transform.position)
         {
-            unit.unitActionHandler.SetTargetGridPosition(unit.gridPosition);
+            unit.unitActionHandler.SetTargetGridPosition(unit.GridPosition());
 
             if (unit.IsNPC())
             {
@@ -495,7 +494,7 @@ public class MoveAction : BaseAction
         // Unblock the Unit's postion, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
         if (unit.IsPlayer())
             unit.UnblockCurrentPosition();
-        else
+        else if (unit.health.IsDead() == false)
             unit.BlockCurrentPosition();
 
         unit.UpdateGridPosition();

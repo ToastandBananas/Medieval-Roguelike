@@ -67,7 +67,7 @@ public class NPCActionHandler : UnitActionHandler
             {
                 bool canAttack = false;
                 List<GridPosition> actionGridPositionsInRange = ListPool<GridPosition>.Claim();
-                actionGridPositionsInRange = queuedAttack.GetActionGridPositionsInRange(unit.gridPosition);
+                actionGridPositionsInRange = queuedAttack.GetActionGridPositionsInRange(unit.GridPosition());
 
                 // Check if there's any enemies in the valid attack positions
                 for (int i = 0; i < actionGridPositionsInRange.Count; i++)
@@ -113,7 +113,7 @@ public class NPCActionHandler : UnitActionHandler
                     float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
                     
                     // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
-                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
+                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), closestEnemy.GridPosition()) < minShootRange + 1.4f)
                     {
                         // TO DO: If the Unit has a melee weapon, switch to it (need to do inventory system first)
 
@@ -125,7 +125,7 @@ public class NPCActionHandler : UnitActionHandler
                         // Shoot the target enemy
                         ClearActionQueue(true);
                         if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
-                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                            QueueAction(GetAction<ShootAction>(), targetEnemyUnit.GridPosition());
                         else
                             QueueAction(GetAction<ReloadAction>());
                         return;
@@ -137,7 +137,7 @@ public class NPCActionHandler : UnitActionHandler
                     {
                         // Melee attack the target enemy
                         ClearActionQueue(false);
-                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+                        QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.GridPosition());
                         return;
                     }
                 }
@@ -220,7 +220,7 @@ public class NPCActionHandler : UnitActionHandler
     public void DetermineAction()
     {
         if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
 
         switch (unit.stateController.currentState)
         {
@@ -263,7 +263,7 @@ public class NPCActionHandler : UnitActionHandler
             float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
             // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-            if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, closestEnemy.gridPosition) < minShootRange + 1.4f)
+            if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), closestEnemy.GridPosition()) < minShootRange + 1.4f)
             {
                 // TO DO: If the Unit has a melee weapon, switch to it
 
@@ -274,7 +274,7 @@ public class NPCActionHandler : UnitActionHandler
 
         FindBestTargetEnemy();
 
-        if (shouldStopChasing || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startChaseGridPosition, unit.gridPosition) >= maxChaseDistance)
+        if (shouldStopChasing || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startChaseGridPosition, unit.GridPosition()) >= maxChaseDistance)
         {
             shouldStopChasing = true;
             SetTargetGridPosition(LevelGrid.GetGridPosition(defaultPosition));
@@ -285,7 +285,7 @@ public class NPCActionHandler : UnitActionHandler
         // If there's no target enemy Unit, try to find one, else switch States
         if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
         {
-            SetTargetEnemyUnit(null);
+            SettargetEnemyUnit(null);
             unit.stateController.SetToDefaultState();
             DetermineAction();
             return;
@@ -312,7 +312,7 @@ public class NPCActionHandler : UnitActionHandler
                 continue;
 
             // Loop through every grid position in range of the combat action
-            foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.gridPosition))
+            foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition()))
             {
                 // For each of these grid positions, get the best one for this combat action
                 npcAIActions.Add(availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
@@ -374,7 +374,7 @@ public class NPCActionHandler : UnitActionHandler
 
         if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
         {
-            SetTargetEnemyUnit(null);
+            SettargetEnemyUnit(null);
             unit.stateController.SetToDefaultState();
             DetermineAction();
             return;
@@ -390,13 +390,13 @@ public class NPCActionHandler : UnitActionHandler
         }
 
         // Move towards the target Unit
-        SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));
+        SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.GridPosition(), unit, 10));
 
         // If there's no space around the enemy unit, try to find another enemy to attack
         if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange(false)))
         {
             SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
-            SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.gridPosition, unit, 10));
+            SetTargetGridPosition(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.GridPosition(), unit, 10));
         }
 
         QueueAction(GetAction<MoveAction>());
@@ -408,7 +408,7 @@ public class NPCActionHandler : UnitActionHandler
         {
             // If there's only one visible enemy, then there's no need to figure out the best enemy AI action
             if (unit.vision.knownEnemies.Count == 1)
-                SetTargetEnemyUnit(unit.vision.knownEnemies[0]);
+                SettargetEnemyUnit(unit.vision.knownEnemies[0]);
             else
             {
                 npcAIActions.Clear();
@@ -426,7 +426,7 @@ public class NPCActionHandler : UnitActionHandler
                         return;
                     }
 
-                    SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
+                    SettargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                 }
                 else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
@@ -443,7 +443,7 @@ public class NPCActionHandler : UnitActionHandler
                         return;
                     }
 
-                    SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(meleeAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
+                    SettargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(meleeAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
                 }
                 else
                 {
@@ -470,18 +470,18 @@ public class NPCActionHandler : UnitActionHandler
 
         // Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
         newEnemy = closestEnemy;
-        SetTargetEnemyUnit(closestEnemy);
+        SettargetEnemyUnit(closestEnemy);
     }
 
-    public override void SetTargetEnemyUnit(Unit target)
+    public override void SettargetEnemyUnit(Unit target)
     {
         if (target != null && target != targetEnemyUnit)
         {
-            startChaseGridPosition = unit.gridPosition;
+            startChaseGridPosition = unit.GridPosition();
             shouldStopChasing = false;
         }
 
-        base.SetTargetEnemyUnit(target);
+        base.SettargetEnemyUnit(target);
     }
 
     #endregion
@@ -497,7 +497,7 @@ public class NPCActionHandler : UnitActionHandler
             return;
         }
 
-        float distanceFromUnitToFleeFrom = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.gridPosition, unit.gridPosition);
+        float distanceFromUnitToFleeFrom = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.GridPosition(), unit.GridPosition());
 
         // If the Unit has fled far enough
         if (distanceFromUnitToFleeFrom >= fleeDistance)
@@ -508,19 +508,19 @@ public class NPCActionHandler : UnitActionHandler
         }
 
         // The enemy this Unit is fleeing from has moved closer or they have arrived at their flee destination, but are still too close to the enemy, so get a new flee destination
-        if (unit.gridPosition == targetGridPosition || (unitToFleeFrom.gridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom + 2f <= unitToFleeFrom_PreviousDistance)))
+        if (unit.GridPosition() == targetGridPosition || (unitToFleeFrom.GridPosition() != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom + 2f <= unitToFleeFrom_PreviousDistance)))
             needsNewFleeDestination = true;
 
         if (needsNewFleeDestination)
         {
             needsNewFleeDestination = false;
-            unitToFleeFrom_PreviousDistance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.gridPosition, unit.gridPosition);
+            unitToFleeFrom_PreviousDistance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.GridPosition(), unit.GridPosition());
             SetTargetGridPosition(GetFleeDestination());
         }
 
         // If there was no valid flee position, just grab a random position within range
-        if (targetGridPosition == unit.gridPosition)
-            SetTargetGridPosition(LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.gridPosition, unit, fleeDistance, fleeDistance + 15));
+        if (targetGridPosition == unit.GridPosition())
+            SetTargetGridPosition(LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.GridPosition(), unit, fleeDistance, fleeDistance + 15));
 
         QueueAction(GetAction<MoveAction>());
     }
@@ -600,7 +600,7 @@ public class NPCActionHandler : UnitActionHandler
             // Get a new Inspect Sound Position if there's now another Unit or obstruction there
             if (LevelGrid.Instance.GridPositionObstructed(inspectSoundGridPosition))
             {
-                inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.gridPosition, LevelGrid.diaganolDistance, true);
+                inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.GridPosition(), LevelGrid.diaganolDistance, true);
                 SetTargetGridPosition(inspectSoundGridPosition);
             }
 
@@ -679,7 +679,7 @@ public class NPCActionHandler : UnitActionHandler
                 SetTargetGridPosition(patrolPointGridPosition);
 
                 // Don't reset the patrol iteration count if the next target position is the Unit's current position, because we'll need to iterate through Patrol again
-                if (targetGridPosition != unit.gridPosition)
+                if (targetGridPosition != unit.GridPosition())
                     patrolIterationCount = 0;
             }
 
@@ -749,7 +749,7 @@ public class NPCActionHandler : UnitActionHandler
         if (wanderPositionSet == false)
         {
             wanderGridPosition = GetNewWanderPosition();
-            if (wanderGridPosition == unit.gridPosition)
+            if (wanderGridPosition == unit.GridPosition())
                 TurnManager.Instance.FinishTurn(unit);
             else
             {

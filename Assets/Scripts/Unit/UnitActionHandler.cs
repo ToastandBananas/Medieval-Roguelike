@@ -138,7 +138,7 @@ public abstract class UnitActionHandler : MonoBehaviour
         else
         {
             MoveAction moveAction = GetAction<MoveAction>();
-            if (moveAction.finalTargetGridPosition != unit.gridPosition)
+            if (moveAction.finalTargetGridPosition != unit.GridPosition())
             {
                 targetGridPosition = moveAction.nextTargetGridPosition;
                 moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
@@ -147,7 +147,7 @@ public abstract class UnitActionHandler : MonoBehaviour
 
         ClearActionQueue(true);
         SetTargetInteractable(null);
-        SetTargetEnemyUnit(null);
+        SettargetEnemyUnit(null);
         SetQueuedAttack(null);
 
         GridSystemVisual.UpdateGridVisual();
@@ -185,12 +185,12 @@ public abstract class UnitActionHandler : MonoBehaviour
         else if (unit.CharacterEquipment.RangedWeaponEquipped())
         {
             if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
-                QueueAction(GetAction<ShootAction>(), targetEnemyUnit.gridPosition);
+                QueueAction(GetAction<ShootAction>(), targetEnemyUnit.GridPosition());
             else
                 QueueAction(GetAction<ReloadAction>());
         }
         else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
-            QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.gridPosition);
+            QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.GridPosition());
     }
 
     public bool IsInAttackRange(Unit targetUnit, bool defaultCombatActionsOnly)
@@ -404,7 +404,7 @@ public abstract class UnitActionHandler : MonoBehaviour
 
     public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
 
-    public virtual void SetTargetEnemyUnit(Unit target)
+    public virtual void SettargetEnemyUnit(Unit target)
     {
         if (target != null && target.health.IsDead())
         {
@@ -415,8 +415,8 @@ public abstract class UnitActionHandler : MonoBehaviour
         targetEnemyUnit = target;
         if (target != null)
         {
-            targetAttackGridPosition = target.gridPosition;
-            previousTargetEnemyGridPosition = target.gridPosition;
+            targetAttackGridPosition = target.GridPosition();
+            previousTargetEnemyGridPosition = targetAttackGridPosition;
         }
     }
 

@@ -53,7 +53,6 @@ public class InventorySlotPool : MonoBehaviour
         if (slot.ParentSlot() != null)
             slot.ParentSlot().ClearSlotVisuals();
 
-        slot.SetMyInventory(null);
         slot.transform.SetParent(transform);
         slot.gameObject.SetActive(false);
     }

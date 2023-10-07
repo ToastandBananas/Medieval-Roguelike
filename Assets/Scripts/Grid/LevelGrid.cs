@@ -18,9 +18,7 @@ public class LevelGrid : MonoBehaviour
     [SerializeField] LayerMask groundMask;
 
     Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
-    Dictionary<GridPosition, Unit> deadUnits = new Dictionary<GridPosition, Unit>();
     Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
-    // Dictionary<LooseItem, Vector3> looseItems = new Dictionary<LooseItem, Vector3>();
 
     List<GridPosition> gridPositionsList = new List<GridPosition>();
     List<GridPosition> validGridPositionsList = new List<GridPosition>();
@@ -78,29 +76,6 @@ public class LevelGrid : MonoBehaviour
         AddUnitAtGridPosition(toGridPosition, unit);
 
         OnAnyUnitMovedGridPosition?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void AddDeadUnitAtGridPosition(GridPosition gridPosition, Unit unit)
-    {
-        deadUnits.Add(gridPosition, unit);
-    }
-
-    public Unit GetDeadUnitAtGridPosition(GridPosition gridPosition)
-    {
-        deadUnits.TryGetValue(gridPosition, out Unit unit);
-        return unit;
-    }
-
-    public void RemoveDeadUnitAtGridPosition(GridPosition gridPosition)
-    {
-        deadUnits.Remove(gridPosition);
-    }
-
-    public void DeadUnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
-    {
-        RemoveDeadUnitAtGridPosition(fromGridPosition);
-
-        AddDeadUnitAtGridPosition(toGridPosition, unit);
     }
 
     public void AddInteractableAtGridPosition(GridPosition gridPosition, Interactable interactable)
@@ -228,7 +203,7 @@ public class LevelGrid : MonoBehaviour
 
         ListPool<GraphNode>.Release(nodes);
         if (validGridPositionsList.Count == 0)
-            validGridPositionsList.Add(unit.gridPosition);
+            validGridPositionsList.Add(unit.GridPosition());
         return validGridPositionsList;
     }
 
@@ -236,7 +211,7 @@ public class LevelGrid : MonoBehaviour
     {
         gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange, checkForObstacles);
         if (gridPositionsList.Count == 0)
-            return unit.gridPosition;
+            return unit.GridPosition();
         return gridPositionsList[Random.Range(0, gridPositionsList.Count - 1)];
     }
 
@@ -260,7 +235,7 @@ public class LevelGrid : MonoBehaviour
             if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                 continue;
 
-            float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.gridPosition, nodeGridPosition);
+            float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.GridPosition(), nodeGridPosition);
             if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                 continue;
 
@@ -278,7 +253,7 @@ public class LevelGrid : MonoBehaviour
 
         ListPool<GraphNode>.Release(nodes);
         if (validGridPositionsList.Count == 0)
-            return unit.gridPosition;
+            return unit.GridPosition();
         return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
     }
 
@@ -341,14 +316,12 @@ public class LevelGrid : MonoBehaviour
     public bool GridPositionObstructed(GridPosition gridPosition)
     {
         GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition()).node;
-        if (IsValidGridPosition(gridPosition) == false || HasAnyUnitOnGridPosition(gridPosition) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
+        if (IsValidGridPosition(gridPosition) == false || (HasAnyUnitOnGridPosition(gridPosition) && GetUnitAtGridPosition(gridPosition).health.IsDead() == false) || UnitManager.Instance.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
             return true;
         return false;
     }
 
     public bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
-
-    public bool HasAnyDeadUnitOnGridPosition(GridPosition gridPosition) => deadUnits.TryGetValue(gridPosition, out Unit unit);
 
     public bool HasAnyInteractableOnGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
 

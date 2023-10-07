@@ -46,7 +46,7 @@ public class Ammunition : Equipment
                 Inventory itemDatasInventory = itemData.MyInventory();
 
                 bool itemAdded = unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
-                if (unit.CharacterEquipment.SlotVisualsCreated)
+                if (unit.CharacterEquipment.slotVisualsCreated)
                     unit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
                 if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)

@@ -174,7 +174,9 @@ public class InventorySlot : Slot
 
         if (validSlot)
         {
-            if (myInventory.ItemTypeAllowed(InventoryUI.Instance.DraggedItem.itemData.Item.ItemType))
+            if (myInventory.MyUnit.health.IsDead() && (InventoryUI.Instance.parentSlotDraggedFrom == null || InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
+                validSlot = false;
+            else if (myInventory.ItemTypeAllowed(InventoryUI.Instance.DraggedItem.itemData.Item.ItemType))
             {
                 if (myInventory.InventoryLayout.HasStandardSlotSize() == false) // Non-standard slot size
                     validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.Instance.DraggedItem.itemData.Item);
@@ -185,7 +187,7 @@ public class InventorySlot : Slot
                 validSlot = false;
         }
 
-        if (InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
+        if (validSlot && InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
         {
             ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as ContainerEquipmentSlot;
             if (InventoryUI.Instance.DraggedItem.itemData.Item is Quiver && containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())

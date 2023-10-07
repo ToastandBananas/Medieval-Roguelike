@@ -89,7 +89,7 @@ public abstract class BaseAction : MonoBehaviour
             Debug.LogWarning(GetActionName() + " is not an attack action, but it is trying to use the 'GetNearestAttackPosition' method.");
         else
             Debug.LogWarning("The 'GetNearestAttackPosition' method has not been implemented for the " + GetActionName() + " action.");
-        return unit.gridPosition;
+        return unit.GridPosition();
     }
 
     public virtual bool IsValidUnitInActionArea(GridPosition targetGridPosition)

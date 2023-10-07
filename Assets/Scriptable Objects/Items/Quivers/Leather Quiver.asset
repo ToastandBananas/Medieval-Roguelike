@@ -27,12 +27,12 @@ MonoBehaviour:
   isUsable: 1
   valueRange: {x: 0, y: 0}
   staticValue: 200
-  meshes: []
-  meshRendererMaterials: []
-  pickupMesh: {fileID: -2432090755550338912, guid: c74b109bba855cd40b9af61c344411fc,
-    type: 3}
-  pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: bfbcfdf55c4b39c458c7128df41bd3da, type: 2}
+  meshes:
+  - {fileID: -2432090755550338912, guid: 4effecae0dd5922459304aa283cd5347, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: df5a2ce38b63e3b42896a17e0fdb7094, type: 2}
+  pickupMesh: {fileID: 0}
+  pickupMeshRendererMaterials: []
   equipSlot: 10
   actionTypes: []
   equippedSprite: {fileID: 21300000, guid: 05a8d25aa1ffc6f4fa3b6e13bfdc7004, type: 3}

@@ -33,7 +33,7 @@ public class HeldRangedWeapon : HeldItem
         bowLineRenderer.StringStartFollowingTargetPositions();
         anim.Play("Shoot");
 
-        StartCoroutine(RotateRangedWeapon(targetUnit.gridPosition));
+        StartCoroutine(RotateRangedWeapon(targetUnit.GridPosition()));
     }
 
     public void LoadProjectile()
@@ -72,7 +72,7 @@ public class HeldRangedWeapon : HeldItem
 
     public void ShootProjectile()
     {
-        StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
+        StartCoroutine(loadedProjectile.ShootProjectile_AttargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
         loadedProjectile = null;
     }
 
@@ -108,8 +108,8 @@ public class HeldRangedWeapon : HeldItem
 
     float CalculateZRotation(GridPosition targetGridPosition)
     {
-        float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.gridPosition, targetGridPosition);
-        float distanceY = unit.gridPosition.y - targetGridPosition.y;
+        float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition(), targetGridPosition);
+        float distanceY = unit.GridPosition().y - targetGridPosition.y;
         float rotateFactor = 5f;
 
         float zRotation = distanceXZ * rotateFactor;

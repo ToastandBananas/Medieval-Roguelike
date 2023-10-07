@@ -109,11 +109,13 @@ public class EquipmentSlot : Slot
         bool validSlot = false;
         Item draggedItem = InventoryUI.Instance.DraggedItem.itemData.Item;
 
-        if (draggedItem is Equipment)
+        if (myCharacterEquipment.MyUnit.health.IsDead() && (InventoryUI.Instance.parentSlotDraggedFrom == null || InventoryUI.Instance.parentSlotDraggedFrom != this))
+            validSlot = false;
+        else if (draggedItem is Equipment)
         {
             if (draggedItem.Equipment.EquipSlot == equipSlot)
                 validSlot = true;
-            else if ((draggedItem is Weapon || draggedItem is Shield) && (equipSlot == global::EquipSlot.LeftHeldItem1 || equipSlot == global::EquipSlot.RightHeldItem1 || equipSlot == global::EquipSlot.LeftHeldItem2 || equipSlot == global::EquipSlot.RightHeldItem2))
+            else if ((draggedItem is Weapon || draggedItem is Shield) && IsHeldItemSlot())
                 validSlot = true;
         }
 

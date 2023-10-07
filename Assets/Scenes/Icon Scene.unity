@@ -513,10 +513,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f40cc5c1e4b098c418d413a826062217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconFolderName: Ammunition/Arrows/Broadhead - Iron
+  iconFolderName: Quivers
   frameRate: 30
   framesToCapture: 1
-  saveFileName: Arrow-Broadhead-Iron-5
+  saveFileName: Quiver-Leather
   overwriteFile: 1
 --- !u!1 &367576692
 GameObject:
@@ -1902,12 +1902,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.56
+      value: -0.105
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.7
+      value: -0.36
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
@@ -1922,12 +1922,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.29337293
+      value: 0.11320323
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.95599806
+      value: 0.9935719
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
@@ -1947,7 +1947,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 34.12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
@@ -1957,7 +1957,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 456e0575b05052447bcb4e96c85a185a,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 456e0575b05052447bcb4e96c85a185a, type: 3}

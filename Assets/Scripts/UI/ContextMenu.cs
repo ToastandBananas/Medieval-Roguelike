@@ -84,7 +84,7 @@ public class ContextMenu : MonoBehaviour
             }
         }
 
-        if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)
+        if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.GridPosition()) > LevelGrid.diaganolDistance)
         {
             CreateMoveToButton();
         }
@@ -98,7 +98,7 @@ public class ContextMenu : MonoBehaviour
             CreateSplitStackButton();
             CreateDropItemButton();
 
-            if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition) > LevelGrid.diaganolDistance)))
+            if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.Instance.player.GridPosition()) > LevelGrid.diaganolDistance)))
                 CreateMoveToButton();  
         }
 
@@ -126,7 +126,7 @@ public class ContextMenu : MonoBehaviour
     {
         GridPosition targetGridPosition;
         if (targetInteractable != null)
-            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.Instance.player.gridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.Instance.player.GridPosition(), LevelGrid.diaganolDistance, targetInteractable is LooseItem);
         else
             targetGridPosition = WorldMouse.GetCurrentGridPosition();
         
@@ -234,7 +234,7 @@ public class ContextMenu : MonoBehaviour
                 return;
             }
 
-            if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (containerEquipmentSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
             {
                 CreateCloseContainerButton();
                 return;
@@ -243,7 +243,7 @@ public class ContextMenu : MonoBehaviour
         else if (targetInteractable != null && targetInteractable is LooseContainerItem)
         {
             LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
-            if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
             {
                 CreateCloseContainerButton();
                 return;

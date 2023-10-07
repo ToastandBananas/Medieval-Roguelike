@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Iron Broadhead Arrow
   pluralName: 
   description: Designed for combat and hunting, this arrow inflicts devastating wounds
-    with its twin razor-sharp blades, causing profuse bleeding in its wake.
+    with its twin razor-sharp blades.
   itemType: 50
   mainMaterial: 9
   itemSize: 3

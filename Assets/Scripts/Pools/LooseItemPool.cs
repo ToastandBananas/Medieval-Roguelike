@@ -134,7 +134,7 @@ public class LooseItemPool : MonoBehaviour
         if (looseItem is LooseQuiverItem)
         {
             LooseQuiverItem looseQuiver = (LooseQuiverItem)looseItem;
-            if (looseQuiver.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (looseQuiver.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
                 InventoryUI.Instance.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
 
             looseQuiver.transform.SetParent(Instance.looseQuiverItemParent);
@@ -143,7 +143,7 @@ public class LooseItemPool : MonoBehaviour
         else if (looseItem is LooseContainerItem)
         {
             LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
-            if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
                 InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
             looseContainerItem.transform.SetParent(Instance.looseContainerItemParent);

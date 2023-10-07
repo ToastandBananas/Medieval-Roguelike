@@ -15,7 +15,7 @@ public class MeleeAction : BaseAction
 
         if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
         {
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
             unit.unitActionHandler.FinishAction();
             return;
         }
@@ -42,7 +42,7 @@ public class MeleeAction : BaseAction
         if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
         {
             // Rotate towards the target
-            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+            if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
                 turnAction.RotateTowards_Unit(targetUnit, false);
 
             // Wait to finish any rotations already in progress
@@ -99,7 +99,7 @@ public class MeleeAction : BaseAction
             }
 
             // Rotate towards the target
-            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+            if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
                 turnAction.RotateTowards_Unit(targetUnit, false);
 
             // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
@@ -197,7 +197,7 @@ public class MeleeAction : BaseAction
         return true;
     }
 
-    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
+    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.GridPosition(), targetUnit.GridPosition());
 
     public int UnarmedDamage()
     {
@@ -216,7 +216,7 @@ public class MeleeAction : BaseAction
 
         unit.unitActionHandler.SetIsAttacking(false);
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.FinishAction();
     }
@@ -241,7 +241,7 @@ public class MeleeAction : BaseAction
         {
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetUnit.GridPosition());
             float minAttackRange = 1f;
             if (unit.CharacterEquipment.MeleeWeaponEquipped())
                 minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
@@ -254,7 +254,7 @@ public class MeleeAction : BaseAction
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = targetUnit.gridPosition,
+                actionGridPosition = targetUnit.GridPosition(),
                 actionValue = Mathf.RoundToInt(finalActionValue)
             };
         }
@@ -262,7 +262,7 @@ public class MeleeAction : BaseAction
         return new NPCAIAction
         {
             baseAction = this,
-            actionGridPosition = unit.gridPosition,
+            actionGridPosition = unit.GridPosition(),
             actionValue = -1
         };
     }
@@ -303,7 +303,7 @@ public class MeleeAction : BaseAction
         return new NPCAIAction
         {
             baseAction = this,
-            actionGridPosition = unit.gridPosition,
+            actionGridPosition = unit.GridPosition(),
             actionValue = -1
         };
     }
@@ -313,7 +313,7 @@ public class MeleeAction : BaseAction
         int cost = 300;
 
         // If not facing the target position, add the cost of turning towards that position
-        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.gridPosition);
+        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition());
         cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
         return cost;
     }
@@ -374,7 +374,7 @@ public class MeleeAction : BaseAction
         if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
             return validGridPositionsList;
 
-        if (IsInAttackRange(null, unit.gridPosition, targetGridPosition) == false)
+        if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
             return validGridPositionsList;
 
         float sphereCastRadius = 0.1f;
@@ -401,7 +401,7 @@ public class MeleeAction : BaseAction
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition().WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -415,7 +415,7 @@ public class MeleeAction : BaseAction
                 continue;
             
             // If target is out of attack range from this Grid Position
-            if (IsInAttackRange(null, nodeGridPosition, targetUnit.gridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition()) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;
@@ -498,7 +498,7 @@ public class MeleeAction : BaseAction
         if (accountForHeight == false)
             return unit.stats.UnarmedAttackRange;
 
-        float maxRange = unit.stats.UnarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.gridPosition.y);
+        float maxRange = unit.stats.UnarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.GridPosition().y);
         if (maxRange < 0f) maxRange = 0f;
         return maxRange;
     }

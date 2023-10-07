@@ -18,7 +18,7 @@ public class CharacterEquipment : MonoBehaviour
 
     public WeaponSet currentWeaponSet { get; private set; }
 
-    bool slotVisualsCreated;
+    public bool slotVisualsCreated { get; private set; }
 
     void Awake()
     {
@@ -120,7 +120,7 @@ public class CharacterEquipment : MonoBehaviour
         // If trying to place the item back into the slot it came from, place the dragged item back to where it came from
         if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.Instance.parentSlotDraggedFrom)
             InventoryUI.Instance.ReplaceDraggedItem();
-        // If trying to place ammo on a Quiver slot that has a Quiver equipped
+        // If trying to place ammo on a Quiver slot that has a Quiver or the same type of arrows equipped
         else if (newItemData.Item is Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
             TryAddToEquippedAmmunition(newItemData);
         else
@@ -188,6 +188,7 @@ public class CharacterEquipment : MonoBehaviour
                 if (slotVisualsCreated)
                     GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
+                RemoveItemFromOrigin(ammoItemData);
                 if (InventoryUI.Instance.isDraggingItem)
                     InventoryUI.Instance.DisableDraggedItem();
 
@@ -224,7 +225,7 @@ public class CharacterEquipment : MonoBehaviour
             else
             {
                 // Update the stack size text for the ammo since it wasn't all equipped
-                if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().SlotVisualsCreated)
+                if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().slotVisualsCreated)
                     ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData).InventoryItem.UpdateStackSizeVisuals();
                 else if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.slotVisualsCreated && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(ammoItemData))
                     InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
@@ -277,44 +278,22 @@ public class CharacterEquipment : MonoBehaviour
         if (InventoryUI.Instance.isDraggingItem)
         {
             if (InventoryUI.Instance.DraggedItem.myCharacterEquipment != null)
-            {
-                EquipmentSlot equipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as EquipmentSlot;
-                equipmentSlotDraggedFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotDraggedFrom.EquipSlot);
-
-                InventoryUI.Instance.DraggedItem.myCharacterEquipment.equippedItemDatas[(int)equipmentSlotDraggedFrom.EquipSlot] = null;
-
-                ActionSystemUI.UpdateActionVisuals();
-            }
+                InventoryUI.Instance.DraggedItem.myCharacterEquipment.RemoveEquipment(itemDataToRemove);
             else if (InventoryUI.Instance.DraggedItem.myInventory != null)
-                InventoryUI.Instance.DraggedItem.myInventory.ItemDatas.Remove(itemDataToRemove);
-        }
-        else if (itemDataToRemove.InventorySlotCoordinate() != null && itemDataToRemove.InventorySlotCoordinate().myInventory.ContainsItemData(itemDataToRemove))
-        {
-            itemDataToRemove.InventorySlotCoordinate().myInventory.RemoveItem(itemDataToRemove);
+                InventoryUI.Instance.DraggedItem.myInventory.RemoveItem(itemDataToRemove);
         }
         else if (ContextMenu.Instance.TargetSlot != null)
         {
             InventoryItem targetInventoryItem = ContextMenu.Instance.TargetSlot.InventoryItem;
             if (targetInventoryItem.myCharacterEquipment != null)
-            {
-                EquipmentSlot equipmentSlotTakenFrom = ContextMenu.Instance.TargetSlot.ParentSlot() as EquipmentSlot;
-                equipmentSlotTakenFrom.CharacterEquipment.RemoveEquipmentMesh(equipmentSlotTakenFrom.EquipSlot);
-
-                targetInventoryItem.myCharacterEquipment.equippedItemDatas[(int)equipmentSlotTakenFrom.EquipSlot] = null;
-                ContextMenu.Instance.TargetSlot.ParentSlot().ClearItem();
-
-                ActionSystemUI.UpdateActionVisuals();
-            }
+                targetInventoryItem.myCharacterEquipment.RemoveEquipment(ContextMenu.Instance.TargetSlot.InventoryItem.itemData);
             else if (targetInventoryItem.myInventory != null)
-            {
-                targetInventoryItem.myInventory.ItemDatas.Remove(itemDataToRemove);
-                ContextMenu.Instance.TargetSlot.ParentSlot().ClearItem();
-            }
+                targetInventoryItem.myInventory.RemoveItem(itemDataToRemove);
         }
-
-        // Clear out the dragged item's original slot
-        if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-            InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+        else if (itemDataToRemove.InventorySlotCoordinate() != null && itemDataToRemove.InventorySlotCoordinate().myInventory.ContainsItemData(itemDataToRemove))
+        {
+            itemDataToRemove.InventorySlotCoordinate().myInventory.RemoveItem(itemDataToRemove);
+        }
     }
 
     public void UnequipItem(EquipSlot equipSlot)
@@ -328,7 +307,7 @@ public class CharacterEquipment : MonoBehaviour
             // If this is the Unit's equipped backpack
             if (equipSlot == EquipSlot.Back && equipment is Backpack)
             {
-                if (myUnit.BackpackInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (myUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
                     InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
                 if (myUnit.BackpackInventoryManager.ContainsAnyItems())
@@ -336,7 +315,7 @@ public class CharacterEquipment : MonoBehaviour
             }
             else if (equipSlot == EquipSlot.Quiver && equipment is Quiver)
             {
-                if (myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (myUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
                     InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
 
                 if (myUnit.QuiverInventoryManager.ContainsAnyItems())
@@ -361,25 +340,12 @@ public class CharacterEquipment : MonoBehaviour
         RemoveActions(equipment);
     }
 
-    void CreateSlotVisuals()
+    public void CreateSlotVisuals()
     {
         if (slotVisualsCreated)
         {
             Debug.LogWarning($"Slot visuals for {name}, owned by {myUnit.name}, has already been created...");
             return;
-        }
-
-        if (slots.Count > 0)
-        {
-            // Clear out any slots already in the list, so we can start from scratch
-            for (int i = 0; i < slots.Count; i++)
-            {
-                slots[i].RemoveSlotHighlights();
-                slots[i].ClearItem();
-                slots[i].SetMyCharacterEquipment(null);
-            }
-
-            slots.Clear();
         }
 
         if (myUnit.IsPlayer())
@@ -400,6 +366,23 @@ public class CharacterEquipment : MonoBehaviour
                 else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
                     containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.CharacterEquipment.MyUnit.QuiverInventoryManager);
             }
+        }
+
+        if (currentWeaponSet == WeaponSet.One)
+        {
+            GetEquipmentSlot(EquipSlot.RightHeldItem2).HideItemIcon();
+            GetEquipmentSlot(EquipSlot.RightHeldItem2).PlaceholderImage.enabled = false;
+
+            GetEquipmentSlot(EquipSlot.LeftHeldItem2).HideItemIcon();
+            GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = false;
+        }
+        else
+        {
+            GetEquipmentSlot(EquipSlot.RightHeldItem1).HideItemIcon();
+            GetEquipmentSlot(EquipSlot.RightHeldItem1).PlaceholderImage.enabled = false;
+
+            GetEquipmentSlot(EquipSlot.LeftHeldItem1).HideItemIcon();
+            GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = false;
         }
 
         slotVisualsCreated = true;
@@ -787,7 +770,7 @@ public class CharacterEquipment : MonoBehaviour
         if (itemData.CurrentStackSize > 0)
         {
             // Update stack size visuals
-            if (QuiverEquipped() && myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+            if (QuiverEquipped() && myUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
                 myUnit.QuiverInventoryManager.ParentInventory.GetSlotFromItemData(itemData).InventoryItem.UpdateStackSizeVisuals();
             else if (EquipSlotHasItem(EquipSlot.Quiver) && slotVisualsCreated)
                 GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
@@ -829,5 +812,20 @@ public class CharacterEquipment : MonoBehaviour
 
     public Unit MyUnit => myUnit;
 
-    public bool SlotVisualsCreated => slotVisualsCreated;
+    public void OnCloseNPCInventory()
+    {
+        slotVisualsCreated = false; 
+        
+        if (slots.Count > 0)
+        {
+            // Clear out any slots already in the list, so we can start from scratch
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].RemoveSlotHighlights();
+                slots[i].ClearItem();
+                slots[i].SetMyCharacterEquipment(null);
+                slots[i].InventoryItem.SetMyCharacterEquipment(null);
+            }
+        }
+    }
 }

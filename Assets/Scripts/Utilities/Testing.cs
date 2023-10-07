@@ -15,7 +15,7 @@ public class Testing : MonoBehaviour
     void ShowDebugPathToMousePosition()
     {
         GridPosition mouseGridPosition = LevelGrid.GetGridPosition(WorldMouse.GetPosition());
-        GridPosition startGridPosition = UnitManager.Instance.player.gridPosition;
+        GridPosition startGridPosition = UnitManager.Instance.player.GridPosition();
         ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(startGridPosition), LevelGrid.GetWorldPosition(mouseGridPosition));
         path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 

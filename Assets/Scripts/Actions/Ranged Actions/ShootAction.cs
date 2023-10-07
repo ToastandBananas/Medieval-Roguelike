@@ -26,7 +26,7 @@ public class ShootAction : BaseAction
         {
             Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
             CompleteAction();
-            unit.unitActionHandler.SetTargetEnemyUnit(targetUnit);
+            unit.unitActionHandler.SettargetEnemyUnit(targetUnit);
             unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<ReloadAction>());
             return;
         }
@@ -53,7 +53,7 @@ public class ShootAction : BaseAction
         if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
         {
             // Rotate towards the target
-            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+            if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
                 turnAction.RotateTowards_Unit(targetUnit, false);
 
             // Wait to finish any rotations already in progress
@@ -74,7 +74,7 @@ public class ShootAction : BaseAction
                 DamageTargets(unit.unitMeshManager.GetHeldRangedWeapon());
 
             // Rotate towards the target
-            if (turnAction.IsFacingTarget(targetUnit.gridPosition) == false)
+            if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
                 turnAction.RotateTowards_Unit(targetUnit, true);
 
             // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
@@ -118,7 +118,7 @@ public class ShootAction : BaseAction
         unit.unitActionHandler.targetUnits.Clear();
 
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
     }
 
     public bool MissedTarget()
@@ -171,7 +171,7 @@ public class ShootAction : BaseAction
         return true;
     }
 
-    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.gridPosition, targetUnit.gridPosition);
+    public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.GridPosition(), targetUnit.GridPosition());
 
     protected override void StartAction()
     {
@@ -183,7 +183,7 @@ public class ShootAction : BaseAction
     {
         base.CompleteAction();
         if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.SetIsAttacking(false);
         unit.unitActionHandler.FinishAction();
@@ -194,7 +194,7 @@ public class ShootAction : BaseAction
         int cost = 300;
 
         // If not facing the target position, add the cost of turning towards that position
-        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.gridPosition);
+        unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition());
         cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
         return cost;
     }
@@ -243,7 +243,7 @@ public class ShootAction : BaseAction
         if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
             return validGridPositionsList;
 
-        if (IsInAttackRange(null, unit.gridPosition, targetGridPosition) == false)
+        if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
             return validGridPositionsList;
 
         float sphereCastRadius = 0.1f;
@@ -263,7 +263,7 @@ public class ShootAction : BaseAction
             return validGridPositionsList;
 
         float maxAttackRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
-        float boundsDimension = ((targetUnit.gridPosition.y + maxAttackRange) * 2) + 0.1f;
+        float boundsDimension = ((targetUnit.GridPosition().y + maxAttackRange) * 2) + 0.1f;
 
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
         nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.transform.position, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -280,7 +280,7 @@ public class ShootAction : BaseAction
                 continue;
 
             // If target is out of attack range
-            if (IsInAttackRange(null, nodeGridPosition, targetUnit.gridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition()) == false)
                 continue;
 
             float sphereCastRadius = 0.1f;
@@ -341,7 +341,7 @@ public class ShootAction : BaseAction
         {
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetUnit.GridPosition());
             if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                 finalActionValue = 0f;
             else
@@ -350,7 +350,7 @@ public class ShootAction : BaseAction
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = targetUnit.gridPosition,
+                actionGridPosition = targetUnit.GridPosition(),
                 actionValue = Mathf.RoundToInt(finalActionValue)
             };
         }
@@ -358,7 +358,7 @@ public class ShootAction : BaseAction
         return new NPCAIAction
         {
             baseAction = this,
-            actionGridPosition = unit.gridPosition,
+            actionGridPosition = unit.GridPosition(),
             actionValue = -1
         };
     }
@@ -384,7 +384,7 @@ public class ShootAction : BaseAction
                 if (unit.unitActionHandler.targetEnemyUnit != null && unitAtGridPosition == unit.unitActionHandler.targetEnemyUnit)
                     finalActionValue += 15f; 
                 
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, actionGridPosition);
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), actionGridPosition);
                 if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                     finalActionValue = -1f;
                 else
@@ -404,7 +404,7 @@ public class ShootAction : BaseAction
         return new NPCAIAction
         {
             baseAction = this,
-            actionGridPosition = unit.gridPosition,
+            actionGridPosition = unit.GridPosition(),
             actionValue = -1
         };
     }

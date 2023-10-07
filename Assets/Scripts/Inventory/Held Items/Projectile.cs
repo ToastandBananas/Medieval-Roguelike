@@ -77,7 +77,7 @@ public class Projectile : MonoBehaviour
 
     public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-    public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool missedTarget)
+    public IEnumerator ShootProjectile_AttargetUnit(Unit targetUnit, bool missedTarget)
     {
         ReadyProjectile();
 
@@ -86,7 +86,7 @@ public class Projectile : MonoBehaviour
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
 
-        float arcHeight = CalculateProjectileArcHeight(shooter.gridPosition, targetUnit.gridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+        float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition(), targetUnit.GridPosition()) * itemData.Item.Ammunition.ArcMultiplier;
         float animationTime = 0f;
 
         while (moveProjectile)

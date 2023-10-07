@@ -13,12 +13,13 @@ public class Inventory
     [Header("Items in Inventory")]
     [SerializeField] protected List<ItemData> itemDatas = new List<ItemData>();
 
+    public bool slotVisualsCreated { get; protected set; }
+    public bool hasBeenInitialized { get; protected set; }
+
     protected List<InventorySlot> slots;
     protected List<SlotCoordinate> slotCoordinates;
 
     protected Transform slotsParent;
-    protected bool slotVisualsCreated;
-    protected bool hasBeenInitialized;
 
     public virtual void Initialize()
     {
@@ -308,7 +309,7 @@ public class Inventory
                         if (InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem != null && InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                             InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                         // If we drag arrows out of a Unit's equipped Quiver
-                        else if (InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.Instance.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.SlotVisualsCreated)
+                        else if (InventoryUI.Instance.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.Instance.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.slotVisualsCreated)
                             InventoryUI.Instance.DraggedItem.myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                     }
                 }
@@ -369,7 +370,7 @@ public class Inventory
             if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is LooseQuiverItem)
                 ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
             // If arrows are being removed from an equipped Quiver
-            else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.SlotVisualsCreated)
+            else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.slotVisualsCreated)
                 myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
         }
     }
@@ -519,16 +520,13 @@ public class Inventory
             CreateSlotVisuals();
     }
 
-    protected void CreateSlotVisuals()
+    public void CreateSlotVisuals()
     {
         if (slotVisualsCreated)
         {
             Debug.LogWarning($"Slot visuals for inventory, owned by {MyUnit.name}, has already been created...");
             return;
         }
-
-        // Clear out any slots already in the list, so we can start from scratch
-        RemoveSlots();
 
         for (int i = 0; i < inventoryLayout.AmountOfSlots; i++)
         {
@@ -542,10 +540,9 @@ public class Inventory
             slots.Add(newSlot);
 
             if (InventoryLayout.HasStandardSlotSize() == false)
-            {
-                newSlot.InventoryItem.EnableIconImage();
-                newSlot.HideItemIcon(); // Shows the placeholder image
-            }
+                newSlot.InventoryItem.EnableIconImage(); // Shows the placeholder image
+
+            newSlot.HideItemIcon();
 
             newSlot.gameObject.SetActive(true);
         }
@@ -576,8 +573,6 @@ public class Inventory
             {
                 InventorySlotPool.Instance.ReturnToPool(slots[i]);
             }
-
-            slots.Clear();
         }
 
         slotVisualsCreated = false;
@@ -623,6 +618,14 @@ public class Inventory
         return false;
     }
 
+    public void OnCloseNPCInventory()
+    {
+        slotVisualsCreated = false;
+
+        // Clear out any slots already in the list, so we can start from scratch when we open another inventory
+        RemoveSlots();
+    }
+
     public bool ItemFitsInSingleSlot(Item item) => item.Width <= inventoryLayout.SlotWidth && item.Height <= inventoryLayout.SlotHeight;
 
     public ContainerInventory ContainerInventory => this as ContainerInventory;
@@ -636,8 +639,4 @@ public class Inventory
     public InventoryLayout InventoryLayout => inventoryLayout;
 
     public int MaxSlotsPerColumn => maxSlotsPerColumn;
-
-    public bool SlotVisualsCreated => slotVisualsCreated;
-
-    public bool HasBeenInitialized => hasBeenInitialized;
 }

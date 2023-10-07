@@ -18,12 +18,12 @@ public class TransparentBackgroundScreenshotRecorder : MonoBehaviour
 {
 
     #region public fields
-    [Tooltip("A folder will be created with this base name in your project root")]
+    [Tooltip("The folder in which the screenshot will be saved. (Root: Art/UI/Icons/Inventory)")]
     public string iconFolderName = "";
     [Tooltip("How many frames should be captured per second of game time")]
-    public int frameRate = 24;
+    public int frameRate = 30;
     [Tooltip("How many frames should be captured before quitting")]
-    public int framesToCapture = 24;
+    public int framesToCapture = 1;
     public string saveFileName;
     public bool overwriteFile;
     #endregion

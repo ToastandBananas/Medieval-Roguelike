@@ -1,10 +1,10 @@
-using System;
 using UnityEngine;
 
-public class HealthSystem : MonoBehaviour
+public class Health : MonoBehaviour
 {
+    [Header("Health")]
     [SerializeField] int maxHealth = 100;
-    [SerializeField] int currentHealth;
+    [SerializeField] int currentHealth = -1;
 
     Unit unit;
 
@@ -12,7 +12,7 @@ public class HealthSystem : MonoBehaviour
     {
         unit = GetComponent<Unit>();
 
-        if (currentHealth == 0)
+        if (currentHealth == -1)
             currentHealth = maxHealth;
     }
 
@@ -69,6 +69,10 @@ public class HealthSystem : MonoBehaviour
     {
         UnitManager.Instance.deadNPCs.Add(unit);
         UnitManager.Instance.livingNPCs.Remove(unit);
+        LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition());
+
+        unit.UnblockCurrentPosition();
+        unit.deadUnit.enabled = true;
 
         unit.unitAnimator.Die(attackerTransform);
     }

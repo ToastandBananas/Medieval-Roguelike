@@ -11,6 +11,7 @@ TagManager:
   - Shield
   - Particle Effect
   - Loose Item
+  - Unit
   layers:
   - Default
   - TransparentFX

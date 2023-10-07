@@ -110,8 +110,7 @@ public class InventoryItem : MonoBehaviour
         }
         else if (myCharacterEquipment != null && mySlot != null)
         {
-            EquipmentSlot equipmentSlot = mySlot as EquipmentSlot;
-            equipmentSlot.PlaceholderImage.enabled = true;
+            mySlot.EquipmentSlot.PlaceholderImage.enabled = true;
             iconImage.enabled = false;
         }
         else

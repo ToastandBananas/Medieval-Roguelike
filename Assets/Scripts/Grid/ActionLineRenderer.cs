@@ -9,14 +9,15 @@ public class ActionLineRenderer : MonoBehaviour
     [SerializeField] LineRenderer mainLineRenderer;
     [SerializeField] LineRenderer arrowHeadLineRenderer;
 
-    Unit player;
+    static Unit player;
 
     Vector3 lineRendererOffset = new Vector3(0f, 0.1f, 0f);
-    GridPosition currentMouseGridPosition;
-    GridPosition currentInteractableGridPosition;
-    GridPosition currentPlayerPosition;
+    static GridPosition currentMouseGridPosition;
+    static GridPosition currentInteractableGridPosition;
+    static GridPosition currentUnitGridPosition;
+    static GridPosition currentPlayerPosition;
 
-    readonly GridPosition defaultGridPosition = new GridPosition(100000, 100000, 100000);
+    static readonly GridPosition defaultGridPosition = new GridPosition(100000, 100000, 100000);
 
     void Awake()
     {
@@ -39,15 +40,16 @@ public class ActionLineRenderer : MonoBehaviour
     public IEnumerator DrawMovePath()
     {
         mainLineRenderer.enabled = true;
-        GridPosition targetGridPosition = WorldMouse.currentGridPosition;
-
-        if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.GridPosition() != currentInteractableGridPosition) || WorldMouse.currentGridPosition != currentMouseGridPosition || player.gridPosition != currentPlayerPosition)
+        GridPosition targetGridPosition;
+        
+        if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.GridPosition() != currentInteractableGridPosition) 
+            || (PlayerInput.Instance.highlightedUnit != null && PlayerInput.Instance.highlightedUnit.GridPosition() != currentUnitGridPosition) 
+            || WorldMouse.GetCurrentGridPosition() != currentMouseGridPosition || player.GridPosition() != currentPlayerPosition)
         {
-            currentMouseGridPosition = WorldMouse.currentGridPosition;
-            currentPlayerPosition = player.gridPosition;
+            currentMouseGridPosition = WorldMouse.GetCurrentGridPosition();
+            currentPlayerPosition = player.GridPosition();
 
-            Unit unitAtMousePosition = LevelGrid.Instance.GetUnitAtGridPosition(currentMouseGridPosition);
-            if (unitAtMousePosition == player || (unitAtMousePosition != null && unitAtMousePosition.health.IsDead()))
+            if (PlayerInput.Instance.highlightedUnit == player || currentMouseGridPosition == currentPlayerPosition)
             {
                 HideLineRenderers();
                 yield break;
@@ -56,21 +58,23 @@ public class ActionLineRenderer : MonoBehaviour
             if (PlayerInput.Instance.highlightedInteractable != null)
             {
                 currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.gridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
-                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.gridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition(), PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+                    targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
                 else
                 {
                     HideLineRenderers();
                     yield break;
                 }
             }
-            else if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition))
+            else if (PlayerInput.Instance.highlightedUnit != null && player.vision.IsVisible(PlayerInput.Instance.highlightedUnit))
             {
                 BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
-                if (player.alliance.IsEnemy(unitAtMousePosition) || (player.alliance.IsNeutral(unitAtMousePosition) && selectedAction.IsDefaultAttackAction()))
+                currentUnitGridPosition = PlayerInput.Instance.highlightedUnit.GridPosition();
+
+                if (PlayerInput.Instance.highlightedUnit.health.IsDead() == false && (player.alliance.IsEnemy(PlayerInput.Instance.highlightedUnit) || selectedAction.IsDefaultAttackAction()))
                 {
                     // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                    if (player.unitActionHandler.IsInAttackRange(unitAtMousePosition, true) || (selectedAction.IsDefaultAttackAction() == false && selectedAction is MoveAction == false))
+                    if (player.unitActionHandler.IsInAttackRange(PlayerInput.Instance.highlightedUnit, true) || (selectedAction.IsDefaultAttackAction() == false && selectedAction is MoveAction == false))
                     {
                         HideLineRenderers();
                         yield break;
@@ -79,12 +83,22 @@ public class ActionLineRenderer : MonoBehaviour
                     if (player.CharacterEquipment.RangedWeaponEquipped())
                     {
                         if (player.CharacterEquipment.HasValidAmmunitionEquipped())
-                            targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
+                            targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition(), PlayerInput.Instance.highlightedUnit);
                         else
-                            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(currentMouseGridPosition, player.gridPosition, LevelGrid.diaganolDistance, false);
+                            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedUnit.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, false);
                     }
                     else
-                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.gridPosition, unitAtMousePosition);
+                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition(), PlayerInput.Instance.highlightedUnit);
+                }
+                else if (PlayerInput.Instance.highlightedUnit.health.IsDead())
+                {
+                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(PlayerInput.Instance.highlightedUnit.GridPosition(), player.GridPosition()) > LevelGrid.diaganolDistance)
+                        targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedUnit.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, false);
+                    else
+                    {
+                        HideLineRenderers();
+                        yield break;
+                    }
                 }
                 else
                 {
@@ -94,14 +108,43 @@ public class ActionLineRenderer : MonoBehaviour
             }
             else
             {
-                // If the unit at the mouse position isn't visible, unblock their position so we can draw a line to it (we will re-block it after the line is drawn)
-                if (unitAtMousePosition != null)
-                    unitAtMousePosition.UnblockCurrentPosition();
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(currentMouseGridPosition);
+                BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+
+                if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
+                {
+                    // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
+                    if (player.unitActionHandler.IsInAttackRange(unitAtGridPosition, true) || (selectedAction.IsDefaultAttackAction() == false && selectedAction is MoveAction == false))
+                    {
+                        HideLineRenderers();
+                        yield break;
+                    }
+
+                    if (player.CharacterEquipment.RangedWeaponEquipped())
+                    {
+                        if (player.CharacterEquipment.HasValidAmmunitionEquipped())
+                            targetGridPosition = player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition);
+                        else
+                            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(unitAtGridPosition.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, false);
+                    }
+                    else
+                        targetGridPosition = player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition);
+                }
+                else
+                {
+                    if (PlayerInput.Instance.highlightedUnit != null) // If the unit at the mouse position isn't visible, unblock their position so we can draw a line to it (we will re-block it after the line is drawn)
+                        PlayerInput.Instance.highlightedUnit.UnblockCurrentPosition();
+
+                    targetGridPosition = currentMouseGridPosition;
+
+                    currentInteractableGridPosition = defaultGridPosition;
+                    currentUnitGridPosition = defaultGridPosition;
+                }
             }
 
             player.UnblockCurrentPosition();
 
-            ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(player.gridPosition), LevelGrid.GetWorldPosition(targetGridPosition));
+            ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(player.GridPosition()), LevelGrid.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
             // Schedule the path for calculation
@@ -121,8 +164,8 @@ public class ActionLineRenderer : MonoBehaviour
                 yield break;
 
             // Re-block the unit's position, in case it was unblocked
-            if (unitAtMousePosition != null && player.vision.IsVisible(unitAtMousePosition) == false)
-                unitAtMousePosition.BlockCurrentPosition();
+            if (PlayerInput.Instance.highlightedUnit != null && PlayerInput.Instance.highlightedUnit.health.IsDead() == false && player.vision.IsVisible(PlayerInput.Instance.highlightedUnit) == false)
+                PlayerInput.Instance.highlightedUnit.BlockCurrentPosition();
 
             int verticeIndex = 0;
             for (int i = 0; i < path.vectorPath.Count - 1; i++)
@@ -269,10 +312,11 @@ public class ActionLineRenderer : MonoBehaviour
         arrowHeadLineRenderer.positionCount = 0;
     }
 
-    public void ResetCurrentPositions() 
+    public static void ResetCurrentPositions() 
     {
         currentMouseGridPosition = defaultGridPosition;
         currentPlayerPosition = defaultGridPosition;
         currentInteractableGridPosition = defaultGridPosition;
+        currentUnitGridPosition = defaultGridPosition;
     }
 }

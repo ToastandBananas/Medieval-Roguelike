@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Iron Bodkin Arrow
   pluralName: 
-  description: Designed to pierce armor and chainmail.
+  description: A slender, pointed projectile designed for piercing armor with its
+    narrow, needle-like tip.
   itemType: 50
   mainMaterial: 9
   itemSize: 3

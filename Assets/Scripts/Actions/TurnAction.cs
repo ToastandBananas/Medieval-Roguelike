@@ -97,12 +97,12 @@ public class TurnAction : BaseAction
 
     public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
     {
-        RotateTowardsPosition(targetUnit.gridPosition.WorldPosition(), rotateInstantly, defaultRotateSpeed * 2f);
+        RotateTowardsPosition(targetUnit.GridPosition().WorldPosition(), rotateInstantly, defaultRotateSpeed * 2f);
     }
 
     public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
     {
-        GridPosition unitGridPosition = unit.gridPosition;
+        GridPosition unitGridPosition = unit.GridPosition();
 
         if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
             targetDirection = Direction.North;
@@ -361,31 +361,31 @@ public class TurnAction : BaseAction
         switch (currentDirection)
         {
             case Direction.North:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(0, 0, -1));
                 break;
             case Direction.East:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 0));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(-1, 0, 0));
                 break;
             case Direction.South:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(0, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(0, 0, 1));
                 break;
             case Direction.West:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 0));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(1, 0, 0));
                 break;
             case Direction.NorthWest:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(1, 0, -1));
                 break;
             case Direction.NorthEast:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, -1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(-1, 0, -1));
                 break;
             case Direction.SouthWest:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(1, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(1, 0, 1));
                 break;
             case Direction.SouthEast:
-                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.gridPosition.WorldPosition() + new Vector3(-1, 0, 1));
+                gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition().WorldPosition() + new Vector3(-1, 0, 1));
                 break;
             default:
-                return unit.gridPosition;
+                return unit.GridPosition();
         }
 
         // Get the Y position for the Grid Position using a raycast
@@ -394,7 +394,7 @@ public class TurnAction : BaseAction
             gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
         if (LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
-            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.gridPosition, unit, 1.4f);
+            gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.GridPosition(), unit, 1.4f);
         return gridPositionBehindUnit;
     }
 

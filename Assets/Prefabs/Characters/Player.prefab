@@ -393,8 +393,11 @@ MonoBehaviour:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 20
-      maxSlots: 20
       maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
     looseItem: {fileID: 0}
   subInventories: []
@@ -612,8 +615,11 @@ MonoBehaviour:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 100
-      maxSlots: 100
       maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
 --- !u!1 &3650739709268681387
 GameObject:
@@ -1115,7 +1121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 10000
-  currentHealth: 0
+  currentHealth: -1
 --- !u!114 &2894362986920051941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1154,6 +1160,9 @@ MonoBehaviour:
   interactableMask:
     serializedVersion: 2
     m_Bits: 2147483648
+  unitMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &1195297390364979018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1493,8 +1502,11 @@ MonoBehaviour:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 2
-      maxSlots: 5
       maxSlotsPerRow: 5
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
     looseItem: {fileID: 0}
   subInventories: []

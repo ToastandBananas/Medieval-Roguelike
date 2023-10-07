@@ -136,9 +136,10 @@ GameObject:
   - component: {fileID: 1716772551159210589}
   - component: {fileID: 4471245059765168945}
   - component: {fileID: 8017101318156772015}
+  - component: {fileID: 5879531810297379322}
   m_Layer: 3
   m_Name: Unit - Male
-  m_TagString: Untagged
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -218,7 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  currentHealth: 0
+  currentHealth: -1
 --- !u!114 &3566344150296233335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,6 +443,18 @@ MonoBehaviour:
   bodyArmorMeshFilter: {fileID: 1045981531652197624}
   baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
     type: 3}
+--- !u!114 &5879531810297379322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3adc24834c6fd8b4ea9432743e8846ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2147645918628440969
 GameObject:
   m_ObjectHideFlags: 0
@@ -573,8 +586,11 @@ MonoBehaviour:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
       amountOfSlots: 50
-      maxSlots: 20
       maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
     looseItem: {fileID: 0}
   subInventories: []
@@ -1325,8 +1341,11 @@ MonoBehaviour:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
       amountOfSlots: 2
-      maxSlots: 5
       maxSlotsPerRow: 5
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
     looseItem: {fileID: 0}
   subInventories: []
@@ -1480,8 +1499,11 @@ MonoBehaviour:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
       amountOfSlots: 20
-      maxSlots: 20
       maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
     itemDatas: []
 --- !u!1 &9200357820980764731
 GameObject:

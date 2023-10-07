@@ -136,7 +136,7 @@ public class GridSystemVisual : MonoBehaviour
         if (selectedAction.IsAttackAction() == false || Instance.player.CharacterEquipment.RangedWeaponEquipped() == false)
             return;
 
-        Instance.ShowAttackRange(selectedAction, Instance.player.gridPosition, GridVisualType.RedSoft);
+        Instance.ShowAttackRange(selectedAction, Instance.player.GridPosition(), GridVisualType.RedSoft);
     }
 
     public static void UpdateAttackGridVisual()

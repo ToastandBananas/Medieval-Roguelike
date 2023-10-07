@@ -19,7 +19,7 @@ public class Consumable : Item
                 SlotCoordinate itemsSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
                 if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
                 {
-                    if (itemsSlotCoordinate.myInventory.SlotVisualsCreated)
+                    if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
                         itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
                 }
                 else

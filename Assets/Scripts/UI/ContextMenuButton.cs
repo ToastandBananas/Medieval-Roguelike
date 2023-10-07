@@ -210,13 +210,13 @@ public class ContextMenuButton : MonoBehaviour
             if (ContextMenu.Instance.TargetInteractable != null && ContextMenu.Instance.TargetInteractable is LooseContainerItem)
             {
                 LooseContainerItem looseContainerItem = ContextMenu.Instance.TargetInteractable as LooseContainerItem;
-                if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
                     InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
                 if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                 {
                     UnitManager.Instance.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                    if (UnitManager.Instance.player.CharacterEquipment.SlotVisualsCreated && itemData.Item is Quiver)
+                    if (UnitManager.Instance.player.CharacterEquipment.slotVisualsCreated && itemData.Item is Quiver)
                         UnitManager.Instance.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                 }
                 else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
@@ -227,7 +227,7 @@ public class ContextMenuButton : MonoBehaviour
                 if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                 {
                     UnitManager.Instance.player.QuiverInventoryManager.Initialize();
-                    if (UnitManager.Instance.player.CharacterEquipment.SlotVisualsCreated && itemData.Item is Quiver)
+                    if (UnitManager.Instance.player.CharacterEquipment.slotVisualsCreated && itemData.Item is Quiver)
                         UnitManager.Instance.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                 }
                 else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)

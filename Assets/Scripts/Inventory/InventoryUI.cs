@@ -38,6 +38,9 @@ public class InventoryUI : MonoBehaviour
     public bool validDragPosition { get; private set; }
     public Slot parentSlotDraggedFrom { get; private set; }
 
+    public bool playerInventoryActive { get; private set; }
+    public bool npcInventoryActive { get; private set; }
+
     RectTransform rectTransform;
 
     WaitForSeconds stopDraggingDelay = new WaitForSeconds(0.05f);
@@ -318,12 +321,12 @@ public class InventoryUI : MonoBehaviour
             ContainerEquipmentSlot containerEquipmentSlot = parentSlotDraggedFrom as ContainerEquipmentSlot;
             if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
             {
-                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
                     GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
             }
             else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
             {
-                if (characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
                     GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
                 characterEquipmentDraggedFrom.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
@@ -368,6 +371,7 @@ public class InventoryUI : MonoBehaviour
             ReplaceDraggedItem();
 
         playerInventoryUIParent.SetActive(!playerInventoryUIParent.activeSelf);
+        playerInventoryActive = playerInventoryUIParent.activeSelf;
 
         if (playerInventoryUIParent.activeSelf == false)
         {
@@ -387,8 +391,18 @@ public class InventoryUI : MonoBehaviour
             ReplaceDraggedItem();
 
         npcInventoryUIParent.SetActive(!npcInventoryUIParent.activeSelf);
+        npcInventoryActive = npcInventoryUIParent.activeSelf;
 
-        if (playerInventoryUIParent.activeSelf == false)
+        if (npcInventoryActive == false)
+        {
+            if (npcEquipmentSlots.Count > 0)
+                npcEquipmentSlots[0].CharacterEquipment.OnCloseNPCInventory();
+
+            if (npcPocketsSlots.Count > 0)
+                npcPocketsSlots[0].myInventory.OnCloseNPCInventory();
+        }
+
+        if (playerInventoryActive == false)
         {
             activeSlot = null;
             ContextMenu.Instance.DisableContextMenu();

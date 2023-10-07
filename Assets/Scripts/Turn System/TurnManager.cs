@@ -42,7 +42,9 @@ public class TurnManager : MonoBehaviour
     public void FinishTurn(Unit unit)
     {
         unit.SetIsMyTurn(false);
-        unit.BlockCurrentPosition();
+
+        if (unit.health.IsDead() == false)
+            unit.BlockCurrentPosition();
 
         if (unit.IsNPC())
         {

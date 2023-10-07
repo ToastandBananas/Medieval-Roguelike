@@ -15,7 +15,7 @@ public class SwipeAction : BaseAction
 
         if (IsValidUnitInActionArea(gridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
         {
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
             unit.unitActionHandler.SetQueuedAttack(null);
             unit.unitActionHandler.FinishAction();
             return;
@@ -23,7 +23,7 @@ public class SwipeAction : BaseAction
 
         StartAction();
 
-        if (IsInAttackRange(null, unit.gridPosition, unit.unitActionHandler.targetAttackGridPosition))
+        if (IsInAttackRange(null, unit.GridPosition(), unit.unitActionHandler.targetAttackGridPosition))
             StartCoroutine(Attack());
         else
         {
@@ -152,7 +152,7 @@ public class SwipeAction : BaseAction
 
         float boundsDimension = (maxAttackRange * 2) + 0.1f;
         List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.gridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+        nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition().WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
         for (int i = 0; i < nodes.Count; i++)
         {
@@ -166,7 +166,7 @@ public class SwipeAction : BaseAction
                 continue;
 
             // If target is out of attack range from this Grid Position
-            if (IsInAttackRange(null, nodeGridPosition, targetUnit.gridPosition) == false)
+            if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition()) == false)
                 continue;
 
             // Check for obstacles
@@ -194,12 +194,12 @@ public class SwipeAction : BaseAction
             return validGridPositionsList;
 
         // Exclude attacker's position
-        if (targetGridPosition == unit.gridPosition)
+        if (targetGridPosition == unit.GridPosition())
             return validGridPositionsList;
 
         // Check if the target position is within the max attack range
         //if (Vector3.Distance(unit.WorldPosition(), targetGridPosition.WorldPosition()) > maxAttackRange)
-        if (IsInAttackRange(null, unit.gridPosition, targetGridPosition) == false)
+        if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
             return validGridPositionsList;
 
         // Check for obstacles
@@ -225,7 +225,7 @@ public class SwipeAction : BaseAction
                 continue;
 
             // Exclude attacker's position
-            if (nodeGridPosition == unit.gridPosition)
+            if (nodeGridPosition == unit.GridPosition())
                 continue;
 
             // Check if the node is in the general direction of the attack
@@ -237,7 +237,7 @@ public class SwipeAction : BaseAction
 
             // Check if the node is within the max attack range
             //if (Vector3.Distance(unit.WorldPosition(), nodeGridPosition.WorldPosition()) > maxAttackRange)
-            if (IsInAttackRange(null, unit.gridPosition, nodeGridPosition) == false)
+            if (IsInAttackRange(null, unit.GridPosition(), nodeGridPosition) == false)
                 continue;
 
             // Make sure the node isn't too much lower or higher than the target grid position (this is a swipe attack, so think of it basically swiping across in a horizontal line)
@@ -366,7 +366,7 @@ public class SwipeAction : BaseAction
         {
             // Target the Unit with the lowest health and/or the nearest target
             finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.gridPosition, targetUnit.gridPosition);
+            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetUnit.GridPosition());
             float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
             if (distance < minAttackRange)
@@ -377,7 +377,7 @@ public class SwipeAction : BaseAction
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = targetUnit.gridPosition,
+                actionGridPosition = targetUnit.GridPosition(),
                 actionValue = Mathf.RoundToInt(finalActionValue)
             };
         }
@@ -385,7 +385,7 @@ public class SwipeAction : BaseAction
         return new NPCAIAction
         {
             baseAction = this,
-            actionGridPosition = unit.gridPosition,
+            actionGridPosition = unit.GridPosition(),
             actionValue = -1
         };
     }
@@ -477,7 +477,7 @@ public class SwipeAction : BaseAction
 
         unit.unitActionHandler.SetIsAttacking(false);
         if (unit.IsPlayer())
-            unit.unitActionHandler.SetTargetEnemyUnit(null);
+            unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.FinishAction();
     }
