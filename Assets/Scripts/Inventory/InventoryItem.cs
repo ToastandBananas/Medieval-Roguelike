@@ -173,7 +173,7 @@ public class InventoryItem : MonoBehaviour
 
     public void DisableIconImage()
     {
-        if (InventoryUI.Instance.DraggedItem == this)
+        if (InventoryUI.DraggedItem == this)
             iconImage.enabled = false;
         else
             ShowPlaceholderIcon();

@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using InteractableObjects;
+using GridSystem;
 
 public class InteractAction : BaseAction
 {
@@ -16,7 +17,7 @@ public class InteractAction : BaseAction
     {
         TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
         {
             if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
                 turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);

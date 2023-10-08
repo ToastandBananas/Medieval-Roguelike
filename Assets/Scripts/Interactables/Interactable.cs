@@ -1,23 +1,27 @@
 using UnityEngine;
+using GridSystem;
 
-public abstract class Interactable : MonoBehaviour
+namespace InteractableObjects
 {
-    protected GridPosition gridPosition;
-
-    public virtual void Awake()
+    public abstract class Interactable : MonoBehaviour
     {
-        UpdateGridPosition();
+        protected GridPosition gridPosition;
+
+        public virtual void Awake()
+        {
+            UpdateGridPosition();
+        }
+
+        public virtual void UpdateGridPosition()
+        {
+            gridPosition = LevelGrid.GetGridPosition(transform.position);
+            LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
+        }
+
+        public virtual GridPosition GridPosition() => gridPosition;
+
+        public abstract void Interact(Unit unit);
+
+        public abstract bool CanInteractAtMyGridPosition();
     }
-
-    public virtual void UpdateGridPosition()
-    {
-        gridPosition = LevelGrid.GetGridPosition(transform.position);
-        LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
-    }
-
-    public virtual GridPosition GridPosition() => gridPosition;
-
-    public abstract void Interact(Unit unit);
-
-    public abstract bool CanInteractAtMyGridPosition();
 }

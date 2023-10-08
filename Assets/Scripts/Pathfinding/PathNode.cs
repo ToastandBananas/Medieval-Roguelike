@@ -1,3 +1,5 @@
+using GridSystem;
+
 public class PathNode
 {
     GridPosition gridPosition;

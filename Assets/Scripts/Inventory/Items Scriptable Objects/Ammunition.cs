@@ -1,4 +1,5 @@
 using UnityEngine;
+using InteractableObjects;
 
 public enum ProjectileType
 {
@@ -51,6 +52,17 @@ public class Ammunition : Equipment
 
                 if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                     itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+
+                if (itemAdded)
+                {
+                    if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != null)
+                        ContextMenu.targetSlot.InventoryItem.myCharacterEquipment.RemoveEquipment(itemData);
+                }
+                else
+                {
+                    if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment.slotVisualsCreated)
+                        ContextMenu.targetSlot.InventoryItem.UpdateStackSizeVisuals();
+                }
 
                 return itemAdded;
             }

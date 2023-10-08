@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using InteractableObjects;
+using GridSystem;
 
 public class PlayerInput : MonoBehaviour
 {
@@ -42,7 +44,7 @@ public class PlayerInput : MonoBehaviour
         if (skipTurnCooldownTimer < skipTurnCooldown)
             skipTurnCooldownTimer += Time.deltaTime;
 
-        if (InventoryUI.Instance.isDraggingItem)
+        if (InventoryUI.isDraggingItem)
             return;
 
         if (EventSystem.current.IsPointerOverGameObject())
@@ -60,7 +62,7 @@ public class PlayerInput : MonoBehaviour
             {
                 // Reset the line renderer and go back to the Move Action
                 ActionLineRenderer.ResetCurrentPositions();
-                player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
+                player.unitActionHandler.SetDefaultSelectedAction();
             }
             
             // If the player is trying to cancel their current action
@@ -85,7 +87,7 @@ public class PlayerInput : MonoBehaviour
                 SetupCursorAndLineRenderer();
 
                 // If the player has an attack action selected
-                BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+                BaseAction selectedAction = player.unitActionHandler.SelectedAction;
                 if (selectedAction.IsAttackAction())
                 {
                     // Set the target attack grid position to the mouse grid position and update the visuals
@@ -215,8 +217,23 @@ public class PlayerInput : MonoBehaviour
                             return;
                         }
                     }
+                    // If the player has a ranged weapon equipped and the target enemy is within attack range
+                    else if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped())
+                    {
+                        // Do nothing if the target unit is dead
+                        if (unitAtGridPosition.health.IsDead())
+                            return;
+
+                        // If the target is in shooting range
+                        if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
+                        {
+                            // Turn towards and attack the target enemy
+                            player.unitActionHandler.AttackTarget();
+                            return;
+                        }
+                    }
                     // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                    else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.CharacterEquipment.IsUnarmed())
+                    else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.CharacterEquipment.IsUnarmed() || (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() == false))
                     {
                         // Do nothing if the target unit is dead
                         if (unitAtGridPosition.health.IsDead())
@@ -238,21 +255,6 @@ public class PlayerInput : MonoBehaviour
                             return;
                         }
                     }
-                    // If the player has a ranged weapon equipped and the target enemy is within attack range
-                    else if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped())
-                    {
-                        // Do nothing if the target unit is dead
-                        if (unitAtGridPosition.health.IsDead())
-                            return;
-
-                        // If the target is in shooting range
-                        if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
-                        {
-                            // Turn towards and attack the target enemy
-                            player.unitActionHandler.AttackTarget();
-                            return;
-                        }
-                    }
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                     // The target enemy wasn't in attack range, so find and move to the nearest melee or ranged attack position //
@@ -261,11 +263,17 @@ public class PlayerInput : MonoBehaviour
                     // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction (or if one of these actions is already selected)
                     if (selectedAction.IsAttackAction() == false || selectedAction.IsDefaultAttackAction())
                     {
-                        // If the player has a ranged weapon equipped, find the nearest Shoot Action attack position
-                        if (player.CharacterEquipment.RangedWeaponEquipped())
+                        // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
+                        if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
-                        else // If the player has a melee weapon equipped or is unarmed, find the nearest Melee Action attack position
+                        else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed) // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                             player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
+                        else
+                        {
+                            player.unitActionHandler.SettargetEnemyUnit(null);
+                            player.unitActionHandler.SetDefaultSelectedAction();
+                            return;
+                        }
 
                         // Set the target attack position to the target unit's position
                         player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.GridPosition());
@@ -280,7 +288,7 @@ public class PlayerInput : MonoBehaviour
                 {
                     // Set the selected action to Move if the Player doesn't have enough energy for their selected action
                     if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
-                        player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName("MoveAction"));
+                        player.unitActionHandler.SetDefaultSelectedAction();
 
                     player.unitActionHandler.SettargetEnemyUnit(null);
                 }
@@ -343,6 +351,8 @@ public class PlayerInput : MonoBehaviour
                             LooseContainerItem highlightedContainer = highlightedInteractable as LooseContainerItem;
                             if (highlightedContainer.ContainerInventoryManager != null && highlightedContainer.ContainerInventoryManager.ContainsAnyItems())
                                 WorldMouse.ChangeCursor(CursorState.LootBag);
+                            else
+                                WorldMouse.ChangeCursor(CursorState.PickupItem);
                         }
                         else
                             WorldMouse.ChangeCursor(CursorState.PickupItem);
@@ -365,17 +375,7 @@ public class PlayerInput : MonoBehaviour
                     else if (highlightedUnit.health.IsDead())
                         WorldMouse.ChangeCursor(CursorState.LootBag);
                     else if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
-                    {
-                        if (player.CharacterEquipment.RangedWeaponEquipped())
-                        {
-                            if (player.CharacterEquipment.HasValidAmmunitionEquipped())
-                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                            else
-                                WorldMouse.ChangeCursor(CursorState.Default);
-                        }
-                        else
-                            WorldMouse.ChangeCursor(CursorState.MeleeAttack);
-                    }
+                        SetAttackCursor();
                     else
                         WorldMouse.ChangeCursor(CursorState.Default);
                 }
@@ -385,15 +385,7 @@ public class PlayerInput : MonoBehaviour
                     if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
                     {
                         highlightedInteractable = null;
-                        if (player.CharacterEquipment.RangedWeaponEquipped())
-                        {
-                            if (player.CharacterEquipment.HasValidAmmunitionEquipped())
-                                WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                            else
-                                WorldMouse.ChangeCursor(CursorState.Default);
-                        }
-                        else
-                            WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                        SetAttackCursor();
                     }
                     else
                     {
@@ -414,10 +406,7 @@ public class PlayerInput : MonoBehaviour
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
-                    if (player.CharacterEquipment.RangedWeaponEquipped())
-                        WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                    else
-                        WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+                    SetAttackCursor();
                 }
                 else
                 {
@@ -433,6 +422,16 @@ public class PlayerInput : MonoBehaviour
                 WorldMouse.ChangeCursor(CursorState.Default);
             }
         }
+    }
+
+    void SetAttackCursor()
+    {
+        if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
+            WorldMouse.ChangeCursor(CursorState.RangedAttack);
+        else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
+            WorldMouse.ChangeCursor(CursorState.MeleeAttack);
+        else
+            WorldMouse.ChangeCursor(CursorState.Default);
     }
 
     bool AttackActionSelected() => player.unitActionHandler.selectedActionType.GetAction(player).IsAttackAction();

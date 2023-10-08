@@ -1159,7 +1159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactableMask:
     serializedVersion: 2
-    m_Bits: 2147483648
+    m_Bits: 3221225472
   unitMask:
     serializedVersion: 2
     m_Bits: 8
@@ -1521,7 +1521,7 @@ GameObject:
   - component: {fileID: 3993356818367710035}
   - component: {fileID: 7698420547713366967}
   - component: {fileID: 1051662800694096370}
-  m_Layer: 30
+  m_Layer: 29
   m_Name: Hearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}

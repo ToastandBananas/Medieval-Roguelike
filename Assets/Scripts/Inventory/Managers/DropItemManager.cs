@@ -1,4 +1,5 @@
 using UnityEngine;
+using InteractableObjects;
 
 public class DropItemManager : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class DropItemManager : MonoBehaviour
 
         // The only time Unit will ever be null is when the Player is dropping an item from a container's inventory
         if (unit == null)
-            unit = UnitManager.Instance.player;
+            unit = UnitManager.player;
 
         LooseItem looseItem;
         if (itemDataToDrop.Item is Backpack)
@@ -36,8 +37,8 @@ public class DropItemManager : MonoBehaviour
         if (inventory != null)
             inventory.RemoveItem(itemDataToDrop);
 
-        if (itemDataToDrop == InventoryUI.Instance.DraggedItem.itemData)
-            InventoryUI.Instance.DisableDraggedItem();
+        if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
+            InventoryUI.DisableDraggedItem();
     }
 
     public static void DropItem(CharacterEquipment characterEquipment, EquipSlot equipSlot)
@@ -45,7 +46,7 @@ public class DropItemManager : MonoBehaviour
         if (characterEquipment.EquipSlotIsFull(equipSlot) == false)
             return;
 
-        if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.DraggedItem.itemData == characterEquipment.EquippedItemDatas[(int)equipSlot] && (characterEquipment.EquippedItemDatas[(int)equipSlot] == null || characterEquipment.EquippedItemDatas[(int)equipSlot].Item == null))
+        if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.itemData == characterEquipment.EquippedItemDatas[(int)equipSlot] && (characterEquipment.EquippedItemDatas[(int)equipSlot] == null || characterEquipment.EquippedItemDatas[(int)equipSlot].Item == null))
         {
             Debug.LogWarning($"Item you're trying to drop from {characterEquipment.MyUnit.name}'s equipment is null...");
             return;
@@ -79,12 +80,12 @@ public class DropItemManager : MonoBehaviour
         // Apply force to the dropped item
         looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        if (characterEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.Instance.DraggedItem.itemData)
+        if (characterEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.itemData)
         {
-            if (InventoryUI.Instance.parentSlotDraggedFrom != null)
-                InventoryUI.Instance.parentSlotDraggedFrom.ClearItem();
+            if (InventoryUI.parentSlotDraggedFrom != null)
+                InventoryUI.parentSlotDraggedFrom.ClearItem();
 
-            InventoryUI.Instance.DisableDraggedItem();
+            InventoryUI.DisableDraggedItem();
         }
         else if (characterEquipment.slotVisualsCreated)
             characterEquipment.GetEquipmentSlot(equipSlot).ClearItem();
@@ -125,7 +126,7 @@ public class DropItemManager : MonoBehaviour
             {
                 heldRangedWeapon.loadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
                 looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
-                if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
+                if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
                     looseProjectile.HideMeshRenderer();
             }
         }
@@ -133,7 +134,7 @@ public class DropItemManager : MonoBehaviour
         // Get the Rigidbody component(s) and apply force
         looseWeapon.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-        if (unit != UnitManager.Instance.player && UnitManager.Instance.player.vision.IsVisible(unit) == false)
+        if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
             looseWeapon.HideMeshRenderer();
 
         // Get rid of the HeldItem
@@ -172,7 +173,7 @@ public class DropItemManager : MonoBehaviour
         SetupLooseItem(looseItem, itemData);
 
         // Set the LooseItem's position to be slightly in front of the Unit dropping the item
-        looseItem.transform.position = unit.transform.position + new Vector3(0, unit.ShoulderHeight(), 0) + (dropDirection / 2);
+        looseItem.transform.position = unit.transform.position + new Vector3(0, unit.ShoulderHeight, 0) + (dropDirection / 2);
 
         // Randomize the rotation and set active
         looseItem.transform.rotation = Quaternion.Euler(new Vector3(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f)));
@@ -186,7 +187,7 @@ public class DropItemManager : MonoBehaviour
         if (equipSlot == EquipSlot.Back)
         {
             if (characterEquipment.MyUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
-                InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
+                InventoryUI.GetContainerUI(characterEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
             LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
             looseContainerItem.ContainerInventoryManager.TransferInventory(characterEquipment.MyUnit.BackpackInventoryManager);
@@ -194,7 +195,7 @@ public class DropItemManager : MonoBehaviour
         else if (equipSlot == EquipSlot.Quiver)
         {
             if (characterEquipment.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
-                InventoryUI.Instance.GetContainerUI(characterEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
+                InventoryUI.GetContainerUI(characterEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
             LooseQuiverItem looseQuiverItem = looseItem as LooseQuiverItem;
             looseQuiverItem.ContainerInventoryManager.TransferInventory(characterEquipment.MyUnit.QuiverInventoryManager);

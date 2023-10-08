@@ -1,4 +1,5 @@
 using System;
+using GridSystem;
 
 public class PlayerActionHandler : UnitActionHandler
 {
@@ -8,9 +9,6 @@ public class PlayerActionHandler : UnitActionHandler
     {
         canPerformActions = true;
         base.Awake();
-
-        // Default to the MoveAction
-        SetSelectedActionType(FindActionTypeByName("MoveAction"));
     }
 
     public override void TakeTurn()
@@ -72,7 +70,7 @@ public class PlayerActionHandler : UnitActionHandler
                     }
 
                     // Handle default ranged attack
-                    if (unit.CharacterEquipment.RangedWeaponEquipped())
+                    if (unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
                     {
                         // If the target enemy is too close, cancel the Player's current action
                         if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetEnemyUnit.GridPosition()) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
@@ -93,7 +91,7 @@ public class PlayerActionHandler : UnitActionHandler
                             QueueAction(GetAction<MoveAction>(), GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition(), targetEnemyUnit));
                     }
                     // Handle default melee attack
-                    else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                    else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
                     {
                         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                         {
@@ -112,7 +110,7 @@ public class PlayerActionHandler : UnitActionHandler
             else
             {
                 unit.UnblockCurrentPosition();
-                GridSystemVisual.UpdateGridVisual();
+                GridSystemVisual.UpdateAttackGridVisual();
             }
         }
     }
@@ -156,7 +154,7 @@ public class PlayerActionHandler : UnitActionHandler
 
     public void OnClick_SetSelectedActionType(ActionType actionType)
     {
-        if (InventoryUI.Instance.isDraggingItem)
+        if (InventoryUI.isDraggingItem)
             return;
 
         SetSelectedActionType(actionType);

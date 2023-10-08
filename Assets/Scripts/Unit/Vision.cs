@@ -4,8 +4,8 @@
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using UnityEditor.AnimatedValues;
 using UnityEngine;
+using InteractableObjects;
 
 public class Vision : MonoBehaviour
 {
@@ -96,9 +96,9 @@ public class Vision : MonoBehaviour
     public bool IsInLineOfSight_SphereCast(Unit unitToCheck)
     {
         float sphereCastRadius = 0.1f;
-        Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight() * 2f;
-        Vector3 shootDir = (unitToCheck.WorldPosition() + offset - transform.position).normalized;
-        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + offset);
+        Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight * 2f;
+        Vector3 shootDir = (unitToCheck.WorldPosition + offset - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition + offset);
         if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask))
             return false; // Blocked by an obstacle
         return true;
@@ -106,8 +106,8 @@ public class Vision : MonoBehaviour
 
     bool IsInLineOfSight_Raycast(Unit unitToCheck)
     {
-        Vector3 dirToTarget = (unitToCheck.WorldPosition() + yOffset - transform.position).normalized;
-        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition() + yOffset);
+        Vector3 dirToTarget = (unitToCheck.WorldPosition + yOffset - transform.position).normalized;
+        float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition + yOffset);
 
         // If target Unit is in the view angle and no obstacles are in the way
         if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
@@ -161,13 +161,13 @@ public class Vision : MonoBehaviour
                     // If no obstacles are in the way, add the Unit to the knownUnits dictionary
                     if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
                         AddVisibleUnit(targetUnit);
-                    else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
+                    else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
                         targetUnit.unitMeshManager.HideMeshRenderers();
                 }
             }
         }
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
         {
             // Check if a "visible NPC Unit" is outside of the Player's view radius. If so, hide their mesh renderers
             foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
@@ -200,7 +200,7 @@ public class Vision : MonoBehaviour
         }
 
         // Flee or Fight if not already doing so, if there are now enemies visible to this NPC
-        if (unit.IsNPC() && unit.stateController.currentState != State.Flee && unit.stateController.currentState != State.Fight)
+        if (unit.IsNPC && unit.stateController.currentState != State.Flee && unit.stateController.currentState != State.Fight)
         {
             if (knownEnemies.Count > 0)
             {
@@ -240,14 +240,14 @@ public class Vision : MonoBehaviour
                     else
                         unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                    if (unit.IsPlayer() && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit) // Hide the NPC's mesh renderers
+                    if (unit.IsPlayer && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit) // Hide the NPC's mesh renderers
                         knownUnit.Key.unitMeshManager.HideMeshRenderers();
                 }
                 else // We can still see the Unit, so reset their lose sight time
                 {
                     knownUnits[knownUnit.Key] = loseSightTime;
 
-                    if (unit.IsPlayer()) // Show the NPC's mesh renderers
+                    if (unit.IsPlayer) // Show the NPC's mesh renderers
                         knownUnit.Key.unitMeshManager.ShowMeshRenderers();
                 }
             }
@@ -258,7 +258,7 @@ public class Vision : MonoBehaviour
                 else
                     unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                if (unit.IsPlayer() && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
+                if (unit.IsPlayer && knownUnit.Key.unitActionHandler.targetEnemyUnit != unit && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
                     knownUnit.Key.unitMeshManager.HideMeshRenderers();
             }
         }
@@ -288,7 +288,7 @@ public class Vision : MonoBehaviour
                 knownEnemies.Add(unitToAdd);
 
                 // The Player should cancel any action (other than attacks) when becoming aware of a new enemy
-                if (unit.IsPlayer() && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.AttackQueued() == false)
+                if (unit.IsPlayer && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.AttackQueued() == false)
                     StartCoroutine(unit.unitActionHandler.CancelAction());
             }
             else if (unit.alliance.IsAlly(unitToAdd))
@@ -298,7 +298,7 @@ public class Vision : MonoBehaviour
             knownUnits[unitToAdd] = loseSightTime;
 
         // If this is the Player's Vision, show the newly visible NPC Unit
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             unitToAdd.unitMeshManager.ShowMeshRenderers();
     }
 
@@ -318,7 +318,7 @@ public class Vision : MonoBehaviour
                 knownAllies.Remove(unitToRemove);
 
             // If they are no longer visible to the player, hide them
-            if (unit.IsPlayer())
+            if (unit.IsPlayer)
                 unitToRemove.unitMeshManager.HideMeshRenderers();
         }
     }
@@ -340,7 +340,7 @@ public class Vision : MonoBehaviour
         Unit closestEnemy = unit.unitActionHandler.targetEnemyUnit;
         float closestEnemyDist = 1000000;
         if (includeTargetEnemy && unit.unitActionHandler.targetEnemyUnit != null)
-            closestEnemyDist = Vector3.Distance(unit.WorldPosition(), unit.unitActionHandler.targetEnemyUnit.WorldPosition());
+            closestEnemyDist = Vector3.Distance(unit.WorldPosition, unit.unitActionHandler.targetEnemyUnit.WorldPosition);
         for (int i = 0; i < knownEnemies.Count; i++)
         {
             if (unit.unitActionHandler.targetEnemyUnit != null)
@@ -386,12 +386,12 @@ public class Vision : MonoBehaviour
                 // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
                 if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
                     AddVisibleLooseItem(looseItem);
-                else if (unit.IsPlayer() && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
+                else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
                     looseItem.HideMeshRenderer();
             }
         }
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
         {
             // Check if a "visible LooseItem" is outside of the Player's view radius. If so, hide their mesh renderers
             foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
@@ -446,14 +446,14 @@ public class Vision : MonoBehaviour
                     else
                         looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
 
-                    if (unit.IsPlayer()) // Hide the LooseItem's mesh renderers
+                    if (unit.IsPlayer) // Hide the LooseItem's mesh renderers
                         looseItem.Key.HideMeshRenderer();
                 }
                 else // We can still see the LooseItem, so reset their lose sight time
                 {
                     knownLooseItems[looseItem.Key] = loseSightTime;
 
-                    if (unit.IsPlayer()) // Show the LooseItem's mesh renderers
+                    if (unit.IsPlayer) // Show the LooseItem's mesh renderers
                         looseItem.Key.ShowMeshRenderer();
                 }
             }
@@ -464,7 +464,7 @@ public class Vision : MonoBehaviour
                 else
                     looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
 
-                if (unit.IsPlayer() && Vector3.Distance(unit.transform.position, looseItemCenter) > playerPerceptionDistance) // Hide the LooseItem's mesh renderers
+                if (unit.IsPlayer && Vector3.Distance(unit.transform.position, looseItemCenter) > playerPerceptionDistance) // Hide the LooseItem's mesh renderers
                     looseItem.Key.HideMeshRenderer();
             }
         }
@@ -487,7 +487,7 @@ public class Vision : MonoBehaviour
             knownLooseItems[looseItemToAdd] = loseSightTime;
 
         // If this is the Player's Vision, show the newly visible LooseItem
-        if (unit.IsPlayer() && looseItemToAdd.CanSeeMeshRenderer() == false)
+        if (unit.IsPlayer && looseItemToAdd.CanSeeMeshRenderer() == false)
             looseItemToAdd.ShowMeshRenderer();
     }
 
@@ -498,7 +498,7 @@ public class Vision : MonoBehaviour
             knownLooseItems.Remove(looseItemToRemove, out int value);
 
             // If they are no longer visible to the player, hide them
-            if (unit.IsPlayer())
+            if (unit.IsPlayer)
                 looseItemToRemove.HideMeshRenderer();
         }
     }

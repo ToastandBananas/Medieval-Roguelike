@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using GridSystem;
 
 public class ActionSystemUI : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class ActionSystemUI : MonoBehaviour
 
     void Start()
     {
-        playerActionHandler = UnitManager.Instance.player.unitActionHandler as PlayerActionHandler;
+        playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
         playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
         InitializeActionButtonPool();
@@ -66,7 +67,7 @@ public class ActionSystemUI : MonoBehaviour
         else
         {
             UpdateSelectedVisual();
-            GridSystemVisual.UpdateGridVisual();
+            GridSystemVisual.UpdateAttackRangeGridVisual();
         }
     }
 

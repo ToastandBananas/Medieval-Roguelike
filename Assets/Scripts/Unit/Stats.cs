@@ -60,18 +60,18 @@ public class Stats : MonoBehaviour
         if (amount <= 0)
             return;
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
         {
             UpdateAPUntilTimeTick(amount);
             SetLastUsedAP(amount);
 
-            for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
+            for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
             {
                 // Every time the Player takes an action that costs AP, a correlating amount of AP is added to each NPCs AP pool (based off percentage of the Player's MaxAP used)
-                UnitManager.Instance.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt(UnitManager.Instance.livingNPCs[i].stats.APUsedMultiplier(amount) * UnitManager.Instance.livingNPCs[i].stats.MaxAP()));
+                UnitManager.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt(UnitManager.livingNPCs[i].stats.APUsedMultiplier(amount) * UnitManager.livingNPCs[i].stats.MaxAP()));
 
                 // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
-                UnitManager.Instance.livingNPCs[i].unitActionHandler.GetAction<MoveAction>().SetMoveSpeed(amount);
+                UnitManager.livingNPCs[i].unitActionHandler.GetAction<MoveAction>().SetMoveSpeed(amount);
             }
         }
         else
@@ -160,7 +160,7 @@ public class Stats : MonoBehaviour
             currentEnergy = 0;
         }
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateEnergyText();
     }
 
@@ -168,7 +168,7 @@ public class Stats : MonoBehaviour
     {
         currentEnergy = MaxEnergy();
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateEnergyText();
     }
 
@@ -178,7 +178,7 @@ public class Stats : MonoBehaviour
         if (currentEnergy > MaxEnergy())
             currentEnergy = MaxEnergy();
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateEnergyText();
     }
 
@@ -198,7 +198,7 @@ public class Stats : MonoBehaviour
 
     void UpdateUnit()
     {
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             TimeSystem.IncreaseTime();
 
         unit.vision.UpdateVision();
@@ -215,7 +215,7 @@ public class Stats : MonoBehaviour
         unit.status.RegenerateStamina();
         unit.nutrition.DrainStaminaBonus();
 
-        if (unit.unitActionHandler.canPerformActions || unit.IsPlayer())
+        if (unit.unitActionHandler.canPerformActions || unit.IsPlayer)
         {
             unit.nutrition.DrainNourishment();
             unit.nutrition.DrainWater();

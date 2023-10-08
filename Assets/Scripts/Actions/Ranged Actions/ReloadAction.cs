@@ -1,3 +1,5 @@
+using GridSystem;
+
 public class ReloadAction : BaseAction
 {
     bool isReloading;
@@ -30,7 +32,7 @@ public class ReloadAction : BaseAction
     {
         base.CompleteAction();
         isReloading = false;
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             unit.unitActionHandler.SetSelectedActionType(unit.unitActionHandler.FindActionTypeByName("ShootAction"));
         unit.unitActionHandler.FinishAction();
     }

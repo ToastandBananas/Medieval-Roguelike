@@ -1,4 +1,5 @@
 using UnityEngine;
+using InteractableObjects;
 
 public class ContainerInventoryManager : InventoryManager
 {
@@ -162,7 +163,7 @@ public class ContainerInventoryManager : InventoryManager
         }
     }
 
-    public bool IsEquippedByPlayer() => this == UnitManager.Instance.player.BackpackInventoryManager || this == UnitManager.Instance.player.QuiverInventoryManager;
+    public bool IsEquippedByPlayer() => this == UnitManager.player.BackpackInventoryManager || this == UnitManager.player.QuiverInventoryManager;
 
     public void SetParentInventory(ContainerInventory newParentInventory) => parentInventory = newParentInventory;
 

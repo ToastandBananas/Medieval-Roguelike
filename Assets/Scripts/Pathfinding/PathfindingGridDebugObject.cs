@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using GridSystem;
 
 public class PathfindingGridDebugObject : GridDebugObject
 {

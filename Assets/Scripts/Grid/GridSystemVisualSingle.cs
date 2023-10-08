@@ -1,11 +1,14 @@
 using UnityEngine;
 
-public class GridSystemVisualSingle : MonoBehaviour
+namespace GridSystem
 {
-    [SerializeField] MeshRenderer meshRenderer;
-
-    public void SetMaterial(Material material)
+    public class GridSystemVisualSingle : MonoBehaviour
     {
-        meshRenderer.material = material;
+        [SerializeField] MeshRenderer meshRenderer;
+
+        public void SetMaterial(Material material)
+        {
+            meshRenderer.material = material;
+        }
     }
 }

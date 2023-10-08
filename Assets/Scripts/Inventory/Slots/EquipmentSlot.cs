@@ -107,9 +107,9 @@ public class EquipmentSlot : Slot
     public override void HighlightSlots()
     {
         bool validSlot = false;
-        Item draggedItem = InventoryUI.Instance.DraggedItem.itemData.Item;
+        Item draggedItem = InventoryUI.DraggedItem.itemData.Item;
 
-        if (myCharacterEquipment.MyUnit.health.IsDead() && (InventoryUI.Instance.parentSlotDraggedFrom == null || InventoryUI.Instance.parentSlotDraggedFrom != this))
+        if (myCharacterEquipment.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
             validSlot = false;
         else if (draggedItem is Equipment)
         {
@@ -119,7 +119,7 @@ public class EquipmentSlot : Slot
                 validSlot = true;
         }
 
-        InventoryUI.Instance.SetValidDragPosition(validSlot);
+        InventoryUI.SetValidDragPosition(validSlot);
 
         SetEmptySlotSprite();
 
@@ -131,7 +131,7 @@ public class EquipmentSlot : Slot
 
     public override void RemoveSlotHighlights()
     {
-        if (IsFull() && InventoryUI.Instance.DraggedItem.itemData != inventoryItem.itemData)
+        if (IsFull() && InventoryUI.DraggedItem.itemData != inventoryItem.itemData)
             SetFullSlotSprite();
 
         image.color = Color.white;

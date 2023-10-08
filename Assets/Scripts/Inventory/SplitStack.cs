@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Text;
 using UnityEngine.EventSystems;
+using InteractableObjects;
 
 public class SplitStack : MonoBehaviour
 {
@@ -93,7 +94,7 @@ public class SplitStack : MonoBehaviour
         {
             Inventory myInventory = targetItemData.MyInventory();
             if (myInventory.TryAddItem(newItemData, false) == false)
-                InventoryUI.Instance.SetupDraggedItem(newItemData, null, (Inventory)null);
+                InventoryUI.SetupDraggedItem(newItemData, null, (Inventory)null);
 
             if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                 myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
@@ -101,7 +102,7 @@ public class SplitStack : MonoBehaviour
                 myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
         }
         else
-            InventoryUI.Instance.SetupDraggedItem(newItemData, null, (Inventory)null);
+            InventoryUI.SetupDraggedItem(newItemData, null, (Inventory)null);
 
         Close();
     }

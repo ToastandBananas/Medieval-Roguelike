@@ -1002,7 +1002,7 @@ GameObject:
   - component: {fileID: 7565454753586844107}
   - component: {fileID: 4046473650707885239}
   - component: {fileID: 8492240010559672664}
-  m_Layer: 30
+  m_Layer: 29
   m_Name: Hearing
   m_TagString: Untagged
   m_Icon: {fileID: 0}

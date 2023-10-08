@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using InteractableObjects;
+using GridSystem;
 
 public class MoveAction : BaseAction
 {
@@ -35,8 +37,8 @@ public class MoveAction : BaseAction
     {
         base.StartAction();
 
-        if (unit.IsPlayer())
-            InventoryUI.Instance.CloseAllContainerUI();
+        if (unit.IsPlayer)
+            InventoryUI.CloseAllContainerUI();
     }
 
     IEnumerator Move()
@@ -67,7 +69,7 @@ public class MoveAction : BaseAction
             nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
         }
 
-        if (nextTargetPosition == unit.WorldPosition() || LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(nextTargetPosition)))
+        if (nextTargetPosition == unit.WorldPosition || LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(nextTargetPosition)))
         {
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -94,7 +96,7 @@ public class MoveAction : BaseAction
         Vector3 nextPathPosition;
         Direction directionToNextPosition;
 
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
         {
             directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
@@ -107,7 +109,7 @@ public class MoveAction : BaseAction
 
             float moveSpeedMultiplier = 1f;
 
-            if (unit.IsNPC())
+            if (unit.IsNPC)
             {
                 moveSpeedMultiplier = 1.1f;
                 if (LevelGrid.IsDiagonal(unit.transform.position, nextTargetPosition))
@@ -200,7 +202,7 @@ public class MoveAction : BaseAction
 
     void TryQueueNextAction()
     {
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
         {
             // If the Player has a target Interactable
             if (unit.unitActionHandler.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), unit.unitActionHandler.targetInteractable.GridPosition()) <= 1.4f)
@@ -247,13 +249,19 @@ public class MoveAction : BaseAction
     {
         unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.GridPosition());
 
-        BaseAction action = unit.unitActionHandler.selectedActionType.GetAction(unit);
-        if (action.IsAttackAction())
-            unit.unitActionHandler.SetTargetGridPosition(action.GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
-        else if (unit.CharacterEquipment.RangedWeaponEquipped())
+        BaseAction selectedAction = unit.unitActionHandler.SelectedAction;
+        if (selectedAction.IsAttackAction())
+            unit.unitActionHandler.SetTargetGridPosition(selectedAction.GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
+        else if (unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
             unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
-        else
+        else if (unit.CharacterEquipment.MeleeWeaponEquipped() || unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed)
             unit.unitActionHandler.SetTargetGridPosition(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition(), unit.unitActionHandler.targetEnemyUnit));
+        else
+        {
+            unit.unitActionHandler.SettargetEnemyUnit(null);
+            unit.unitActionHandler.SkipTurn();
+            return;
+        }
 
         unit.unitActionHandler.QueueAction(unit.unitActionHandler.GetAction<MoveAction>());
     }
@@ -280,7 +288,7 @@ public class MoveAction : BaseAction
         // Force the path request to complete immediately. This assumes the graph is small enough that this will not cause any lag
         path.BlockUntilCalculated();
 
-        if (unit.IsNPC() && path.vectorPath.Count == 0)
+        if (unit.IsNPC && path.vectorPath.Count == 0)
         {
             NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
             if (unit.stateController.currentState == State.Patrol)
@@ -368,7 +376,7 @@ public class MoveAction : BaseAction
         float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
 
         floatCost += floatCost * tileCostMultiplier;
-        if (LevelGrid.IsDiagonal(unit.WorldPosition(), nextTargetPosition))
+        if (LevelGrid.IsDiagonal(unit.WorldPosition, nextTargetPosition))
             floatCost *= 1.4f;
 
         cost = Mathf.RoundToInt(floatCost);
@@ -377,7 +385,7 @@ public class MoveAction : BaseAction
         {
             unit.unitActionHandler.SetTargetGridPosition(unit.GridPosition());
 
-            if (unit.IsNPC())
+            if (unit.IsNPC)
             {
                 if (unit.stateController.currentState == State.Patrol)
                 {
@@ -391,7 +399,7 @@ public class MoveAction : BaseAction
 
         unit.BlockCurrentPosition();
 
-        // if (unit.IsNPC()) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
+        // if (unit.IsNPC) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
         return cost;
     }
 
@@ -471,7 +479,7 @@ public class MoveAction : BaseAction
     float GetTileMoveCostMultiplier(Vector3 tilePosition)
     {
         GraphNode node = AstarPath.active.GetNearest(tilePosition).node;
-        // if (unit.IsPlayer()) Debug.Log("Tag #" + node.Tag + " penalty is: ");
+        // if (unit.IsPlayer) Debug.Log("Tag #" + node.Tag + " penalty is: ");
 
         for (int i = 0; i < unit.seeker.tagPenalties.Length; i++)
         {
@@ -492,7 +500,7 @@ public class MoveAction : BaseAction
         base.CompleteAction();
 
         // Unblock the Unit's postion, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             unit.UnblockCurrentPosition();
         else if (unit.health.IsDead() == false)
             unit.BlockCurrentPosition();
@@ -505,7 +513,7 @@ public class MoveAction : BaseAction
 
     public void SetMoveSpeed(int pooledAP)
     {
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             return;
 
         if (((float)pooledAP) / defaultTileMoveCost <= 1f)

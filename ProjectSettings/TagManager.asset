@@ -42,8 +42,8 @@ TagManager:
   - 
   - 
   - 
-  - 
   - Hearing
+  - LooseInteractable
   - Interactable
   m_SortingLayers:
   - name: Default

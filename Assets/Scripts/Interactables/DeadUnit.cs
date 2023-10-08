@@ -1,27 +1,33 @@
 using UnityEngine;
 
-public class DeadUnit : Interactable
+namespace InteractableObjects
 {
-    Unit myUnit;
-
-    public override void Awake()
+    public class DeadUnit : Interactable
     {
-        base.Awake();
+        Unit myUnit;
 
-        myUnit = GetComponent<Unit>();
-    }
-
-    public override void Interact(Unit unitInteracting)
-    {
-        if (myUnit.CharacterEquipment.slotVisualsCreated == false)
+        public override void Awake()
         {
-            myUnit.CharacterEquipment.CreateSlotVisuals();
-            myUnit.MainInventoryManager.MainInventory.CreateSlotVisuals();
+            base.Awake();
 
-            if (InventoryUI.Instance.npcInventoryActive == false)
-                InventoryUI.Instance.ToggleNPCInventory();
+            myUnit = GetComponent<Unit>();
         }
-    }
 
-    public override bool CanInteractAtMyGridPosition() => true;
+        public override void Interact(Unit unitInteracting)
+        {
+            if (myUnit.CharacterEquipment.slotVisualsCreated == false)
+            {
+                myUnit.CharacterEquipment.CreateSlotVisuals();
+                myUnit.MainInventoryManager.MainInventory.CreateSlotVisuals();
+
+                if (InventoryUI.npcInventoryActive == false)
+                    InventoryUI.ToggleNPCInventory();
+
+                if (InventoryUI.playerInventoryActive == false)
+                    InventoryUI.TogglePlayerInventory();
+            }
+        }
+
+        public override bool CanInteractAtMyGridPosition() => true;
+    }
 }

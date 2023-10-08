@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using GridSystem;
+using SoundSystem;
 
 public class Testing : MonoBehaviour
 {
@@ -15,7 +17,7 @@ public class Testing : MonoBehaviour
     void ShowDebugPathToMousePosition()
     {
         GridPosition mouseGridPosition = LevelGrid.GetGridPosition(WorldMouse.GetPosition());
-        GridPosition startGridPosition = UnitManager.Instance.player.GridPosition();
+        GridPosition startGridPosition = UnitManager.player.GridPosition();
         ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(startGridPosition), LevelGrid.GetWorldPosition(mouseGridPosition));
         path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 
@@ -35,5 +37,5 @@ public class Testing : MonoBehaviour
         }
     }
 
-    void PlayTestSound() => AudioManager.PlayRandomSound(AudioManager.Instance.humanMaleGruntSounds, UnitManager.Instance.player.WorldPosition(), UnitManager.Instance.player, true);
+    void PlayTestSound() => AudioManager.PlayRandomSound(AudioManager.Instance.humanMaleGruntSounds, UnitManager.player.WorldPosition, UnitManager.player, true);
 }

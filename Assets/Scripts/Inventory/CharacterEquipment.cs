@@ -32,7 +32,7 @@ public class CharacterEquipment : MonoBehaviour
             equippedItemDatas[i].SetItem(startingEquipment[i]);
         }
 
-        if (myUnit.IsPlayer())
+        if (myUnit.IsPlayer)
             CreateSlotVisuals();
         else
             SetupItems();
@@ -83,28 +83,28 @@ public class CharacterEquipment : MonoBehaviour
     {
         // If drag/dropping an item onto an equipped backpack
         if ((newItemData.Item is Equipment == false || newItemData.Item.Equipment.EquipSlot != EquipSlot.Back) && targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item is Backpack)
-        { 
+        {
             if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
             {
                 if (ItemDataEquipped(newItemData))
                     RemoveEquipment(newItemData);
 
-                if (InventoryUI.Instance.isDraggingItem)
-                    InventoryUI.Instance.DisableDraggedItem();
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.DisableDraggedItem();
                 return true;
             }
             else
             {
-                if (InventoryUI.Instance.isDraggingItem)
-                    InventoryUI.Instance.ReplaceDraggedItem();
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.ReplaceDraggedItem();
                 return false;
             }
         }
 
         // Check if the position is invalid
-        if (InventoryUI.Instance.isDraggingItem && InventoryUI.Instance.validDragPosition == false)
+        if (InventoryUI.isDraggingItem && InventoryUI.validDragPosition == false)
         {
-            InventoryUI.Instance.ReplaceDraggedItem();
+            InventoryUI.ReplaceDraggedItem();
             return false;
         }
 
@@ -118,8 +118,8 @@ public class CharacterEquipment : MonoBehaviour
         }
 
         // If trying to place the item back into the slot it came from, place the dragged item back to where it came from
-        if (InventoryUI.Instance.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.Instance.parentSlotDraggedFrom)
-            InventoryUI.Instance.ReplaceDraggedItem();
+        if (InventoryUI.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.parentSlotDraggedFrom)
+            InventoryUI.ReplaceDraggedItem();
         // If trying to place ammo on a Quiver slot that has a Quiver or the same type of arrows equipped
         else if (newItemData.Item is Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
             TryAddToEquippedAmmunition(newItemData);
@@ -161,9 +161,9 @@ public class CharacterEquipment : MonoBehaviour
         SetupEquipmentMesh(targetEquipSlot, newItemData);
 
         // Hide the dragged item
-        if (InventoryUI.Instance.isDraggingItem)
-            InventoryUI.Instance.DisableDraggedItem();
-        
+        if (InventoryUI.isDraggingItem)
+            InventoryUI.DisableDraggedItem();
+
         AddActions(newItemData.Item as Equipment);
     }
 
@@ -171,12 +171,12 @@ public class CharacterEquipment : MonoBehaviour
     {
         if (EquipSlotHasItem(EquipSlot.Quiver) == false || ammoItemData.Item is Ammunition == false)
             return false;
-        
+
         if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory() == myUnit.QuiverInventoryManager.ParentInventory)
         {
-            if (InventoryUI.Instance.isDraggingItem)
-                InventoryUI.Instance.ReplaceDraggedItem();
-            
+            if (InventoryUI.isDraggingItem)
+                InventoryUI.ReplaceDraggedItem();
+
             return false;
         }
 
@@ -189,8 +189,8 @@ public class CharacterEquipment : MonoBehaviour
                     GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
                 RemoveItemFromOrigin(ammoItemData);
-                if (InventoryUI.Instance.isDraggingItem)
-                    InventoryUI.Instance.DisableDraggedItem();
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.DisableDraggedItem();
 
                 return true;
             }
@@ -217,8 +217,8 @@ public class CharacterEquipment : MonoBehaviour
             if (ammoItemData.CurrentStackSize <= 0)
             {
                 RemoveItemFromOrigin(ammoItemData);
-                if (InventoryUI.Instance.isDraggingItem)
-                    InventoryUI.Instance.DisableDraggedItem();
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.DisableDraggedItem();
 
                 return true;
             }
@@ -227,15 +227,15 @@ public class CharacterEquipment : MonoBehaviour
                 // Update the stack size text for the ammo since it wasn't all equipped
                 if (ammoItemData.MyInventory() != null && ammoItemData.MyInventory().slotVisualsCreated)
                     ammoItemData.MyInventory().GetSlotFromItemData(ammoItemData).InventoryItem.UpdateStackSizeVisuals();
-                else if (InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.slotVisualsCreated && InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(ammoItemData))
-                    InventoryUI.Instance.npcEquipmentSlots[0].CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
+                else if (InventoryUI.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.npcEquipmentSlots[0].CharacterEquipment.slotVisualsCreated && InventoryUI.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(ammoItemData))
+                    InventoryUI.npcEquipmentSlots[0].CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
                 else if (slotVisualsCreated && ItemDataEquipped(ammoItemData))
                     GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
             }
         }
 
-        if (InventoryUI.Instance.isDraggingItem)
-            InventoryUI.Instance.ReplaceDraggedItem();
+        if (InventoryUI.isDraggingItem)
+            InventoryUI.ReplaceDraggedItem();
 
         return false;
     }
@@ -275,18 +275,18 @@ public class CharacterEquipment : MonoBehaviour
     void RemoveItemFromOrigin(ItemData itemDataToRemove)
     {
         // Remove the item from its original character equipment or inventory
-        if (InventoryUI.Instance.isDraggingItem)
+        if (InventoryUI.isDraggingItem)
         {
-            if (InventoryUI.Instance.DraggedItem.myCharacterEquipment != null)
-                InventoryUI.Instance.DraggedItem.myCharacterEquipment.RemoveEquipment(itemDataToRemove);
-            else if (InventoryUI.Instance.DraggedItem.myInventory != null)
-                InventoryUI.Instance.DraggedItem.myInventory.RemoveItem(itemDataToRemove);
+            if (InventoryUI.DraggedItem.myCharacterEquipment != null)
+                InventoryUI.DraggedItem.myCharacterEquipment.RemoveEquipment(itemDataToRemove);
+            else if (InventoryUI.DraggedItem.myInventory != null)
+                InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove);
         }
-        else if (ContextMenu.Instance.TargetSlot != null)
+        else if (ContextMenu.targetSlot != null)
         {
-            InventoryItem targetInventoryItem = ContextMenu.Instance.TargetSlot.InventoryItem;
+            InventoryItem targetInventoryItem = ContextMenu.targetSlot.InventoryItem;
             if (targetInventoryItem.myCharacterEquipment != null)
-                targetInventoryItem.myCharacterEquipment.RemoveEquipment(ContextMenu.Instance.TargetSlot.InventoryItem.itemData);
+                targetInventoryItem.myCharacterEquipment.RemoveEquipment(ContextMenu.targetSlot.InventoryItem.itemData);
             else if (targetInventoryItem.myInventory != null)
                 targetInventoryItem.myInventory.RemoveItem(itemDataToRemove);
         }
@@ -302,13 +302,13 @@ public class CharacterEquipment : MonoBehaviour
             return;
 
         Equipment equipment = equippedItemDatas[(int)equipSlot].Item as Equipment;
-        if (GetEquipmentSlot(equipSlot) != InventoryUI.Instance.parentSlotDraggedFrom)
+        if (GetEquipmentSlot(equipSlot) != InventoryUI.parentSlotDraggedFrom)
         {
             // If this is the Unit's equipped backpack
             if (equipSlot == EquipSlot.Back && equipment is Backpack)
             {
                 if (myUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
-                    InventoryUI.Instance.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
+                    InventoryUI.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
                 if (myUnit.BackpackInventoryManager.ContainsAnyItems())
                     DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
@@ -316,7 +316,7 @@ public class CharacterEquipment : MonoBehaviour
             else if (equipSlot == EquipSlot.Quiver && equipment is Quiver)
             {
                 if (myUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
-                    InventoryUI.Instance.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
+                    InventoryUI.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
 
                 if (myUnit.QuiverInventoryManager.ContainsAnyItems())
                     DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
@@ -348,10 +348,10 @@ public class CharacterEquipment : MonoBehaviour
             return;
         }
 
-        if (myUnit.IsPlayer())
-            slots = InventoryUI.Instance.playerEquipmentSlots;
+        if (myUnit.IsPlayer)
+            slots = InventoryUI.playerEquipmentSlots;
         else
-            slots = InventoryUI.Instance.npcEquipmentSlots;
+            slots = InventoryUI.npcEquipmentSlots;
 
         for (int i = 0; i < slots.Count; i++)
         {
@@ -552,8 +552,8 @@ public class CharacterEquipment : MonoBehaviour
 
             heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
 
-            if (myUnit.IsPlayer())
-                myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
+            if (myUnit.IsPlayer)
+                myUnit.unitActionHandler.SetDefaultSelectedAction();
         }
         else if (equipSlot == EquipSlot.Helm || equipSlot == EquipSlot.BodyArmor)
         {
@@ -580,7 +580,7 @@ public class CharacterEquipment : MonoBehaviour
                 {
                     Debug.LogWarning("Opposite Equip Slot has no Item...");
                     return;
-                }    
+                }
 
                 if (equippedItemDatas[(int)oppositeEquipSlot].Item is Weapon && equippedItemDatas[(int)oppositeEquipSlot].Item.Weapon.IsTwoHanded)
                     equipSlot = oppositeEquipSlot;
@@ -588,8 +588,8 @@ public class CharacterEquipment : MonoBehaviour
 
             myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
 
-            if (myUnit.IsPlayer())
-                myUnit.unitActionHandler.SetSelectedActionType(myUnit.unitActionHandler.FindActionTypeByName("MoveAction"));
+            if (myUnit.IsPlayer)
+                myUnit.unitActionHandler.SetDefaultSelectedAction();
         }
         else
             myUnit.unitMeshManager.RemoveMesh(equipSlot);
@@ -597,8 +597,8 @@ public class CharacterEquipment : MonoBehaviour
 
     public void SwapWeaponSet()
     {
-        if (InventoryUI.Instance.isDraggingItem)
-            InventoryUI.Instance.ReplaceDraggedItem();
+        if (InventoryUI.isDraggingItem)
+            InventoryUI.ReplaceDraggedItem();
 
         if (currentWeaponSet == WeaponSet.One)
         {
@@ -696,15 +696,15 @@ public class CharacterEquipment : MonoBehaviour
         ActionSystemUI.UpdateActionVisuals();
     }
 
-    public bool IsDualWielding() => 
+    public bool IsDualWielding() =>
         (currentWeaponSet == WeaponSet.One && EquipSlotHasItem(EquipSlot.LeftHeldItem1) && EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is MeleeWeapon && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is MeleeWeapon)
         || (currentWeaponSet == WeaponSet.Two && EquipSlotHasItem(EquipSlot.LeftHeldItem2) && EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is MeleeWeapon && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is MeleeWeapon);
 
-    public bool MeleeWeaponEquipped() => 
+    public bool MeleeWeaponEquipped() =>
         (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is MeleeWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is MeleeWeapon)))
         || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is MeleeWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is MeleeWeapon)));
 
-    public bool RangedWeaponEquipped() => 
+    public bool RangedWeaponEquipped() =>
         (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is RangedWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is RangedWeapon)))
         || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is RangedWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is RangedWeapon)));
 
@@ -712,9 +712,10 @@ public class CharacterEquipment : MonoBehaviour
         (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is Shield) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is Shield)))
         || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Shield) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Shield)));
 
-    public bool IsUnarmed() => 
+    public bool IsUnarmed() =>
         (currentWeaponSet == WeaponSet.One && (EquipSlotHasItem(EquipSlot.LeftHeldItem1) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem1) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is Weapon == false))
-        || (currentWeaponSet == WeaponSet.Two && (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Weapon == false));
+        || (currentWeaponSet == WeaponSet.Two && (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Weapon == false))
+        || (RangedWeaponEquipped() && HasValidAmmunitionEquipped() == false);
 
     public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 

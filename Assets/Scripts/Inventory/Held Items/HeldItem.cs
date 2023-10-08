@@ -100,7 +100,7 @@ public abstract class HeldItem : MonoBehaviour
             else // For items like the bow that consist of multiple meshes
                 meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
 
-            if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 meshFilters[i].mesh = itemData.Item.Meshes[i];
                 meshRenderers[i].enabled = true;

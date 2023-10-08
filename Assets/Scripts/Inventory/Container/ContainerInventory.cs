@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using InteractableObjects;
 
 [System.Serializable]
 public class ContainerInventory : Inventory

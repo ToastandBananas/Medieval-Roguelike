@@ -167,19 +167,19 @@ public class InventorySlot : Slot
 
     public override void HighlightSlots()
     {
-        int width = InventoryUI.Instance.DraggedItem.itemData.Item.Width;
-        int height = InventoryUI.Instance.DraggedItem.itemData.Item.Height;
+        int width = InventoryUI.DraggedItem.itemData.Item.Width;
+        int height = InventoryUI.DraggedItem.itemData.Item.Height;
 
-        bool validSlot = !InventoryUI.Instance.OverlappingMultipleItems(slotCoordinate, InventoryUI.Instance.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
+        bool validSlot = !InventoryUI.OverlappingMultipleItems(slotCoordinate, InventoryUI.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
 
         if (validSlot)
         {
-            if (myInventory.MyUnit.health.IsDead() && (InventoryUI.Instance.parentSlotDraggedFrom == null || InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.Instance.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
+            if (myInventory.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
                 validSlot = false;
-            else if (myInventory.ItemTypeAllowed(InventoryUI.Instance.DraggedItem.itemData.Item.ItemType))
+            else if (myInventory.ItemTypeAllowed(InventoryUI.DraggedItem.itemData.Item.ItemType))
             {
                 if (myInventory.InventoryLayout.HasStandardSlotSize() == false) // Non-standard slot size
-                    validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.Instance.DraggedItem.itemData.Item);
+                    validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.DraggedItem.itemData.Item);
                 else if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0) // Standard slot size
                     validSlot = false;
             }
@@ -187,14 +187,14 @@ public class InventorySlot : Slot
                 validSlot = false;
         }
 
-        if (validSlot && InventoryUI.Instance.parentSlotDraggedFrom != null && InventoryUI.Instance.parentSlotDraggedFrom is ContainerEquipmentSlot)
+        if (validSlot && InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is ContainerEquipmentSlot)
         {
-            ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.Instance.parentSlotDraggedFrom as ContainerEquipmentSlot;
-            if (InventoryUI.Instance.DraggedItem.itemData.Item is Quiver && containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
+            ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.parentSlotDraggedFrom as ContainerEquipmentSlot;
+            if (InventoryUI.DraggedItem.itemData.Item is Quiver && containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
                 validSlot = false;
         }
 
-        InventoryUI.Instance.SetValidDragPosition(validSlot);
+        InventoryUI.SetValidDragPosition(validSlot);
         
         if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
         {
@@ -232,9 +232,9 @@ public class InventorySlot : Slot
             return;
         }
 
-        for (int x = 0; x < InventoryUI.Instance.DraggedItem.itemData.Item.Width; x++)
+        for (int x = 0; x < InventoryUI.DraggedItem.itemData.Item.Width; x++)
         {
-            for (int y = 0; y < InventoryUI.Instance.DraggedItem.itemData.Item.Height; y++)
+            for (int y = 0; y < InventoryUI.DraggedItem.itemData.Item.Height; y++)
             {
                 InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
                 if (slotToHighlight == null)

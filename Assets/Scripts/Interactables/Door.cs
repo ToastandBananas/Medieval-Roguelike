@@ -1,67 +1,71 @@
 using System.Collections;
 using UnityEngine;
+using GridSystem;
 
-public class Door : Interactable
+namespace InteractableObjects
 {
-    public bool isOpen { get; private set; }
-
-    float rotationAmount = 90f;
-    float speed = 2f;
-
-    Vector3 closedRotation;
-
-    public override void Awake()
+    public class Door : Interactable
     {
-        base.Awake();
+        public bool isOpen { get; private set; }
 
-        closedRotation = transform.rotation.eulerAngles;
-    }
+        float rotationAmount = 90f;
+        float speed = 2f;
 
-    public override void Interact(Unit unit)
-    {
-        isOpen = !isOpen;
+        Vector3 closedRotation;
 
-        if (isOpen)
-            StartCoroutine(OpenDoor());
-        else
-            StartCoroutine(CloseDoor());
-    }
-
-    public override void UpdateGridPosition()
-    {
-        gridPosition = LevelGrid.GetGridPosition(transform.parent.position);
-        LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
-    }
-
-    IEnumerator OpenDoor()
-    {
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation;
-
-        endRotation = Quaternion.Euler(new Vector3(0f, startRotation.y + rotationAmount, 0f));
-
-        float time = 0f;
-        while (time < 1f)
+        public override void Awake()
         {
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
-            yield return null;
-            time += Time.deltaTime * speed;
+            base.Awake();
+
+            closedRotation = transform.rotation.eulerAngles;
         }
-    }
 
-    IEnumerator CloseDoor()
-    {
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(closedRotation);
-
-        float time = 0f;
-        while (time < 1f)
+        public override void Interact(Unit unit)
         {
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
-            yield return null;
-            time += Time.deltaTime * speed;
-        }
-    }
+            isOpen = !isOpen;
 
-    public override bool CanInteractAtMyGridPosition() => false;
+            if (isOpen)
+                StartCoroutine(OpenDoor());
+            else
+                StartCoroutine(CloseDoor());
+        }
+
+        public override void UpdateGridPosition()
+        {
+            gridPosition = LevelGrid.GetGridPosition(transform.parent.position);
+            LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
+        }
+
+        IEnumerator OpenDoor()
+        {
+            Quaternion startRotation = transform.rotation;
+            Quaternion endRotation;
+
+            endRotation = Quaternion.Euler(new Vector3(0f, startRotation.y + rotationAmount, 0f));
+
+            float time = 0f;
+            while (time < 1f)
+            {
+                transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
+                yield return null;
+                time += Time.deltaTime * speed;
+            }
+        }
+
+        IEnumerator CloseDoor()
+        {
+            Quaternion startRotation = transform.rotation;
+            Quaternion endRotation = Quaternion.Euler(closedRotation);
+
+            float time = 0f;
+            while (time < 1f)
+            {
+                transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
+                yield return null;
+                time += Time.deltaTime * speed;
+            }
+        }
+
+        public override bool CanInteractAtMyGridPosition() => false;
+    }
 }

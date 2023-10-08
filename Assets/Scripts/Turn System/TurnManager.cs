@@ -31,7 +31,7 @@ public class TurnManager : MonoBehaviour
 
     void Start()
     {
-        activeUnit = UnitManager.Instance.player;
+        activeUnit = UnitManager.player;
 
         npcs_HaventFinishedTurn = new List<Unit>();
         npcs_FinishedTurn = new List<Unit>();
@@ -46,7 +46,7 @@ public class TurnManager : MonoBehaviour
         if (unit.health.IsDead() == false)
             unit.BlockCurrentPosition();
 
-        if (unit.IsNPC())
+        if (unit.IsNPC)
         {
             // The unit should be at 0 AP, but if they finished their turn without performing an action (because it had to be cancelled, for example) then just zero out their currentAP
             if (unit.stats.currentAP > 0)
@@ -78,7 +78,7 @@ public class TurnManager : MonoBehaviour
 
     void StartUnitsTurn(Unit unit)
     {
-        if (UnitManager.Instance.player.health.IsDead())
+        if (UnitManager.player.health.IsDead())
             return;
 
         activeUnit = unit;
@@ -88,7 +88,7 @@ public class TurnManager : MonoBehaviour
             unit.unitActionHandler.CancelAction();
 
             // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
-            if (unit.IsNPC())
+            if (unit.IsNPC)
             {
                 if (npcs_HaventFinishedTurn.Contains(unit))
                     npcs_HaventFinishedTurn.Remove(unit);
@@ -169,7 +169,7 @@ public class TurnManager : MonoBehaviour
         else
         {
             activeUnit.SetIsMyTurn(false);
-            activeUnit = UnitManager.Instance.player;
+            activeUnit = UnitManager.player;
             StartUnitsTurn(activeUnit);
         }
 
@@ -179,15 +179,15 @@ public class TurnManager : MonoBehaviour
     void SortNPCsBySpeed()
     {
         npcs_HaventFinishedTurn.Clear();
-        for (int i = 0; i < UnitManager.Instance.livingNPCs.Count; i++)
+        for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
         {
-            if (UnitManager.Instance.livingNPCs[i].stats.pooledAP > 0)
-                npcs_HaventFinishedTurn.Add(UnitManager.Instance.livingNPCs[i]);
+            if (UnitManager.livingNPCs[i].stats.pooledAP > 0)
+                npcs_HaventFinishedTurn.Add(UnitManager.livingNPCs[i]);
         }
 
         if (npcs_HaventFinishedTurn.Count > 0)
             npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.stats.Speed().GetValue()).ToList();
     }
 
-    public bool IsPlayerTurn() => activeUnit == UnitManager.Instance.player;
+    public bool IsPlayerTurn() => activeUnit == UnitManager.player;
 }

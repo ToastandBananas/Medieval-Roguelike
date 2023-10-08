@@ -3,6 +3,7 @@ using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GridSystem;
 
 public class SwipeAction : BaseAction
 {
@@ -28,7 +29,7 @@ public class SwipeAction : BaseAction
         else
         {
             CompleteAction();
-            if (unit.IsPlayer())
+            if (unit.IsPlayer)
                 unit.unitActionHandler.TakeTurn();
             return;
         }
@@ -39,7 +40,7 @@ public class SwipeAction : BaseAction
         TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
         // If this is the Player attacking, or if this is an NPC that's visible on screen
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
         {
             // Rotate towards the target
             if (turnAction.IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition) == false)
@@ -122,7 +123,7 @@ public class SwipeAction : BaseAction
                             blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetLeftHeldMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
 
-                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit);
 
                     if (itemBlockedWith is HeldShield)
                         targetUnit.unitMeshManager.GetHeldShield().LowerShield();
@@ -133,7 +134,7 @@ public class SwipeAction : BaseAction
                     }
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit);
             }
         }
 
@@ -171,8 +172,8 @@ public class SwipeAction : BaseAction
 
             // Check for obstacles
             float sphereCastRadius = 0.1f;
-            Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask))
+            Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
                 continue;
 
             validGridPositionsList.Add(nodeGridPosition);
@@ -187,7 +188,7 @@ public class SwipeAction : BaseAction
         validGridPositionsList.Clear();
 
         // Get the closest cardinal or intermediate direction
-        Vector3 directionToTarget = (targetGridPosition.WorldPosition() - unit.WorldPosition()).normalized;
+        Vector3 directionToTarget = (targetGridPosition.WorldPosition() - unit.WorldPosition).normalized;
         Vector3 generalDirection = GetGeneralDirection(directionToTarget);
 
         if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
@@ -198,17 +199,17 @@ public class SwipeAction : BaseAction
             return validGridPositionsList;
 
         // Check if the target position is within the max attack range
-        //if (Vector3.Distance(unit.WorldPosition(), targetGridPosition.WorldPosition()) > maxAttackRange)
+        //if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition()) > maxAttackRange)
         if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
             return validGridPositionsList;
 
         // Check for obstacles
         float sphereCastRadius = 0.1f;
-        Vector3 heightOffset = Vector3.up * unit.ShoulderHeight() * 2f;
-        if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask))
+        Vector3 heightOffset = Vector3.up * unit.ShoulderHeight * 2f;
+        if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition() + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
         {
             // Debug.Log(targetGridPosition.WorldPosition() + " (the target position) is blocked by " + hit.collider.name);
-            return validGridPositionsList; ;
+            return validGridPositionsList;
         }
 
         float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
@@ -229,14 +230,14 @@ public class SwipeAction : BaseAction
                 continue;
 
             // Check if the node is in the general direction of the attack
-            Vector3 yDifference = Vector3.up * (nodeGridPosition.WorldPosition().y - unit.WorldPosition().y);
-            Vector3 directionToNode = (nodeGridPosition.WorldPosition() - (unit.WorldPosition() + yDifference)).normalized;
+            Vector3 yDifference = Vector3.up * (nodeGridPosition.WorldPosition().y - unit.WorldPosition.y);
+            Vector3 directionToNode = (nodeGridPosition.WorldPosition() - (unit.WorldPosition + yDifference)).normalized;
             float angleBetweenDirections = Vector3.Angle(generalDirection, directionToNode);
             if (angleBetweenDirections > 45f)
                 continue;
 
             // Check if the node is within the max attack range
-            //if (Vector3.Distance(unit.WorldPosition(), nodeGridPosition.WorldPosition()) > maxAttackRange)
+            //if (Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition()) > maxAttackRange)
             if (IsInAttackRange(null, unit.GridPosition(), nodeGridPosition) == false)
                 continue;
 
@@ -245,8 +246,8 @@ public class SwipeAction : BaseAction
                 continue;
 
             // Check for obstacles
-            Vector3 directionToAttackPosition = ((nodeGridPosition.WorldPosition() + heightOffset) - (unit.WorldPosition() + heightOffset)).normalized;
-            if (Physics.SphereCast(unit.WorldPosition() + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition() + heightOffset), unit.unitActionHandler.AttackObstacleMask))
+            Vector3 directionToAttackPosition = ((nodeGridPosition.WorldPosition() + heightOffset) - (unit.WorldPosition + heightOffset)).normalized;
+            if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
             {
                 // Debug.Log(nodeGridPosition.WorldPosition() + " is blocked by " + hit.collider.name);
                 continue;
@@ -427,7 +428,7 @@ public class SwipeAction : BaseAction
                 finalActionValue -= 35f - (unitAtGridPosition.health.CurrentHealthNormalized() * 35f);
 
                 // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
-                if (unitAtGridPosition.IsPlayer())
+                if (unitAtGridPosition.IsPlayer)
                     finalActionValue -= 100f;
             }
             else // If IsNeutral
@@ -439,7 +440,7 @@ public class SwipeAction : BaseAction
                 finalActionValue -= 15f - (unitAtGridPosition.health.CurrentHealthNormalized() * 15f);
 
                 // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
-                if (unitAtGridPosition.IsPlayer())
+                if (unitAtGridPosition.IsPlayer)
                     finalActionValue -= 50f;
             }
         }
@@ -476,7 +477,7 @@ public class SwipeAction : BaseAction
         base.CompleteAction();
 
         unit.unitActionHandler.SetIsAttacking(false);
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.FinishAction();

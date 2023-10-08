@@ -48,7 +48,7 @@ public class CameraController : MonoBehaviour
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         targetFollowOffset = cinemachineTransposer.m_FollowOffset;
 
-        transform.position = UnitManager.Instance.player.transform.position;
+        transform.position = UnitManager.player.transform.position;
 
         /*UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
         UnitActionSystem.Instance.OnActiveAIUnitChanged += UnitActionSystem_OnActiveAIUnitChanged;

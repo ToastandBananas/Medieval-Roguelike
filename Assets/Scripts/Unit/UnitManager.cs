@@ -6,10 +6,10 @@ public class UnitManager : MonoBehaviour
 {
     public static UnitManager Instance { get; private set; }
 
-    public Unit player { get; private set; }
+    public static Unit player { get; private set; }
 
-    public List<Unit> livingNPCs { get; private set; }
-    public List<Unit> deadNPCs { get; private set; }
+    public static List<Unit> livingNPCs { get; private set; }
+    public static List<Unit> deadNPCs { get; private set; }
 
     void Awake()
     {
@@ -46,7 +46,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void AddUnitToNPCList(Unit unit) => livingNPCs.Add(unit);
+    public static void AddUnitToNPCList(Unit unit) => livingNPCs.Add(unit);
 
-    public void RemoveUnitFromNPCList(Unit unit) => livingNPCs.Remove(unit);
+    public static void RemoveUnitFromNPCList(Unit unit) => livingNPCs.Remove(unit);
 }

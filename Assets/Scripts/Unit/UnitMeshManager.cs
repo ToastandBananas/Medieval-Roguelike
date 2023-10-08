@@ -143,7 +143,7 @@ public class UnitMeshManager : MonoBehaviour
                 break;
         }
 
-        if (myUnit.IsPlayer() == false && IsVisibleOnScreen() == false)
+        if (myUnit.IsPlayer == false && IsVisibleOnScreen() == false)
             HideMesh(equipSlot);
     }
 
@@ -225,5 +225,5 @@ public class UnitMeshManager : MonoBehaviour
 
     public Transform RightHeldItemParent => rightHeldItemParent;
 
-    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.Instance.player.vision.IsKnown(myUnit);
+    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using GridSystem;
 
 public abstract class BaseAction : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public abstract class BaseAction : MonoBehaviour
     public virtual void CompleteAction()
     {
         isActive = false;
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateActionVisuals();
     }
 

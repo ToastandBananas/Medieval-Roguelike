@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using GridSystem;
 
 public class ShootAction : BaseAction
 {
@@ -35,7 +36,7 @@ public class ShootAction : BaseAction
         else
         {
             CompleteAction();
-            if (unit.IsPlayer())
+            if (unit.IsPlayer)
                 unit.unitActionHandler.TakeTurn();
             return;
         }
@@ -50,7 +51,7 @@ public class ShootAction : BaseAction
         BecomeVisibleEnemyOfTarget(targetUnit);
 
         // If this is the Player attacking, or if this is an NPC that's visible on screen
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
         {
             // Rotate towards the target
             if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
@@ -105,19 +106,19 @@ public class ShootAction : BaseAction
                     if (targetUnit.CharacterEquipment.ShieldEquipped())
                         blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
 
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit);
 
                     if (targetUnit.CharacterEquipment.ShieldEquipped())
                         targetUnit.unitMeshManager.GetHeldShield().LowerShield();
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit);
             }
         }
 
         unit.unitActionHandler.targetUnits.Clear();
 
-        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
+        if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SettargetEnemyUnit(null);
     }
 
@@ -142,11 +143,11 @@ public class ShootAction : BaseAction
 
     IEnumerator RotateTowardsTarget()
     {
-        Vector3 targetPos = unit.unitActionHandler.targetEnemyUnit.WorldPosition();
+        Vector3 targetPos = unit.unitActionHandler.targetEnemyUnit.WorldPosition;
         while (unit.unitActionHandler.isAttacking)
         {
             float rotateSpeed = 10f;
-            Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - unit.WorldPosition()).normalized;
+            Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - unit.WorldPosition).normalized;
             Quaternion rotation = Quaternion.LookRotation(lookPos);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
             yield return null;
@@ -182,7 +183,7 @@ public class ShootAction : BaseAction
     public override void CompleteAction()
     {
         base.CompleteAction();
-        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
+        if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.SetIsAttacking(false);
@@ -224,9 +225,9 @@ public class ShootAction : BaseAction
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
+            Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
             Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (startGridPosition.WorldPosition() + offset)).normalized;
-            if (Physics.SphereCast(startGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(startGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, nodeGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
                 continue;
 
             // Debug.Log(gridPosition);
@@ -247,9 +248,9 @@ public class ShootAction : BaseAction
             return validGridPositionsList;
 
         float sphereCastRadius = 0.1f;
-        Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
-        Vector3 shootDir = ((unit.WorldPosition() + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
-        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
+        Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
+        Vector3 shootDir = ((unit.WorldPosition + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
+        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
             return validGridPositionsList; // Blocked by an obstacle
 
         validGridPositionsList.Add(targetGridPosition);
@@ -284,8 +285,8 @@ public class ShootAction : BaseAction
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask))
+            Vector3 shootDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
                 continue; // Blocked by an obstacle
 
             // Debug.Log(gridPosition);

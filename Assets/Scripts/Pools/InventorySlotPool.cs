@@ -50,9 +50,11 @@ public class InventorySlotPool : MonoBehaviour
 
     public void ReturnToPool(InventorySlot slot)
     {
+        // Hide the item's sprite, setup the empty slot sprites, clear the stack size text & clear out the slot's item data
         if (slot.ParentSlot() != null)
             slot.ParentSlot().ClearSlotVisuals();
 
+        slot.SetMyInventory(null);
         slot.transform.SetParent(transform);
         slot.gameObject.SetActive(false);
     }

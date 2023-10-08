@@ -2,6 +2,7 @@ using Pathfinding.Util;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using GridSystem;
 
 public class NPCActionHandler : UnitActionHandler
 {
@@ -107,7 +108,7 @@ public class NPCActionHandler : UnitActionHandler
                     return;
                 }
 
-                if (unit.CharacterEquipment.RangedWeaponEquipped())
+                if (unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
                 {
                     Unit closestEnemy = unit.vision.GetClosestEnemy(true);
                     float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
@@ -131,7 +132,7 @@ public class NPCActionHandler : UnitActionHandler
                         return;
                     }
                 }
-                else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
                 {
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                     {
@@ -412,7 +413,7 @@ public class NPCActionHandler : UnitActionHandler
             else
             {
                 npcAIActions.Clear();
-                if (unit.CharacterEquipment.RangedWeaponEquipped())
+                if (unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
                 {
                     ShootAction shootAction = GetAction<ShootAction>();
                     for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
@@ -429,7 +430,7 @@ public class NPCActionHandler : UnitActionHandler
                     SettargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                 }
-                else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed())
+                else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
                 {
                     MeleeAction meleeAction = GetAction<MeleeAction>();
                     for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
@@ -554,7 +555,7 @@ public class NPCActionHandler : UnitActionHandler
             return;
         }
 
-        if (Vector3.Distance(transform.position, leader.WorldPosition()) <= stopFollowDistance)
+        if (Vector3.Distance(transform.position, leader.WorldPosition) <= stopFollowDistance)
             TurnManager.Instance.FinishTurn(unit);
         else if (isMoving == false)
         {

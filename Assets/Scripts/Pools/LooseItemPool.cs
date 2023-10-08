@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using InteractableObjects;
 
 public class LooseItemPool : MonoBehaviour
 {
@@ -135,7 +136,7 @@ public class LooseItemPool : MonoBehaviour
         {
             LooseQuiverItem looseQuiver = (LooseQuiverItem)looseItem;
             if (looseQuiver.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
-                InventoryUI.Instance.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
+                InventoryUI.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
 
             looseQuiver.transform.SetParent(Instance.looseQuiverItemParent);
             looseQuiver.HideArrowMeshes();
@@ -144,7 +145,7 @@ public class LooseItemPool : MonoBehaviour
         {
             LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
             if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
-                InventoryUI.Instance.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
+                InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
             looseContainerItem.transform.SetParent(Instance.looseContainerItemParent);
         }

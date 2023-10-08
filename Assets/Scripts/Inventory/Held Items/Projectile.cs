@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using InteractableObjects;
+using GridSystem;
 
 public class Projectile : MonoBehaviour
 {
@@ -69,7 +71,7 @@ public class Projectile : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localEulerAngles = Vector3.zero;
 
-        if (shooter.IsPlayer() == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
+        if (shooter.IsPlayer == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
             meshRenderer.enabled = false;
 
         gameObject.SetActive(true);
@@ -81,7 +83,7 @@ public class Projectile : MonoBehaviour
     {
         ReadyProjectile();
 
-        targetPosition = targetUnit.WorldPosition();
+        targetPosition = targetUnit.WorldPosition;
 
         Vector3 startPos = transform.position;
         Vector3 offset = GetOffset(missedTarget);
@@ -120,7 +122,7 @@ public class Projectile : MonoBehaviour
 
         SetupTrail();
 
-        //if (shooter.IsPlayer())
+        //if (shooter.IsPlayer)
             //StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
     }
 
@@ -150,7 +152,7 @@ public class Projectile : MonoBehaviour
             float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().ItemData);
             float minOffset = 0.35f;
             float maxOffset = 1.35f;
-            float distToEnemy = Vector3.Distance(shooter.WorldPosition(), shooter.unitActionHandler.targetEnemyUnit.WorldPosition());
+            float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
             offsetX = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f)); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
             offsetZ = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f));
 
@@ -217,7 +219,7 @@ public class Projectile : MonoBehaviour
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.GetGridPosition(collider.transform.localPosition), LevelGrid.GetGridPosition(targetPosition)) <= damageRadius)
                 {
                     float sphereCastRadius = 0.1f;
-                    Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight();
+                    Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight;
                     Vector3 shootDir = ((targetPosition + heightOffset) - (collider.transform.localPosition + heightOffset)).normalized;
 
                     if (Physics.SphereCast(collider.transform.localPosition + heightOffset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(collider.transform.localPosition + heightOffset, targetPosition + heightOffset), obstaclesMask))
@@ -228,7 +230,7 @@ public class Projectile : MonoBehaviour
                         shooter.unitActionHandler.GetAction<ShootAction>().BecomeVisibleEnemyOfTarget(targetUnit);
 
                         // TODO: Less damage the further away from explosion
-                        targetUnit.health.TakeDamage(30, shooter.transform);
+                        targetUnit.health.TakeDamage(30, shooter);
                     }
                 }
             }

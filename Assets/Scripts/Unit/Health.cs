@@ -1,4 +1,5 @@
 using UnityEngine;
+using GridSystem;
 
 public class Health : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class Health : MonoBehaviour
             currentHealth = maxHealth;
     }
 
-    public void TakeDamage(int damageAmount, Transform attackerTransform)
+    public void TakeDamage(int damageAmount, Unit attacker)
     {
         if (damageAmount <= 0)
             return;
@@ -26,15 +27,15 @@ public class Health : MonoBehaviour
         if (currentHealth < 0)
             currentHealth = 0;
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateHealthText();
 
         // SpawnBlood(attackerTransform);
 
         if (currentHealth == 0)
-            Die(attackerTransform);
+            Die(attacker);
         else
-            unit.unitAnimator.DoSlightKnockback(attackerTransform);
+            unit.unitAnimator.DoSlightKnockback(attacker.transform);
     }
 
     public void IncreaseHealth(int healAmount)
@@ -43,14 +44,14 @@ public class Health : MonoBehaviour
         if (currentHealth > maxHealth)
             currentHealth = maxHealth;
 
-        if (unit.IsPlayer())
+        if (unit.IsPlayer)
             ActionSystemUI.UpdateHealthText();
     }
 
     void SpawnBlood(Transform attackerTransform)
     {
         ParticleSystem blood = ParticleEffectPool.Instance.GetParticleEffectFromPool(ParticleSystemData.ParticleSystemType.BloodSpray);
-        blood.transform.position = unit.transform.position + new Vector3(0, unit.ShoulderHeight(), 0);
+        blood.transform.position = unit.transform.position + new Vector3(0, unit.ShoulderHeight, 0);
         
         // Calculate the hit direction from the unit to the enemy.
         Vector3 hitDirection = (unit.transform.position - attackerTransform.position).normalized;
@@ -65,16 +66,19 @@ public class Health : MonoBehaviour
         blood.Play();
     }
 
-    void Die(Transform attackerTransform)
+    void Die(Unit attacker)
     {
-        UnitManager.Instance.deadNPCs.Add(unit);
-        UnitManager.Instance.livingNPCs.Remove(unit);
+        UnitManager.deadNPCs.Add(unit);
+        UnitManager.livingNPCs.Remove(unit);
         LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition());
 
         unit.UnblockCurrentPosition();
         unit.deadUnit.enabled = true;
 
-        unit.unitAnimator.Die(attackerTransform);
+        unit.unitAnimator.Die(attacker.transform);
+
+        if (attacker.IsPlayer)
+            attacker.unitActionHandler.SetDefaultSelectedAction();
     }
 
     public bool IsDead() => currentHealth <= 0;

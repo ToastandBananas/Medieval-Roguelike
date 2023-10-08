@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using InteractableObjects;
 
 [CustomEditor (typeof(Vision))]
 public class FieldOfViewEditor : Editor

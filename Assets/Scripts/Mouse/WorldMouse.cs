@@ -1,4 +1,5 @@
 using UnityEngine;
+using GridSystem;
 
 public enum CursorState { Default, MeleeAttack, RangedAttack, UseDoor, PickupItem, LootBag, LootContainer, Speak }
 

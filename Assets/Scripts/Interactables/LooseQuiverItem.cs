@@ -1,78 +1,81 @@
 using UnityEngine;
 
-public class LooseQuiverItem : LooseContainerItem
+namespace InteractableObjects
 {
-    [Header("Arrow Meshes")]
-    [SerializeField] MeshFilter[] arrowMeshFilters;
-    [SerializeField] MeshRenderer[] arrowMeshRenderers;
-
-    public override void Awake()
+    public class LooseQuiverItem : LooseContainerItem
     {
-        base.Awake();
+        [Header("Arrow Meshes")]
+        [SerializeField] MeshFilter[] arrowMeshFilters;
+        [SerializeField] MeshRenderer[] arrowMeshRenderers;
 
-        UpdateArrowMeshes();
-    }
-
-    public void UpdateArrowMeshes()
-    {
-        HideArrowMeshes();
-        
-        int arrowCount = 0;
-        for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
+        public override void Awake()
         {
-            arrowCount += ContainerInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize;
+            base.Awake();
+
+            UpdateArrowMeshes();
         }
-        
-        int totalAmmoCount = arrowCount;
-        if (arrowCount > 10)
-            arrowCount = 10;
 
-        int meshIndex = 0;
-        for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
+        public void UpdateArrowMeshes()
         {
-            if (ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh == null)
+            HideArrowMeshes();
+
+            int arrowCount = 0;
+            for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
             {
-                Debug.LogWarning(ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.name + " doesn't have an assigned Loose Quiver Mesh in its Scriptable Object");
-                continue;
+                arrowCount += ContainerInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize;
             }
 
-            if (ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial == null)
-            {
-                Debug.LogWarning(ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.name + " doesn't have an assigned Loose Quiver Material in its Scriptable Object");
-                continue;
-            }
+            int totalAmmoCount = arrowCount;
+            if (arrowCount > 10)
+                arrowCount = 10;
 
-            float ammoPercent = (float)ContainerInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize / totalAmmoCount;
-            int thisAmmosSpriteCount = Mathf.RoundToInt(arrowCount * ammoPercent);
-            if (thisAmmosSpriteCount == 0 && ammoPercent > 0f)
-                thisAmmosSpriteCount = 1;
-
-            for (int j = 0; j < thisAmmosSpriteCount; j++)
+            int meshIndex = 0;
+            for (int i = 0; i < ContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
             {
-                if (meshIndex >= arrowCount)
+                if (ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh == null)
                 {
-                    arrowMeshFilters[meshIndex - 1].mesh = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh;
-                    arrowMeshRenderers[meshIndex - 1].material = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial;
-                    arrowMeshFilters[meshIndex - 1].transform.parent.gameObject.SetActive(true);
-                    break;
+                    Debug.LogWarning(ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.name + " doesn't have an assigned Loose Quiver Mesh in its Scriptable Object");
+                    continue;
                 }
 
-                arrowMeshFilters[meshIndex].mesh = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh;
-                arrowMeshRenderers[meshIndex].material = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial;
-                arrowMeshFilters[meshIndex].transform.parent.gameObject.SetActive(true);
-                meshIndex++;
+                if (ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial == null)
+                {
+                    Debug.LogWarning(ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.name + " doesn't have an assigned Loose Quiver Material in its Scriptable Object");
+                    continue;
+                }
+
+                float ammoPercent = (float)ContainerInventoryManager.ParentInventory.ItemDatas[i].CurrentStackSize / totalAmmoCount;
+                int thisAmmosSpriteCount = Mathf.RoundToInt(arrowCount * ammoPercent);
+                if (thisAmmosSpriteCount == 0 && ammoPercent > 0f)
+                    thisAmmosSpriteCount = 1;
+
+                for (int j = 0; j < thisAmmosSpriteCount; j++)
+                {
+                    if (meshIndex >= arrowCount)
+                    {
+                        arrowMeshFilters[meshIndex - 1].mesh = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh;
+                        arrowMeshRenderers[meshIndex - 1].material = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial;
+                        arrowMeshFilters[meshIndex - 1].transform.parent.gameObject.SetActive(true);
+                        break;
+                    }
+
+                    arrowMeshFilters[meshIndex].mesh = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMesh;
+                    arrowMeshRenderers[meshIndex].material = ContainerInventoryManager.ParentInventory.ItemDatas[i].Item.Ammunition.LooseQuiverMaterial;
+                    arrowMeshFilters[meshIndex].transform.parent.gameObject.SetActive(true);
+                    meshIndex++;
+                }
             }
         }
-    }
 
-    public void HideArrowMeshes()
-    {
-        if (arrowMeshRenderers[0].transform.parent.gameObject.activeSelf == false)
-            return;
-
-        for (int i = 0; i < arrowMeshRenderers.Length; i++)
+        public void HideArrowMeshes()
         {
-            arrowMeshRenderers[i].transform.parent.gameObject.SetActive(false);
+            if (arrowMeshRenderers[0].transform.parent.gameObject.activeSelf == false)
+                return;
+
+            for (int i = 0; i < arrowMeshRenderers.Length; i++)
+            {
+                arrowMeshRenderers[i].transform.parent.gameObject.SetActive(false);
+            }
         }
     }
 }

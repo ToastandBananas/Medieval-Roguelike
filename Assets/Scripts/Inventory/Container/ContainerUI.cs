@@ -43,7 +43,7 @@ public class ContainerUI : MonoBehaviour
         {
             if (mainContainerInventory.MyUnit != null)
             {
-                if (mainContainerInventory.MyUnit.IsPlayer())
+                if (mainContainerInventory.MyUnit.IsPlayer)
                     titleText.text = $"Your {containerItem.name}";
                 else
                     titleText.text = $"{mainContainerInventory.MyUnit.name}'s {containerItem.name}";
@@ -197,14 +197,14 @@ public class ContainerUI : MonoBehaviour
 
         for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0 ; i--)
         {
-            UnitManager.Instance.player.TryAddItemToInventories(containerInventoryManager.ParentInventory.ItemDatas[i]);
+            UnitManager.player.TryAddItemToInventories(containerInventoryManager.ParentInventory.ItemDatas[i]);
         }
 
         for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
             for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0 ; j--)
             {
-                UnitManager.Instance.player.TryAddItemToInventories(containerInventoryManager.SubInventories[i].ItemDatas[j]);
+                UnitManager.player.TryAddItemToInventories(containerInventoryManager.SubInventories[i].ItemDatas[j]);
             }
         }
 
@@ -216,16 +216,16 @@ public class ContainerUI : MonoBehaviour
     {
         for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0; i--)
         {
-            if (UnitManager.Instance.player.MainInventory().TryAddItem(containerInventoryManager.ParentInventory.ItemDatas[i]) == false)
-                DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
+            if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.ParentInventory.ItemDatas[i]) == false)
+                DropItemManager.DropItem(UnitManager.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
         }
 
         for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
             for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0; j--)
             {
-                if (UnitManager.Instance.player.MainInventory().TryAddItem(containerInventoryManager.SubInventories[i].ItemDatas[j]) == false)
-                    DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
+                if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.SubInventories[i].ItemDatas[j]) == false)
+                    DropItemManager.DropItem(UnitManager.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
             }
         }
 
@@ -237,14 +237,14 @@ public class ContainerUI : MonoBehaviour
     {
         for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0; i--)
         {
-            DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
+            DropItemManager.DropItem(UnitManager.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
         }
 
         for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
         {
             for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0; j--)
             {
-                DropItemManager.DropItem(UnitManager.Instance.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
+                DropItemManager.DropItem(UnitManager.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
             }
         }
 

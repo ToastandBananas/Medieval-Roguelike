@@ -1,6 +1,8 @@
 using Pathfinding;
 using System.Collections.Generic;
 using UnityEngine;
+using InteractableObjects;
+using GridSystem;
 
 public class Unit : MonoBehaviour
 {
@@ -60,7 +62,7 @@ public class Unit : MonoBehaviour
         singleNodeBlocker.manager = LevelGrid.Instance.GetBlockManager();
         LevelGrid.Instance.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.Instance.GetUnitSingleNodeBlockerList());
 
-        if (IsNPC())
+        if (IsNPC)
         {
             if (health.IsDead())
             {
@@ -110,7 +112,7 @@ public class Unit : MonoBehaviour
 
     public float GetAttackRange(bool accountForHeight)
     {
-        if (myCharacterEquipment.RangedWeaponEquipped())
+        if (myCharacterEquipment.RangedWeaponEquipped() && myCharacterEquipment.HasValidAmmunitionEquipped())
             return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
         else if (myCharacterEquipment.MeleeWeaponEquipped())
             return unitMeshManager.GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
@@ -124,24 +126,26 @@ public class Unit : MonoBehaviour
 
     public void BlockAtPosition(Vector3 position) => singleNodeBlocker.BlockAt(position);
 
-    public bool IsNPC() => gameObject.CompareTag("Player") == false;
+    public bool IsNPC => gameObject.CompareTag("Player") == false;
 
-    public bool IsPlayer() => gameObject.CompareTag("Player");
+    public bool IsPlayer => gameObject.CompareTag("Player");
 
     public void SetIsMyTurn(bool isMyTurn) 
     {
         this.isMyTurn = isMyTurn;
-        if (IsPlayer())
-            GridSystemVisual.UpdateGridVisual();
+        if (IsPlayer)
+            GridSystemVisual.UpdateAttackGridVisual();
     }
 
     public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
 
-    public Vector3 WorldPosition() => LevelGrid.GetWorldPosition(gridPosition);
+    public Vector3 WorldPosition => LevelGrid.GetWorldPosition(gridPosition);
 
-    public float ShoulderHeight() => shoulderHeight;
+    public float ShoulderHeight => shoulderHeight;
 
     public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
+
+    public BaseAction SelectedAction => unitActionHandler.selectedActionType.GetAction(this);
 
     public UnitInventoryManager MainInventoryManager => mainInventoryManager;
 
@@ -149,7 +153,7 @@ public class Unit : MonoBehaviour
 
     public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
 
-    public Inventory MainInventory() => mainInventoryManager.MainInventory;
+    public Inventory MainInventory => mainInventoryManager.MainInventory;
 
     public CharacterEquipment CharacterEquipment => myCharacterEquipment;
 
@@ -172,7 +176,7 @@ public class Unit : MonoBehaviour
             return true;
         }
 
-        if (mainInventoryManager != null && MainInventory().TryAddItem(itemData))
+        if (mainInventoryManager != null && MainInventory.TryAddItem(itemData))
             return true;
 
         if (myCharacterEquipment != null)

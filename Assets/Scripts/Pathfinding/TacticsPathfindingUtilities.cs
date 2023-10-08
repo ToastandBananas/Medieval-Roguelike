@@ -1,5 +1,6 @@
 using UnityEngine;
 using Pathfinding;
+using GridSystem;
 
 public abstract class TacticsPathfindingUtilities
 {

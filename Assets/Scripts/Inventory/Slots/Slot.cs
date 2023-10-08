@@ -80,18 +80,18 @@ public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        InventoryUI.Instance.SetActiveSlot(this);
+        InventoryUI.SetActiveSlot(this);
 
-        if (InventoryUI.Instance.isDraggingItem)
+        if (InventoryUI.isDraggingItem)
             HighlightSlots();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (InventoryUI.Instance.activeSlot == this)
-            InventoryUI.Instance.SetActiveSlot(null);
+        if (InventoryUI.activeSlot == this)
+            InventoryUI.SetActiveSlot(null);
 
-        if (InventoryUI.Instance.isDraggingItem)
+        if (InventoryUI.isDraggingItem)
             RemoveSlotHighlights();
     }
 }

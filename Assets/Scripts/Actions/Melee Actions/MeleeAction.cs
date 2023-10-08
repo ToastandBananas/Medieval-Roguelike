@@ -3,6 +3,7 @@ using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GridSystem;
 
 public class MeleeAction : BaseAction
 {
@@ -27,7 +28,7 @@ public class MeleeAction : BaseAction
         else
         {
             CompleteAction();
-            if (unit.IsPlayer())
+            if (unit.IsPlayer)
                 unit.unitActionHandler.TakeTurn();
             return;
         }
@@ -39,7 +40,7 @@ public class MeleeAction : BaseAction
         TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
         // If this is the Player attacking, or if this is an NPC that's visible on screen
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
         {
             // Rotate towards the target
             if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
@@ -66,7 +67,10 @@ public class MeleeAction : BaseAction
             {
                 // Primary weapon attack
                 unit.unitAnimator.StartMeleeAttack(); 
-                unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack();
+                if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                    unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack();
+                else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
+                    unit.unitAnimator.DoDefaultUnarmedAttack();
             }
 
             // Wait until the attack lands before completing the action
@@ -95,7 +99,10 @@ public class MeleeAction : BaseAction
             else
             {
                 attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()); // Right hand weapon attack
+                if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                    DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()); // Right hand weapon attack
+                else
+                    DamageTargets(null); // Fallback to unarmed damage
             }
 
             // Rotate towards the target
@@ -152,7 +159,7 @@ public class MeleeAction : BaseAction
                             blockAmount = Mathf.RoundToInt(targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetLeftHeldMeleeWeapon()) * GameManager.dualWieldSecondaryEfficiency);
                     }
 
-                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - blockAmount - armorAbsorbAmount, unit);
 
                     if (itemBlockedWith is HeldShield)
                         targetUnit.unitMeshManager.GetHeldShield().LowerShield();
@@ -163,7 +170,7 @@ public class MeleeAction : BaseAction
                     }
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit.transform);
+                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit);
             }
         }
 
@@ -215,7 +222,7 @@ public class MeleeAction : BaseAction
         base.CompleteAction();
 
         unit.unitActionHandler.SetIsAttacking(false);
-        if (unit.IsPlayer() && PlayerInput.Instance.autoAttack == false)
+        if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
             unit.unitActionHandler.SettargetEnemyUnit(null);
 
         unit.unitActionHandler.FinishAction();
@@ -227,8 +234,10 @@ public class MeleeAction : BaseAction
             yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
         else if (unit.CharacterEquipment.IsDualWielding())
             yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
-        else
+        else if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
             yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item as Weapon));
+        else
+            yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
 
         CompleteAction();
         TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -330,8 +339,17 @@ public class MeleeAction : BaseAction
         }
         else
         {
-            minRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
-            maxRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+            HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+            if (primaryHeldMeleeWeapon != null)
+            {
+                minRange = primaryHeldMeleeWeapon.ItemData.Item.Weapon.MinRange;
+                maxRange = primaryHeldMeleeWeapon.ItemData.Item.Weapon.MaxRange;
+            }
+            else
+            {
+                minRange = 1f;
+                maxRange = UnarmedAttackRange(startGridPosition, false);
+            }
         }
 
         float boundsDimension = (maxRange * 2) + 0.1f;
@@ -356,9 +374,9 @@ public class MeleeAction : BaseAction
 
             // Check for obstacles
             float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
+            Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
             Vector3 shootDir = ((nodeGridPosition.WorldPosition() + offset) - (startGridPosition.WorldPosition() + offset)).normalized;
-            if (Physics.SphereCast(startGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, nodeGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(startGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, nodeGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
                 continue;
 
             validGridPositionsList.Add(nodeGridPosition);
@@ -378,9 +396,9 @@ public class MeleeAction : BaseAction
             return validGridPositionsList;
 
         float sphereCastRadius = 0.1f;
-        Vector3 offset = Vector3.up * unit.ShoulderHeight() * 2f;
-        Vector3 shootDir = ((unit.WorldPosition() + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
-        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition() + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
+        Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
+        Vector3 shootDir = ((unit.WorldPosition + offset) - (targetGridPosition.WorldPosition() + offset)).normalized;
+        if (Physics.SphereCast(targetGridPosition.WorldPosition() + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, targetGridPosition.WorldPosition() + offset), unit.unitActionHandler.AttackObstacleMask))
             return validGridPositionsList; // Blocked by an obstacle
 
         validGridPositionsList.Add(targetGridPosition);
@@ -419,8 +437,8 @@ public class MeleeAction : BaseAction
                 continue;
 
             float sphereCastRadius = 0.1f;
-            Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f)) - (targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f))).normalized;
-            if (Physics.SphereCast(targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight() * 2f), targetUnit.WorldPosition() + (Vector3.up * targetUnit.ShoulderHeight() * 2f)), unit.unitActionHandler.AttackObstacleMask))
+            Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
+            if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
                 continue; // Blocked by an obstacle
 
             validGridPositionsList.Add(nodeGridPosition);
@@ -478,7 +496,7 @@ public class MeleeAction : BaseAction
 
     public override bool IsValidAction()
     {
-        if (unit != null && (unit.CharacterEquipment.MeleeWeaponEquipped() || (unit.stats.CanFightUnarmed && unit.CharacterEquipment.IsUnarmed())))
+        if (unit != null && (unit.CharacterEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed))
             return true;
         return false;
     }
@@ -491,7 +509,7 @@ public class MeleeAction : BaseAction
 
     public override int GetEnergyCost() => 0;
 
-    public bool CanFightUnarmed() => unit.stats.CanFightUnarmed;
+    public bool CanFightUnarmed => unit.stats.CanFightUnarmed;
 
     public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
     {

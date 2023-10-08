@@ -103,6 +103,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Loose Container Item
       objectReference: {fileID: 0}
+    - target: {fileID: 5387763566216881598, guid: 17071e32cebe6024d9a7f365e066b03a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 30
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1974948824427181876, guid: 17071e32cebe6024d9a7f365e066b03a, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 17071e32cebe6024d9a7f365e066b03a, type: 3}

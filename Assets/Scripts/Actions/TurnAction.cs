@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using GridSystem;
 
 public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
 
@@ -25,7 +26,7 @@ public class TurnAction : BaseAction
         SetTargetPosition(targetDirection);
         StartAction();
 
-        if (unit.IsPlayer() || unit.unitMeshManager.IsVisibleOnScreen())
+        if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             Turn(false);
         else
             Turn(true);
@@ -38,7 +39,7 @@ public class TurnAction : BaseAction
 
         CompleteAction();
 
-        if (unit.IsNPC())
+        if (unit.IsNPC)
             unit.unitActionHandler.TakeTurn();
         else
             TurnManager.Instance.StartNextUnitsTurn(unit);
