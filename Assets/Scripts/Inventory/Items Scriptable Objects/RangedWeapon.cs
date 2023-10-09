@@ -1,10 +1,13 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Ranged Weapon", menuName = "Inventory/Weapon - Ranged")]
-public class RangedWeapon : Weapon
+namespace InventorySystem
 {
-    [Header("Ranged Weapon Info")]
-    [SerializeField] ProjectileType projectileType;
+    [CreateAssetMenu(fileName = "New Ranged Weapon", menuName = "Inventory/Weapon - Ranged")]
+    public class RangedWeapon : Weapon
+    {
+        [Header("Ranged Weapon Info")]
+        [SerializeField] ProjectileType projectileType;
 
-    public ProjectileType ProjectileType => projectileType;
+        public ProjectileType ProjectileType => projectileType;
+    }
 }

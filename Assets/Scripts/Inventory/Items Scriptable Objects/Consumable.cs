@@ -1,49 +1,53 @@
 using UnityEngine;
+using UnitSystem;
 
-[CreateAssetMenu(fileName = "New Consumable", menuName = "Inventory/Consumable")]
-public class Consumable : Item
+namespace InventorySystem
 {
-    [Header("Item/Sprite Change Thresholds")]
-    [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
-
-    public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
+    [CreateAssetMenu(fileName = "New Consumable", menuName = "Inventory/Consumable")]
+    public class Consumable : Item
     {
-        ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
+        [Header("Item/Sprite Change Thresholds")]
+        [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
 
-        base.Use(unit, itemData, amountToUse);
-
-        if (ItemChangeThreshold.ThresholdReached(itemData, true, currentItemChangeThreshold, itemChangeThresholds, out ItemChangeThreshold newThreshold))
+        public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
         {
-            if (itemData.MyInventory() != null)
+            ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
+
+            base.Use(unit, itemData, amountToUse);
+
+            if (ItemChangeThreshold.ThresholdReached(itemData, true, currentItemChangeThreshold, itemChangeThresholds, out ItemChangeThreshold newThreshold))
             {
-                SlotCoordinate itemsSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
-                if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
+                if (itemData.MyInventory() != null)
                 {
-                    if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
-                        itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
-                }
-                else
-                {
-                    itemData.MyInventory().RemoveItem(itemData);
-                    itemData.SetItem(newThreshold.NewItem);
-                    itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData);
+                    SlotCoordinate itemsSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
+                    if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
+                    {
+                        if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
+                            itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
+                    }
+                    else
+                    {
+                        itemData.MyInventory().RemoveItem(itemData);
+                        itemData.SetItem(newThreshold.NewItem);
+                        itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData);
+                    }
                 }
             }
+
+            return true;
         }
 
-        return true;
-    }
+        public override Sprite InventorySprite(ItemData itemData = null)
+        {
+            if (itemData == null)
+                return base.InventorySprite();
 
-    public override Sprite InventorySprite(ItemData itemData = null)
-    {
-        if (itemData == null)
+            ItemChangeThreshold itemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
+            if (itemChangeThreshold != null && itemChangeThreshold.NewSprite != null)
+                return itemChangeThreshold.NewSprite;
             return base.InventorySprite();
+        }
 
-        ItemChangeThreshold itemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
-        if (itemChangeThreshold != null && itemChangeThreshold.NewSprite != null)
-            return itemChangeThreshold.NewSprite;
-        return base.InventorySprite();
+        public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
     }
-
-    public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
 }

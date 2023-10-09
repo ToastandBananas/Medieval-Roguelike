@@ -1,15 +1,18 @@
 using System;
 using UnityEngine;
 
-public class ScreenShakeActions : MonoBehaviour
+namespace CameraSystem
 {
-    void Start()
+    public class ScreenShakeActions : MonoBehaviour
     {
-        //Projectile.OnExplosion += Projectile_OnExplosion;
-    }
+        void Start()
+        {
+            //Projectile.OnExplosion += Projectile_OnExplosion;
+        }
 
-    void Projectile_OnExplosion(object sender, EventArgs e)
-    {
-        ScreenShake.Instance.Shake(3f);
+        void Projectile_OnExplosion(object sender, EventArgs e)
+        {
+            ScreenShake.Instance.Shake(3f);
+        }
     }
 }

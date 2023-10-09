@@ -2,96 +2,99 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+namespace InventorySystem
 {
-    // public Slot parentSlot { get; protected set; }
-
-    [Header("Components")]
-    [SerializeField] protected InventoryItem inventoryItem;
-    [SerializeField] protected Image image;
-
-    [Header("Sprites")]
-    [SerializeField] Sprite emptySlotSprite;
-    [SerializeField] protected Sprite fullSlotSprite;
-    
-    public virtual void ShowSlotImage()
+    public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+        // public Slot parentSlot { get; protected set; }
+
+        [Header("Components")]
+        [SerializeField] protected InventoryItem inventoryItem;
+        [SerializeField] protected Image image;
+
+        [Header("Sprites")]
+        [SerializeField] Sprite emptySlotSprite;
+        [SerializeField] protected Sprite fullSlotSprite;
+
+        public virtual void ShowSlotImage()
         {
-            Debug.LogWarning("There is no item in this slot...");
-            return;
+            if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+            {
+                Debug.LogWarning("There is no item in this slot...");
+                return;
+            }
+
+            if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
+            {
+                Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
+                return;
+            }
+
+            inventoryItem.SetupIconSprite(true);
         }
 
-        if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
+        public void EnableSlotImage()
         {
-            Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
-            return;
+            image.enabled = true;
         }
 
-        inventoryItem.SetupIconSprite(true);
-    }
+        public void DisableSlotImage()
+        {
+            image.enabled = false;
+        }
 
-    public void EnableSlotImage()
-    {
-        image.enabled = true;
-    }
+        public void HideItemIcon()
+        {
+            inventoryItem.DisableIconImage();
+        }
 
-    public void DisableSlotImage()
-    {
-        image.enabled = false;
-    }
+        public void SetFullSlotSprite(Sprite sprite = null)
+        {
+            if (sprite == null)
+                image.sprite = fullSlotSprite;
+            else
+                image.sprite = sprite;
+        }
 
-    public void HideItemIcon()
-    {
-        inventoryItem.DisableIconImage();
-    }
+        protected void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
 
-    public void SetFullSlotSprite(Sprite sprite = null)
-    {
-        if (sprite == null)
-            image.sprite = fullSlotSprite;
-        else
-            image.sprite = sprite;
-    }
+        public InventoryItem InventoryItem => inventoryItem;
 
-    protected void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
+        public InventorySlot InventorySlot => this as InventorySlot;
 
-    public InventoryItem InventoryItem => inventoryItem;
+        public EquipmentSlot EquipmentSlot => this as EquipmentSlot;
 
-    public InventorySlot InventorySlot => this as InventorySlot;
+        public abstract ItemData GetItemData();
 
-    public EquipmentSlot EquipmentSlot => this as EquipmentSlot;
+        public abstract void ClearSlotVisuals();
 
-    public abstract ItemData GetItemData();
+        public abstract void ClearItem();
 
-    public abstract void ClearSlotVisuals();
+        public abstract bool IsFull();
 
-    public abstract void ClearItem();
+        public abstract Slot ParentSlot();
 
-    public abstract bool IsFull();
+        public abstract void HighlightSlots();
 
-    public abstract Slot ParentSlot();
+        public abstract void RemoveSlotHighlights();
 
-    public abstract void HighlightSlots();
+        public abstract void SetupEmptySlotSprites();
 
-    public abstract void RemoveSlotHighlights();
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            InventoryUI.SetActiveSlot(this);
 
-    public abstract void SetupEmptySlotSprites();
+            if (InventoryUI.isDraggingItem)
+                HighlightSlots();
+        }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        InventoryUI.SetActiveSlot(this);
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (InventoryUI.activeSlot == this)
+                InventoryUI.SetActiveSlot(null);
 
-        if (InventoryUI.isDraggingItem)
-            HighlightSlots();
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        if (InventoryUI.activeSlot == this)
-            InventoryUI.SetActiveSlot(null);
-
-        if (InventoryUI.isDraggingItem)
-            RemoveSlotHighlights();
+            if (InventoryUI.isDraggingItem)
+                RemoveSlotHighlights();
+        }
     }
 }

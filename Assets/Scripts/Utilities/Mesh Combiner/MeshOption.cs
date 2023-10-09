@@ -1,41 +1,44 @@
 using UnityEngine;
 
-public class MeshOption : MonoBehaviour
+namespace Utilities
 {
-    public float size = 0.25f;
-    public GameObject[] options;
-    public int currentOption = -1;
-    public GameObject instance;
-
-    void OnDrawGizmos()
+    public class MeshOption : MonoBehaviour
     {
-        Gizmos.color = new Color(2, 2, 0.75f, 1);
-        Gizmos.DrawSphere(transform.position, size);
-    }
+        public float size = 0.25f;
+        public GameObject[] options;
+        public int currentOption = -1;
+        public GameObject instance;
 
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.DrawWireSphere(transform.position, size * 1.1f);
-    }
-
-    public void NextOption()
-    {
-        if (instance != null)
+        void OnDrawGizmos()
         {
-            DestroyImmediate(instance);
-            instance = null;
+            Gizmos.color = new Color(2, 2, 0.75f, 1);
+            Gizmos.DrawSphere(transform.position, size);
         }
 
-        currentOption++;
-        if (currentOption >= options.Length)
-            currentOption = -1;
-        else
+        void OnDrawGizmosSelected()
         {
-            // Put a new GameObject into the scene view
-            instance = Instantiate(options[currentOption]);
-            instance.transform.SetParent(transform, false);
-            instance.transform.position = transform.position;
-            // Debug.Log(name + " -> " + instance.name);
+            Gizmos.DrawWireSphere(transform.position, size * 1.1f);
+        }
+
+        public void NextOption()
+        {
+            if (instance != null)
+            {
+                DestroyImmediate(instance);
+                instance = null;
+            }
+
+            currentOption++;
+            if (currentOption >= options.Length)
+                currentOption = -1;
+            else
+            {
+                // Put a new GameObject into the scene view
+                instance = Instantiate(options[currentOption]);
+                instance.transform.SetParent(transform, false);
+                instance.transform.position = transform.position;
+                // Debug.Log(name + " -> " + instance.name);
+            }
         }
     }
 }

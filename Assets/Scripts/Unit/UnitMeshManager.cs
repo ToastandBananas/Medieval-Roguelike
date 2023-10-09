@@ -1,229 +1,233 @@
 using System.Collections.Generic;
 using UnityEngine;
+using InventorySystem;
 
-public class UnitMeshManager : MonoBehaviour
+namespace UnitSystem
 {
-    [Header("Parent Transforms")]
-    [SerializeField] Transform leftHeldItemParent;
-    [SerializeField] Transform rightHeldItemParent;
-
-    [Header("Mesh Renderers")]
-    [SerializeField] MeshRenderer baseMeshRenderer;
-    [SerializeField] MeshRenderer bodyMeshRenderer, headMeshRenderer, hairMeshRenderer, helmMeshRenderer, tunicMeshRenderer, bodyArmorMeshRenderer;
-    List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
-
-    [Header("Mesh Filters")]
-    [SerializeField] MeshFilter baseMeshFilter;
-    [SerializeField] MeshFilter bodyMeshFilter, headMeshFilter, hairMeshFilter, helmMeshFilter, tunicMeshFilter, bodyArmorMeshFilter;
-
-    [Header("Meshes")]
-    [SerializeField] Mesh baseMesh;
-
-    public HeldItem leftHeldItem { get; private set; }
-    public HeldItem rightHeldItem { get; private set; }
-
-    public bool meshesHidden { get; private set; }
-
-    Unit myUnit;
-
-    void Awake()
+    public class UnitMeshManager : MonoBehaviour
     {
-        myUnit = GetComponent<Unit>();
+        [Header("Parent Transforms")]
+        [SerializeField] Transform leftHeldItemParent;
+        [SerializeField] Transform rightHeldItemParent;
 
-        if (baseMeshRenderer != null)
-            meshRenderers.Add(baseMeshRenderer);
-        if(bodyMeshRenderer != null)
-            meshRenderers.Add(bodyMeshRenderer);
-        if (headMeshRenderer != null)
-            meshRenderers.Add(headMeshRenderer);
-        if (hairMeshRenderer != null)
-            meshRenderers.Add(hairMeshRenderer);
-        if (helmMeshRenderer != null)
-            meshRenderers.Add(helmMeshRenderer);
-        if (tunicMeshRenderer != null)
-            meshRenderers.Add(tunicMeshRenderer);
-        if (bodyArmorMeshRenderer != null)
-            meshRenderers.Add(bodyArmorMeshRenderer);
-    }
+        [Header("Mesh Renderers")]
+        [SerializeField] MeshRenderer baseMeshRenderer;
+        [SerializeField] MeshRenderer bodyMeshRenderer, headMeshRenderer, hairMeshRenderer, helmMeshRenderer, tunicMeshRenderer, bodyArmorMeshRenderer;
+        List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
 
-    public void ShowMeshRenderers()
-    {
-        if (meshesHidden == false)
-            return;
+        [Header("Mesh Filters")]
+        [SerializeField] MeshFilter baseMeshFilter;
+        [SerializeField] MeshFilter bodyMeshFilter, headMeshFilter, hairMeshFilter, helmMeshFilter, tunicMeshFilter, bodyArmorMeshFilter;
 
-        meshesHidden = false;
+        [Header("Meshes")]
+        [SerializeField] Mesh baseMesh;
 
-        for (int i = 0; i < meshRenderers.Count; i++)
+        public HeldItem leftHeldItem { get; private set; }
+        public HeldItem rightHeldItem { get; private set; }
+
+        public bool meshesHidden { get; private set; }
+
+        Unit myUnit;
+
+        void Awake()
         {
-            meshRenderers[i].enabled = true;
+            myUnit = GetComponent<Unit>();
+
+            if (baseMeshRenderer != null)
+                meshRenderers.Add(baseMeshRenderer);
+            if (bodyMeshRenderer != null)
+                meshRenderers.Add(bodyMeshRenderer);
+            if (headMeshRenderer != null)
+                meshRenderers.Add(headMeshRenderer);
+            if (hairMeshRenderer != null)
+                meshRenderers.Add(hairMeshRenderer);
+            if (helmMeshRenderer != null)
+                meshRenderers.Add(helmMeshRenderer);
+            if (tunicMeshRenderer != null)
+                meshRenderers.Add(tunicMeshRenderer);
+            if (bodyArmorMeshRenderer != null)
+                meshRenderers.Add(bodyArmorMeshRenderer);
         }
 
-        baseMeshFilter.mesh = baseMesh;
-
-        if (leftHeldItem != null)
-            leftHeldItem.ShowMeshes();
-
-        if (rightHeldItem != null)
-            rightHeldItem.ShowMeshes();
-    }
-
-    public void HideMeshRenderers()
-    {
-        if (meshesHidden)
-            return;
-
-        meshesHidden = true;
-
-        for (int i = 0; i < meshRenderers.Count; i++)
+        public void ShowMeshRenderers()
         {
-            meshRenderers[i].enabled = false;
-        }
+            if (meshesHidden == false)
+                return;
 
-        baseMeshFilter.mesh = null;
+            meshesHidden = false;
 
-        if (leftHeldItem != null)
-            leftHeldItem.HideMeshes();
-
-        if (rightHeldItem != null)
-            rightHeldItem.HideMeshes();
-    }
-
-    public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;
-
-    public void SetRightHeldItem(HeldItem heldItem) => rightHeldItem = heldItem;
-
-    public HeldMeleeWeapon GetPrimaryMeleeWeapon()
-    {
-        if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
-            return rightHeldItem as HeldMeleeWeapon;
-        else if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
-            return leftHeldItem as HeldMeleeWeapon;
-        return null;
-    }
-
-    public HeldItem GetHeldItemFromItemData(ItemData itemData)
-    {
-        if (rightHeldItem != null && rightHeldItem.ItemData == itemData)
-            return rightHeldItem;
-
-        if (leftHeldItem != null && leftHeldItem.ItemData == itemData)
-            return leftHeldItem;
-        return null;
-    }
-
-    public HeldRangedWeapon GetHeldRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
-
-    public HeldMeleeWeapon GetLeftHeldMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
-
-    public HeldMeleeWeapon GetRightHeldMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
-
-    public HeldShield GetHeldShield()
-    {
-        if (leftHeldItem != null && leftHeldItem.ItemData.Item is Shield)
-            return leftHeldItem as HeldShield;
-        else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Shield)
-            return rightHeldItem as HeldShield;
-        return null;
-    }
-
-    public void SetupMesh(EquipSlot equipSlot, Equipment equipment)
-    {
-        if (equipment == null)
-            return;
-
-        switch (equipSlot)
-        {
-            case EquipSlot.Helm:
-                AssignMeshAndMaterials(helmMeshFilter, helmMeshRenderer, equipment);
-                break;
-            case EquipSlot.BodyArmor:
-                AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, equipment);
-                break;
-            default:
-                break;
-        }
-
-        if (myUnit.IsPlayer == false && IsVisibleOnScreen() == false)
-            HideMesh(equipSlot);
-    }
-
-    void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Equipment equipment)
-    {
-        meshFilter.mesh = equipment.Meshes[0];
-
-        Material[] materials = meshRenderer.materials;
-        for (int i = 0; i < materials.Length; i++)
-        {
-            if (i > equipment.MeshRendererMaterials.Length - 1)
-                materials[i] = null;
-            else
-                materials[i] = equipment.MeshRendererMaterials[i];
-        }
-
-        meshRenderer.materials = materials;
-    }
-
-    public void HideMesh(EquipSlot equipSlot)
-    {
-        switch (equipSlot)
-        {
-            case EquipSlot.Helm:
-                helmMeshRenderer.enabled = false;
-                break;
-            case EquipSlot.BodyArmor:
-                bodyArmorMeshRenderer.enabled = false;
-                break;
-        }
-    }
-
-    public void RemoveMesh(EquipSlot equipSlot)
-    {
-        switch (equipSlot)
-        {
-            case EquipSlot.Helm:
-                helmMeshRenderer.material = null;
-                helmMeshFilter.mesh = null;
-                helmMeshRenderer.enabled = false;
-                break;
-            case EquipSlot.BodyArmor:
-                bodyArmorMeshRenderer.material = null;
-                bodyArmorMeshFilter.mesh = null;
-                bodyArmorMeshRenderer.enabled = false;
-                break;
-        }
-    }
-
-    public void ReturnHeldItemToPool(EquipSlot equipSlot)
-    {
-        if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
-            return;
-
-        if (myUnit.CharacterEquipment.EquipSlotHasItem(equipSlot) == false)
-            return;
-
-        if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
-        {
-            if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+            for (int i = 0; i < meshRenderers.Count; i++)
             {
-                leftHeldItem.ResetHeldItem();
-                leftHeldItem = null;
+                meshRenderers[i].enabled = true;
             }
-            else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+
+            baseMeshFilter.mesh = baseMesh;
+
+            if (leftHeldItem != null)
+                leftHeldItem.ShowMeshes();
+
+            if (rightHeldItem != null)
+                rightHeldItem.ShowMeshes();
+        }
+
+        public void HideMeshRenderers()
+        {
+            if (meshesHidden)
+                return;
+
+            meshesHidden = true;
+
+            for (int i = 0; i < meshRenderers.Count; i++)
+            {
+                meshRenderers[i].enabled = false;
+            }
+
+            baseMeshFilter.mesh = null;
+
+            if (leftHeldItem != null)
+                leftHeldItem.HideMeshes();
+
+            if (rightHeldItem != null)
+                rightHeldItem.HideMeshes();
+        }
+
+        public void SetLeftHeldItem(HeldItem heldItem) => leftHeldItem = heldItem;
+
+        public void SetRightHeldItem(HeldItem heldItem) => rightHeldItem = heldItem;
+
+        public HeldMeleeWeapon GetPrimaryMeleeWeapon()
+        {
+            if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
+                return rightHeldItem as HeldMeleeWeapon;
+            else if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
+                return leftHeldItem as HeldMeleeWeapon;
+            return null;
+        }
+
+        public HeldItem GetHeldItemFromItemData(ItemData itemData)
+        {
+            if (rightHeldItem != null && rightHeldItem.ItemData == itemData)
+                return rightHeldItem;
+
+            if (leftHeldItem != null && leftHeldItem.ItemData == itemData)
+                return leftHeldItem;
+            return null;
+        }
+
+        public HeldRangedWeapon GetHeldRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
+
+        public HeldMeleeWeapon GetLeftHeldMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
+
+        public HeldMeleeWeapon GetRightHeldMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
+
+        public HeldShield GetHeldShield()
+        {
+            if (leftHeldItem != null && leftHeldItem.ItemData.Item is Shield)
+                return leftHeldItem as HeldShield;
+            else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Shield)
+                return rightHeldItem as HeldShield;
+            return null;
+        }
+
+        public void SetupMesh(EquipSlot equipSlot, Equipment equipment)
+        {
+            if (equipment == null)
+                return;
+
+            switch (equipSlot)
+            {
+                case EquipSlot.Helm:
+                    AssignMeshAndMaterials(helmMeshFilter, helmMeshRenderer, equipment);
+                    break;
+                case EquipSlot.BodyArmor:
+                    AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, equipment);
+                    break;
+                default:
+                    break;
+            }
+
+            if (myUnit.IsPlayer == false && IsVisibleOnScreen() == false)
+                HideMesh(equipSlot);
+        }
+
+        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Equipment equipment)
+        {
+            meshFilter.mesh = equipment.Meshes[0];
+
+            Material[] materials = meshRenderer.materials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (i > equipment.MeshRendererMaterials.Length - 1)
+                    materials[i] = null;
+                else
+                    materials[i] = equipment.MeshRendererMaterials[i];
+            }
+
+            meshRenderer.materials = materials;
+        }
+
+        public void HideMesh(EquipSlot equipSlot)
+        {
+            switch (equipSlot)
+            {
+                case EquipSlot.Helm:
+                    helmMeshRenderer.enabled = false;
+                    break;
+                case EquipSlot.BodyArmor:
+                    bodyArmorMeshRenderer.enabled = false;
+                    break;
+            }
+        }
+
+        public void RemoveMesh(EquipSlot equipSlot)
+        {
+            switch (equipSlot)
+            {
+                case EquipSlot.Helm:
+                    helmMeshRenderer.material = null;
+                    helmMeshFilter.mesh = null;
+                    helmMeshRenderer.enabled = false;
+                    break;
+                case EquipSlot.BodyArmor:
+                    bodyArmorMeshRenderer.material = null;
+                    bodyArmorMeshFilter.mesh = null;
+                    bodyArmorMeshRenderer.enabled = false;
+                    break;
+            }
+        }
+
+        public void ReturnHeldItemToPool(EquipSlot equipSlot)
+        {
+            if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
+                return;
+
+            if (myUnit.CharacterEquipment.EquipSlotHasItem(equipSlot) == false)
+                return;
+
+            if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
+            {
+                if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+                {
+                    leftHeldItem.ResetHeldItem();
+                    leftHeldItem = null;
+                }
+                else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+                {
+                    rightHeldItem.ResetHeldItem();
+                    rightHeldItem = null;
+                }
+            }
+            else if (rightHeldItem != null)
             {
                 rightHeldItem.ResetHeldItem();
                 rightHeldItem = null;
             }
         }
-        else if (rightHeldItem != null)
-        {
-            rightHeldItem.ResetHeldItem();
-            rightHeldItem = null;
-        }
+
+        public Transform LeftHeldItemParent => leftHeldItemParent;
+
+        public Transform RightHeldItemParent => rightHeldItemParent;
+
+        public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
     }
-
-    public Transform LeftHeldItemParent => leftHeldItemParent;
-
-    public Transform RightHeldItemParent => rightHeldItemParent;
-
-    public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
 }

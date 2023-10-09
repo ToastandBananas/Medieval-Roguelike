@@ -3841,7 +3841,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4539,7 +4539,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -11030,7 +11030,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 891044954}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d36a141ef96166c4f91b52c0daa7b487, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f4a7c1cbde42094eaea19ace2cf1f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   amountToPool: 0

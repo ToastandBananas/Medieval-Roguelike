@@ -1,6 +1,9 @@
-public class ContainerEquipmentSlot : EquipmentSlot
+namespace InventorySystem
 {
-    public ContainerInventoryManager containerInventoryManager { get; private set; }
+    public class ContainerEquipmentSlot : EquipmentSlot
+    {
+        public ContainerInventoryManager containerInventoryManager { get; private set; }
 
-    public void SetContainerInventoryManager(ContainerInventoryManager containerInventoryManager) => this.containerInventoryManager = containerInventoryManager;
+        public void SetContainerInventoryManager(ContainerInventoryManager containerInventoryManager) => this.containerInventoryManager = containerInventoryManager;
+    }
 }

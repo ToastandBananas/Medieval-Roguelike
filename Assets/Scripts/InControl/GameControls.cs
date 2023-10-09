@@ -1,96 +1,99 @@
 ﻿using UnityEngine;
 using InControl;
 
-public class GameControls : MonoBehaviour
+namespace Controls
 {
-    public static GamePlayActions gamePlayActions;
-
-    void Start()
+    public class GameControls : MonoBehaviour
     {
-        gamePlayActions = new GamePlayActions();
-        BindDefaultControls();
-    }
+        public static GamePlayActions gamePlayActions;
 
-    void BindDefaultControls()
-    {
-        gamePlayActions.select.AddDefaultBinding(Mouse.LeftButton);
-        gamePlayActions.select.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
+        void Start()
+        {
+            gamePlayActions = new GamePlayActions();
+            BindDefaultControls();
+        }
 
-        gamePlayActions.turnMode.AddDefaultBinding(Key.LeftShift);
-        gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftBumper);
+        void BindDefaultControls()
+        {
+            gamePlayActions.select.AddDefaultBinding(Mouse.LeftButton);
+            gamePlayActions.select.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
 
-        gamePlayActions.skipTurn.AddDefaultBinding(Key.Space);
-        gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+            gamePlayActions.turnMode.AddDefaultBinding(Key.LeftShift);
+            gamePlayActions.turnMode.AddDefaultBinding(InputControlType.LeftBumper);
 
-        gamePlayActions.cancelAction.AddDefaultBinding(Key.Space);
-        gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+            gamePlayActions.skipTurn.AddDefaultBinding(Key.Space);
+            gamePlayActions.skipTurn.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
 
-        gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
-        gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4) / Y(Xbox)
+            gamePlayActions.cancelAction.AddDefaultBinding(Key.Space);
+            gamePlayActions.cancelAction.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
 
-        // Mouse Buttons
-        gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);
-        gamePlayActions.rightMouseClick.AddDefaultBinding(Mouse.RightButton);
-        gamePlayActions.mouseScrollWheelClick.AddDefaultBinding(Mouse.MiddleButton);
+            gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
+            gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4) / Y(Xbox)
 
-        // Move Camera
-        gamePlayActions.moveUp.AddDefaultBinding(Key.W);
-        gamePlayActions.moveUp.AddDefaultBinding(InputControlType.LeftStickUp);
-        gamePlayActions.moveDown.AddDefaultBinding(Key.S);
-        gamePlayActions.moveDown.AddDefaultBinding(InputControlType.LeftStickDown);
-        gamePlayActions.moveLeft.AddDefaultBinding(Key.A);
-        gamePlayActions.moveLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
-        gamePlayActions.moveRight.AddDefaultBinding(Key.D);
-        gamePlayActions.moveRight.AddDefaultBinding(InputControlType.LeftStickRight);
+            // Mouse Buttons
+            gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);
+            gamePlayActions.rightMouseClick.AddDefaultBinding(Mouse.RightButton);
+            gamePlayActions.mouseScrollWheelClick.AddDefaultBinding(Mouse.MiddleButton);
 
-        // Rotate Camera
-        gamePlayActions.cameraRotateLeft.AddDefaultBinding(Key.Q);
-        gamePlayActions.cameraRotateLeft.AddDefaultBinding(InputControlType.RightStickLeft);
-        gamePlayActions.cameraRotateRight.AddDefaultBinding(Key.E);
-        gamePlayActions.cameraRotateRight.AddDefaultBinding(InputControlType.RightStickRight);
+            // Move Camera
+            gamePlayActions.moveUp.AddDefaultBinding(Key.W);
+            gamePlayActions.moveUp.AddDefaultBinding(InputControlType.LeftStickUp);
+            gamePlayActions.moveDown.AddDefaultBinding(Key.S);
+            gamePlayActions.moveDown.AddDefaultBinding(InputControlType.LeftStickDown);
+            gamePlayActions.moveLeft.AddDefaultBinding(Key.A);
+            gamePlayActions.moveLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
+            gamePlayActions.moveRight.AddDefaultBinding(Key.D);
+            gamePlayActions.moveRight.AddDefaultBinding(InputControlType.LeftStickRight);
 
-        // Zoom Camera
-        gamePlayActions.cameraZoomIn.AddDefaultBinding(Mouse.PositiveScrollWheel);
-        gamePlayActions.cameraZoomOut.AddDefaultBinding(Mouse.NegativeScrollWheel);
+            // Rotate Camera
+            gamePlayActions.cameraRotateLeft.AddDefaultBinding(Key.Q);
+            gamePlayActions.cameraRotateLeft.AddDefaultBinding(InputControlType.RightStickLeft);
+            gamePlayActions.cameraRotateRight.AddDefaultBinding(Key.E);
+            gamePlayActions.cameraRotateRight.AddDefaultBinding(InputControlType.RightStickRight);
 
-        // UI Actions
-        gamePlayActions.menuPause.AddDefaultBinding(Key.Escape);
-        gamePlayActions.menuPause.AddDefaultBinding(InputControlType.RightCommand);
+            // Zoom Camera
+            gamePlayActions.cameraZoomIn.AddDefaultBinding(Mouse.PositiveScrollWheel);
+            gamePlayActions.cameraZoomOut.AddDefaultBinding(Mouse.NegativeScrollWheel);
 
-        gamePlayActions.menuSelect.AddDefaultBinding(Mouse.LeftButton);
-        gamePlayActions.menuSelect.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
+            // UI Actions
+            gamePlayActions.menuPause.AddDefaultBinding(Key.Escape);
+            gamePlayActions.menuPause.AddDefaultBinding(InputControlType.RightCommand);
 
-        gamePlayActions.menuContext.AddDefaultBinding(Mouse.RightButton);
-        gamePlayActions.menuContext.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
+            gamePlayActions.menuSelect.AddDefaultBinding(Mouse.LeftButton);
+            gamePlayActions.menuSelect.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
 
-        gamePlayActions.menuQuickUse.AddDefaultBinding(Mouse.MiddleButton);
-        gamePlayActions.menuQuickUse.AddDefaultBinding(InputControlType.RightBumper);
+            gamePlayActions.menuContext.AddDefaultBinding(Mouse.RightButton);
+            gamePlayActions.menuContext.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
 
-        gamePlayActions.menuUp.AddDefaultBinding(Key.UpArrow);
-        gamePlayActions.menuUp.AddDefaultBinding(InputControlType.DPadUp);
-        gamePlayActions.menuUp.AddDefaultBinding(InputControlType.LeftStickUp);
+            gamePlayActions.menuQuickUse.AddDefaultBinding(Mouse.MiddleButton);
+            gamePlayActions.menuQuickUse.AddDefaultBinding(InputControlType.RightBumper);
 
-        gamePlayActions.menuDown.AddDefaultBinding(Key.DownArrow);
-        gamePlayActions.menuDown.AddDefaultBinding(InputControlType.DPadDown);
-        gamePlayActions.menuDown.AddDefaultBinding(InputControlType.LeftStickDown);
+            gamePlayActions.menuUp.AddDefaultBinding(Key.UpArrow);
+            gamePlayActions.menuUp.AddDefaultBinding(InputControlType.DPadUp);
+            gamePlayActions.menuUp.AddDefaultBinding(InputControlType.LeftStickUp);
 
-        gamePlayActions.menuLeft.AddDefaultBinding(Key.LeftArrow);
-        gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.DPadLeft);
-        gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
+            gamePlayActions.menuDown.AddDefaultBinding(Key.DownArrow);
+            gamePlayActions.menuDown.AddDefaultBinding(InputControlType.DPadDown);
+            gamePlayActions.menuDown.AddDefaultBinding(InputControlType.LeftStickDown);
 
-        gamePlayActions.menuRight.AddDefaultBinding(Key.RightArrow);
-        gamePlayActions.menuRight.AddDefaultBinding(InputControlType.DPadRight);
-        gamePlayActions.menuRight.AddDefaultBinding(InputControlType.LeftStickRight);
+            gamePlayActions.menuLeft.AddDefaultBinding(Key.LeftArrow);
+            gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.DPadLeft);
+            gamePlayActions.menuLeft.AddDefaultBinding(InputControlType.LeftStickLeft);
 
-        gamePlayActions.toggleInventory.AddDefaultBinding(Key.I);
-        gamePlayActions.toggleInventory.AddDefaultBinding(InputControlType.Select);
+            gamePlayActions.menuRight.AddDefaultBinding(Key.RightArrow);
+            gamePlayActions.menuRight.AddDefaultBinding(InputControlType.DPadRight);
+            gamePlayActions.menuRight.AddDefaultBinding(InputControlType.LeftStickRight);
 
-        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Return);
-        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.PadEnter);
-        gamePlayActions.splitStackEnter.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
+            gamePlayActions.toggleInventory.AddDefaultBinding(Key.I);
+            gamePlayActions.toggleInventory.AddDefaultBinding(InputControlType.Select);
 
-        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Backspace);
-        gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Delete);
-        gamePlayActions.splitStackDelete.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+            gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Return);
+            gamePlayActions.splitStackEnter.AddDefaultBinding(Key.PadEnter);
+            gamePlayActions.splitStackEnter.AddDefaultBinding(InputControlType.Action3); // Square(PS4) / X(Xbox)
+
+            gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Backspace);
+            gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Delete);
+            gamePlayActions.splitStackDelete.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+        }
     }
 }

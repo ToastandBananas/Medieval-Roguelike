@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public abstract class InventoryManager : MonoBehaviour
+namespace InventorySystem
 {
-    
+    public abstract class InventoryManager : MonoBehaviour
+    {
+
+    }
 }

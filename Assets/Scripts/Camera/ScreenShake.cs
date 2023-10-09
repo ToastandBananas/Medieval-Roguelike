@@ -1,32 +1,35 @@
 using UnityEngine;
 using Cinemachine;
 
-public class ScreenShake : MonoBehaviour
+namespace CameraSystem
 {
-    public static ScreenShake Instance { get; private set; }
-
-    CinemachineImpulseSource cinemachineImpulseSource;
-
-    bool canScreenShake = true;
-
-    void Awake()
+    public class ScreenShake : MonoBehaviour
     {
-        if (Instance != null)
+        public static ScreenShake Instance { get; private set; }
+
+        CinemachineImpulseSource cinemachineImpulseSource;
+
+        bool canScreenShake = true;
+
+        void Awake()
         {
-            Debug.LogError("There's more than one ScreenShake! " + transform + " - " + Instance);
-            Destroy(gameObject);
-            return;
+            if (Instance != null)
+            {
+                Debug.LogError("There's more than one ScreenShake! " + transform + " - " + Instance);
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
+            cinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
         }
-        Instance = this;
 
-        cinemachineImpulseSource = GetComponent<CinemachineImpulseSource>();
+        public void Shake(float intensity = 1f)
+        {
+            if (canScreenShake)
+                cinemachineImpulseSource.GenerateImpulse(intensity);
+        }
+
+        public void SetCanScreenShake(bool canScreenShake) => this.canScreenShake = canScreenShake;
     }
-
-    public void Shake(float intensity = 1f)
-    {
-        if (canScreenShake)
-            cinemachineImpulseSource.GenerateImpulse(intensity);
-    }
-
-    public void SetCanScreenShake(bool canScreenShake) => this.canScreenShake = canScreenShake;
 }

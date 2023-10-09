@@ -1,46 +1,49 @@
 using UnityEngine;
 
-public class NPCDistanceTrigger : MonoBehaviour
+namespace UnitSystem
 {
-    public static NPCDistanceTrigger Instance;
-
-    SphereCollider sphereCollider;
-
-    [SerializeField] LayerMask unitsMask;
-
-    void Awake()
+    public class NPCDistanceTrigger : MonoBehaviour
     {
-        if (Instance != null)
+        public static NPCDistanceTrigger Instance;
+
+        SphereCollider sphereCollider;
+
+        [SerializeField] LayerMask unitsMask;
+
+        void Awake()
         {
-            if (Instance != this)
+            if (Instance != null)
             {
-                Debug.LogWarning("More than one Instance of NPCDistanceTrigger. Fix me!");
-                Destroy(gameObject);
+                if (Instance != this)
+                {
+                    Debug.LogWarning("More than one Instance of NPCDistanceTrigger. Fix me!");
+                    Destroy(gameObject);
+                }
+            }
+            else
+                Instance = this;
+
+            sphereCollider = GetComponent<SphereCollider>();
+        }
+
+        public float TriggerRange() => sphereCollider.radius;
+
+        void OnTriggerEnter(Collider other)
+        {
+            if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
+            {
+                // Debug.Log(other.gameObject.name + " can now perform actions.");
+                other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(true);
             }
         }
-        else
-            Instance = this;
 
-        sphereCollider = GetComponent<SphereCollider>();
-    }
-
-    public float TriggerRange() => sphereCollider.radius;
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
+        void OnTriggerExit(Collider other)
         {
-            // Debug.Log(other.gameObject.name + " can now perform actions.");
-            other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(true);
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
-        {
-            // Debug.Log(other.gameObject.name + " cannot perform actions.");
-            other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(false);
+            if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
+            {
+                // Debug.Log(other.gameObject.name + " cannot perform actions.");
+                other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(false);
+            }
         }
     }
 }

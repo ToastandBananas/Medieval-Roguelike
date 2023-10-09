@@ -1,13 +1,16 @@
 using UnityEngine;
 
-public class UnitInventoryManager : InventoryManager
+namespace InventorySystem
 {
-    [SerializeField] Inventory mainInventory;
-
-    void Awake()
+    public class UnitInventoryManager : InventoryManager
     {
-        mainInventory.Initialize();
-    }
+        [SerializeField] Inventory mainInventory;
 
-    public Inventory MainInventory => mainInventory;
+        void Awake()
+        {
+            mainInventory.Initialize();
+        }
+
+        public Inventory MainInventory => mainInventory;
+    }
 }

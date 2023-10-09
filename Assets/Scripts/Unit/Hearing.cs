@@ -1,22 +1,25 @@
 using UnityEngine;
 
-public class Hearing : MonoBehaviour
+namespace UnitSystem
 {
-    [SerializeField] float hearingRadius = 10f;
-
-    SphereCollider hearingCollider;
-
-    void Awake()
+    public class Hearing : MonoBehaviour
     {
-        hearingCollider = GetComponent<SphereCollider>();
-        hearingCollider.radius = hearingRadius;
-    }
+        [SerializeField] float hearingRadius = 10f;
 
-    public void SetHearingRadius(float radius)
-    {
-        hearingRadius = radius;
-        hearingCollider.radius = radius;
-    }
+        SphereCollider hearingCollider;
 
-    public float HearingRadius() => hearingRadius;
+        void Awake()
+        {
+            hearingCollider = GetComponent<SphereCollider>();
+            hearingCollider.radius = hearingRadius;
+        }
+
+        public void SetHearingRadius(float radius)
+        {
+            hearingRadius = radius;
+            hearingCollider.radius = radius;
+        }
+
+        public float HearingRadius() => hearingRadius;
+    }
 }

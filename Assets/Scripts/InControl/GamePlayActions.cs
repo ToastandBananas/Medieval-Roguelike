@@ -1,66 +1,69 @@
 ﻿using InControl;
 
-public class GamePlayActions : PlayerActionSet
+namespace Controls
 {
-    public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons;
-
-    // Mouse Buttons
-    public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
-
-    // Move Camera
-    public PlayerAction moveUp, moveDown, moveLeft, moveRight;
-    public PlayerTwoAxisAction movementAxis;
-
-    // Rotate Camera
-    public PlayerAction cameraRotateLeft, cameraRotateRight;
-    public PlayerOneAxisAction cameraRotateAxis;
-
-    // Zoom Camera
-    public PlayerAction cameraZoomIn, cameraZoomOut;
-
-    // UI Actions
-    public PlayerAction menuPause, menuSelect, menuContext, menuQuickUse;
-    public PlayerAction menuLeft, menuRight, menuUp, menuDown;
-    public PlayerAction toggleInventory, splitStackEnter, splitStackDelete;
-
-    public GamePlayActions()
+    public class GamePlayActions : PlayerActionSet
     {
-        select = CreatePlayerAction("Select");
-        turnMode = CreatePlayerAction("TurnMode");
-        skipTurn = CreatePlayerAction("SkipTurn");
-        cancelAction = CreatePlayerAction("CancelAction");
-        swapWeapons = CreatePlayerAction("SwapWeapons");
+        public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons;
 
-        leftMouseClick = CreatePlayerAction("LeftMouseClick");
-        rightMouseClick = CreatePlayerAction("RightMouseClick");
-        mouseScrollWheelClick = CreatePlayerAction("MouseScrollWheelClick");
+        // Mouse Buttons
+        public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
 
-        moveUp = CreatePlayerAction("MoveUp");
-        moveDown = CreatePlayerAction("MoveDown");
-        moveLeft = CreatePlayerAction("MoveLeft");
-        moveRight = CreatePlayerAction("MoveRight");
-        movementAxis = CreateTwoAxisPlayerAction(moveLeft, moveRight, moveDown, moveUp);
+        // Move Camera
+        public PlayerAction moveUp, moveDown, moveLeft, moveRight;
+        public PlayerTwoAxisAction movementAxis;
 
-        cameraRotateLeft = CreatePlayerAction("PlayerLookLeft");
-        cameraRotateRight = CreatePlayerAction("PlayerLookRight");
-        cameraRotateAxis = CreateOneAxisPlayerAction(cameraRotateLeft, cameraRotateRight);
+        // Rotate Camera
+        public PlayerAction cameraRotateLeft, cameraRotateRight;
+        public PlayerOneAxisAction cameraRotateAxis;
 
-        cameraZoomIn = CreatePlayerAction("CameraZoomIn");
-        cameraZoomOut = CreatePlayerAction("CameraZoomOut");
+        // Zoom Camera
+        public PlayerAction cameraZoomIn, cameraZoomOut;
 
         // UI Actions
-        menuPause = CreatePlayerAction("MenuPause");
-        menuSelect = CreatePlayerAction("MenuSelect");
-        menuContext = CreatePlayerAction("MenuContext");
-        menuQuickUse = CreatePlayerAction("MenuQuickUse");
+        public PlayerAction menuPause, menuSelect, menuContext, menuQuickUse;
+        public PlayerAction menuLeft, menuRight, menuUp, menuDown;
+        public PlayerAction toggleInventory, splitStackEnter, splitStackDelete;
 
-        menuLeft = CreatePlayerAction("MenuLeft");
-        menuRight = CreatePlayerAction("MenuRight");
-        menuUp = CreatePlayerAction("MenuUp");
-        menuDown = CreatePlayerAction("MenuDown");
+        public GamePlayActions()
+        {
+            select = CreatePlayerAction("Select");
+            turnMode = CreatePlayerAction("TurnMode");
+            skipTurn = CreatePlayerAction("SkipTurn");
+            cancelAction = CreatePlayerAction("CancelAction");
+            swapWeapons = CreatePlayerAction("SwapWeapons");
 
-        toggleInventory = CreatePlayerAction("ToggleInventory");
-        splitStackEnter = CreatePlayerAction("SplitStackEnter");
-        splitStackDelete = CreatePlayerAction("SplitStackDelete");
+            leftMouseClick = CreatePlayerAction("LeftMouseClick");
+            rightMouseClick = CreatePlayerAction("RightMouseClick");
+            mouseScrollWheelClick = CreatePlayerAction("MouseScrollWheelClick");
+
+            moveUp = CreatePlayerAction("MoveUp");
+            moveDown = CreatePlayerAction("MoveDown");
+            moveLeft = CreatePlayerAction("MoveLeft");
+            moveRight = CreatePlayerAction("MoveRight");
+            movementAxis = CreateTwoAxisPlayerAction(moveLeft, moveRight, moveDown, moveUp);
+
+            cameraRotateLeft = CreatePlayerAction("PlayerLookLeft");
+            cameraRotateRight = CreatePlayerAction("PlayerLookRight");
+            cameraRotateAxis = CreateOneAxisPlayerAction(cameraRotateLeft, cameraRotateRight);
+
+            cameraZoomIn = CreatePlayerAction("CameraZoomIn");
+            cameraZoomOut = CreatePlayerAction("CameraZoomOut");
+
+            // UI Actions
+            menuPause = CreatePlayerAction("MenuPause");
+            menuSelect = CreatePlayerAction("MenuSelect");
+            menuContext = CreatePlayerAction("MenuContext");
+            menuQuickUse = CreatePlayerAction("MenuQuickUse");
+
+            menuLeft = CreatePlayerAction("MenuLeft");
+            menuRight = CreatePlayerAction("MenuRight");
+            menuUp = CreatePlayerAction("MenuUp");
+            menuDown = CreatePlayerAction("MenuDown");
+
+            toggleInventory = CreatePlayerAction("ToggleInventory");
+            splitStackEnter = CreatePlayerAction("SplitStackEnter");
+            splitStackDelete = CreatePlayerAction("SplitStackDelete");
+        }
     }
 }

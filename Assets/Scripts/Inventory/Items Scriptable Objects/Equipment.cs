@@ -1,14 +1,18 @@
 using UnityEngine;
+using ActionSystem;
 
-public abstract class Equipment : Item
+namespace InventorySystem
 {
-    [Header("Equipment Info")]
-    [SerializeField] EquipSlot equipSlot;
+    public abstract class Equipment : Item
+    {
+        [Header("Equipment Info")]
+        [SerializeField] EquipSlot equipSlot;
 
-    [Header("Actions")]
-    [SerializeField] ActionType[] actionTypes;
+        [Header("Actions")]
+        [SerializeField] ActionType[] actionTypes;
 
-    public EquipSlot EquipSlot => equipSlot;
+        public EquipSlot EquipSlot => equipSlot;
 
-    public ActionType[] ActionTypes => actionTypes;
+        public ActionType[] ActionTypes => actionTypes;
+    }
 }

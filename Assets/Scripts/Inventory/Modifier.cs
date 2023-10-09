@@ -1,130 +1,134 @@
 using UnityEngine;
+using UnitSystem;
 
-[System.Serializable]
-public class Modifier
+namespace InventorySystem
 {
-    [Header("Stats")]
-    [SerializeField] int speed;
-    [SerializeField] float percentSpeed;
-
-    [SerializeField] int strength;
-    [SerializeField] float percentStrength;
-
-    [Header("Skills")]
-    [SerializeField] int axeSkill;
-    [SerializeField] float percentAxeSkill;
-
-    [SerializeField] int bowSkill;
-    [SerializeField] float percentBowSkill;
-
-    [SerializeField] int crossBowSkill;
-    [SerializeField] float percentCrossBowSkill;
-
-    [SerializeField] int daggerSkill;
-    [SerializeField] float percentDaggerSkill;
-
-    [SerializeField] int maceSkill;
-    [SerializeField] float percentMaceSkill;
-
-    [SerializeField] int polearmSkill;
-    [SerializeField] float percentPolearmSkill;
-
-    [SerializeField] int shieldSkill;
-    [SerializeField] float percentShieldSkill;
-
-    [SerializeField] int spearSkill;
-    [SerializeField] float percentSpearSkill;
-
-    [SerializeField] int swordSkill;
-    [SerializeField] float percentSwordSkill;
-
-    [SerializeField] int throwingSkill;
-    [SerializeField] float percentThrowingSkill;
-
-    [SerializeField] int warHammerSkill;
-    [SerializeField] float percentWarHammerSkill;
-
-    public void ApplyModifiers(Stats stats)
+    [System.Serializable]
+    public class Modifier
     {
-        stats.Speed().AddModifier(speed);
-        stats.Speed().AddPercentModifier(percentSpeed);
+        [Header("Stats")]
+        [SerializeField] int speed;
+        [SerializeField] float percentSpeed;
 
-        stats.Strength().AddModifier(strength);
-        stats.Strength().AddPercentModifier(percentStrength);
+        [SerializeField] int strength;
+        [SerializeField] float percentStrength;
 
-        stats.AxeSkill().AddModifier(axeSkill);
-        stats.AxeSkill().AddPercentModifier(percentAxeSkill);
+        [Header("Skills")]
+        [SerializeField] int axeSkill;
+        [SerializeField] float percentAxeSkill;
 
-        stats.BowSkill().AddModifier(bowSkill);
-        stats.BowSkill().AddPercentModifier(percentBowSkill);
+        [SerializeField] int bowSkill;
+        [SerializeField] float percentBowSkill;
 
-        stats.CrossbowSkill().AddModifier(crossBowSkill);
-        stats.CrossbowSkill().AddPercentModifier(percentCrossBowSkill);
+        [SerializeField] int crossBowSkill;
+        [SerializeField] float percentCrossBowSkill;
 
-        stats.DaggerSkill().AddModifier(daggerSkill);
-        stats.DaggerSkill().AddPercentModifier(percentDaggerSkill);
+        [SerializeField] int daggerSkill;
+        [SerializeField] float percentDaggerSkill;
 
-        stats.MaceSkill().AddModifier(maceSkill);
-        stats.MaceSkill().AddPercentModifier(percentMaceSkill);
+        [SerializeField] int maceSkill;
+        [SerializeField] float percentMaceSkill;
 
-        stats.PolearmSkill().AddModifier(polearmSkill);
-        stats.PolearmSkill().AddPercentModifier(percentPolearmSkill);
+        [SerializeField] int polearmSkill;
+        [SerializeField] float percentPolearmSkill;
 
-        stats.ShieldSkill().AddModifier(shieldSkill);
-        stats.ShieldSkill().AddPercentModifier(percentShieldSkill);
+        [SerializeField] int shieldSkill;
+        [SerializeField] float percentShieldSkill;
 
-        stats.SpearSkill().AddModifier(spearSkill);
-        stats.SpearSkill().AddPercentModifier(percentSpearSkill);
+        [SerializeField] int spearSkill;
+        [SerializeField] float percentSpearSkill;
 
-        stats.SwordSkill().AddModifier(swordSkill);
-        stats.SwordSkill().AddPercentModifier(percentSwordSkill);
+        [SerializeField] int swordSkill;
+        [SerializeField] float percentSwordSkill;
 
-        stats.ThrowingSkill().AddModifier(throwingSkill);
-        stats.ThrowingSkill().AddPercentModifier(percentThrowingSkill);
+        [SerializeField] int throwingSkill;
+        [SerializeField] float percentThrowingSkill;
 
-        stats.WarHammerSkill().AddModifier(warHammerSkill);
-        stats.WarHammerSkill().AddPercentModifier(percentWarHammerSkill);
-    }
+        [SerializeField] int warHammerSkill;
+        [SerializeField] float percentWarHammerSkill;
 
-    public void RemoveModifiers(Stats stats)
-    {
-        stats.Speed().RemoveModifier(speed);
-        stats.Speed().RemovePercentModifier(percentSpeed);
+        public void ApplyModifiers(Stats stats)
+        {
+            stats.Speed().AddModifier(speed);
+            stats.Speed().AddPercentModifier(percentSpeed);
 
-        stats.Strength().RemoveModifier(strength);
-        stats.Strength().RemovePercentModifier(percentStrength);
+            stats.Strength().AddModifier(strength);
+            stats.Strength().AddPercentModifier(percentStrength);
 
-        stats.AxeSkill().RemoveModifier(axeSkill);
-        stats.AxeSkill().RemovePercentModifier(percentAxeSkill);
+            stats.AxeSkill().AddModifier(axeSkill);
+            stats.AxeSkill().AddPercentModifier(percentAxeSkill);
 
-        stats.BowSkill().RemoveModifier(bowSkill);
-        stats.BowSkill().RemovePercentModifier(percentBowSkill);
+            stats.BowSkill().AddModifier(bowSkill);
+            stats.BowSkill().AddPercentModifier(percentBowSkill);
 
-        stats.CrossbowSkill().RemoveModifier(crossBowSkill);
-        stats.CrossbowSkill().RemovePercentModifier(percentCrossBowSkill);
+            stats.CrossbowSkill().AddModifier(crossBowSkill);
+            stats.CrossbowSkill().AddPercentModifier(percentCrossBowSkill);
 
-        stats.DaggerSkill().RemoveModifier(daggerSkill);
-        stats.DaggerSkill().RemovePercentModifier(percentDaggerSkill);
+            stats.DaggerSkill().AddModifier(daggerSkill);
+            stats.DaggerSkill().AddPercentModifier(percentDaggerSkill);
 
-        stats.MaceSkill().RemoveModifier(maceSkill);
-        stats.MaceSkill().RemovePercentModifier(percentMaceSkill);
+            stats.MaceSkill().AddModifier(maceSkill);
+            stats.MaceSkill().AddPercentModifier(percentMaceSkill);
 
-        stats.PolearmSkill().RemoveModifier(polearmSkill);
-        stats.PolearmSkill().RemovePercentModifier(percentPolearmSkill);
+            stats.PolearmSkill().AddModifier(polearmSkill);
+            stats.PolearmSkill().AddPercentModifier(percentPolearmSkill);
 
-        stats.ShieldSkill().RemoveModifier(shieldSkill);
-        stats.ShieldSkill().RemovePercentModifier(percentShieldSkill);
+            stats.ShieldSkill().AddModifier(shieldSkill);
+            stats.ShieldSkill().AddPercentModifier(percentShieldSkill);
 
-        stats.SpearSkill().RemoveModifier(spearSkill);
-        stats.SpearSkill().RemovePercentModifier(percentSpearSkill);
+            stats.SpearSkill().AddModifier(spearSkill);
+            stats.SpearSkill().AddPercentModifier(percentSpearSkill);
 
-        stats.SwordSkill().RemoveModifier(swordSkill);
-        stats.SwordSkill().RemovePercentModifier(percentSwordSkill);
+            stats.SwordSkill().AddModifier(swordSkill);
+            stats.SwordSkill().AddPercentModifier(percentSwordSkill);
 
-        stats.ThrowingSkill().RemoveModifier(throwingSkill);
-        stats.ThrowingSkill().RemovePercentModifier(percentThrowingSkill);
+            stats.ThrowingSkill().AddModifier(throwingSkill);
+            stats.ThrowingSkill().AddPercentModifier(percentThrowingSkill);
 
-        stats.WarHammerSkill().RemoveModifier(warHammerSkill);
-        stats.WarHammerSkill().RemovePercentModifier(percentWarHammerSkill);
+            stats.WarHammerSkill().AddModifier(warHammerSkill);
+            stats.WarHammerSkill().AddPercentModifier(percentWarHammerSkill);
+        }
+
+        public void RemoveModifiers(Stats stats)
+        {
+            stats.Speed().RemoveModifier(speed);
+            stats.Speed().RemovePercentModifier(percentSpeed);
+
+            stats.Strength().RemoveModifier(strength);
+            stats.Strength().RemovePercentModifier(percentStrength);
+
+            stats.AxeSkill().RemoveModifier(axeSkill);
+            stats.AxeSkill().RemovePercentModifier(percentAxeSkill);
+
+            stats.BowSkill().RemoveModifier(bowSkill);
+            stats.BowSkill().RemovePercentModifier(percentBowSkill);
+
+            stats.CrossbowSkill().RemoveModifier(crossBowSkill);
+            stats.CrossbowSkill().RemovePercentModifier(percentCrossBowSkill);
+
+            stats.DaggerSkill().RemoveModifier(daggerSkill);
+            stats.DaggerSkill().RemovePercentModifier(percentDaggerSkill);
+
+            stats.MaceSkill().RemoveModifier(maceSkill);
+            stats.MaceSkill().RemovePercentModifier(percentMaceSkill);
+
+            stats.PolearmSkill().RemoveModifier(polearmSkill);
+            stats.PolearmSkill().RemovePercentModifier(percentPolearmSkill);
+
+            stats.ShieldSkill().RemoveModifier(shieldSkill);
+            stats.ShieldSkill().RemovePercentModifier(percentShieldSkill);
+
+            stats.SpearSkill().RemoveModifier(spearSkill);
+            stats.SpearSkill().RemovePercentModifier(percentSpearSkill);
+
+            stats.SwordSkill().RemoveModifier(swordSkill);
+            stats.SwordSkill().RemovePercentModifier(percentSwordSkill);
+
+            stats.ThrowingSkill().RemoveModifier(throwingSkill);
+            stats.ThrowingSkill().RemovePercentModifier(percentThrowingSkill);
+
+            stats.WarHammerSkill().RemoveModifier(warHammerSkill);
+            stats.WarHammerSkill().RemovePercentModifier(percentWarHammerSkill);
+        }
     }
 }

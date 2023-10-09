@@ -1,5 +1,7 @@
 using UnityEngine;
 using GridSystem;
+using InventorySystem;
+using UnitSystem;
 
 namespace InteractableObjects
 {

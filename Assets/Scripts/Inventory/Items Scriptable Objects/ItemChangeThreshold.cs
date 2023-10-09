@@ -1,78 +1,81 @@
 using UnityEngine;
 
-[System.Serializable]
-public class ItemChangeThreshold
+namespace InventorySystem
 {
-    [SerializeField][Range(0f, 100f)] float thresholdPercentage = 50f;
-    [SerializeField] Item newItem;
-    [SerializeField] Sprite newSprite;
-
-    public float ThresholdPercentage => thresholdPercentage;
-    public Item NewItem => newItem;
-    public Sprite NewSprite => newSprite;
-
-    public static ItemChangeThreshold GetCurrentItemChangeThreshold(ItemData itemData, ItemChangeThreshold[] itemChangeThresholds)
+    [System.Serializable]
+    public class ItemChangeThreshold
     {
-        if (itemChangeThresholds.Length == 0)
-            return null;
+        [SerializeField][Range(0f, 100f)] float thresholdPercentage = 50f;
+        [SerializeField] Item newItem;
+        [SerializeField] Sprite newSprite;
 
-        ItemChangeThreshold itemChangeThreshold = null;
-        float percentRemaining = 100;
+        public float ThresholdPercentage => thresholdPercentage;
+        public Item NewItem => newItem;
+        public Sprite NewSprite => newSprite;
 
-        if (itemData.Item.MaxUses > 1)
+        public static ItemChangeThreshold GetCurrentItemChangeThreshold(ItemData itemData, ItemChangeThreshold[] itemChangeThresholds)
         {
-            int count = itemData.RemainingUses;
-            percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxUses) * 100f);
-        }
-        else if (itemData.Item.MaxStackSize > 1)
-        {
-            int count = itemData.CurrentStackSize;
-            percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxStackSize) * 100f);
-        }
+            if (itemChangeThresholds.Length == 0)
+                return null;
 
-        for (int i = 0; i < itemChangeThresholds.Length; i++)
-        {
-            if (itemChangeThreshold == null)
-                itemChangeThreshold = itemChangeThresholds[i];
-            else if ((percentRemaining <= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)) && itemChangeThresholds[i].ThresholdPercentage < itemChangeThreshold.ThresholdPercentage)
-                itemChangeThreshold = itemChangeThresholds[i];
-            else if ((percentRemaining >= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)) && itemChangeThresholds[i].ThresholdPercentage > itemChangeThreshold.ThresholdPercentage)
-                itemChangeThreshold = itemChangeThresholds[i];
-        }
+            ItemChangeThreshold itemChangeThreshold = null;
+            float percentRemaining = 100;
 
-        return itemChangeThreshold;
-    }
-
-    public static bool ThresholdReached(ItemData itemData, bool usedSome, ItemChangeThreshold currentThreshold, ItemChangeThreshold[] itemChangeThresholds, out ItemChangeThreshold newThreshold)
-    {
-        newThreshold = null;
-        if (itemChangeThresholds.Length == 0)
-            return false;
-
-        float percentRemaining = 100;
-
-        if (itemData.Item.MaxUses > 1)
-            percentRemaining = Mathf.RoundToInt(((float)itemData.RemainingUses / itemData.Item.MaxUses) * 100f);
-        else if (itemData.Item.MaxStackSize > 1)
-            percentRemaining = Mathf.RoundToInt(((float)itemData.CurrentStackSize / itemData.Item.MaxStackSize) * 100f);
-
-        if (percentRemaining != 0)
-        {
-            for (int i = 0; i < itemChangeThresholds.Length; i++)
+            if (itemData.Item.MaxUses > 1)
             {
-                if (itemChangeThresholds[i] == currentThreshold)
-                    continue;
-
-                if (usedSome == false && (percentRemaining >= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)))
-                    newThreshold = itemChangeThresholds[i];
-                else if (usedSome && (percentRemaining <= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)))
-                    newThreshold = itemChangeThresholds[i];
+                int count = itemData.RemainingUses;
+                percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxUses) * 100f);
+            }
+            else if (itemData.Item.MaxStackSize > 1)
+            {
+                int count = itemData.CurrentStackSize;
+                percentRemaining = Mathf.RoundToInt(((float)count / itemData.Item.MaxStackSize) * 100f);
             }
 
-            if (newThreshold != null)
-                return true;
+            for (int i = 0; i < itemChangeThresholds.Length; i++)
+            {
+                if (itemChangeThreshold == null)
+                    itemChangeThreshold = itemChangeThresholds[i];
+                else if ((percentRemaining <= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)) && itemChangeThresholds[i].ThresholdPercentage < itemChangeThreshold.ThresholdPercentage)
+                    itemChangeThreshold = itemChangeThresholds[i];
+                else if ((percentRemaining >= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)) && itemChangeThresholds[i].ThresholdPercentage > itemChangeThreshold.ThresholdPercentage)
+                    itemChangeThreshold = itemChangeThresholds[i];
+            }
+
+            return itemChangeThreshold;
         }
 
-        return false;
+        public static bool ThresholdReached(ItemData itemData, bool usedSome, ItemChangeThreshold currentThreshold, ItemChangeThreshold[] itemChangeThresholds, out ItemChangeThreshold newThreshold)
+        {
+            newThreshold = null;
+            if (itemChangeThresholds.Length == 0)
+                return false;
+
+            float percentRemaining = 100;
+
+            if (itemData.Item.MaxUses > 1)
+                percentRemaining = Mathf.RoundToInt(((float)itemData.RemainingUses / itemData.Item.MaxUses) * 100f);
+            else if (itemData.Item.MaxStackSize > 1)
+                percentRemaining = Mathf.RoundToInt(((float)itemData.CurrentStackSize / itemData.Item.MaxStackSize) * 100f);
+
+            if (percentRemaining != 0)
+            {
+                for (int i = 0; i < itemChangeThresholds.Length; i++)
+                {
+                    if (itemChangeThresholds[i] == currentThreshold)
+                        continue;
+
+                    if (usedSome == false && (percentRemaining >= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)))
+                        newThreshold = itemChangeThresholds[i];
+                    else if (usedSome && (percentRemaining <= itemChangeThresholds[i].ThresholdPercentage || Mathf.Approximately(percentRemaining, itemChangeThresholds[i].ThresholdPercentage)))
+                        newThreshold = itemChangeThresholds[i];
+                }
+
+                if (newThreshold != null)
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -1,39 +1,42 @@
 using UnityEngine;
 
-public class BowLineRenderer : MonoBehaviour
+namespace InventorySystem
 {
-    [SerializeField] LineRenderer lineRenderer;
-    [SerializeField] Transform stringTopTarget, stringCenterTarget, stringBottomTarget;
-
-    bool stringShouldFollowPositions;
-
-    void Update()
+    public class BowLineRenderer : MonoBehaviour
     {
-        StringFollowTargetPositions();
-    }
+        [SerializeField] LineRenderer lineRenderer;
+        [SerializeField] Transform stringTopTarget, stringCenterTarget, stringBottomTarget;
 
-    void StringFollowTargetPositions()
-    {
-        if (stringShouldFollowPositions)
+        bool stringShouldFollowPositions;
+
+        void Update()
         {
-            lineRenderer.SetPosition(0, new Vector3(stringTopTarget.localPosition.x, lineRenderer.GetPosition(0).y, stringTopTarget.localPosition.z)); // Top
-            lineRenderer.SetPosition(1, new Vector3(stringCenterTarget.localPosition.x, lineRenderer.GetPosition(1).y, lineRenderer.GetPosition(1).z)); // Center
-            lineRenderer.SetPosition(2, new Vector3(stringBottomTarget.localPosition.x, lineRenderer.GetPosition(2).y, stringBottomTarget.localPosition.z)); // Bottom
+            StringFollowTargetPositions();
         }
-    }
 
-    public Transform GetStringCenterTarget()
-    {
-        return stringCenterTarget;
-    }
+        void StringFollowTargetPositions()
+        {
+            if (stringShouldFollowPositions)
+            {
+                lineRenderer.SetPosition(0, new Vector3(stringTopTarget.localPosition.x, lineRenderer.GetPosition(0).y, stringTopTarget.localPosition.z)); // Top
+                lineRenderer.SetPosition(1, new Vector3(stringCenterTarget.localPosition.x, lineRenderer.GetPosition(1).y, lineRenderer.GetPosition(1).z)); // Center
+                lineRenderer.SetPosition(2, new Vector3(stringBottomTarget.localPosition.x, lineRenderer.GetPosition(2).y, stringBottomTarget.localPosition.z)); // Bottom
+            }
+        }
 
-    public void StringStartFollowingTargetPositions()
-    {
-        stringShouldFollowPositions = true;
-    }
+        public Transform GetStringCenterTarget()
+        {
+            return stringCenterTarget;
+        }
 
-    public void StringStopFollowingTargetPositions()
-    {
-        stringShouldFollowPositions = false;
+        public void StringStartFollowingTargetPositions()
+        {
+            stringShouldFollowPositions = true;
+        }
+
+        public void StringStopFollowingTargetPositions()
+        {
+            stringShouldFollowPositions = false;
+        }
     }
 }
