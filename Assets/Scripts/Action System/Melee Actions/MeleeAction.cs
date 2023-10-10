@@ -12,16 +12,37 @@ namespace ActionSystem
 {
     public class MeleeAction : BaseAction
     {
+        Unit targetEnemyUnit;
+
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-        public override void TakeAction(GridPosition gridPosition)
+        public void QueueAction(Unit targetEnemyUnit)
+        {
+            this.targetEnemyUnit = targetEnemyUnit;
+            targetGridPosition = targetEnemyUnit.GridPosition;
+            unit.unitActionHandler.QueueAction(this);
+        }
+
+        public override void SetTargetGridPosition(GridPosition gridPosition)
+        {
+            base.SetTargetGridPosition(gridPosition);
+
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition))
+                targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+        }
+
+        public override void TakeAction()
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (unit.unitActionHandler.targetEnemyUnit == null || unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+            if (targetEnemyUnit == null && unit.unitActionHandler.targetEnemyUnit != null)
+                targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+
+            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
             {
-                unit.unitActionHandler.SettargetEnemyUnit(null);
+                targetEnemyUnit = null;
+                unit.unitActionHandler.SetTargetEnemyUnit(null);
                 unit.unitActionHandler.FinishAction();
                 return;
             }
@@ -41,27 +62,26 @@ namespace ActionSystem
 
         IEnumerator Attack()
         {
-            Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
             TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
-                    turnAction.RotateTowards_Unit(targetUnit, false);
+                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.isRotating)
                     yield return null;
 
                 // Play the attack animations and handle blocking for the target
-                if (unit.CharacterEquipment.IsUnarmed())
+                if (unit.UnitEquipment.IsUnarmed())
                 {
                     if (unit.stats.CanFightUnarmed)
                         unit.unitAnimator.DoDefaultUnarmedAttack();
                 }
-                else if (unit.CharacterEquipment.IsDualWielding())
+                else if (unit.UnitEquipment.IsDualWielding())
                 {
                     // Dual wield attack
                     unit.unitAnimator.StartDualMeleeAttack();
@@ -85,17 +105,17 @@ namespace ActionSystem
             {
                 // Try to block the attack
                 bool attackBlocked = false;
-                if (unit.CharacterEquipment.IsUnarmed())
+                if (unit.UnitEquipment.IsUnarmed())
                 {
-                    attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                     DamageTargets(null);
                 }
-                else if (unit.CharacterEquipment.IsDualWielding()) // Dual wield attack
+                else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
                 {
-                    bool mainAttackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    bool mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                     DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon);
 
-                    bool offhandAttackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    bool offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                     DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon);
 
                     if (mainAttackBlocked || offhandAttackBlocked)
@@ -103,7 +123,7 @@ namespace ActionSystem
                 }
                 else
                 {
-                    attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
                     if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
                         DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()); // Right hand weapon attack
                     else
@@ -111,15 +131,14 @@ namespace ActionSystem
                 }
 
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetUnit.GridPosition()) == false)
-                    turnAction.RotateTowards_Unit(targetUnit, false);
+                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
-                    targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
+                    targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
                 CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
             }
         }
 
@@ -147,14 +166,14 @@ namespace ActionSystem
                     if (itemBlockedWith != null)
                     {
                         int blockAmount = 0;
-                        if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetHeldShield()) // If blocked with shield
+                        if (targetUnit.UnitEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetHeldShield()) // If blocked with shield
                             blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
-                        else if (targetUnit.CharacterEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
+                        else if (targetUnit.UnitEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
                         {
                             if (itemBlockedWith == targetUnit.unitMeshManager.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
                             {
                                 blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetPrimaryMeleeWeapon());
-                                if (unit.CharacterEquipment.IsDualWielding())
+                                if (unit.UnitEquipment.IsDualWielding())
                                 {
                                     if (itemBlockedWith == unit.unitMeshManager.GetRightHeldMeleeWeapon())
                                         blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
@@ -188,7 +207,7 @@ namespace ActionSystem
                 return false;
 
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-            if (unit.CharacterEquipment.MeleeWeaponEquipped())
+            if (unit.UnitEquipment.MeleeWeaponEquipped())
             {
                 Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon;
                 float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
@@ -209,7 +228,7 @@ namespace ActionSystem
             return true;
         }
 
-        public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.GridPosition(), targetUnit.GridPosition());
+        public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition);
 
         public int UnarmedDamage()
         {
@@ -227,17 +246,25 @@ namespace ActionSystem
             base.CompleteAction();
 
             unit.unitActionHandler.SetIsAttacking(false);
-            if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
-                unit.unitActionHandler.SettargetEnemyUnit(null);
+            if (unit.IsPlayer)
+            {
+                unit.unitActionHandler.SetDefaultSelectedAction();
+                if (PlayerInput.Instance.autoAttack == false)
+                {
+                    targetEnemyUnit = null;
+                    unit.unitActionHandler.SetTargetEnemyUnit(null);
+                }
+            }
 
             unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         IEnumerator WaitToCompleteAction()
         {
-            if (unit.CharacterEquipment.IsUnarmed())
+            if (unit.UnitEquipment.IsUnarmed())
                 yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
-            else if (unit.CharacterEquipment.IsDualWielding())
+            else if (unit.UnitEquipment.IsDualWielding())
                 yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
             else if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
                 yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item as Weapon));
@@ -245,7 +272,6 @@ namespace ActionSystem
                 yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
@@ -255,9 +281,9 @@ namespace ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetUnit.GridPosition());
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
-                if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                if (unit.UnitEquipment.MeleeWeaponEquipped())
                     minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
@@ -268,7 +294,7 @@ namespace ActionSystem
                 return new NPCAIAction
                 {
                     baseAction = this,
-                    actionGridPosition = targetUnit.GridPosition(),
+                    actionGridPosition = targetUnit.GridPosition,
                     actionValue = Mathf.RoundToInt(finalActionValue)
                 };
             }
@@ -276,7 +302,7 @@ namespace ActionSystem
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = unit.GridPosition(),
+                actionGridPosition = unit.GridPosition,
                 actionValue = -1
             };
         }
@@ -317,7 +343,7 @@ namespace ActionSystem
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = unit.GridPosition(),
+                actionGridPosition = unit.GridPosition,
                 actionValue = -1
             };
         }
@@ -327,7 +353,7 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition());
+            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition);
             cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
             return cost;
         }
@@ -337,7 +363,7 @@ namespace ActionSystem
             float minRange;
             float maxRange;
 
-            if (unit.CharacterEquipment.IsUnarmed())
+            if (unit.UnitEquipment.IsUnarmed())
             {
                 minRange = 1f;
                 maxRange = UnarmedAttackRange(startGridPosition, false);
@@ -397,7 +423,7 @@ namespace ActionSystem
             if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
                 return validGridPositionsList;
 
-            if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
+            if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
                 return validGridPositionsList;
 
             float sphereCastRadius = 0.1f;
@@ -417,14 +443,14 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             float maxAttackRange;
-            if (unit.CharacterEquipment.MeleeWeaponEquipped())
+            if (unit.UnitEquipment.MeleeWeaponEquipped())
                 maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
             else
                 maxAttackRange = unit.stats.UnarmedAttackRange;
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition().WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -438,7 +464,7 @@ namespace ActionSystem
                     continue;
 
                 // If target is out of attack range from this Grid Position
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition()) == false)
+                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
                     continue;
 
                 float sphereCastRadius = 0.1f;
@@ -501,10 +527,12 @@ namespace ActionSystem
 
         public override bool IsValidAction()
         {
-            if (unit != null && (unit.CharacterEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed))
+            if (unit != null && (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed))
                 return true;
             return false;
         }
+
+        public override bool IsHotbarAction() => true;
 
         public override bool IsAttackAction() => true;
 
@@ -521,13 +549,11 @@ namespace ActionSystem
             if (accountForHeight == false)
                 return unit.stats.UnarmedAttackRange;
 
-            float maxRange = unit.stats.UnarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.GridPosition().y);
+            float maxRange = unit.stats.UnarmedAttackRange - Mathf.Abs(enemyGridPosition.y - unit.GridPosition.y);
             if (maxRange < 0f) maxRange = 0f;
             return maxRange;
         }
 
         public override bool ActionIsUsedInstantly() => false;
-
-        public override string GetActionName() => "Melee Attack";
     }
 }

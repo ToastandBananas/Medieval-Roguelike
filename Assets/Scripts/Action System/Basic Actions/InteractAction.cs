@@ -1,15 +1,27 @@
 using System.Collections;
-using InteractableObjects;
 using GridSystem;
+using InteractableObjects;
 using UnitSystem;
 
 namespace ActionSystem
 {
     public class InteractAction : BaseAction
     {
-        Interactable targetInteractable;
+        public Interactable targetInteractable { get; private set; }
 
-        public override void TakeAction(GridPosition gridPosition)
+        public void QueueAction(Interactable targetInteractable)
+        {
+            this.targetInteractable = targetInteractable;
+            unit.unitActionHandler.QueueAction(this);
+        }
+
+        public void QueueActionImmediately(Interactable targetInteractable)
+        {
+            this.targetInteractable = targetInteractable;
+            unit.unitActionHandler.QueueAction(this, 0);
+        }
+
+        public override void TakeAction()
         {
             StartAction();
 
@@ -19,7 +31,6 @@ namespace ActionSystem
         IEnumerator Interact()
         {
             TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
-
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
@@ -32,21 +43,20 @@ namespace ActionSystem
                 turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), true);
 
             // Perform the interaction
-            targetInteractable.Interact(unit);
+            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.Instance.HasAnyUnitOnGridPosition(targetInteractable.GridPosition()) == false)
+                targetInteractable.Interact(unit);
+
             CompleteAction();
-            unit.unitActionHandler.SetTargetInteractable(null);
+            targetInteractable = null;
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetActionPointsCost()
         {
-            Interactable interactable = LevelGrid.Instance.GetInteractableAtGridPosition(unit.unitActionHandler.targetGridPosition);
-            if (interactable is Door)
+            if (targetInteractable is Door)
                 return 150;
             return 100;
         }
-
-        public void SetTargetInteractable(Interactable target) => targetInteractable = target;
 
         public override void CompleteAction()
         {
@@ -54,7 +64,9 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public override bool IsValidAction() => false; // Setting this to false prevents it from showing up as an action in the action bar
+        public override bool IsHotbarAction() => false;
+
+        public override bool IsValidAction() => true;
 
         public override bool IsAttackAction() => false;
 
@@ -65,7 +77,5 @@ namespace ActionSystem
         public override bool ActionIsUsedInstantly() => true;
 
         public override int GetEnergyCost() => 0;
-
-        public override string GetActionName() => "Interact";
     }
 }

@@ -133,14 +133,13 @@ namespace GridSystem
         {
             HideGridVisual();
 
-            if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null)
+            if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            BaseAction selectedAction = Instance.player.unitActionHandler.SelectedAction;
-            if (selectedAction.IsAttackAction() == false)
+            if (Instance.player.unitActionHandler.SelectedAction.IsAttackAction() == false)
                 return;
 
-            Instance.ShowAttackRange(selectedAction, Instance.player.GridPosition(), GridVisualType.RedSoft);
+            Instance.ShowAttackRange(Instance.player.unitActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
         }
 
         /// <summary>Highlights grid spaces that will be hit by the currently selected attack, based off of the current mouse position. Color depends on Alliance to Player.</summary>
@@ -148,14 +147,13 @@ namespace GridSystem
         {
             UpdateAttackRangeGridVisual();
 
-            if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedAction != null)
+            if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            BaseAction selectedAction = Instance.player.unitActionHandler.SelectedAction;
-            if (selectedAction.IsAttackAction() == false)
+            if (Instance.player.unitActionHandler.SelectedAction.IsAttackAction() == false)
                 return;
 
-            Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
+            Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
         }
 
         Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

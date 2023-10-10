@@ -99,15 +99,15 @@ namespace InventorySystem
                             EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
                             if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                             {
-                                SetupDraggedItem(oppositeWeaponSlot.InventoryItem.itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem.myCharacterEquipment);
+                                SetupDraggedItem(oppositeWeaponSlot.InventoryItem.itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem.myUnitEquipment);
                                 oppositeWeaponSlot.InventoryItem.DisableIconImage();
                             }
                             else
-                                SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myCharacterEquipment);
+                                SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myUnitEquipment);
                         }
                         else
                         {
-                            SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myCharacterEquipment);
+                            SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myUnitEquipment);
 
                             if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item is Weapon && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                                 activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem.DisableIconImage();
@@ -142,7 +142,7 @@ namespace InventorySystem
                         else
                         {
                             EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                            activeEquipmentSlot.CharacterEquipment.TryAddItemAt(activeEquipmentSlot.EquipSlot, draggedItem.itemData);
+                            activeEquipmentSlot.UnitEquipment.TryAddItemAt(activeEquipmentSlot.EquipSlot, draggedItem.itemData);
                         }
                     }
                     else if (EventSystem.current.IsPointerOverGameObject() == false)
@@ -158,7 +158,7 @@ namespace InventorySystem
                         else if (parentSlotDraggedFrom is EquipmentSlot)
                         {
                             EquipmentSlot equipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
-                            DropItemManager.DropItem(equipmentSlotDraggedFrom.CharacterEquipment, equipmentSlotDraggedFrom.EquipSlot);
+                            DropItemManager.DropItem(equipmentSlotDraggedFrom.UnitEquipment, equipmentSlotDraggedFrom.EquipSlot);
                         }
                         else
                         {
@@ -250,9 +250,9 @@ namespace InventorySystem
                 else
                 {
                     EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
-                    if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.itemData) == false)
+                    if (parentSlotDraggedFrom.InventoryItem.myUnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.itemData) == false)
                     {
-                        if (parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
+                        if (parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                             DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
                     }
                 }
@@ -305,13 +305,13 @@ namespace InventorySystem
                 newItemData.SetInventorySlotCoordinate(null);
 
             Instance.draggedItem.SetMyInventory(inventoryDraggedFrom);
-            Instance.draggedItem.SetMyCharacterEquipment(null);
+            Instance.draggedItem.SetMyUnitEquipment(null);
             Instance.draggedItem.SetItemData(newItemData);
             Instance.draggedItem.UpdateStackSizeVisuals();
             Instance.draggedItem.SetupDraggedSprite();
         }
 
-        public void SetupDraggedItem(ItemData newItemData, Slot theParentSlotDraggedFrom, CharacterEquipment characterEquipmentDraggedFrom)
+        public void SetupDraggedItem(ItemData newItemData, Slot theParentSlotDraggedFrom, UnitEquipment unitEquipmentDraggedFrom)
         {
             SplitStack.Instance.Close();
             ContextMenu.DisableContextMenu(true);
@@ -331,15 +331,15 @@ namespace InventorySystem
                 }
                 else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
                 {
-                    if (characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
-                        GetContainerUI(characterEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
+                    if (unitEquipmentDraggedFrom.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
+                        GetContainerUI(unitEquipmentDraggedFrom.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
-                    characterEquipmentDraggedFrom.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
+                    unitEquipmentDraggedFrom.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
                 }
             }
 
             draggedItem.SetMyInventory(null);
-            draggedItem.SetMyCharacterEquipment(characterEquipmentDraggedFrom);
+            draggedItem.SetMyUnitEquipment(unitEquipmentDraggedFrom);
             draggedItem.SetItemData(newItemData);
             draggedItem.UpdateStackSizeVisuals();
             draggedItem.SetupDraggedSprite();
@@ -401,7 +401,7 @@ namespace InventorySystem
             if (npcInventoryActive == false)
             {
                 if (npcEquipmentSlots.Count > 0)
-                    npcEquipmentSlots[0].CharacterEquipment.OnCloseNPCInventory();
+                    npcEquipmentSlots[0].UnitEquipment.OnCloseNPCInventory();
 
                 if (npcPocketsSlots.Count > 0)
                     npcPocketsSlots[0].myInventory.OnCloseNPCInventory();

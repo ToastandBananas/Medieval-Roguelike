@@ -11,7 +11,7 @@ namespace InventorySystem
         [Header("Placeholder Icon")]
         [SerializeField] Image placeholderImage;
 
-        CharacterEquipment myCharacterEquipment;
+        UnitEquipment myUnitEquipment;
 
         public override bool IsFull()
         {
@@ -55,13 +55,13 @@ namespace InventorySystem
         public EquipmentSlot GetOppositeWeaponSlot()
         {
             if (equipSlot == EquipSlot.RightHeldItem1)
-                return myCharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1);
+                return myUnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1);
             else if (equipSlot == EquipSlot.LeftHeldItem1)
-                return myCharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1);
+                return myUnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1);
             else if (equipSlot == EquipSlot.RightHeldItem2)
-                return myCharacterEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2);
+                return myUnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2);
             else if (equipSlot == EquipSlot.LeftHeldItem2)
-                return myCharacterEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2);
+                return myUnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2);
 
             Debug.LogWarning($"{equipSlot} is not a weapon slot...");
             return null;
@@ -111,7 +111,7 @@ namespace InventorySystem
             bool validSlot = false;
             Item draggedItem = InventoryUI.DraggedItem.itemData.Item;
 
-            if (myCharacterEquipment.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
+            if (myUnitEquipment.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
                 validSlot = false;
             else if (draggedItem is Equipment)
             {
@@ -155,11 +155,11 @@ namespace InventorySystem
             }
         }
 
-        public void SetMyCharacterEquipment(CharacterEquipment characterEquipment) => myCharacterEquipment = characterEquipment;
+        public void SetMyCharacterEquipment(UnitEquipment unitEquipment) => myUnitEquipment = unitEquipment;
 
         public override ItemData GetItemData() => inventoryItem.itemData;
 
-        public CharacterEquipment CharacterEquipment => myCharacterEquipment;
+        public UnitEquipment UnitEquipment => myUnitEquipment;
 
         public Image PlaceholderImage => placeholderImage;
 

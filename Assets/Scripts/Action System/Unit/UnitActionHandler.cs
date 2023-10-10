@@ -12,15 +12,13 @@ namespace ActionSystem
 {
     public abstract class UnitActionHandler : MonoBehaviour
     {
-        public GridPosition targetGridPosition { get; protected set; }
-
         /// <summary>The Units targeted by the last attack and the item they blocked with (if they successfully blocked).</summary>
         public Dictionary<Unit, HeldItem> targetUnits { get; private set; }
 
-        public BaseAction queuedAction { get; private set; }
+        public List<BaseAction> queuedActions { get; private set; }
         public BaseAction queuedAttack { get; private set; }
         public BaseAction lastQueuedAction { get; protected set; }
-        public int queuedAP { get; protected set; }
+        public List<int> queuedAPs { get; protected set; }
 
         [Header("Actions")]
         [SerializeField] List<ActionType> availableActionTypes = new List<ActionType>();
@@ -30,8 +28,6 @@ namespace ActionSystem
 
         public Unit unit { get; private set; }
         public Unit targetEnemyUnit { get; protected set; }
-        public GridPosition targetAttackGridPosition { get; protected set; }
-        public Interactable targetInteractable { get; protected set; }
         public GridPosition previousTargetEnemyGridPosition { get; private set; }
 
         [Header("Layer Masks")]
@@ -47,6 +43,8 @@ namespace ActionSystem
         public virtual void Awake()
         {
             unit = GetComponent<Unit>();
+            queuedActions = new List<BaseAction>();
+            queuedAPs = new List<int>();
 
             // Determine which BaseActions are combat actions and add them to the combatActions list
             for (int i = 0; i < availableActionTypes.Count; i++)
@@ -54,7 +52,6 @@ namespace ActionSystem
                 availableActionTypes[i].GetAction(unit);
             }
 
-            targetGridPosition = LevelGrid.GetGridPosition(transform.position);
             targetUnits = new Dictionary<Unit, HeldItem>();
 
             // Default to the MoveAction
@@ -62,12 +59,6 @@ namespace ActionSystem
         }
 
         #region Action Queue
-        public void QueueAction(ActionType actionType, GridPosition targetGridPosition)
-        {
-            SetTargetGridPosition(targetGridPosition);
-            QueueAction(actionType);
-        }
-
         public void QueueAction(ActionType actionType)
         {
             if (actionType == null)
@@ -83,35 +74,28 @@ namespace ActionSystem
                 Debug.LogWarning("Failed to obtain an action of type " + actionType.GetActionType().Name);
         }
 
-        public void QueueAction(BaseAction action, GridPosition targetGridPosition)
-        {
-            SetTargetGridPosition(targetGridPosition);
-            QueueAction(action);
-        }
-
-        public void QueueAction(BaseAction action)
+        public virtual void QueueAction(BaseAction action, int position = -1)
         {
             GridSystemVisual.HideGridVisual();
 
-            //if (queuedAction != null)
-            //{
-            //ActionSystem.ReturnToPool(queuedAction);
-            //queuedAction = null;
-            //}
-
             // if (unit.IsPlayer) Debug.Log(name + " queued " + action);
             queuedAttack = null;
-            queuedAction = action;
-            queuedAction.gameObject.SetActive(true);
-            lastQueuedAction = action;
-            queuedAP = action.GetActionPointsCost();
+
+            if (position == -1)
+            {
+                queuedActions.Add(action);
+                lastQueuedAction = action;
+                queuedAPs.Add(action.GetActionPointsCost());
+            }
+            else
+            {
+                queuedActions.Insert(0, action);
+                queuedAPs.Insert(0, action.GetActionPointsCost());
+            }
 
             // If the action changed while getting the action point cost (such as when running into a door)
-            if (action != queuedAction)
-            {
-                //ActionSystem.ReturnToPool(action);
+            if (action != queuedActions[0])
                 return;
-            }
 
             if (action.IsAttackAction())
                 unit.unitAnimator.StopMovingForward();
@@ -123,9 +107,6 @@ namespace ActionSystem
                 else if (isMoving == false)
                     GetNextQueuedAction();
             }
-
-            if (unit.IsPlayer && selectedActionType.GetAction(unit).IsDefaultAttackAction() == false)
-                SetDefaultSelectedAction();
         }
 
         public abstract void GetNextQueuedAction();
@@ -134,11 +115,22 @@ namespace ActionSystem
 
         public abstract void SkipTurn();
 
-        public virtual void FinishAction() => ClearActionQueue(false);
+        public virtual void FinishAction()
+        {
+            if (queuedActions.Count == 0)
+                return;
+
+            queuedActions.RemoveAt(0);
+            queuedAPs.RemoveAt(0);
+
+            isPerformingAction = false;
+
+            GridSystemVisual.UpdateAttackGridVisual();
+        }
 
         public IEnumerator CancelAction()
         {
-            if (queuedAction is MoveAction == false)
+            if (queuedActions.Count > 0 && queuedActions[0] is MoveAction == false)
             {
                 while (isPerformingAction)
                 {
@@ -148,16 +140,12 @@ namespace ActionSystem
             else
             {
                 MoveAction moveAction = GetAction<MoveAction>();
-                if (moveAction.finalTargetGridPosition != unit.GridPosition())
-                {
-                    targetGridPosition = moveAction.nextTargetGridPosition;
+                if (moveAction.finalTargetGridPosition != unit.GridPosition)
                     moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
-                }
             }
 
             ClearActionQueue(true);
-            SetTargetInteractable(null);
-            SettargetEnemyUnit(null);
+            SetTargetEnemyUnit(null);
             SetQueuedAttack(null);
 
             GridSystemVisual.UpdateAttackGridVisual();
@@ -165,17 +153,18 @@ namespace ActionSystem
 
         public void ClearActionQueue(bool stopMoveAnimation)
         {
-            if (queuedAction != null && queuedAction.IsAttackAction())
+            if (queuedActions.Count > 0 && queuedActions[0].IsAttackAction())
                 queuedAttack = null;
 
-            // Debug.Log("Clearing action queue");
-            //if (queuedAction != null)
-            //{
-            //ActionSystem.ReturnToPool(queuedAction);
-            //}
+            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            {
+                if (queuedActions[i] is InventoryAction == false && queuedActions[i] is EquipmentAction == false)
+                {
+                    queuedActions.RemoveAt(i);
+                    queuedAPs.RemoveAt(i);
+                }
+            }
 
-            queuedAction = null;
-            queuedAP = 0;
             isPerformingAction = false;
 
             // If the Unit isn't moving, they might still be in a move animation, so cancel that
@@ -183,7 +172,7 @@ namespace ActionSystem
                 unit.unitAnimator.StopMovingForward();
         }
 
-        public bool AttackQueued() => queuedAction is MeleeAction || queuedAction is ShootAction;
+        public bool AttackQueued() => queuedActions.Count > 0 && (queuedActions[0] is MeleeAction || queuedActions[0] is ShootAction);
         #endregion
 
         #region Combat
@@ -191,23 +180,23 @@ namespace ActionSystem
         {
             BaseAction selectedAction = selectedActionType.GetAction(unit);
             if (selectedAction.IsAttackAction())
-                QueueAction(selectedActionType, targetAttackGridPosition);
-            else if (unit.CharacterEquipment.RangedWeaponEquipped() && unit.CharacterEquipment.HasValidAmmunitionEquipped())
+                QueueAction(selectedActionType);
+            else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
             {
                 if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
-                    QueueAction(GetAction<ShootAction>(), targetEnemyUnit.GridPosition());
+                    GetAction<ShootAction>().QueueAction(targetEnemyUnit);
                 else
-                    QueueAction(GetAction<ReloadAction>());
+                    GetAction<ReloadAction>().QueueAction();
             }
-            else if (unit.CharacterEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
-                QueueAction(GetAction<MeleeAction>(), targetEnemyUnit.GridPosition());
+            else if (unit.UnitEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
+                GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
         }
 
         public bool IsInAttackRange(Unit targetUnit, bool defaultCombatActionsOnly)
         {
             if (defaultCombatActionsOnly)
             {
-                if (unit.CharacterEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit))
+                if (unit.UnitEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit))
                     return true;
 
                 if (GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
@@ -227,7 +216,7 @@ namespace ActionSystem
 
         public bool TryBlockRangedAttack(Unit attackingUnit)
         {
-            if (unit.CharacterEquipment.ShieldEquipped())
+            if (unit.UnitEquipment.ShieldEquipped())
             {
                 // If the attacker is in front of this Unit (greater chance to block)
                 if (GetAction<TurnAction>().AttackerInFrontOfUnit(attackingUnit))
@@ -264,7 +253,7 @@ namespace ActionSystem
             TurnAction targetUnitTurnAction = GetAction<TurnAction>();
             if (targetUnitTurnAction.AttackerInFrontOfUnit(attackingUnit))
             {
-                if (unit.CharacterEquipment.ShieldEquipped())
+                if (unit.UnitEquipment.ShieldEquipped())
                 {
                     // Try blocking with shield
                     random = Random.Range(1f, 100f);
@@ -276,7 +265,7 @@ namespace ActionSystem
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                    if (unit.UnitEquipment.MeleeWeaponEquipped())
                     {
                         random = Random.Range(1f, 100f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false, true))
@@ -287,9 +276,9 @@ namespace ActionSystem
                         }
                     }
                 }
-                else if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                else if (unit.UnitEquipment.MeleeWeaponEquipped())
                 {
-                    if (unit.CharacterEquipment.IsDualWielding())
+                    if (unit.UnitEquipment.IsDualWielding())
                     {
                         // Try blocking with right weapon
                         random = Random.Range(1f, 100f);
@@ -324,7 +313,7 @@ namespace ActionSystem
             }
             else if (targetUnitTurnAction.AttackerBesideUnit(attackingUnit))
             {
-                if (unit.CharacterEquipment.ShieldEquipped())
+                if (unit.UnitEquipment.ShieldEquipped())
                 {
                     // Try blocking with shield
                     random = Random.Range(1f, 100f);
@@ -336,7 +325,7 @@ namespace ActionSystem
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                    if (unit.UnitEquipment.MeleeWeaponEquipped())
                     {
                         random = Random.Range(1f, 100f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryMeleeWeapon(), true, true))
@@ -347,9 +336,9 @@ namespace ActionSystem
                         }
                     }
                 }
-                else if (unit.CharacterEquipment.MeleeWeaponEquipped())
+                else if (unit.UnitEquipment.MeleeWeaponEquipped())
                 {
-                    if (unit.CharacterEquipment.IsDualWielding())
+                    if (unit.UnitEquipment.IsDualWielding())
                     {
                         // Try blocking with right weapon
                         random = Random.Range(1f, 100f);
@@ -414,7 +403,7 @@ namespace ActionSystem
 
         public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
 
-        public virtual void SettargetEnemyUnit(Unit target)
+        public virtual void SetTargetEnemyUnit(Unit target)
         {
             if (target != null && target.health.IsDead())
             {
@@ -424,17 +413,8 @@ namespace ActionSystem
 
             targetEnemyUnit = target;
             if (target != null)
-            {
-                targetAttackGridPosition = target.GridPosition();
-                previousTargetEnemyGridPosition = targetAttackGridPosition;
-            }
+                previousTargetEnemyGridPosition = target.GridPosition;
         }
-
-        public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
-
-        public void SetTargetGridPosition(GridPosition targetGridPosition) => this.targetGridPosition = targetGridPosition;
-
-        public void SetTargetAttackGridPosition(GridPosition targetAttackGridPosition) => this.targetAttackGridPosition = targetAttackGridPosition;
 
         public void SetQueuedAttack(BaseAction attackAction)
         {

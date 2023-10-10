@@ -91,12 +91,12 @@ namespace GeneralUI
                 if (targetSlot is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
-                    if (equipmentSlot.CharacterEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.CharacterEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
-                        targetSlot = equipmentSlot.CharacterEquipment.GetEquipmentSlot(equipmentSlot.CharacterEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
+                    if (equipmentSlot.UnitEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
+                        targetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
                 }
             }
 
-            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition()) > LevelGrid.diaganolDistance)
+            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
             {
                 CreateMoveToButton();
             }
@@ -111,7 +111,7 @@ namespace GeneralUI
                 CreateSplitStackButton();
                 CreateDropItemButton();
 
-                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition()) > LevelGrid.diaganolDistance)))
+                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
                     CreateMoveToButton();
             }
 
@@ -139,7 +139,7 @@ namespace GeneralUI
         {
             GridPosition targetGridPosition;
             if (targetInteractable != null)
-                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.player.GridPosition(), LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
             else
                 targetGridPosition = WorldMouse.GetCurrentGridPosition();
 
@@ -152,11 +152,11 @@ namespace GeneralUI
         static void CreateAttackButton()
         {
             if (targetUnit == null || targetUnit.health.IsDead() || UnitManager.player.vision.IsVisible(targetUnit) == false
-                || (UnitManager.player.CharacterEquipment.MeleeWeaponEquipped() == false && (UnitManager.player.CharacterEquipment.RangedWeaponEquipped() == false || UnitManager.player.CharacterEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
+                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped() == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped() == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction() == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange(false)) && UnitManager.player.GetAttackRange(false) < 2f))
+            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction() == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange(targetUnit, false)) && UnitManager.player.GetAttackRange(targetUnit, false) < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();
@@ -195,14 +195,14 @@ namespace GeneralUI
             {
                 ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
                 if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null
-                    && UnitManager.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
+                    && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
                 {
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
                 }
             }
             else
             {
-                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
+                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
             }
         }
@@ -218,7 +218,7 @@ namespace GeneralUI
                 if (targetSlot is EquipmentSlot)
                 {
                     EquipmentSlot targetEquipmentSlot = targetSlot as EquipmentSlot;
-                    if (targetEquipmentSlot.CharacterEquipment == UnitManager.player.CharacterEquipment)
+                    if (targetEquipmentSlot.UnitEquipment == UnitManager.player.UnitEquipment)
                         return;
                 }
                 else if (targetSlot is InventorySlot)
@@ -277,7 +277,7 @@ namespace GeneralUI
             }
             else if (targetUnit != null && targetUnit.health.IsDead())
             {
-                if (targetUnit.CharacterEquipment.slotVisualsCreated)
+                if (targetUnit.UnitEquipment.slotVisualsCreated)
                 {
                     CreateCloseContainerButton();
                     return;

@@ -20,7 +20,7 @@ namespace UnitSystem
         [SerializeField] UnitInventoryManager mainInventoryManager;
         [SerializeField] ContainerInventoryManager backpackInventoryManager;
         [SerializeField] ContainerInventoryManager quiverInventoryManager;
-        [SerializeField] CharacterEquipment myCharacterEquipment;
+        [SerializeField] UnitEquipment myUnitEquipment;
 
         public bool isMyTurn { get; private set; }
         public bool hasStartedTurn { get; private set; }
@@ -28,7 +28,6 @@ namespace UnitSystem
         public SingleNodeBlocker singleNodeBlocker { get; private set; }
 
         public Alliance alliance { get; private set; }
-        public DeadUnit deadUnit { get; private set; }
         public Health health { get; private set; }
         public Hearing hearing { get; private set; }
         public Seeker seeker { get; private set; }
@@ -36,6 +35,7 @@ namespace UnitSystem
         public Stats stats { get; private set; }
         public UnitActionHandler unitActionHandler { get; private set; }
         public UnitAnimator unitAnimator { get; private set; }
+        public UnitInteractable unitInteractable { get; private set; }
         public UnitMeshManager unitMeshManager { get; private set; }
         public Vision vision { get; private set; }
 
@@ -48,8 +48,8 @@ namespace UnitSystem
 
             singleNodeBlocker = GetComponent<SingleNodeBlocker>();
             alliance = GetComponent<Alliance>();
-            if (TryGetComponent(out DeadUnit deadUnit))
-                this.deadUnit = deadUnit;
+            if (TryGetComponent(out UnitInteractable deadUnit))
+                this.unitInteractable = deadUnit;
             health = GetComponent<Health>();
             hearing = GetComponentInChildren<Hearing>();
             seeker = GetComponent<Seeker>();
@@ -71,8 +71,8 @@ namespace UnitSystem
                 if (health.IsDead())
                 {
                     UnblockCurrentPosition();
-                    if (deadUnit != null)
-                        deadUnit.enabled = true;
+                    if (unitInteractable != null)
+                        unitInteractable.enabled = true;
                 }
                 else
                     BlockCurrentPosition();
@@ -114,14 +114,14 @@ namespace UnitSystem
             return true;
         }
 
-        public float GetAttackRange(bool accountForHeight)
+        public float GetAttackRange(Unit targetUnit, bool accountForHeight)
         {
-            if (myCharacterEquipment.RangedWeaponEquipped() && myCharacterEquipment.HasValidAmmunitionEquipped())
-                return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
-            else if (myCharacterEquipment.MeleeWeaponEquipped())
-                return unitMeshManager.GetPrimaryMeleeWeapon().MaxRange(gridPosition, unitActionHandler.targetAttackGridPosition, accountForHeight);
+            if (myUnitEquipment.RangedWeaponEquipped() && myUnitEquipment.HasValidAmmunitionEquipped())
+                return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
+            else if (myUnitEquipment.MeleeWeaponEquipped())
+                return unitMeshManager.GetPrimaryMeleeWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
             else
-                return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(unitActionHandler.targetAttackGridPosition, accountForHeight);
+                return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(targetUnit.GridPosition, accountForHeight);
         }
 
         public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
@@ -159,7 +159,7 @@ namespace UnitSystem
 
         public Inventory MainInventory => mainInventoryManager.MainInventory;
 
-        public CharacterEquipment CharacterEquipment => myCharacterEquipment;
+        public UnitEquipment UnitEquipment => myUnitEquipment;
 
         public Transform ActionsParent => actionsParent;
 
@@ -169,10 +169,10 @@ namespace UnitSystem
                 return false;
 
             Inventory itemDatasInventory = itemData.MyInventory();
-            if (itemData.Item is Ammunition && myCharacterEquipment != null && quiverInventoryManager != null && myCharacterEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+            if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
             {
-                if (myCharacterEquipment.slotVisualsCreated)
-                    myCharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                if (myUnitEquipment.slotVisualsCreated)
+                    myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
                 if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                     itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
@@ -183,19 +183,15 @@ namespace UnitSystem
             if (mainInventoryManager != null && MainInventory.TryAddItem(itemData))
                 return true;
 
-            if (myCharacterEquipment != null)
+            if (myUnitEquipment != null)
             {
-                if (backpackInventoryManager != null && myCharacterEquipment.BackpackEquipped() && backpackInventoryManager.TryAddItem(itemData))
+                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && backpackInventoryManager.TryAddItem(itemData))
                     return true;
             }
 
             return false;
         }
 
-        public GridPosition GridPosition()
-        {
-            UpdateGridPosition();
-            return gridPosition;
-        }
+        public GridPosition GridPosition => gridPosition;
     }
 }

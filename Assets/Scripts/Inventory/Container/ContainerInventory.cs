@@ -25,10 +25,10 @@ namespace InventorySystem
         {
             // TODO: Figure out out to discern between an equipped container vs one that's in a Unit's inventory and then set it up based off its Item
 
-            if (myUnit != null && containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
-                SetupInventoryLayoutFromItem((Backpack)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
-            else if (myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
-                SetupInventoryLayoutFromItem((Quiver)myUnit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+            if (myUnit != null && containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
+                SetupInventoryLayoutFromItem((Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+            else if (myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+                SetupInventoryLayoutFromItem((Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
             else if (looseItem != null && looseItem.ItemData != null)
                 SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
 
@@ -80,7 +80,7 @@ namespace InventorySystem
             if (looseItem != null && looseItem is LooseQuiverItem)
                 looseItem.LooseQuiverItem.UpdateArrowMeshes();
             else if (slotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
-                myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
             return added;
         }

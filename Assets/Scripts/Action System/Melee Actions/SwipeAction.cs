@@ -15,13 +15,19 @@ namespace ActionSystem
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
-        public override void TakeAction(GridPosition gridPosition)
+        public void QueueAction(GridPosition targetGridPosition)
+        {
+            this.targetGridPosition = targetGridPosition;
+            unit.unitActionHandler.QueueAction(this);
+        }
+
+        public override void TakeAction()
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (IsValidUnitInActionArea(gridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
+            if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {
-                unit.unitActionHandler.SettargetEnemyUnit(null);
+                unit.unitActionHandler.SetTargetEnemyUnit(null);
                 unit.unitActionHandler.SetQueuedAttack(null);
                 unit.unitActionHandler.FinishAction();
                 return;
@@ -29,7 +35,7 @@ namespace ActionSystem
 
             StartAction();
 
-            if (IsInAttackRange(null, unit.GridPosition(), unit.unitActionHandler.targetAttackGridPosition))
+            if (IsInAttackRange(null, unit.GridPosition, targetGridPosition))
                 StartCoroutine(Attack());
             else
             {
@@ -48,8 +54,8 @@ namespace ActionSystem
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition) == false)
-                    turnAction.RotateTowardsPosition(unit.unitActionHandler.targetAttackGridPosition.WorldPosition(), false);
+                if (turnAction.IsFacingTarget(targetGridPosition) == false)
+                    turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition(), false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.isRotating)
@@ -65,11 +71,11 @@ namespace ActionSystem
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(unit.unitActionHandler.targetAttackGridPosition) == false)
-                    turnAction.RotateTowardsPosition(unit.unitActionHandler.targetAttackGridPosition.WorldPosition(), true);
+                if (turnAction.IsFacingTarget(targetGridPosition) == false)
+                    turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition(), true);
 
                 // Loop through the grid positions in the attack area
-                foreach (GridPosition gridPosition in GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
+                foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
                 {
                     // Skip this position if there's no unit here
                     if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
@@ -87,7 +93,6 @@ namespace ActionSystem
                 }
 
                 CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
             }
         }
 
@@ -111,14 +116,14 @@ namespace ActionSystem
                     if (itemBlockedWith != null)
                     {
                         int blockAmount = 0;
-                        if (targetUnit.CharacterEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetHeldShield()) // If blocked with shield
+                        if (targetUnit.UnitEquipment.ShieldEquipped() && itemBlockedWith == targetUnit.unitMeshManager.GetHeldShield()) // If blocked with shield
                             blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
-                        else if (targetUnit.CharacterEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
+                        else if (targetUnit.UnitEquipment.MeleeWeaponEquipped()) // If blocked with melee weapon
                         {
                             if (itemBlockedWith == targetUnit.unitMeshManager.GetPrimaryMeleeWeapon()) // If blocked with primary weapon (only weapon, or dual wield right hand weapon)
                             {
                                 blockAmount = targetUnit.stats.WeaponBlockPower(targetUnit.unitMeshManager.GetPrimaryMeleeWeapon());
-                                if (unit.CharacterEquipment.IsDualWielding())
+                                if (unit.UnitEquipment.IsDualWielding())
                                 {
                                     if (itemBlockedWith == unit.unitMeshManager.GetRightHeldMeleeWeapon())
                                         blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
@@ -158,7 +163,7 @@ namespace ActionSystem
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition().WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -172,7 +177,7 @@ namespace ActionSystem
                     continue;
 
                 // If target is out of attack range from this Grid Position
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition()) == false)
+                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
                     continue;
 
                 // Check for obstacles
@@ -200,12 +205,12 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             // Exclude attacker's position
-            if (targetGridPosition == unit.GridPosition())
+            if (targetGridPosition == unit.GridPosition)
                 return validGridPositionsList;
 
             // Check if the target position is within the max attack range
             //if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition()) > maxAttackRange)
-            if (IsInAttackRange(null, unit.GridPosition(), targetGridPosition) == false)
+            if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
                 return validGridPositionsList;
 
             // Check for obstacles
@@ -231,7 +236,7 @@ namespace ActionSystem
                     continue;
 
                 // Exclude attacker's position
-                if (nodeGridPosition == unit.GridPosition())
+                if (nodeGridPosition == unit.GridPosition)
                     continue;
 
                 // Check if the node is in the general direction of the attack
@@ -243,7 +248,7 @@ namespace ActionSystem
 
                 // Check if the node is within the max attack range
                 //if (Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition()) > maxAttackRange)
-                if (IsInAttackRange(null, unit.GridPosition(), nodeGridPosition) == false)
+                if (IsInAttackRange(null, unit.GridPosition, nodeGridPosition) == false)
                     continue;
 
                 // Make sure the node isn't too much lower or higher than the target grid position (this is a swipe attack, so think of it basically swiping across in a horizontal line)
@@ -372,7 +377,7 @@ namespace ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition(), targetUnit.GridPosition());
+                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
@@ -383,7 +388,7 @@ namespace ActionSystem
                 return new NPCAIAction
                 {
                     baseAction = this,
-                    actionGridPosition = targetUnit.GridPosition(),
+                    actionGridPosition = targetUnit.GridPosition,
                     actionValue = Mathf.RoundToInt(finalActionValue)
                 };
             }
@@ -391,7 +396,7 @@ namespace ActionSystem
             return new NPCAIAction
             {
                 baseAction = this,
-                actionGridPosition = unit.GridPosition(),
+                actionGridPosition = unit.GridPosition,
                 actionValue = -1
             };
         }
@@ -465,7 +470,7 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetAttackGridPosition);
+            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(targetGridPosition);
             cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
             return cost;
         }
@@ -483,9 +488,10 @@ namespace ActionSystem
 
             unit.unitActionHandler.SetIsAttacking(false);
             if (unit.IsPlayer)
-                unit.unitActionHandler.SettargetEnemyUnit(null);
+                unit.unitActionHandler.SetTargetEnemyUnit(null);
 
             unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         IEnumerator WaitToCompleteAction()
@@ -493,12 +499,13 @@ namespace ActionSystem
             yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetEnergyCost() => 25;
 
-        public override bool IsValidAction() => unit != null && unit.CharacterEquipment.MeleeWeaponEquipped();
+        public override bool IsHotbarAction() => true;
+
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();
 
         public override bool IsAttackAction() => true;
 
@@ -507,7 +514,5 @@ namespace ActionSystem
         public override bool IsRangedAttackAction() => false;
 
         public override bool ActionIsUsedInstantly() => false;
-
-        public override string GetActionName() => "Swipe";
     }
 }

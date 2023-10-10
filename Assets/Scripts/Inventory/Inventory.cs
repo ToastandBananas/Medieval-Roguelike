@@ -184,8 +184,8 @@ namespace InventorySystem
                             {
                                 if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != null)
                                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
-                                else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment != null)
-                                    InventoryUI.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.RemoveEquipment(newItemData);
+                                else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment != null)
+                                    InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(newItemData);
                             }
 
                             // Hide the dragged item
@@ -207,16 +207,16 @@ namespace InventorySystem
                     Slot overlappedParentSlot = GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate);
                     if (overlappedParentSlot.InventoryItem.myInventory != null)
                         overlappedParentSlot.InventoryItem.myInventory.RemoveItem(overlappedItemsData);
-                    else if (overlappedParentSlot.InventoryItem.myCharacterEquipment != null)
-                        overlappedParentSlot.InventoryItem.myCharacterEquipment.RemoveEquipment(overlappedItemsData);
+                    else if (overlappedParentSlot.InventoryItem.myUnitEquipment != null)
+                        overlappedParentSlot.InventoryItem.myUnitEquipment.RemoveEquipment(overlappedItemsData);
 
                     // Clear out the dragged item
                     if (InventoryUI.parentSlotDraggedFrom != null)
                     {
                         if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != null)
                             InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(InventoryUI.DraggedItem.itemData);
-                        else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment != null)
-                            InventoryUI.parentSlotDraggedFrom.InventoryItem.myCharacterEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
+                        else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment != null)
+                            InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
                     }
 
                     // Setup the target slot's item data and sprites
@@ -296,7 +296,7 @@ namespace InventorySystem
                 {
                     // Remove the item from its original character equipment
                     if (InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is EquipmentSlot)
-                        InventoryUI.parentSlotDraggedFrom.EquipmentSlot.CharacterEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
+                        InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
                     // Remove the item from its original inventory
                     else if (InventoryUI.DraggedItem.myInventory != null)
                     {
@@ -307,8 +307,8 @@ namespace InventorySystem
                             if (InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem != null && InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                                 InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                             // If we drag arrows out of a Unit's equipped Quiver
-                            else if (InventoryUI.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.DraggedItem.myInventory.MyUnit.CharacterEquipment.slotVisualsCreated)
-                                InventoryUI.DraggedItem.myInventory.MyUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                            else if (InventoryUI.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.DraggedItem.myInventory.MyUnit.QuiverInventoryManager && InventoryUI.DraggedItem.myInventory.MyUnit.UnitEquipment.slotVisualsCreated)
+                                InventoryUI.DraggedItem.myInventory.MyUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                         }
                     }
                 }
@@ -317,7 +317,7 @@ namespace InventorySystem
 
         void TryTakeStuckProjectiles(ItemData newItemData)
         {
-            if (newItemData.Item is Shield == false || myUnit == null || myUnit.CharacterEquipment == null || myUnit.CharacterEquipment.ItemDataEquipped(newItemData) == false)
+            if (newItemData.Item is Shield == false || myUnit == null || myUnit.UnitEquipment == null || myUnit.UnitEquipment.ItemDataEquipped(newItemData) == false)
                 return;
 
             // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them
@@ -368,8 +368,8 @@ namespace InventorySystem
                 if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is LooseQuiverItem)
                     ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                 // If arrows are being removed from an equipped Quiver
-                else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.CharacterEquipment.slotVisualsCreated)
-                    myUnit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.slotVisualsCreated)
+                    myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
             }
         }
 

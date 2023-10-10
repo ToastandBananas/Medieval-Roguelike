@@ -201,17 +201,17 @@ namespace UnitSystem
             if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
                 return;
 
-            if (myUnit.CharacterEquipment.EquipSlotHasItem(equipSlot) == false)
+            if (myUnit.UnitEquipment.EquipSlotHasItem(equipSlot) == false)
                 return;
 
             if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
             {
-                if (leftHeldItem != null && leftHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+                if (leftHeldItem != null && leftHeldItem.itemData == myUnit.UnitEquipment.EquippedItemDatas[(int)equipSlot])
                 {
                     leftHeldItem.ResetHeldItem();
                     leftHeldItem = null;
                 }
-                else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.CharacterEquipment.EquippedItemDatas[(int)equipSlot])
+                else if (rightHeldItem != null && rightHeldItem.itemData == myUnit.UnitEquipment.EquippedItemDatas[(int)equipSlot])
                 {
                     rightHeldItem.ResetHeldItem();
                     rightHeldItem = null;

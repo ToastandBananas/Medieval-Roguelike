@@ -291,7 +291,7 @@ namespace UnitSystem
                     knownEnemies.Add(unitToAdd);
 
                     // The Player should cancel any action (other than attacks) when becoming aware of a new enemy
-                    if (unit.IsPlayer && unit.unitActionHandler.queuedAction != null && unit.unitActionHandler.AttackQueued() == false)
+                    if (unit.IsPlayer && unit.unitActionHandler.queuedActions.Count > 0 && unit.unitActionHandler.AttackQueued() == false)
                         StartCoroutine(unit.unitActionHandler.CancelAction());
                 }
                 else if (unit.alliance.IsAlly(unitToAdd))

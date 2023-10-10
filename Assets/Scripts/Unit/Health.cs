@@ -74,10 +74,10 @@ namespace UnitSystem
         {
             UnitManager.deadNPCs.Add(unit);
             UnitManager.livingNPCs.Remove(unit);
-            LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition());
+            LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition);
 
             unit.UnblockCurrentPosition();
-            unit.deadUnit.enabled = true;
+            unit.unitInteractable.enabled = true;
 
             unit.unitAnimator.Die(attacker.transform);
 

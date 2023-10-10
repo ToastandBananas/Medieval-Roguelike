@@ -29,7 +29,7 @@ namespace ActionSystem
 
             button.onClick.AddListener(() =>
             {
-                if (playerActionHandler.queuedAction == null)
+                if (playerActionHandler.queuedActions.Count == 0)
                     playerActionHandler.OnClick_SetSelectedActionType(actionType);
             });
         }
@@ -60,7 +60,7 @@ namespace ActionSystem
             else
             {
                 BaseAction action = actionType.GetAction(playerActionHandler.unit);
-                if (action == null || action.IsValidAction() == false)
+                if (action == null || action.IsHotbarAction() == false || action.IsValidAction() == false)
                     transform.gameObject.SetActive(false);
                 else
                 {

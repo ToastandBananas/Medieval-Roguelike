@@ -31,7 +31,7 @@ namespace InventorySystem
             {
                 // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                 targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
-                if (targetUnit.CharacterEquipment.ShieldEquipped())
+                if (targetUnit.UnitEquipment.ShieldEquipped())
                     targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
             }
 
@@ -39,20 +39,20 @@ namespace InventorySystem
             bowLineRenderer.StringStartFollowingTargetPositions();
             anim.Play("Shoot");
 
-            StartCoroutine(RotateRangedWeapon(targetUnit.GridPosition()));
+            StartCoroutine(RotateRangedWeapon(targetUnit.GridPosition));
         }
 
         public void LoadProjectile()
         {
-            if (unit.CharacterEquipment.HasValidAmmunitionEquipped() == false)
+            if (unit.UnitEquipment.HasValidAmmunitionEquipped() == false)
                 return;
 
             Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-            ItemData projectileItemData = unit.CharacterEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
+            ItemData projectileItemData = unit.UnitEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
             projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
             // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0
-            unit.CharacterEquipment.OnReloadProjectile(projectileItemData);
+            unit.UnitEquipment.OnReloadProjectile(projectileItemData);
 
             loadedProjectile = projectile;
             isLoaded = true;
@@ -114,8 +114,8 @@ namespace InventorySystem
 
         float CalculateZRotation(GridPosition targetGridPosition)
         {
-            float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition(), targetGridPosition);
-            float distanceY = unit.GridPosition().y - targetGridPosition.y;
+            float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition, targetGridPosition);
+            float distanceY = unit.GridPosition.y - targetGridPosition.y;
             float rotateFactor = 5f;
 
             float zRotation = distanceXZ * rotateFactor;

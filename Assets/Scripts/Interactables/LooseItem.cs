@@ -65,13 +65,13 @@ namespace InteractableObjects
             bool equipped = false;
             if (itemData.Item is Equipment)
             {
-                if (itemData.Item.Equipment is Shield && unitPickingUpItem.CharacterEquipment.ShieldEquipped())
+                if (itemData.Item.Equipment is Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped())
                     return false;
 
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
-                if (unitPickingUpItem.CharacterEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+                if (unitPickingUpItem.UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
                 {
-                    if (unitPickingUpItem.CharacterEquipment.currentWeaponSet == WeaponSet.Two)
+                    if (unitPickingUpItem.UnitEquipment.currentWeaponSet == WeaponSet.Two)
                     {
                         if (targetEquipSlot == EquipSlot.LeftHeldItem1)
                             targetEquipSlot = EquipSlot.LeftHeldItem2;
@@ -79,20 +79,20 @@ namespace InteractableObjects
                             targetEquipSlot = EquipSlot.RightHeldItem2;
                     }
 
-                    if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot))
+                    if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot))
                     {
-                        EquipSlot oppositeEquipSlot = unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
+                        EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
 
-                        if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(unitPickingUpItem.CharacterEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
-                            equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
+                        if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.UnitEquipment.EquipSlotIsFull(unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
+                            equipped = unitPickingUpItem.UnitEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
                     }
                     else
-                        equipped = unitPickingUpItem.CharacterEquipment.TryAddItemAt(targetEquipSlot, itemData);
+                        equipped = unitPickingUpItem.UnitEquipment.TryAddItemAt(targetEquipSlot, itemData);
                 }
-                else if (unitPickingUpItem.CharacterEquipment.EquipSlotIsFull(targetEquipSlot) == false)
-                    equipped = unitPickingUpItem.CharacterEquipment.TryEquipItem(itemData);
-                else if (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
-                    equipped = unitPickingUpItem.CharacterEquipment.TryAddToEquippedAmmunition(itemData);
+                else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false)
+                    equipped = unitPickingUpItem.UnitEquipment.TryEquipItem(itemData);
+                else if (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
+                    equipped = unitPickingUpItem.UnitEquipment.TryAddToEquippedAmmunition(itemData);
 
                 // Transfer inventory from loose container item if applicable
                 /*if (equipped && this is LooseContainerItem)

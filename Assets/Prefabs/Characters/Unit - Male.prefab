@@ -233,6 +233,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availableActionTypes:
+  - {fileID: 11400000, guid: 02c7d6c4db975da479ba897fe0548abc, type: 2}
+  - {fileID: 11400000, guid: e40d38b46a394e54dbd80dac34e3e64d, type: 2}
   - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
   - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
   - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
@@ -412,7 +414,7 @@ MonoBehaviour:
   mainInventoryManager: {fileID: 2873528818137102224}
   backpackInventoryManager: {fileID: 2430282970964941548}
   quiverInventoryManager: {fileID: 478177491740138796}
-  myCharacterEquipment: {fileID: 504428574042382846}
+  myUnitEquipment: {fileID: 504428574042382846}
 --- !u!114 &8017101318156772015
 MonoBehaviour:
   m_ObjectHideFlags: 0

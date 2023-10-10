@@ -23,9 +23,7 @@ namespace GeneralUI
 
         void MoveTo(GridPosition targetGridPosition)
         {
-            UnitManager.player.unitActionHandler.SetTargetGridPosition(targetGridPosition);
-            UnitManager.player.unitActionHandler.QueueAction(UnitManager.player.unitActionHandler.GetAction<MoveAction>());
-
+            UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(targetGridPosition);
             ContextMenu.DisableContextMenu();
         }
 
@@ -39,21 +37,17 @@ namespace GeneralUI
 
         void Attack(bool isInAttackRange)
         {
-            UnitManager.player.unitActionHandler.SettargetEnemyUnit(ContextMenu.targetUnit);
-            UnitManager.player.unitActionHandler.SetTargetAttackGridPosition(ContextMenu.targetUnit.GridPosition());
+            UnitManager.player.unitActionHandler.SetTargetEnemyUnit(ContextMenu.targetUnit);
 
             if (isInAttackRange)
                 UnitManager.player.unitActionHandler.AttackTarget();
             else
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                if (UnitManager.player.CharacterEquipment.RangedWeaponEquipped() && UnitManager.player.CharacterEquipment.HasValidAmmunitionEquipped())
-                    UnitManager.player.unitActionHandler.SetTargetGridPosition(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition(), ContextMenu.targetUnit));
+                if (UnitManager.player.UnitEquipment.RangedWeaponEquipped() && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
+                    UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
                 else // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
-                    UnitManager.player.unitActionHandler.SetTargetGridPosition(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition(), ContextMenu.targetUnit));
-
-                // Move towards the nearest attack position
-                UnitManager.player.unitActionHandler.QueueAction(UnitManager.player.unitActionHandler.GetAction<MoveAction>());
+                    UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
             }
 
             ContextMenu.DisableContextMenu();
@@ -63,7 +57,7 @@ namespace GeneralUI
         {
             stringBuilder.Clear();
             stringBuilder.Append("Put in ");
-            if (UnitManager.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
+            if (UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
                 stringBuilder.Append("Bag");
 
             SetupButton(stringBuilder.ToString(), delegate { AddToBackpack(itemData); });
@@ -109,8 +103,8 @@ namespace GeneralUI
             }
             else if (UnitManager.player.TryAddItemToInventories(itemData))
             {
-                if (InventoryUI.npcEquipmentSlots[0].CharacterEquipment != null && InventoryUI.npcEquipmentSlots[0].CharacterEquipment.ItemDataEquipped(itemData))
-                    InventoryUI.npcEquipmentSlots[0].CharacterEquipment.RemoveEquipment(itemData);
+                if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
+                    InventoryUI.npcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
                 else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
                     LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
             }
@@ -127,7 +121,7 @@ namespace GeneralUI
         {
             if (itemData.Item is Equipment)
             {
-                if (UnitManager.player.CharacterEquipment.ItemDataEquipped(itemData))
+                if (UnitManager.player.UnitEquipment.ItemDataEquipped(itemData))
                 {
                     stringBuilder.Clear();
                     stringBuilder.Append("Unequip");
@@ -140,11 +134,11 @@ namespace GeneralUI
 
                     SetupButton(stringBuilder.ToString(), UnequipItem);
                 }
-                else if (ContextMenu.targetInteractable != null || (ContextMenu.targetSlot != null && (ContextMenu.targetSlot is EquipmentSlot == false || ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != UnitManager.player.CharacterEquipment)))
+                else if (ContextMenu.targetInteractable != null || (ContextMenu.targetSlot != null && (ContextMenu.targetSlot is EquipmentSlot == false || ContextMenu.targetSlot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)))
                 {
-                    if (itemData.Item is Ammunition && UnitManager.player.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+                    if (itemData.Item is Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
                     {
-                        Quiver quiver = UnitManager.player.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
+                        Quiver quiver = UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
                         if (quiver.AllowedProjectileType == itemData.Item.Ammunition.ProjectileType)
                             SetupButton("Add to Quiver", delegate { UseItem(itemData); });
                         else
@@ -242,7 +236,7 @@ namespace GeneralUI
 
         void EquipItem(ItemData itemData)
         {
-            if (UnitManager.player.CharacterEquipment.TryEquipItem(itemData))
+            if (UnitManager.player.UnitEquipment.TryEquipItem(itemData))
             {
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
                 {
@@ -253,8 +247,8 @@ namespace GeneralUI
                     if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                     {
                         UnitManager.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                        if (UnitManager.player.CharacterEquipment.slotVisualsCreated && itemData.Item is Quiver)
-                            UnitManager.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                        if (UnitManager.player.UnitEquipment.slotVisualsCreated && itemData.Item is Quiver)
+                            UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                     }
                     else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                         UnitManager.player.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
@@ -264,8 +258,8 @@ namespace GeneralUI
                     if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                     {
                         UnitManager.player.QuiverInventoryManager.Initialize();
-                        if (UnitManager.player.CharacterEquipment.slotVisualsCreated && itemData.Item is Quiver)
-                            UnitManager.player.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                        if (UnitManager.player.UnitEquipment.slotVisualsCreated && itemData.Item is Quiver)
+                            UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                     }
                     else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
                         UnitManager.player.BackpackInventoryManager.Initialize();
@@ -286,7 +280,7 @@ namespace GeneralUI
         void UnequipItem()
         {
             EquipmentSlot equipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
-            equipmentSlot.CharacterEquipment.UnequipItem(equipmentSlot.EquipSlot);
+            equipmentSlot.UnitEquipment.UnequipItem(equipmentSlot.EquipSlot);
             ContextMenu.DisableContextMenu();
         }
 
@@ -305,10 +299,7 @@ namespace GeneralUI
                 InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
             }
             else if (ContextMenu.targetUnit != null)
-            {
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(ContextMenu.targetUnit.deadUnit);
-                UnitManager.player.unitActionHandler.QueueAction(UnitManager.player.unitActionHandler.GetAction<InteractAction>());
-            }
+                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetUnit.unitInteractable);
 
             ContextMenu.DisableContextMenu();
         }
@@ -347,10 +338,10 @@ namespace GeneralUI
         {
             if (ContextMenu.targetSlot != null)
             {
-                if (ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != null)
+                if (ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null)
                 {
                     EquipmentSlot targetEquipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
-                    DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.myCharacterEquipment, targetEquipmentSlot.EquipSlot);
+                    DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
                 }
                 else if (ContextMenu.targetSlot.InventoryItem.myInventory != null)
                     DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.GetMyUnit(), ContextMenu.targetSlot.InventoryItem.myInventory, ContextMenu.targetSlot.GetItemData());

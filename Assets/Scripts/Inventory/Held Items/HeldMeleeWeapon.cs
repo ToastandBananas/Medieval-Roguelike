@@ -47,7 +47,7 @@ namespace InventorySystem
             }
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-            StartCoroutine(RotateWeaponTowardsTarget(targetUnit.GridPosition()));
+            StartCoroutine(RotateWeaponTowardsTarget(targetUnit.GridPosition));
         }
 
         public void DoSwipeAttack()
@@ -55,7 +55,8 @@ namespace InventorySystem
             if (anim == null)
                 return;
 
-            foreach (GridPosition gridPosition in unit.unitActionHandler.GetAction<SwipeAction>().GetActionAreaGridPositions(unit.unitActionHandler.targetAttackGridPosition))
+            GridPosition targetGridPosition = unit.unitActionHandler.GetAction<SwipeAction>().targetGridPosition;
+            foreach (GridPosition gridPosition in unit.unitActionHandler.GetAction<SwipeAction>().GetActionAreaGridPositions(targetGridPosition))
             {
                 if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
                     continue;
@@ -76,7 +77,7 @@ namespace InventorySystem
             anim.Play("SwipeAttack_2H");
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-            StartCoroutine(RotateWeaponTowardsTarget(unit.unitActionHandler.targetAttackGridPosition));
+            StartCoroutine(RotateWeaponTowardsTarget(targetGridPosition));
         }
 
         void BlockAttack(Unit blockingUnit, HeldItem itemBlockedWith)
@@ -144,7 +145,7 @@ namespace InventorySystem
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
         {
-            if (targetGridPosition.y == unit.GridPosition().y)
+            if (targetGridPosition.y == unit.GridPosition.y)
                 yield break;
 
             Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
@@ -165,7 +166,7 @@ namespace InventorySystem
         public int DamageAmount()
         {
             int damageAmount = itemData.Damage;
-            if (unit.CharacterEquipment.IsDualWielding())
+            if (unit.UnitEquipment.IsDualWielding())
             {
                 if (this == unit.unitMeshManager.GetRightHeldMeleeWeapon())
                     damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);

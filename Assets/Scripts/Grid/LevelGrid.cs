@@ -208,7 +208,7 @@ namespace GridSystem
 
             ListPool<GraphNode>.Release(nodes);
             if (validGridPositionsList.Count == 0)
-                validGridPositionsList.Add(unit.GridPosition());
+                validGridPositionsList.Add(unit.GridPosition);
             return validGridPositionsList;
         }
 
@@ -216,7 +216,7 @@ namespace GridSystem
         {
             gridPositionsList = GetGridPositionsInRange(startingGridPosition, unit, minRange, maxRange, checkForObstacles);
             if (gridPositionsList.Count == 0)
-                return unit.GridPosition();
+                return unit.GridPosition;
             return gridPositionsList[Random.Range(0, gridPositionsList.Count - 1)];
         }
 
@@ -240,7 +240,7 @@ namespace GridSystem
                 if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                     continue;
 
-                float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.GridPosition(), nodeGridPosition);
+                float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.GridPosition, nodeGridPosition);
                 if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                     continue;
 
@@ -258,7 +258,7 @@ namespace GridSystem
 
             ListPool<GraphNode>.Release(nodes);
             if (validGridPositionsList.Count == 0)
-                return unit.GridPosition();
+                return unit.GridPosition;
             return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
         }
 

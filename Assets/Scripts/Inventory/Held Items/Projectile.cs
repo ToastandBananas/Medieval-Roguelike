@@ -95,7 +95,7 @@ namespace InventorySystem
             Vector3 startPos = transform.position;
             Vector3 offset = GetOffset(missedTarget);
 
-            float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition(), targetUnit.GridPosition()) * itemData.Item.Ammunition.ArcMultiplier;
+            float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
 
             while (moveProjectile)

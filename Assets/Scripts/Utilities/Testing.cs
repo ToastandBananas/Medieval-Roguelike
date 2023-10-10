@@ -21,7 +21,7 @@ namespace Utilities
         void ShowDebugPathToMousePosition()
         {
             GridPosition mouseGridPosition = LevelGrid.GetGridPosition(WorldMouse.GetPosition());
-            GridPosition startGridPosition = UnitManager.player.GridPosition();
+            GridPosition startGridPosition = UnitManager.player.GridPosition;
             ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(startGridPosition), LevelGrid.GetWorldPosition(mouseGridPosition));
             path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
 

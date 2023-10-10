@@ -8,7 +8,7 @@ namespace InventorySystem
     public class InventoryItem : MonoBehaviour
     {
         public Inventory myInventory { get; private set; }
-        public CharacterEquipment myCharacterEquipment { get; private set; }
+        public UnitEquipment myUnitEquipment { get; private set; }
         public ItemData itemData { get; private set; }
 
         [Header("Components")]
@@ -83,9 +83,9 @@ namespace InventorySystem
             if (mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = (EquipmentSlot)mySlot;
-                if (myEquipmentSlot.CharacterEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
-                    && (myEquipmentSlot.CharacterEquipment.currentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
-                    || (myEquipmentSlot.CharacterEquipment.currentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2))
+                if (myEquipmentSlot.UnitEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
+                    && (myEquipmentSlot.UnitEquipment.currentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
+                    || (myEquipmentSlot.UnitEquipment.currentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2))
                 {
                     DisableIconImage();
                 }
@@ -111,7 +111,7 @@ namespace InventorySystem
                 imageColor.a = 0.5f;
                 iconImage.color = imageColor;
             }
-            else if (myCharacterEquipment != null && mySlot != null)
+            else if (myUnitEquipment != null && mySlot != null)
             {
                 mySlot.EquipmentSlot.PlaceholderImage.enabled = true;
                 iconImage.enabled = false;
@@ -194,14 +194,14 @@ namespace InventorySystem
         {
             if (myInventory != null)
                 return myInventory.MyUnit;
-            else if (myCharacterEquipment != null)
-                return myCharacterEquipment.MyUnit;
+            else if (myUnitEquipment != null)
+                return myUnitEquipment.MyUnit;
             return null;
         }
 
         public void SetMyInventory(Inventory inv) => myInventory = inv;
 
-        public void SetMyCharacterEquipment(CharacterEquipment charEquipment) => myCharacterEquipment = charEquipment;
+        public void SetMyUnitEquipment(UnitEquipment charEquipment) => myUnitEquipment = charEquipment;
 
         public void SetItemData(ItemData newItemData) => itemData = newItemData;
 

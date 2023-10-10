@@ -7,9 +7,9 @@ namespace ActionSystem
     {
         bool isReloading;
 
-        public override bool IsValidAction() => unit != null && unit.CharacterEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.CharacterEquipment.HasValidAmmunitionEquipped();
+        public void QueueAction() => unit.unitActionHandler.QueueAction(this);
 
-        public override void TakeAction(GridPosition gridPosition)
+        public override void TakeAction()
         {
             if (isReloading) return;
 
@@ -45,6 +45,10 @@ namespace ActionSystem
             return 100;
         }
 
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.UnitEquipment.HasValidAmmunitionEquipped();
+
+        public override bool IsHotbarAction() => true;
+
         public override bool ActionIsUsedInstantly() => true;
 
         public override bool IsAttackAction() => false;
@@ -54,7 +58,5 @@ namespace ActionSystem
         public override bool IsRangedAttackAction() => false;
 
         public override int GetEnergyCost() => 0;
-
-        public override string GetActionName() => "Reload";
     }
 }

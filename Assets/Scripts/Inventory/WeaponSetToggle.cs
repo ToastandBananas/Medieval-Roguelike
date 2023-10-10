@@ -1,18 +1,15 @@
 using UnityEngine;
 using UnitSystem;
+using ActionSystem;
 
 namespace InventorySystem
 {
     public class WeaponSetToggle : MonoBehaviour
     {
-        CharacterEquipment characterEquipment;
-
-        void Start()
+        public void SwapWeaponSet()
         {
-            if (transform.parent.name == "Player Equipment")
-                characterEquipment = UnitManager.player.CharacterEquipment;
+            if (UnitManager.player.isMyTurn && UnitManager.player.unitActionHandler.isPerformingAction == false && UnitManager.player.unitActionHandler.isMoving == false)
+                UnitManager.player.unitActionHandler.GetAction<EquipmentAction>().QueueAction(EquipmentActionType.SwapWeaponSet, null, null);
         }
-
-        public void SwapWeaponSet() => characterEquipment.SwapWeaponSet();
     }
 }

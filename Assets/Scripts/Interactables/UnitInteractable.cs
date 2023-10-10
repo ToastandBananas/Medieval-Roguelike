@@ -1,9 +1,10 @@
+using GridSystem;
 using InventorySystem;
 using UnitSystem;
 
 namespace InteractableObjects
 {
-    public class DeadUnit : Interactable
+    public class UnitInteractable : Interactable
     {
         Unit myUnit;
 
@@ -16,9 +17,9 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitInteracting)
         {
-            if (myUnit.CharacterEquipment.slotVisualsCreated == false)
+            if (myUnit.UnitEquipment.slotVisualsCreated == false)
             {
-                myUnit.CharacterEquipment.CreateSlotVisuals();
+                myUnit.UnitEquipment.CreateSlotVisuals();
                 myUnit.MainInventoryManager.MainInventory.CreateSlotVisuals();
 
                 if (InventoryUI.npcInventoryActive == false)
@@ -27,6 +28,13 @@ namespace InteractableObjects
                 if (InventoryUI.playerInventoryActive == false)
                     InventoryUI.TogglePlayerInventory();
             }
+        }
+
+        public override GridPosition GridPosition()
+        {
+            UpdateGridPosition();
+            myUnit.UpdateGridPosition();
+            return base.GridPosition();
         }
 
         public override bool CanInteractAtMyGridPosition() => true;

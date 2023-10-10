@@ -43,38 +43,38 @@ namespace InventorySystem
 
         public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
         {
-            if (unit.CharacterEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
             {
-                Quiver quiver = unit.CharacterEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
+                Quiver quiver = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
                 if (quiver.AllowedProjectileType == projectileType)
                 {
                     Inventory itemDatasInventory = itemData.MyInventory();
 
                     bool itemAdded = unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
-                    if (unit.CharacterEquipment.slotVisualsCreated)
-                        unit.CharacterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                    if (unit.UnitEquipment.slotVisualsCreated)
+                        unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
                     if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
                         itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
                     if (itemAdded)
                     {
-                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != null)
-                            ContextMenu.targetSlot.InventoryItem.myCharacterEquipment.RemoveEquipment(itemData);
+                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null)
+                            ContextMenu.targetSlot.InventoryItem.myUnitEquipment.RemoveEquipment(itemData);
                     }
                     else
                     {
-                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment != null && ContextMenu.targetSlot.InventoryItem.myCharacterEquipment.slotVisualsCreated)
+                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment.slotVisualsCreated)
                             ContextMenu.targetSlot.InventoryItem.UpdateStackSizeVisuals();
                     }
 
                     return itemAdded;
                 }
                 else
-                    return unit.CharacterEquipment.TryEquipItem(itemData);
+                    return unit.UnitEquipment.TryEquipItem(itemData);
             }
             else
-                return unit.CharacterEquipment.TryEquipItem(itemData);
+                return unit.UnitEquipment.TryEquipItem(itemData);
         }
 
         public override Sprite InventorySprite(ItemData itemData = null)

@@ -98,7 +98,7 @@ namespace ActionSystem
                     if (selectedAction.IsAttackAction())
                     {
                         // Set the target attack grid position to the mouse grid position and update the visuals
-                        player.unitActionHandler.SetTargetAttackGridPosition(WorldMouse.GetCurrentGridPosition());
+                        // player.unitActionHandler.SetTargetAttackGridPosition(WorldMouse.GetCurrentGridPosition);
                         GridSystemVisual.UpdateAttackGridVisual();
                     }
 
@@ -107,12 +107,12 @@ namespace ActionSystem
                         HandleTurnMode();
                     // If the player is trying to swap their weapon set
                     else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
-                        player.CharacterEquipment.SwapWeaponSet();
+                        player.unitActionHandler.GetAction<EquipmentAction>().QueueAction(EquipmentActionType.SwapWeaponSet, null, null);
                     // If the player selects a grid position to try and perform an action
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
                 }
-                else if (player.unitActionHandler.queuedAction != null || player.unitActionHandler.isMoving)
+                else if (player.unitActionHandler.queuedActions.Count > 0 || player.unitActionHandler.isMoving)
                 {
                     ActionLineRenderer.Instance.HideLineRenderers();
                     WorldMouse.ChangeCursor(CursorState.Default);
@@ -132,62 +132,51 @@ namespace ActionSystem
             turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
             WorldMouse.ChangeCursor(CursorState.Default);
 
-            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition() && turnAction.targetDirection != turnAction.currentDirection)
+            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition && turnAction.targetDirection != turnAction.currentDirection)
                 player.unitActionHandler.QueueAction(turnAction);
         }
 
         void HandleActions()
         {
             GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
-            player.unitActionHandler.SetTargetInteractable(null);
 
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
             {
                 // Do nothing if the player is in the same grid position as the interactable (such as an open door)
-                if (player.GridPosition() == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
+                if (player.GridPosition == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
                     return;
 
-                // Set the target Interactable
-                player.unitActionHandler.SetTargetInteractable(highlightedInteractable);
-
                 // If the player is too far away from the Interactable to interact with it
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition(), highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
                 {
                     // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
                     // Queue the Interact Action with the Interactable
-                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+                    player.unitActionHandler.GetAction<InteractAction>().QueueAction(highlightedInteractable);
                 }
             }
             // If the player is trying to perform an action on themselves
-            else if (mouseGridPosition == player.GridPosition())
+            else if (mouseGridPosition == player.GridPosition)
             {
                 // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
             }
             // If the mouse is hovering over a dead Unit
             else if (highlightedUnit != null && highlightedUnit.health.IsDead())
             {
-                // Set the target Interactable
-                player.unitActionHandler.SetTargetInteractable(highlightedUnit.deadUnit);
-
                 // If the player is too far away from the Interactable to interact with it
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition(), highlightedUnit.GridPosition()) > LevelGrid.diaganolDistance)
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedUnit.GridPosition) > LevelGrid.diaganolDistance)
                 {
                     // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.SetTargetGridPosition(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition(), player.GridPosition(), LevelGrid.diaganolDistance, highlightedUnit.deadUnit.CanInteractAtMyGridPosition()));
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
+                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
                     // Queue the Interact Action with the Interactable
-                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.deadUnit);
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<InteractAction>());
+                    player.unitActionHandler.GetAction<InteractAction>().QueueAction(highlightedUnit.unitInteractable);
                 }
             }
             // Make sure the mouse grid position is a valid position to perform an action
@@ -203,7 +192,7 @@ namespace ActionSystem
                     if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction.IsAttackAction())))
                     {
                         // Set the Unit as the target enemy
-                        player.unitActionHandler.SettargetEnemyUnit(unitAtGridPosition);
+                        player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
 
                         // If the player has an attack action selected
                         if (selectedAction.IsAttackAction())
@@ -212,10 +201,11 @@ namespace ActionSystem
                             if (selectedAction.IsInAttackRange(unitAtGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
-                                if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
+                                float attackRange = player.GetAttackRange(unitAtGridPosition, false);
+                                if (unitAtGridPosition.IsCompletelySurrounded(attackRange) && attackRange < 2f)
                                 {
                                     // Remove the unit as the target enemy
-                                    player.unitActionHandler.SettargetEnemyUnit(null);
+                                    player.unitActionHandler.SetTargetEnemyUnit(null);
                                     return;
                                 }
 
@@ -225,7 +215,7 @@ namespace ActionSystem
                             }
                         }
                         // If the player has a ranged weapon equipped and the target enemy is within attack range
-                        else if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped())
+                        else if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.health.IsDead())
@@ -240,7 +230,7 @@ namespace ActionSystem
                             }
                         }
                         // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                        else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.CharacterEquipment.IsUnarmed() || (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() == false))
+                        else if (player.UnitEquipment.MeleeWeaponEquipped() || player.UnitEquipment.IsUnarmed() || (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() == false))
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.health.IsDead())
@@ -250,10 +240,11 @@ namespace ActionSystem
                             if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
-                                if (unitAtGridPosition.IsCompletelySurrounded(player.GetAttackRange(false)) && player.GetAttackRange(false) < 2f)
+                                float attackRange = player.GetAttackRange(unitAtGridPosition, false);
+                                if (unitAtGridPosition.IsCompletelySurrounded(attackRange) && attackRange < 2f)
                                 {
                                     // Remove the unit as the target enemy
-                                    player.unitActionHandler.SettargetEnemyUnit(null);
+                                    player.unitActionHandler.SetTargetEnemyUnit(null);
                                     return;
                                 }
 
@@ -271,25 +262,24 @@ namespace ActionSystem
                         if (selectedAction.IsAttackAction() == false || selectedAction.IsDefaultAttackAction())
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                            if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
-                                player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
-                            else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed) // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
-                                player.unitActionHandler.SetTargetGridPosition(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition(), unitAtGridPosition));
+                            if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
+                            {
+                                player.unitActionHandler.GetAction<MoveAction>().QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                            }
+                            // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
+                            else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
+                            {
+                                player.unitActionHandler.GetAction<MoveAction>().QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                            }
                             else
                             {
-                                player.unitActionHandler.SettargetEnemyUnit(null);
+                                player.unitActionHandler.SetTargetEnemyUnit(null);
                                 player.unitActionHandler.SetDefaultSelectedAction();
                                 return;
                             }
-
-                            // Set the target attack position to the target unit's position
-                            player.unitActionHandler.SetTargetAttackGridPosition(unitAtGridPosition.GridPosition());
-
-                            // Move towards the nearest attack position
-                            player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
                         }
                         else // The player either doesn't have an attack action selected or has a non-default attack action selected
-                            player.unitActionHandler.SettargetEnemyUnit(null);
+                            player.unitActionHandler.SetTargetEnemyUnit(null);
                     }
                     else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                     {
@@ -297,7 +287,7 @@ namespace ActionSystem
                         if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
                             player.unitActionHandler.SetDefaultSelectedAction();
 
-                        player.unitActionHandler.SettargetEnemyUnit(null);
+                        player.unitActionHandler.SetTargetEnemyUnit(null);
                     }
                 }
                 // If there's no unit or a dead unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
@@ -308,7 +298,7 @@ namespace ActionSystem
                         return;
 
                     // If there's any enemy or neutral unit within the attack positions
-                    if (selectedAction.IsValidUnitInActionArea(player.unitActionHandler.targetAttackGridPosition) == false)
+                    if (selectedAction.IsValidUnitInActionArea(selectedAction.targetGridPosition) == false)
                         return;
 
                     // Turn towards and attack the target enemy
@@ -317,11 +307,7 @@ namespace ActionSystem
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
                 else if (selectedAction is MoveAction)
-                {
-                    player.unitActionHandler.SettargetEnemyUnit(null);
-                    player.unitActionHandler.SetTargetGridPosition(mouseGridPosition);
-                    player.unitActionHandler.QueueAction(player.unitActionHandler.GetAction<MoveAction>());
-                }
+                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(mouseGridPosition);
             }
         }
 
@@ -433,9 +419,9 @@ namespace ActionSystem
 
         void SetAttackCursor()
         {
-            if (player.CharacterEquipment.RangedWeaponEquipped() && player.CharacterEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
+            if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
-            else if (player.CharacterEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
+            else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);
             else
                 WorldMouse.ChangeCursor(CursorState.Default);

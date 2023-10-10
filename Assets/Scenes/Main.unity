@@ -24184,11 +24184,6 @@ PrefabInstance:
       objectReference: {fileID: 6419999078298759150}
     - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
-      propertyPath: startingEquipment.Array.size
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
-        type: 3}
       propertyPath: startingEquipment.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 422a243168c1e9248a2ea7446b4b9aa6,
@@ -24230,6 +24225,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6440773195933579921, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: myUnitEquipment
+      value: 
+      objectReference: {fileID: 3102349543255663289}
     - target: {fileID: 6440773195933579921, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: mainInventoryManager
@@ -24480,6 +24480,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9cd58403f3e6e864b8d7fded7e5447d4, type: 3}
+--- !u!114 &3102349543255663289 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+    type: 3}
+  m_PrefabInstance: {fileID: 3102349543255663288}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b2ff79b5fcdc604e96940b3d3c4f9bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &5301632359037128112
 CanvasRenderer:
   m_ObjectHideFlags: 0
