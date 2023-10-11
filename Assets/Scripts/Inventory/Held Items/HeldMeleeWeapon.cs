@@ -140,7 +140,7 @@ namespace InventorySystem
         // Used in animation Key Frame
         void DamageTargetUnits()
         {
-            unit.unitActionHandler.lastQueuedAction.DamageTargets(this);
+            unit.unitActionHandler.lastQueuedAction.BaseAttackAction.DamageTargets(this);
         }
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

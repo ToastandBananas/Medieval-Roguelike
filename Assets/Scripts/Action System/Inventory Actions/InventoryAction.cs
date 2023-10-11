@@ -44,12 +44,6 @@ namespace ActionSystem
 
         public override int GetEnergyCost() => 0;
 
-        public override bool IsAttackAction() => false;
-
-        public override bool IsMeleeAttackAction() => false;
-
-        public override bool IsRangedAttackAction() => false;
-
         public override bool IsHotbarAction() => false;
 
         public override bool IsValidAction() => true;

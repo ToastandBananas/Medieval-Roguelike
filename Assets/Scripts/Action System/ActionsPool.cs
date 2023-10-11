@@ -72,8 +72,8 @@ namespace ActionSystem
             action.SetUnit(unit);
 
             unit.unitActionHandler.AvailableActions.Add(action);
-            if (action.IsAttackAction())
-                unit.unitActionHandler.AvailableCombatActions.Add(action);
+            if (action is BaseAttackAction)
+                unit.unitActionHandler.AvailableCombatActions.Add(action as BaseAttackAction);
 
             action.transform.SetParent(unit.ActionsParent);
             action.gameObject.SetActive(true);
@@ -102,7 +102,7 @@ namespace ActionSystem
         {
             action.unit.unitActionHandler.AvailableActions.Remove(action);
             if (action.unit.unitActionHandler.AvailableCombatActions.Contains(action))
-                action.unit.unitActionHandler.AvailableCombatActions.Remove(action);
+                action.unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
 
             action.SetUnit(null);
             action.transform.SetParent(Instance.transform);

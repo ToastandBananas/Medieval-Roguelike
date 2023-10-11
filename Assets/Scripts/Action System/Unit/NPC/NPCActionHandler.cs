@@ -5,6 +5,7 @@ using UnityEngine;
 using GridSystem;
 using UnitSystem;
 using Utilities;
+using System.Collections;
 
 namespace ActionSystem
 {
@@ -98,7 +99,7 @@ namespace ActionSystem
                     // If so, queue the attack and return out of this method
                     if (canAttack)
                     {
-                        QueueAction(queuedAttack);
+                        queuedAttack.QueueAction(targetEnemyUnit);
                         return;
                     }
                 }
@@ -267,7 +268,7 @@ namespace ActionSystem
                     // TO DO: If the Unit has a melee weapon, switch to it
 
                     // Else flee somewhere
-                    StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                    StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                 }
             }
 
@@ -295,9 +296,11 @@ namespace ActionSystem
                 PursueTargetEnemy();
         }
 
-        public void ChooseCombatAction()
+        public void ChooseCombatAction() => StartCoroutine(ChooseCombatAction_Coroutine());
+
+        public IEnumerator ChooseCombatAction_Coroutine()
         {
-            BaseAction chosenCombatAction = null;
+            BaseAttackAction chosenCombatAction = null;
             npcAIActions.Clear();
 
             // Loop through all combat actions
@@ -346,15 +349,31 @@ namespace ActionSystem
                 int selectedIndex = accumulatedWeights.FindIndex(weight => weight >= randomWeight);
 
                 // Get the BaseAction from the corresponding NPCAIAction
-                chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction;
+                chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction as BaseAttackAction;
 
                 // If an action was found
                 if (chosenCombatAction != null)
                 {
+                    Unit unitAtActionGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
+                    if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.isMoving)
+                    {
+                        while (unitAtActionGridPosition.unitActionHandler.isMoving)
+                            yield return null;
+
+                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition) == false) // If the target Unit moved out of range
+                        {
+                            targetEnemyUnit = unitAtActionGridPosition;
+                            PursueTargetEnemy();
+
+                            ListPool<NPCAIAction>.Release(filteredNPCAIActions);
+                            ListPool<int>.Release(accumulatedWeights);
+                            yield break;
+                        }
+                    }
+
                     // Set the unit's target attack position to the one corresponding to the NPCAIAction that was chosen
-                    SetQueuedAttack(chosenCombatAction);
-                    chosenCombatAction.SetTargetGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
-                    QueueAction(chosenCombatAction);
+                    SetQueuedAttack(chosenCombatAction, filteredNPCAIActions[selectedIndex].actionGridPosition);
+                    chosenCombatAction.QueueAction(filteredNPCAIActions[selectedIndex].actionGridPosition);
                 }
                 else // If no combat action was found, just move towards the target enemy
                     PursueTargetEnemy();
@@ -749,7 +768,7 @@ namespace ActionSystem
 
                 // Queue the Move Action if the Unit isn't already moving
                 if (isMoving == false)
-                    GetAction<MoveAction>().QueueAction(GetAction<MoveAction>().targetGridPosition);
+                    GetAction<MoveAction>().QueueAction(wanderGridPosition);
             }
             // If the NPC has arrived at their destination
             else if (Vector3.Distance(wanderGridPosition.WorldPosition(), transform.position) <= 0.1f)
@@ -770,11 +789,11 @@ namespace ActionSystem
 
         GridPosition GetNewWanderPosition()
         {
-            // => LevelGrid.Instance.GetRandomGridPositionInRange(LevelGrid.Instance.GetGridPosition(defaultPosition), unit, minWanderDistance, maxWanderDistance);
-            Vector3 randomPosition = Random.insideUnitSphere * maxWanderDistance;
-            randomPosition.y = 0;
-            randomPosition += transform.position;
-            return LevelGrid.GetGridPosition(randomPosition);
+            float distance = Random.Range(minWanderDistance, maxWanderDistance);
+            Vector3 randomDirection = Random.insideUnitSphere;
+            randomDirection.y = 0;
+            Vector3 randomPosition = randomDirection * distance + transform.position;
+            return LevelGrid.GetGridPosition((Vector3)AstarPath.active.GetNearest(randomPosition).node.position);
         }
         #endregion
 

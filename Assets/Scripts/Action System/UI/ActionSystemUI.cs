@@ -66,7 +66,7 @@ namespace ActionSystem
         {
             BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
             if (selectedAction.ActionIsUsedInstantly())
-                playerActionHandler.QueueAction(selectedAction);
+                selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
             else
             {
                 UpdateSelectedVisual();

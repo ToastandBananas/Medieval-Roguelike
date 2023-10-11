@@ -1,5 +1,4 @@
 using Pathfinding;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,10 +30,9 @@ namespace ActionSystem
             targetGridPosition = unit.GridPosition;
         }
 
-        public void QueueAction(GridPosition finalTargetGridPosition)
+        public override void QueueAction(GridPosition finalTargetGridPosition)
         {
             targetGridPosition = finalTargetGridPosition;
-            // this.finalTargetGridPosition = finalTargetGridPosition;
             unit.unitActionHandler.QueueAction(this);
         }
 
@@ -260,8 +258,8 @@ namespace ActionSystem
             unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.GridPosition);
 
             BaseAction selectedAction = unit.unitActionHandler.SelectedAction;
-            if (selectedAction.IsAttackAction())
-                unit.unitActionHandler.GetAction<MoveAction>().QueueAction(selectedAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+            if (selectedAction is BaseAttackAction)
+                unit.unitActionHandler.GetAction<MoveAction>().QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
                 unit.unitActionHandler.GetAction<MoveAction>().QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed)
@@ -532,12 +530,6 @@ namespace ActionSystem
         public override bool IsHotbarAction() => true;
 
         public override bool ActionIsUsedInstantly() => false;
-
-        public override bool IsAttackAction() => false;
-
-        public override bool IsMeleeAttackAction() => false;
-
-        public override bool IsRangedAttackAction() => false;
 
         public override int GetEnergyCost() => 0;
 

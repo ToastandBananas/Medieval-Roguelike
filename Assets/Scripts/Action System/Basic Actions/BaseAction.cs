@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using GridSystem;
-using InventorySystem;
 using UnitSystem;
 
 namespace ActionSystem
@@ -16,6 +15,14 @@ namespace ActionSystem
         protected virtual void StartAction() { }
 
         public virtual void SetTargetGridPosition(GridPosition gridPosition) => targetGridPosition = gridPosition;
+
+        public void QueueAction() => unit.unitActionHandler.QueueAction(this);
+
+        public virtual void QueueAction(GridPosition targetGridPosition)
+        {
+            this.targetGridPosition = targetGridPosition;
+            QueueAction();
+        }
 
         public virtual void CompleteAction()
         {
@@ -59,41 +66,6 @@ namespace ActionSystem
             targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
         }
 
-        public virtual void DamageTargets(HeldItem heldWeapon)
-        {
-            if (IsAttackAction() == false)
-                Debug.LogWarning(GetType().Name + " is not an attack action, but it is trying to use the 'DamageTarget' method.");
-            else
-                Debug.LogWarning("The 'DamageTarget' method has not been implemented for the " + GetType().Name + " action.");
-        }
-
-        public virtual bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
-        {
-            if (IsAttackAction() == false)
-                Debug.LogWarning(GetType().Name + " is not an attack action, but it is trying to use the 'IsInAttackRange' method.");
-            else
-                Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + GetType().Name + " action.");
-            return false;
-        }
-
-        public virtual bool IsInAttackRange(Unit targetUnit)
-        {
-            if (IsAttackAction() == false)
-                Debug.LogWarning(GetType().Name + " is not an attack action, but it is trying to use the 'IsInAttackRange' method.");
-            else
-                Debug.LogWarning("The 'IsInAttackRange' method has not been implemented for the " + GetType().Name + " action.");
-            return false;
-        }
-
-        public virtual GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
-        {
-            if (IsAttackAction() == false)
-                Debug.LogWarning(GetType().Name + " is not an attack action, but it is trying to use the 'GetNearestAttackPosition' method.");
-            else
-                Debug.LogWarning("The 'GetNearestAttackPosition' method has not been implemented for the " + GetType().Name + " action.");
-            return unit.GridPosition;
-        }
-
         public virtual bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Debug.LogWarning("The 'IsValidUnitInActionArea' method has not been implemented for the " + GetType().Name + " action.");
@@ -130,19 +102,15 @@ namespace ActionSystem
             return null;
         }
 
-        public void SetUnit(Unit unit) => this.unit = unit;
-
         public bool IsDefaultAttackAction() => this is MeleeAction || this is ShootAction;
+
+        public BaseAttackAction BaseAttackAction => this as BaseAttackAction;
+
+        public void SetUnit(Unit unit) => this.unit = unit;
 
         public abstract bool IsHotbarAction();
 
         public abstract bool IsValidAction();
-
-        public abstract bool IsAttackAction();
-
-        public abstract bool IsMeleeAttackAction();
-
-        public abstract bool IsRangedAttackAction();
 
         public abstract bool ActionIsUsedInstantly();
 

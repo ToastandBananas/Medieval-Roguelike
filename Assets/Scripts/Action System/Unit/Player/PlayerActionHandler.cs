@@ -16,11 +16,12 @@ namespace ActionSystem
             base.Awake();
         }
 
-        public override void QueueAction(BaseAction action, int position = -1)
+        public override void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
-            base.QueueAction(action, position);
+            base.QueueAction(action, addToFrontOfQueue);
 
-            if (selectedActionType.GetAction(unit).IsDefaultAttackAction() == false)
+            BaseAction selectedAction = selectedActionType.GetAction(unit);
+            if (selectedAction.IsDefaultAttackAction() == false)
                 SetDefaultSelectedAction();
         }
 
@@ -53,7 +54,7 @@ namespace ActionSystem
                                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                                 // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < 1.4f || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, queuedAttack.targetGridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, queuedAttack.targetGridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                                 {
                                     CancelAction();
                                     return;
@@ -61,7 +62,7 @@ namespace ActionSystem
                             }
 
                             // Queue the attack action
-                            QueueAction(queuedAttack);
+                            queuedAttack.QueueAction();
                         }
                         else // If there's no unit in the attack area or the target attack position is out of range, cancel the action
                         {

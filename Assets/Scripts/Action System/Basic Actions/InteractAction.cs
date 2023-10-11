@@ -18,7 +18,7 @@ namespace ActionSystem
         public void QueueActionImmediately(Interactable targetInteractable)
         {
             this.targetInteractable = targetInteractable;
-            unit.unitActionHandler.QueueAction(this, 0);
+            unit.unitActionHandler.QueueAction(this, true);
         }
 
         public override void TakeAction()
@@ -67,12 +67,6 @@ namespace ActionSystem
         public override bool IsHotbarAction() => false;
 
         public override bool IsValidAction() => true;
-
-        public override bool IsAttackAction() => false;
-
-        public override bool IsMeleeAttackAction() => false;
-
-        public override bool IsRangedAttackAction() => false;
 
         public override bool ActionIsUsedInstantly() => true;
 

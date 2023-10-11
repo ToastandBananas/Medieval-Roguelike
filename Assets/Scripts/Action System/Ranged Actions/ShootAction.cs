@@ -11,19 +11,10 @@ using Utilities;
 
 namespace ActionSystem
 {
-    public class ShootAction : BaseAction
+    public class ShootAction : BaseAttackAction
     {
-        Unit targetEnemyUnit;
-
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
-        public void QueueAction(Unit targetEnemyUnit)
-        {
-            this.targetEnemyUnit = targetEnemyUnit;
-            targetGridPosition = targetEnemyUnit.GridPosition;
-            unit.unitActionHandler.QueueAction(this);
-        }
 
         public override void SetTargetGridPosition(GridPosition gridPosition)
         {
@@ -37,8 +28,13 @@ namespace ActionSystem
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (targetEnemyUnit == null && unit.unitActionHandler.targetEnemyUnit != null)
-                targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+            if (targetEnemyUnit == null)
+            {
+                if (unit.unitActionHandler.targetEnemyUnit != null)
+                    targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+                else if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+                    targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+            }
 
             if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
             {
@@ -78,6 +74,24 @@ namespace ActionSystem
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
+                if (targetEnemyUnit.unitActionHandler.isMoving)
+                {
+                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                        yield return null;
+
+                    // If the target Unit moved out of range, queue a movement instead
+                    if (IsInAttackRange(targetEnemyUnit) == false)
+                    {
+                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+
+                        CompleteAction();
+                        if (unit.IsPlayer)
+                            unit.unitActionHandler.TakeTurn();
+
+                        yield break;
+                    }
+                }
+
                 // Rotate towards the target
                 if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
                     turnAction.RotateTowards_Unit(targetEnemyUnit, false);
@@ -464,8 +478,6 @@ namespace ActionSystem
         public bool RangedWeaponIsLoaded() => unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
 
         public override bool ActionIsUsedInstantly() => false;
-
-        public override bool IsAttackAction() => true;
 
         public override bool IsMeleeAttackAction() => false;
 

@@ -136,7 +136,7 @@ namespace GridSystem
             if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            if (Instance.player.unitActionHandler.SelectedAction.IsAttackAction() == false)
+            if (Instance.player.unitActionHandler.SelectedAction is BaseAttackAction == false)
                 return;
 
             Instance.ShowAttackRange(Instance.player.unitActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
@@ -150,7 +150,7 @@ namespace GridSystem
             if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            if (Instance.player.unitActionHandler.SelectedAction.IsAttackAction() == false)
+            if (Instance.player.unitActionHandler.SelectedAction is BaseAttackAction == false)
                 return;
 
             Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));

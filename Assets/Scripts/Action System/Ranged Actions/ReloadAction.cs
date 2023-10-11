@@ -7,8 +7,6 @@ namespace ActionSystem
     {
         bool isReloading;
 
-        public void QueueAction() => unit.unitActionHandler.QueueAction(this);
-
         public override void TakeAction()
         {
             if (isReloading) return;
@@ -50,12 +48,6 @@ namespace ActionSystem
         public override bool IsHotbarAction() => true;
 
         public override bool ActionIsUsedInstantly() => true;
-
-        public override bool IsAttackAction() => false;
-
-        public override bool IsMeleeAttackAction() => false;
-
-        public override bool IsRangedAttackAction() => false;
 
         public override int GetEnergyCost() => 0;
     }

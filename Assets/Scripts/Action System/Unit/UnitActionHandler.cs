@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using InteractableObjects;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
@@ -16,14 +15,14 @@ namespace ActionSystem
         public Dictionary<Unit, HeldItem> targetUnits { get; private set; }
 
         public List<BaseAction> queuedActions { get; private set; }
-        public BaseAction queuedAttack { get; private set; }
+        public BaseAttackAction queuedAttack { get; private set; }
         public BaseAction lastQueuedAction { get; protected set; }
         public List<int> queuedAPs { get; protected set; }
 
         [Header("Actions")]
         [SerializeField] List<ActionType> availableActionTypes = new List<ActionType>();
         protected List<BaseAction> availableActions = new List<BaseAction>();
-        protected List<BaseAction> availableCombatActions = new List<BaseAction>();
+        protected List<BaseAttackAction> availableCombatActions = new List<BaseAttackAction>();
         public ActionType selectedActionType { get; private set; }
 
         public Unit unit { get; private set; }
@@ -59,7 +58,20 @@ namespace ActionSystem
         }
 
         #region Action Queue
-        public void QueueAction(ActionType actionType)
+        public void QueueAction(ActionType actionType, GridPosition targetGridPosition, bool addToFrontOfQueue = false)
+        {
+            if (actionType == null)
+            {
+                Debug.LogWarning("ActionType is null. Cannot queue action.");
+                return;
+            }
+
+            BaseAction actionInstance = actionType.GetAction(unit);
+            actionInstance.SetTargetGridPosition(targetGridPosition);
+            QueueAction(actionType, addToFrontOfQueue);
+        }
+
+        public void QueueAction(ActionType actionType, bool addToFrontOfQueue = false)
         {
             if (actionType == null)
             {
@@ -69,25 +81,31 @@ namespace ActionSystem
 
             BaseAction actionInstance = actionType.GetAction(unit);
             if (actionInstance != null)
-                QueueAction(actionInstance);
+                QueueAction(actionInstance, addToFrontOfQueue);
             else
                 Debug.LogWarning("Failed to obtain an action of type " + actionType.GetActionType().Name);
         }
 
-        public virtual void QueueAction(BaseAction action, int position = -1)
+        public void QueueAction(BaseAction action, GridPosition targetGridPosition, bool addToFrontOfQueue = false)
+        {
+            action.SetTargetGridPosition(targetGridPosition);
+            QueueAction(action, addToFrontOfQueue);
+        }
+
+        public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
             GridSystemVisual.HideGridVisual();
 
             // if (unit.IsPlayer) Debug.Log(name + " queued " + action);
             queuedAttack = null;
 
-            if (position == -1)
+            if (addToFrontOfQueue == false) // Add to end of queue
             {
                 queuedActions.Add(action);
                 lastQueuedAction = action;
                 queuedAPs.Add(action.GetActionPointsCost());
             }
-            else
+            else // Add to front of queue
             {
                 queuedActions.Insert(0, action);
                 queuedAPs.Insert(0, action.GetActionPointsCost());
@@ -97,7 +115,7 @@ namespace ActionSystem
             if (action != queuedActions[0])
                 return;
 
-            if (action.IsAttackAction())
+            if (action is BaseAttackAction)
                 unit.unitAnimator.StopMovingForward();
 
             if (unit.isMyTurn)
@@ -146,14 +164,14 @@ namespace ActionSystem
 
             ClearActionQueue(true);
             SetTargetEnemyUnit(null);
-            SetQueuedAttack(null);
+            queuedAttack = null;
 
             GridSystemVisual.UpdateAttackGridVisual();
         }
 
         public void ClearActionQueue(bool stopMoveAnimation)
         {
-            if (queuedActions.Count > 0 && queuedActions[0].IsAttackAction())
+            if (queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction)
                 queuedAttack = null;
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
@@ -176,20 +194,64 @@ namespace ActionSystem
         #endregion
 
         #region Combat
-        public void AttackTarget()
+        public void AttackTarget() => StartCoroutine(AttackTarget_Coroutine());
+
+        IEnumerator AttackTarget_Coroutine()
         {
             BaseAction selectedAction = selectedActionType.GetAction(unit);
-            if (selectedAction.IsAttackAction())
+            if (selectedAction is BaseAttackAction)
+            {
+                if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                {
+                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                        yield return null;
+
+                    if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                    {
+                        GetAction<MoveAction>().QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                        yield break;
+                    }
+                }
+
                 QueueAction(selectedActionType);
+            }
             else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
             {
                 if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                {
+                    if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                    {
+                        while (targetEnemyUnit.unitActionHandler.isMoving)
+                            yield return null;
+
+                        if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                        {
+                            GetAction<MoveAction>().QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                            yield break;
+                        }
+                    }
+
                     GetAction<ShootAction>().QueueAction(targetEnemyUnit);
+                }
                 else
                     GetAction<ReloadAction>().QueueAction();
             }
             else if (unit.UnitEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
+            {
+                if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                {
+                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                        yield return null;
+
+                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                    {
+                        GetAction<MoveAction>().QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                        yield break;
+                    }
+                }
+
                 GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
+            }
         }
 
         public bool IsInAttackRange(Unit targetUnit, bool defaultCombatActionsOnly)
@@ -206,7 +268,7 @@ namespace ActionSystem
             {
                 for (int i = 0; i < availableCombatActions.Count; i++)
                 {
-                    BaseAction action = availableCombatActions[i];
+                    BaseAttackAction action = availableCombatActions[i];
                     if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.GetEnergyCost()) && action.IsInAttackRange(targetUnit))
                         return true;
                 }
@@ -416,13 +478,18 @@ namespace ActionSystem
                 previousTargetEnemyGridPosition = target.GridPosition;
         }
 
-        public void SetQueuedAttack(BaseAction attackAction)
+        public void SetQueuedAttack(BaseAttackAction attackAction, GridPosition targetAttackGridPosition)
         {
-            if (attackAction != null && attackAction.IsAttackAction())
+            if (attackAction != null)
+            {
                 queuedAttack = attackAction;
+                queuedAttack.SetTargetGridPosition(targetAttackGridPosition);
+            }
             else
                 queuedAttack = null;
         }
+
+        public void ClearQueuedAttack() => queuedAttack = null;
 
         public virtual void SetSelectedActionType(ActionType actionType) => selectedActionType = actionType;
 
@@ -446,6 +513,6 @@ namespace ActionSystem
 
         public List<BaseAction> AvailableActions => availableActions;
 
-        public List<BaseAction> AvailableCombatActions => availableCombatActions;
+        public List<BaseAttackAction> AvailableCombatActions => availableCombatActions;
     }
 }

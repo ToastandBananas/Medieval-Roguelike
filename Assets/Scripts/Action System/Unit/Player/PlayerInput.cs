@@ -95,7 +95,7 @@ namespace ActionSystem
 
                     // If the player has an attack action selected
                     BaseAction selectedAction = player.unitActionHandler.SelectedAction;
-                    if (selectedAction.IsAttackAction())
+                    if (selectedAction is BaseAttackAction)
                     {
                         // Set the target attack grid position to the mouse grid position and update the visuals
                         // player.unitActionHandler.SetTargetAttackGridPosition(WorldMouse.GetCurrentGridPosition);
@@ -129,11 +129,10 @@ namespace ActionSystem
         {
             TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
             player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
-            turnAction.SetTargetPosition(turnAction.DetermineTargetTurnDirection(WorldMouse.GetCurrentGridPosition()));
             WorldMouse.ChangeCursor(CursorState.Default);
 
-            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition && turnAction.targetDirection != turnAction.currentDirection)
-                player.unitActionHandler.QueueAction(turnAction);
+            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition)
+                turnAction.QueueAction(WorldMouse.GetCurrentGridPosition());
         }
 
         void HandleActions()
@@ -189,16 +188,16 @@ namespace ActionSystem
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                    if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction.IsAttackAction())))
+                    if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction is BaseAttackAction)))
                     {
                         // Set the Unit as the target enemy
                         player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
 
                         // If the player has an attack action selected
-                        if (selectedAction.IsAttackAction())
+                        if (selectedAction is BaseAttackAction)
                         {
                             // If the target is in attack range
-                            if (selectedAction.IsInAttackRange(unitAtGridPosition))
+                            if (selectedAction.BaseAttackAction.IsInAttackRange(unitAtGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
                                 float attackRange = player.GetAttackRange(unitAtGridPosition, false);
@@ -259,7 +258,7 @@ namespace ActionSystem
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                         // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction (or if one of these actions is already selected)
-                        if (selectedAction.IsAttackAction() == false || selectedAction.IsDefaultAttackAction())
+                        if (selectedAction.IsDefaultAttackAction())
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
@@ -291,7 +290,7 @@ namespace ActionSystem
                     }
                 }
                 // If there's no unit or a dead unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
-                else if (selectedAction.IsAttackAction())
+                else if (selectedAction is BaseAttackAction)
                 {
                     // Make sure the Player has enough energy for the attack
                     if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
@@ -302,7 +301,7 @@ namespace ActionSystem
                         return;
 
                     // Turn towards and attack the target enemy
-                    player.unitActionHandler.SetQueuedAttack(selectedAction);
+                    player.unitActionHandler.SetQueuedAttack(selectedAction as BaseAttackAction, selectedAction.targetGridPosition);
                     player.unitActionHandler.AttackTarget();
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
@@ -390,7 +389,7 @@ namespace ActionSystem
 
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                 }
-                else if (selectedAction.IsAttackAction())
+                else if (selectedAction is BaseAttackAction)
                 {
                     highlightedInteractable = null;
                     Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
@@ -427,7 +426,7 @@ namespace ActionSystem
                 WorldMouse.ChangeCursor(CursorState.Default);
         }
 
-        bool AttackActionSelected() => player.unitActionHandler.selectedActionType.GetAction(player).IsAttackAction();
+        bool AttackActionSelected() => player.unitActionHandler.SelectedAction is BaseAttackAction;
 
         public void SetAutoAttack(bool shouldAutoAttack) => autoAttack = shouldAutoAttack;
     }

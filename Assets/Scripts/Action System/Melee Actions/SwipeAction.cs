@@ -10,16 +10,10 @@ using Utilities;
 
 namespace ActionSystem
 {
-    public class SwipeAction : BaseAction
+    public class SwipeAction : BaseAttackAction
     {
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
-        public void QueueAction(GridPosition targetGridPosition)
-        {
-            this.targetGridPosition = targetGridPosition;
-            unit.unitActionHandler.QueueAction(this);
-        }
 
         public override void TakeAction()
         {
@@ -28,7 +22,7 @@ namespace ActionSystem
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
-                unit.unitActionHandler.SetQueuedAttack(null);
+                unit.unitActionHandler.ClearQueuedAttack();
                 unit.unitActionHandler.FinishAction();
                 return;
             }
@@ -53,6 +47,24 @@ namespace ActionSystem
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
+                if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
+                {
+                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                        yield return null;
+
+                    // If the target Unit moved out of range, queue a movement instead
+                    if (IsInAttackRange(targetEnemyUnit) == false)
+                    {
+                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+
+                        CompleteAction();
+                        if (unit.IsPlayer)
+                            unit.unitActionHandler.TakeTurn();
+
+                        yield break;
+                    }
+                }
+
                 // Rotate towards the target
                 if (turnAction.IsFacingTarget(targetGridPosition) == false)
                     turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition(), false);
@@ -506,8 +518,6 @@ namespace ActionSystem
         public override bool IsHotbarAction() => true;
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();
-
-        public override bool IsAttackAction() => true;
 
         public override bool IsMeleeAttackAction() => true;
 

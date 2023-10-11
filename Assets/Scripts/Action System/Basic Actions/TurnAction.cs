@@ -22,9 +22,12 @@ namespace ActionSystem
             SetCurrentDirection();
         }
 
-        public void QueueAction(GridPosition targetGridPosition)
+        public override void QueueAction(GridPosition targetGridPosition)
         {
             DetermineTargetTurnDirection(targetGridPosition);
+            if (targetDirection == currentDirection)
+                return;
+
             unit.unitActionHandler.QueueAction(this);
         }
 
@@ -510,12 +513,6 @@ namespace ActionSystem
         public override bool IsHotbarAction() => true;
 
         public override bool IsValidAction() => true;
-
-        public override bool IsAttackAction() => false;
-
-        public override bool IsMeleeAttackAction() => false;
-
-        public override bool IsRangedAttackAction() => false;
 
         public override int GetActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 

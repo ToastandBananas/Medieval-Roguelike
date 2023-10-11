@@ -10,19 +10,10 @@ using Utilities;
 
 namespace ActionSystem
 {
-    public class MeleeAction : BaseAction
+    public class MeleeAction : BaseAttackAction
     {
-        Unit targetEnemyUnit;
-
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
-        public void QueueAction(Unit targetEnemyUnit)
-        {
-            this.targetEnemyUnit = targetEnemyUnit;
-            targetGridPosition = targetEnemyUnit.GridPosition;
-            unit.unitActionHandler.QueueAction(this);
-        }
 
         public override void SetTargetGridPosition(GridPosition gridPosition)
         {
@@ -36,8 +27,13 @@ namespace ActionSystem
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (targetEnemyUnit == null && unit.unitActionHandler.targetEnemyUnit != null)
-                targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+            if (targetEnemyUnit == null)
+            {
+                if (unit.unitActionHandler.targetEnemyUnit != null)
+                    targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+                else if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+                    targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+            }
 
             if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
             {
@@ -62,11 +58,30 @@ namespace ActionSystem
 
         IEnumerator Attack()
         {
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
-
             // If this is the Player attacking, or if this is an NPC that's visible on screen
+            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
+                if (targetEnemyUnit.unitActionHandler.isMoving)
+                {
+                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                        yield return null;
+                    Debug.Log("Target unit is moving");
+
+                    // If the target Unit moved out of range, queue a movement instead
+                    if (IsInAttackRange(targetEnemyUnit) == false)
+                    {
+                        Debug.Log("No longer in melee range");
+                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+
+                        CompleteAction();
+                        if (unit.IsPlayer)
+                            unit.unitActionHandler.TakeTurn();
+
+                        yield break;
+                    }
+                }
+
                 // Rotate towards the target
                 if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
                     turnAction.RotateTowards_Unit(targetEnemyUnit, false);
@@ -139,6 +154,90 @@ namespace ActionSystem
                     targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
                 CompleteAction();
+            }
+        }
+
+        public void TryOpportunityAttack() => StartCoroutine(TryOpportunityAttack_Coroutine());
+
+        IEnumerator TryOpportunityAttack_Coroutine()
+        {
+            // TODO: Just set isAttacking when attack animation starts & then set it to false when animation is complete, rather than doing WaitToCompleteAction
+            //       Then QueueAction or GetNextQueuedAction should wait until isAttacking is false
+
+            unit.unitActionHandler.SetIsAttacking(true);
+            unit.unitAnimator.StopMovingForward();
+
+            // If this is the Player attacking, or if this is an NPC that's visible on screen
+            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            {
+                // Rotate towards the target
+                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+
+                // Wait to finish any rotations already in progress
+                while (unit.unitActionHandler.isRotating)
+                    yield return null;
+
+                // Play the attack animations and handle blocking for the target
+                if (unit.UnitEquipment.IsUnarmed())
+                {
+                    if (unit.stats.CanFightUnarmed)
+                        unit.unitAnimator.DoDefaultUnarmedAttack();
+                }
+                else if (unit.UnitEquipment.IsDualWielding())
+                {
+                    // Dual wield attack
+                    unit.unitAnimator.StartDualMeleeAttack();
+                    unit.unitMeshManager.rightHeldItem.DoDefaultAttack();
+                    StartCoroutine(unit.unitMeshManager.leftHeldItem.DelayDoDefaultAttack());
+                }
+                else
+                {
+                    // Primary weapon attack
+                    unit.unitAnimator.StartMeleeAttack();
+                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                        unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack();
+                    else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
+                        unit.unitAnimator.DoDefaultUnarmedAttack();
+                }
+            }
+            else
+            {
+                // Try to block the attack
+                bool attackBlocked = false;
+                if (unit.UnitEquipment.IsUnarmed())
+                {
+                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    DamageTargets(null);
+                }
+                else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
+                {
+                    bool mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon);
+
+                    bool offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon);
+
+                    if (mainAttackBlocked || offhandAttackBlocked)
+                        attackBlocked = true;
+                }
+                else
+                {
+                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                        DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()); // Right hand weapon attack
+                    else
+                        DamageTargets(null); // Fallback to unarmed damage
+                }
+
+                // Rotate towards the target
+                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+
+                // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
+                if (attackBlocked)
+                    targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
             }
         }
 
@@ -533,8 +632,6 @@ namespace ActionSystem
         }
 
         public override bool IsHotbarAction() => true;
-
-        public override bool IsAttackAction() => true;
 
         public override bool IsMeleeAttackAction() => true;
 
