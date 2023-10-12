@@ -31,40 +31,60 @@ namespace ActionSystem
                 return;
             }
             Instance = this;
-        }
 
-        void Start()
-        {
             playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
             playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
-
-            InitializeActionButtonPool();
 
             UpdateActionPointsText();
             UpdateEnergyText();
             UpdateHealthText();
 
+            InitializeActionButtonPool();
+
             SetupUnitActionButtons();
+        }
+
+        void Start()
+        {
             UpdateSelectedVisual();
         }
 
-        void SetupUnitActionButtons()
+        public static void SetupUnitActionButtons()
         {
-            HideActionButtons();
-
-            for (int i = 0; i < playerActionHandler.AvailableActionTypes.Count; i++)
+            for (int i = 0; i < Instance.playerActionHandler.AvailableActionTypes.Count; i++)
             {
-                ActionButtonUI newActionButton = GetActionButtonFromPool();
-                newActionButton.SetActionType(playerActionHandler.AvailableActionTypes[i]);
-                newActionButton.gameObject.SetActive(true);
+                AddButton(Instance.playerActionHandler.AvailableActionTypes[i]);
             }
 
             UpdateActionVisuals();
         }
 
-        void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
+        public static void AddButton(ActionType actionType)
         {
-            BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
+            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            {
+                if (Instance.actionButtons[i].gameObject.activeSelf && Instance.actionButtons[i].ActionType == actionType)
+                    return;
+            }
+
+            ActionButtonUI newActionButton = GetActionButtonFromPool();
+            newActionButton.transform.SetSiblingIndex(Instance.actionButtonContainerTransform.childCount - 1);
+            newActionButton.SetActionType(actionType);
+            newActionButton.gameObject.SetActive(true);
+        }
+
+        public static void RemoveButton(ActionType actionType)
+        {
+            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            {
+                if (Instance.actionButtons[i].gameObject.activeSelf && Instance.actionButtons[i].ActionType == actionType)
+                    Instance.actionButtons[i].ResetButton();
+            }
+        }
+
+        static void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
+        {
+            BaseAction selectedAction = Instance.playerActionHandler.selectedActionType.GetAction(Instance.playerActionHandler.unit);
             if (selectedAction.ActionIsUsedInstantly())
                 selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
             else
@@ -74,38 +94,38 @@ namespace ActionSystem
             }
         }
 
-        void HideActionButtons()
+        static void HideAllActionButtons()
         {
-            for (int i = 0; i < actionButtons.Count; i++)
+            for (int i = 0; i < Instance.actionButtons.Count; i++)
             {
-                actionButtons[i].ResetButton();
+                Instance.actionButtons[i].ResetButton();
             }
         }
 
-        void InitializeActionButtonPool()
+        static void InitializeActionButtonPool()
         {
-            for (int i = 0; i < amountActionButtonsToPool; i++)
+            for (int i = 0; i < Instance.amountActionButtonsToPool; i++)
             {
                 ActionButtonUI newActionButton = CreateNewActionButton();
                 newActionButton.gameObject.SetActive(false);
             }
         }
 
-        ActionButtonUI GetActionButtonFromPool()
+        static ActionButtonUI GetActionButtonFromPool()
         {
-            for (int i = 0; i < actionButtons.Count; i++)
+            for (int i = 0; i < Instance.actionButtons.Count; i++)
             {
-                if (actionButtons[i].gameObject.activeSelf == false)
-                    return actionButtons[i];
+                if (Instance.actionButtons[i].gameObject.activeSelf == false)
+                    return Instance.actionButtons[i];
             }
 
             return CreateNewActionButton();
         }
 
-        ActionButtonUI CreateNewActionButton()
+        static ActionButtonUI CreateNewActionButton()
         {
-            ActionButtonUI newActionButton = Instantiate(actionButtonPrefab, actionButtonContainerTransform).GetComponent<ActionButtonUI>();
-            actionButtons.Add(newActionButton);
+            ActionButtonUI newActionButton = Instantiate(Instance.actionButtonPrefab, Instance.actionButtonContainerTransform).GetComponent<ActionButtonUI>();
+            Instance.actionButtons.Add(newActionButton);
             return newActionButton;
         }
 

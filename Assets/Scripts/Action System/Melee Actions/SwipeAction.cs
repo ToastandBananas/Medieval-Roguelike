@@ -30,7 +30,7 @@ namespace ActionSystem
             StartAction();
 
             if (IsInAttackRange(null, unit.GridPosition, targetGridPosition))
-                StartCoroutine(Attack());
+                unit.StartCoroutine(Attack());
             else
             {
                 CompleteAction();
@@ -55,12 +55,7 @@ namespace ActionSystem
                     // If the target Unit moved out of range, queue a movement instead
                     if (IsInAttackRange(targetEnemyUnit) == false)
                     {
-                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
-
-                        CompleteAction();
-                        if (unit.IsPlayer)
-                            unit.unitActionHandler.TakeTurn();
-
+                        MoveToTargetInstead();
                         yield break;
                     }
                 }
@@ -78,7 +73,7 @@ namespace ActionSystem
                 unit.unitMeshManager.GetPrimaryMeleeWeapon().DoSwipeAttack();
 
                 // Wait until the attack lands before completing the action
-                StartCoroutine(WaitToCompleteAction());
+                unit.StartCoroutine(WaitToCompleteAction());
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
@@ -498,7 +493,6 @@ namespace ActionSystem
         {
             base.CompleteAction();
 
-            unit.unitActionHandler.SetIsAttacking(false);
             if (unit.IsPlayer)
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
 
@@ -514,6 +508,8 @@ namespace ActionSystem
         }
 
         public override int GetEnergyCost() => 25;
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 

@@ -45,10 +45,7 @@ namespace GridSystem
                 return;
             }
             Instance = this;
-        }
 
-        void Start()
-        {
             player = UnitManager.player;
 
             for (int i = 0; i < amountToPool; i++)
@@ -132,7 +129,7 @@ namespace GridSystem
         public static void UpdateAttackRangeGridVisual()
         {
             HideGridVisual();
-
+            
             if (Instance.player.isMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 

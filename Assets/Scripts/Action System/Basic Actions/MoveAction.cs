@@ -7,6 +7,7 @@ using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using Utilities;
+using Pathfinding.Util;
 
 namespace ActionSystem
 {
@@ -87,6 +88,46 @@ namespace ActionSystem
                 yield break;
             }
 
+            // Check if an opportunity attack should happen
+            List<GridPosition> surroundingGridPositions = ListPool<GridPosition>.Claim();
+            surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(unit.GridPosition, 4.5f, true, false);
+
+            for (int i = 0; i < surroundingGridPositions.Count; i++)
+            {
+                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(surroundingGridPositions[i]) == false)
+                    continue;
+
+                Unit nearbyUnit = LevelGrid.Instance.GetUnitAtGridPosition(surroundingGridPositions[i]);
+                if (unit.alliance.IsEnemy(nearbyUnit) == false)
+                    continue;
+                
+                // Only melee Unit's can do an opportunity attack
+                if (nearbyUnit.UnitEquipment.RangedWeaponEquipped() || (nearbyUnit.UnitEquipment.MeleeWeaponEquipped() == false && nearbyUnit.stats.CanFightUnarmed == false))
+                    continue;
+                
+                // The enemy must be facing this Unit
+                if (nearbyUnit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.GridPosition) == false)
+                    continue;
+                Debug.Log("is facing target");
+                // Check if the Unit is starting out within the nearbyUnit's attack range
+                MeleeAction meleeAction = nearbyUnit.unitActionHandler.GetAction<MeleeAction>();
+                if (meleeAction.IsInAttackRange(unit) == false)
+                    continue;
+
+                Debug.Log("is initially in range");
+                // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
+                if (meleeAction.IsInAttackRange(unit, nearbyUnit.GridPosition, nextTargetGridPosition))
+                    continue;
+
+                Debug.Log("Opportunity attack");
+                meleeAction.DoOpportunityAttack(unit);
+
+                while (nearbyUnit.unitActionHandler.isAttacking)
+                    yield return null;
+            }
+
+            ListPool<GridPosition>.Release(surroundingGridPositions);
+
             // Unblock the Unit's current position since they're about to move
             unit.UnblockCurrentPosition();
             unit.unitActionHandler.SetIsMoving(true);
@@ -97,6 +138,9 @@ namespace ActionSystem
             // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
             LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition);
             LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.GetGridPosition(nextTargetPosition), unit);
+
+            // Set the Unit's new grid position before they move so that other Unit's use that grid position when checking attack ranges and such
+            unit.SetGridPosition(nextTargetGridPosition);
 
             // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -191,7 +235,7 @@ namespace ActionSystem
                 unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(directionToNextPosition, true);
 
                 nextPathPosition = nextTargetPosition;
-                unit.UpdateGridPosition();
+                //unit.UpdateGridPosition();
 
                 TurnManager.Instance.StartNextUnitsTurn(unit);
             }
@@ -496,13 +540,13 @@ namespace ActionSystem
         {
             base.CompleteAction();
 
-            // Unblock the Unit's postion, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
+            // Unblock the Unit's position, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
             if (unit.IsPlayer)
                 unit.UnblockCurrentPosition();
             else if (unit.health.IsDead() == false)
                 unit.BlockCurrentPosition();
 
-            unit.UpdateGridPosition();
+            // unit.UpdateGridPosition();
 
             unit.unitActionHandler.SetIsMoving(false);
             unit.unitActionHandler.FinishAction();
@@ -526,6 +570,8 @@ namespace ActionSystem
         }
 
         public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 

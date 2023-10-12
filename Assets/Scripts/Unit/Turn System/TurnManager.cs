@@ -82,7 +82,7 @@ namespace UnitSystem
         {
             if (UnitManager.player.health.IsDead())
                 return;
-
+            
             activeUnit = unit;
 
             if (unit.health.IsDead())
@@ -112,13 +112,19 @@ namespace UnitSystem
             }
         }
 
+        public void StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
+        {
+            if (activeUnit != unitFinishingAction)
+                return;
+
+            StartCoroutine(DoNextUnitsTurn(increaseTurnIndex));
+        }
+
         IEnumerator DoNextUnitsTurn(bool increaseTurnIndex = true)
         {
             // If the final Unit is still performing an action or if someone is attacking
             while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
-            {
                 yield return null;
-            }
 
             // Increase the turn index or go back to 0 if it's time for a new round of turns
             if (increaseTurnIndex)
@@ -139,14 +145,6 @@ namespace UnitSystem
                 activeUnit = npcs_HaventFinishedTurn[npcTurnIndex];
                 StartUnitsTurn(activeUnit);
             }
-        }
-
-        public void StartNextUnitsTurn(Unit unitFinishingAction, bool increaseTurnIndex = true)
-        {
-            if (activeUnit != unitFinishingAction)
-                return;
-
-            StartCoroutine(DoNextUnitsTurn(increaseTurnIndex));
         }
 
         void OnCompleteAllTurns()

@@ -86,7 +86,7 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public IEnumerator ShootProjectile_AttargetUnit(Unit targetUnit, bool missedTarget)
+        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool missedTarget)
         {
             ReadyProjectile();
 
@@ -110,8 +110,11 @@ namespace InventorySystem
 
                 transform.position = nextPosition;
 
-                if (transform.position.y < -20f)
+                if (transform.position.y < -30f)
+                {
+                    shooter.unitActionHandler.SetIsAttacking(false);
                     Disable();
+                }
 
                 yield return null;
             }
@@ -195,8 +198,7 @@ namespace InventorySystem
         void Arrived(Transform collisionTransform)
         {
             shooter.unitActionHandler.targetUnits.Clear();
-
-            TurnManager.Instance.StartNextUnitsTurn(shooter);
+            shooter.unitActionHandler.SetIsAttacking(false);
 
             moveProjectile = false;
             projectileCollider.enabled = false;

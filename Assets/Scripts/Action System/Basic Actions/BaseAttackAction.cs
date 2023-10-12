@@ -15,6 +15,15 @@ namespace ActionSystem
             QueueAction();
         }
 
+        protected void MoveToTargetInstead()
+        {
+            CompleteAction();
+            unit.unitActionHandler.SetIsAttacking(false);
+            unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+            if (unit.IsPlayer)
+                unit.unitActionHandler.TakeTurn();
+        }
+
         public abstract void DamageTargets(HeldItem heldWeapon);
 
         public abstract bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition);

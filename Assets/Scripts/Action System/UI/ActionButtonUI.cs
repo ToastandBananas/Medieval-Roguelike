@@ -48,39 +48,36 @@ namespace ActionSystem
 
         public void UpdateActionVisual()
         {
-            if (actionType == null)
+            if (actionType == null || playerActionHandler.AvailableActionTypes.Contains(actionType) == false)
             {
                 transform.gameObject.SetActive(false);
                 return;
             }
 
-            // Show the invalid action visual if the Action assigned to this button is an invalid action
-            if (playerActionHandler.AvailableActionTypes.Contains(actionType) == false)
-                transform.gameObject.SetActive(false);
-            else
+            BaseAction action = actionType.GetAction(playerActionHandler.unit);
+            if (action == null || action.IsHotbarAction() == false)
             {
-                BaseAction action = actionType.GetAction(playerActionHandler.unit);
-                if (action == null || action.IsHotbarAction() == false || action.IsValidAction() == false)
-                    transform.gameObject.SetActive(false);
-                else
-                {
-                    transform.gameObject.SetActive(true);
-                    if (playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
-                        ActivateButton();
-                    else
-                        DeactivateButton();
-                }
+                transform.gameObject.SetActive(false);
+                return;
             }
+
+            transform.gameObject.SetActive(true);
+            if (action.IsValidAction() && playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
+                ActivateButton();
+            else
+                DeactivateButton();
         }
 
         void ActivateButton()
         {
             button.interactable = true;
+            invalidActionImageGameObject.SetActive(false);
         }
 
         void DeactivateButton()
         {
             button.interactable = false;
+            invalidActionImageGameObject.SetActive(true);
         }
 
         public ActionType ActionType => actionType;

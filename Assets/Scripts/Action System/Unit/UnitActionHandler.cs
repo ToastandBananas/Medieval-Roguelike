@@ -58,34 +58,6 @@ namespace ActionSystem
         }
 
         #region Action Queue
-        public void QueueAction(ActionType actionType, GridPosition targetGridPosition, bool addToFrontOfQueue = false)
-        {
-            if (actionType == null)
-            {
-                Debug.LogWarning("ActionType is null. Cannot queue action.");
-                return;
-            }
-
-            BaseAction actionInstance = actionType.GetAction(unit);
-            actionInstance.SetTargetGridPosition(targetGridPosition);
-            QueueAction(actionType, addToFrontOfQueue);
-        }
-
-        public void QueueAction(ActionType actionType, bool addToFrontOfQueue = false)
-        {
-            if (actionType == null)
-            {
-                Debug.LogWarning("ActionType is null. Cannot queue action.");
-                return;
-            }
-
-            BaseAction actionInstance = actionType.GetAction(unit);
-            if (actionInstance != null)
-                QueueAction(actionInstance, addToFrontOfQueue);
-            else
-                Debug.LogWarning("Failed to obtain an action of type " + actionType.GetActionType().Name);
-        }
-
         public void QueueAction(BaseAction action, GridPosition targetGridPosition, bool addToFrontOfQueue = false)
         {
             action.SetTargetGridPosition(targetGridPosition);
@@ -96,42 +68,70 @@ namespace ActionSystem
         {
             GridSystemVisual.HideGridVisual();
 
-            // if (unit.IsPlayer) Debug.Log(name + " queued " + action);
             queuedAttack = null;
 
-            if (addToFrontOfQueue == false) // Add to end of queue
+            for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                queuedActions.Add(action);
-                lastQueuedAction = action;
-                queuedAPs.Add(action.GetActionPointsCost());
+                if (action != queuedActions[i] && action.CanQueueMultiple() == false && queuedActions[i].CanQueueMultiple() == false)
+                {
+                    int actionIndex = queuedActions.IndexOf(queuedActions[i]);
+                    queuedActions.RemoveAt(actionIndex);
+                    queuedAPs.RemoveAt(actionIndex);
+                }
             }
-            else // Add to front of queue
+
+            // Make sure not to queue multiple of certain types of actions:
+            if (queuedActions.Contains(action) == false || action.CanQueueMultiple())
             {
-                queuedActions.Insert(0, action);
-                queuedAPs.Insert(0, action.GetActionPointsCost());
+                lastQueuedAction = action;
+                if (addToFrontOfQueue == false) // Add to end of queue
+                {
+                    queuedActions.Add(action);
+                    queuedAPs.Add(action.GetActionPointsCost());
+                }
+                else // Add to front of queue
+                {
+                    queuedActions.Insert(0, action);
+                    queuedAPs.Insert(0, action.GetActionPointsCost());
+                }
             }
 
             // If the action changed while getting the action point cost (such as when running into a door)
-            if (action != queuedActions[0])
+            if (queuedActions.Count > 0 && action != queuedActions[0])
+            {
+                Debug.Log("action != queuedActions[0]");
                 return;
+            }
 
             if (action is BaseAttackAction)
                 unit.unitAnimator.StopMovingForward();
 
+            StartCoroutine(TryTakeTurn());
+        }
+
+        IEnumerator TryTakeTurn()
+        {
             if (unit.isMyTurn)
             {
+                while (isAttacking) // Wait in case the Unit is performing an opportunity attack
+                    yield return null;
+
                 if (canPerformActions == false)
                     TurnManager.Instance.FinishTurn(unit);
                 else if (isMoving == false)
-                    GetNextQueuedAction();
+                    StartCoroutine(GetNextQueuedAction());
             }
         }
 
-        public abstract void GetNextQueuedAction();
+        public abstract IEnumerator GetNextQueuedAction();
 
         public abstract void TakeTurn();
 
-        public abstract void SkipTurn();
+        public virtual void SkipTurn()
+        {
+            if (isMoving == false)
+                unit.unitAnimator.StopMovingForward();
+        }
 
         public virtual void FinishAction()
         {
@@ -151,9 +151,7 @@ namespace ActionSystem
             if (queuedActions.Count > 0 && queuedActions[0] is MoveAction == false)
             {
                 while (isPerformingAction)
-                {
                     yield return null;
-                }
             }
             else
             {
@@ -213,7 +211,7 @@ namespace ActionSystem
                     }
                 }
 
-                QueueAction(selectedActionType);
+                selectedAction.BaseAttackAction.QueueAction(targetEnemyUnit);
             }
             else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
             {

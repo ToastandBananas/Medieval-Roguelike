@@ -64,6 +64,8 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
+        public override bool CanQueueMultiple() => false;
+
         public override bool IsHotbarAction() => false;
 
         public override bool IsValidAction() => true;

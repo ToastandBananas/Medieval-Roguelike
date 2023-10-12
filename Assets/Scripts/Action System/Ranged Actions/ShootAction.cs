@@ -54,7 +54,7 @@ namespace ActionSystem
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit))
-                StartCoroutine(Shoot());
+                unit.StartCoroutine(Shoot());
             else
             {
                 CompleteAction();
@@ -82,12 +82,7 @@ namespace ActionSystem
                     // If the target Unit moved out of range, queue a movement instead
                     if (IsInAttackRange(targetEnemyUnit) == false)
                     {
-                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
-
-                        CompleteAction();
-                        if (unit.IsPlayer)
-                            unit.unitActionHandler.TakeTurn();
-
+                        MoveToTargetInstead();
                         yield break;
                     }
                 }
@@ -101,10 +96,8 @@ namespace ActionSystem
                     yield return null;
 
                 // Rotate towards the target and do the shoot animation
-                StartCoroutine(RotateTowardsTarget());
+                unit.StartCoroutine(RotateTowardsTarget());
                 unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack();
-
-                StartCoroutine(WaitToCompleteAction());
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
@@ -120,10 +113,13 @@ namespace ActionSystem
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
                     targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
-
-                CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
             }
+
+            while (unit.unitActionHandler.isAttacking)
+                yield return null;
+
+            CompleteAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override void DamageTargets(HeldItem heldWeapon)
@@ -173,12 +169,27 @@ namespace ActionSystem
             return false;
         }
 
+        public override void CompleteAction()
+        {
+            // StartNextUnitsTurn will be called when the projectile hits something, rather than in this method as is with non-ranged actions
+            base.CompleteAction();
+            if (unit.IsPlayer)
+            {
+                unit.unitActionHandler.SetDefaultSelectedAction();
+                if (PlayerInput.Instance.autoAttack == false)
+                    unit.unitActionHandler.SetTargetEnemyUnit(null);
+            }
+
+            unit.unitActionHandler.SetIsAttacking(false);
+            unit.unitActionHandler.FinishAction();
+        }
+
         IEnumerator WaitToCompleteAction()
         {
             if (unit.unitMeshManager.GetHeldRangedWeapon() != null)
                 yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item as Weapon));
             else
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
 
             CompleteAction();
         }
@@ -220,20 +231,6 @@ namespace ActionSystem
         {
             base.StartAction();
             unit.unitActionHandler.SetIsAttacking(true);
-        }
-
-        public override void CompleteAction()
-        {
-            base.CompleteAction();
-            if (unit.IsPlayer)
-            {
-                unit.unitActionHandler.SetDefaultSelectedAction();
-                if (PlayerInput.Instance.autoAttack == false)
-                    unit.unitActionHandler.SetTargetEnemyUnit(null);
-            }
-
-            unit.unitActionHandler.SetIsAttacking(false);
-            unit.unitActionHandler.FinishAction();
         }
 
         public override int GetActionPointsCost()
@@ -472,6 +469,8 @@ namespace ActionSystem
         }
 
         public override int GetEnergyCost() => 0;
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 

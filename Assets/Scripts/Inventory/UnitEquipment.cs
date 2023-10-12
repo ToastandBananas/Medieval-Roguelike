@@ -439,6 +439,9 @@ namespace InventorySystem
 
         void AddActions(Equipment equipment)
         {
+            if (equipment.ActionTypes.Length == 0)
+                return;
+
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
                 if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
@@ -446,9 +449,13 @@ namespace InventorySystem
 
                 myUnit.unitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
                 equipment.ActionTypes[i].GetAction(myUnit);
+
+                if (myUnit.IsPlayer)
+                    ActionSystemUI.AddButton(equipment.ActionTypes[i]);
             }
 
-            ActionSystemUI.UpdateActionVisuals();
+            if (myUnit.IsPlayer)
+                ActionSystemUI.UpdateActionVisuals();
         }
 
         public void RemoveActions(Equipment equipment)
@@ -460,9 +467,13 @@ namespace InventorySystem
 
                 ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
                 myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
+
+                if (myUnit.IsPlayer)
+                    ActionSystemUI.RemoveButton(equipment.ActionTypes[i]);
             }
 
-            ActionSystemUI.UpdateActionVisuals();
+            if (myUnit.IsPlayer)
+                ActionSystemUI.UpdateActionVisuals();
         }
 
         public bool EquipSlotIsFull(EquipSlot equipSlot)

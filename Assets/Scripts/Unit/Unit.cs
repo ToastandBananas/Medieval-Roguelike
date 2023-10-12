@@ -103,9 +103,11 @@ namespace UnitSystem
             }
         }
 
+        public void SetGridPosition(GridPosition gridPosition) => this.gridPosition = gridPosition;
+
         public bool IsCompletelySurrounded(float range)
         {
-            List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range, false);
+            List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range, true, false);
             for (int i = 0; i < surroundingGridPositions.Count; i++)
             {
                 if (LevelGrid.Instance.GridPositionObstructed(surroundingGridPositions[i]) == false)

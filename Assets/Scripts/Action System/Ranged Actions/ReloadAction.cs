@@ -20,7 +20,6 @@ namespace ActionSystem
             // StartCoroutine(StartReloadTimer());
             unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile();
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         protected override void StartAction()
@@ -36,12 +35,15 @@ namespace ActionSystem
             if (unit.IsPlayer)
                 unit.unitActionHandler.SetSelectedActionType(unit.unitActionHandler.FindActionTypeByName("ShootAction"));
             unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetActionPointsCost()
         {
             return 100;
         }
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.UnitEquipment.HasValidAmmunitionEquipped();
 

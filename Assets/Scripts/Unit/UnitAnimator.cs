@@ -61,6 +61,9 @@ namespace UnitSystem
             unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null);
         }
 
+        // Used in animation Key Frame
+        void StopAttacking() => unit.unitActionHandler.SetIsAttacking(false);
+
         public void DoSlightKnockback(Transform attackerTransform) => StartCoroutine(SlightKnockback(attackerTransform));
 
         IEnumerator SlightKnockback(Transform attackerTransform)

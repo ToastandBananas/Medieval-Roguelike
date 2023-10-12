@@ -101,6 +101,8 @@ namespace ActionSystem
 
         public override int GetEnergyCost() => 0;
 
+        public override bool CanQueueMultiple() => true;
+
         public override bool IsHotbarAction() => false;
 
         public override bool IsValidAction() => unit.UnitEquipment != null;

@@ -262,7 +262,7 @@ namespace GridSystem
             return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
         }
 
-        public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool startingGridPositionValid)
+        public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool obstructedGridPositionsValid, bool startingGridPositionValid)
         {
             gridPositionsList.Clear();
             float boundsDimension = (range * 2f) + 0.1f;
@@ -274,7 +274,7 @@ namespace GridSystem
                 if (startingGridPositionValid == false && nodeGridPosition == startingGridPosition)
                     continue;
 
-                if (GridPositionObstructed(nodeGridPosition))
+                if (obstructedGridPositionsValid == false && GridPositionObstructed(nodeGridPosition))
                     continue;
 
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startingGridPosition, nodeGridPosition) > range)
@@ -289,7 +289,7 @@ namespace GridSystem
 
         public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range, bool targetGridPositionValid)
         {
-            validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range, targetGridPositionValid);
+            validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range, false, targetGridPositionValid);
             GridPosition nearestGridPosition = targetGridPosition;
             float nearestDist = 1000000;
             for (int i = 0; i < validGridPositionsList.Count; i++)

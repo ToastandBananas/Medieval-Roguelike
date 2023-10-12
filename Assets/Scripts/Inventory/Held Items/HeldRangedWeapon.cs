@@ -78,7 +78,7 @@ namespace InventorySystem
 
         public void ShootProjectile()
         {
-            StartCoroutine(loadedProjectile.ShootProjectile_AttargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
+            StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
             loadedProjectile = null;
         }
 

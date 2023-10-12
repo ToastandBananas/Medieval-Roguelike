@@ -61,7 +61,7 @@ namespace ActionSystem
                 highlightedInteractable = null;
                 return;
             }
-
+            
             if (player.health.IsDead() == false)
             {
                 // If the player was holding the button for turn mode (the Turn Action) and then they release it
@@ -257,8 +257,8 @@ namespace ActionSystem
                         // The target enemy wasn't in attack range, so find and move to the nearest melee or ranged attack position //
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                        // If the player doesn't have an attack action already selected, we will just default to either the MeleeAction or ShootAction (or if one of these actions is already selected)
-                        if (selectedAction.IsDefaultAttackAction())
+                        // If the player has a Move, Melee, or Shoot Action selected
+                        if (selectedAction.IsDefaultAttackAction() || selectedAction is MoveAction)
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)

@@ -46,42 +46,48 @@ namespace ActionSystem
             StartAction();
 
             if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
-                StartCoroutine(Attack());
+                unit.StartCoroutine(Attack());
             else
-            {
-                CompleteAction();
-                if (unit.IsPlayer)
-                    unit.unitActionHandler.TakeTurn();
-                return;
-            }
+                MoveToTargetInstead();
         }
 
         IEnumerator Attack()
+        {
+            if (targetEnemyUnit.unitActionHandler.isMoving)
+            {
+                while (targetEnemyUnit.unitActionHandler.isMoving)
+                    yield return null;
+
+                // If the target Unit moved out of range, queue a movement instead
+                if (IsInAttackRange(targetEnemyUnit) == false)
+                {
+                    MoveToTargetInstead();
+                    yield break;
+                }
+            }
+
+            unit.StartCoroutine(DoAttack());
+
+            // Wait until the attack lands before completing the action
+            while (unit.unitActionHandler.isAttacking)
+                yield return null;
+
+            CompleteAction();
+        }
+
+        public void DoOpportunityAttack(Unit targetEnemyUnit)
+        {
+            this.targetEnemyUnit = targetEnemyUnit;
+            unit.unitActionHandler.SetIsAttacking(true);
+            unit.StartCoroutine(DoAttack());
+        }
+
+        IEnumerator DoAttack()
         {
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
-                if (targetEnemyUnit.unitActionHandler.isMoving)
-                {
-                    while (targetEnemyUnit.unitActionHandler.isMoving)
-                        yield return null;
-                    Debug.Log("Target unit is moving");
-
-                    // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(targetEnemyUnit) == false)
-                    {
-                        Debug.Log("No longer in melee range");
-                        unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
-
-                        CompleteAction();
-                        if (unit.IsPlayer)
-                            unit.unitActionHandler.TakeTurn();
-
-                        yield break;
-                    }
-                }
-
                 // Rotate towards the target
                 if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
                     turnAction.RotateTowards_Unit(targetEnemyUnit, false);
@@ -101,7 +107,7 @@ namespace ActionSystem
                     // Dual wield attack
                     unit.unitAnimator.StartDualMeleeAttack();
                     unit.unitMeshManager.rightHeldItem.DoDefaultAttack();
-                    StartCoroutine(unit.unitMeshManager.leftHeldItem.DelayDoDefaultAttack());
+                    unit.StartCoroutine(unit.unitMeshManager.leftHeldItem.DelayDoDefaultAttack());
                 }
                 else
                 {
@@ -112,9 +118,6 @@ namespace ActionSystem
                     else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
                         unit.unitAnimator.DoDefaultUnarmedAttack();
                 }
-
-                // Wait until the attack lands before completing the action
-                StartCoroutine(WaitToCompleteAction());
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
@@ -153,93 +156,11 @@ namespace ActionSystem
                 if (attackBlocked)
                     targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
 
-                CompleteAction();
+                unit.unitActionHandler.SetIsAttacking(false);
             }
         }
 
-        public void TryOpportunityAttack() => StartCoroutine(TryOpportunityAttack_Coroutine());
-
-        IEnumerator TryOpportunityAttack_Coroutine()
-        {
-            // TODO: Just set isAttacking when attack animation starts & then set it to false when animation is complete, rather than doing WaitToCompleteAction
-            //       Then QueueAction or GetNextQueuedAction should wait until isAttacking is false
-
-            unit.unitActionHandler.SetIsAttacking(true);
-            unit.unitAnimator.StopMovingForward();
-
-            // If this is the Player attacking, or if this is an NPC that's visible on screen
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
-            {
-                // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
-
-                // Wait to finish any rotations already in progress
-                while (unit.unitActionHandler.isRotating)
-                    yield return null;
-
-                // Play the attack animations and handle blocking for the target
-                if (unit.UnitEquipment.IsUnarmed())
-                {
-                    if (unit.stats.CanFightUnarmed)
-                        unit.unitAnimator.DoDefaultUnarmedAttack();
-                }
-                else if (unit.UnitEquipment.IsDualWielding())
-                {
-                    // Dual wield attack
-                    unit.unitAnimator.StartDualMeleeAttack();
-                    unit.unitMeshManager.rightHeldItem.DoDefaultAttack();
-                    StartCoroutine(unit.unitMeshManager.leftHeldItem.DelayDoDefaultAttack());
-                }
-                else
-                {
-                    // Primary weapon attack
-                    unit.unitAnimator.StartMeleeAttack();
-                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
-                        unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack();
-                    else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
-                        unit.unitAnimator.DoDefaultUnarmedAttack();
-                }
-            }
-            else
-            {
-                // Try to block the attack
-                bool attackBlocked = false;
-                if (unit.UnitEquipment.IsUnarmed())
-                {
-                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(null);
-                }
-                else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
-                {
-                    bool mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon);
-
-                    bool offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon);
-
-                    if (mainAttackBlocked || offhandAttackBlocked)
-                        attackBlocked = true;
-                }
-                else
-                {
-                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
-                        DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()); // Right hand weapon attack
-                    else
-                        DamageTargets(null); // Fallback to unarmed damage
-                }
-
-                // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
-
-                // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
-                if (attackBlocked)
-                    targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
-            }
-        }
+        public void StopAttacking() => unit.unitActionHandler.SetIsAttacking(false);
 
         public override void DamageTargets(HeldItem heldWeapon)
         {
@@ -311,7 +232,7 @@ namespace ActionSystem
                 Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon;
                 float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
                 if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
-
+                
                 if (distance > maxRangeToTargetPosition || distance < meleeWeapon.MinRange)
                     return false;
             }
@@ -343,8 +264,7 @@ namespace ActionSystem
         public override void CompleteAction()
         {
             base.CompleteAction();
-
-            unit.unitActionHandler.SetIsAttacking(false);
+            
             if (unit.IsPlayer)
             {
                 unit.unitActionHandler.SetDefaultSelectedAction();
@@ -357,20 +277,6 @@ namespace ActionSystem
 
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
-        }
-
-        IEnumerator WaitToCompleteAction()
-        {
-            if (unit.UnitEquipment.IsUnarmed())
-                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
-            else if (unit.UnitEquipment.IsDualWielding())
-                yield return new WaitForSeconds(AnimationTimes.Instance.DualWieldAttackTime());
-            else if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
-                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item as Weapon));
-            else
-                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
-
-            CompleteAction();
         }
 
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
@@ -630,6 +536,8 @@ namespace ActionSystem
                 return true;
             return false;
         }
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 

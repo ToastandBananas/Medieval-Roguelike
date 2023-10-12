@@ -122,6 +122,15 @@ namespace ActionSystem
                         if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
                         {
                             // TO DO: If the Unit has a melee weapon, switch to it (need to do inventory system first)
+                            // else
+                            if (unit.stats.CanFightUnarmed)
+                            {
+                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy))
+                                    GetAction<MeleeAction>().QueueAction(closestEnemy);
+                                //else
+                                    //GetAction<MoveAction>().QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, closestEnemy));
+                                return;
+                            }
 
                             // Else flee somewhere
                             StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
@@ -129,12 +138,16 @@ namespace ActionSystem
                         else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
                         {
                             // Shoot the target enemy
-                            ClearActionQueue(true);
                             if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                                 GetAction<ShootAction>().QueueAction(targetEnemyUnit);
                             else
                                 GetAction<ReloadAction>().QueueAction();
                             return;
+                        }
+                        else
+                        {
+                            //GetAction<MoveAction>().QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                            //return;
                         }
                     }
                     else if (unit.UnitEquipment.MeleeWeaponEquipped() || GetAction<MeleeAction>().CanFightUnarmed)
@@ -142,16 +155,20 @@ namespace ActionSystem
                         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
                         {
                             // Melee attack the target enemy
-                            ClearActionQueue(false);
                             GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
                             return;
+                        }
+                        else
+                        {
+                            //GetAction<MoveAction>().QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                            //return;
                         }
                     }
                 }
 
                 // If not attacking, get/determine the next action
                 if (queuedActions.Count > 0)
-                    GetNextQueuedAction();
+                    StartCoroutine(GetNextQueuedAction());
                 else
                     DetermineAction();
             }
@@ -159,12 +176,17 @@ namespace ActionSystem
 
         public override void SkipTurn()
         {
+            base.SkipTurn();
+
             // unit.stats.UseAP(unit.stats.currentAP);
             TurnManager.Instance.FinishTurn(unit);
         }
 
-        public override void GetNextQueuedAction()
+        public override IEnumerator GetNextQueuedAction()
         {
+            while (isAttacking)
+                yield return null;
+
             if (queuedActions.Count > 0 && isPerformingAction == false)
             {
                 int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
@@ -172,7 +194,7 @@ namespace ActionSystem
                 if (unit.health.IsDead())
                 {
                     ClearActionQueue(true);
-                    return;
+                    yield break;
                 }
 
                 if (APRemainder <= 0)

@@ -510,6 +510,8 @@ namespace ActionSystem
 
         public bool IsFacingTarget(GridPosition targetGridPosition) => DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
+        public override bool CanQueueMultiple() => false;
+
         public override bool IsHotbarAction() => true;
 
         public override bool IsValidAction() => true;

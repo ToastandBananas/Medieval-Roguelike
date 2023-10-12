@@ -102,6 +102,8 @@ namespace ActionSystem
             return null;
         }
 
+        public abstract bool CanQueueMultiple();
+
         public bool IsDefaultAttackAction() => this is MeleeAction || this is ShootAction;
 
         public BaseAttackAction BaseAttackAction => this as BaseAttackAction;

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using UnityEngine;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
@@ -61,7 +63,7 @@ namespace ActionSystem
                                 }
                             }
 
-                            // Queue the attack action
+                            // Queue the attack action (target grid position has already been set in this case)
                             queuedAttack.QueueAction();
                         }
                         else // If there's no unit in the attack area or the target attack position is out of range, cancel the action
@@ -117,7 +119,7 @@ namespace ActionSystem
                 }
 
                 if (queuedActions.Count > 0)
-                    GetNextQueuedAction();
+                    StartCoroutine(GetNextQueuedAction());
                 else
                 {
                     unit.UnblockCurrentPosition();
@@ -128,22 +130,27 @@ namespace ActionSystem
 
         public override void SkipTurn()
         {
+            base.SkipTurn();
+
             lastQueuedAction = null;
             unit.stats.UseAP(unit.stats.APUntilTimeTick);
             TurnManager.Instance.FinishTurn(unit);
         }
 
-        public override void GetNextQueuedAction()
+        public override IEnumerator GetNextQueuedAction()
         {
             if (unit.health.IsDead())
             {
                 ClearActionQueue(true);
                 GridSystemVisual.HideGridVisual();
-                return;
+                yield break;
             }
 
             if (queuedActions.Count > 0 && isPerformingAction == false)
             {
+                while (isAttacking)
+                    yield return null;
+
                 unit.stats.UseAP(queuedAPs[0]);
 
                 if (queuedActions.Count > 0) // This can become cleared out after a time tick update
