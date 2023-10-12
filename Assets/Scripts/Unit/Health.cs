@@ -78,6 +78,7 @@ namespace UnitSystem
 
             unit.UnblockCurrentPosition();
             unit.unitInteractable.enabled = true;
+            unit.opportunityAttackTrigger.gameObject.SetActive(false);
 
             unit.unitAnimator.Die(attacker.transform);
 

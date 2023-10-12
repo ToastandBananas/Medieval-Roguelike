@@ -16,7 +16,8 @@ namespace UnitSystem
         [SerializeField] Transform parentTransform;
         [SerializeField] float viewRadius = 20f;
         [Range(0, 360)][SerializeField] float viewAngle = 160f;
-        Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
+        [Range(0, 360)][SerializeField] float opportunityAttackViewAngle = 220f;
+        [SerializeField] Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
 
         [Header("Layer Masks")]
         [SerializeField] LayerMask unitsMask;
@@ -214,6 +215,14 @@ namespace UnitSystem
                         npcActionHandler.StartFight();
                 }
             }
+        }
+
+        public bool TargetInOpportunityAttackViewAngle(Transform targetTransform)
+        {
+            Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
+            if (Vector3.Angle(transform.forward, dirToTarget) < 220f / 2)
+                return true;
+            return false;
         }
 
         void UpdateVisibleUnits()

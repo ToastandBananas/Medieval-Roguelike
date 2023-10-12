@@ -30,6 +30,7 @@ namespace UnitSystem
         public Alliance alliance { get; private set; }
         public Health health { get; private set; }
         public Hearing hearing { get; private set; }
+        public OpportunityAttackTrigger opportunityAttackTrigger { get; private set; }
         public Seeker seeker { get; private set; }
         public StateController stateController { get; private set; }
         public Stats stats { get; private set; }
@@ -38,6 +39,8 @@ namespace UnitSystem
         public UnitInteractable unitInteractable { get; private set; }
         public UnitMeshManager unitMeshManager { get; private set; }
         public Vision vision { get; private set; }
+
+        public List<Unit> unitsWhoCouldOpportunityAttackMe { get; private set; }
 
         GridPosition gridPosition;
 
@@ -52,6 +55,7 @@ namespace UnitSystem
                 this.unitInteractable = deadUnit;
             health = GetComponent<Health>();
             hearing = GetComponentInChildren<Hearing>();
+            opportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
             seeker = GetComponent<Seeker>();
             stateController = GetComponent<StateController>();
             stats = GetComponent<Stats>();
@@ -59,6 +63,8 @@ namespace UnitSystem
             unitAnimator = GetComponentInChildren<UnitAnimator>();
             unitMeshManager = GetComponent<UnitMeshManager>();
             vision = GetComponentInChildren<Vision>();
+
+            unitsWhoCouldOpportunityAttackMe = new List<Unit>();
         }
 
         void Start()

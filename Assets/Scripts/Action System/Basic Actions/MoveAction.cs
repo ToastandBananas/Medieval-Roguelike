@@ -88,45 +88,40 @@ namespace ActionSystem
                 yield break;
             }
 
-            // Check if an opportunity attack should happen
-            List<GridPosition> surroundingGridPositions = ListPool<GridPosition>.Claim();
-            surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(unit.GridPosition, 4.5f, true, false);
-
-            for (int i = 0; i < surroundingGridPositions.Count; i++)
+            // Check for Opportunity Attacks
+            for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
-                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(surroundingGridPositions[i]) == false)
+                if (unit.unitsWhoCouldOpportunityAttackMe[i].health.IsDead())
+                {
+                    unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
+                    continue;
+                }
+
+                if (unit.alliance.IsEnemy(unit.unitsWhoCouldOpportunityAttackMe[i]) == false)
                     continue;
 
-                Unit nearbyUnit = LevelGrid.Instance.GetUnitAtGridPosition(surroundingGridPositions[i]);
-                if (unit.alliance.IsEnemy(nearbyUnit) == false)
-                    continue;
-                
                 // Only melee Unit's can do an opportunity attack
-                if (nearbyUnit.UnitEquipment.RangedWeaponEquipped() || (nearbyUnit.UnitEquipment.MeleeWeaponEquipped() == false && nearbyUnit.stats.CanFightUnarmed == false))
+                if (unit.unitsWhoCouldOpportunityAttackMe[i].UnitEquipment.RangedWeaponEquipped() || (unit.unitsWhoCouldOpportunityAttackMe[i].UnitEquipment.MeleeWeaponEquipped() == false && unit.unitsWhoCouldOpportunityAttackMe[i].stats.CanFightUnarmed == false))
                     continue;
-                
-                // The enemy must be facing this Unit
-                if (nearbyUnit.unitActionHandler.GetAction<TurnAction>().IsFacingTarget(unit.GridPosition) == false)
+
+                // The enemy must be at least somewhat facing this Unit
+                if (unit.unitsWhoCouldOpportunityAttackMe[i].vision.IsVisible(unit) == false || unit.unitsWhoCouldOpportunityAttackMe[i].vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
                     continue;
-                Debug.Log("is facing target");
+
                 // Check if the Unit is starting out within the nearbyUnit's attack range
-                MeleeAction meleeAction = nearbyUnit.unitActionHandler.GetAction<MeleeAction>();
+                MeleeAction meleeAction = unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.GetAction<MeleeAction>();
                 if (meleeAction.IsInAttackRange(unit) == false)
                     continue;
 
-                Debug.Log("is initially in range");
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
-                if (meleeAction.IsInAttackRange(unit, nearbyUnit.GridPosition, nextTargetGridPosition))
+                if (meleeAction.IsInAttackRange(unit, unit.unitsWhoCouldOpportunityAttackMe[i].GridPosition, nextTargetGridPosition))
                     continue;
 
-                Debug.Log("Opportunity attack");
                 meleeAction.DoOpportunityAttack(unit);
 
-                while (nearbyUnit.unitActionHandler.isAttacking)
+                while (unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.isAttacking)
                     yield return null;
             }
-
-            ListPool<GridPosition>.Release(surroundingGridPositions);
 
             // Unblock the Unit's current position since they're about to move
             unit.UnblockCurrentPosition();

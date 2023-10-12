@@ -102,13 +102,19 @@ namespace ActionSystem
             return null;
         }
 
+        protected virtual void Initialize() { }
+
         public abstract bool CanQueueMultiple();
 
         public bool IsDefaultAttackAction() => this is MeleeAction || this is ShootAction;
 
         public BaseAttackAction BaseAttackAction => this as BaseAttackAction;
 
-        public void SetUnit(Unit unit) => this.unit = unit;
+        public void SetUnit(Unit unit)
+        {
+            this.unit = unit;
+            Initialize();
+        }
 
         public abstract bool IsHotbarAction();
 

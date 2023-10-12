@@ -17,7 +17,7 @@ namespace ActionSystem
         readonly float defaultRotateSpeed = 10f;
         readonly int singleTurnSegmentAPCost = 25;
 
-        void Start()
+        protected override void Initialize()
         {
             SetCurrentDirection();
         }
@@ -60,7 +60,7 @@ namespace ActionSystem
 
         public void RotateTowards_CurrentTargetPosition(bool rotateInstantly)
         {
-            StartCoroutine(Rotate(targetPosition, rotateInstantly));
+            unit.StartCoroutine(Rotate(targetPosition, rotateInstantly));
         }
 
         public void RotateTowards_Direction(Direction direction, bool rotateInstantly)
@@ -71,7 +71,7 @@ namespace ActionSystem
 
         public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
         {
-            StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
+            unit.StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
         }
 
         public IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
@@ -142,7 +142,7 @@ namespace ActionSystem
 
         public Direction SetCurrentDirection()
         {
-            Vector3 forward = transform.forward;
+            Vector3 forward = unit.transform.forward;
             forward.y = 0;
             float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
 
@@ -416,7 +416,7 @@ namespace ActionSystem
         {
             if (attackingUnit == null) return false;
 
-            Vector3 unitPos = transform.position;
+            Vector3 unitPos = unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
             switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing
@@ -461,7 +461,7 @@ namespace ActionSystem
         {
             if (attackingUnit == null) return false;
 
-            Vector3 unitPos = transform.position;
+            Vector3 unitPos = unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
             switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing

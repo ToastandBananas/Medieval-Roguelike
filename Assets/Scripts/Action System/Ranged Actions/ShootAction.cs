@@ -200,9 +200,9 @@ namespace ActionSystem
             while (unit.unitActionHandler.isAttacking)
             {
                 float rotateSpeed = 10f;
-                Vector3 lookPos = (new Vector3(targetPos.x, transform.position.y, targetPos.z) - unit.WorldPosition).normalized;
+                Vector3 lookPos = (new Vector3(targetPos.x, unit.transform.position.y, targetPos.z) - unit.WorldPosition).normalized;
                 Quaternion rotation = Quaternion.LookRotation(lookPos);
-                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
+                unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, rotation, rotateSpeed * Time.deltaTime);
                 yield return null;
             }
 
