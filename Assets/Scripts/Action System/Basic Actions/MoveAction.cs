@@ -230,7 +230,6 @@ namespace ActionSystem
                 unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(directionToNextPosition, true);
 
                 nextPathPosition = nextTargetPosition;
-                //unit.UpdateGridPosition();
 
                 TurnManager.Instance.StartNextUnitsTurn(unit);
             }
@@ -243,7 +242,6 @@ namespace ActionSystem
                 positionIndex++;
 
             CompleteAction();
-
             TryQueueNextAction();
 
             // Check for newly visible Units
@@ -255,8 +253,9 @@ namespace ActionSystem
             if (unit.IsPlayer)
             {
                 // If the Player has a target Interactable
-                if (unit.unitActionHandler.GetAction<InteractAction>().targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, unit.unitActionHandler.GetAction<InteractAction>().targetInteractable.GridPosition()) <= 1.4f)
-                    unit.unitActionHandler.GetAction<InteractAction>().QueueAction(unit.unitActionHandler.GetAction<InteractAction>().targetInteractable);
+                InteractAction interactAction = unit.unitActionHandler.GetAction<InteractAction>();
+                if (interactAction.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
+                    interactAction.QueueAction();
                 // If the target enemy Unit died
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
                     unit.unitActionHandler.CancelAction();

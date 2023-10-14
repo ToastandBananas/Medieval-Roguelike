@@ -18,7 +18,11 @@ namespace UnitSystem
             unit = GetComponent<Unit>();
 
             if (currentHealth == -1)
-                currentHealth = maxHealth;
+            {
+                currentHealth = maxHealth; 
+                if (unit.IsPlayer)
+                    ActionSystemUI.UpdateHealthText();
+            }
         }
 
         public void TakeDamage(int damageAmount, Unit attacker)

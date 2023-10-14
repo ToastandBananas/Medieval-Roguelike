@@ -50,12 +50,6 @@ namespace InventorySystem
             if (unitEquipment.EquipSlotIsFull(equipSlot) == false)
                 return;
 
-            if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.itemData == unitEquipment.EquippedItemDatas[(int)equipSlot] && (unitEquipment.EquippedItemDatas[(int)equipSlot] == null || unitEquipment.EquippedItemDatas[(int)equipSlot].Item == null))
-            {
-                Debug.LogWarning($"Item you're trying to drop from {unitEquipment.MyUnit.name}'s equipment is null...");
-                return;
-            }
-
             LooseItem looseItem;
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack)
                 looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
@@ -72,9 +66,6 @@ namespace InventorySystem
                 SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
             else
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
-
-            //if (characterEquipment.slotVisualsCreated && equipSlot == EquipSlot.Quiver && characterEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
-            //characterEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
 
             unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
             unitEquipment.RemoveEquipmentMesh(equipSlot);
@@ -95,6 +86,9 @@ namespace InventorySystem
                 unitEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
             unitEquipment.EquippedItemDatas[(int)equipSlot] = null;
+
+            if (unitEquipment.IsHeldItemEquipSlot(equipSlot))
+                unitEquipment.MyUnit.opportunityAttackTrigger.SetupColliderRadius();
 
             ActionSystemUI.UpdateActionVisuals();
         }
@@ -170,6 +164,8 @@ namespace InventorySystem
 
             unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
+
+            unit.opportunityAttackTrigger.SetupColliderRadius();
         }
 
         static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
@@ -194,7 +190,7 @@ namespace InventorySystem
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
                 LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
-                looseContainerItem.ContainerInventoryManager.TransferInventory(unitEquipment.MyUnit.BackpackInventoryManager);
+                looseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BackpackInventoryManager);
             }
             else if (equipSlot == EquipSlot.Quiver)
             {
@@ -202,7 +198,7 @@ namespace InventorySystem
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
                 LooseQuiverItem looseQuiverItem = looseItem as LooseQuiverItem;
-                looseQuiverItem.ContainerInventoryManager.TransferInventory(unitEquipment.MyUnit.QuiverInventoryManager);
+                looseQuiverItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.QuiverInventoryManager);
                 looseQuiverItem.UpdateArrowMeshes();
             }
         }

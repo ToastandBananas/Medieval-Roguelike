@@ -170,7 +170,12 @@ namespace InventorySystem
                         {
                             InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
                             if (slot != null)
-                                slot.InventoryItem.UpdateStackSizeVisuals();
+                            {
+                                if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.itemData == slot.ParentSlot().GetItemData())
+                                    slot.HideItemIcon();
+                                else
+                                    slot.InventoryItem.UpdateStackSizeVisuals();
+                            }
                         }
                     }
 

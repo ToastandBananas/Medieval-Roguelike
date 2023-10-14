@@ -2,6 +2,7 @@ using UnityEngine;
 using InteractableObjects;
 using UnitSystem;
 using ContextMenu = GeneralUI.ContextMenu;
+using ActionSystem;
 
 namespace InventorySystem
 {
@@ -41,9 +42,12 @@ namespace InventorySystem
         [Tooltip("Amount the arc height will be multiplied by. (0 = no arc)")]
         [SerializeField] float arcMultiplier = 1f;
 
-        public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
+        /*public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
         {
-            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+            bool canEquipItem = unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
+            unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
+            return canEquipItem;
+            /*if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
             {
                 Quiver quiver = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
                 if (quiver.AllowedProjectileType == projectileType)
@@ -71,11 +75,17 @@ namespace InventorySystem
                     return itemAdded;
                 }
                 else
-                    return unit.UnitEquipment.TryEquipItem(itemData);
+                {
+                    unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
+                    return unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
+                }
             }
             else
-                return unit.UnitEquipment.TryEquipItem(itemData);
-        }
+            {
+                unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
+                return unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
+            }
+        }*/
 
         public override Sprite InventorySprite(ItemData itemData = null)
         {

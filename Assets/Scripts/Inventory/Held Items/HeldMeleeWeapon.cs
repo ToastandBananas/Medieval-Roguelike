@@ -34,7 +34,7 @@ namespace InventorySystem
                 else
                     anim.Play("DefaultAttack_1H_R");
 
-                if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.ItemData.Item is Shield)
+                if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.itemData.Item is Shield)
                     unit.unitMeshManager.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L");
             }
             else if (this == unit.unitMeshManager.leftHeldItem)
@@ -42,7 +42,7 @@ namespace InventorySystem
                 if (itemData.Item.Weapon.IsTwoHanded == false)
                     anim.Play("DefaultAttack_1H_L");
 
-                if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.ItemData.Item is Shield)
+                if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.itemData.Item is Shield)
                     unit.unitMeshManager.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
             }
 

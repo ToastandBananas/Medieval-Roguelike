@@ -97,19 +97,19 @@ namespace UnitSystem
 
         public HeldMeleeWeapon GetPrimaryMeleeWeapon()
         {
-            if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
+            if (rightHeldItem != null && rightHeldItem.itemData.Item is MeleeWeapon)
                 return rightHeldItem as HeldMeleeWeapon;
-            else if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
+            else if (leftHeldItem != null && leftHeldItem.itemData.Item is MeleeWeapon)
                 return leftHeldItem as HeldMeleeWeapon;
             return null;
         }
 
         public HeldItem GetHeldItemFromItemData(ItemData itemData)
         {
-            if (rightHeldItem != null && rightHeldItem.ItemData == itemData)
+            if (rightHeldItem != null && rightHeldItem.itemData == itemData)
                 return rightHeldItem;
 
-            if (leftHeldItem != null && leftHeldItem.ItemData == itemData)
+            if (leftHeldItem != null && leftHeldItem.itemData == itemData)
                 return leftHeldItem;
             return null;
         }
@@ -122,9 +122,9 @@ namespace UnitSystem
 
         public HeldShield GetHeldShield()
         {
-            if (leftHeldItem != null && leftHeldItem.ItemData.Item is Shield)
+            if (leftHeldItem != null && leftHeldItem.itemData.Item is Shield)
                 return leftHeldItem as HeldShield;
-            else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Shield)
+            else if (rightHeldItem != null && rightHeldItem.itemData.Item is Shield)
                 return rightHeldItem as HeldShield;
             return null;
         }

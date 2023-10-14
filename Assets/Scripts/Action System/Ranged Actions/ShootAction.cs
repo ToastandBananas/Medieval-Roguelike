@@ -131,7 +131,7 @@ namespace ActionSystem
                 HeldItem itemBlockedWith = target.Value;
                 if (targetUnit != null && targetUnit.health.IsDead() == false)
                 {
-                    int damageAmount = heldRangedWeapon.ItemData.Damage;
+                    int damageAmount = heldRangedWeapon.itemData.Damage;
                     int armorAbsorbAmount = 0;
 
                     // If the attack was blocked
@@ -163,7 +163,7 @@ namespace ActionSystem
         public bool MissedTarget()
         {
             float random = Random.Range(0f, 100f);
-            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().ItemData);
+            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData);
             if (random > rangedAccuracy)
                 return true;
             return false;
@@ -187,7 +187,7 @@ namespace ActionSystem
         IEnumerator WaitToCompleteAction()
         {
             if (unit.unitMeshManager.GetHeldRangedWeapon() != null)
-                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item as Weapon));
+                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item as Weapon));
             else
                 yield return new WaitForSeconds(1f);
 
@@ -216,7 +216,7 @@ namespace ActionSystem
                 return false;
 
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-            Weapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon;
+            Weapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon;
             float maxRangeToTargetPosition = rangedWeapon.MaxRange + (startGridPosition.y - targetGridPosition.y);
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
@@ -245,8 +245,8 @@ namespace ActionSystem
 
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
         {
-            float minRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
-            float maxRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
+            float minRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
+            float maxRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
 
             validGridPositionsList.Clear();
@@ -306,7 +306,7 @@ namespace ActionSystem
             if (targetUnit == null)
                 return validGridPositionsList;
 
-            float maxAttackRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = ((targetUnit.GridPosition.y + maxAttackRange) * 2) + 0.1f;
 
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -386,7 +386,7 @@ namespace ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
-                if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                     finalActionValue = 0f;
                 else
                     finalActionValue -= distance * 10f;
@@ -429,7 +429,7 @@ namespace ActionSystem
                         finalActionValue += 15f;
 
                     float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, actionGridPosition);
-                    if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                    if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                         finalActionValue = -1f;
                     else
                         finalActionValue -= distance * 1.5f;

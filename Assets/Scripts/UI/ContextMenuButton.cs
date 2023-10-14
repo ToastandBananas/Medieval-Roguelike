@@ -142,10 +142,10 @@ namespace GeneralUI
                         if (quiver.AllowedProjectileType == itemData.Item.Ammunition.ProjectileType)
                             SetupButton("Add to Quiver", delegate { UseItem(itemData); });
                         else
-                            SetupButton("Equip", delegate { EquipItem(itemData); });
+                            SetupButton("Equip", delegate { UseItem(itemData); });
                     }
                     else
-                        SetupButton("Equip", delegate { EquipItem(itemData); });
+                        SetupButton("Equip", delegate { UseItem(itemData); });
                 }
             }
             else
@@ -222,22 +222,6 @@ namespace GeneralUI
         {
             if (itemData.Item.Use(UnitManager.player, itemData, amountToUse))
             {
-                if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
-            }
-            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
-            {
-                LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
-                looseItem.FumbleItem();
-            }
-
-            ContextMenu.DisableContextMenu();
-        }
-
-        void EquipItem(ItemData itemData)
-        {
-            if (UnitManager.player.UnitEquipment.TryEquipItem(itemData))
-            {
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
                 {
                     LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
@@ -246,12 +230,12 @@ namespace GeneralUI
 
                     if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
                     {
-                        UnitManager.player.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+                        UnitManager.player.QuiverInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
                         if (UnitManager.player.UnitEquipment.slotVisualsCreated && itemData.Item is Quiver)
                             UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                     }
                     else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
-                        UnitManager.player.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
+                        UnitManager.player.BackpackInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
                 }
                 else if (ContextMenu.targetSlot != null)
                 {
@@ -266,7 +250,7 @@ namespace GeneralUI
                 }
 
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool(ContextMenu.targetInteractable as LooseItem);
+                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
             }
             else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
@@ -280,7 +264,7 @@ namespace GeneralUI
         void UnequipItem()
         {
             EquipmentSlot equipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
-            equipmentSlot.UnitEquipment.UnequipItem(equipmentSlot.EquipSlot);
+            UnitManager.player.unitActionHandler.GetAction<UnequipAction>().QueueAction(equipmentSlot.EquipSlot);
             ContextMenu.DisableContextMenu();
         }
 

@@ -107,7 +107,7 @@ namespace ActionSystem
                         HandleTurnMode();
                     // If the player is trying to swap their weapon set
                     else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
-                        player.unitActionHandler.GetAction<EquipmentAction>().QueueAction(EquipmentActionType.SwapWeaponSet, null, null);
+                        player.unitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
                     // If the player selects a grid position to try and perform an action
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
@@ -142,14 +142,15 @@ namespace ActionSystem
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
             {
-                // Do nothing if the player is in the same grid position as the interactable (such as an open door)
-                if (player.GridPosition == highlightedInteractable.GridPosition() && highlightedInteractable is LooseItem == false)
+                // Do nothing if the player is in the same grid position as the interactable (such as an open door...loose items are okay though)
+                if (player.GridPosition == highlightedInteractable.GridPosition() && highlightedInteractable.CanInteractAtMyGridPosition() == false)
                     return;
 
                 // If the player is too far away from the Interactable to interact with it
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
                 {
                     // Queue a Move Action towards the Interactable
+                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
                     player.unitActionHandler.GetAction<MoveAction>().QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 }
                 else

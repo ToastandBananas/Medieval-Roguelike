@@ -2,6 +2,7 @@ using UnityEngine;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
+using ActionSystem;
 
 namespace InteractableObjects
 {
@@ -68,6 +69,8 @@ namespace InteractableObjects
                 if (itemData.Item.Equipment is Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped())
                     return false;
 
+                equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
+
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
                 if (unitPickingUpItem.UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
                 {
@@ -84,15 +87,15 @@ namespace InteractableObjects
                         EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
 
                         if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.UnitEquipment.EquipSlotIsFull(unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)) == false)
-                            equipped = unitPickingUpItem.UnitEquipment.TryAddItemAt(oppositeEquipSlot, itemData);
+                            unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, oppositeEquipSlot);
                     }
                     else
-                        equipped = unitPickingUpItem.UnitEquipment.TryAddItemAt(targetEquipSlot, itemData);
+                        unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot);
                 }
-                else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false)
-                    equipped = unitPickingUpItem.UnitEquipment.TryEquipItem(itemData);
-                else if (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver]))
-                    equipped = unitPickingUpItem.UnitEquipment.TryAddToEquippedAmmunition(itemData);
+                else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false || (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
+                    unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot);
+                else
+                    equipped = false;
 
                 // Transfer inventory from loose container item if applicable
                 /*if (equipped && this is LooseContainerItem)

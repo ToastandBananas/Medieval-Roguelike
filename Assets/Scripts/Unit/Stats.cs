@@ -261,7 +261,7 @@ namespace UnitSystem
         public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
         {
             float blockChance = shieldSkill.GetValue() * 2f;
-            blockChance = Mathf.RoundToInt((blockChance + heldShield.ItemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
+            blockChance = Mathf.RoundToInt((blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
 
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
@@ -273,7 +273,7 @@ namespace UnitSystem
 
         public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
         {
-            Weapon weapon = heldWeapon.ItemData.Item.Weapon;
+            Weapon weapon = heldWeapon.itemData.Item.Weapon;
             float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
             blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
 
@@ -288,11 +288,11 @@ namespace UnitSystem
             return blockChance;
         }
 
-        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.ItemData.BlockPower;
+        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.itemData.BlockPower;
 
         public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
         {
-            Weapon weapon = heldWeapon.ItemData.Item.Weapon;
+            Weapon weapon = heldWeapon.itemData.Item.Weapon;
             return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
         }
 

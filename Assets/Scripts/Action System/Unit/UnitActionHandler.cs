@@ -72,7 +72,7 @@ namespace ActionSystem
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                if (action != queuedActions[i] && action.CanQueueMultiple() == false && queuedActions[i].CanQueueMultiple() == false)
+                if ((action == queuedActions[i] && action.CanQueueMultiple() == false) || (action is MoveAction && queuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && queuedActions[i] is MoveAction))
                 {
                     int actionIndex = queuedActions.IndexOf(queuedActions[i]);
                     queuedActions.RemoveAt(actionIndex);
@@ -98,10 +98,7 @@ namespace ActionSystem
 
             // If the action changed while getting the action point cost (such as when running into a door)
             if (queuedActions.Count > 0 && action != queuedActions[0])
-            {
-                Debug.Log("action != queuedActions[0]");
                 return;
-            }
 
             if (action is BaseAttackAction)
                 unit.unitAnimator.StopMovingForward();
@@ -174,7 +171,7 @@ namespace ActionSystem
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                if (queuedActions[i] is InventoryAction == false && queuedActions[i] is EquipmentAction == false)
+                if (queuedActions[i] is InventoryAction == false && queuedActions[i] is SwapWeaponSetAction == false)
                 {
                     queuedActions.RemoveAt(i);
                     queuedAPs.RemoveAt(i);

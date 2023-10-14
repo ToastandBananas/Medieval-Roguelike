@@ -229,7 +229,7 @@ namespace ActionSystem
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
             if (unit.UnitEquipment.MeleeWeaponEquipped())
             {
-                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon;
+                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon;
                 float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
                 if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
                 
@@ -289,7 +289,7 @@ namespace ActionSystem
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
                 if (unit.UnitEquipment.MeleeWeaponEquipped())
-                    minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
+                    minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -378,8 +378,8 @@ namespace ActionSystem
                 HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
                 if (primaryHeldMeleeWeapon != null)
                 {
-                    minRange = primaryHeldMeleeWeapon.ItemData.Item.Weapon.MinRange;
-                    maxRange = primaryHeldMeleeWeapon.ItemData.Item.Weapon.MaxRange;
+                    minRange = primaryHeldMeleeWeapon.itemData.Item.Weapon.MinRange;
+                    maxRange = primaryHeldMeleeWeapon.itemData.Item.Weapon.MaxRange;
                 }
                 else
                 {
@@ -449,7 +449,7 @@ namespace ActionSystem
 
             float maxAttackRange;
             if (unit.UnitEquipment.MeleeWeaponEquipped())
-                maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+                maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
             else
                 maxAttackRange = unit.stats.UnarmedAttackRange;
 

@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 6659473671975276795}
   - component: {fileID: 2252755739874693656}
   m_Layer: 31
-  m_Name: Collider
+  m_Name: Door Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

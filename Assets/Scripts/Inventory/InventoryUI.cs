@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using Controls;
 using ContextMenu = GeneralUI.ContextMenu;
 using UnitSystem;
+using ActionSystem;
 
 namespace InventorySystem
 {
@@ -79,6 +80,10 @@ namespace InventorySystem
             // If we're not already dragging an item
             if (isDraggingItem == false)
             {
+                // Don't allow drag/drop inventory/equipment actions while an action is already queued
+                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                    return;
+
                 // If we select an item
                 if (GameControls.gamePlayActions.menuSelect.WasPressed)
                 {
@@ -123,6 +128,13 @@ namespace InventorySystem
             }
             else // If we are dragging an item
             {
+                // Don't allow drag/drop inventory/equipment actions while an action is already queued
+                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                {
+                    ReplaceDraggedItem();
+                    return;
+                }
+
                 // The dragged item should follow the mouse position
                 Vector2 offset = draggedItem.GetDraggedItemOffset();
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localMousePosition);
@@ -132,7 +144,7 @@ namespace InventorySystem
                 if (GameControls.gamePlayActions.menuSelect.WasPressed)
                 {
                     // Try placing the item
-                    if (activeSlot != null)
+                    if (activeSlot != null && validDragPosition && activeSlot != parentSlotDraggedFrom)
                     {
                         if (activeSlot is InventorySlot)
                         {
@@ -142,8 +154,10 @@ namespace InventorySystem
                         else
                         {
                             EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                            activeEquipmentSlot.UnitEquipment.TryAddItemAt(activeEquipmentSlot.EquipSlot, draggedItem.itemData);
+                            UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot);
                         }
+
+                        DisableDraggedItem();
                     }
                     else if (EventSystem.current.IsPointerOverGameObject() == false)
                     {
@@ -166,6 +180,8 @@ namespace InventorySystem
                             DropItemManager.DropItem(inventorySlotDraggedFrom.myInventory.MyUnit, inventorySlotDraggedFrom.myInventory, draggedItem.itemData);
                         }
                     }
+                    else
+                        ReplaceDraggedItem();
                 }
             }
         }
@@ -250,9 +266,9 @@ namespace InventorySystem
                 else
                 {
                     EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
-                    if (parentSlotDraggedFrom.InventoryItem.myUnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.itemData) == false)
+                    if (equipmentSlot.UnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.itemData) == false)
                     {
-                        if (parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
+                        if (equipmentSlot.UnitEquipment.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                             DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
                     }
                 }

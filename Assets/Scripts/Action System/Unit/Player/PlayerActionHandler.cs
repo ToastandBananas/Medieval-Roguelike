@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
-using UnityEngine;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using Utilities;
+using GeneralUI;
 
 namespace ActionSystem
 {
@@ -56,7 +56,7 @@ namespace ActionSystem
                                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                                 // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, queuedAttack.targetGridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, queuedAttack.targetGridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                                 {
                                     CancelAction();
                                     return;
@@ -86,7 +86,7 @@ namespace ActionSystem
                         if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
-                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetEnemyUnit.GridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetEnemyUnit.GridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                             {
                                 CancelAction();
                                 return;
@@ -146,14 +146,16 @@ namespace ActionSystem
                 yield break;
             }
 
-            if (queuedActions.Count > 0 && isPerformingAction == false)
+            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && isPerformingAction == false)
             {
+                ContextMenu.DisableContextMenu(true);
+
                 while (isAttacking)
                     yield return null;
 
                 unit.stats.UseAP(queuedAPs[0]);
 
-                if (queuedActions.Count > 0) // This can become cleared out after a time tick update
+                if (queuedActions.Count > 0 && queuedAPs.Count > 0) // This can become cleared out after a time tick update
                 {
                     isPerformingAction = true;
                     lastQueuedAction = queuedActions[0];

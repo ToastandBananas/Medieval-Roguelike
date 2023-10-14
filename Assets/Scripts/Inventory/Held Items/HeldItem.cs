@@ -51,8 +51,6 @@ namespace InventorySystem
             DoDefaultAttack();
         }
 
-        public ItemData ItemData => itemData;
-
         public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
             this.itemData = itemData;

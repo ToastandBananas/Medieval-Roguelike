@@ -60,6 +60,10 @@ namespace GeneralUI
 
             if (GameControls.gamePlayActions.menuContext.WasReleased)
             {
+                // Don't allow context menu actions while an action is already queued
+                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                    return;
+
                 if (contextMenuHoldTimer < maxContextMenuHoldTime)
                     BuildContextMenu();
 
@@ -85,6 +89,7 @@ namespace GeneralUI
 
             targetUnit = PlayerInput.Instance.highlightedUnit;
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
+            targetSlot = null;
             if (InventoryUI.activeSlot != null)
             {
                 targetSlot = InventoryUI.activeSlot.ParentSlot();
@@ -399,9 +404,6 @@ namespace GeneralUI
                 return;
 
             isActive = false;
-            targetUnit = null;
-            targetSlot = null;
-            targetInteractable = null;
 
             for (int i = 0; i < contextButtons.Count; i++)
             {

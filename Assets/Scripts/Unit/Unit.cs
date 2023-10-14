@@ -176,16 +176,19 @@ namespace UnitSystem
             if (itemData == null || itemData.Item == null)
                 return false;
 
-            Inventory itemDatasInventory = itemData.MyInventory();
-            if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+            if (myUnitEquipment != null)
             {
-                if (myUnitEquipment.slotVisualsCreated)
-                    myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                Inventory itemDatasInventory = itemData.MyInventory();
+                if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+                {
+                    if (myUnitEquipment.slotVisualsCreated)
+                        myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
-                if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
-                    itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+                    if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                        itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
-                return true;
+                    return true;
+                }
             }
 
             if (mainInventoryManager != null && MainInventory.TryAddItem(itemData))
@@ -193,7 +196,7 @@ namespace UnitSystem
 
             if (myUnitEquipment != null)
             {
-                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && backpackInventoryManager.TryAddItem(itemData))
+                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && myUnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData))
                     return true;
             }
 

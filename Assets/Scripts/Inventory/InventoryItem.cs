@@ -148,7 +148,7 @@ namespace InventorySystem
                 else
                     myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize.ToString();
             }
-
+            
             SetupIconSprite(true);
         }
 

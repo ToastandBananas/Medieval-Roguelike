@@ -159,7 +159,7 @@ namespace InventorySystem
             // If the shooter is missing
             if (missedTarget)
             {
-                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().ItemData);
+                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData);
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);

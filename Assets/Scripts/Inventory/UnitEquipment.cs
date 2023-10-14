@@ -5,6 +5,7 @@ using ActionSystem;
 using Utilities;
 using UnitSystem;
 using ContextMenu = GeneralUI.ContextMenu;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -40,50 +41,63 @@ namespace InventorySystem
 
             if (myUnit.IsPlayer)
                 CreateSlotVisuals();
-            else
-                SetupItems();
+            
+            SetupItems();
         }
 
-        // For testing:
-        /*void Update()
+        public bool CanEquipItem(ItemData newItemData) => CanEquipItemAt(newItemData, GetTargetEquipSlot(newItemData));
+
+        public bool CanEquipItemAt(ItemData newItemData, EquipSlot targetEquipSlot)
         {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                ItemData newItemData = new ItemData(equippedItemDatas[(int)EquipSlot.RightHeldItem].Item);
-                TryEquipItem(newItemData);
-            }
-        }*/
+            if (newItemData.Item is Equipment == false)
+                return false;
 
-        public bool TryEquipItem(ItemData newItemData)
-        {
-            EquipSlot targetEquipSlot = newItemData.Item.Equipment.EquipSlot;
-            if (currentWeaponSet == WeaponSet.Two)
-            {
-                if (targetEquipSlot == EquipSlot.LeftHeldItem1)
-                    targetEquipSlot = EquipSlot.LeftHeldItem2;
-                else if (targetEquipSlot == EquipSlot.RightHeldItem1)
-                    targetEquipSlot = EquipSlot.RightHeldItem2;
-            }
+            if ((IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsHeldItemEquipSlot(targetEquipSlot) == false)
+                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
+                return false;
 
-            if (newItemData.Item is Weapon)
+            if (targetEquipSlot == EquipSlot.Quiver && newItemData.Item is Ammunition)
             {
-                if (newItemData.Item.Weapon.IsTwoHanded)
+                int availableSpace = 0;
+                ItemData quiverSlotItemData = equippedItemDatas[(int)EquipSlot.Quiver];
+                if (QuiverEquipped())
                 {
-                    if (currentWeaponSet == WeaponSet.One)
-                        targetEquipSlot = EquipSlot.LeftHeldItem1;
-                    else
-                        targetEquipSlot = EquipSlot.LeftHeldItem2;
+                    // In this case we'd just be replacing the quiver with the different type of ammo (i.e. replacing an arrow quiver with crossbow bolts), so return true
+                    if (quiverSlotItemData.Item.Quiver.AllowedProjectileType != newItemData.Item.Ammunition.ProjectileType)
+                        return true;
+
+                    for (int i = 0; i < myUnit.QuiverInventoryManager.ParentInventory.InventoryLayout.AmountOfSlots; i++)
+                    {
+                        SlotCoordinate slotCoord = myUnit.QuiverInventoryManager.ParentInventory.GetSlotCoordinate(i + 1, 1).parentSlotCoordinate;
+
+                        // If there's an empty slot, the ammo will fit
+                        if (slotCoord.isFull == false) 
+                            return true;
+                        else if (newItemData.IsEqual(slotCoord.itemData))
+                            availableSpace += slotCoord.itemData.Item.MaxStackSize - slotCoord.itemData.CurrentStackSize;
+                    }
                 }
-                else if (EquipSlotIsFull(targetEquipSlot))
+                else
                 {
-                    EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
-                    if (EquipSlotIsFull(oppositeWeaponEquipSlot) == false)
-                        targetEquipSlot = oppositeWeaponEquipSlot;
+                    // If the slot is empty, the ammo will fit
+                    if (EquipSlotHasItem(EquipSlot.Quiver) == false)
+                        return true;
+
+                    // We would just be replacing the ammo in this case, so return true
+                    if (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) == false)
+                        return true;
+
+                    availableSpace = quiverSlotItemData.Item.MaxStackSize - quiverSlotItemData.CurrentStackSize;
                 }
+
+                if (availableSpace < newItemData.CurrentStackSize)
+                    return false;
             }
 
-            return TryAddItemAt(targetEquipSlot, newItemData);
+            return true;
         }
+
+        public bool TryEquipItem(ItemData newItemData) => TryAddItemAt(GetTargetEquipSlot(newItemData), newItemData);
 
         public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
         {
@@ -94,9 +108,6 @@ namespace InventorySystem
                 {
                     if (ItemDataEquipped(newItemData))
                         RemoveEquipment(newItemData);
-
-                    if (InventoryUI.isDraggingItem)
-                        InventoryUI.DisableDraggedItem();
                     return true;
                 }
                 else
@@ -105,13 +116,6 @@ namespace InventorySystem
                         InventoryUI.ReplaceDraggedItem();
                     return false;
                 }
-            }
-
-            // Check if the position is invalid
-            if (InventoryUI.isDraggingItem && InventoryUI.validDragPosition == false)
-            {
-                InventoryUI.ReplaceDraggedItem();
-                return false;
             }
 
             // If the item is a two-handed weapon, assign the left held item equip slot
@@ -123,11 +127,8 @@ namespace InventorySystem
                     targetEquipSlot = EquipSlot.LeftHeldItem2;
             }
 
-            // If trying to place the item back into the slot it came from, place the dragged item back to where it came from
-            if (InventoryUI.isDraggingItem && GetEquipmentSlot(targetEquipSlot) == InventoryUI.parentSlotDraggedFrom)
-                InventoryUI.ReplaceDraggedItem();
             // If trying to place ammo on a Quiver slot that has a Quiver or the same type of arrows equipped
-            else if (newItemData.Item is Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
+            if (newItemData.Item is Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
                 TryAddToEquippedAmmunition(newItemData);
             else
                 Equip(newItemData, targetEquipSlot);
@@ -166,9 +167,9 @@ namespace InventorySystem
             SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), newItemData);
             SetupEquipmentMesh(targetEquipSlot, newItemData);
 
-            // Hide the dragged item
-            if (InventoryUI.isDraggingItem)
-                InventoryUI.DisableDraggedItem();
+            // Set the size of the opportunity attack trigger
+            if (IsHeldItemEquipSlot(targetEquipSlot))
+                myUnit.opportunityAttackTrigger.SetupColliderRadius();
 
             AddActions(newItemData.Item as Equipment);
         }
@@ -194,7 +195,9 @@ namespace InventorySystem
                     if (slotVisualsCreated)
                         GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
-                    RemoveItemFromOrigin(ammoItemData);
+                    if (ammoItemData.MyInventory() != null && myUnit.QuiverInventoryManager.ParentInventory != ammoItemData.MyInventory())
+                        RemoveItemFromOrigin(ammoItemData);
+
                     if (InventoryUI.isDraggingItem)
                         InventoryUI.DisableDraggedItem();
 
@@ -244,6 +247,36 @@ namespace InventorySystem
                 InventoryUI.ReplaceDraggedItem();
 
             return false;
+        }
+
+        EquipSlot GetTargetEquipSlot(ItemData newItemData)
+        {
+            EquipSlot targetEquipSlot = newItemData.Item.Equipment.EquipSlot;
+            if (currentWeaponSet == WeaponSet.Two)
+            {
+                if (targetEquipSlot == EquipSlot.LeftHeldItem1)
+                    targetEquipSlot = EquipSlot.LeftHeldItem2;
+                else if (targetEquipSlot == EquipSlot.RightHeldItem1)
+                    targetEquipSlot = EquipSlot.RightHeldItem2;
+            }
+
+            if (newItemData.Item is Weapon)
+            {
+                if (newItemData.Item.Weapon.IsTwoHanded)
+                {
+                    if (currentWeaponSet == WeaponSet.One)
+                        targetEquipSlot = EquipSlot.LeftHeldItem1;
+                    else
+                        targetEquipSlot = EquipSlot.LeftHeldItem2;
+                }
+                else if (EquipSlotIsFull(targetEquipSlot))
+                {
+                    EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
+                    if (EquipSlotIsFull(oppositeWeaponEquipSlot) == false)
+                        targetEquipSlot = oppositeWeaponEquipSlot;
+                }
+            }
+            return targetEquipSlot;
         }
 
         public void RemoveEquipment(ItemData itemData)
@@ -344,6 +377,10 @@ namespace InventorySystem
 
             equippedItemDatas[(int)equipSlot] = null;
             RemoveActions(equipment);
+
+            // Set the size of the opportunity attack trigger
+            if (IsHeldItemEquipSlot(equipSlot))
+                myUnit.opportunityAttackTrigger.SetupColliderRadius();
         }
 
         public void CreateSlotVisuals()
@@ -392,11 +429,9 @@ namespace InventorySystem
             }
 
             slotVisualsCreated = true;
-
-            SetupItems();
         }
 
-        public void SetupItems()
+        void SetupItems()
         {
             for (int i = 0; i < equippedItemDatas.Length; i++)
             {
@@ -435,6 +470,8 @@ namespace InventorySystem
 
                 AddActions(equippedItemDatas[i].Item as Equipment);
             }
+
+            myUnit.opportunityAttackTrigger.SetupColliderRadius();
         }
 
         void AddActions(Equipment equipment)

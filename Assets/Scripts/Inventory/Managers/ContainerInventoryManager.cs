@@ -82,7 +82,7 @@ namespace InventorySystem
             return false;
         }
 
-        public void TransferInventory(ContainerInventoryManager containerInventoryManagerToCopy)
+        public void SwapInventories(ContainerInventoryManager containerInventoryManagerToCopy)
         {
             parentInventory.RemoveSlots();
             parentInventory.RemoveSlots();

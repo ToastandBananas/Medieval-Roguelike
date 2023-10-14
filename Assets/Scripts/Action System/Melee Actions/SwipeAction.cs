@@ -166,7 +166,7 @@ namespace ActionSystem
             if (targetUnit == null)
                 return validGridPositionsList;
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -229,7 +229,7 @@ namespace ActionSystem
                 return validGridPositionsList;
             }
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
             nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -385,7 +385,7 @@ namespace ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
-                float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().ItemData.Item.Weapon.MinRange;
+                float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;

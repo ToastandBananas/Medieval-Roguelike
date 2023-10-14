@@ -116,7 +116,7 @@ namespace ActionSystem
                     if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
                         Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                        float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
+                        float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
                         if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
@@ -133,7 +133,7 @@ namespace ActionSystem
                             }
 
                             // Else flee somewhere
-                            StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                            StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange - 2)));
                         }
                         else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
                         {
@@ -282,7 +282,7 @@ namespace ActionSystem
             if (unit.UnitEquipment.RangedWeaponEquipped())
             {
                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
+                float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
                 if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
@@ -290,7 +290,7 @@ namespace ActionSystem
                     // TO DO: If the Unit has a melee weapon, switch to it
 
                     // Else flee somewhere
-                    StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                    StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange - 2)));
                 }
             }
 

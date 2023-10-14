@@ -176,7 +176,7 @@ namespace InventorySystem
 
             if (validSlot)
             {
-                if (myInventory.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
+                if (myInventory.MyUnit != null && myInventory.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
                     validSlot = false;
                 else if (myInventory.ItemTypeAllowed(InventoryUI.DraggedItem.itemData.Item.ItemType))
                 {

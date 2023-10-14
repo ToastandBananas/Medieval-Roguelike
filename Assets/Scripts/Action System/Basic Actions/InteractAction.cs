@@ -51,10 +51,15 @@ namespace ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
+        public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
+
         public override int GetActionPointsCost()
         {
             if (targetInteractable is Door)
                 return 150;
+            else if (targetInteractable is LooseItem)
+                return 0; // We'll calculate this when we queue an equip or inventory action
+
             return 100;
         }
 
