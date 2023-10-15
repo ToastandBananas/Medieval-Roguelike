@@ -179,7 +179,7 @@ namespace UnitSystem
             if (myUnitEquipment != null)
             {
                 Inventory itemDatasInventory = itemData.MyInventory();
-                if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData))
+                if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, this))
                 {
                     if (myUnitEquipment.slotVisualsCreated)
                         myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
@@ -191,12 +191,12 @@ namespace UnitSystem
                 }
             }
 
-            if (mainInventoryManager != null && MainInventory.TryAddItem(itemData))
+            if (mainInventoryManager != null && MainInventory.TryAddItem(itemData, this))
                 return true;
 
             if (myUnitEquipment != null)
             {
-                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && myUnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData))
+                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && myUnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, this))
                     return true;
             }
 

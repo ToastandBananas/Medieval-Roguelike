@@ -113,6 +113,8 @@ namespace InventorySystem
 
             if (myUnitEquipment.MyUnit.health.IsDead() && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
                 validSlot = false;
+            else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
+                validSlot = true;
             else if (draggedItem is Equipment)
             {
                 if (draggedItem.Equipment.EquipSlot == equipSlot)

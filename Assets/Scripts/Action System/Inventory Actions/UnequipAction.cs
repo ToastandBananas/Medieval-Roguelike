@@ -33,7 +33,7 @@ namespace ActionSystem
         {
             int cost = 0;
             if (unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))
-                cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]]);
+                cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize);
             else
                 Debug.LogWarning($"{targetEquipSlots[targetEquipSlots.Count - 1]} is not full, yet {unit.name} is trying to unequip from it...");
             return cost;

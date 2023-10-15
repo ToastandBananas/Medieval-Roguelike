@@ -65,7 +65,7 @@ namespace GeneralUI
 
         void AddToBackpack(ItemData itemData)
         {
-            if (UnitManager.player.BackpackInventoryManager.TryAddItem(itemData))
+            if (UnitManager.player.BackpackInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
                     LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
@@ -99,7 +99,7 @@ namespace GeneralUI
             {
                 ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
                 if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
-                    UnitManager.player.MainInventory.TryAddItem(itemData);
+                    UnitManager.player.MainInventory.TryAddItem(itemData, UnitManager.player);
             }
             else if (UnitManager.player.TryAddItemToInventories(itemData))
             {

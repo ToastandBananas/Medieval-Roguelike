@@ -1,37 +1,29 @@
-using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
 
 namespace ActionSystem
 {
-    public class InventoryAction : BaseAction
+    public class InventoryAction : BaseInventoryAction
     {
         ItemData targetItemData;
-        UnitEquipment targetItemDatasUnitEquipment; // In case the item is coming from a Unit's equipment
+        int itemCount;
 
-        readonly int actionPointCostPerPound = 10;
-
-        public void SetTarget(ItemData targetItemData, UnitEquipment targetItemDatasUnitEquipment)
+        public void QueueAction(ItemData targetItemData, int itemCount)
         {
             this.targetItemData = targetItemData;
-            this.targetItemDatasUnitEquipment = targetItemDatasUnitEquipment;
+            this.itemCount = itemCount;
+            QueueAction();
         }
 
         public override void TakeAction()
         {
-            Debug.Log("Performing inventory action");
+            CompleteAction();
         }
 
         public override int GetActionPointsCost()
         {
-            int cost = 0;
-            if (targetItemData != null)
-            {
-                cost += Mathf.RoundToInt(targetItemData.Item.Weight / actionPointCostPerPound) * actionPointCostPerPound;
-            }
-
-            return cost;
+            return GetItemsActionPointCost(targetItemData, itemCount);
         }
 
         public override void CompleteAction()

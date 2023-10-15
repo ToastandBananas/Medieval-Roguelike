@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using InteractableObjects;
 using UnitSystem;
+using ActionSystem;
 
 namespace InventorySystem
 {
@@ -41,7 +42,7 @@ namespace InventorySystem
             hasBeenInitialized = true;
         }
 
-        public virtual bool TryAddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
+        public virtual bool TryAddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
         {
             if (newItemData == null || newItemData.Item == null)
                 return false;
@@ -52,10 +53,10 @@ namespace InventorySystem
             if (newItemData.ShouldRandomize)
                 newItemData.RandomizeData();
 
-            return AddItem(newItemData, tryAddToExistingStacks);
+            return AddItem(newItemData, unitAdding, tryAddToExistingStacks);
         }
 
-        protected bool AddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
+        protected bool AddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
         {
             Inventory originalInventory = newItemData.MyInventory();
 
@@ -65,6 +66,7 @@ namespace InventorySystem
             // Combine stacks if possible
             if (newItemData.Item.MaxStackSize > 1 && tryAddToExistingStacks)
             {
+                int startingStackSize = newItemData.CurrentStackSize;
                 for (int i = 0; i < itemDatas.Count; i++)
                 {
                     if (newItemData.CurrentStackSize <= 0)
@@ -76,16 +78,7 @@ namespace InventorySystem
                     CombineStacks(newItemData, itemDatas[i]);
 
                     if (slotVisualsCreated)
-                    {
-                        InventorySlot targetSlot = GetSlotFromItemData(itemDatas[i]);
-                        targetSlot.InventoryItem.UpdateStackSizeVisuals();
-
-                        if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
-                        {
-                            InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
-                            slot.InventoryItem.UpdateStackSizeVisuals();
-                        }
-                    }
+                        GetSlotFromItemData(itemDatas[i]).InventoryItem.UpdateStackSizeVisuals();
                 }
 
                 // If the entire stack was combined with another stack
@@ -94,7 +87,20 @@ namespace InventorySystem
                     if (originalInventory != null && originalInventory != this)
                         originalInventory.RemoveItem(newItemData);
 
+                    if (unitAdding != null && originalInventory != this)
+                        unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize);
+
                     return true;
+                }
+                // If there's some left in the stack
+                else
+                {
+                    if (newItemData.MyInventory() != null && newItemData.MyInventory().slotVisualsCreated)
+                        newItemData.MyInventory().GetSlotFromItemData(newItemData).InventoryItem.UpdateStackSizeVisuals();
+
+                    // If some was added to other stacks, queue an InventoryAction for the amount added
+                    if (startingStackSize != newItemData.CurrentStackSize && unitAdding != null && originalInventory != this)
+                        unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize);
                 }
             }
 
@@ -129,22 +135,35 @@ namespace InventorySystem
                         SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
                 }
 
+                if (unitAdding != null && originalInventory != this)
+                    unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
+
                 return true;
             }
 
             return false;
         }
 
-        public virtual bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
+        public virtual bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData, Unit unitAdding)
         {
             if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
+            {
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.ReplaceDraggedItem();
                 return false;
+            }
 
             InventoryUI.OverlappingMultipleItems(targetSlotCoordinate, newItemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
 
             // Check if there's multiple items in the way or if the position is invalid
-            if ((InventoryUI.isDraggingItem && InventoryUI.validDragPosition == false) || overlappedItemCount >= 2)
+            if (overlappedItemCount >= 2)
+            {
+                if (InventoryUI.isDraggingItem)
+                    InventoryUI.ReplaceDraggedItem();
                 return false;
+            }
+
+            Inventory originalInventory = newItemData.MyInventory();
 
             // If there's only one item in the way
             if (overlappedItemCount == 1)
@@ -159,6 +178,7 @@ namespace InventorySystem
                 // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
                 if (overlappedItemsParentSlotCoordinate == targetSlotCoordinate && newItemData.Item.MaxStackSize > 1 && overlappedItemsData.CurrentStackSize < overlappedItemsData.Item.MaxStackSize && newItemData.IsEqual(overlappedItemsData))
                 {
+                    int startingStackSize = newItemData.CurrentStackSize;
                     CombineStacks(newItemData, overlappedItemsData);
 
                     // Update the overlapped item's stack size text
@@ -166,9 +186,9 @@ namespace InventorySystem
                     {
                         GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).InventoryItem.UpdateStackSizeVisuals();
 
-                        if (newItemData.CurrentStackSize > 0 && newItemData.MyInventory() != null)
+                        if (newItemData.CurrentStackSize > 0 && originalInventory != null)
                         {
-                            InventorySlot slot = newItemData.MyInventory().GetSlotFromItemData(newItemData);
+                            InventorySlot slot = originalInventory.GetSlotFromItemData(newItemData);
                             if (slot != null)
                             {
                                 if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.itemData == slot.ParentSlot().GetItemData())
@@ -190,7 +210,13 @@ namespace InventorySystem
                                 if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != null)
                                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
                                 else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment != null)
+                                {
                                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(newItemData);
+
+                                    // Queue an InventoryAction to account for unequipping the item
+                                    if (unitAdding != null && InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != this)
+                                        unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize);
+                                }
                             }
 
                             // Hide the dragged item
@@ -203,6 +229,10 @@ namespace InventorySystem
 
                             // Re-enable the highlighting
                             GetSlotFromCoordinate(targetSlotCoordinate).HighlightSlots();
+
+                            // Queue an InventoryAction for the amount added to the stack
+                            if (unitAdding != null && originalInventory != this)
+                                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize);
                         }
                     }
                 }
@@ -212,8 +242,6 @@ namespace InventorySystem
                     Slot overlappedParentSlot = GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate);
                     if (overlappedParentSlot.InventoryItem.myInventory != null)
                         overlappedParentSlot.InventoryItem.myInventory.RemoveItem(overlappedItemsData);
-                    else if (overlappedParentSlot.InventoryItem.myUnitEquipment != null)
-                        overlappedParentSlot.InventoryItem.myUnitEquipment.RemoveEquipment(overlappedItemsData);
 
                     // Clear out the dragged item
                     if (InventoryUI.parentSlotDraggedFrom != null)
@@ -221,7 +249,13 @@ namespace InventorySystem
                         if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != null)
                             InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(InventoryUI.DraggedItem.itemData);
                         else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment != null)
+                        {
                             InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
+
+                            // Queue an InventoryAction to account for unequipping the item
+                            if (unitAdding != null && originalInventory != this)
+                                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
+                        }
                     }
 
                     // Setup the target slot's item data and sprites
@@ -241,12 +275,6 @@ namespace InventorySystem
                     GetSlotFromCoordinate(targetSlotCoordinate).HighlightSlots();
                 }
             }
-            // If trying to place the item back into the slot it came from
-            else if (InventoryUI.isDraggingItem && GetSlotFromCoordinate(targetSlotCoordinate) == InventoryUI.parentSlotDraggedFrom)
-            {
-                // Place the dragged item back to where it came from
-                InventoryUI.ReplaceDraggedItem();
-            }
             else // If there's no items in the way
             {
                 // Clear out the dragged item's original slot
@@ -263,7 +291,7 @@ namespace InventorySystem
                 TryTakeStuckProjectiles(newItemData);
 
                 // If the slots are in different inventories
-                RemoveFromOrigin(targetSlotCoordinate, newItemData);
+                RemoveFromOrigin(targetSlotCoordinate, newItemData, unitAdding);
 
                 if (itemDatas.Contains(newItemData) == false)
                     itemDatas.Add(newItemData);
@@ -272,6 +300,9 @@ namespace InventorySystem
                 if (InventoryUI.isDraggingItem)
                     InventoryUI.DisableDraggedItem();
             }
+
+            if (unitAdding != null && originalInventory != this)
+                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
 
             return true;
         }
@@ -293,7 +324,7 @@ namespace InventorySystem
             }
         }
 
-        void RemoveFromOrigin(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
+        void RemoveFromOrigin(SlotCoordinate targetSlotCoordinate, ItemData newItemData, Unit unitAdding)
         {
             if (targetSlotCoordinate.myInventory != InventoryUI.DraggedItem.myInventory)
             {
@@ -301,7 +332,13 @@ namespace InventorySystem
                 {
                     // Remove the item from its original character equipment
                     if (InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is EquipmentSlot)
+                    {
                         InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
+
+                        // Queue an InventoryAction to account for unequipping the item
+                        if (unitAdding != null)
+                            unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
+                    }
                     // Remove the item from its original inventory
                     else if (InventoryUI.DraggedItem.myInventory != null)
                     {
@@ -373,7 +410,7 @@ namespace InventorySystem
                 if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is LooseQuiverItem)
                     ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                 // If arrows are being removed from an equipped Quiver
-                else if (ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.slotVisualsCreated)
+                else if (myUnit != null && ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.slotVisualsCreated)
                     myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
             }
         }
@@ -592,7 +629,7 @@ namespace InventorySystem
 
                 itemDatas[i].RandomizeData();
 
-                if (TryAddItem(itemDatas[i]) == false)
+                if (TryAddItem(itemDatas[i], null) == false)
                 {
                     Debug.LogWarning($"{itemDatas[i].Item.name} can't fit in inventory...");
                     itemDatas.Remove(itemDatas[i]);

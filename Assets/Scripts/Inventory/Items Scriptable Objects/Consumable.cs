@@ -29,7 +29,7 @@ namespace InventorySystem
                     {
                         itemData.MyInventory().RemoveItem(itemData);
                         itemData.SetItem(newThreshold.NewItem);
-                        itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData);
+                        itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData, unit);
                     }
                 }
             }

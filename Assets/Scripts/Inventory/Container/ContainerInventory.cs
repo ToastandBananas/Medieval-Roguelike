@@ -41,7 +41,7 @@ namespace InventorySystem
             hasBeenInitialized = true;
         }
 
-        public override bool TryAddItem(ItemData newItemData, bool tryAddToExistingStacks = true)
+        public override bool TryAddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
         {
             if (newItemData == null || newItemData.Item == null)
                 return false;
@@ -55,7 +55,7 @@ namespace InventorySystem
             bool itemAdded;
             if (containerInventoryManager.ParentInventory == this || containerInventoryManager.SubInventories.Length == 0 || containerInventoryManager.SubInventories[0] == null)
             {
-                itemAdded = AddItem(newItemData, tryAddToExistingStacks);
+                itemAdded = AddItem(newItemData, unitAdding, tryAddToExistingStacks);
                 if (itemAdded == false)
                 {
                     for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)
@@ -63,19 +63,19 @@ namespace InventorySystem
                         if (itemAdded)
                             continue;
 
-                        itemAdded = containerInventoryManager.SubInventories[i].AddItem(newItemData, tryAddToExistingStacks);
+                        itemAdded = containerInventoryManager.SubInventories[i].AddItem(newItemData, unitAdding, tryAddToExistingStacks);
                     }
                 }
             }
             else
-                itemAdded = AddItem(newItemData, tryAddToExistingStacks);
+                itemAdded = AddItem(newItemData, unitAdding, tryAddToExistingStacks);
 
             return itemAdded;
         }
 
-        public override bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData)
+        public override bool TryAddItemAt(SlotCoordinate targetSlotCoordinate, ItemData newItemData, Unit unitAdding)
         {
-            bool added = base.TryAddItemAt(targetSlotCoordinate, newItemData);
+            bool added = base.TryAddItemAt(targetSlotCoordinate, newItemData, unitAdding);
 
             if (looseItem != null && looseItem is LooseQuiverItem)
                 looseItem.LooseQuiverItem.UpdateArrowMeshes();

@@ -69,14 +69,14 @@ namespace InventorySystem
             return false;
         }
 
-        public bool TryAddItem(ItemData itemData)
+        public bool TryAddItem(ItemData itemData, Unit unitAdding)
         {
-            if (parentInventory.TryAddItem(itemData))
+            if (parentInventory.TryAddItem(itemData, unitAdding))
                 return true;
 
             for (int i = 0; i < subInventories.Length; i++)
             {
-                if (subInventories[i].TryAddItem(itemData))
+                if (subInventories[i].TryAddItem(itemData, unitAdding))
                     return true;
             }
             return false;

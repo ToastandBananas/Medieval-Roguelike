@@ -72,7 +72,7 @@ namespace InteractableObjects
                 equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
 
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
-                if (unitPickingUpItem.UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+                if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
                 {
                     if (unitPickingUpItem.UnitEquipment.currentWeaponSet == WeaponSet.Two)
                     {

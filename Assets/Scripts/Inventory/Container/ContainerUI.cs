@@ -219,7 +219,7 @@ namespace InventorySystem
         {
             for (int i = containerInventoryManager.ParentInventory.ItemDatas.Count - 1; i >= 0; i--)
             {
-                if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.ParentInventory.ItemDatas[i]) == false)
+                if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.ParentInventory.ItemDatas[i], UnitManager.player) == false)
                     DropItemManager.DropItem(UnitManager.player, containerInventoryManager.ParentInventory, containerInventoryManager.ParentInventory.ItemDatas[i]);
             }
 
@@ -227,7 +227,7 @@ namespace InventorySystem
             {
                 for (int j = containerInventoryManager.SubInventories[i].ItemDatas.Count - 1; j >= 0; j--)
                 {
-                    if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.SubInventories[i].ItemDatas[j]) == false)
+                    if (UnitManager.player.MainInventory.TryAddItem(containerInventoryManager.SubInventories[i].ItemDatas[j], UnitManager.player) == false)
                         DropItemManager.DropItem(UnitManager.player, containerInventoryManager.SubInventories[i], containerInventoryManager.SubInventories[i].ItemDatas[j]);
                 }
             }

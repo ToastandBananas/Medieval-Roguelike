@@ -18,30 +18,30 @@ namespace ActionSystem
             if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
             {
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem2))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem2))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2], 1);
             }
             else
             {
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem2))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2], 1);
 
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem2))
-                    cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2]);
+                    cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2], 1);
             }
 
             return cost;

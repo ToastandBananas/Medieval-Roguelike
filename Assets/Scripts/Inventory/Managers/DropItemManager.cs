@@ -43,6 +43,8 @@ namespace InventorySystem
 
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
+
+            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToDrop, itemDataToDrop.CurrentStackSize);
         }
 
         public static void DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
@@ -87,8 +89,10 @@ namespace InventorySystem
 
             unitEquipment.EquippedItemDatas[(int)equipSlot] = null;
 
-            if (unitEquipment.IsHeldItemEquipSlot(equipSlot))
+            if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.opportunityAttackTrigger.SetupColliderRadius();
+
+            unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
 
             ActionSystemUI.UpdateActionVisuals();
         }
@@ -166,6 +170,8 @@ namespace InventorySystem
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
 
             unit.opportunityAttackTrigger.SetupColliderRadius();
+
+            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseWeapon.ItemData, looseWeapon.ItemData.CurrentStackSize);
         }
 
         static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)

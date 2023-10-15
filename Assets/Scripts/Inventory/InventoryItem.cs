@@ -83,7 +83,7 @@ namespace InventorySystem
             if (mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = (EquipmentSlot)mySlot;
-                if (myEquipmentSlot.UnitEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
+                if (UnitEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
                     && (myEquipmentSlot.UnitEquipment.currentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
                     || (myEquipmentSlot.UnitEquipment.currentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2))
                 {

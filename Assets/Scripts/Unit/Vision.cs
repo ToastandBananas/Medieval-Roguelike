@@ -220,7 +220,7 @@ namespace UnitSystem
         public bool TargetInOpportunityAttackViewAngle(Transform targetTransform)
         {
             Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, dirToTarget) < 220f / 2)
+            if (Vector3.Angle(transform.forward, dirToTarget) < opportunityAttackViewAngle / 2)
                 return true;
             return false;
         }

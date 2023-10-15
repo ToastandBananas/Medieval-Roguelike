@@ -104,7 +104,7 @@ namespace InventorySystem
             // If drag/dropping an item onto an equipped backpack
             if ((newItemData.Item is Equipment == false || newItemData.Item.Equipment.EquipSlot != EquipSlot.Back) && targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item is Backpack)
             {
-                if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData))
+                if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData, myUnit))
                 {
                     if (ItemDataEquipped(newItemData))
                         RemoveEquipment(newItemData);
@@ -190,7 +190,7 @@ namespace InventorySystem
             // If there's a quiver we can add the ammo to
             if (equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver && ammoItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)
             {
-                if (myUnit.QuiverInventoryManager.ParentInventory.TryAddItem(ammoItemData))
+                if (myUnit.QuiverInventoryManager.ParentInventory.TryAddItem(ammoItemData, myUnit))
                 {
                     if (slotVisualsCreated)
                         GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
@@ -771,7 +771,7 @@ namespace InventorySystem
             || (currentWeaponSet == WeaponSet.Two && (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Weapon == false))
             || (RangedWeaponEquipped() && HasValidAmmunitionEquipped() == false);
 
-        public bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
+        public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
         public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Backpack;
 

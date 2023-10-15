@@ -18,6 +18,8 @@ public class OpportunityAttackTrigger : MonoBehaviour
             if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.unitMeshManager.rightHeldItem.itemData.Item.Weapon.MaxRange > maxAttackRange)
                 maxAttackRange = myUnit.unitMeshManager.rightHeldItem.itemData.Item.Weapon.MaxRange;
         }
+        else if (myUnit.UnitEquipment.RangedWeaponEquipped())
+            maxAttackRange = 0.1f;
 
         sphereCollider.radius = maxAttackRange;
     }

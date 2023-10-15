@@ -96,7 +96,7 @@ namespace InventorySystem
             if (targetItemData.MyInventory() != null)
             {
                 Inventory myInventory = targetItemData.MyInventory();
-                if (myInventory.TryAddItem(newItemData, false) == false)
+                if (myInventory.TryAddItem(newItemData, null, false) == false)
                     InventoryUI.SetupDraggedItem(newItemData, null, (Inventory)null);
 
                 if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is LooseQuiverItem)

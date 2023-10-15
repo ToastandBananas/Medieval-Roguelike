@@ -37,19 +37,19 @@ namespace ActionSystem
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().LastOrDefault();
             EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
             ItemData itemDataToEquip = (ItemData)dictionaryEntry.Key;
-            int cost = CalculateItemsActionPointCost(itemDataToEquip);
+            int cost = GetItemsActionPointCost(itemDataToEquip, itemDataToEquip.CurrentStackSize);
 
             // Account for having to unequip any items
             if (unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot))
-                cost += CalculateItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot]);
+                cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].CurrentStackSize);
 
-            if (unit.UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+            if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
                 ItemData oppositeItemData = unit.UnitEquipment.EquippedItemDatas[(int)unit.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)];
                 if (oppositeItemData != null && oppositeItemData.Item != null)
                 {
                     if ((itemDataToEquip.Item is Weapon && itemDataToEquip.Item.Weapon.IsTwoHanded) || (oppositeItemData.Item is Weapon && oppositeItemData.Item.Weapon.IsTwoHanded))
-                        cost += CalculateItemsActionPointCost(oppositeItemData);
+                        cost += GetItemsActionPointCost(oppositeItemData, oppositeItemData.CurrentStackSize);
                 }
             }
 

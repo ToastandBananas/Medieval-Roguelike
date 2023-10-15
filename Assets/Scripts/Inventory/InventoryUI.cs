@@ -149,15 +149,15 @@ namespace InventorySystem
                         if (activeSlot is InventorySlot)
                         {
                             InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                            activeInventorySlot.myInventory.TryAddItemAt(activeInventorySlot.slotCoordinate, draggedItem.itemData);
+                            activeInventorySlot.myInventory.TryAddItemAt(activeInventorySlot.slotCoordinate, draggedItem.itemData, UnitManager.player);
                         }
                         else
                         {
                             EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
                             UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot);
-                        }
 
-                        DisableDraggedItem();
+                            DisableDraggedItem();
+                        }
                     }
                     else if (EventSystem.current.IsPointerOverGameObject() == false)
                     {
@@ -257,7 +257,7 @@ namespace InventorySystem
             {
                 if (parentSlotDraggedFrom is InventorySlot)
                 {
-                    if (parentSlotDraggedFrom.InventoryItem.myInventory.TryAddItemAt(parentSlotDraggedFrom.InventoryItem.myInventory.GetSlotCoordinateFromItemData(parentSlotDraggedFrom.GetItemData()), Instance.draggedItem.itemData) == false)
+                    if (parentSlotDraggedFrom.InventoryItem.myInventory.TryAddItemAt(parentSlotDraggedFrom.InventoryItem.myInventory.GetSlotCoordinateFromItemData(parentSlotDraggedFrom.GetItemData()), Instance.draggedItem.itemData, UnitManager.player) == false)
                     {
                         if (parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                             DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
