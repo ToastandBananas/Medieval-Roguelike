@@ -85,7 +85,7 @@ namespace ActionSystem
         IEnumerator DoAttack()
         {
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+            TurnAction turnAction = unit.unitActionHandler.turnAction;
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 // Rotate towards the target
@@ -154,7 +154,7 @@ namespace ActionSystem
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
-                    targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
+                    targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                 unit.unitActionHandler.SetIsAttacking(false);
             }
@@ -358,8 +358,8 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition);
-            cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition);
+            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
             return cost;
         }
 
@@ -546,8 +546,6 @@ namespace ActionSystem
         public override bool IsRangedAttackAction() => false;
 
         public override int GetEnergyCost() => 0;
-
-        public bool CanFightUnarmed => unit.stats.CanFightUnarmed;
 
         public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
         {

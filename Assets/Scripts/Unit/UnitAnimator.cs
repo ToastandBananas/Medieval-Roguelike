@@ -41,7 +41,7 @@ namespace UnitSystem
             if (attackBlocked)
             {
                 // Target Unit rotates towards this Unit & does block animation
-                targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
+                targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
 
                 if (itemBlockedWith is HeldShield)
                     targetUnit.unitMeshManager.GetHeldShield().RaiseShield();

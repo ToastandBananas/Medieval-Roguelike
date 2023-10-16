@@ -90,7 +90,7 @@ namespace InventorySystem
             unitEquipment.EquippedItemDatas[(int)equipSlot] = null;
 
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
-                unitEquipment.MyUnit.opportunityAttackTrigger.SetupColliderRadius();
+                unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
 
             unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
 
@@ -169,7 +169,7 @@ namespace InventorySystem
             unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
 
-            unit.opportunityAttackTrigger.SetupColliderRadius();
+            unit.opportunityAttackTrigger.UpdateColliderRadius();
 
             unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseWeapon.ItemData, looseWeapon.ItemData.CurrentStackSize);
         }

@@ -20,7 +20,7 @@ namespace InteractableObjects
             if (myUnit.UnitEquipment.slotVisualsCreated == false)
             {
                 myUnit.UnitEquipment.CreateSlotVisuals();
-                myUnit.MainInventoryManager.MainInventory.CreateSlotVisuals();
+                myUnit.UnitInventoryManager.MainInventory.CreateSlotVisuals();
 
                 if (InventoryUI.npcInventoryActive == false)
                     InventoryUI.ToggleNPCInventory();

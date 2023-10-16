@@ -5,7 +5,6 @@ using ActionSystem;
 using Utilities;
 using UnitSystem;
 using ContextMenu = GeneralUI.ContextMenu;
-using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -169,7 +168,7 @@ namespace InventorySystem
 
             // Set the size of the opportunity attack trigger
             if (IsHeldItemEquipSlot(targetEquipSlot))
-                myUnit.opportunityAttackTrigger.SetupColliderRadius();
+                myUnit.opportunityAttackTrigger.UpdateColliderRadius();
 
             AddActions(newItemData.Item as Equipment);
         }
@@ -362,7 +361,7 @@ namespace InventorySystem
                 }
             }
 
-            if (myUnit.TryAddItemToInventories(equippedItemDatas[(int)equipSlot]))
+            if (myUnit.UnitInventoryManager.TryAddItemToInventories(equippedItemDatas[(int)equipSlot]))
             {
                 if (slotVisualsCreated)
                     GetEquipmentSlot(equipSlot).ClearItem();
@@ -380,7 +379,7 @@ namespace InventorySystem
 
             // Set the size of the opportunity attack trigger
             if (IsHeldItemEquipSlot(equipSlot))
-                myUnit.opportunityAttackTrigger.SetupColliderRadius();
+                myUnit.opportunityAttackTrigger.UpdateColliderRadius();
         }
 
         public void CreateSlotVisuals()
@@ -471,7 +470,7 @@ namespace InventorySystem
                 AddActions(equippedItemDatas[i].Item as Equipment);
             }
 
-            myUnit.opportunityAttackTrigger.SetupColliderRadius();
+            myUnit.opportunityAttackTrigger.UpdateColliderRadius();
         }
 
         void AddActions(Equipment equipment)
@@ -747,7 +746,50 @@ namespace InventorySystem
                 }
             }
 
+            myUnit.opportunityAttackTrigger.UpdateColliderRadius();
             ActionSystemUI.UpdateActionVisuals();
+        }
+
+        public bool OtherWeaponSet_IsMelee()
+        {
+            if (currentWeaponSet == WeaponSet.One)
+            {
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is MeleeWeapon)
+                    return true;
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is MeleeWeapon)
+                    return true;
+            }
+            else
+            {
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is MeleeWeapon)
+                    return true;
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is MeleeWeapon)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool OtherWeaponSet_IsRanged()
+        {
+            if (currentWeaponSet == WeaponSet.One)
+            {
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is RangedWeapon)
+                    return true;
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is RangedWeapon)
+                    return true;
+            }
+            else
+            {
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is RangedWeapon)
+                    return true;
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is RangedWeapon)
+                    return true;
+            }
+            return false;
         }
 
         public bool IsDualWielding() =>
@@ -781,6 +823,9 @@ namespace InventorySystem
         {
             if (RangedWeaponEquipped() == false)
                 return false;
+
+            if (myUnit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                return true;
 
             if (QuiverEquipped())
             {

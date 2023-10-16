@@ -414,9 +414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionsParent: {fileID: 8969485865295368387}
   shoulderHeight: 0.25
-  mainInventoryManager: {fileID: 2873528818137102224}
-  backpackInventoryManager: {fileID: 2430282970964941548}
-  quiverInventoryManager: {fileID: 478177491740138796}
+  unitInventoryManager: {fileID: 2873528818137102224}
   myUnitEquipment: {fileID: 504428574042382846}
 --- !u!114 &8017101318156772015
 MonoBehaviour:
@@ -1529,7 +1527,7 @@ GameObject:
   - component: {fileID: 1399477393502689192}
   - component: {fileID: 2873528818137102224}
   m_Layer: 3
-  m_Name: Main Inventory
+  m_Name: Unit Main Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1562,6 +1560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d195bec6912fcce40b6ae090e27cc030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 4471245059765168945}
   mainInventory:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
@@ -1572,6 +1571,8 @@ MonoBehaviour:
       placeholderSprite: {fileID: 0}
       allowedItemTypes: 
     itemDatas: []
+  backpackInventoryManager: {fileID: 2430282970964941548}
+  quiverInventoryManager: {fileID: 478177491740138796}
 --- !u!1 &9200357820980764731
 GameObject:
   m_ObjectHideFlags: 0

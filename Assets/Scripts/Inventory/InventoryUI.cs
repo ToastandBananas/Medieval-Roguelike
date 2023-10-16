@@ -259,7 +259,7 @@ namespace InventorySystem
                 {
                     if (parentSlotDraggedFrom.InventoryItem.myInventory.TryAddItemAt(parentSlotDraggedFrom.InventoryItem.myInventory.GetSlotCoordinateFromItemData(parentSlotDraggedFrom.GetItemData()), Instance.draggedItem.itemData, UnitManager.player) == false)
                     {
-                        if (parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
+                        if (parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                             DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
                     }
                 }
@@ -268,7 +268,7 @@ namespace InventorySystem
                     EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
                     if (equipmentSlot.UnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.itemData) == false)
                     {
-                        if (equipmentSlot.UnitEquipment.MyUnit.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
+                        if (equipmentSlot.UnitEquipment.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                             DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
                     }
                 }
@@ -301,7 +301,7 @@ namespace InventorySystem
             }
             else // Otherwise just try to add it to one of the Unit's inventories
             {
-                if (UnitManager.player.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
+                if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.itemData) == false)
                     DropItemManager.DropItem(UnitManager.player, Instance.draggedItem.myInventory, Instance.draggedItem.itemData);
             }
 

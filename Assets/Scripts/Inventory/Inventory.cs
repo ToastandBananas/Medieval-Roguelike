@@ -377,7 +377,7 @@ namespace InventorySystem
                         continue;
 
                     LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<LooseItem>();
-                    if (myUnit.TryAddItemToInventories(looseProjectile.ItemData))
+                    if (myUnit.UnitInventoryManager.TryAddItemToInventories(looseProjectile.ItemData))
                         LooseItemPool.ReturnToPool(looseProjectile);
                     else
                     {

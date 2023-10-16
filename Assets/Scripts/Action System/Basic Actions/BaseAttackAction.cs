@@ -19,7 +19,7 @@ namespace ActionSystem
         {
             CompleteAction();
             unit.unitActionHandler.SetIsAttacking(false);
-            unit.unitActionHandler.GetAction<MoveAction>().QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+            unit.unitActionHandler.moveAction.QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
             if (unit.IsPlayer)
                 unit.unitActionHandler.TakeTurn();
         }

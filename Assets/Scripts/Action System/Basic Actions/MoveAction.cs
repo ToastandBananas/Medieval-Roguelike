@@ -151,8 +151,8 @@ namespace ActionSystem
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
                 // Start rotating towards the target position
-                unit.unitActionHandler.GetAction<TurnAction>().SetTargetPosition(directionToNextPosition);
-                unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_CurrentTargetPosition(false);
+                unit.unitActionHandler.turnAction.SetTargetPosition(directionToNextPosition);
+                unit.unitActionHandler.turnAction.RotateTowards_CurrentTargetPosition(false);
 
                 // Get the next path position, not including the Y coordinate
                 nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
@@ -227,7 +227,7 @@ namespace ActionSystem
             else // Move and rotate instantly while NPC is offscreen
             {
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
-                unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(directionToNextPosition, true);
+                unit.unitActionHandler.turnAction.RotateTowards_Direction(directionToNextPosition, true);
 
                 nextPathPosition = nextTargetPosition;
 
@@ -258,7 +258,7 @@ namespace ActionSystem
                     interactAction.QueueAction();
                 // If the target enemy Unit died
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
-                    unit.unitActionHandler.CancelAction();
+                    unit.unitActionHandler.CancelActions();
                 // If the Player is trying to attack an enemy and they are in range, stop moving and attack
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.IsInAttackRange(unit.unitActionHandler.targetEnemyUnit, true))
                 {
@@ -297,11 +297,11 @@ namespace ActionSystem
 
             BaseAction selectedAction = unit.unitActionHandler.SelectedAction;
             if (selectedAction is BaseAttackAction)
-                unit.unitActionHandler.GetAction<MoveAction>().QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+                unit.unitActionHandler.moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
-                unit.unitActionHandler.GetAction<MoveAction>().QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
-            else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.unitActionHandler.GetAction<MeleeAction>().CanFightUnarmed)
-                unit.unitActionHandler.GetAction<MoveAction>().QueueAction(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+            else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else
             {
                 unit.unitActionHandler.SetTargetEnemyUnit(null);

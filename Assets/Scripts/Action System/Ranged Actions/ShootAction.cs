@@ -66,7 +66,7 @@ namespace ActionSystem
 
         IEnumerator Shoot()
         {
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+            TurnAction turnAction = unit.unitActionHandler.turnAction;
 
             // The unit being attacked becomes aware of this unit
             BecomeVisibleEnemyOfTarget(targetEnemyUnit);
@@ -112,7 +112,7 @@ namespace ActionSystem
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
-                    targetEnemyUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
+                    targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
             }
 
             while (unit.unitActionHandler.isAttacking)
@@ -207,7 +207,7 @@ namespace ActionSystem
             }
 
             // After this Unit is done shooting, rotate back towards their TurnAction's currentDirection
-            unit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Direction(unit.unitActionHandler.GetAction<TurnAction>().currentDirection, false);
+            unit.unitActionHandler.turnAction.RotateTowards_Direction(unit.unitActionHandler.turnAction.currentDirection, false);
         }
 
         public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -238,8 +238,8 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(targetEnemyUnit.GridPosition);
-            cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetEnemyUnit.GridPosition);
+            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
             return cost;
         }
 

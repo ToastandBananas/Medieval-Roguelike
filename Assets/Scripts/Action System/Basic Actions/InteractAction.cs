@@ -30,7 +30,7 @@ namespace ActionSystem
 
         IEnumerator Interact()
         {
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+            TurnAction turnAction = unit.unitActionHandler.turnAction;
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)

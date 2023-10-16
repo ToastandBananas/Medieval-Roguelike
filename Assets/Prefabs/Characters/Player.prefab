@@ -578,7 +578,7 @@ GameObject:
   - component: {fileID: 5211287562367492748}
   - component: {fileID: 7995056210117479334}
   m_Layer: 3
-  m_Name: Main Inventory
+  m_Name: Unit Main Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -611,6 +611,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d195bec6912fcce40b6ae090e27cc030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 6440773195933579921}
   mainInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
@@ -621,6 +622,8 @@ MonoBehaviour:
       placeholderSprite: {fileID: 0}
       allowedItemTypes: 
     itemDatas: []
+  backpackInventoryManager: {fileID: 7264128157382338334}
+  quiverInventoryManager: {fileID: 1782432552993377815}
 --- !u!1 &3650739709268681387
 GameObject:
   m_ObjectHideFlags: 0
@@ -1371,9 +1374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionsParent: {fileID: 6202983556206637106}
   shoulderHeight: 0.25
-  mainInventoryManager: {fileID: 7995056210117479334}
-  backpackInventoryManager: {fileID: 7264128157382338334}
-  quiverInventoryManager: {fileID: 1782432552993377815}
+  unitInventoryManager: {fileID: 7995056210117479334}
   myUnitEquipment: {fileID: 4966063475579553678}
 --- !u!114 &942902502714962659
 MonoBehaviour:

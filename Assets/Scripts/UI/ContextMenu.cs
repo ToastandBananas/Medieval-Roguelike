@@ -229,7 +229,7 @@ namespace GeneralUI
                 else if (targetSlot is InventorySlot)
                 {
                     InventorySlot targetInventorySlot = targetSlot as InventorySlot;
-                    if (targetInventorySlot.myInventory == UnitManager.player.MainInventory)
+                    if (targetInventorySlot.myInventory == UnitManager.player.UnitInventoryManager.MainInventory)
                         return;
                 }
 

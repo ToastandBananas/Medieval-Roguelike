@@ -28,7 +28,7 @@ namespace InteractableObjects
         public override void Interact(Unit unitPickingUpItem)
         {
             // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
-            if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.TryAddItemToInventories(itemData))
+            if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
                 TryTakeStuckProjectiles(unitPickingUpItem);
                 LooseItemPool.ReturnToPool(this);
@@ -47,7 +47,7 @@ namespace InteractableObjects
                         continue;
 
                     LooseItem looseProjectile = transform.GetChild(i).GetComponent<LooseItem>();
-                    if (unitPickingUpItem.TryAddItemToInventories(looseProjectile.itemData))
+                    if (unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(looseProjectile.itemData))
                         LooseItemPool.ReturnToPool(looseProjectile);
                     else
                     {

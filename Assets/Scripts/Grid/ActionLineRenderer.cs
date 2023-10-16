@@ -247,7 +247,7 @@ namespace GridSystem
             mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
             float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-            Direction turnDirection = player.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
+            Direction turnDirection = player.unitActionHandler.turnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
             arrowHeadLineRenderer.enabled = true;
             arrowHeadLineRenderer.positionCount = 3;
 

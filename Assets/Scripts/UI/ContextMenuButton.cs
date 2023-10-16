@@ -23,7 +23,7 @@ namespace GeneralUI
 
         void MoveTo(GridPosition targetGridPosition)
         {
-            UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(targetGridPosition);
+            UnitManager.player.unitActionHandler.moveAction.QueueAction(targetGridPosition);
             ContextMenu.DisableContextMenu();
         }
 
@@ -45,9 +45,9 @@ namespace GeneralUI
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                 if (UnitManager.player.UnitEquipment.RangedWeaponEquipped() && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
-                    UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
+                    UnitManager.player.unitActionHandler.moveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
                 else // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
-                    UnitManager.player.unitActionHandler.GetAction<MoveAction>().QueueAction(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
+                    UnitManager.player.unitActionHandler.moveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
             }
 
             ContextMenu.DisableContextMenu();
@@ -99,9 +99,9 @@ namespace GeneralUI
             {
                 ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
                 if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
-                    UnitManager.player.MainInventory.TryAddItem(itemData, UnitManager.player);
+                    UnitManager.player.UnitInventoryManager.MainInventory.TryAddItem(itemData, UnitManager.player);
             }
-            else if (UnitManager.player.TryAddItemToInventories(itemData))
+            else if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
                 if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
                     InventoryUI.npcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);

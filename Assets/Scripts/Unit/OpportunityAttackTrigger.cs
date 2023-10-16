@@ -7,7 +7,7 @@ public class OpportunityAttackTrigger : MonoBehaviour
     [SerializeField] SphereCollider sphereCollider;
     [SerializeField] Unit myUnit;
 
-    public void SetupColliderRadius()
+    public void UpdateColliderRadius()
     {
         float maxAttackRange = myUnit.stats.UnarmedAttackRange;
         if (myUnit.UnitEquipment.MeleeWeaponEquipped())

@@ -83,7 +83,7 @@ namespace InventorySystem
         void BlockAttack(Unit blockingUnit, HeldItem itemBlockedWith)
         {
             // Target Unit rotates towards this Unit & does block animation with shield or weapon
-            blockingUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
+            blockingUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
             if (itemBlockedWith is HeldShield)
                 blockingUnit.unitMeshManager.GetHeldShield().RaiseShield();
             else

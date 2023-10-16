@@ -42,7 +42,7 @@ namespace ActionSystem
 
         IEnumerator Attack()
         {
-            TurnAction turnAction = unit.unitActionHandler.GetAction<TurnAction>();
+            TurnAction turnAction = unit.unitActionHandler.turnAction;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
@@ -93,7 +93,7 @@ namespace ActionSystem
 
                     // The targetUnit tries to block the attack and if they do, they face their attacker
                     if (targetUnit.unitActionHandler.TryBlockMeleeAttack(unit))
-                        targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, true);
+                        targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                     // Damage this unit
                     DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon());
@@ -477,8 +477,8 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.GetAction<TurnAction>().DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.GetAction<TurnAction>().GetActionPointsCost();
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
+            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
             return cost;
         }
 

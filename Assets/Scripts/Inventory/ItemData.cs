@@ -97,6 +97,34 @@ namespace InventorySystem
             }
         }
 
+        public virtual bool IsBetterThan(ItemData itemDataToCompare)
+        {
+            float thisItemDatasPoints = 0f;
+            float itemDataToComparesPoints = 0f;
+
+            if (item.GetType() != itemDataToCompare.item.GetType())
+            {
+                Debug.LogWarning($"{item.name} and {itemDataToCompare.item.name} are not the same type of Item and should not be compared...");
+                return false;
+            }
+
+            if (itemDataToCompare.item is Weapon)
+            {
+                thisItemDatasPoints += damage;
+                itemDataToComparesPoints += itemDataToCompare.damage;
+
+                thisItemDatasPoints += blockPower;
+                itemDataToComparesPoints += itemDataToCompare.damage;
+
+                thisItemDatasPoints += accuracyModifier;
+                itemDataToComparesPoints += itemDataToCompare.accuracyModifier;
+            }
+
+            if (itemDataToComparesPoints > thisItemDatasPoints)
+                return false;
+            return true;
+        }
+
         public bool IsEqual(ItemData otherItemData)
         {
             if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower)

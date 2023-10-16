@@ -77,7 +77,7 @@ namespace UnitSystem
                     UnitManager.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].stats.MaxAP()));
 
                     // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
-                    UnitManager.livingNPCs[i].unitActionHandler.GetAction<MoveAction>().SetMoveSpeed(amount);
+                    UnitManager.livingNPCs[i].unitActionHandler.moveAction.SetMoveSpeed(amount);
                 }
             }
             else

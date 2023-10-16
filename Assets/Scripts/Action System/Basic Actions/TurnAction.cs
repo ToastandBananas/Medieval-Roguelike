@@ -419,7 +419,7 @@ namespace ActionSystem
             Vector3 unitPos = unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.unitActionHandler.turnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && unitPos.z > attackerPos.z)
@@ -464,7 +464,7 @@ namespace ActionSystem
             Vector3 unitPos = unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.GetAction<TurnAction>().currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.unitActionHandler.turnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.West || currentDirection == Direction.East) && unitPos.x == attackerPos.x && unitPos.z > attackerPos.z)

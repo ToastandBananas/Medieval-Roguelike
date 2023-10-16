@@ -75,7 +75,7 @@ namespace ActionSystem
                 // If the player is trying to cancel their current action
                 if (GameControls.gamePlayActions.cancelAction.WasPressed)
                 {
-                    StartCoroutine(player.unitActionHandler.CancelAction());
+                    player.unitActionHandler.CancelActions();
                     ActionLineRenderer.ResetCurrentPositions();
                 }
                 // If it's time for the player to choose an action
@@ -127,7 +127,7 @@ namespace ActionSystem
 
         void HandleTurnMode()
         {
-            TurnAction turnAction = player.unitActionHandler.GetAction<TurnAction>();
+            TurnAction turnAction = player.unitActionHandler.turnAction;
             player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
             WorldMouse.ChangeCursor(CursorState.Default);
 
@@ -151,7 +151,7 @@ namespace ActionSystem
                 {
                     // Queue a Move Action towards the Interactable
                     player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
-                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
@@ -171,7 +171,7 @@ namespace ActionSystem
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedUnit.GridPosition) > LevelGrid.diaganolDistance)
                 {
                     // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
+                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
@@ -264,12 +264,12 @@ namespace ActionSystem
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
                             {
-                                player.unitActionHandler.GetAction<MoveAction>().QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                             }
                             // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                             else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
                             {
-                                player.unitActionHandler.GetAction<MoveAction>().QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                             }
                             else
                             {
@@ -307,7 +307,7 @@ namespace ActionSystem
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
                 else if (selectedAction is MoveAction)
-                    player.unitActionHandler.GetAction<MoveAction>().QueueAction(mouseGridPosition);
+                    player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
             }
         }
 
@@ -411,7 +411,7 @@ namespace ActionSystem
                 {
                     highlightedInteractable = null;
                     highlightedUnit = null;
-                    ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.GetAction<TurnAction>().targetPosition);
+                    ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.turnAction.targetPosition);
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }
             }

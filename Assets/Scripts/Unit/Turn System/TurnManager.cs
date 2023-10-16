@@ -87,7 +87,7 @@ namespace UnitSystem
 
             if (unit.health.IsDead())
             {
-                unit.unitActionHandler.CancelAction();
+                unit.unitActionHandler.CancelActions();
 
                 // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
                 if (unit.IsNPC)

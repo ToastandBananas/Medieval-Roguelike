@@ -30,7 +30,7 @@ namespace InventorySystem
             if (attackBlocked)
             {
                 // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
-                targetUnit.unitActionHandler.GetAction<TurnAction>().RotateTowards_Unit(unit, false);
+                targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
                 if (targetUnit.UnitEquipment.ShieldEquipped())
                     targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
             }
@@ -60,7 +60,7 @@ namespace InventorySystem
 
         public void UnloadProjectile()
         {
-            if (unit.TryAddItemToInventories(loadedProjectile.ItemData) == false)
+            if (unit.UnitInventoryManager.TryAddItemToInventories(loadedProjectile.ItemData) == false)
                 DropItemManager.DropItem(unit, null, loadedProjectile.ItemData);
 
             loadedProjectile.Disable();

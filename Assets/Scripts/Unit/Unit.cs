@@ -17,9 +17,7 @@ namespace UnitSystem
         [SerializeField] float shoulderHeight = 0.25f;
 
         [Header("Inventories")]
-        [SerializeField] UnitInventoryManager mainInventoryManager;
-        [SerializeField] ContainerInventoryManager backpackInventoryManager;
-        [SerializeField] ContainerInventoryManager quiverInventoryManager;
+        [SerializeField] UnitInventoryManager unitInventoryManager;
         [SerializeField] UnitEquipment myUnitEquipment;
 
         public bool isMyTurn { get; private set; }
@@ -159,49 +157,15 @@ namespace UnitSystem
 
         public BaseAction SelectedAction => unitActionHandler.selectedActionType.GetAction(this);
 
-        public UnitInventoryManager MainInventoryManager => mainInventoryManager;
+        public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
 
-        public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;
+        public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;
 
-        public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
-
-        public Inventory MainInventory => mainInventoryManager.MainInventory;
+        public ContainerInventoryManager QuiverInventoryManager => unitInventoryManager.QuiverInventoryManager;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
 
         public Transform ActionsParent => actionsParent;
-
-        public bool TryAddItemToInventories(ItemData itemData)
-        {
-            if (itemData == null || itemData.Item == null)
-                return false;
-
-            if (myUnitEquipment != null)
-            {
-                Inventory itemDatasInventory = itemData.MyInventory();
-                if (itemData.Item is Ammunition && myUnitEquipment != null && quiverInventoryManager != null && myUnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, this))
-                {
-                    if (myUnitEquipment.slotVisualsCreated)
-                        myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
-
-                    if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
-                        itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
-
-                    return true;
-                }
-            }
-
-            if (mainInventoryManager != null && MainInventory.TryAddItem(itemData, this))
-                return true;
-
-            if (myUnitEquipment != null)
-            {
-                if (backpackInventoryManager != null && myUnitEquipment.BackpackEquipped() && myUnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, this))
-                    return true;
-            }
-
-            return false;
-        }
 
         public GridPosition GridPosition => gridPosition;
     }
