@@ -32,33 +32,7 @@ namespace UnitSystem
 
         public void DoDefaultUnarmedAttack()
         {
-            Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-
-            // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-            bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
-
-            if (attackBlocked)
-            {
-                // Target Unit rotates towards this Unit & does block animation
-                targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
-
-                if (itemBlockedWith is HeldShield)
-                    targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
-                else
-                {
-                    HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
-                    heldWeapon.RaiseWeapon();
-                }
-            }
-
             unitAnim.Play("Unarmed Attack");
-        }
-
-        // Used in animation Key Frame
-        void DamageTargetUnit_UnarmedAttack()
-        {
-            unit.unitActionHandler.GetAction<MeleeAction>().DamageTargets(null);
         }
 
         // Used in animation Key Frame

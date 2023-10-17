@@ -4,7 +4,6 @@ using UnityEngine;
 using InteractableObjects;
 using GridSystem;
 using ActionSystem;
-using CameraSystem;
 using EffectsSystem;
 using UnitSystem;
 using Utilities;
@@ -91,6 +90,7 @@ namespace InventorySystem
             ReadyProjectile();
 
             targetPosition = targetUnit.WorldPosition;
+            //if (shooter.tar)
 
             Vector3 startPos = transform.position;
             Vector3 offset = GetOffset(missedTarget);
@@ -118,8 +118,6 @@ namespace InventorySystem
 
                 yield return null;
             }
-
-            CameraController.Instance.StopFollowingTarget();
         }
 
         void ReadyProjectile()
@@ -131,9 +129,6 @@ namespace InventorySystem
             moveProjectile = true;
 
             SetupTrail();
-
-            //if (shooter.IsPlayer)
-            //StartCoroutine(CameraController.Instance.FollowTarget(transform, false, 10f));
         }
 
         float CalculateProjectileArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -160,8 +155,8 @@ namespace InventorySystem
             if (missedTarget)
             {
                 float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData);
-                float minOffset = 0.35f;
-                float maxOffset = 1.35f;
+                float minOffset = 1f;
+                float maxOffset = 1f;
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
                 offsetX = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f)); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
                 offsetZ = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f));
@@ -323,49 +318,31 @@ namespace InventorySystem
             {
                 if (collider.CompareTag("Unit Body"))
                 {
-                    Unit targetUnit = collider.transform.parent.parent.GetComponent<Unit>();
+                    Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        bool attackBlocked = false;
-                        if (shooter.unitActionHandler.targetUnits.ContainsKey(targetUnit))
-                        {
-                            shooter.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedAttackWith);
-                            if (itemBlockedAttackWith != null)
-                                attackBlocked = true;
-                        }
-
-                        HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
-                        if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
-                            shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
+                        shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Unit Head"))
                 {
-                    Unit targetUnit = collider.transform.parent.parent.parent.GetComponent<Unit>();
+                    Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        bool attackBlocked = false;
-                        if (shooter.unitActionHandler.targetUnits.ContainsKey(targetUnit))
-                        {
-                            shooter.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedAttackWith);
-                            if (itemBlockedAttackWith != null)
-                                attackBlocked = true;
-                        }
-
-                        HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
-                        if (attackBlocked == false || targetUnit != shooter.unitActionHandler.targetEnemyUnit)
-                            shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
+                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
+                        shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Shield"))
                 {
-                    // Unit targetUnit = collider.transform.parent.parent.parent.parent.parent.GetComponent<Unit>();
-                    HeldRangedWeapon rangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
-                    shooter.unitActionHandler.GetAction<ShootAction>().DamageTargets(rangedWeapon);
+                    // DamageTargets will take into account whether the Unit blocked or not
+                    shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), collider.GetComponent<HeldItem>(), false);
+                    shooter.unitActionHandler.targetUnits.Clear();
 
                     Arrived(collider.transform);
                 }

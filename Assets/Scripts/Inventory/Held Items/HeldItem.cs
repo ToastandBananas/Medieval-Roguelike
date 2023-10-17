@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnitSystem;
 using Utilities;
+using GridSystem;
 
 namespace InventorySystem
 {
@@ -43,12 +44,12 @@ namespace InventorySystem
             transform.parent.localRotation = defaultRotation;
         }
 
-        public abstract void DoDefaultAttack();
+        public abstract void DoDefaultAttack(GridPosition targetGridPosition);
 
-        public IEnumerator DelayDoDefaultAttack()
+        public IEnumerator DelayDoDefaultAttack(GridPosition targetGridPosition)
         {
             yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item as Weapon) / 2f) + 0.05f);
-            DoDefaultAttack();
+            DoDefaultAttack(targetGridPosition);
         }
 
         public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
@@ -112,6 +113,12 @@ namespace InventorySystem
                     break;
                 }
             }
+        }
+
+        public virtual void BlockAttack(Unit attackingUnit)
+        { 
+            // Target Unit rotates towards this Unit & does block animation with shield or weapon
+            unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
         }
 
         public virtual void HideMeshes()

@@ -54,7 +54,7 @@ namespace ActionSystem
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit))
-                unit.StartCoroutine(Shoot());
+                unit.StartCoroutine(DoAttack());
             else
             {
                 CompleteAction();
@@ -64,9 +64,20 @@ namespace ActionSystem
             }
         }
 
-        IEnumerator Shoot()
+        protected override IEnumerator DoAttack()
         {
-            TurnAction turnAction = unit.unitActionHandler.turnAction;
+            if (targetEnemyUnit.unitActionHandler.isMoving)
+            {
+                while (targetEnemyUnit.unitActionHandler.isMoving)
+                    yield return null;
+
+                // If the target Unit moved out of range, queue a movement instead
+                if (IsInAttackRange(targetEnemyUnit) == false)
+                {
+                    MoveToTargetInstead();
+                    yield break;
+                }
+            }
 
             // The unit being attacked becomes aware of this unit
             BecomeVisibleEnemyOfTarget(targetEnemyUnit);
@@ -74,41 +85,28 @@ namespace ActionSystem
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
-                if (targetEnemyUnit.unitActionHandler.isMoving)
-                {
-                    while (targetEnemyUnit.unitActionHandler.isMoving)
-                        yield return null;
-
-                    // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(targetEnemyUnit) == false)
-                    {
-                        MoveToTargetInstead();
-                        yield break;
-                    }
-                }
-
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.isRotating)
                     yield return null;
 
                 // Rotate towards the target and do the shoot animation
-                unit.StartCoroutine(RotateTowardsTarget());
-                unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack();
+                PlayAttackAnimation();
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 bool missedTarget = MissedTarget();
                 bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit);
+                bool headShot = false;
                 if (missedTarget == false)
-                    DamageTargets(unit.unitMeshManager.GetHeldRangedWeapon());
+                    DamageTargets(unit.unitMeshManager.GetHeldRangedWeapon(), headShot);
 
                 // Rotate towards the target
-                if (turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    turnAction.RotateTowards_Unit(targetEnemyUnit, true);
+                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, true);
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
@@ -119,39 +117,17 @@ namespace ActionSystem
                 yield return null;
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
-        public override void DamageTargets(HeldItem heldWeapon)
+        public override void PlayAttackAnimation()
         {
-            HeldRangedWeapon heldRangedWeapon = heldWeapon as HeldRangedWeapon;
-            foreach (KeyValuePair<Unit, HeldItem> target in unit.unitActionHandler.targetUnits)
-            {
-                Unit targetUnit = target.Key;
-                HeldItem itemBlockedWith = target.Value;
-                if (targetUnit != null && targetUnit.health.IsDead() == false)
-                {
-                    int damageAmount = heldRangedWeapon.itemData.Damage;
-                    int armorAbsorbAmount = 0;
+            unit.StartCoroutine(RotateTowardsTarget());
+            unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack(targetGridPosition);
+        }
 
-                    // If the attack was blocked
-                    if (itemBlockedWith != null)
-                    {
-                        int blockAmount = 0;
-                        if (targetUnit.UnitEquipment.ShieldEquipped())
-                            blockAmount = targetUnit.stats.ShieldBlockPower(targetUnit.unitMeshManager.GetHeldShield());
-
-                        targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit);
-
-                        if (targetUnit.UnitEquipment.ShieldEquipped())
-                            targetUnit.unitMeshManager.GetHeldShield().LowerShield();
-                    }
-                    else
-                        targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit);
-                }
-            }
-
-            unit.unitActionHandler.targetUnits.Clear();
+        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
+        {
+            base.DamageTarget(targetUnit, heldWeaponAttackingWith, heldItemBlockedWith, headShot);
 
             if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
             {
@@ -182,6 +158,7 @@ namespace ActionSystem
 
             unit.unitActionHandler.SetIsAttacking(false);
             unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         IEnumerator WaitToCompleteAction()

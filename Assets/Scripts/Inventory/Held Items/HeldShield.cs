@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitSystem;
+using GridSystem;
 
 namespace InventorySystem
 {
@@ -9,9 +10,15 @@ namespace InventorySystem
 
         public bool shieldRaised { get; private set; }
 
-        public override void DoDefaultAttack()
+        public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             Debug.LogWarning("Default attack for Shields is not created yet.");
+        }
+
+        public override void BlockAttack(Unit attackingUnit)
+        {
+            base.BlockAttack(attackingUnit);
+            RaiseShield();
         }
 
         public void RaiseShield()

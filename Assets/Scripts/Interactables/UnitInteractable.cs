@@ -30,6 +30,11 @@ namespace InteractableObjects
             }
         }
 
+        public override void UpdateGridPosition()
+        {
+            gridPosition = LevelGrid.GetGridPosition(transform.position);
+        }
+
         public override GridPosition GridPosition()
         {
             UpdateGridPosition();

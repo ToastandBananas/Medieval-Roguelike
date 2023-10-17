@@ -127,6 +127,9 @@ namespace InventorySystem
 
         public bool IsEqual(ItemData otherItemData)
         {
+            if (otherItemData == null)
+                return false;
+
             if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower)
                 return true;
             return false;

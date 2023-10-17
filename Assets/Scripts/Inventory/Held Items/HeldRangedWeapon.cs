@@ -16,7 +16,7 @@ namespace InventorySystem
         public Projectile loadedProjectile { get; private set; }
         public bool isLoaded { get; private set; }
 
-        public override void DoDefaultAttack()
+        public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
 

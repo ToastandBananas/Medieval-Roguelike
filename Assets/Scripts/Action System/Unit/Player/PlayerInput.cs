@@ -362,12 +362,11 @@ namespace ActionSystem
                             if (unitHit.transform.TryGetComponent(out Unit unit))
                                 highlightedUnit = unit;
                         }
-
                         if (highlightedUnit == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
-                        else if (highlightedUnit.health.IsDead())
+                        else if (highlightedUnit.health.IsDead() && player.vision.IsVisible(highlightedUnit))
                             WorldMouse.ChangeCursor(CursorState.LootBag);
-                        else if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
+                        else if (player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
                             SetAttackCursor();
                         else
                             WorldMouse.ChangeCursor(CursorState.Default);
@@ -411,6 +410,7 @@ namespace ActionSystem
                 {
                     highlightedInteractable = null;
                     highlightedUnit = null;
+                    player.unitActionHandler.turnAction.SetTargetPosition(player.unitActionHandler.turnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition())));
                     ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.turnAction.targetPosition);
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }

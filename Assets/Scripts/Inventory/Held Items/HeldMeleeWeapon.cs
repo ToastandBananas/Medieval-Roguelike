@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using GridSystem;
-using ActionSystem;
 using UnitSystem;
 
 namespace InventorySystem
@@ -10,22 +9,8 @@ namespace InventorySystem
     {
         public bool weaponRaised { get; private set; }
 
-        public override void DoDefaultAttack()
+        public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
-            if (anim == null)
-                return;
-
-            Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-            HeldItem itemBlockedWith;
-
-            // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-            bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
-
-            // If the target is successfully blocking the attack
-            if (attackBlocked)
-                BlockAttack(targetUnit, itemBlockedWith);
-
             // Determine attack animation based on melee weapon type
             if (this == unit.unitMeshManager.rightHeldItem)
             {
@@ -47,32 +32,11 @@ namespace InventorySystem
             }
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
-            StartCoroutine(RotateWeaponTowardsTarget(targetUnit.GridPosition));
+            StartCoroutine(RotateWeaponTowardsTarget(targetGridPosition));
         }
 
-        public void DoSwipeAttack()
+        public void DoSwipeAttack(GridPosition targetGridPosition)
         {
-            if (anim == null)
-                return;
-
-            GridPosition targetGridPosition = unit.unitActionHandler.GetAction<SwipeAction>().targetGridPosition;
-            foreach (GridPosition gridPosition in unit.unitActionHandler.GetAction<SwipeAction>().GetActionAreaGridPositions(targetGridPosition))
-            {
-                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
-                    continue;
-
-                Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
-                HeldItem itemBlockedWith;
-
-                // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
-
-                // If the target is successfully blocking the attack
-                if (attackBlocked)
-                    BlockAttack(targetUnit, itemBlockedWith);
-            }
-
             // Play the Swipe animation
             anim.Play("SwipeAttack_2H");
 
@@ -80,17 +44,10 @@ namespace InventorySystem
             StartCoroutine(RotateWeaponTowardsTarget(targetGridPosition));
         }
 
-        void BlockAttack(Unit blockingUnit, HeldItem itemBlockedWith)
+        public override void BlockAttack(Unit attackingUnit)
         {
-            // Target Unit rotates towards this Unit & does block animation with shield or weapon
-            blockingUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
-            if (itemBlockedWith is HeldShield)
-                blockingUnit.unitMeshManager.GetHeldShield().RaiseShield();
-            else
-            {
-                HeldMeleeWeapon heldWeapon = itemBlockedWith as HeldMeleeWeapon;
-                heldWeapon.RaiseWeapon();
-            }
+            base.BlockAttack(attackingUnit);
+            RaiseWeapon();
         }
 
         public void RaiseWeapon()
@@ -137,12 +94,6 @@ namespace InventorySystem
             }
         }
 
-        // Used in animation Key Frame
-        void DamageTargetUnits()
-        {
-            unit.unitActionHandler.lastQueuedAction.BaseAttackAction.DamageTargets(this);
-        }
-
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
         {
             if (targetGridPosition.y == unit.GridPosition.y)
@@ -161,20 +112,6 @@ namespace InventorySystem
             }
 
             transform.parent.localRotation = targetRotation;
-        }
-
-        public int DamageAmount()
-        {
-            int damageAmount = itemData.Damage;
-            if (unit.UnitEquipment.IsDualWielding())
-            {
-                if (this == unit.unitMeshManager.GetRightHeldMeleeWeapon())
-                    damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);
-                else
-                    damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldSecondaryEfficiency);
-            }
-
-            return damageAmount;
         }
 
         public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)

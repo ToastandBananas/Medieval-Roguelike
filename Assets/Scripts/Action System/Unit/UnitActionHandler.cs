@@ -139,9 +139,10 @@ namespace ActionSystem
         {
             if (queuedActions.Count == 0)
                 return;
-
+            
             queuedActions.RemoveAt(0);
-            queuedAPs.RemoveAt(0);
+            if (queuedAPs.Count > 0)
+                queuedAPs.RemoveAt(0);
 
             isPerformingAction = false;
 
@@ -260,10 +261,10 @@ namespace ActionSystem
         {
             if (defaultCombatActionsOnly)
             {
-                if (GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit))
+                if (unit.UnitEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit))
                     return true;
 
-                if (GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
+                if ((unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
                     return true;
             }
             else

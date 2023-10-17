@@ -50,7 +50,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 0
   m_CollisionDetection: 1
 --- !u!136 &2135768502737961380
 CapsuleCollider:
@@ -81,6 +81,7 @@ MonoBehaviour:
   meshFilter: {fileID: 5543258945124015132}
   meshRenderer: {fileID: 7988317198904808471}
   projectileCollider: {fileID: 2135768502737961380}
+  rigidBody: {fileID: 2964047115981917315}
   obstaclesMask:
     serializedVersion: 2
     m_Bits: 64
