@@ -171,8 +171,19 @@ namespace ActionSystem
         {
             if (targetEnemyUnit.unitActionHandler.isMoving)
             {
-                while (targetEnemyUnit.unitActionHandler.isMoving)
+                while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
                     yield return null;
+
+                if (targetEnemyUnit == null)
+                {
+                    Debug.Log("Here?");
+                    if (unit.unitActionHandler.targetEnemyUnit != null)
+                        targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+                    else if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+                        targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+                    //CompleteAction();
+                    //yield break;
+                }
 
                 // If the target Unit moved out of range, queue a movement instead
                 if (IsInAttackRange(targetEnemyUnit) == false)
@@ -189,6 +200,7 @@ namespace ActionSystem
                 yield return null;
 
             CompleteAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call it early
         }
 
         public override void PlayAttackAnimation() { }
@@ -254,7 +266,6 @@ namespace ActionSystem
             }
 
             unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)

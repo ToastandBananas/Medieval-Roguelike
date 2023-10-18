@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using InteractableObjects;
 using ActionSystem;
+using GridSystem;
 
 namespace UnitSystem
 {
@@ -108,7 +109,7 @@ namespace UnitSystem
             return true;
         }
 
-        bool IsInLineOfSight_Raycast(Unit unitToCheck)
+        public bool IsInLineOfSight_Raycast(Unit unitToCheck)
         {
             Vector3 dirToTarget = (unitToCheck.WorldPosition + yOffset - transform.position).normalized;
             float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition + yOffset);
@@ -134,12 +135,16 @@ namespace UnitSystem
         {
             FindVisibleUnits();
             FindVisibleLooseItems();
+
+            ActionLineRenderer.ResetCurrentPositions();
         }
 
         public void UpdateVision()
         {
             UpdateVisibleUnits();
             UpdateVisibleLooseItems();
+
+            ActionLineRenderer.ResetCurrentPositions();
         }
 
         #region Units

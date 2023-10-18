@@ -28,6 +28,13 @@ namespace ActionSystem
                 unit.unitActionHandler.TakeTurn();
         }
 
+        protected override void StartAction()
+        {
+            base.StartAction();
+            if (unit.IsPlayer && targetEnemyUnit != null)
+                targetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(targetEnemyUnit.GridPosition);
+        }
+
         public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
             if (targetUnit != null && targetUnit.health.IsDead() == false)
@@ -156,11 +163,10 @@ namespace ActionSystem
                         continue;
 
                     Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
-                    HeldItem itemBlockedWith;
 
                     // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
                     bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out itemBlockedWith);
+                    unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
                     // If the target is successfully blocking the attack
                     if (attackBlocked)
@@ -208,6 +214,7 @@ namespace ActionSystem
                 yield return null;
 
             CompleteAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call it early
         }
 
         public abstract void PlayAttackAnimation();

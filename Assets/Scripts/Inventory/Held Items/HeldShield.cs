@@ -8,8 +8,6 @@ namespace InventorySystem
     {
         [SerializeField] MeshCollider meshCollider;
 
-        public bool shieldRaised { get; private set; }
-
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             Debug.LogWarning("Default attack for Shields is not created yet.");
@@ -21,12 +19,14 @@ namespace InventorySystem
             RaiseShield();
         }
 
+        public override void StopBlocking() => LowerShield();
+
         public void RaiseShield()
         {
-            if (shieldRaised)
+            if (isBlocking)
                 return;
 
-            shieldRaised = true;
+            isBlocking = true;
             if (unit.unitMeshManager.leftHeldItem == this)
                 anim.Play("RaiseShield_L");
             else if (unit.unitMeshManager.rightHeldItem == this)
@@ -35,10 +35,10 @@ namespace InventorySystem
 
         public void LowerShield()
         {
-            if (shieldRaised == false)
+            if (isBlocking == false)
                 return;
 
-            shieldRaised = false;
+            isBlocking = false;
             if (unit.unitMeshManager.leftHeldItem == this)
                 anim.Play("LowerShield_L");
             else if (unit.unitMeshManager.rightHeldItem == this)

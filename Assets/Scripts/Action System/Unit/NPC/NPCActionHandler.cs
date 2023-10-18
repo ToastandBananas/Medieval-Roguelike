@@ -56,12 +56,12 @@ namespace ActionSystem
 
         void Start()
         {
-            if (defaultPosition == Vector3.zero) defaultPosition = transform.position;
+            if (defaultPosition == Vector3.zero) defaultPosition = unit.WorldPosition;
         }
 
         public override void TakeTurn()
         {
-            if (unit.isMyTurn && unit.health.IsDead() == false)
+            if (unit.IsMyTurn && unit.health.IsDead() == false)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 
@@ -194,6 +194,9 @@ namespace ActionSystem
             while (isAttacking)
                 yield return null;
 
+            if (unit.IsMyTurn == false)
+                yield break;
+
             if (queuedActions.Count > 0 && isPerformingAction == false)
             {
                 int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
@@ -238,11 +241,11 @@ namespace ActionSystem
             // If the character has no AP remaining, end their turn
             if (unit.stats.currentAP <= 0)
             {
-                if (unit.isMyTurn)
+                if (unit.IsMyTurn)
                     TurnManager.Instance.FinishTurn(unit);
             }
 
-            if (unit.isMyTurn)
+            if (unit.IsMyTurn)
                 TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
@@ -314,14 +317,29 @@ namespace ActionSystem
                 }
             }
 
-            FindBestTargetEnemy();
-
-            if (shouldStopChasing || TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startChaseGridPosition, unit.GridPosition) >= maxChaseDistance)
+            if (shouldStopChasing)
             {
-                shouldStopChasing = true;
-                moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
+                if (unit.GridPosition == LevelGrid.GetGridPosition(defaultPosition))
+                {
+                    SetTargetEnemyUnit(null);
+                    unit.stateController.SetToDefaultState();
+                    DetermineAction();
+                }
+                else
+                    moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
                 return;
             }
+            else
+            {
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startChaseGridPosition, unit.GridPosition) >= maxChaseDistance)
+                {
+                    shouldStopChasing = true;
+                    moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
+                    return;
+                }
+            }
+
+            FindBestTargetEnemy();
 
             // If there's no target enemy Unit, try to find one, else switch States
             if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
@@ -336,6 +354,12 @@ namespace ActionSystem
                 ChooseCombatAction();
             else
                 PursueTargetEnemy();
+        }
+
+        public void SetStartChaseGridPosition(GridPosition newGridPosition)
+        {
+            startChaseGridPosition = newGridPosition;
+            shouldStopChasing = false;
         }
 
         public void ChooseCombatAction() => StartCoroutine(ChooseCombatAction_Coroutine());
@@ -530,6 +554,8 @@ namespace ActionSystem
 
         public override void SetTargetEnemyUnit(Unit target)
         {
+            if (unit.IsNPC)
+                Debug.Log(target);
             if (target != null && target != targetEnemyUnit)
             {
                 startChaseGridPosition = unit.GridPosition;

@@ -12,9 +12,10 @@ namespace InventorySystem
         [SerializeField] protected MeshRenderer[] meshRenderers;
         [SerializeField] protected MeshFilter[] meshFilters;
 
+        public Animator anim { get; private set; }
         public ItemData itemData { get; private set; }
 
-        public Animator anim { get; private set; }
+        public bool isBlocking { get; protected set; }
 
         protected Unit unit;
 
@@ -120,6 +121,8 @@ namespace InventorySystem
             // Target Unit rotates towards this Unit & does block animation with shield or weapon
             unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
         }
+
+        public virtual void StopBlocking() { }
 
         public virtual void HideMeshes()
         {

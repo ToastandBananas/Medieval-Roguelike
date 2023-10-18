@@ -253,7 +253,6 @@ namespace GridSystem
 
         public void DrawTurnArrow(Vector3 targetPosition)
         {
-            Debug.Log(targetPosition);
             if (targetPosition == Vector3.zero)
             {
                 HideLineRenderers();

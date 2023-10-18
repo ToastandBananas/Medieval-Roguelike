@@ -7,8 +7,6 @@ namespace InventorySystem
 {
     public class HeldMeleeWeapon : HeldItem
     {
-        public bool weaponRaised { get; private set; }
-
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Determine attack animation based on melee weapon type
@@ -50,12 +48,14 @@ namespace InventorySystem
             RaiseWeapon();
         }
 
+        public override void StopBlocking() => LowerWeapon();
+
         public void RaiseWeapon()
         {
-            if (weaponRaised)
+            if (isBlocking)
                 return;
 
-            weaponRaised = true;
+            isBlocking = true;
             if (unit.unitMeshManager.rightHeldItem == this)
             {
                 if (itemData.Item.Weapon.IsTwoHanded)
@@ -64,20 +64,15 @@ namespace InventorySystem
                     anim.Play("RaiseWeapon_1H_R");
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-            {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    Debug.LogWarning("Animation not created yet.");
-                else
-                    anim.Play("RaiseWeapon_1H_L");
-            }
+                anim.Play("RaiseWeapon_1H_L");
         }
 
         public void LowerWeapon()
         {
-            if (weaponRaised == false)
+            if (isBlocking == false)
                 return;
 
-            weaponRaised = false;
+            isBlocking = false;
             if (unit.unitMeshManager.rightHeldItem == this)
             {
                 if (itemData.Item.Weapon.IsTwoHanded)
@@ -86,12 +81,7 @@ namespace InventorySystem
                     anim.Play("LowerWeapon_1H_R");
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-            {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    Debug.LogWarning("Animation not created yet.");
-                else
-                    anim.Play("LowerWeapon_1H_L");
-            }
+                anim.Play("LowerWeapon_1H_L");
         }
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

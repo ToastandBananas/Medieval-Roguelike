@@ -7,7 +7,6 @@ using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using Utilities;
-using Pathfinding.Util;
 
 namespace ActionSystem
 {
@@ -129,10 +128,10 @@ namespace ActionSystem
 
             // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
             unit.BlockAtPosition(nextTargetPosition);
-
+            
             // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
             LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition);
-            LevelGrid.Instance.AddUnitAtGridPosition(LevelGrid.GetGridPosition(nextTargetPosition), unit);
+            LevelGrid.Instance.AddUnitAtGridPosition(nextTargetGridPosition, unit);
 
             // Set the Unit's new grid position before they move so that other Unit's use that grid position when checking attack ranges and such
             unit.SetGridPosition(nextTargetGridPosition);
@@ -539,8 +538,6 @@ namespace ActionSystem
                 unit.UnblockCurrentPosition();
             else if (unit.health.IsDead() == false)
                 unit.BlockCurrentPosition();
-
-            // unit.UpdateGridPosition();
 
             unit.unitActionHandler.SetIsMoving(false);
             unit.unitActionHandler.FinishAction();

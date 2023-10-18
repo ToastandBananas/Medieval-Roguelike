@@ -33,7 +33,7 @@ namespace ActionSystem
             base.CompleteAction();
             isReloading = false;
             if (unit.IsPlayer)
-                unit.unitActionHandler.SetSelectedActionType(unit.unitActionHandler.FindActionTypeByName("ShootAction"));
+                unit.unitActionHandler.SetDefaultSelectedAction();
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }

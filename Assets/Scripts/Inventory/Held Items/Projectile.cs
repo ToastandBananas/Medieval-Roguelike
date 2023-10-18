@@ -85,15 +85,19 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool missedTarget)
+        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool hitTarget)
         {
             ReadyProjectile();
 
-            targetPosition = targetUnit.WorldPosition;
-            //if (shooter.tar)
+            if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.isBlocking)
+                targetPosition = targetUnit.unitMeshManager.leftHeldItem.transform.position;
+            else if (targetUnit.unitMeshManager.rightHeldItem != null && targetUnit.unitMeshManager.rightHeldItem.isBlocking)
+                targetPosition = targetUnit.unitMeshManager.rightHeldItem.transform.position;
+            else
+                targetPosition = targetUnit.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(missedTarget);
+            Vector3 offset = GetOffset(hitTarget);
 
             float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
@@ -147,16 +151,16 @@ namespace InventorySystem
             return arcHeight;
         }
 
-        Vector3 GetOffset(bool missedTarget)
+        Vector3 GetOffset(bool hitTarget)
         {
             float offsetX, offsetZ;
 
             // If the shooter is missing
-            if (missedTarget)
+            if (hitTarget == false)
             {
                 float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData);
-                float minOffset = 1f;
-                float maxOffset = 1f;
+                float minOffset = 0.35f;
+                float maxOffset = 1.35f;
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
                 offsetX = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f)); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
                 offsetZ = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f));

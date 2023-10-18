@@ -36,7 +36,7 @@ namespace ActionSystem
         public void SetToDefaultState()
         {
             if (npcActionHandler.shouldFollowLeader && npcActionHandler.Leader() != null)
-                currentState = State.Follow;
+                SetCurrentState(State.Follow);
             else
             {
                 if (DefaultStateInvalid())

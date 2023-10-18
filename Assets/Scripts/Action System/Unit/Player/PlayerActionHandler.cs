@@ -29,7 +29,7 @@ namespace ActionSystem
 
         public override void TakeTurn()
         {
-            if (unit.isMyTurn && unit.health.IsDead() == false)
+            if (unit.IsMyTurn && unit.health.IsDead() == false)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 

@@ -383,7 +383,6 @@ namespace ActionSystem
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
 
             unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetEnergyCost() => 25;

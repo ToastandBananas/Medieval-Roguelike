@@ -1,3 +1,4 @@
+using GridSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +44,8 @@ namespace UnitSystem
 
         public void FinishTurn(Unit unit)
         {
-            unit.SetIsMyTurn(false);
+            if (unit != activeUnit)
+                return;
 
             if (unit.health.IsDead() == false)
                 unit.BlockCurrentPosition();
@@ -74,6 +76,8 @@ namespace UnitSystem
                     unit.stats.GetAPFromPool();
                 }
             }
+            else
+                GridSystemVisual.UpdateAttackGridVisual();
 
             StartNextUnitsTurn(unit);
         }
@@ -107,7 +111,9 @@ namespace UnitSystem
             }
             else
             {
-                unit.SetIsMyTurn(true);
+                if (unit.IsPlayer)
+                    GridSystemVisual.UpdateAttackGridVisual();
+
                 unit.unitActionHandler.TakeTurn();
             }
         }
@@ -141,7 +147,6 @@ namespace UnitSystem
             else
             {
                 // Set new Active Unit
-                activeUnit.SetIsMyTurn(false);
                 activeUnit = npcs_HaventFinishedTurn[npcTurnIndex];
                 StartUnitsTurn(activeUnit);
             }
@@ -160,7 +165,6 @@ namespace UnitSystem
 
                 for (int i = 0; i < npcs_HaventFinishedTurn.Count; i++)
                 {
-                    npcs_HaventFinishedTurn[i].SetHasStartedTurn(false);
                     npcs_HaventFinishedTurn[i].stats.GetAPFromPool();
                 }
 
@@ -168,7 +172,6 @@ namespace UnitSystem
             }
             else
             {
-                activeUnit.SetIsMyTurn(false);
                 activeUnit = UnitManager.player;
                 StartUnitsTurn(activeUnit);
             }

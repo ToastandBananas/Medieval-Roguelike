@@ -1,6 +1,4 @@
 using InventorySystem;
-using UnitSystem;
-using UnityEngine;
 
 namespace ActionSystem
 {
@@ -24,14 +22,6 @@ namespace ActionSystem
         public override int GetActionPointsCost()
         {
             return GetItemsActionPointCost(targetItemData, itemCount);
-        }
-
-        public override void CompleteAction()
-        {
-            base.CompleteAction();
-
-            unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetEnergyCost() => 0;

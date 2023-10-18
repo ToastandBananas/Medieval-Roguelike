@@ -69,16 +69,19 @@ namespace ActionSystem
             RotateTowards_CurrentTargetPosition(rotateInstantly);
         }
 
-        public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
+        public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 0f)
         {
             unit.StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
         }
 
-        public IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 10f)
+        public IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 0f)
         {
             Vector3 lookPos = (new Vector3(targetPos.x, unit.transform.position.y, targetPos.z) - unit.transform.position).normalized;
             if (lookPos == Vector3.zero)
                 yield break;
+
+            if (rotateSpeed <= 0f)
+                rotateSpeed = defaultRotateSpeed;
 
             targetPosition = targetPos;
             Vector3 rotateTargetPosition = targetPos;
@@ -102,9 +105,9 @@ namespace ActionSystem
                 }
             }
 
-            unit.unitActionHandler.SetIsRotating(false);
             unit.transform.rotation = targetRotation;
             SetCurrentDirection();
+            unit.unitActionHandler.SetIsRotating(false);
 
             unit.vision.FindVisibleUnitsAndObjects();
         }
@@ -112,6 +115,23 @@ namespace ActionSystem
         public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
         {
             RotateTowardsPosition(targetUnit.GridPosition.WorldPosition(), rotateInstantly, defaultRotateSpeed * 2f);
+        }
+
+        public void RotateTowardsAttackPosition(Vector3 targetPosition) => unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
+
+        IEnumerator RotateTowardsAttackPosition_Coroutine(Vector3 targetPosition)
+        {
+            while (unit.unitActionHandler.isAttacking)
+            {
+                Vector3 lookPos = (new Vector3(targetPosition.x, unit.transform.position.y, targetPosition.z) - unit.transform.position).normalized;
+                Quaternion rotation = Quaternion.LookRotation(lookPos);
+                unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, rotation, defaultRotateSpeed * Time.deltaTime);
+                yield return null;
+            }
+
+            // After this Unit is done shooting, rotate back towards their TurnAction's currentDirection
+            unit.unitActionHandler.turnAction.SetCurrentDirection();
+            unit.unitActionHandler.turnAction.RotateTowards_Direction(unit.unitActionHandler.turnAction.currentDirection, false);
         }
 
         public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
@@ -144,7 +164,7 @@ namespace ActionSystem
         {
             Vector3 forward = unit.transform.forward;
             forward.y = 0;
-            float headingAngle = Quaternion.LookRotation(forward).eulerAngles.y;
+            float headingAngle = Quaternion.LookRotation(unit.transform.forward).eulerAngles.y;
 
             if ((headingAngle >= 337.5f && headingAngle <= 360f) || (headingAngle >= 0f && headingAngle <= 22.5f))
                 currentDirection = Direction.North;

@@ -43,7 +43,7 @@ namespace ActionSystem
         void Start()
         {
             player = GetComponent<Unit>();
-            player.SetIsMyTurn(true);
+            GridSystemVisual.UpdateAttackGridVisual();
         }
 
         void Update()
@@ -79,7 +79,7 @@ namespace ActionSystem
                     ActionLineRenderer.ResetCurrentPositions();
                 }
                 // If it's time for the player to choose an action
-                else if (player.isMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
+                else if (player.IsMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
                 {
                     // If the player wants to skip their turn
                     if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
@@ -307,7 +307,13 @@ namespace ActionSystem
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
                 else if (selectedAction is MoveAction)
-                    player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
+                {
+                    // If there's a non-visible Unit at this position and they're one tile away and could directly be within the line of sight (basically just meaning there's no obstacles in the way), just turn to face that tile
+                    if (unitAtGridPosition != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(player.GridPosition, unitAtGridPosition.GridPosition) <= LevelGrid.diaganolDistance && player.vision.IsInLineOfSight_Raycast(unitAtGridPosition))
+                        player.unitActionHandler.turnAction.QueueAction(mouseGridPosition);
+                    else
+                        player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
+                }
             }
         }
 

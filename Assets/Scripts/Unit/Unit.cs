@@ -20,9 +20,6 @@ namespace UnitSystem
         [SerializeField] UnitInventoryManager unitInventoryManager;
         [SerializeField] UnitEquipment myUnitEquipment;
 
-        public bool isMyTurn { get; private set; }
-        public bool hasStartedTurn { get; private set; }
-
         public SingleNodeBlocker singleNodeBlocker { get; private set; }
 
         public Alliance alliance { get; private set; }
@@ -140,14 +137,7 @@ namespace UnitSystem
 
         public bool IsPlayer => gameObject.CompareTag("Player");
 
-        public void SetIsMyTurn(bool isMyTurn)
-        {
-            this.isMyTurn = isMyTurn;
-            if (IsPlayer)
-                GridSystemVisual.UpdateAttackGridVisual();
-        }
-
-        public void SetHasStartedTurn(bool hasStartedTurn) => this.hasStartedTurn = hasStartedTurn;
+        public bool IsMyTurn => TurnManager.Instance.activeUnit == this;
 
         public Vector3 WorldPosition => LevelGrid.GetWorldPosition(gridPosition);
 

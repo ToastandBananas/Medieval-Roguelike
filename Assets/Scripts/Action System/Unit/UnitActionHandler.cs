@@ -113,7 +113,7 @@ namespace ActionSystem
 
         IEnumerator TryTakeTurn()
         {
-            if (unit.isMyTurn)
+            if (unit.IsMyTurn)
             {
                 while (isAttacking) // Wait in case the Unit is performing an opportunity attack
                     yield return null;
@@ -506,6 +506,8 @@ namespace ActionSystem
         public void SetIsRotating(bool isRotating) => this.isRotating = isRotating;
 
         public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
+
+        public NPCActionHandler NPCActionHandler => this as NPCActionHandler;
 
         public LayerMask AttackObstacleMask => attackObstacleMask;
 

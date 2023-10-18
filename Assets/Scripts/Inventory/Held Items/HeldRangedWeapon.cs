@@ -18,28 +18,14 @@ namespace InventorySystem
 
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
-            Unit targetUnit = unit.unitActionHandler.targetEnemyUnit;
-
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
-            loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetUnit); });
-
-            // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-            bool attackBlocked = targetUnit.unitActionHandler.TryBlockRangedAttack(unit);
-            unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
-
-            if (attackBlocked)
-            {
-                // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
-                targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
-                if (targetUnit.UnitEquipment.ShieldEquipped())
-                    targetUnit.unitMeshManager.GetHeldShield().RaiseShield();
-            }
+            loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(unit.unitActionHandler.targetEnemyUnit); });
 
             isLoaded = false;
             bowLineRenderer.StringStartFollowingTargetPositions();
             anim.Play("Shoot");
 
-            StartCoroutine(RotateRangedWeapon(targetUnit.GridPosition));
+            StartCoroutine(RotateRangedWeapon(unit.unitActionHandler.targetEnemyUnit.GridPosition));
         }
 
         public void LoadProjectile()
@@ -76,9 +62,10 @@ namespace InventorySystem
                 targetUnit.unitAnimator.StopBlocking();
         }
 
-        public void ShootProjectile()
+        // Used in keyframe animation
+        void ShootProjectile()
         {
-            StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().MissedTarget()));
+            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().TryHitTarget()));
             loadedProjectile = null;
         }
 
