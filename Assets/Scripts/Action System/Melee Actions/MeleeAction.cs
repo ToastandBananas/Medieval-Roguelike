@@ -18,11 +18,7 @@ namespace ActionSystem
         public override void SetTargetGridPosition(GridPosition gridPosition)
         {
             base.SetTargetGridPosition(gridPosition);
-
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition))
-                targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
-            else
-                targetEnemyUnit = null;
+            SetTargetEnemyUnit();
         }
 
         public override void TakeAction()
@@ -30,12 +26,7 @@ namespace ActionSystem
             if (unit.unitActionHandler.isAttacking) return;
 
             if (targetEnemyUnit == null)
-            {
-                if (unit.unitActionHandler.targetEnemyUnit != null)
-                    targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
-                else if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
-                    targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-            }
+                SetTargetEnemyUnit();
 
             if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
             {
@@ -169,21 +160,10 @@ namespace ActionSystem
 
         protected override IEnumerator DoAttack()
         {
-            if (targetEnemyUnit.unitActionHandler.isMoving)
+            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
             {
-                while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
+                while (targetEnemyUnit.unitActionHandler.isMoving)
                     yield return null;
-
-                if (targetEnemyUnit == null)
-                {
-                    Debug.Log("Here?");
-                    if (unit.unitActionHandler.targetEnemyUnit != null)
-                        targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
-                    else if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
-                        targetEnemyUnit = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
-                    //CompleteAction();
-                    //yield break;
-                }
 
                 // If the target Unit moved out of range, queue a movement instead
                 if (IsInAttackRange(targetEnemyUnit) == false)
@@ -200,21 +180,10 @@ namespace ActionSystem
                 yield return null;
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call it early
+            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
         }
 
         public override void PlayAttackAnimation() { }
-
-        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
-        {
-            base.DamageTarget(targetUnit, heldWeaponAttackingWith, heldItemBlockedWith, headShot);
-
-            if (unit.IsPlayer && PlayerInput.Instance.autoAttack == false)
-            {
-                targetEnemyUnit = null;
-                unit.unitActionHandler.SetTargetEnemyUnit(null);
-            }
-        }
 
         public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
         {
@@ -347,7 +316,7 @@ namespace ActionSystem
             int cost = 300;
 
             // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(unit.unitActionHandler.targetEnemyUnit.GridPosition);
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
             cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
             return cost;
         }

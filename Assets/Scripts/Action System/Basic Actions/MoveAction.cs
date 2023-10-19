@@ -118,7 +118,7 @@ namespace ActionSystem
 
                 meleeAction.DoOpportunityAttack(unit);
 
-                while (unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.isAttacking)
+                while (unit.unitsWhoCouldOpportunityAttackMe.Count < i && unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.isAttacking)
                     yield return null;
             }
 

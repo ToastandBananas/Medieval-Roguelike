@@ -35,6 +35,18 @@ namespace ActionSystem
                 targetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(targetEnemyUnit.GridPosition);
         }
 
+        protected void SetTargetEnemyUnit()
+        {
+            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+            {
+                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+                unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                targetEnemyUnit = unitAtGridPosition;
+            }
+            else if (unit.unitActionHandler.targetEnemyUnit != null)
+                targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+        }
+
         public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
             if (targetUnit != null && targetUnit.health.IsDead() == false)
@@ -214,7 +226,7 @@ namespace ActionSystem
                 yield return null;
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call it early
+            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
         }
 
         public abstract void PlayAttackAnimation();

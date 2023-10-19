@@ -81,14 +81,44 @@ namespace UnitSystem
 
         public void Die(Transform attackerTransform)
         {
-            bool diedForward = Random.value <= 0.5f;
+            /*bool diedForward = Random.value <= 0.5f;
             if (diedForward)
                 unitAnim.Play("Die Forward");
             else
-                unitAnim.Play("Die Backward");
+                unitAnim.Play("Die Backward");*/
 
+            //StartCoroutine(Die_RotateBody(diedForward));
+
+            // Hide the Unit's base
+            unit.unitMeshManager.DisableBaseMeshRenderer();
+
+            float forceMagnitude = Random.Range(52000, 65000);
+            float towardsAttackerChance = 0.3f;
+            Vector3 randomDirection = Random.onUnitSphere;
+            randomDirection.y = 0; // Ensure the force is applied horizontally
+
+            // Calculate a direction away from the attacker
+            Vector3 directionAwayFromAttacker = (transform.position - attackerTransform.position).normalized;
+
+            // Interpolate between randomDirection and directionAwayFromAttacker
+            Vector3 forceDirection = Vector3.Lerp(randomDirection, directionAwayFromAttacker, towardsAttackerChance);
+
+            // Check if the character died forward
+            bool diedForward = Vector3.Dot(forceDirection, randomDirection) > 0.0f;
+
+            // Apply head rotation
             StartCoroutine(Die_RotateHead(diedForward));
-            StartCoroutine(Die_RotateBody(diedForward));
+
+            // Calculate the point where you want to apply the force (e.g., the top of the character)
+            float desiredHeight = unit.unitMeshManager.BodyMeshRenderer.bounds.size.y * 0.35f;
+            Vector3 forcePosition = unit.rigidBody.transform.position + (Vector3.up * desiredHeight);
+
+            unit.rigidBody.useGravity = true;
+            unit.rigidBody.isKinematic = false;
+            unit.rigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            
+            // Apply force to the character's Rigidbody at the specified position
+            unit.rigidBody.AddForceAtPosition(forceDirection * forceMagnitude, forcePosition);
 
             if (unit.unitMeshManager.leftHeldItem != null)
                 DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);

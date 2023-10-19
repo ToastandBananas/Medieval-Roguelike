@@ -197,13 +197,13 @@ namespace ActionSystem
             if (unit.IsMyTurn == false)
                 yield break;
 
-            if (queuedActions.Count > 0 && isPerformingAction == false)
+            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && isPerformingAction == false)
             {
                 int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
                 lastQueuedAction = queuedActions[0];
                 if (unit.health.IsDead())
                 {
-                    ClearActionQueue(true);
+                    ClearActionQueue(true, true);
                     yield break;
                 }
 
@@ -240,12 +240,8 @@ namespace ActionSystem
 
             // If the character has no AP remaining, end their turn
             if (unit.stats.currentAP <= 0)
-            {
-                if (unit.IsMyTurn)
-                    TurnManager.Instance.FinishTurn(unit);
-            }
-
-            if (unit.IsMyTurn)
+                TurnManager.Instance.FinishTurn(unit);
+            else if (unit.IsMyTurn)
                 TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
@@ -554,8 +550,6 @@ namespace ActionSystem
 
         public override void SetTargetEnemyUnit(Unit target)
         {
-            if (unit.IsNPC)
-                Debug.Log(target);
             if (target != null && target != targetEnemyUnit)
             {
                 startChaseGridPosition = unit.GridPosition;

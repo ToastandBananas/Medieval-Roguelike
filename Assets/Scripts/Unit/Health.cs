@@ -84,6 +84,8 @@ namespace UnitSystem
             unit.unitInteractable.enabled = true;
             unit.opportunityAttackTrigger.gameObject.SetActive(false);
 
+            unit.unitActionHandler.ClearActionQueue(true, true);
+
             unit.unitAnimator.Die(attacker.transform);
 
             if (attacker.IsPlayer)

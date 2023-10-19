@@ -37,8 +37,8 @@ MonoBehaviour:
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   - {fileID: 11400000, guid: 4a8c6127ccbd3d74f940e7fc6b52c543, type: 2}
-  idlePosition_Left: {x: 0.23, y: -0.29, z: -0.23}
-  idlePosition_Right: {x: -0.23, y: -0.29, z: -0.23}
+  idlePosition_Left: {x: 0.23, y: 0.05, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: 0.05, z: -0.23}
   idleRotation_Left: {x: 0, y: 90, z: 25}
   idleRotation_Right: {x: 0, y: 90, z: 25}
   weaponType: 4

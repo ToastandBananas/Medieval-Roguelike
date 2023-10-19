@@ -22,8 +22,7 @@ namespace ActionSystem
         {
             base.QueueAction(action, addToFrontOfQueue);
 
-            BaseAction selectedAction = selectedActionType.GetAction(unit);
-            if (selectedAction.IsDefaultAttackAction() == false)
+            if (selectedActionType.GetAction(unit).IsDefaultAttackAction() == false)
                 SetDefaultSelectedAction();
         }
 
@@ -141,7 +140,7 @@ namespace ActionSystem
         {
             if (unit.health.IsDead())
             {
-                ClearActionQueue(true);
+                ClearActionQueue(true, true);
                 GridSystemVisual.HideGridVisual();
                 yield break;
             }

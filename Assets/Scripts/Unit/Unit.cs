@@ -26,6 +26,7 @@ namespace UnitSystem
         public Health health { get; private set; }
         public Hearing hearing { get; private set; }
         public OpportunityAttackTrigger opportunityAttackTrigger { get; private set; }
+        public Rigidbody rigidBody { get; private set; }
         public Seeker seeker { get; private set; }
         public StateController stateController { get; private set; }
         public Stats stats { get; private set; }
@@ -51,6 +52,7 @@ namespace UnitSystem
             health = GetComponent<Health>();
             hearing = GetComponentInChildren<Hearing>();
             opportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
+            rigidBody = GetComponent<Rigidbody>();
             seeker = GetComponent<Seeker>();
             stateController = GetComponent<StateController>();
             stats = GetComponent<Stats>();

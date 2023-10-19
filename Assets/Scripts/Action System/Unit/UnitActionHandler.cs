@@ -73,6 +73,12 @@ namespace ActionSystem
         {
             GridSystemVisual.HideGridVisual();
 
+            if (unit.health.IsDead())
+            {
+                ClearActionQueue(true, true);
+                return;
+            }
+
             queuedAttack = null;
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
@@ -172,14 +178,14 @@ namespace ActionSystem
                 GridSystemVisual.UpdateAttackGridVisual();
         }
 
-        public void ClearActionQueue(bool stopMoveAnimation)
+        public void ClearActionQueue(bool stopMoveAnimation, bool forceClearAll = false)
         {
             if (queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction)
                 queuedAttack = null;
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                if (queuedActions[i] is BaseInventoryAction == false)
+                if (forceClearAll || queuedActions[i] is BaseInventoryAction == false)
                 {
                     queuedActions.RemoveAt(i);
                     queuedAPs.RemoveAt(i);

@@ -30,7 +30,7 @@ MonoBehaviour:
   meshes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: c2a8fc70a2a8bd94baa3cb3786761a30, type: 2}
+  - {fileID: 2100000, guid: feea8d768ddd3574c896cd890d05ee9f, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   itemChangeThresholds:

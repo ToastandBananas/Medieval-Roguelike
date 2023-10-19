@@ -6,6 +6,8 @@ namespace UnitSystem
 {
     public class UnitMeshManager : MonoBehaviour
     {
+        [SerializeField] Unit myUnit;
+
         [Header("Parent Transforms")]
         [SerializeField] Transform leftHeldItemParent;
         [SerializeField] Transform rightHeldItemParent;
@@ -26,8 +28,6 @@ namespace UnitSystem
         public HeldItem rightHeldItem { get; private set; }
 
         public bool meshesHidden { get; private set; }
-
-        Unit myUnit;
 
         void Awake()
         {
@@ -196,6 +196,8 @@ namespace UnitSystem
             }
         }
 
+        public void DisableBaseMeshRenderer() => baseMeshFilter.mesh = null;
+
         public void ReturnHeldItemToPool(EquipSlot equipSlot)
         {
             if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
@@ -227,6 +229,8 @@ namespace UnitSystem
         public Transform LeftHeldItemParent => leftHeldItemParent;
 
         public Transform RightHeldItemParent => rightHeldItemParent;
+
+        public MeshRenderer BodyMeshRenderer => bodyMeshRenderer;
 
         public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
     }

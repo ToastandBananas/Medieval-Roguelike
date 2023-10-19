@@ -103,11 +103,9 @@ namespace InventorySystem
                 else // For items like the bow that consist of multiple meshes
                     meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
 
+                meshFilters[i].mesh = itemData.Item.Meshes[i];
                 if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
-                {
-                    meshFilters[i].mesh = itemData.Item.Meshes[i];
                     meshRenderers[i].enabled = true;
-                }
                 else
                 {
                     HideMeshes();

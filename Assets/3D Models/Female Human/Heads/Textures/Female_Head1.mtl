@@ -1,7 +1,0 @@
-newmtl Female_Head1
-	Ka 1 1 1
-	Kd 1 1 1
-	Ks 1 1 1
-	Ns 500
-	map_Ka Textures\Female_Head1.png
-	map_Kd Textures\Female_Head1.png
