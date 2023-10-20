@@ -55,12 +55,6 @@ namespace GeneralUI
                 currentUnit = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
             }
 
-            /*Physics.Raycast(ray, out RaycastHit looseItemHit, float.MaxValue, Instance.looseItemLayerMask);
-            if (looseItemHit.collider != null)
-            {
-                // Get item
-            }*/
-
             return hit.point;
         }
 

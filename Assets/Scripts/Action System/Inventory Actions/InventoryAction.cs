@@ -1,4 +1,5 @@
 using InventorySystem;
+using UnityEngine;
 
 namespace ActionSystem
 {
@@ -9,6 +10,7 @@ namespace ActionSystem
 
         public void QueueAction(ItemData targetItemData, int itemCount)
         {
+            Debug.Log("Inventory Action: " + unit.name);
             this.targetItemData = targetItemData;
             this.itemCount = itemCount;
             QueueAction();

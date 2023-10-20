@@ -137,7 +137,7 @@ namespace ActionSystem
                             }
                             else if (unit.stats.CanFightUnarmed)
                             {
-                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy))
+                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy, unit.GridPosition, closestEnemy.GridPosition))
                                     GetAction<MeleeAction>().QueueAction(closestEnemy);
                                 else
                                     moveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, closestEnemy));
@@ -147,7 +147,7 @@ namespace ActionSystem
                             // Else flee somewhere
                             StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange - 2)));
                         }
-                        else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                        else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                         {
                             // Shoot the target enemy
                             if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
@@ -165,7 +165,7 @@ namespace ActionSystem
                     else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
                     {
                         // Melee attack the target enemy
-                        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                             GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
                         else
                             moveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
@@ -422,7 +422,7 @@ namespace ActionSystem
                         while (unitAtActionGridPosition.unitActionHandler.isMoving)
                             yield return null;
 
-                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition) == false) // If the target Unit moved out of range
+                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, unit.GridPosition, unitAtActionGridPosition.GridPosition) == false) // If the target Unit moved out of range
                         {
                             targetEnemyUnit = unitAtActionGridPosition;
                             PursueTargetEnemy();

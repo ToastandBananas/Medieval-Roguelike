@@ -90,7 +90,7 @@ namespace ActionSystem
                                 CancelActions();
                                 return;
                             }
-                            else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit))
+                            else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                             {
                                 // Shoot the target enemy
                                 ClearActionQueue(true);
@@ -105,7 +105,7 @@ namespace ActionSystem
                         // Handle default melee attack
                         else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
                         {
-                            if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit))
+                            if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                             {
                                 // Melee attack the target enemy
                                 ClearActionQueue(false);

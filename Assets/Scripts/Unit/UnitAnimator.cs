@@ -81,18 +81,10 @@ namespace UnitSystem
 
         public void Die(Transform attackerTransform)
         {
-            /*bool diedForward = Random.value <= 0.5f;
-            if (diedForward)
-                unitAnim.Play("Die Forward");
-            else
-                unitAnim.Play("Die Backward");*/
-
-            //StartCoroutine(Die_RotateBody(diedForward));
-
             // Hide the Unit's base
             unit.unitMeshManager.DisableBaseMeshRenderer();
 
-            float forceMagnitude = Random.Range(52000, 65000);
+            float forceMagnitude = 30000;//Random.Range(30000, 40000);
             float towardsAttackerChance = 0.3f;
             Vector3 randomDirection = Random.onUnitSphere;
             randomDirection.y = 0; // Ensure the force is applied horizontally
@@ -109,16 +101,23 @@ namespace UnitSystem
             // Apply head rotation
             StartCoroutine(Die_RotateHead(diedForward));
 
-            // Calculate the point where you want to apply the force (e.g., the top of the character)
-            float desiredHeight = unit.unitMeshManager.BodyMeshRenderer.bounds.size.y * 0.35f;
-            Vector3 forcePosition = unit.rigidBody.transform.position + (Vector3.up * desiredHeight);
+            // Calculate the point where we want to apply the force (near the top of the character)
+            float desiredForceHeight = unit.unitMeshManager.BodyMeshRenderer.bounds.size.y * 0.75f;
+            Vector3 forcePosition = unit.rigidBody.transform.position + (Vector3.up * desiredForceHeight);
 
             unit.rigidBody.useGravity = true;
             unit.rigidBody.isKinematic = false;
-            unit.rigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            // unit.rigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
             
             // Apply force to the character's Rigidbody at the specified position
             unit.rigidBody.AddForceAtPosition(forceDirection * forceMagnitude, forcePosition);
+
+            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
+            {
+                Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Helm;
+                if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 100f) <= helm.FallOffOnDeathChance)
+                    DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
+            }
 
             if (unit.unitMeshManager.leftHeldItem != null)
                 DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);

@@ -42,51 +42,6 @@ namespace InventorySystem
         [Tooltip("Amount the arc height will be multiplied by. (0 = no arc)")]
         [SerializeField] float arcMultiplier = 1f;
 
-        /*public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
-        {
-            bool canEquipItem = unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
-            unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
-            return canEquipItem;
-            /*if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
-            {
-                Quiver quiver = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
-                if (quiver.AllowedProjectileType == projectileType)
-                {
-                    Inventory itemDatasInventory = itemData.MyInventory();
-
-                    bool itemAdded = unit.QuiverInventoryManager.ParentInventory.TryAddItem(itemData);
-                    if (unit.UnitEquipment.slotVisualsCreated)
-                        unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
-
-                    if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
-                        itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
-
-                    if (itemAdded)
-                    {
-                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null)
-                            ContextMenu.targetSlot.InventoryItem.myUnitEquipment.RemoveEquipment(itemData);
-                    }
-                    else
-                    {
-                        if (ContextMenu.targetSlot != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null && ContextMenu.targetSlot.InventoryItem.myUnitEquipment.slotVisualsCreated)
-                            ContextMenu.targetSlot.InventoryItem.UpdateStackSizeVisuals();
-                    }
-
-                    return itemAdded;
-                }
-                else
-                {
-                    unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
-                    return unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
-                }
-            }
-            else
-            {
-                unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
-                return unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
-            }
-        }*/
-
         public override Sprite InventorySprite(ItemData itemData = null)
         {
             if (itemData == null)

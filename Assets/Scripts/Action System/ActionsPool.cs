@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnitSystem;
+using InventorySystem;
 
 namespace ActionSystem
 {
@@ -100,11 +101,19 @@ namespace ActionSystem
 
         public static void ReturnToPool(BaseAction action)
         {
+            // De-queue the action if necessary
+            if (action.unit.unitActionHandler.queuedActions.Contains(action))
+            {
+                int actionIndex = action.unit.unitActionHandler.queuedActions.IndexOf(action);
+                action.unit.unitActionHandler.queuedActions.RemoveAt(actionIndex);
+                if (action.unit.unitActionHandler.queuedAPs.Count >= actionIndex + 1)
+                    action.unit.unitActionHandler.queuedAPs.RemoveAt(actionIndex);
+            }
+
             action.unit.unitActionHandler.AvailableActions.Remove(action);
             if (action.unit.unitActionHandler.AvailableCombatActions.Contains(action))
                 action.unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
 
-            action.SetUnit(null);
             action.transform.SetParent(Instance.transform);
             actions.Add(action);
             action.gameObject.SetActive(false);

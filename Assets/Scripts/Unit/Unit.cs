@@ -8,12 +8,16 @@ using InventorySystem;
 
 namespace UnitSystem
 {
+    /// <summary>Used to determine which armor models to use when equipping.</summary>
+    public enum Gender { Male, Female }
+
     public class Unit : MonoBehaviour
     {
         [Header("Transforms")]
         [SerializeField] Transform actionsParent;
 
         [Header("Unit Info")]
+        [SerializeField] Gender gender;
         [SerializeField] float shoulderHeight = 0.25f;
 
         [Header("Inventories")]
@@ -159,6 +163,8 @@ namespace UnitSystem
 
         public Transform ActionsParent => actionsParent;
 
-        public GridPosition GridPosition => gridPosition;
+        public GridPosition GridPosition => health.IsDead() ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
+
+        public Gender Gender => gender;
     }
 }

@@ -394,7 +394,7 @@ namespace InventorySystem
             Instance.playerInventoryUIParent.SetActive(!Instance.playerInventoryUIParent.activeSelf);
             playerInventoryActive = Instance.playerInventoryUIParent.activeSelf;
 
-            if (Instance.playerInventoryUIParent.activeSelf == false)
+            if (playerInventoryActive == false)
             {
                 activeSlot = null;
                 ContextMenu.DisableContextMenu();
@@ -406,30 +406,30 @@ namespace InventorySystem
             }
         }
 
+        public static void ClearNPCInventorySlots()
+        {
+            if (npcInventoryActive == false)
+                return;
+
+            if (isDraggingItem)
+                ReplaceDraggedItem(); 
+            
+            if (npcEquipmentSlots.Count > 0)
+                npcEquipmentSlots[0].UnitEquipment.OnCloseNPCInventory();
+
+            if (npcPocketsSlots.Count > 0)
+                npcPocketsSlots[0].myInventory.OnCloseNPCInventory();
+        }
+
         public static void ToggleNPCInventory()
         {
-            if (isDraggingItem)
-                ReplaceDraggedItem();
+            ClearNPCInventorySlots();
 
             Instance.npcInventoryUIParent.SetActive(!Instance.npcInventoryUIParent.activeSelf);
             npcInventoryActive = Instance.npcInventoryUIParent.activeSelf;
 
-            if (npcInventoryActive == false)
-            {
-                if (npcEquipmentSlots.Count > 0)
-                    npcEquipmentSlots[0].UnitEquipment.OnCloseNPCInventory();
-
-                if (npcPocketsSlots.Count > 0)
-                    npcPocketsSlots[0].myInventory.OnCloseNPCInventory();
-            }
-
             if (playerInventoryActive == false)
-            {
-                activeSlot = null;
-                ContextMenu.DisableContextMenu();
-                SplitStack.Instance.Close();
-                CloseAllContainerUI();
-            }
+                TogglePlayerInventory();
         }
 
         public static void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)

@@ -96,11 +96,7 @@ namespace ActionSystem
                     // If the player has an attack action selected
                     BaseAction selectedAction = player.unitActionHandler.SelectedAction;
                     if (selectedAction is BaseAttackAction)
-                    {
-                        // Set the target attack grid position to the mouse grid position and update the visuals
-                        // player.unitActionHandler.SetTargetAttackGridPosition(WorldMouse.GetCurrentGridPosition);
                         GridSystemVisual.UpdateAttackGridVisual();
-                    }
 
                     // If the player is trying to perform the Turn Action
                     if (GameControls.gamePlayActions.turnMode.IsPressed || selectedAction is TurnAction)
@@ -138,7 +134,7 @@ namespace ActionSystem
         void HandleActions()
         {
             GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
-
+            
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
             {
@@ -159,11 +155,6 @@ namespace ActionSystem
                     player.unitActionHandler.GetAction<InteractAction>().QueueAction(highlightedInteractable);
                 }
             }
-            // If the player is trying to perform an action on themselves
-            else if (mouseGridPosition == player.GridPosition)
-            {
-                // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
-            }
             // If the mouse is hovering over a dead Unit
             else if (highlightedUnit != null && highlightedUnit.health.IsDead())
             {
@@ -179,12 +170,17 @@ namespace ActionSystem
                     player.unitActionHandler.GetAction<InteractAction>().QueueAction(highlightedUnit.unitInteractable);
                 }
             }
+            // If the player is trying to perform an action on themselves
+            else if (mouseGridPosition == player.GridPosition)
+            {
+                // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
+            }
             // Make sure the mouse grid position is a valid position to perform an action
             else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
             {
-                BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
                 Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
-
+                BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+                
                 // If the mouse is hovering over a living unit that's in the player's Vision
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
                 {
@@ -198,7 +194,7 @@ namespace ActionSystem
                         if (selectedAction is BaseAttackAction)
                         {
                             // If the target is in attack range
-                            if (selectedAction.BaseAttackAction.IsInAttackRange(unitAtGridPosition))
+                            if (selectedAction.BaseAttackAction.IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
                                 float attackRange = player.GetAttackRange(unitAtGridPosition, false);
@@ -222,7 +218,7 @@ namespace ActionSystem
                                 return;
 
                             // If the target is in shooting range
-                            if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition))
+                            if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // Turn towards and attack the target enemy
                                 player.unitActionHandler.AttackTarget();
@@ -237,7 +233,7 @@ namespace ActionSystem
                                 return;
 
                             // If the target is in attack range
-                            if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition))
+                            if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
                                 float attackRange = player.GetAttackRange(unitAtGridPosition, false);
@@ -298,12 +294,11 @@ namespace ActionSystem
                         return;
 
                     // If there's any enemy or neutral unit within the attack positions
-                    if (selectedAction.IsValidUnitInActionArea(selectedAction.targetGridPosition) == false)
+                    if (selectedAction.IsValidUnitInActionArea(mouseGridPosition) == false)
                         return;
 
                     // Turn towards and attack the target enemy
-                    player.unitActionHandler.SetQueuedAttack(selectedAction as BaseAttackAction, selectedAction.targetGridPosition);
-                    player.unitActionHandler.AttackTarget();
+                    selectedAction.BaseAttackAction.QueueAction(mouseGridPosition);
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
                 else if (selectedAction is MoveAction)

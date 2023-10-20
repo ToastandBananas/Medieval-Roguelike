@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dc5aa59c5d8fd9469790d1b56220b76, type: 3}
   m_Name: Short Recurve Bow - Wooden
   m_EditorClassIdentifier: 
-  name: Wooden Short Recurve Bow
+  name: Short Recurve Bow
   pluralName: 
-  description: 
+  description: Crafted from durable wood, this compact yet powerful bow combines
+    precision and speed, making it a versatile choice for archers in need of close-quarters
+    accuracy."
   itemType: 30
   mainMaterial: 9
   itemSize: 4

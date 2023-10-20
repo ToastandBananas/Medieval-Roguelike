@@ -19,14 +19,13 @@ namespace InteractableObjects
         {
             if (myUnit.UnitEquipment.slotVisualsCreated == false)
             {
+                InventoryUI.ClearNPCInventorySlots();
+
                 myUnit.UnitEquipment.CreateSlotVisuals();
                 myUnit.UnitInventoryManager.MainInventory.CreateSlotVisuals();
 
                 if (InventoryUI.npcInventoryActive == false)
                     InventoryUI.ToggleNPCInventory();
-
-                if (InventoryUI.playerInventoryActive == false)
-                    InventoryUI.TogglePlayerInventory();
             }
         }
 

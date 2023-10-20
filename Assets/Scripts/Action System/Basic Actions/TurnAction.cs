@@ -528,7 +528,7 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public bool IsFacingTarget(GridPosition targetGridPosition) => DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
+        public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == unit.GridPosition ? true : DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
         public override bool CanQueueMultiple() => false;
 

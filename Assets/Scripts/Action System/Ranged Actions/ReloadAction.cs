@@ -9,7 +9,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (isReloading) return;
+            if (unit == null || isReloading) return;
 
             StartAction();
             Reload();

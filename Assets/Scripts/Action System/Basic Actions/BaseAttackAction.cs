@@ -154,7 +154,7 @@ namespace ActionSystem
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(targetEnemyUnit) == false)
+                    if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
                     {
                         MoveToTargetInstead();
                         yield break;
@@ -233,7 +233,13 @@ namespace ActionSystem
 
         public abstract bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition);
 
-        public abstract bool IsInAttackRange(Unit targetUnit);
+        public virtual bool IsInAttackRange(Unit targetUnit)
+        {
+            if (targetUnit == null)
+                return IsInAttackRange(null, unit.GridPosition, targetGridPosition);
+            else
+                return IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition);
+        }
 
         public abstract GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit);
 

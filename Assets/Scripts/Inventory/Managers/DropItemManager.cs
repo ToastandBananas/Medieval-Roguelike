@@ -44,7 +44,11 @@ namespace InventorySystem
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
 
-            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToDrop, itemDataToDrop.CurrentStackSize);
+            // In this case, the player is dropping an item from a dead Unit's equipment
+            if (unit.health.IsDead())
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            else
+                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
         }
 
         public static void DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
@@ -64,6 +68,8 @@ namespace InventorySystem
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield)
                 SetupHeldItemDrop(unitEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
+            else if (equipSlot == EquipSlot.Helm)
+                SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
             else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver))
                 SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
             else
@@ -92,9 +98,55 @@ namespace InventorySystem
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
 
-            unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            // We queue each action twice to account for unequipping the item before dropping it (not for held items though)
+            if (unitEquipment.MyUnit.health.IsDead()) // In this case, the player is dropping an item from a dead Unit's equipment
+            {
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+                if (UnitEquipment.IsHeldItemEquipSlot(equipSlot) == false)
+                    UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            }
+            else
+            {
+                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+                if (UnitEquipment.IsHeldItemEquipSlot(equipSlot) == false)
+                    unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            }
 
             ActionSystemUI.UpdateActionVisuals();
+        }
+
+        public static void DropHelmOnDeath(ItemData itemData, Unit unit, Transform attackerTransform, bool diedForward)
+        {
+            LooseItem looseHelm = LooseItemPool.Instance.GetLooseItemFromPool();
+
+            float randomForceMagnitude = Random.Range(looseHelm.RigidBody.mass, looseHelm.RigidBody.mass * 6f);
+            float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
+
+            // Get the attacker's position and the character's position
+            Vector3 attackerPosition = attackerTransform.position;
+            Vector3 unitPosition = unit.transform.position;
+
+            // Calculate the force direction (depending on whether they fall forward or backward)
+            Vector3 forceDirection;
+            if (diedForward)
+                forceDirection = (attackerPosition - unitPosition).normalized;
+            else
+                forceDirection = (unitPosition - attackerPosition).normalized;
+
+            // Add some randomness to the force direction
+            Quaternion randomRotation = Quaternion.Euler(0, randomAngleRange, 0);
+            forceDirection = randomRotation * forceDirection;
+
+            SetupHelmItemDrop(looseHelm, itemData, unit);
+
+            // Get the Rigidbody component(s) and apply force
+            looseHelm.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
+
+            if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
+                looseHelm.HideMeshRenderer();
+
+            unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Equipment);
+            unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
         }
 
         public static void DropHeldItemOnDeath(HeldItem heldItem, Unit unit, Transform attackerTransform, bool diedForward)
@@ -106,7 +158,7 @@ namespace InventorySystem
 
             // Get the attacker's position and the character's position
             Vector3 attackerPosition = attackerTransform.position;
-            Vector3 unitPosition = unit.transform.parent.position;
+            Vector3 unitPosition = unit.transform.position;
 
             // Calculate the force direction (depending on whether they fall forward or backward)
             Vector3 forceDirection;
@@ -170,8 +222,6 @@ namespace InventorySystem
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
 
             unit.opportunityAttackTrigger.UpdateColliderRadius();
-
-            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseWeapon.ItemData, looseWeapon.ItemData.CurrentStackSize);
         }
 
         static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
@@ -230,6 +280,15 @@ namespace InventorySystem
             // Set the LooseItem's position to match the HeldItem before we add force
             looseItem.transform.position = heldItem.transform.position;
             looseItem.transform.rotation = heldItem.transform.rotation;
+        }
+
+        static void SetupHelmItemDrop(LooseItem looseItem, ItemData itemData, Unit unit)
+        {
+            SetupLooseItem(looseItem, itemData);
+
+            // Set the LooseItem's position to match the HeldItem before we add force
+            looseItem.transform.position = unit.unitMeshManager.HelmMeshRenderer.transform.position;
+            looseItem.transform.rotation = unit.unitMeshManager.HelmMeshRenderer.transform.rotation;
         }
 
         static float FindHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;

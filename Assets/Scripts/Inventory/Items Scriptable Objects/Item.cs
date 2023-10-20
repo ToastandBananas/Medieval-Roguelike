@@ -134,6 +134,8 @@ namespace InventorySystem
 
         public Weapon Weapon => this as Weapon;
 
+        public Helm Helm => this as Helm;
+
         public MeleeWeapon MeleeWeapon => this as MeleeWeapon;
 
         public RangedWeapon RangedWeapon => this as RangedWeapon;

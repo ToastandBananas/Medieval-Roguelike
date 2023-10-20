@@ -15,7 +15,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit.unitActionHandler.isAttacking) return;
+            if (unit == null || unit.unitActionHandler.isAttacking) return;
 
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {
@@ -145,17 +145,17 @@ namespace ActionSystem
                     continue;
 
                 // Make sure the node isn't too much lower or higher than the target grid position (this is a swipe attack, so think of it basically swiping across in a horizontal line)
-                if (Mathf.Abs(nodeGridPosition.WorldPosition().y - targetGridPosition.WorldPosition().y) > 0.5f)
+                if (Mathf.Abs(nodeGridPosition.y - targetGridPosition.y) > 0.5f)
                     continue;
 
                 // Check for obstacles
-                Vector3 directionToAttackPosition = ((nodeGridPosition.WorldPosition() + heightOffset) - (unit.WorldPosition + heightOffset)).normalized;
+                Vector3 directionToAttackPosition = (nodeGridPosition.WorldPosition() + heightOffset - (unit.WorldPosition + heightOffset)).normalized;
                 if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
                 {
                     // Debug.Log(nodeGridPosition.WorldPosition() + " is blocked by " + hit.collider.name);
                     continue;
                 }
-
+                
                 validGridPositionsList.Add(nodeGridPosition);
             }
 
@@ -254,14 +254,12 @@ namespace ActionSystem
                 ListPool<GridPosition>.Release(attackGridPositions);
                 return true;
             }
-
+            
             ListPool<GridPosition>.Release(attackGridPositions);
             return false;
         }
 
         public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit, startGridPosition, targetGridPosition);
-
-        public override bool IsInAttackRange(Unit targetUnit) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit);
 
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {

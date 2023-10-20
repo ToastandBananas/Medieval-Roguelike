@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ff3d86feea51e74c9d5c98644e73617, type: 3}
+  m_Name: Helm - Nasal - Gray
+  m_EditorClassIdentifier: 
+  name: Nasal Helm
+  pluralName: 
+  description: A sturdy piece of headgear with a distinctive, pointed nose guard,
+    offering reliable protection without compromising visibility.
+  itemType: 100
+  mainMaterial: 35
+  itemSize: 3
+  width: 2
+  height: 2
+  weight: 6
+  maxStackSize: 1
+  inventorySprite: {fileID: 21300000, guid: cc2771318766e8d4dbac2f98dc048b34, type: 3}
+  maxUses: 1
+  isUsable: 1
+  valueRange: {x: 0, y: 0}
+  staticValue: 200
+  meshes:
+  - {fileID: -2432090755550338912, guid: 1c4817232c101a9428bdbf2577315f0e, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: e20874e55ce89a446b7d00e3bd5fd4d1, type: 2}
+  pickupMesh: {fileID: -2432090755550338912, guid: f68634b4a5fdc5c42bf5eb0af886538b,
+    type: 3}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: 18d7b336b74e22147aa42f86402434ae, type: 2}
+  equipSlot: 4
+  actionTypes: []
+  meshes_Female:
+  - {fileID: -2432090755550338912, guid: 675a2e87ce6a81f40b35be6976e33377, type: 3}
+  meshRendererMaterials_Female:
+  - {fileID: 2100000, guid: 477f6094a124f7540ae81e53d5e8dafe, type: 2}
+  fallOffOnDeathChance: 14.5

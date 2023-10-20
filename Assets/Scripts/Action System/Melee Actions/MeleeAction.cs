@@ -23,7 +23,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit.unitActionHandler.isAttacking) return;
+            if (unit == null || unit.unitActionHandler.isAttacking) return;
 
             if (targetEnemyUnit == null)
                 SetTargetEnemyUnit();
@@ -38,7 +38,7 @@ namespace ActionSystem
 
             StartAction();
 
-            if (IsInAttackRange(unit.unitActionHandler.targetEnemyUnit))
+            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
                 unit.StartCoroutine(DoAttack());
             else
                 MoveToTargetInstead();
@@ -166,7 +166,7 @@ namespace ActionSystem
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit) == false)
+                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
                 {
                     MoveToTargetInstead();
                     yield break;
@@ -211,8 +211,6 @@ namespace ActionSystem
 
             return true;
         }
-
-        public override bool IsInAttackRange(Unit targetUnit) => IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition);
 
         protected override void StartAction()
         {

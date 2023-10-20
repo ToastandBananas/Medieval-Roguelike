@@ -252,8 +252,8 @@ namespace InventorySystem
                         {
                             InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
 
-                            // Queue an InventoryAction to account for unequipping the item
-                            if (unitAdding != null && originalInventory != this)
+                            // Queue an InventoryAction to account for unequipping the item (not in the case of held items though)
+                            if (unitAdding != null && UnitEquipment.IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false)
                                 unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
                         }
                     }

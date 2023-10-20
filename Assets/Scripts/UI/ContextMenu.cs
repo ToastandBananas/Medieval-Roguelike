@@ -273,6 +273,9 @@ namespace GeneralUI
             }
             else if (targetInteractable != null && targetInteractable is LooseContainerItem)
             {
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                    return;
+
                 LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
                 if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
                 {
@@ -282,6 +285,9 @@ namespace GeneralUI
             }
             else if (targetUnit != null && targetUnit.health.IsDead())
             {
+                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.GetGridPosition(targetUnit.transform.position), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                    return;
+
                 if (targetUnit.UnitEquipment.slotVisualsCreated)
                 {
                     CreateCloseContainerButton();

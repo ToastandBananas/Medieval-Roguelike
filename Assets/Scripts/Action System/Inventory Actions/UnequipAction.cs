@@ -10,6 +10,7 @@ namespace ActionSystem
 
         public void QueueAction(EquipSlot targetEquipSlot)
         {
+            Debug.Log("Unequip Action: " + unit.name);
             targetEquipSlots.Add(targetEquipSlot);
             unit.unitActionHandler.QueueAction(this);
         }

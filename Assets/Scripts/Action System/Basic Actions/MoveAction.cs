@@ -38,7 +38,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit.unitActionHandler.isMoving) return;
+            if (unit == null || unit.unitActionHandler.isMoving) return;
 
             StartAction();
             StartCoroutine(Move());
@@ -49,7 +49,11 @@ namespace ActionSystem
             base.StartAction();
 
             if (unit.IsPlayer)
+            {
                 InventoryUI.CloseAllContainerUI();
+                if (InventoryUI.npcInventoryActive)
+                    InventoryUI.ToggleNPCInventory();
+            }
         }
 
         IEnumerator Move()
@@ -108,15 +112,15 @@ namespace ActionSystem
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
-                MeleeAction meleeAction = unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.GetAction<MeleeAction>();
-                if (meleeAction.IsInAttackRange(unit) == false)
+                MeleeAction opponentsMeleeAction = unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.GetAction<MeleeAction>();
+                if (opponentsMeleeAction.IsInAttackRange(unit) == false)
                     continue;
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
-                if (meleeAction.IsInAttackRange(unit, unit.unitsWhoCouldOpportunityAttackMe[i].GridPosition, nextTargetGridPosition))
+                if (opponentsMeleeAction.IsInAttackRange(unit, unit.unitsWhoCouldOpportunityAttackMe[i].GridPosition, nextTargetGridPosition))
                     continue;
 
-                meleeAction.DoOpportunityAttack(unit);
+                opponentsMeleeAction.DoOpportunityAttack(unit);
 
                 while (unit.unitsWhoCouldOpportunityAttackMe.Count < i && unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.isAttacking)
                     yield return null;

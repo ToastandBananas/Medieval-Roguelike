@@ -207,6 +207,9 @@ namespace ActionSystem
 
         IEnumerator AttackTarget_Coroutine()
         {
+            if (targetEnemyUnit == null)
+                yield break;
+
             BaseAction selectedAction = selectedActionType.GetAction(unit);
             if (selectedAction is BaseAttackAction)
             {
@@ -215,7 +218,7 @@ namespace ActionSystem
                     while (targetEnemyUnit.unitActionHandler.isMoving)
                         yield return null;
 
-                    if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                    if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
                         moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
                         yield break;
@@ -233,7 +236,7 @@ namespace ActionSystem
                         while (targetEnemyUnit.unitActionHandler.isMoving)
                             yield return null;
 
-                        if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                        if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                         {
                             moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
                             yield break;
@@ -252,7 +255,7 @@ namespace ActionSystem
                     while (targetEnemyUnit.unitActionHandler.isMoving)
                         yield return null;
 
-                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit) == false) // Check if they're now out of attack range
+                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
                         moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
                         yield break;
@@ -267,10 +270,10 @@ namespace ActionSystem
         {
             if (defaultCombatActionsOnly)
             {
-                if (unit.UnitEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit))
+                if (unit.UnitEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit))
+                if ((unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else
@@ -278,7 +281,7 @@ namespace ActionSystem
                 for (int i = 0; i < availableCombatActions.Count; i++)
                 {
                     BaseAttackAction action = availableCombatActions[i];
-                    if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.GetEnergyCost()) && action.IsInAttackRange(targetUnit))
+                    if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.GetEnergyCost()) && action.IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                         return true;
                 }
             }

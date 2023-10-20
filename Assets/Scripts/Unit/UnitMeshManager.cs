@@ -61,7 +61,8 @@ namespace UnitSystem
                 meshRenderers[i].enabled = true;
             }
 
-            baseMeshFilter.mesh = baseMesh;
+            if (myUnit.health.IsDead() == false)
+                baseMeshFilter.mesh = baseMesh;
 
             if (leftHeldItem != null)
                 leftHeldItem.ShowMeshes();
@@ -129,18 +130,18 @@ namespace UnitSystem
             return null;
         }
 
-        public void SetupMesh(EquipSlot equipSlot, Equipment equipment)
+        public void SetupWearableMesh(EquipSlot equipSlot, Wearable wearable)
         {
-            if (equipment == null)
+            if (wearable == null)
                 return;
 
             switch (equipSlot)
             {
                 case EquipSlot.Helm:
-                    AssignMeshAndMaterials(helmMeshFilter, helmMeshRenderer, equipment);
+                    AssignMeshAndMaterials(helmMeshFilter, helmMeshRenderer, wearable);
                     break;
                 case EquipSlot.BodyArmor:
-                    AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, equipment);
+                    AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, wearable);
                     break;
                 default:
                     break;
@@ -150,20 +151,51 @@ namespace UnitSystem
                 HideMesh(equipSlot);
         }
 
-        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Equipment equipment)
+        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Wearable wearable)
         {
-            meshFilter.mesh = equipment.Meshes[0];
-
-            Material[] materials = meshRenderer.materials;
-            for (int i = 0; i < materials.Length; i++)
+            if (myUnit.Gender == Gender.Male)
             {
-                if (i > equipment.MeshRendererMaterials.Length - 1)
-                    materials[i] = null;
-                else
-                    materials[i] = equipment.MeshRendererMaterials[i];
-            }
+                meshFilter.mesh = wearable.Meshes[0];
 
-            meshRenderer.materials = materials;
+                Material[] materials = meshRenderer.materials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if (i > wearable.MeshRendererMaterials.Length - 1)
+                        materials[i] = null;
+                    else
+                        materials[i] = wearable.MeshRendererMaterials[i];
+                }
+
+                meshRenderer.materials = materials;
+            }
+            else // Female
+            {
+                if (wearable.Meshes_Female.Length > 0)
+                    meshFilter.mesh = wearable.Meshes_Female[0];
+                else
+                    meshFilter.mesh = wearable.Meshes[0];
+
+                Material[] materials = meshRenderer.materials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if (wearable.MeshRendererMaterials_Female.Length > 0)
+                    {
+                        if (i > wearable.MeshRendererMaterials_Female.Length - 1)
+                            materials[i] = null;
+                        else
+                            materials[i] = wearable.MeshRendererMaterials_Female[i];
+                    }
+                    else
+                    {
+                        if (i > wearable.MeshRendererMaterials.Length - 1)
+                            materials[i] = null;
+                        else
+                            materials[i] = wearable.MeshRendererMaterials[i];
+                    }
+                }
+
+                meshRenderer.materials = materials;
+            }
         }
 
         public void HideMesh(EquipSlot equipSlot)
@@ -186,12 +218,10 @@ namespace UnitSystem
                 case EquipSlot.Helm:
                     helmMeshRenderer.material = null;
                     helmMeshFilter.mesh = null;
-                    helmMeshRenderer.enabled = false;
                     break;
                 case EquipSlot.BodyArmor:
                     bodyArmorMeshRenderer.material = null;
                     bodyArmorMeshFilter.mesh = null;
-                    bodyArmorMeshRenderer.enabled = false;
                     break;
             }
         }
@@ -231,6 +261,8 @@ namespace UnitSystem
         public Transform RightHeldItemParent => rightHeldItemParent;
 
         public MeshRenderer BodyMeshRenderer => bodyMeshRenderer;
+
+        public MeshRenderer HelmMeshRenderer => helmMeshRenderer;
 
         public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
     }

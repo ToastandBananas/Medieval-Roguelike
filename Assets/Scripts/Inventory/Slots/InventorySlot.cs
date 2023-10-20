@@ -257,7 +257,7 @@ namespace InventorySystem
 
         public override Slot ParentSlot()
         {
-            if (slotCoordinate == null || slotCoordinate.parentSlotCoordinate == null)
+            if (slotCoordinate == null || slotCoordinate.parentSlotCoordinate == null || myInventory == null)
                 return this;
 
             return myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate);
