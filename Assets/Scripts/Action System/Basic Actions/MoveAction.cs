@@ -94,35 +94,36 @@ namespace ActionSystem
             // Check for Opportunity Attacks
             for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
-                if (unit.unitsWhoCouldOpportunityAttackMe[i].health.IsDead())
+                Unit opportunityAttackingUnit = unit.unitsWhoCouldOpportunityAttackMe[i];
+                if (opportunityAttackingUnit.health.IsDead())
                 {
                     unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
                     continue;
                 }
 
-                if (unit.alliance.IsEnemy(unit.unitsWhoCouldOpportunityAttackMe[i]) == false)
+                if (unit.alliance.IsEnemy(opportunityAttackingUnit) == false)
                     continue;
 
                 // Only melee Unit's can do an opportunity attack
-                if (unit.unitsWhoCouldOpportunityAttackMe[i].UnitEquipment.RangedWeaponEquipped() || (unit.unitsWhoCouldOpportunityAttackMe[i].UnitEquipment.MeleeWeaponEquipped() == false && unit.unitsWhoCouldOpportunityAttackMe[i].stats.CanFightUnarmed == false))
+                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped() || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped() == false && opportunityAttackingUnit.stats.CanFightUnarmed == false))
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
-                if (unit.unitsWhoCouldOpportunityAttackMe[i].vision.IsVisible(unit) == false || unit.unitsWhoCouldOpportunityAttackMe[i].vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
+                if (opportunityAttackingUnit.vision.IsVisible(unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
-                MeleeAction opponentsMeleeAction = unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.GetAction<MeleeAction>();
+                MeleeAction opponentsMeleeAction = opportunityAttackingUnit.unitActionHandler.GetAction<MeleeAction>();
                 if (opponentsMeleeAction.IsInAttackRange(unit) == false)
                     continue;
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
-                if (opponentsMeleeAction.IsInAttackRange(unit, unit.unitsWhoCouldOpportunityAttackMe[i].GridPosition, nextTargetGridPosition))
+                if (opponentsMeleeAction.IsInAttackRange(unit, opportunityAttackingUnit.GridPosition, nextTargetGridPosition))
                     continue;
 
                 opponentsMeleeAction.DoOpportunityAttack(unit);
 
-                while (unit.unitsWhoCouldOpportunityAttackMe.Count < i && unit.unitsWhoCouldOpportunityAttackMe[i].unitActionHandler.isAttacking)
+                while (opportunityAttackingUnit.unitActionHandler.isAttacking)
                     yield return null;
             }
 

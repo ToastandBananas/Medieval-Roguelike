@@ -58,7 +58,7 @@ namespace GeneralUI
             if (contextMenuHoldTimer < maxContextMenuHoldTime && GameControls.gamePlayActions.menuContext.IsPressed)
                 contextMenuHoldTimer += Time.deltaTime;
 
-            if (GameControls.gamePlayActions.menuContext.WasReleased)
+            if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.DefaultActionIsSelected)
             {
                 // Don't allow context menu actions while an action is already queued
                 if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
@@ -196,9 +196,9 @@ namespace GeneralUI
             if (itemData == null || itemData.Item == null)
                 return;
 
-            if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+            if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
-                ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+                ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
                 if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null
                     && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
                 {

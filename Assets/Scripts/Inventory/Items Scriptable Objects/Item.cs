@@ -81,8 +81,8 @@ namespace InventorySystem
 
             if (itemData.RemainingUses <= 0)
             {
-                if (itemData.MyInventory() != null)
-                    itemData.MyInventory().RemoveItem(itemData);
+                if (itemData.MyInventory != null)
+                    itemData.MyInventory.RemoveItem(itemData);
             }
             return true;
         }

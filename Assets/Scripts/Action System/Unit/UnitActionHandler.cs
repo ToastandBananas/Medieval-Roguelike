@@ -175,7 +175,7 @@ namespace ActionSystem
             queuedAttack = null;
 
             if (unit.IsPlayer)
-                GridSystemVisual.UpdateAttackGridVisual();
+                unit.unitActionHandler.SetDefaultSelectedAction();
         }
 
         public void ClearActionQueue(bool stopMoveAnimation, bool forceClearAll = false)
@@ -502,11 +502,13 @@ namespace ActionSystem
 
         public void ClearQueuedAttack() => queuedAttack = null;
 
-        public virtual void SetSelectedActionType(ActionType actionType) => selectedActionType = actionType;
-
         public BaseAction SelectedAction => selectedActionType.GetAction(unit);
 
+        public virtual void SetSelectedActionType(ActionType actionType) => selectedActionType = actionType;
+
         public void SetDefaultSelectedAction() => SetSelectedActionType(FindActionTypeByName("MoveAction"));
+
+        public bool DefaultActionIsSelected => SelectedAction is MoveAction;
 
         public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 

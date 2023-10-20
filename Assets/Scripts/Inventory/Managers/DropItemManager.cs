@@ -44,7 +44,7 @@ namespace InventorySystem
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
 
-            // In this case, the player is dropping an item from a dead Unit's equipment
+            // In this case, the Player is dropping an item from a dead Unit's equipment
             if (unit.health.IsDead())
                 UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
             else
@@ -98,18 +98,16 @@ namespace InventorySystem
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
 
-            // We queue each action twice to account for unequipping the item before dropping it (not for held items though)
+            // We queue each action twice to account for unequipping the item before dropping it
             if (unitEquipment.MyUnit.health.IsDead()) // In this case, the player is dropping an item from a dead Unit's equipment
             {
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, InventoryActionType.Unequip);
                 UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
-                if (UnitEquipment.IsHeldItemEquipSlot(equipSlot) == false)
-                    UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
             }
             else
             {
+                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, InventoryActionType.Unequip);
                 unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
-                if (UnitEquipment.IsHeldItemEquipSlot(equipSlot) == false)
-                    unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
             }
 
             ActionSystemUI.UpdateActionVisuals();
@@ -297,7 +295,7 @@ namespace InventorySystem
         {
             looseItem.SetItemData(itemData);
             looseItem.SetupMesh();
-            looseItem.name = itemData.Item.name;
+            looseItem.name = itemData.Item.Name;
             itemData.SetInventorySlotCoordinate(null);
             looseItem.gameObject.SetActive(true);
         }

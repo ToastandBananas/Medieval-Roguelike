@@ -15,7 +15,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.isAttacking) return;
+            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking) return;
 
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {

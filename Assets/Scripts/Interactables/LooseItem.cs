@@ -96,16 +96,6 @@ namespace InteractableObjects
                     unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot);
                 else
                     equipped = false;
-
-                // Transfer inventory from loose container item if applicable
-                /*if (equipped && this is LooseContainerItem)
-                {
-                    LooseContainerItem looseContainerItem = this as LooseContainerItem;
-                    if (targetEquipSlot == EquipSlot.Back)
-                        unitPickingUpItem.BackpackInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                    else if (itemData.Item is Quiver)
-                        unitPickingUpItem.QuiverInventoryManager.TransferInventory(looseContainerItem.ContainerInventoryManager);
-                }*/
             }
 
             return equipped;

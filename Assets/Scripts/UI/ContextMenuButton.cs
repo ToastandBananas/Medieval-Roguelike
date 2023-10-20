@@ -83,9 +83,9 @@ namespace GeneralUI
         {
             stringBuilder.Clear();
             stringBuilder.Append("Take");
-            if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+            if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
-                ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+                ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
                 if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
                     stringBuilder.Append(" Out");
             }
@@ -95,9 +95,9 @@ namespace GeneralUI
 
         void TakeItem(ItemData itemData)
         {
-            if (itemData.MyInventory() != null && itemData.MyInventory() is ContainerInventory)
+            if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
-                ContainerInventory containerInventory = itemData.MyInventory() as ContainerInventory;
+                ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
                 if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
                     UnitManager.player.UnitInventoryManager.MainInventory.TryAddItem(itemData, UnitManager.player);
             }

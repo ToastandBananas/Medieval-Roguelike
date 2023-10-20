@@ -93,9 +93,9 @@ namespace InventorySystem
 
             targetParentSlot.InventoryItem.UpdateStackSizeVisuals();
 
-            if (targetItemData.MyInventory() != null)
+            if (targetItemData.MyInventory != null)
             {
-                Inventory myInventory = targetItemData.MyInventory();
+                Inventory myInventory = targetItemData.MyInventory;
                 if (myInventory.TryAddItem(newItemData, null, false) == false)
                     InventoryUI.SetupDraggedItem(newItemData, null, (Inventory)null);
 

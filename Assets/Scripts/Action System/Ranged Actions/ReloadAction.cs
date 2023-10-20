@@ -1,15 +1,18 @@
-using GridSystem;
 using UnitSystem;
+using UnityEngine;
 
 namespace ActionSystem
 {
     public class ReloadAction : BaseAction
     {
-        bool isReloading;
+        // bool isReloading;
+
+        readonly int defaultActionPointCost = 200;
 
         public override void TakeAction()
         {
-            if (unit == null || isReloading) return;
+            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)// || isReloading)
+                return;
 
             StartAction();
             Reload();
@@ -17,7 +20,6 @@ namespace ActionSystem
 
         void Reload()
         {
-            // StartCoroutine(StartReloadTimer());
             unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile();
             CompleteAction();
         }
@@ -25,22 +27,25 @@ namespace ActionSystem
         protected override void StartAction()
         {
             base.StartAction();
-            isReloading = true;
+            // isReloading = true;
         }
 
         public override void CompleteAction()
         {
             base.CompleteAction();
-            isReloading = false;
+            // isReloading = false;
+
             if (unit.IsPlayer)
                 unit.unitActionHandler.SetDefaultSelectedAction();
+
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override int GetActionPointsCost()
         {
-            return 100;
+            // TODO: Determine cost by specific ranged weapon (set a multiplier of the cost in the ranged weapon's Scriptable Object)
+            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
         public override bool CanQueueMultiple() => false;

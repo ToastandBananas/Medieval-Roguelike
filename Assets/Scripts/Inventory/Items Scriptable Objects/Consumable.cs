@@ -17,9 +17,9 @@ namespace InventorySystem
 
             if (ItemChangeThreshold.ThresholdReached(itemData, true, currentItemChangeThreshold, itemChangeThresholds, out ItemChangeThreshold newThreshold))
             {
-                if (itemData.MyInventory() != null)
+                if (itemData.MyInventory != null)
                 {
-                    SlotCoordinate itemsSlotCoordinate = itemData.MyInventory().GetSlotCoordinateFromItemData(itemData);
+                    SlotCoordinate itemsSlotCoordinate = itemData.MyInventory.GetSlotCoordinateFromItemData(itemData);
                     if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
                     {
                         if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
@@ -27,9 +27,9 @@ namespace InventorySystem
                     }
                     else
                     {
-                        itemData.MyInventory().RemoveItem(itemData);
+                        itemData.MyInventory.RemoveItem(itemData);
                         itemData.SetItem(newThreshold.NewItem);
-                        itemData.MyInventory().TryAddItemAt(itemData.MyInventory().GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData, unit);
+                        itemData.MyInventory.TryAddItemAt(itemData.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x - width + newThreshold.NewItem.Width, itemsSlotCoordinate.coordinate.y - height + newThreshold.NewItem.Height), itemData, unit);
                     }
                 }
             }

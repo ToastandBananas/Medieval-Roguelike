@@ -35,10 +35,6 @@ namespace ActionSystem
             playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
             playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
-            UpdateActionPointsText();
-            UpdateEnergyText();
-            UpdateHealthText();
-
             InitializeActionButtonPool();
 
             SetupUnitActionButtons();
@@ -47,6 +43,12 @@ namespace ActionSystem
         void Start()
         {
             UpdateSelectedVisual();
+            
+            UpdateActionPointsText();
+            UpdateEnergyText();
+            UpdateHealthText();
+
+            UpdateActionVisuals();
         }
 
         public static void SetupUnitActionButtons()
@@ -153,6 +155,6 @@ namespace ActionSystem
 
         public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {Instance.playerActionHandler.unit.stats.currentEnergy}";
 
-        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {Instance.playerActionHandler.unit.health.CurrentHealth()}";
+        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {Instance.playerActionHandler.unit.health.CurrentHealth}";
     }
 }

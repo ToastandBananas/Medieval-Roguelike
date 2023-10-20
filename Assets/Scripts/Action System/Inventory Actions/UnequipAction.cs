@@ -7,10 +7,10 @@ namespace ActionSystem
     public class UnequipAction : BaseInventoryAction
     {
         List<EquipSlot> targetEquipSlots = new List<EquipSlot>();
+        static readonly float unequipActionPointCostMultiplier = 0.75f;
 
         public void QueueAction(EquipSlot targetEquipSlot)
         {
-            Debug.Log("Unequip Action: " + unit.name);
             targetEquipSlots.Add(targetEquipSlot);
             unit.unitActionHandler.QueueAction(this);
         }
@@ -30,11 +30,17 @@ namespace ActionSystem
             targetEquipSlots.RemoveAt(0);
         }
 
+        public static int GetItemsUnequipActionPointCost(ItemData itemData, int stackSize)
+        {
+            // Debug.Log($"Unequip Cost of {itemData.Item.Name}: {Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize) * unequipActionPointCostMultiplier)}");
+            return Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize) * unequipActionPointCostMultiplier);
+        }
+
         public override int GetActionPointsCost()
         {
             int cost = 0;
             if (unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))
-                cost += GetItemsActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize);
+                cost += GetItemsUnequipActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize);
             else
                 Debug.LogWarning($"{targetEquipSlots[targetEquipSlots.Count - 1]} is not full, yet {unit.name} is trying to unequip from it...");
             return cost;

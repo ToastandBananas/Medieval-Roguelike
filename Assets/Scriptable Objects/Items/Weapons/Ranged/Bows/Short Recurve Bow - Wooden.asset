@@ -16,7 +16,7 @@ MonoBehaviour:
   pluralName: 
   description: Crafted from durable wood, this compact yet powerful bow combines
     precision and speed, making it a versatile choice for archers in need of close-quarters
-    accuracy."
+    accuracy.
   itemType: 30
   mainMaterial: 9
   itemSize: 4
@@ -63,4 +63,5 @@ MonoBehaviour:
   blockChanceAddOn: 0
   minAccuracyModifier: -60
   maxAccuracyModifier: -50
+  reloadActionPointCostMultiplier: 0.8
   projectileType: 0

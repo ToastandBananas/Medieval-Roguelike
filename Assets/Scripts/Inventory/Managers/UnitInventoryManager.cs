@@ -25,7 +25,7 @@ namespace InventorySystem
 
             if (unit.UnitEquipment != null)
             {
-                Inventory itemDatasInventory = itemData.MyInventory();
+                Inventory itemDatasInventory = itemData.MyInventory;
                 if (itemData.Item is Ammunition && unit.UnitEquipment != null && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
                 {
                     if (unit.UnitEquipment.slotVisualsCreated)

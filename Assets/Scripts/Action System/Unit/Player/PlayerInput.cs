@@ -64,7 +64,7 @@ namespace ActionSystem
             
             if (player.health.IsDead() == false)
             {
-                // If the player was holding the button for turn mode (the Turn Action) and then they release it
+                // If the Player was holding the button for turn mode (the Turn Action) and then they release it
                 if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.selectedActionType.GetAction(player) is TurnAction)
                 {
                     // Reset the line renderer and go back to the Move Action
@@ -72,13 +72,16 @@ namespace ActionSystem
                     player.unitActionHandler.SetDefaultSelectedAction();
                 }
 
-                // If the player is trying to cancel their current action
+                // If the Player is trying to cancel their current action
                 if (GameControls.gamePlayActions.cancelAction.WasPressed)
                 {
                     player.unitActionHandler.CancelActions();
                     ActionLineRenderer.ResetCurrentPositions();
                 }
-                // If it's time for the player to choose an action
+                // If the Player wants to revert back to the default selected action
+                else if (GameControls.gamePlayActions.menuContext.WasPressed && player.unitActionHandler.DefaultActionIsSelected == false)
+                    player.unitActionHandler.SetDefaultSelectedAction();
+                // If it's time for the Player to choose an action
                 else if (player.IsMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
                 {
                     // If the player wants to skip their turn
@@ -93,18 +96,18 @@ namespace ActionSystem
                     // Display the appropriate mouse cursor and line renderer, depending on what/who is at mouse grid position and which action is currently selected by the player
                     SetupCursorAndLineRenderer();
 
-                    // If the player has an attack action selected
+                    // If the Player has an attack action selected
                     BaseAction selectedAction = player.unitActionHandler.SelectedAction;
                     if (selectedAction is BaseAttackAction)
                         GridSystemVisual.UpdateAttackGridVisual();
 
-                    // If the player is trying to perform the Turn Action
+                    // If the Player is trying to perform the Turn Action
                     if (GameControls.gamePlayActions.turnMode.IsPressed || selectedAction is TurnAction)
                         HandleTurnMode();
-                    // If the player is trying to swap their weapon set
+                    // If the Player is trying to swap their weapon set
                     else if (GameControls.gamePlayActions.swapWeapons.WasPressed && GameControls.gamePlayActions.turnMode.IsPressed == false)
                         player.unitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
-                    // If the player selects a grid position to try and perform an action
+                    // If the Player selects a grid position to try and perform an action
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
                 }
@@ -162,6 +165,7 @@ namespace ActionSystem
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedUnit.GridPosition) > LevelGrid.diaganolDistance)
                 {
                     // Queue a Move Action towards the Interactable
+                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.unitInteractable);
                     player.unitActionHandler.moveAction.QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
                 }
                 else

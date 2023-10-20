@@ -58,7 +58,7 @@ namespace InventorySystem
 
         protected bool AddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
         {
-            Inventory originalInventory = newItemData.MyInventory();
+            Inventory originalInventory = newItemData.MyInventory;
 
             // If the new Item is a Shield, remove any projectiles and try to add them to the Unit's Inventories
             TryTakeStuckProjectiles(newItemData);
@@ -95,8 +95,8 @@ namespace InventorySystem
                 // If there's some left in the stack
                 else
                 {
-                    if (newItemData.MyInventory() != null && newItemData.MyInventory().slotVisualsCreated)
-                        newItemData.MyInventory().GetSlotFromItemData(newItemData).InventoryItem.UpdateStackSizeVisuals();
+                    if (newItemData.MyInventory != null && newItemData.MyInventory.slotVisualsCreated)
+                        newItemData.MyInventory.GetSlotFromItemData(newItemData).InventoryItem.UpdateStackSizeVisuals();
 
                     // If some was added to other stacks, queue an InventoryAction for the amount added
                     if (startingStackSize != newItemData.CurrentStackSize && unitAdding != null && originalInventory != this)
@@ -163,7 +163,7 @@ namespace InventorySystem
                 return false;
             }
 
-            Inventory originalInventory = newItemData.MyInventory();
+            Inventory originalInventory = newItemData.MyInventory;
 
             // If there's only one item in the way
             if (overlappedItemCount == 1)
@@ -215,7 +215,7 @@ namespace InventorySystem
 
                                     // Queue an InventoryAction to account for unequipping the item
                                     if (unitAdding != null && InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != this)
-                                        unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize);
+                                        unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize, InventoryActionType.Unequip);
                                 }
                             }
 
@@ -252,9 +252,9 @@ namespace InventorySystem
                         {
                             InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
 
-                            // Queue an InventoryAction to account for unequipping the item (not in the case of held items though)
-                            if (unitAdding != null && UnitEquipment.IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false)
-                                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
+                            // Queue an InventoryAction to account for unequipping the item
+                            if (unitAdding != null)
+                                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, InventoryActionType.Unequip);
                         }
                     }
 
@@ -337,7 +337,7 @@ namespace InventorySystem
 
                         // Queue an InventoryAction to account for unequipping the item
                         if (unitAdding != null)
-                            unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize);
+                            unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, InventoryActionType.Unequip);
                     }
                     // Remove the item from its original inventory
                     else if (InventoryUI.DraggedItem.myInventory != null)

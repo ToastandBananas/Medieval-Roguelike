@@ -24373,10 +24373,20 @@ PrefabInstance:
         type: 2}
     - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
+      propertyPath: startingEquipment.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
       propertyPath: startingEquipment.Array.data[2]
       value: 
       objectReference: {fileID: 11400000, guid: 422a243168c1e9248a2ea7446b4b9aa6,
         type: 2}
+    - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: startingEquipment.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: startingEquipment.Array.data[4]

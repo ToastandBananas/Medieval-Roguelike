@@ -84,7 +84,7 @@ namespace UnitSystem
             // Hide the Unit's base
             unit.unitMeshManager.DisableBaseMeshRenderer();
 
-            float forceMagnitude = 30000;//Random.Range(30000, 40000);
+            float forceMagnitude = Random.Range(30000, 40000);
             float towardsAttackerChance = 0.3f;
             Vector3 randomDirection = Random.onUnitSphere;
             randomDirection.y = 0; // Ensure the force is applied horizontally
@@ -107,7 +107,6 @@ namespace UnitSystem
 
             unit.rigidBody.useGravity = true;
             unit.rigidBody.isKinematic = false;
-            // unit.rigidBody.collisionDetectionMode = CollisionDetectionMode.Continuous;
             
             // Apply force to the character's Rigidbody at the specified position
             unit.rigidBody.AddForceAtPosition(forceDirection * forceMagnitude, forcePosition);
@@ -124,6 +123,9 @@ namespace UnitSystem
 
             if (unit.unitMeshManager.rightHeldItem != null)
                 DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
+
+            // Swap to the other weapon set so that when we go to loot this Unit's body, it will show the items in their equipment
+            unit.UnitEquipment.SwapWeaponSet();
         }
 
         IEnumerator Die_RotateHead(bool diedForward)
