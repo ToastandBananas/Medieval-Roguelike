@@ -7,6 +7,7 @@ using Controls;
 using GeneralUI;
 using UnitSystem;
 using Utilities;
+using ContextMenu = GeneralUI.ContextMenu;
 
 namespace ActionSystem
 {
@@ -80,7 +81,10 @@ namespace ActionSystem
                 }
                 // If the Player wants to revert back to the default selected action
                 else if (GameControls.gamePlayActions.menuContext.WasPressed && player.unitActionHandler.DefaultActionIsSelected == false)
+                {
                     player.unitActionHandler.SetDefaultSelectedAction();
+                    ContextMenu.StartContextMenuCooldown();
+                }
                 // If it's time for the Player to choose an action
                 else if (player.IsMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
                 {

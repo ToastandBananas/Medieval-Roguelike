@@ -51,6 +51,8 @@ namespace ActionSystem
         {
             if (targetUnit != null && targetUnit.health.IsDead() == false)
             {
+                targetUnit.unitActionHandler.InterruptActions();
+
                 int damageAmount = 0;
                 if (heldWeaponAttackingWith != null)
                 {

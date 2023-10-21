@@ -222,33 +222,6 @@ namespace GeneralUI
         {
             if (itemData.Item.Use(UnitManager.player, itemData, ContextMenu.targetSlot != null ? ContextMenu.targetSlot : null, ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem ? ContextMenu.targetInteractable as LooseContainerItem : null, amountToUse))
             {
-                if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
-                {
-                    LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
-                    if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
-                        InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
-
-                    if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
-                    {
-                        UnitManager.player.QuiverInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
-                        if (UnitManager.player.UnitEquipment.slotVisualsCreated && itemData.Item is Quiver)
-                            UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
-                    }
-                    else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
-                        UnitManager.player.BackpackInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
-                }
-                else if (ContextMenu.targetSlot != null)
-                {
-                    if (itemData.Item.Equipment.EquipSlot == EquipSlot.Quiver)
-                    {
-                        UnitManager.player.QuiverInventoryManager.Initialize();
-                        if (UnitManager.player.UnitEquipment.slotVisualsCreated && itemData.Item is Quiver)
-                            UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
-                    }
-                    else if (itemData.Item.Equipment.EquipSlot == EquipSlot.Back)
-                        UnitManager.player.BackpackInventoryManager.Initialize();
-                }
-
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
                     LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
             }
@@ -280,7 +253,16 @@ namespace GeneralUI
             else if (ContextMenu.targetInteractable != null)
             {
                 LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
-                InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
+                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
+                    UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+                else
+                {
+                    UnitManager.player.unitActionHandler.ForceQueueAP(100); 
+                    if (UnitManager.player.unitActionHandler.turnAction.IsFacingTarget(looseContainerItem.GridPosition()) == false)
+                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition(), false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed() * 2f);
+
+                    InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
+                }
             }
             else if (ContextMenu.targetUnit != null)
                 UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetUnit.unitInteractable);
@@ -325,7 +307,14 @@ namespace GeneralUI
                 if (ContextMenu.targetSlot.InventoryItem.myUnitEquipment != null)
                 {
                     EquipmentSlot targetEquipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
-                    DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
+
+                    // If the slot owner is dead, then it just means the Player is trying to drop a dead Unit's equipment
+                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.health.IsDead())
+                        UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
+                    else
+                        targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(ContextMenu.targetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
+
+                    DropItemManager.DropItem(targetEquipmentSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
                 }
                 else if (ContextMenu.targetSlot.InventoryItem.myInventory != null)
                     DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.GetMyUnit(), ContextMenu.targetSlot.InventoryItem.myInventory, ContextMenu.targetSlot.GetItemData());

@@ -83,7 +83,7 @@ namespace ActionSystem
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                if (/*(action == queuedActions[i] && action.CanQueueMultiple() == false) ||*/ (action is MoveAction && queuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && queuedActions[i] is MoveAction))
+                if ((action is MoveAction && queuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && queuedActions[i] is MoveAction))
                 {
                     int actionIndex = queuedActions.IndexOf(queuedActions[i]);
                     queuedActions.RemoveAt(actionIndex);
@@ -95,18 +95,18 @@ namespace ActionSystem
             lastQueuedAction = action;
             if (queuedActions.Contains(action) == false || action.CanQueueMultiple())
             {
-                if (addToFrontOfQueue == false) // Add to end of queue
+                if (addToFrontOfQueue)
+                {
+                    queuedActions.Insert(0, action);
+                    queuedAPs.Insert(0, action.GetActionPointsCost());
+                }
+                else // Add to end of queue
                 {
                     queuedActions.Add(action);
                     int cost = action.GetActionPointsCost();
                     if (unit.IsPlayer)
                         Debug.Log($"{unit.name}'s {action.name} cost: {cost}");
                     queuedAPs.Add(cost);
-                }
-                else // Add to front of queue
-                {
-                    queuedActions.Insert(0, action);
-                    queuedAPs.Insert(0, action.GetActionPointsCost());
                 }
             }
 
@@ -132,6 +132,13 @@ namespace ActionSystem
                 else if (isMoving == false)
                     StartCoroutine(GetNextQueuedAction());
             }
+        }
+
+        public void ForceQueueAP(int amountAP)
+        {
+            queuedActions.Add(GetAction<InventoryAction>()); // Use InventoryAction because it doesn't actually do anything in its TakeAction method
+            queuedAPs.Add(amountAP);
+            StartCoroutine(TryTakeTurn());
         }
 
         public abstract IEnumerator GetNextQueuedAction();
@@ -181,6 +188,19 @@ namespace ActionSystem
                 unit.unitActionHandler.SetDefaultSelectedAction();
         }
 
+        public void InterruptActions()
+        {
+            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            {
+                if (queuedActions[i].IsInterruptable())
+                {
+                    queuedActions.RemoveAt(i);
+                    if (queuedAPs.Count >= i + 1)
+                        queuedAPs.RemoveAt(i);
+                }
+            }
+        }
+
         public void ClearActionQueue(bool stopMoveAnimation, bool forceClearAll = false)
         {
             if (queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction)
@@ -188,10 +208,11 @@ namespace ActionSystem
 
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
-                if (forceClearAll || queuedActions[i] is BaseInventoryAction == false)
+                if (forceClearAll || queuedActions[i].CanBeClearedFromActionQueue())
                 {
                     queuedActions.RemoveAt(i);
-                    queuedAPs.RemoveAt(i);
+                    if (queuedAPs.Count >= i + 1)
+                        queuedAPs.RemoveAt(i);
                 }
             }
 
@@ -202,7 +223,7 @@ namespace ActionSystem
                 unit.unitAnimator.StopMovingForward();
         }
 
-        public bool AttackQueued() => queuedActions.Count > 0 && (queuedActions[0] is MeleeAction || queuedActions[0] is ShootAction);
+        public bool AttackQueuedNext() => queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction;
         #endregion
 
         #region Combat

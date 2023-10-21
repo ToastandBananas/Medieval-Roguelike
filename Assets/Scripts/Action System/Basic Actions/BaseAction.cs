@@ -121,6 +121,10 @@ namespace ActionSystem
 
         public abstract bool IsValidAction();
 
+        public abstract bool CanBeClearedFromActionQueue();
+
+        public abstract bool IsInterruptable();
+
         public abstract bool ActionIsUsedInstantly();
 
         public abstract int GetActionPointsCost();

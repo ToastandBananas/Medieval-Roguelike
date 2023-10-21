@@ -493,16 +493,6 @@ namespace ActionSystem
             return false;
         }
 
-        public override bool CanQueueMultiple() => false;
-
-        public override bool IsHotbarAction() => true;
-
-        public override bool IsMeleeAttackAction() => true;
-
-        public override bool IsRangedAttackAction() => false;
-
-        public override int GetEnergyCost() => 0;
-
         public float UnarmedAttackRange(GridPosition enemyGridPosition, bool accountForHeight)
         {
             if (accountForHeight == false)
@@ -512,6 +502,20 @@ namespace ActionSystem
             if (maxRange < 0f) maxRange = 0f;
             return maxRange;
         }
+
+        public override int GetEnergyCost() => 0;
+
+        public override bool IsInterruptable() => false;
+
+        public override bool CanQueueMultiple() => false;
+
+        public override bool IsHotbarAction() => true;
+
+        public override bool CanBeClearedFromActionQueue() => true;
+
+        public override bool IsMeleeAttackAction() => true;
+
+        public override bool IsRangedAttackAction() => false;
 
         public override bool ActionIsUsedInstantly() => false;
     }

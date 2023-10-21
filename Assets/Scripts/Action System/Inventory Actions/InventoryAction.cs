@@ -47,7 +47,11 @@ namespace ActionSystem
 
         public override int GetEnergyCost() => 0;
 
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => true;
+
+        public override bool CanBeClearedFromActionQueue() => false;
 
         public override bool IsHotbarAction() => false;
 

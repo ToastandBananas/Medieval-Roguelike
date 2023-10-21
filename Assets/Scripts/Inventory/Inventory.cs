@@ -655,7 +655,7 @@ namespace InventorySystem
 
                 itemDatas[i].RandomizeData();
 
-                if (TryAddItem(itemDatas[i], null) == false)
+                if (TryAddItem(itemDatas[i], null, false) == false)
                 {
                     Debug.LogWarning($"{itemDatas[i].Item.name} can't fit in inventory...");
                     itemDatas.Remove(itemDatas[i]);

@@ -13,6 +13,12 @@ namespace ActionSystem
 
         public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
         {
+            if (itemDataToEquip.Item is Equipment == false)
+            {
+                Debug.LogWarning($"{itemDataToEquip.Item.Name} is not a type of Equipment, but you're trying to queue an EquipAction...");
+                return;
+            }
+
             this.itemsContainerInventoryManager = itemsContainerInventoryManager;
 
             if (itemDatasToEquip.Contains(itemDataToEquip))
@@ -84,29 +90,17 @@ namespace ActionSystem
 
         public override int GetActionPointsCost()
         {
-            DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().LastOrDefault();
-            // EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
-            ItemData itemDataToEquip = (ItemData)dictionaryEntry.Key;
+            ItemData itemDataToEquip = (ItemData)itemDatasToEquip.Cast<DictionaryEntry>().LastOrDefault().Key;
             int cost = GetItemsEquipActionPointCost(itemDataToEquip, itemDataToEquip.CurrentStackSize, itemsContainerInventoryManager);
-
-            // Account for having to unequip any items
-            /*if (unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot))
-                cost += UnequipAction.GetItemsUnequipActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].CurrentStackSize, itemsContainerInventoryManager);
-
-            if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
-            {
-                ItemData oppositeItemData = unit.UnitEquipment.EquippedItemDatas[(int)unit.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot)];
-                if (oppositeItemData != null && oppositeItemData.Item != null)
-                {
-                    if ((itemDataToEquip.Item is Weapon && itemDataToEquip.Item.Weapon.IsTwoHanded) || (oppositeItemData.Item is Weapon && oppositeItemData.Item.Weapon.IsTwoHanded))
-                        cost += UnequipAction.GetItemsUnequipActionPointCost(oppositeItemData, oppositeItemData.CurrentStackSize, itemsContainerInventoryManager);
-                }
-            }*/
 
             itemsContainerInventoryManager = null;
             return cost;
         }
 
         public override bool IsValidAction() => unit.UnitEquipment != null;
+
+        public override bool IsInterruptable() => false;
+
+        public override bool CanBeClearedFromActionQueue() => false;
     }
 }

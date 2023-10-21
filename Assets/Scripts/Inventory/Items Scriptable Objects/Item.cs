@@ -78,13 +78,6 @@ namespace InventorySystem
 
         public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         {
-            itemData.Use(amountToUse);
-
-            if (itemData.RemainingUses <= 0)
-            {
-                if (itemData.MyInventory != null)
-                    itemData.MyInventory.RemoveItem(itemData);
-            }
             return true;
         }
 

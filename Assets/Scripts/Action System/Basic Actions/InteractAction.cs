@@ -58,6 +58,12 @@ namespace ActionSystem
         {
             if (targetInteractable is Door)
                 return 150;
+            else if (targetInteractable is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems() == false)
+                    return 0;
+            }
             else if (targetInteractable is LooseItem)
                 return 0; // We'll calculate this when we queue an equip or inventory action
 
@@ -70,6 +76,8 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => false;
@@ -77,6 +85,8 @@ namespace ActionSystem
         public override bool IsValidAction() => true;
 
         public override bool ActionIsUsedInstantly() => true;
+
+        public override bool CanBeClearedFromActionQueue() => true;
 
         public override int GetEnergyCost() => 0;
     }

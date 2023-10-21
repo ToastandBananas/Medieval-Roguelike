@@ -87,12 +87,18 @@ namespace GeneralUI
 
             DisableContextMenu(true);
 
-            targetUnit = PlayerInput.Instance.highlightedUnit;
-            targetInteractable = PlayerInput.Instance.highlightedInteractable;
             targetSlot = null;
+            targetInteractable = PlayerInput.Instance.highlightedInteractable;
+            targetUnit = PlayerInput.Instance.highlightedUnit;
+            if (targetUnit != null && targetUnit.health.IsDead())
+                targetUnit.UpdateGridPosition();
+
             if (InventoryUI.activeSlot != null)
             {
                 targetSlot = InventoryUI.activeSlot.ParentSlot();
+                targetUnit = null;
+                targetInteractable = null;
+
                 if (targetSlot is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
@@ -103,6 +109,7 @@ namespace GeneralUI
 
             if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
             {
+                targetUnit = null;
                 CreateMoveToButton();
             }
             else
@@ -116,8 +123,12 @@ namespace GeneralUI
                 CreateSplitStackButton();
                 CreateDropItemButton();
 
-                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetSlot == null && activeCount != 1) || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
+                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
+                    || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                    || (targetUnit != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetUnit.GridPosition, UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
+                {
                     CreateMoveToButton();
+                }
             }
 
             int buttonCount = 0;
@@ -384,12 +395,14 @@ namespace GeneralUI
             if (targetSlot != null && targetSlot is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerSlot = targetSlot as ContainerEquipmentSlot;
-                if (containerSlot.containerInventoryManager.ContainsAnyItems())
+                if (containerSlot.InventoryItem.myUnitEquipment.MyUnit == UnitManager.player && containerSlot.containerInventoryManager.ContainsAnyItems())
                     return;
             }
 
             GetContextMenuButton().SetupDropItemButton();
         }
+
+        public static void StartContextMenuCooldown() => Instance.StartCoroutine(BuildContextMenuCooldown());
 
         static IEnumerator BuildContextMenuCooldown()
         {

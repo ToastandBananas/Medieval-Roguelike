@@ -385,11 +385,15 @@ namespace ActionSystem
 
         public override int GetEnergyCost() => 25;
 
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();
+
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => false;
 
-        public override bool IsHotbarAction() => true;
+        public override bool CanBeClearedFromActionQueue() => true;
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();
+        public override bool IsHotbarAction() => true;
 
         public override bool IsMeleeAttackAction() => true;
 

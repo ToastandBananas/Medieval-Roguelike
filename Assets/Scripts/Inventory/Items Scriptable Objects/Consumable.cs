@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnitSystem;
 using InteractableObjects;
+using ActionSystem;
 
 namespace InventorySystem
 {
@@ -10,12 +11,12 @@ namespace InventorySystem
         [Header("Item/Sprite Change Thresholds")]
         [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
 
+        [Header("Consumable Info")]
+        [SerializeField] float consumeAPCostMultiplier = 1f;
+
         public override bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         {
             ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
-
-            base.Use(unit, itemData, slotUsingFrom, looseItemUsing, amountToUse);
-
             if (ItemChangeThreshold.ThresholdReached(itemData, true, currentItemChangeThreshold, itemChangeThresholds, out ItemChangeThreshold newThreshold))
             {
                 if (itemData.MyInventory != null)
@@ -35,7 +36,11 @@ namespace InventorySystem
                 }
             }
 
-            // TODO: ConsumeAction
+            // For each part of a consumable we're trying to eat, we should queue a separate ConsumeAction. That way we're not incurring a huge AP cost at once and consuming can be interrupted.
+            for (int i = 0; i < amountToUse; i++)
+            {
+                unit.unitActionHandler.GetAction<ConsumeAction>().QueueAction(itemData);
+            }
 
             return true;
         }
@@ -52,5 +57,7 @@ namespace InventorySystem
         }
 
         public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
+
+        public float ConsumeAPCostMultiplier => consumeAPCostMultiplier;
     }
 }

@@ -433,13 +433,17 @@ namespace ActionSystem
             return false;
         }
 
+        public bool RangedWeaponIsLoaded() => unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
+
         public override int GetEnergyCost() => 0;
 
         public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 
-        public bool RangedWeaponIsLoaded() => unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
+        public override bool IsInterruptable() => false;
+
+        public override bool CanBeClearedFromActionQueue() => true;
 
         public override bool ActionIsUsedInstantly() => false;
 

@@ -5,6 +5,7 @@ using ActionSystem;
 using Utilities;
 using UnitSystem;
 using ContextMenu = GeneralUI.ContextMenu;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -137,9 +138,6 @@ namespace InventorySystem
 
         void Equip(ItemData newItemData, EquipSlot targetEquipSlot)
         {
-            // Clear out the item from it's original slot
-            RemoveItemFromOrigin(newItemData);
-
             if (IsHeldItemEquipSlot(targetEquipSlot))
             {
                 EquipSlot oppositeWeaponSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
@@ -166,6 +164,12 @@ namespace InventorySystem
                 UnequipItem(targetEquipSlot);
             }
 
+            // If the new item is coming from an NPC's Container Equipment Slot or a Loose Container Item, transfer the inventories
+            TransferContainerInventories(targetEquipSlot, newItemData);
+
+            // Clear out the item from it's original slot
+            RemoveItemFromOrigin(newItemData);
+
             // Assign the data
             equippedItemDatas[(int)targetEquipSlot] = newItemData;
 
@@ -189,6 +193,65 @@ namespace InventorySystem
                 return;
 
             AddActions(newItemData.Item as Equipment);
+        }
+
+        void TransferContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
+        {
+            if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.myUnitEquipment != null)
+            {
+                if (targetEquipSlot == EquipSlot.Quiver)
+                {
+                    ContainerEquipmentSlot quiverSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
+                    if (quiverSlot.GetItemData().Item is Quiver)
+                        myUnit.QuiverInventoryManager.SwapInventories(quiverSlot.containerInventoryManager);
+                }
+                else if (targetEquipSlot == EquipSlot.Back)
+                {
+                    ContainerEquipmentSlot backpackSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
+                    if (backpackSlot.GetItemData().Item is Backpack)
+                        myUnit.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
+                }
+            }
+            else if (ContextMenu.targetSlot != null && ContextMenu.targetSlot is ContainerEquipmentSlot && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != this)
+            {
+                if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
+                {
+                    ContainerEquipmentSlot quiverSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
+                    if (quiverSlot.GetItemData().Item is Quiver)
+                    {
+                        if (quiverSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                            InventoryUI.GetContainerUI(quiverSlot.containerInventoryManager).CloseContainerInventory();
+
+                        UnitManager.player.QuiverInventoryManager.SwapInventories(quiverSlot.containerInventoryManager);
+                    }
+                }
+                else if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Back)
+                {
+                    ContainerEquipmentSlot backpackSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
+                    if (backpackSlot.GetItemData().Item is Backpack)
+                    {
+                        if (backpackSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                            InventoryUI.GetContainerUI(backpackSlot.containerInventoryManager).CloseContainerInventory();
+
+                        UnitManager.player.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
+                    }
+                }
+            }
+            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
+            {
+                LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
+                    InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
+
+                if (targetEquipSlot == EquipSlot.Quiver)
+                {
+                    UnitManager.player.QuiverInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
+                    if (UnitManager.player.UnitEquipment.slotVisualsCreated && newItemData.Item is Quiver)
+                        UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                }
+                else if (targetEquipSlot == EquipSlot.Back)
+                    UnitManager.player.BackpackInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
+            }
         }
 
         public bool TryAddToEquippedAmmunition(ItemData ammoItemData)

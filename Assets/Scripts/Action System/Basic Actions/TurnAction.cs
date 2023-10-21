@@ -530,6 +530,8 @@ namespace ActionSystem
 
         public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == unit.GridPosition ? true : DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
 
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
@@ -541,6 +543,8 @@ namespace ActionSystem
         public override int GetEnergyCost() => 0;
 
         public override bool ActionIsUsedInstantly() => false;
+
+        public override bool CanBeClearedFromActionQueue() => true;
 
         public float DefaultRotateSpeed() => defaultRotateSpeed;
     }

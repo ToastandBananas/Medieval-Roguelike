@@ -9,7 +9,7 @@ namespace ActionSystem
         List<EquipSlot> targetEquipSlots = new List<EquipSlot>();
         ContainerInventoryManager itemsContainerInventoryManager;
 
-        static readonly float unequipActionPointCostMultiplier = 0.75f;
+        static readonly float unequipAPCostMultiplier = 0.75f;
 
         public void QueueAction(EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
         {
@@ -37,7 +37,7 @@ namespace ActionSystem
         public static int GetItemsUnequipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
             // Debug.Log($"Unequip Cost of {itemData.Item.Name}: {Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize) * unequipActionPointCostMultiplier)}");
-            return Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * unequipActionPointCostMultiplier);
+            return Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * unequipAPCostMultiplier);
         }
 
         public override int GetActionPointsCost()
@@ -53,5 +53,9 @@ namespace ActionSystem
         }
 
         public override bool IsValidAction() => unit.UnitEquipment != null;
+
+        public override bool IsInterruptable() => false;
+
+        public override bool CanBeClearedFromActionQueue() => false;
     }
 }

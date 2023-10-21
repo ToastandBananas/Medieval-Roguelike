@@ -1205,6 +1205,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 42978d32b3a6dce43bf4f37c14a40f23, type: 2}
   - {fileID: 11400000, guid: 117798a1a749f81419de04fbbddb7d47, type: 2}
   - {fileID: 11400000, guid: 02c7d6c4db975da479ba897fe0548abc, type: 2}
+  - {fileID: 11400000, guid: a8260d2ab069d63439bee569be215b80, type: 2}
   - {fileID: 11400000, guid: b13130a362e058946842a1a0c68f27d8, type: 2}
   - {fileID: 11400000, guid: fb35a3895d3eb2043ba0e0588d8cbed7, type: 2}
   - {fileID: 11400000, guid: b6b114d6b18a7ea4a8bb2e6a213ca4f6, type: 2}
@@ -1373,6 +1374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionsParent: {fileID: 6202983556206637106}
+  gender: 0
   shoulderHeight: 0.25
   unitInventoryManager: {fileID: 7995056210117479334}
   myUnitEquipment: {fileID: 4966063475579553678}

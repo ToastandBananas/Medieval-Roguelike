@@ -48,9 +48,13 @@ namespace ActionSystem
             return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.UnitEquipment.HasValidAmmunitionEquipped();
+
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => false;
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.UnitEquipment.HasValidAmmunitionEquipped();
+        public override bool CanBeClearedFromActionQueue() => true;
 
         public override bool IsHotbarAction() => true;
 

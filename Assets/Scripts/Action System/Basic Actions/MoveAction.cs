@@ -572,11 +572,15 @@ namespace ActionSystem
 
         public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
 
+        public override bool IsInterruptable() => false;
+
         public override bool CanQueueMultiple() => false;
 
         public override bool IsHotbarAction() => true;
 
         public override bool ActionIsUsedInstantly() => false;
+
+        public override bool CanBeClearedFromActionQueue() => true;
 
         public override int GetEnergyCost() => 0;
 

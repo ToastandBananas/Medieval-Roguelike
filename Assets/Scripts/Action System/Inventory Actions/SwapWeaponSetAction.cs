@@ -5,6 +5,8 @@ namespace ActionSystem
 {
     public class SwapWeaponSetAction : BaseInventoryAction
     {
+        readonly static float swapAPMultiplier = 0.5f;
+
         public override void TakeAction()
         {
             unit.UnitEquipment.SwapWeaponSet();
@@ -44,12 +46,16 @@ namespace ActionSystem
             }
 
             // Swapping a weapon set shouldn't cost as much as actually equipping and unequipping the items
-            cost = Mathf.RoundToInt(cost * 0.5f);
+            cost = Mathf.RoundToInt(cost * swapAPMultiplier);
 
             // Debug.Log($"Swap Weapon Set Cost for {unit.name}: {cost}");
             return cost;
         }
 
+        public override bool IsInterruptable() => false;
+
         public override bool IsValidAction() => unit.UnitEquipment != null;
+
+        public override bool CanBeClearedFromActionQueue() => false;
     }
 }
