@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitSystem;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -9,11 +10,11 @@ namespace InventorySystem
         [Header("Item/Sprite Change Thresholds")]
         [SerializeField] ItemChangeThreshold[] itemChangeThresholds;
 
-        public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
+        public override bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         {
             ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemData, itemChangeThresholds);
 
-            base.Use(unit, itemData, amountToUse);
+            base.Use(unit, itemData, slotUsingFrom, looseItemUsing, amountToUse);
 
             if (ItemChangeThreshold.ThresholdReached(itemData, true, currentItemChangeThreshold, itemChangeThresholds, out ItemChangeThreshold newThreshold))
             {
@@ -33,6 +34,8 @@ namespace InventorySystem
                     }
                 }
             }
+
+            // TODO: ConsumeAction
 
             return true;
         }

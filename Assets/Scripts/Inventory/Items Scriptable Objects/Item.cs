@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitSystem;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -75,7 +76,7 @@ namespace InventorySystem
         public int MaxUses => maxUses;
         public bool IsUsable => isUsable;
 
-        public virtual bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
+        public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         {
             itemData.Use(amountToUse);
 

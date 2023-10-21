@@ -542,7 +542,7 @@ PrefabInstance:
     - target: {fileID: 2108678774539729225, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: shieldSkill.baseValue
-      value: 1000
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2108678774539729225, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}

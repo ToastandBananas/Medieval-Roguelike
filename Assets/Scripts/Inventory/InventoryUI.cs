@@ -154,7 +154,7 @@ namespace InventorySystem
                         else
                         {
                             EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                            UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot);
+                            UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
 
                             DisableDraggedItem();
                         }

@@ -37,7 +37,7 @@ namespace InventorySystem
         {
             if (item != null)
             {
-                name = item.name;
+                name = item.Name;
                 if (forceRandomization || hasBeenRandomized == false)
                 {
                     hasBeenRandomized = true;
@@ -52,7 +52,7 @@ namespace InventorySystem
                                 if (item != newThreshold.NewItem)
                                 {
                                     item = newThreshold.NewItem;
-                                    name = item.name;
+                                    name = item.Name;
                                 }
                             }
                         }
@@ -72,7 +72,7 @@ namespace InventorySystem
                                 if (item != newThreshold.NewItem)
                                 {
                                     item = newThreshold.NewItem;
-                                    name = item.name;
+                                    name = item.Name;
                                 }
                             }
                         }
@@ -104,7 +104,7 @@ namespace InventorySystem
 
             if (item.GetType() != itemDataToCompare.item.GetType())
             {
-                Debug.LogWarning($"{item.name} and {itemDataToCompare.item.name} are not the same type of Item and should not be compared...");
+                Debug.LogWarning($"{item.Name} and {itemDataToCompare.item.Name} are not the same type of Item and should not be compared...");
                 return false;
             }
 
@@ -138,7 +138,7 @@ namespace InventorySystem
         public void TransferData(ItemData itemDataToCopy)
         {
             item = itemDataToCopy.item;
-            name = item.name;
+            name = item.Name;
             hasBeenRandomized = itemDataToCopy.hasBeenRandomized;
 
             currentStackSize = itemDataToCopy.currentStackSize;
@@ -153,7 +153,7 @@ namespace InventorySystem
         {
             ItemData temp = new ItemData();
             temp.item = item;
-            temp.name = item.name;
+            temp.name = item.Name;
             temp.currentStackSize = currentStackSize;
             temp.remainingUses = remainingUses;
             temp.damage = damage;
@@ -162,7 +162,7 @@ namespace InventorySystem
             temp.hasBeenRandomized = hasBeenRandomized;
 
             item = otherItemData.item;
-            name = item.name;
+            name = item.Name;
             currentStackSize = otherItemData.currentStackSize;
             remainingUses = otherItemData.remainingUses;
             damage = otherItemData.damage;
@@ -171,7 +171,7 @@ namespace InventorySystem
             hasBeenRandomized = otherItemData.hasBeenRandomized;
 
             otherItemData.item = temp.item;
-            otherItemData.name = otherItemData.item.name;
+            otherItemData.name = otherItemData.item.Name;
             otherItemData.currentStackSize = temp.currentStackSize;
             otherItemData.remainingUses = temp.remainingUses;
             otherItemData.damage = temp.damage;
@@ -212,10 +212,10 @@ namespace InventorySystem
             {
                 if (item.PluralName != "")
                     return item.PluralName;
-                return $"{item.name}s";
+                return $"{item.Name}s";
             }
 
-            return item.name;
+            return item.Name;
         }
 
         public void Use(int uses) => remainingUses -= uses;

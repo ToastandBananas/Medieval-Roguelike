@@ -1,6 +1,7 @@
 using UnityEngine;
 using ActionSystem;
 using UnitSystem;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -12,10 +13,17 @@ namespace InventorySystem
         [Header("Actions")]
         [SerializeField] ActionType[] actionTypes;
 
-        public override bool Use(Unit unit, ItemData itemData, int amountToUse = 1)
+        public override bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         { 
             bool canEquipItem = unit.UnitEquipment.CanEquipItemAt(itemData, equipSlot);
-            unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot);
+
+            ContainerInventoryManager itemsContainerInventoryManager = null;
+            if (slotUsingFrom != null && slotUsingFrom is ContainerEquipmentSlot)
+                itemsContainerInventoryManager = slotUsingFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager;
+            else if (looseItemUsing != null && looseItemUsing is LooseContainerItem)
+                itemsContainerInventoryManager = looseItemUsing.LooseContainerItem.ContainerInventoryManager;
+
+            unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot, itemsContainerInventoryManager);
             return canEquipItem;
         }
 

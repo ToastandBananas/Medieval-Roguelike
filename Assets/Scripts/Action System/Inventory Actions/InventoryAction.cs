@@ -4,18 +4,22 @@ using UnityEngine;
 namespace ActionSystem
 {
     // We use Equip & Unequip for when we need to use the Action Point cost for these actions, but don't actually want to queue an Equip or Unequip action
-    public enum InventoryActionType { Default, Equip, Unequip }
+    public enum InventoryActionType { Default, Equip, Unequip, Drop }
 
     public class InventoryAction : BaseInventoryAction
     {
         ItemData targetItemData;
         int itemCount;
+        ContainerInventoryManager itemsContainerInventoryManager;
         InventoryActionType inventoryActionType;
 
-        public void QueueAction(ItemData targetItemData, int itemCount, InventoryActionType inventoryActionType = InventoryActionType.Default)
+        readonly float dropActionPointCostMultiplier = 0.2f;
+
+        public void QueueAction(ItemData targetItemData, int itemCount, ContainerInventoryManager itemsContainerInventoryManager, InventoryActionType inventoryActionType = InventoryActionType.Default)
         {
             this.targetItemData = targetItemData;
             this.itemCount = itemCount;
+            this.itemsContainerInventoryManager = itemsContainerInventoryManager;
             this.inventoryActionType = inventoryActionType;
             QueueAction();
         }
@@ -27,12 +31,18 @@ namespace ActionSystem
 
         public override int GetActionPointsCost()
         {
+            int cost;
             if (inventoryActionType == InventoryActionType.Default)
-                return GetItemsActionPointCost(targetItemData, itemCount);
+                cost = GetItemsActionPointCost(targetItemData, itemCount, itemsContainerInventoryManager);
+            else if (inventoryActionType == InventoryActionType.Drop)
+                cost = Mathf.RoundToInt(GetItemsActionPointCost(targetItemData, itemCount, itemsContainerInventoryManager) * dropActionPointCostMultiplier);
             else if (inventoryActionType == InventoryActionType.Unequip)
-                return UnequipAction.GetItemsUnequipActionPointCost(targetItemData, itemCount);
+                cost = UnequipAction.GetItemsUnequipActionPointCost(targetItemData, itemCount, itemsContainerInventoryManager);
             else
-                return EquipAction.GetItemsEquipActionPointCost(targetItemData, itemCount);
+                cost = EquipAction.GetItemsEquipActionPointCost(targetItemData, itemCount, itemsContainerInventoryManager);
+
+            itemsContainerInventoryManager = null;
+            return cost;
         }
 
         public override int GetEnergyCost() => 0;

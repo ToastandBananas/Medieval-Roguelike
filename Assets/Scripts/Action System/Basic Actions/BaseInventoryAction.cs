@@ -1,4 +1,3 @@
-using InteractableObjects;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
@@ -7,13 +6,36 @@ namespace ActionSystem
 {
     public abstract class BaseInventoryAction : BaseAction
     {
-        protected readonly static int defaultActionPointCostPerPound = 20;
+        readonly static int defaultActionPointCostPerPound = 20;
+        readonly static float insideBagActionPointCostMultiplier = 0.2f;
 
-        public static int GetItemsActionPointCost(ItemData itemData, int stackSize)
+        public static int GetItemsActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
+            float cost = CalculateItemsCost(itemData.Item.Weight, GetItemSizeMultiplier(itemData.Item.ItemSize), stackSize);
+
+            if (itemsContainerInventoryManager != null)
+            {
+                for (int i = 0; i < itemsContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    ItemData itemInContainer = itemsContainerInventoryManager.ParentInventory.ItemDatas[i];
+                    cost += CalculateItemsCost(itemInContainer.Item.Weight, GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagActionPointCostMultiplier;
+                }
+
+                for (int i = 0; i < itemsContainerInventoryManager.SubInventories.Length; i++)
+                {
+                    for (int j = 0; j < itemsContainerInventoryManager.SubInventories[i].ItemDatas.Count; j++)
+                    {
+                        ItemData itemInContainer = itemsContainerInventoryManager.SubInventories[i].ItemDatas[j];
+                        cost += CalculateItemsCost(itemInContainer.Item.Weight, GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagActionPointCostMultiplier;
+                    }
+                }
+            }
+
             // Debug.Log($"Cost for {itemData.Item.Name}: {Mathf.RoundToInt(itemData.Item.Weight * defaultActionPointCostPerPound * GetItemSizeMultiplier(itemData.Item.ItemSize) * stackSize)}");
-            return Mathf.RoundToInt(itemData.Item.Weight * defaultActionPointCostPerPound * GetItemSizeMultiplier(itemData.Item.ItemSize) * stackSize);
+            return Mathf.RoundToInt(cost);
         }
+
+        static float CalculateItemsCost(float itemWeight, float itemSizeMultiplier, int stackSize) => itemWeight * defaultActionPointCostPerPound * itemSizeMultiplier * stackSize;
 
         static float GetItemSizeMultiplier(ItemSize itemSize)
         {

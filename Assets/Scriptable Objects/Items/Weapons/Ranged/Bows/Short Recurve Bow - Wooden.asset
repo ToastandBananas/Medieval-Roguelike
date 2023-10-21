@@ -22,7 +22,7 @@ MonoBehaviour:
   itemSize: 4
   width: 2
   height: 4
-  weight: 6
+  weight: 2.5
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: 3f5fc2cf6b50cbf458b1815e9e19f639, type: 3}
   maxUses: 1

@@ -2,6 +2,7 @@ using UnityEngine;
 using InteractableObjects;
 using ActionSystem;
 using UnitSystem;
+using ContextMenu = GeneralUI.ContextMenu;
 
 namespace InventorySystem
 {
@@ -44,11 +45,17 @@ namespace InventorySystem
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
 
-            // In this case, the Player is dropping an item from a dead Unit's equipment
+            // In this case, the Player is dropping an item from a dead Unit's inventory
             if (unit.health.IsDead())
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            {
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+            }
             else
-                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
+            {
+                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+            }
         }
 
         public static void DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
@@ -64,6 +71,7 @@ namespace InventorySystem
             else
                 looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
 
+            ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield)
@@ -71,9 +79,27 @@ namespace InventorySystem
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
             else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver))
+            {
                 SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
+                itemsContainerInventoryManager = looseItem.LooseContainerItem.ContainerInventoryManager;
+            }
             else
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
+
+            // We queue each action twice to account for unequipping the item before dropping it
+            if (unitEquipment.MyUnit.health.IsDead()) // In this case, the player is dropping an item from a dead Unit's equipment
+            {
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+            }
+            else
+            {
+                // The context menu already accounts for unequipping AP cost by calling an UnequipAction
+                if (ContextMenu.targetSlot == null || InventoryUI.isDraggingItem)
+                    unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+
+                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+            }
 
             unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
             unitEquipment.RemoveEquipmentMesh(equipSlot);
@@ -97,18 +123,6 @@ namespace InventorySystem
 
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
-
-            // We queue each action twice to account for unequipping the item before dropping it
-            if (unitEquipment.MyUnit.health.IsDead()) // In this case, the player is dropping an item from a dead Unit's equipment
-            {
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, InventoryActionType.Unequip);
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
-            }
-            else
-            {
-                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, InventoryActionType.Unequip);
-                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize);
-            }
 
             ActionSystemUI.UpdateActionVisuals();
         }

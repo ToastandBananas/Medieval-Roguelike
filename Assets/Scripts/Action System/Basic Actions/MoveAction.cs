@@ -127,6 +127,13 @@ namespace ActionSystem
                     yield return null;
             }
 
+            // This Unit can die during an opportunity attack
+            if (unit.health.IsDead())
+            {
+                CompleteAction();
+                yield break;
+            }
+
             // Unblock the Unit's current position since they're about to move
             unit.UnblockCurrentPosition();
             unit.unitActionHandler.SetIsMoving(true);
@@ -432,8 +439,6 @@ namespace ActionSystem
                         npcActionHandler.AssignNextPatrolTargetPosition();
                     }
                 }
-
-                CompleteAction();
             }
 
             unit.BlockCurrentPosition();

@@ -9,9 +9,12 @@ namespace ActionSystem
     public class EquipAction : BaseInventoryAction
     {
         OrderedDictionary itemDatasToEquip = new OrderedDictionary();
+        ContainerInventoryManager itemsContainerInventoryManager;
 
-        public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot)
+        public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
         {
+            this.itemsContainerInventoryManager = itemsContainerInventoryManager;
+
             if (itemDatasToEquip.Contains(itemDataToEquip))
                 itemDatasToEquip.Remove(itemDataToEquip);
 
@@ -34,13 +37,18 @@ namespace ActionSystem
             itemDatasToEquip.Remove((ItemData)itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault().Key);
         }
 
-        public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize)
+        public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
             float costMultiplier = 1f;
             if (itemData.Item is Equipment)
             {
                 if (UnitEquipment.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
-                    costMultiplier = 0.5f;
+                {
+                    if (itemData.Item is Weapon)
+                        costMultiplier = 0.4f;
+                    else
+                        costMultiplier = 0.6f;
+                }
                 else
                 {
                     switch (itemData.Item.Equipment.EquipSlot)
@@ -61,29 +69,29 @@ namespace ActionSystem
                             costMultiplier = 3.5f;
                             break;
                         case EquipSlot.Back:
-                            costMultiplier = 4f;
+                            costMultiplier = 1.4f;
                             break;
                         case EquipSlot.Quiver:
-                            costMultiplier = 2f;
+                            costMultiplier = 1.2f;
                             break;
                     }
                 }
             }
-
-            // Debug.Log($"Equip Cost of {itemData.Item.Name}: {Mathf.RoundToInt(GetItemsActionPointCost(itemData, stackSize) * (float)costMultiplier)}");
-            return Mathf.RoundToInt(GetItemsActionPointCost(itemData, stackSize) * (float)costMultiplier);
+            
+            // Debug.Log($"Equip Cost of {itemData.Item.Name}: {Mathf.RoundToInt(GetItemsActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * (float)costMultiplier)}");
+            return Mathf.RoundToInt(GetItemsActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * (float)costMultiplier);
         }
 
         public override int GetActionPointsCost()
         {
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().LastOrDefault();
-            EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
+            // EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
             ItemData itemDataToEquip = (ItemData)dictionaryEntry.Key;
-            int cost = GetItemsEquipActionPointCost(itemDataToEquip, itemDataToEquip.CurrentStackSize);
+            int cost = GetItemsEquipActionPointCost(itemDataToEquip, itemDataToEquip.CurrentStackSize, itemsContainerInventoryManager);
 
             // Account for having to unequip any items
-            if (unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot))
-                cost += UnequipAction.GetItemsUnequipActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].CurrentStackSize);
+            /*if (unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot))
+                cost += UnequipAction.GetItemsUnequipActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].CurrentStackSize, itemsContainerInventoryManager);
 
             if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
@@ -91,10 +99,11 @@ namespace ActionSystem
                 if (oppositeItemData != null && oppositeItemData.Item != null)
                 {
                     if ((itemDataToEquip.Item is Weapon && itemDataToEquip.Item.Weapon.IsTwoHanded) || (oppositeItemData.Item is Weapon && oppositeItemData.Item.Weapon.IsTwoHanded))
-                        cost += UnequipAction.GetItemsUnequipActionPointCost(oppositeItemData, oppositeItemData.CurrentStackSize);
+                        cost += UnequipAction.GetItemsUnequipActionPointCost(oppositeItemData, oppositeItemData.CurrentStackSize, itemsContainerInventoryManager);
                 }
-            }
+            }*/
 
+            itemsContainerInventoryManager = null;
             return cost;
         }
 

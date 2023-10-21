@@ -220,7 +220,7 @@ namespace GeneralUI
 
         void UseItem(ItemData itemData, int amountToUse = 1)
         {
-            if (itemData.Item.Use(UnitManager.player, itemData, amountToUse))
+            if (itemData.Item.Use(UnitManager.player, itemData, ContextMenu.targetSlot != null ? ContextMenu.targetSlot : null, ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem ? ContextMenu.targetInteractable as LooseContainerItem : null, amountToUse))
             {
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
                 {
@@ -264,7 +264,7 @@ namespace GeneralUI
         void UnequipItem()
         {
             EquipmentSlot equipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
-            UnitManager.player.unitActionHandler.GetAction<UnequipAction>().QueueAction(equipmentSlot.EquipSlot);
+            UnitManager.player.unitActionHandler.GetAction<UnequipAction>().QueueAction(equipmentSlot.EquipSlot, equipmentSlot is ContainerEquipmentSlot ? equipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
             ContextMenu.DisableContextMenu();
         }
 

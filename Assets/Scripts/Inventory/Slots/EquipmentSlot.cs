@@ -159,6 +159,8 @@ namespace InventorySystem
 
         public void SetMyCharacterEquipment(UnitEquipment unitEquipment) => myUnitEquipment = unitEquipment;
 
+        public ContainerEquipmentSlot ContainerEquipmentSlot => this as ContainerEquipmentSlot;
+
         public override ItemData GetItemData() => inventoryItem.itemData;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;

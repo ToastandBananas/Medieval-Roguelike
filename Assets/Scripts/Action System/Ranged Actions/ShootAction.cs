@@ -48,7 +48,15 @@ namespace ActionSystem
             {
                 CompleteAction();
                 unit.unitActionHandler.SetTargetEnemyUnit(targetEnemyUnit);
-                unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
+
+                ReloadAction reloadAction = unit.unitActionHandler.GetAction<ReloadAction>();
+                if (reloadAction == null)
+                {
+                    CompleteAction();
+                    return;
+                }
+
+                reloadAction.QueueAction();
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))

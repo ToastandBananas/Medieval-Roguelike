@@ -98,7 +98,10 @@ namespace ActionSystem
                 if (addToFrontOfQueue == false) // Add to end of queue
                 {
                     queuedActions.Add(action);
-                    queuedAPs.Add(action.GetActionPointsCost());
+                    int cost = action.GetActionPointsCost();
+                    if (unit.IsPlayer)
+                        Debug.Log($"{unit.name}'s {action.name} cost: {cost}");
+                    queuedAPs.Add(cost);
                 }
                 else // Add to front of queue
                 {

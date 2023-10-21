@@ -132,7 +132,7 @@ namespace ActionSystem
                             {
                                 ClearActionQueue(true);
                                 GetAction<SwapWeaponSetAction>().QueueAction();
-                                GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot);
+                                GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                                 return;
                             }
                             else if (unit.stats.CanFightUnarmed)
@@ -304,7 +304,7 @@ namespace ActionSystem
                     {
                         ClearActionQueue(true);
                         GetAction<SwapWeaponSetAction>().QueueAction();
-                        GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot);
+                        GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
                     }
                     else
@@ -480,6 +480,9 @@ namespace ActionSystem
 
         void FindBestTargetEnemy()
         {
+            if (unit.health.IsDead())
+                return;
+
             if (unit.vision.knownEnemies.Count > 0)
             {
                 // If there's only one visible enemy, then there's no need to figure out the best enemy AI action
