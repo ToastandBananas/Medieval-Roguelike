@@ -67,7 +67,7 @@ namespace ActionSystem
             }
 
             // If the next position is obstructed
-            if (LevelGrid.Instance.GridPositionObstructed(nextTargetGridPosition))
+            if (LevelGrid.GridPositionObstructed(nextTargetGridPosition))
             {
                 // Get a new path to the target position
                 GetPathToTargetPosition(finalTargetGridPosition);
@@ -81,10 +81,10 @@ namespace ActionSystem
                 }
 
                 nextTargetPosition = GetNextTargetPosition();
-                nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
+                nextTargetGridPosition.Set(nextTargetPosition);
             }
 
-            if (nextTargetPosition == unit.WorldPosition || LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(nextTargetPosition)))
+            if (nextTargetPosition == unit.WorldPosition || LevelGrid.GridPositionObstructed(nextTargetGridPosition))
             {
                 CompleteAction();
                 TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -142,8 +142,8 @@ namespace ActionSystem
             unit.BlockAtPosition(nextTargetPosition);
             
             // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
-            LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition);
-            LevelGrid.Instance.AddUnitAtGridPosition(nextTargetGridPosition, unit);
+            LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
+            LevelGrid.AddUnitAtGridPosition(nextTargetGridPosition, unit);
 
             // Set the Unit's new grid position before they move so that other Unit's use that grid position when checking attack ranges and such
             unit.SetGridPosition(nextTargetGridPosition);
@@ -249,7 +249,7 @@ namespace ActionSystem
             unit.transform.position = nextPathPosition;
 
             // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
-            if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition())
+            if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition)
                 positionIndex++;
 
             CompleteAction();
@@ -323,11 +323,11 @@ namespace ActionSystem
 
         void GetPathToTargetPosition(GridPosition targetGridPosition)
         {
-            Unit unitAtTargetGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+            Unit unitAtTargetGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
             if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead() == false)
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
-                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, false);
+                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, false);
             }
 
             finalTargetGridPosition = targetGridPosition;
@@ -335,7 +335,7 @@ namespace ActionSystem
             unit.UnblockCurrentPosition();
 
             ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.GetWorldPosition(targetGridPosition));
-            path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
+            path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
             // Schedule the path for calculation
             unit.seeker.StartPath(path);
@@ -381,7 +381,7 @@ namespace ActionSystem
                 positionIndex = positionList.Count - 1;
 
             // Only calculate a new path if the Unit's target position changed or if their path becomes obstructed
-            if (targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.Instance.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
+            if (targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
                 GetPathToTargetPosition(targetGridPosition);
 
             if (positionList.Count == 0)
@@ -401,9 +401,9 @@ namespace ActionSystem
 
             // If there's an Interactable on the next path position
             GridPosition nextGridPosition = LevelGrid.GetGridPosition(nextPathPosition);
-            if (LevelGrid.Instance.HasAnyInteractableOnGridPosition(nextGridPosition))
+            if (LevelGrid.HasAnyInteractableOnGridPosition(nextGridPosition))
             {
-                Interactable interactable = LevelGrid.Instance.GetInteractableAtGridPosition(nextGridPosition);
+                Interactable interactable = LevelGrid.GetInteractableAtGridPosition(nextGridPosition);
                 if (interactable is Door)
                 {
                     Door door = interactable as Door;

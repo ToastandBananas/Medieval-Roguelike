@@ -1,3 +1,4 @@
+using GeneralUI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -6,8 +7,6 @@ namespace InventorySystem
 {
     public abstract class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        // public Slot parentSlot { get; protected set; }
-
         [Header("Components")]
         [SerializeField] protected InventoryItem inventoryItem;
         [SerializeField] protected Image image;
@@ -56,7 +55,10 @@ namespace InventorySystem
                 image.sprite = sprite;
         }
 
-        protected void SetEmptySlotSprite() => image.sprite = emptySlotSprite;
+        protected void SetEmptySlotSprite()
+        {
+            image.sprite = emptySlotSprite;
+        }
 
         public InventoryItem InventoryItem => inventoryItem;
 
@@ -84,6 +86,14 @@ namespace InventorySystem
         {
             InventoryUI.SetActiveSlot(this);
 
+            if (TooltipManager.currentSlot == null || TooltipManager.currentSlot.ParentSlot() != ParentSlot())
+            {
+                TooltipManager.SetCurrentSlot(ParentSlot());
+
+                if (GetItemData() != null)
+                    TooltipManager.GetTooltip().ShowItemTooltip(this);
+            }
+
             if (InventoryUI.isDraggingItem)
                 HighlightSlots();
         }
@@ -92,6 +102,8 @@ namespace InventorySystem
         {
             if (InventoryUI.activeSlot == this)
                 InventoryUI.SetActiveSlot(null);
+
+            TooltipManager.ClearTooltips();
 
             if (InventoryUI.isDraggingItem)
                 RemoveSlotHighlights();

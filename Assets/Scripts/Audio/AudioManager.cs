@@ -53,17 +53,18 @@ namespace SoundSystem
 
             if (shouldTriggerNPCInspectSound)
             {
-                unitsInSoundRadius = Physics.OverlapSphere(soundPosition, soundRadius, AudioManager.Instance.HearingMask());
+                unitsInSoundRadius = Physics.OverlapSphere(soundPosition, soundRadius, AudioManager.Instance.HearingMask);
                 for (int i = 0; i < unitsInSoundRadius.Length; i++)
                 {
-                    Unit unit = LevelGrid.Instance.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
+                    // Unit unit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
+                    Unit unit = LevelGrid.GetUnitAtPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position);
                     if (unit == null)
                         continue;
 
-                    if (unitMakingSound != null && unitMakingSound == unit)
+                    if (unit.IsPlayer)
                         continue;
 
-                    if (unit.IsPlayer)
+                    if (unitMakingSound != null && unitMakingSound == unit)
                         continue;
 
                     if (unit.stateController.currentState == State.Fight || unit.stateController.currentState == State.Flee)
@@ -380,6 +381,6 @@ namespace SoundSystem
             */
         }
 
-        public LayerMask HearingMask() => hearingMask;
+        public LayerMask HearingMask => hearingMask;
     }
 }

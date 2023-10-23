@@ -2,29 +2,45 @@
 using UnityEngine;
 using System.Text;
 using InventorySystem;
+using TMPro;
+using System.Collections.Generic;
 
 namespace GeneralUI
 {
     public class Tooltip : MonoBehaviour
     {
-        StringBuilder stringBuilder = new StringBuilder(50);
-        RectTransform rectTransform;
-        Canvas canvas;
+        [SerializeField] RectTransform rectTransform;
+        [SerializeField] TextMeshProUGUI textMesh;
 
-        Vector3 offset;
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder currentLine = new StringBuilder();
 
-        // Start is called before the first frame update
-        void Awake()
-        {
-            rectTransform = GetComponentInParent<RectTransform>();
-            // canvas = GameObject.Find("Tooltip Canvas").GetComponent<Canvas>();
-        }
+        readonly int maxCharactersPerLine = 50;
+        Vector3 newTooltipPosition;
 
         public void ShowItemTooltip(Slot slot)
         {
+            ItemData itemData = slot.GetItemData();
+            if (itemData == null || itemData.Item == null)
+                return;
 
+            stringBuilder.Clear();
+
+            // Name
+            stringBuilder.Append($"<b><size=20>{itemData.Item.Name}</size></b>\n\n");
+
+            // Description
+            stringBuilder.Append("<size=16>");
+            SplitText(itemData.Item.Description);
+            stringBuilder.Append("</size>");
+            // stringBuilder.Append("\n");
+
+            textMesh.text = stringBuilder.ToString();
+
+            gameObject.SetActive(true);
 
             RecalculateTooltipSize();
+            CalculatePosition(slot);
         }
 
         public void ClearTooltip()
@@ -33,41 +49,66 @@ namespace GeneralUI
             gameObject.SetActive(false);
         }
 
-        void CalculateOffset(Item item, EquipSlot equipSlot)
+        void CalculatePosition(Slot slot)
         {
-            /*if (equipSlot == null)
+            float slotWidth = slot.InventoryItem.RectTransform().rect.width;
+            newTooltipPosition = slot.ParentSlot().transform.position;
+
+            if (slot is EquipmentSlot)
             {
-                // For invSlots
-                if (item.iconWidth == 1)
-                    offset = new Vector3(0.55f, 0.55f);
-                else if (item.iconWidth == 2)
-                    offset = new Vector3(1.65f, 0.55f);
-                else if (item.iconWidth == 3)
-                    offset = new Vector3(2.75f, 0.55f);
-
-                // If the tooltip is going to be too far to the right
-                if (tooltipSlot.slotParent != invUI.containerParent && tooltipSlot.slotCoordinate.x > 3)
-                    offset += new Vector3(-5.15f, 0);
-
-                // Get our mouse position
-                RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out Vector2 pos);
-
-                // If the tooltip is going to be too close to the bottom
-                if (pos.y < -260.0f)
-                    offset += new Vector3(0, 2f);
+                if (slot.transform.position.x <= rectTransform.sizeDelta.x + slotWidth)
+                    newTooltipPosition.Set(newTooltipPosition.x + rectTransform.sizeDelta.x + (slotWidth / 4f), newTooltipPosition.y, 0);
+                else
+                    newTooltipPosition.Set(newTooltipPosition.x - slotWidth + (slotWidth / 2f), newTooltipPosition.y, 0);
             }
-            else
+            else if (slot is InventorySlot)
             {
-                // For equipSlots
-                offset = new Vector3(0.75f, 0.75f);
+                int itemWidth = slot.GetItemData().Item.Width;
+                int itemHeight = slot.GetItemData().Item.Height;
+                float slotHeight;
 
-                if (equipSlot.thisEquipmentSlot == EquipmentSlot.Boots || equipSlot.thisEquipmentSlot == EquipmentSlot.Quiver)
-                    offset += new Vector3(0, 2f);
-            }*/
+                if (slot == slot.ParentSlot())
+                {
+                    slotWidth = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1).InventoryItem.RectTransform().rect.width;
+                    slotHeight = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1).InventoryItem.RectTransform().rect.height;
+                }
+                else
+                    slotHeight = slot.InventoryItem.RectTransform().rect.height;
+
+                if (slot.ParentSlot().transform.position.x <= rectTransform.sizeDelta.x + slotWidth)
+                    newTooltipPosition.Set(newTooltipPosition.x + rectTransform.sizeDelta.x + (slotWidth / 4f), newTooltipPosition.y + (itemHeight * (slotHeight / 2f)) - (slotHeight / 2f), 0);
+                else
+                    newTooltipPosition.Set(newTooltipPosition.x - (itemWidth * slotWidth) + (slotWidth / 2f), newTooltipPosition.y + (itemHeight * (slotHeight / 2f)) - (slotHeight / 2f), 0);
+            }
+
+            rectTransform.position = newTooltipPosition;
+        }
+
+        void SplitText(string originalText)
+        {
+            currentLine.Clear();
+            foreach (string word in originalText.Split(' '))
+            {
+                if (currentLine.Length + word.Length <= maxCharactersPerLine)
+                {
+                    currentLine.Append($"{word} ");
+                }
+                else
+                {
+                    stringBuilder.AppendLine(currentLine.ToString().TrimEnd());
+                    currentLine.Clear().Append($"{word} ");
+                }
+            }
+
+            // Add the remaining text (if any) as the last line.
+            if (currentLine.Length > 0)
+                stringBuilder.AppendLine(currentLine.ToString().TrimEnd());
         }
 
         void RecalculateTooltipSize()
         {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(textMesh.rectTransform);
+            rectTransform.sizeDelta = textMesh.rectTransform.sizeDelta;
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
     }

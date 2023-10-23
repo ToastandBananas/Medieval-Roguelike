@@ -89,7 +89,7 @@ namespace InventorySystem
             if (targetGridPosition.y == unit.GridPosition.y)
                 yield break;
 
-            Vector3 lookPos = (targetGridPosition.WorldPosition() - transform.parent.position).normalized;
+            Vector3 lookPos = (targetGridPosition.WorldPosition - transform.parent.position).normalized;
             Vector3 startRotation = transform.parent.localEulerAngles;
             Quaternion targetRotation = Quaternion.LookRotation(lookPos);
             targetRotation = Quaternion.Euler(new Vector3(startRotation.x, startRotation.y, -targetRotation.eulerAngles.x));

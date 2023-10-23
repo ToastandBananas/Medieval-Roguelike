@@ -83,10 +83,10 @@ namespace ActionSystem
 
                         foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
                         {
-                            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                            if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
                                 continue;
 
-                            Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+                            Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(gridPosition);
                             if (unit.alliance.IsEnemy(unitAtGridPosition))
                             {
                                 canAttack = true;
@@ -416,7 +416,7 @@ namespace ActionSystem
                 // If an action was found
                 if (chosenCombatAction != null)
                 {
-                    Unit unitAtActionGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
+                    Unit unitAtActionGridPosition = LevelGrid.GetUnitAtGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
                     if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.isMoving)
                     {
                         while (unitAtActionGridPosition.unitActionHandler.isMoving)
@@ -472,10 +472,10 @@ namespace ActionSystem
             if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange(targetEnemyUnit, false)))
             {
                 SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
-                moveAction.QueueAction(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
+                moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
             }
             else
-                moveAction.QueueAction(LevelGrid.Instance.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
+                moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
         }
 
         void FindBestTargetEnemy()
@@ -505,7 +505,7 @@ namespace ActionSystem
                             return;
                         }
 
-                        SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
+                        SetTargetEnemyUnit(LevelGrid.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                     }
                     else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
@@ -522,7 +522,7 @@ namespace ActionSystem
                             return;
                         }
 
-                        SetTargetEnemyUnit(LevelGrid.Instance.GetUnitAtGridPosition(meleeAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
+                        SetTargetEnemyUnit(LevelGrid.GetUnitAtGridPosition(meleeAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
                     }
                     else
                     {
@@ -663,7 +663,7 @@ namespace ActionSystem
                 inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, unit, 0 + inspectSoundIterations, 2 + inspectSoundIterations, true);
                 moveAction.QueueAction(inspectSoundGridPosition);
             }
-            else if (Vector3.Distance(inspectSoundGridPosition.WorldPosition(), transform.position) <= 0.1f)
+            else if (Vector3.Distance(inspectSoundGridPosition.WorldPosition, transform.position) <= 0.1f)
             {
                 // Get a new Inspect Sound Position when the current one is reached
                 inspectSoundIterations++;
@@ -673,8 +673,8 @@ namespace ActionSystem
             else if (isMoving == false)
             {
                 // Get a new Inspect Sound Position if there's now another Unit or obstruction there
-                if (LevelGrid.Instance.GridPositionObstructed(inspectSoundGridPosition))
-                    inspectSoundGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true);
+                if (LevelGrid.GridPositionObstructed(inspectSoundGridPosition))
+                    inspectSoundGridPosition = LevelGrid.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true);
 
                 moveAction.QueueAction(inspectSoundGridPosition);
             }
@@ -716,26 +716,26 @@ namespace ActionSystem
                     return;
                 }
                 // If there's another Unit currently on the Patrol Point or Alternative Patrol Point
-                else if ((hasAlternativePatrolPoint == false && LevelGrid.Instance.GridPositionObstructed(patrolPointGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
-                    || (hasAlternativePatrolPoint && LevelGrid.Instance.GridPositionObstructed(moveAction.targetGridPosition) && LevelGrid.Instance.GetUnitAtGridPosition(moveAction.targetGridPosition) != unit))
+                else if ((hasAlternativePatrolPoint == false && LevelGrid.GridPositionObstructed(patrolPointGridPosition) && LevelGrid.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
+                    || (hasAlternativePatrolPoint && LevelGrid.GridPositionObstructed(moveAction.targetGridPosition) && LevelGrid.GetUnitAtGridPosition(moveAction.targetGridPosition) != unit))
                 {
                     // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
                     patrolIterationCount++;
 
                     // Find the nearest Grid Position to the Patrol Point
-                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.Instance.FindNearestValidGridPosition(patrolPointGridPosition, unit, 7);
+                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.FindNearestValidGridPosition(patrolPointGridPosition, unit, 7);
                     if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
                         IncreasePatrolPointIndex();
 
                     hasAlternativePatrolPoint = true;
                     moveAction.SetTargetGridPosition(nearestGridPositionToPatrolPoint);
 
-                    if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.Instance.GridPositionObstructed(nearestGridPositionToPatrolPoint) == false)
+                    if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.GridPositionObstructed(nearestGridPositionToPatrolPoint) == false)
                         patrolIterationCount = 0;
                 }
 
                 // If the Unit has arrived at their current Patrol Point or Alternative Patrol Point position
-                if (Vector3.Distance(moveAction.targetGridPosition.WorldPosition(), transform.position) <= 0.1f)
+                if (Vector3.Distance(moveAction.targetGridPosition.WorldPosition, transform.position) <= 0.1f)
                 {
                     if (hasAlternativePatrolPoint)
                         hasAlternativePatrolPoint = false;
@@ -746,7 +746,7 @@ namespace ActionSystem
                     moveAction.SetTargetGridPosition(patrolPointGridPosition);
                 }
                 // Otherwise, assign their target position to the Patrol Point if it's not already set
-                else if (hasAlternativePatrolPoint == false && moveAction.targetGridPosition.WorldPosition() != patrolPoints[currentPatrolPointIndex])
+                else if (hasAlternativePatrolPoint == false && moveAction.targetGridPosition.WorldPosition != patrolPoints[currentPatrolPointIndex])
                 {
                     moveAction.SetTargetGridPosition(patrolPointGridPosition);
 
@@ -834,7 +834,7 @@ namespace ActionSystem
                     moveAction.QueueAction(wanderGridPosition);
             }
             // If the NPC has arrived at their destination
-            else if (Vector3.Distance(wanderGridPosition.WorldPosition(), transform.position) <= 0.1f)
+            else if (Vector3.Distance(wanderGridPosition.WorldPosition, transform.position) <= 0.1f)
             {
                 // Get a new Wander Position when the current one is reached
                 wanderPositionSet = false;
@@ -843,7 +843,7 @@ namespace ActionSystem
             else if (isMoving == false)
             {
                 // Get a new Wander Position if there's now another Unit or obstruction there
-                if (LevelGrid.Instance.GridPositionObstructed(wanderGridPosition))
+                if (LevelGrid.GridPositionObstructed(wanderGridPosition))
                     wanderGridPosition = GetNewWanderPosition();
 
                 moveAction.QueueAction(wanderGridPosition);

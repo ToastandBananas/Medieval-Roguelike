@@ -51,9 +51,9 @@ namespace GridSystem
 
             if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.GridPosition() != currentInteractableGridPosition)
                 || (PlayerInput.Instance.highlightedUnit != null && PlayerInput.Instance.highlightedUnit.GridPosition != currentUnitGridPosition)
-                || WorldMouse.GetCurrentGridPosition() != currentMouseGridPosition || player.GridPosition != currentPlayerPosition)
+                || WorldMouse.CurrentGridPosition() != currentMouseGridPosition || player.GridPosition != currentPlayerPosition)
             {
-                currentMouseGridPosition = WorldMouse.GetCurrentGridPosition();
+                currentMouseGridPosition = WorldMouse.CurrentGridPosition();
                 currentPlayerPosition = player.GridPosition;
 
                 if (PlayerInput.Instance.highlightedUnit == player || currentMouseGridPosition == currentPlayerPosition)
@@ -68,7 +68,7 @@ namespace GridSystem
                     targetUnit = null;
                     currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
                     if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
-                        targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
+                        targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
                     else
                     {
                         HideLineRenderers();
@@ -103,7 +103,7 @@ namespace GridSystem
                     else if (targetUnit.health.IsDead())
                     {
                         if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetUnit.GridPosition, player.GridPosition) > LevelGrid.diaganolDistance)
-                            targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
+                            targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
                         else
                         {
                             HideLineRenderers();
@@ -123,7 +123,7 @@ namespace GridSystem
                 }
                 else
                 {
-                    targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(currentMouseGridPosition);
+                    targetUnit = LevelGrid.GetUnitAtGridPosition(currentMouseGridPosition);
                     BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
 
                     if (targetUnit != null && player.vision.IsVisible(targetUnit))
@@ -155,7 +155,7 @@ namespace GridSystem
                 player.UnblockCurrentPosition();
 
                 ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(player.GridPosition), LevelGrid.GetWorldPosition(targetGridPosition));
-                path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
+                path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
                 // Schedule the path for calculation
                 player.seeker.StartPath(path);
@@ -170,7 +170,7 @@ namespace GridSystem
                 if (path.error || path == null)
                     yield break;
 
-                if (LevelGrid.IsValidGridPosition(targetGridPosition) == false || AstarPath.active.GetNearest(targetGridPosition.WorldPosition()).node.Walkable == false)
+                if (LevelGrid.IsValidGridPosition(targetGridPosition) == false || AstarPath.active.GetNearest(targetGridPosition.WorldPosition).node.Walkable == false)
                     yield break;
 
                 // Re-block the unit's position, in case it was unblocked

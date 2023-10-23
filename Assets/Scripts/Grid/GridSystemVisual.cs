@@ -103,7 +103,7 @@ namespace GridSystem
             for (int i = 0; i < gridPositionList.Count; i++)
             {
                 GridSystemVisualSingle gridSystemVisualSingle = GetGridVisualSystemSingleFromPool();
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(gridPositionList[i]);
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(gridPositionList[i]);
 
                 if (unitAtGridPosition == null || player.vision.IsVisible(unitAtGridPosition) == false)
                     gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Red));

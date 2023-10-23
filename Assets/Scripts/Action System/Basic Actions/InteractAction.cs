@@ -35,16 +35,16 @@ namespace ActionSystem
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
-                    turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), false, turnAction.DefaultRotateSpeed() * 2f);
+                    turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed() * 2f);
 
                 while (unit.unitActionHandler.isRotating)
                     yield return null;
             }
             else
-                turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition(), true);
+                turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, true);
 
             // Perform the interaction
-            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.Instance.HasAnyUnitOnGridPosition(targetInteractable.GridPosition()) == false)
+            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasAnyUnitOnGridPosition(targetInteractable.GridPosition()) == false)
                 targetInteractable.Interact(unit);
 
             CompleteAction();

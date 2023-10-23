@@ -37,9 +37,9 @@ namespace ActionSystem
 
         protected void SetTargetEnemyUnit()
         {
-            if (LevelGrid.Instance.HasAnyUnitOnGridPosition(targetGridPosition))
+            if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition))
             {
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(targetGridPosition);
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
                 unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                 targetEnemyUnit = unitAtGridPosition;
             }
@@ -165,7 +165,7 @@ namespace ActionSystem
 
                 // Rotate towards the target
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition(), false);
+                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.isRotating)
@@ -173,10 +173,10 @@ namespace ActionSystem
                 
                 foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
                 {
-                    if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                    if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
                         continue;
 
-                    Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+                    Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
 
                     // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
                     bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
@@ -199,17 +199,17 @@ namespace ActionSystem
             {
                 // Rotate towards the target
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition(), true);
+                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, true);
 
                 // Loop through the grid positions in the attack area
                 foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
                 {
                     // Skip this position if there's no unit here
-                    if (LevelGrid.Instance.HasAnyUnitOnGridPosition(gridPosition) == false)
+                    if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
                         continue;
 
                     // Get the unit at this grid position
-                    Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+                    Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
                     bool headShot = false;
 
                     // The targetUnit tries to block the attack and if they do, they face their attacker

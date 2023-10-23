@@ -33,8 +33,9 @@ namespace InteractableObjects
 
         public override void UpdateGridPosition()
         {
-            gridPosition = LevelGrid.GetGridPosition(transform.parent.position);
-            LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
+            LevelGrid.RemoveInteractableAtGridPosition(gridPosition);
+            gridPosition.Set(transform.parent.position);
+            LevelGrid.AddInteractableAtGridPosition(gridPosition, this);
         }
 
         IEnumerator OpenDoor()

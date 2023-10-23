@@ -73,7 +73,7 @@ namespace GeneralUI
 
         public static void BuildContextMenu()
         {
-            if (onCooldown)
+            if (onCooldown || InventoryUI.isDraggingItem)
                 return;
 
             SplitStack.Instance.Close();
@@ -155,9 +155,9 @@ namespace GeneralUI
         {
             GridPosition targetGridPosition;
             if (targetInteractable != null)
-                targetGridPosition = LevelGrid.Instance.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
             else
-                targetGridPosition = WorldMouse.GetCurrentGridPosition();
+                targetGridPosition = WorldMouse.CurrentGridPosition();
 
             if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
                 return;

@@ -56,7 +56,7 @@ namespace ActionSystem
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -66,7 +66,7 @@ namespace ActionSystem
                     continue;
 
                 // If Grid Position has a Unit there already
-                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(nodeGridPosition))
+                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition))
                     continue;
 
                 // If target is out of attack range from this Grid Position
@@ -75,8 +75,8 @@ namespace ActionSystem
 
                 // Check for obstacles
                 float sphereCastRadius = 0.1f;
-                Vector3 attackDir = ((nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
+                Vector3 attackDir = ((nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
+                if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
                     continue;
 
                 validGridPositionsList.Add(nodeGridPosition);
@@ -91,7 +91,7 @@ namespace ActionSystem
             validGridPositionsList.Clear();
 
             // Get the closest cardinal or intermediate direction
-            Vector3 directionToTarget = (targetGridPosition.WorldPosition() - unit.WorldPosition).normalized;
+            Vector3 directionToTarget = (targetGridPosition.WorldPosition - unit.WorldPosition).normalized;
             Vector3 generalDirection = GetGeneralDirection(directionToTarget);
 
             if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
@@ -102,23 +102,23 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             // Check if the target position is within the max attack range
-            //if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition()) > maxAttackRange)
+            //if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > maxAttackRange)
             if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
                 return validGridPositionsList;
 
             // Check for obstacles
             float sphereCastRadius = 0.1f;
             Vector3 heightOffset = Vector3.up * unit.ShoulderHeight * 2f;
-            if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition() + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
             {
-                // Debug.Log(targetGridPosition.WorldPosition() + " (the target position) is blocked by " + hit.collider.name);
+                // Debug.Log(targetGridPosition.WorldPosition + " (the target position) is blocked by " + hit.collider.name);
                 return validGridPositionsList;
             }
 
             float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             // Validate the potential attack positions based on the requirements
             for (int i = 0; i < nodes.Count; i++)
@@ -133,14 +133,14 @@ namespace ActionSystem
                     continue;
 
                 // Check if the node is in the general direction of the attack
-                Vector3 yDifference = Vector3.up * (nodeGridPosition.WorldPosition().y - unit.WorldPosition.y);
-                Vector3 directionToNode = (nodeGridPosition.WorldPosition() - (unit.WorldPosition + yDifference)).normalized;
+                Vector3 yDifference = Vector3.up * (nodeGridPosition.WorldPosition.y - unit.WorldPosition.y);
+                Vector3 directionToNode = (nodeGridPosition.WorldPosition - (unit.WorldPosition + yDifference)).normalized;
                 float angleBetweenDirections = Vector3.Angle(generalDirection, directionToNode);
                 if (angleBetweenDirections > 45f)
                     continue;
 
                 // Check if the node is within the max attack range
-                //if (Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition()) > maxAttackRange)
+                //if (Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition) > maxAttackRange)
                 if (IsInAttackRange(null, unit.GridPosition, nodeGridPosition) == false)
                     continue;
 
@@ -149,10 +149,10 @@ namespace ActionSystem
                     continue;
 
                 // Check for obstacles
-                Vector3 directionToAttackPosition = (nodeGridPosition.WorldPosition() + heightOffset - (unit.WorldPosition + heightOffset)).normalized;
-                if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition() + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
+                Vector3 directionToAttackPosition = (nodeGridPosition.WorldPosition + heightOffset - (unit.WorldPosition + heightOffset)).normalized;
+                if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
                 {
-                    // Debug.Log(nodeGridPosition.WorldPosition() + " is blocked by " + hit.collider.name);
+                    // Debug.Log(nodeGridPosition.WorldPosition + " is blocked by " + hit.collider.name);
                     continue;
                 }
                 
@@ -203,7 +203,7 @@ namespace ActionSystem
             // First, find the nearest valid Grid Positions to the Player
             for (int i = 0; i < gridPositions.Count; i++)
             {
-                float distance = Vector3.Distance(gridPositions[i].WorldPosition(), startGridPosition.WorldPosition());
+                float distance = Vector3.Distance(gridPositions[i].WorldPosition, startGridPosition.WorldPosition);
                 if (distance < nearestDistance)
                 {
                     nearestGridPositionsList.Clear();
@@ -219,7 +219,7 @@ namespace ActionSystem
             for (int i = 0; i < nearestGridPositionsList.Count; i++)
             {
                 // Get the Grid Position that is closest to the target Grid Position
-                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition(), targetUnit.transform.position);
+                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition, targetUnit.transform.position);
                 if (distance < nearestDistanceToTarget)
                 {
                     nearestDistanceToTarget = distance;
@@ -237,10 +237,10 @@ namespace ActionSystem
             attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
             for (int i = 0; i < attackGridPositions.Count; i++)
             {
-                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(attackGridPositions[i]) == false)
+                if (LevelGrid.HasAnyUnitOnGridPosition(attackGridPositions[i]) == false)
                     continue;
 
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(attackGridPositions[i]);
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(attackGridPositions[i]);
                 if (unitAtGridPosition.health.IsDead())
                     continue;
 
@@ -302,11 +302,11 @@ namespace ActionSystem
             for (int i = 0; i < actionAreaGridPositions.Count; i++)
             {
                 // Make sure there's a Unit at this grid position
-                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(actionAreaGridPositions[i]) == false)
+                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i]) == false)
                     continue;
 
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(actionAreaGridPositions[i]);
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(actionAreaGridPositions[i]);
 
                 // Skip this unit if they're dead
                 if (unitAtGridPosition.health.IsDead())

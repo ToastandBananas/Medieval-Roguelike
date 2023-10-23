@@ -5,6 +5,7 @@ using InteractableObjects;
 using GridSystem;
 using ActionSystem;
 using InventorySystem;
+using UnityEngine.UIElements;
 
 namespace UnitSystem
 {
@@ -51,8 +52,8 @@ namespace UnitSystem
 
             singleNodeBlocker = GetComponent<SingleNodeBlocker>();
             alliance = GetComponent<Alliance>();
-            if (TryGetComponent(out UnitInteractable deadUnit))
-                this.unitInteractable = deadUnit;
+            if (TryGetComponent(out UnitInteractable unitInteractable))
+                this.unitInteractable = unitInteractable;
             health = GetComponent<Health>();
             hearing = GetComponentInChildren<Hearing>();
             opportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
@@ -70,8 +71,8 @@ namespace UnitSystem
 
         void Start()
         {
-            singleNodeBlocker.manager = LevelGrid.Instance.GetBlockManager();
-            LevelGrid.Instance.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.Instance.GetUnitSingleNodeBlockerList());
+            singleNodeBlocker.manager = LevelGrid.BlockManager;
+            LevelGrid.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.UnitSingleNodeBlockerList);
 
             if (IsNPC)
             {
@@ -87,8 +88,8 @@ namespace UnitSystem
                 unitMeshManager.HideMeshRenderers();
             }
 
-            gridPosition = LevelGrid.GetGridPosition(transform.position);
-            LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
+            gridPosition.Set(transform.position);
+            LevelGrid.AddUnitAtGridPosition(gridPosition, this);
         }
 
         // Used for debugging
@@ -100,13 +101,12 @@ namespace UnitSystem
 
         public void UpdateGridPosition()
         {
-            GridPosition newGridPosition = LevelGrid.GetGridPosition(transform.position);
-            if (newGridPosition != gridPosition)
+            // Unit changed Grid Position
+            if (gridPosition != transform.position)
             {
-                // Unit changed Grid Position
-                GridPosition oldGridPosition = gridPosition;
-                gridPosition = newGridPosition;
-                LevelGrid.Instance.UnitMovedGridPosition(this, oldGridPosition, newGridPosition);
+                LevelGrid.RemoveUnitAtGridPosition(gridPosition);
+                gridPosition.Set(transform.position);
+                LevelGrid.AddUnitAtGridPosition(gridPosition, this);
             }
         }
 
@@ -114,10 +114,10 @@ namespace UnitSystem
 
         public bool IsCompletelySurrounded(float range)
         {
-            List<GridPosition> surroundingGridPositions = LevelGrid.Instance.GetSurroundingGridPositions(gridPosition, range, true, false);
+            List<GridPosition> surroundingGridPositions = LevelGrid.GetSurroundingGridPositions(gridPosition, range, true, false);
             for (int i = 0; i < surroundingGridPositions.Count; i++)
             {
-                if (LevelGrid.Instance.GridPositionObstructed(surroundingGridPositions[i]) == false)
+                if (LevelGrid.GridPositionObstructed(surroundingGridPositions[i]) == false)
                     return false;
             }
             return true;
@@ -149,14 +149,12 @@ namespace UnitSystem
 
         public float ShoulderHeight => shoulderHeight;
 
-        public void CenterPosition() => transform.position = LevelGrid.GetGridPosition(transform.position).WorldPosition();
+        public void CenterPosition() => transform.position = LevelGrid.SnapPosition(transform.position);
 
         public BaseAction SelectedAction => unitActionHandler.selectedActionType.GetAction(this);
 
         public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
-
         public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;
-
         public ContainerInventoryManager QuiverInventoryManager => unitInventoryManager.QuiverInventoryManager;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;

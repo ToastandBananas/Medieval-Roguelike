@@ -74,7 +74,7 @@ namespace UnitSystem
         {
             UnitManager.deadNPCs.Add(unit);
             UnitManager.livingNPCs.Remove(unit);
-            LevelGrid.Instance.RemoveUnitAtGridPosition(unit.GridPosition);
+            LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
 
             unit.UnblockCurrentPosition();
             unit.unitInteractable.enabled = true;

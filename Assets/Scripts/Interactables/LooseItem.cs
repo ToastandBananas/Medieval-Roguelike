@@ -146,10 +146,10 @@ namespace InteractableObjects
 
         public override void UpdateGridPosition()
         {
-            if (Physics.Raycast(meshCollider.bounds.center, Vector3.down, out RaycastHit hit, 100f, LevelGrid.Instance.GroundMask))
-                gridPosition = LevelGrid.GetGridPosition(hit.point);
+            if (Physics.Raycast(meshCollider.bounds.center, Vector3.down, out RaycastHit hit, 100f, LevelGrid.GroundMask))
+                gridPosition.Set(hit.point);
             else
-                gridPosition = LevelGrid.GetGridPosition(meshCollider.bounds.center);
+                gridPosition.Set(meshCollider.bounds.center);
         }
 
         public override GridPosition GridPosition()
@@ -169,7 +169,7 @@ namespace InteractableObjects
                 for (int i = 0; i < materials.Length; i++)
                 {
                     if (i > itemData.Item.PickupMeshRendererMaterials.Length - 1)
-                        materials[i] = null;
+                        materials[i] = itemData.Item.PickupMeshRendererMaterials[itemData.Item.PickupMeshRendererMaterials.Length - 1];
                     else
                         materials[i] = itemData.Item.PickupMeshRendererMaterials[i];
                 }
@@ -185,7 +185,7 @@ namespace InteractableObjects
                 for (int i = 0; i < materials.Length; i++)
                 {
                     if (i > itemData.Item.MeshRendererMaterials.Length - 1)
-                        materials[i] = null;
+                        materials[i] = itemData.Item.MeshRendererMaterials[itemData.Item.MeshRendererMaterials.Length - 1];
                     else
                         materials[i] = itemData.Item.MeshRendererMaterials[i];
                 }

@@ -93,7 +93,7 @@ namespace InventorySystem
                     for (int j = 0; j < materials.Length; j++)
                     {
                         if (j > itemData.Item.MeshRendererMaterials.Length - 1)
-                            materials[j] = null;
+                            materials[j] = itemData.Item.MeshRendererMaterials[itemData.Item.MeshRendererMaterials.Length - 1];
                         else
                             materials[j] = itemData.Item.MeshRendererMaterials[j];
                     }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
@@ -14,22 +13,22 @@ namespace GridSystem
     {
         public static LevelGrid Instance { get; private set; }
 
-        public event EventHandler OnAnyUnitMovedGridPosition;
+        // public event EventHandler OnAnyUnitMovedGridPosition;
 
         [SerializeField] BlockManager blockManager;
-        List<SingleNodeBlocker> unitSingleNodeBlockers = new List<SingleNodeBlocker>();
-        BlockManager.TraversalProvider defaultTraversalProvider;
+        static List<SingleNodeBlocker> unitSingleNodeBlockers = new List<SingleNodeBlocker>();
+        static BlockManager.TraversalProvider defaultTraversalProvider;
 
         [SerializeField] LayerMask groundMask;
 
-        Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
-        Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
+        static Dictionary<GridPosition, Unit> units = new Dictionary<GridPosition, Unit>();
+        static Dictionary<GridPosition, Interactable> interactableObjects = new Dictionary<GridPosition, Interactable>();
 
-        List<GridPosition> gridPositionsList = new List<GridPosition>();
-        List<GridPosition> validGridPositionsList = new List<GridPosition>();
+        static List<GridPosition> gridPositionsList = new List<GridPosition>();
+        static List<GridPosition> validGridPositionsList = new List<GridPosition>();
 
-        Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
-        Collider[] collisionsCheckArray;
+        static Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
+        static Collider[] collisionsCheckArray;
 
         public static readonly float diaganolDistance = 1.4142f;
         public static readonly int gridSize = 1;
@@ -48,10 +47,16 @@ namespace GridSystem
         void Start()
         {
             // Create a traversal provider which says that a path should be blocked by all the SingleNodeBlockers in the unitSingleNodeBlockers array
-            defaultTraversalProvider = new BlockManager.TraversalProvider(blockManager, BlockManager.BlockMode.OnlySelector, unitSingleNodeBlockers);
+            defaultTraversalProvider = new BlockManager.TraversalProvider(blockManager, Pathfinding.BlockManager.BlockMode.OnlySelector, unitSingleNodeBlockers);
         }
 
-        public void AddUnitAtGridPosition(GridPosition gridPosition, Unit unit)
+        public static Vector3 SnapPosition(Vector3 position)
+        {
+            position.Set(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.y * 100f) / 100f, Mathf.RoundToInt(position.z));
+            return position;
+        }
+
+        public static void AddUnitAtGridPosition(GridPosition gridPosition, Unit unit)
         {
             if (units.ContainsKey(gridPosition) && units.TryGetValue(gridPosition, out Unit unitValue) == unit)
                 return;
@@ -60,13 +65,24 @@ namespace GridSystem
             // Debug.Log(unit.name + " added to position: " + gridPosition.ToString());
         }
 
-        public Unit GetUnitAtGridPosition(GridPosition gridPosition)
+        public static Unit GetUnitAtGridPosition(GridPosition gridPosition)
         {
             units.TryGetValue(gridPosition, out Unit unit);
             return unit;
         }
 
-        public void RemoveUnitAtGridPosition(GridPosition gridPosition)
+        public static Unit GetUnitAtPosition(Vector3 position)
+        {
+            position = SnapPosition(position);
+            foreach (KeyValuePair<GridPosition, Unit> unit in units)
+            {
+                if (unit.Key == position)
+                    return GetUnitAtGridPosition(unit.Key);
+            }
+            return null;
+        }
+
+        public static void RemoveUnitAtGridPosition(GridPosition gridPosition)
         {
             // units.TryGetValue(gridPosition, out Unit unit);
             // Debug.Log(unit.name + " removed from position: " + gridPosition.ToString());
@@ -74,32 +90,32 @@ namespace GridSystem
                 units.Remove(gridPosition);
         }
 
-        public void UnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
+        public static void UnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
         {
             RemoveUnitAtGridPosition(fromGridPosition);
 
             AddUnitAtGridPosition(toGridPosition, unit);
 
-            OnAnyUnitMovedGridPosition?.Invoke(this, EventArgs.Empty);
+            // OnAnyUnitMovedGridPosition?.Invoke(this, EventArgs.Empty);
         }
 
-        public void AddInteractableAtGridPosition(GridPosition gridPosition, Interactable interactable)
+        public static void AddInteractableAtGridPosition(GridPosition gridPosition, Interactable interactable)
         {
             interactableObjects.Add(gridPosition, interactable);
         }
 
-        public Interactable GetInteractableAtGridPosition(GridPosition gridPosition)
+        public static Interactable GetInteractableAtGridPosition(GridPosition gridPosition)
         {
             interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
             return interactable;
         }
 
-        public void RemoveInteractableAtGridPosition(GridPosition gridPosition)
+        public static void RemoveInteractableAtGridPosition(GridPosition gridPosition)
         {
             interactableObjects.Remove(gridPosition);
         }
 
-        public Interactable GetInteractableFromTransform(Transform transform)
+        public static Interactable GetInteractableFromTransform(Transform transform)
         {
             foreach (KeyValuePair<GridPosition, Interactable> interactable in interactableObjects)
             {
@@ -123,14 +139,14 @@ namespace GridSystem
                    gridPosition.z < (layeredGridGraph.depth / 2) + layeredGridGraph.center.z;
         }
 
-        public GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, float rangeToSearch)
+        public static GridPosition FindNearestValidGridPosition(GridPosition startingGridPosition, Unit unit, float rangeToSearch)
         {
             GridPosition newGridPosition;
             validGridPositionsList.Clear();
             float boundsDimension = (rangeToSearch * 2) + 0.1f;
 
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -142,7 +158,7 @@ namespace GridSystem
                 if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                     continue;
 
-                collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -154,13 +170,13 @@ namespace GridSystem
             return newGridPosition;
         }
 
-        public GridPosition GetClosestGridPositionFromList(GridPosition startingGridPosition, List<GridPosition> gridPositions)
+        public static GridPosition GetClosestGridPositionFromList(GridPosition startingGridPosition, List<GridPosition> gridPositions)
         {
             GridPosition nearestGridPosition = startingGridPosition;
             float nearestGridPositionDist = 1000000;
             for (int i = 0; i < gridPositions.Count; i++)
             {
-                float dist = Vector3.Distance(startingGridPosition.WorldPosition(), gridPositions[i].WorldPosition());
+                float dist = Vector3.Distance(startingGridPosition.WorldPosition, gridPositions[i].WorldPosition);
                 if (dist < nearestGridPositionDist)
                 {
                     nearestGridPosition = gridPositions[i];
@@ -176,7 +192,7 @@ namespace GridSystem
             validGridPositionsList.Clear();
             float boundsDimension = (maxRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -192,12 +208,12 @@ namespace GridSystem
                 if (checkForObstacles)
                 {
                     float sphereCastRadius = 0.1f;
-                    Vector3 shootDir = ((nodeGridPosition.WorldPosition() + Vector3.up) - (startingGridPosition.WorldPosition() + Vector3.up)).normalized;
-                    if (Physics.SphereCast(startingGridPosition.WorldPosition() + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition() + Vector3.up, startingGridPosition.WorldPosition() + Vector3.up), unit.unitActionHandler.AttackObstacleMask))
+                    Vector3 shootDir = ((nodeGridPosition.WorldPosition + Vector3.up) - (startingGridPosition.WorldPosition + Vector3.up)).normalized;
+                    if (Physics.SphereCast(startingGridPosition.WorldPosition + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + Vector3.up, startingGridPosition.WorldPosition + Vector3.up), unit.unitActionHandler.AttackObstacleMask))
                         continue; // Blocked by an obstacle
                 }
 
-                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -234,7 +250,7 @@ namespace GridSystem
             {
                 GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-                Vector3 dirToNode = (nodeGridPosition.WorldPosition() - enemyWorldPosition).normalized;
+                Vector3 dirToNode = (nodeGridPosition.WorldPosition - enemyWorldPosition).normalized;
                 Vector3 dirToUnit = (unitWorldPosition - enemyWorldPosition).normalized;
 
                 if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
@@ -247,7 +263,7 @@ namespace GridSystem
                 if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                     continue;
 
-                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition() + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -262,12 +278,12 @@ namespace GridSystem
             return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
         }
 
-        public List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool obstructedGridPositionsValid, bool startingGridPositionValid)
+        public static List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool obstructedGridPositionsValid, bool startingGridPositionValid)
         {
             gridPositionsList.Clear();
             float boundsDimension = (range * 2f) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition(), new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
             for (int i = 0; i < nodes.Count; i++)
             {
                 GridPosition nodeGridPosition = GetGridPosition((Vector3)nodes[i].position);
@@ -287,14 +303,14 @@ namespace GridSystem
             return gridPositionsList;
         }
 
-        public GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range, bool targetGridPositionValid)
+        public static GridPosition GetNearestSurroundingGridPosition(GridPosition targetGridPosition, GridPosition unitGridPosition, float range, bool targetGridPositionValid)
         {
             validGridPositionsList = GetSurroundingGridPositions(targetGridPosition, range, false, targetGridPositionValid);
             GridPosition nearestGridPosition = targetGridPosition;
             float nearestDist = 1000000;
             for (int i = 0; i < validGridPositionsList.Count; i++)
             {
-                float dist = Vector3.Distance(unitGridPosition.WorldPosition(), validGridPositionsList[i].WorldPosition());
+                float dist = Vector3.Distance(unitGridPosition.WorldPosition, validGridPositionsList[i].WorldPosition);
                 if (dist < nearestDist)
                 {
                     nearestGridPosition = validGridPositionsList[i];
@@ -318,28 +334,28 @@ namespace GridSystem
             return false;
         }
 
-        public bool GridPositionObstructed(GridPosition gridPosition)
+        public static bool GridPositionObstructed(GridPosition gridPosition)
         {
-            GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition()).node;
+            GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
             if (IsValidGridPosition(gridPosition) == false || (HasAnyUnitOnGridPosition(gridPosition) && GetUnitAtGridPosition(gridPosition).health.IsDead() == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
                 return true;
             return false;
         }
 
-        public bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
+        public static bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
 
-        public bool HasAnyInteractableOnGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
+        public static bool HasAnyInteractableOnGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
 
-        public BlockManager GetBlockManager() => blockManager;
+        public static BlockManager BlockManager => Instance.blockManager;
 
-        public BlockManager.TraversalProvider DefaultTraversalProvider() => defaultTraversalProvider;
+        public static BlockManager.TraversalProvider DefaultTraversalProvider => defaultTraversalProvider;
 
-        public List<SingleNodeBlocker> GetUnitSingleNodeBlockerList() => unitSingleNodeBlockers;
+        public static List<SingleNodeBlocker> UnitSingleNodeBlockerList => unitSingleNodeBlockers;
 
-        public void AddSingleNodeBlockerToList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Add(singleNodeBlocker);
+        public static void AddSingleNodeBlockerToList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Add(singleNodeBlocker);
 
-        public void RemoveSingleNodeBlockerFromList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Remove(singleNodeBlocker);
+        public static void RemoveSingleNodeBlockerFromList(SingleNodeBlocker singleNodeBlocker, List<SingleNodeBlocker> singleNodeBlockerList) => singleNodeBlockerList.Remove(singleNodeBlocker);
 
-        public LayerMask GroundMask => groundMask;
+        public static LayerMask GroundMask => Instance.groundMask;
     }
 }

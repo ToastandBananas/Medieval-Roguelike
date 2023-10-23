@@ -114,7 +114,7 @@ namespace ActionSystem
 
         public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
         {
-            RotateTowardsPosition(targetUnit.GridPosition.WorldPosition(), rotateInstantly, defaultRotateSpeed * 2f);
+            RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, defaultRotateSpeed * 2f);
         }
 
         public void RotateTowardsAttackPosition(Vector3 targetPosition) => unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
@@ -395,40 +395,40 @@ namespace ActionSystem
             switch (currentDirection)
             {
                 case Direction.North:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(0, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(0, 0, -1));
                     break;
                 case Direction.East:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(-1, 0, 0));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, 0));
                     break;
                 case Direction.South:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(0, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(0, 0, 1));
                     break;
                 case Direction.West:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(1, 0, 0));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, 0));
                     break;
                 case Direction.NorthWest:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(1, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, -1));
                     break;
                 case Direction.NorthEast:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(-1, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, -1));
                     break;
                 case Direction.SouthWest:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(1, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, 1));
                     break;
                 case Direction.SouthEast:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition() + new Vector3(-1, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, 1));
                     break;
                 default:
                     return unit.GridPosition;
             }
 
             // Get the Y position for the Grid Position using a raycast
-            Physics.Raycast(gridPositionBehindUnit.WorldPosition() + new Vector3(0, 1, 0), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.Instance.MousePlaneLayerMask());
+            Physics.Raycast(gridPositionBehindUnit.WorldPosition + new Vector3(0, 1, 0), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.Instance.MousePlaneLayerMask());
             if (hit.collider != null)
                 gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
-            if (LevelGrid.Instance.GridPositionObstructed(gridPositionBehindUnit))
-                gridPositionBehindUnit = LevelGrid.Instance.FindNearestValidGridPosition(unit.GridPosition, unit, 1.4f);
+            if (LevelGrid.GridPositionObstructed(gridPositionBehindUnit))
+                gridPositionBehindUnit = LevelGrid.FindNearestValidGridPosition(unit.GridPosition, unit, 1.4f);
             return gridPositionBehindUnit;
         }
 

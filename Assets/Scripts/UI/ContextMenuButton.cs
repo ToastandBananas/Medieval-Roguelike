@@ -259,7 +259,7 @@ namespace GeneralUI
                 {
                     UnitManager.player.unitActionHandler.ForceQueueAP(100); 
                     if (UnitManager.player.unitActionHandler.turnAction.IsFacingTarget(looseContainerItem.GridPosition()) == false)
-                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition(), false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed() * 2f);
+                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition, false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed() * 2f);
 
                     InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
                 }

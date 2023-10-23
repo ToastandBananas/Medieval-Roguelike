@@ -804,6 +804,8 @@ namespace InventorySystem
             if (myUnit.IsPlayer && InventoryUI.isDraggingItem)
                 InventoryUI.ReplaceDraggedItem();
 
+            myUnit.unitActionHandler.ClearActionQueue(false);
+
             if (currentWeaponSet == WeaponSet.One)
             {
                 currentWeaponSet = WeaponSet.Two;

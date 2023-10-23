@@ -10,13 +10,15 @@ namespace InteractableObjects
 
         public virtual void Awake()
         {
+            gridPosition.Set(transform.position);
             UpdateGridPosition();
         }
 
         public virtual void UpdateGridPosition()
         {
+            LevelGrid.RemoveInteractableAtGridPosition(gridPosition);
             gridPosition = LevelGrid.GetGridPosition(transform.position);
-            LevelGrid.Instance.AddInteractableAtGridPosition(gridPosition, this);
+            LevelGrid.AddInteractableAtGridPosition(gridPosition, this);
         }
 
         public virtual GridPosition GridPosition() => gridPosition;

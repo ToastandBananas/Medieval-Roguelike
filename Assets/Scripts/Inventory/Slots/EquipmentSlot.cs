@@ -18,8 +18,13 @@ namespace InventorySystem
             if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null)
                 return true;
 
-            if (equipSlot == EquipSlot.RightHeldItem1 && GetOppositeWeaponSlot().inventoryItem.itemData != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item != null && GetOppositeWeaponSlot().inventoryItem.itemData.Item is Weapon && GetOppositeWeaponSlot().inventoryItem.itemData.Item.Weapon.IsTwoHanded)
-                return true;
+            if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
+            {
+                EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                    return true;
+            }
+
             return false;
         }
 

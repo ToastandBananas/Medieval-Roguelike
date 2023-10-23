@@ -134,13 +134,13 @@ namespace ActionSystem
             player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
             WorldMouse.ChangeCursor(CursorState.Default);
 
-            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.GetCurrentGridPosition() != player.GridPosition)
-                turnAction.QueueAction(WorldMouse.GetCurrentGridPosition());
+            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.CurrentGridPosition() != player.GridPosition)
+                turnAction.QueueAction(WorldMouse.CurrentGridPosition());
         }
 
         void HandleActions()
         {
-            GridPosition mouseGridPosition = WorldMouse.GetCurrentGridPosition();
+            GridPosition mouseGridPosition = WorldMouse.CurrentGridPosition();
             
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
@@ -154,7 +154,7 @@ namespace ActionSystem
                 {
                     // Queue a Move Action towards the Interactable
                     player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
-                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace ActionSystem
                 {
                     // Queue a Move Action towards the Interactable
                     player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.unitInteractable);
-                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.Instance.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
+                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
                 }
                 else
                 {
@@ -184,9 +184,9 @@ namespace ActionSystem
                 // TODO: Implement actions that can be performed on oneself (such as healing or a buff)
             }
             // Make sure the mouse grid position is a valid position to perform an action
-            else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition()).node.Walkable)
+            else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition).node.Walkable)
             {
-                Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
                 BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
                 
                 // If the mouse is hovering over a living unit that's in the player's Vision
@@ -382,7 +382,7 @@ namespace ActionSystem
                     }
                     else
                     {
-                        Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                        Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
                         if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
                         {
                             highlightedInteractable = null;
@@ -401,7 +401,7 @@ namespace ActionSystem
                 else if (selectedAction is BaseAttackAction)
                 {
                     highlightedInteractable = null;
-                    Unit unitAtGridPosition = LevelGrid.Instance.GetUnitAtGridPosition(WorldMouse.GetCurrentGridPosition());
+                    Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
                     highlightedUnit = unitAtGridPosition;
 
                     if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))

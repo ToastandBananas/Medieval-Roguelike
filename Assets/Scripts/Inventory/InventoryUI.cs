@@ -70,13 +70,19 @@ namespace InventorySystem
             rectTransform = GetComponent<RectTransform>();
 
             draggedItem.DisableIconImage();
+
+            if (Instance.playerInventoryUIParent.activeSelf)
+                TogglePlayerInventory();
+
+            if (Instance.npcInventoryUIParent.activeSelf)
+                ToggleNPCInventory();
         }
 
         void Update()
         {
             if (GameControls.gamePlayActions.toggleInventory.WasPressed)
                 TogglePlayerInventory();
-
+            
             // If we're not already dragging an item
             if (isDraggingItem == false)
             {

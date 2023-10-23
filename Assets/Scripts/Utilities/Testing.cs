@@ -14,7 +14,7 @@ namespace Utilities
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
-
+                // PlayTestSound();
             }
         }
 
@@ -23,7 +23,7 @@ namespace Utilities
             GridPosition mouseGridPosition = LevelGrid.GetGridPosition(WorldMouse.GetPosition());
             GridPosition startGridPosition = UnitManager.player.GridPosition;
             ABPath path = ABPath.Construct(LevelGrid.GetWorldPosition(startGridPosition), LevelGrid.GetWorldPosition(mouseGridPosition));
-            path.traversalProvider = LevelGrid.Instance.DefaultTraversalProvider();
+            path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
             AstarPath.StartPath(path);
             path.BlockUntilCalculated();

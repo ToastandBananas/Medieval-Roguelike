@@ -103,10 +103,7 @@ namespace ActionSystem
                 else // Add to end of queue
                 {
                     queuedActions.Add(action);
-                    int cost = action.GetActionPointsCost();
-                    if (unit.IsPlayer)
-                        Debug.Log($"{unit.name}'s {action.name} cost: {cost}");
-                    queuedAPs.Add(cost);
+                    queuedAPs.Add(action.GetActionPointsCost());
                 }
             }
 
@@ -203,13 +200,13 @@ namespace ActionSystem
 
         public void ClearActionQueue(bool stopMoveAnimation, bool forceClearAll = false)
         {
-            if (queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction)
-                queuedAttack = null;
-
             for (int i = queuedActions.Count - 1; i >= 0; i--)
             {
                 if (forceClearAll || queuedActions[i].CanBeClearedFromActionQueue())
                 {
+                    if (queuedAttack == queuedActions[i])
+                        queuedAttack = null;
+
                     queuedActions.RemoveAt(i);
                     if (queuedAPs.Count >= i + 1)
                         queuedAPs.RemoveAt(i);
