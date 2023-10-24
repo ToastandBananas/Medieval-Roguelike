@@ -117,7 +117,7 @@ namespace ActionSystem
             Initialize();
         }
 
-        public abstract bool IsHotbarAction();
+        public abstract ActionBarSection ActionBarSection();
 
         public abstract bool IsValidAction();
 

@@ -18,7 +18,7 @@ namespace UnitSystem
         [SerializeField] float viewRadius = 20f;
         [Range(0, 360)][SerializeField] float viewAngle = 160f;
         [Range(0, 360)][SerializeField] float opportunityAttackViewAngle = 220f;
-        [SerializeField] Vector3 yOffset = new Vector3(0, 0.15f, 0); // Height offset for where vision starts (the eyes)
+        Vector3 yOffset; // Height offset for where vision starts (the eyes)
 
         [Header("Layer Masks")]
         [SerializeField] LayerMask unitsMask;
@@ -53,7 +53,7 @@ namespace UnitSystem
             knownAllies = new List<Unit>();
             unit = parentTransform.GetComponent<Unit>();
 
-            yOffset = new Vector3(0, Mathf.Abs(transform.position.y - unit.transform.localPosition.y), 0);
+            yOffset.Set(0, transform.localPosition.y, 0);
         }
 
         public bool IsVisible(Unit unitToCheck)
@@ -201,7 +201,11 @@ namespace UnitSystem
                     if (shouldHide && knownUnit.Key != unit)
                     {
                         if (knownUnit.Key.unitActionHandler.targetEnemyUnit != unit && Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
+                        {
                             knownUnit.Key.unitMeshManager.HideMeshRenderers();
+                            if (unit.unitActionHandler.targetEnemyUnit == knownUnit.Key)
+                                unit.unitActionHandler.SetTargetEnemyUnit(null);
+                        }
                     }
                     else
                         knownUnit.Key.unitMeshManager.ShowMeshRenderers();
@@ -333,6 +337,9 @@ namespace UnitSystem
 
                 if (knownAllies.Contains(unitToRemove))
                     knownAllies.Remove(unitToRemove);
+
+                if (unit.unitActionHandler.targetEnemyUnit == unitToRemove)
+                    unit.unitActionHandler.SetTargetEnemyUnit(null);
 
                 // If they are no longer visible to the player, hide them
                 if (unit.IsPlayer)

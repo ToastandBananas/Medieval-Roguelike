@@ -9,7 +9,6 @@ namespace ActionSystem
         [SerializeField] TextMeshProUGUI textMesh;
         [SerializeField] Button button;
         [SerializeField] GameObject selectedImageGameObject;
-        [SerializeField] GameObject invalidActionImageGameObject;
 
         ActionType actionType;
 
@@ -55,7 +54,7 @@ namespace ActionSystem
             }
 
             BaseAction action = actionType.GetAction(playerActionHandler.unit);
-            if (action == null || action.IsHotbarAction() == false)
+            if (action == null || action.ActionBarSection() == ActionBarSection.None)
             {
                 transform.gameObject.SetActive(false);
                 return;
@@ -71,13 +70,11 @@ namespace ActionSystem
         void ActivateButton()
         {
             button.interactable = true;
-            invalidActionImageGameObject.SetActive(false);
         }
 
         void DeactivateButton()
         {
             button.interactable = false;
-            invalidActionImageGameObject.SetActive(true);
         }
 
         public ActionType ActionType => actionType;

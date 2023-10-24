@@ -534,7 +534,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => false;
 
-        public override bool IsHotbarAction() => true;
+        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
 
         public override bool IsValidAction() => true;
 

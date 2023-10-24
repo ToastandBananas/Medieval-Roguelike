@@ -53,8 +53,6 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => false;
 
-        public override bool IsHotbarAction() => false;
-
         public override bool IsValidAction() => true;
 
         public override bool ActionIsUsedInstantly() => true;

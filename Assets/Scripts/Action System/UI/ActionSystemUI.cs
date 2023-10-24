@@ -7,12 +7,20 @@ using UnitSystem;
 
 namespace ActionSystem
 {
+    public enum ActionBarSection { None, Basic, Default, Item }
+
     public class ActionSystemUI : MonoBehaviour
     {
         public static ActionSystemUI Instance { get; private set; }
 
         [SerializeField] Transform actionButtonPrefab;
-        [SerializeField] Transform actionButtonContainerTransform;
+
+        [Header("Parent Transforms")]
+        [SerializeField] Transform basicActionButtons_ParentTransform;
+        [SerializeField] Transform otherActions_ParentTransform;
+        [SerializeField] Transform itemActions_ParentTransform;
+
+        [Header("Stat Texts")]
         [SerializeField] TextMeshProUGUI actionPointsText;
         [SerializeField] TextMeshProUGUI energyText;
         [SerializeField] TextMeshProUGUI healthText;
@@ -55,6 +63,9 @@ namespace ActionSystem
         {
             for (int i = 0; i < Instance.playerActionHandler.AvailableActionTypes.Count; i++)
             {
+                if (Instance.playerActionHandler.AvailableActionTypes[i].GetAction(UnitManager.player).ActionBarSection() == ActionBarSection.None)
+                    continue;
+
                 AddButton(Instance.playerActionHandler.AvailableActionTypes[i]);
             }
 
@@ -70,9 +81,29 @@ namespace ActionSystem
             }
 
             ActionButtonUI newActionButton = GetActionButtonFromPool();
-            newActionButton.transform.SetSiblingIndex(Instance.actionButtonContainerTransform.childCount - 1);
             newActionButton.SetActionType(actionType);
+            SetParent(actionType.GetAction(UnitManager.player), newActionButton);
+            newActionButton.transform.SetSiblingIndex(newActionButton.transform.parent.childCount - 1);
             newActionButton.gameObject.SetActive(true);
+        }
+
+        static void SetParent(BaseAction baseAction, ActionButtonUI actionButton)
+        {
+            switch (baseAction.ActionBarSection())
+            {
+                case ActionBarSection.None:
+                    Debug.LogWarning($"We shouldn't be setting up a button for {baseAction.name}...");
+                    break;
+                case ActionBarSection.Basic:
+                    actionButton.transform.SetParent(Instance.basicActionButtons_ParentTransform, false);
+                    break;
+                case ActionBarSection.Default:
+                    actionButton.transform.SetParent(Instance.otherActions_ParentTransform, false);
+                    break;
+                case ActionBarSection.Item:
+                    actionButton.transform.SetParent(Instance.itemActions_ParentTransform, false);
+                    break;
+            }
         }
 
         public static void RemoveButton(ActionType actionType)
@@ -126,7 +157,7 @@ namespace ActionSystem
 
         static ActionButtonUI CreateNewActionButton()
         {
-            ActionButtonUI newActionButton = Instantiate(Instance.actionButtonPrefab, Instance.actionButtonContainerTransform).GetComponent<ActionButtonUI>();
+            ActionButtonUI newActionButton = Instantiate(Instance.actionButtonPrefab).GetComponent<ActionButtonUI>();
             Instance.actionButtons.Add(newActionButton);
             return newActionButton;
         }

@@ -76,7 +76,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => true;
 
-        public override bool IsHotbarAction() => false;
+        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.None;
 
         public override bool ActionIsUsedInstantly() => true;
     }

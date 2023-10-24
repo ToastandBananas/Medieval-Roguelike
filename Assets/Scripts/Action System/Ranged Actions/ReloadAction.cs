@@ -55,7 +55,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override bool IsHotbarAction() => true;
+        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
 
         public override bool ActionIsUsedInstantly() => true;
 
