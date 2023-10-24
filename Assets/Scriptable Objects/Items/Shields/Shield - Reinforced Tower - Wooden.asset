@@ -27,8 +27,7 @@ MonoBehaviour:
   inventorySprite: {fileID: 21300000, guid: 09faf35f3b20db347b4a26b9d1704148, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 0, y: 0}
-  staticValue: 300
+  valueRange: {x: 150, y: 330}
   meshes:
   - {fileID: -2432090755550338912, guid: 50c800bcecc87c64282516b74f8e3b85, type: 3}
   meshRendererMaterials:
@@ -45,6 +44,6 @@ MonoBehaviour:
   idlePosition_Right: {x: -0.23, y: 0.05, z: -0.23}
   idleRotation_Left: {x: 0, y: -30, z: 0}
   idleRotation_Right: {x: 0, y: 30, z: 0}
-  minBlockPower: 4
-  maxBlockPower: 9
+  blockPowerRange: {x: 12, y: 18}
+  damageRange: {x: 4, y: 7}
   blockChanceAddOn: 10

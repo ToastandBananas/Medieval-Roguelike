@@ -7,6 +7,7 @@ using Controls;
 using ContextMenu = GeneralUI.ContextMenu;
 using UnitSystem;
 using ActionSystem;
+using GeneralUI;
 
 namespace InventorySystem
 {
@@ -144,7 +145,7 @@ namespace InventorySystem
                 // The dragged item should follow the mouse position
                 Vector2 offset = draggedItem.GetDraggedItemOffset();
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localMousePosition);
-                draggedItem.RectTransform().localPosition = localMousePosition + offset;
+                draggedItem.RectTransform.localPosition = localMousePosition + offset;
 
                 // If we try to place an item
                 if (GameControls.gamePlayActions.menuSelect.WasPressed)
@@ -318,6 +319,7 @@ namespace InventorySystem
         {
             SplitStack.Instance.Close();
             ContextMenu.DisableContextMenu(true);
+            TooltipManager.ClearTooltips();
 
             Cursor.visible = false;
             isDraggingItem = true;
@@ -337,6 +339,7 @@ namespace InventorySystem
         {
             SplitStack.Instance.Close();
             ContextMenu.DisableContextMenu(true);
+            TooltipManager.ClearTooltips();
 
             Cursor.visible = false;
             isDraggingItem = true;
@@ -449,9 +452,7 @@ namespace InventorySystem
             if (playerInventoryActive == false)
                 TogglePlayerInventory();
 
-            ContainerUI containerUI = GetNextAvailableContainerUI();
-            containerUI.ShowContainerInventory(containerInventoryManager.ParentInventory, containerItem);
-            containerUI.SetupRectTransform(containerInventoryManager.ParentInventory);
+            GetNextAvailableContainerUI().ShowContainerInventory(containerInventoryManager.ParentInventory, containerItem);
         }
 
         public static void CloseAllContainerUI()
@@ -472,6 +473,8 @@ namespace InventorySystem
                 if (Instance.containerUIs[i].gameObject.activeSelf == false)
                     return Instance.containerUIs[i];
             }
+
+            Instance.containerUIs[1].CloseContainerInventory();
             return Instance.containerUIs[1];
         }
 

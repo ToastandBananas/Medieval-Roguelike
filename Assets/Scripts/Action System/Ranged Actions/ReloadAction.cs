@@ -44,7 +44,6 @@ namespace ActionSystem
 
         public override int GetActionPointsCost()
         {
-            // TODO: Determine cost by specific ranged weapon (set a multiplier of the cost in the ranged weapon's Scriptable Object)
             return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 

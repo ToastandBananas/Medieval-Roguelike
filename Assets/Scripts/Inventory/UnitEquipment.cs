@@ -639,7 +639,8 @@ namespace InventorySystem
         {
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
-                if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (equipment.ActionTypes[i].GetAction(myUnit) is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
+                BaseAction action = equipment.ActionTypes[i].GetAction(myUnit);
+                if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
                     continue;
 
                 ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
@@ -812,14 +813,29 @@ namespace InventorySystem
 
                 // Remove held item bases for current held items
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem1))
+                {
                     RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item.Equipment);
+                }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem1))
+                {
                     RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.Equipment);
+                }
 
                 // Create held item bases for the other weapon set
-                SetupEquipmentMesh(EquipSlot.LeftHeldItem2, equippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
-                SetupEquipmentMesh(EquipSlot.RightHeldItem2, equippedItemDatas[(int)EquipSlot.RightHeldItem2]);
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem2))
+                {
+                    SetupEquipmentMesh(EquipSlot.LeftHeldItem2, equippedItemDatas[(int)EquipSlot.LeftHeldItem2]);
+                    AddActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item.Equipment);
+                }
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem2))
+                {
+                    SetupEquipmentMesh(EquipSlot.RightHeldItem2, equippedItemDatas[(int)EquipSlot.RightHeldItem2]);
+                    AddActions(equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.Equipment);
+                }
 
                 if (slotVisualsCreated)
                 {
@@ -858,14 +874,29 @@ namespace InventorySystem
 
                 // Remove held item bases for current held items
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem2))
+                {
                     RemoveEquipmentMesh(EquipSlot.LeftHeldItem2);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item.Equipment);
+                }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem2))
+                {
                     RemoveEquipmentMesh(EquipSlot.RightHeldItem2);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.Equipment);
+                }
 
                 // Create held item bases for the other weapon set
-                SetupEquipmentMesh(EquipSlot.LeftHeldItem1, equippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
-                SetupEquipmentMesh(EquipSlot.RightHeldItem1, equippedItemDatas[(int)EquipSlot.RightHeldItem1]);
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem1))
+                {
+                    SetupEquipmentMesh(EquipSlot.LeftHeldItem1, equippedItemDatas[(int)EquipSlot.LeftHeldItem1]);
+                    AddActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item.Equipment);
+                }
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem1))
+                {
+                    SetupEquipmentMesh(EquipSlot.RightHeldItem1, equippedItemDatas[(int)EquipSlot.RightHeldItem1]);
+                    AddActions(equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.Equipment);
+                }
 
                 if (slotVisualsCreated)
                 {

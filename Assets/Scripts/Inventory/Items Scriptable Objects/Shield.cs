@@ -6,14 +6,20 @@ namespace InventorySystem
     public class Shield : HeldEquipment
     {
         [Header("Block Power")]
-        [SerializeField] int minBlockPower = 1;
-        [SerializeField] int maxBlockPower = 5;
+        [Tooltip("The amount of damage that will be blocked")]
+        [SerializeField] Vector2Int blockPowerRange;
+
+        [Header("Shield Bash Damage")]
+        [SerializeField] Vector2Int damageRange;
 
         [Header("Modifiers")]
         [SerializeField] float blockChanceAddOn = 10f;
 
-        public int MinBlockPower => minBlockPower;
-        public int MaxBlockPower => maxBlockPower;
+        public int MinBlockPower => blockPowerRange.x;
+        public int MaxBlockPower => blockPowerRange.y;
+
+        public int MinDamage => damageRange.x;
+        public int MaxDamage => damageRange.y;
 
         public float BlockChanceAddOn => blockChanceAddOn;
     }

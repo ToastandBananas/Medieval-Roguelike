@@ -15,6 +15,9 @@ namespace InventorySystem
         [SerializeField] float accuracyModifier;
 
         [SerializeField] int blockPower;
+        [SerializeField] int defense;
+
+        [SerializeField] int value;
 
         [SerializeField] bool hasBeenRandomized;
 
@@ -93,8 +96,100 @@ namespace InventorySystem
                         Shield shield = item as Shield;
                         blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
                     }
+                    else if (item is Armor)
+                    {
+                        Armor armor = item as Armor;
+                        defense = Random.Range(armor.MinDefense, armor.MaxDefense + 1);
+                    }
+
+                    if (item.ValueRange.x == item.ValueRange.y)
+                        value = item.ValueRange.x;
+                    else 
+                        CalculateValue();
                 }
             }
+        }
+
+        /// <summary>Value = min possible value * the difference between the min/max possible value * how good the item's stats are vs. what its max values could be if the item rolled perfect stats.</summary>
+        public void CalculateValue() => value = Mathf.RoundToInt(item.ValueRange.x + ((item.ValueRange.y - item.ValueRange.x) * CalculatePercentPointValue()));
+
+        float CalculatePercentPointValue()
+        {
+            // Calculate the percentage of points that were added to the item's stats when randomized (compared to the total possible points)
+            float pointIncrease = 0f; // Amount the stats have been increased by in relation to its base stat values, in total
+            float percent; // Percent of possible stat increase this item has
+
+            // ClampMaxValues();
+
+            if (item is Equipment)
+            {
+                //if (item.Equipment.maxBaseDurability > 0)
+                    //pointIncrease += (maxDurability - equipment.minBaseDurability);
+
+                if (item is Weapon)
+                {
+                    pointIncrease += (damage - item.Weapon.MinDamage) * 2f; // Damage contributes to value twice as much
+                }
+                else if (item is Shield)
+                {
+                    pointIncrease += (blockPower - item.Shield.MinBlockPower) * 2f; // Block power contributes to value twice as much
+                    pointIncrease += damage - item.Shield.MinDamage;
+                }
+                else if (item is Armor)
+                {
+                    pointIncrease += (defense - item.Armor.MinDefense) * 2f; // Armor contributes to value twice as much
+                }
+            }
+            else if (item is Consumable)
+            {
+                //if (item.Consumable.ItemType == ItemType.Food)
+                    //pointIncrease += (freshness - consumable.minBaseFreshness) * 2f;
+            }
+
+            if (item.MaxUses > 1)
+                pointIncrease += remainingUses;
+
+            percent = pointIncrease / GetTotalPointValue();
+
+            return percent;
+        }
+
+        float GetTotalPointValue()
+        {
+            // Add up all the possible points that can be added to our stats when randomized (damage, defense, etc)
+            float totalPointsPossible = 0f;
+
+            if (item is Equipment)
+            {
+                //if (equipment.maxBaseDurability > 0)
+                    //totalPointsPossible += (equipment.maxBaseDurability - equipment.minBaseDurability);
+
+                if (item is Weapon)
+                {
+                    totalPointsPossible += (item.Weapon.MaxDamage - item.Weapon.MinDamage) * 2f;
+                }
+
+                if (item is Shield)
+                {
+                    totalPointsPossible += item.Shield.MaxBlockPower - item.Shield.MinBlockPower;
+                    totalPointsPossible += item.Shield.MaxDamage - item.Shield.MinDamage;
+                }
+
+                if (item is Armor)
+                {
+                    totalPointsPossible += (item.Armor.MaxDefense - item.Armor.MinDefense) * 2f;
+                }
+            }
+            else if (item is Consumable)
+            {
+                //if (item.Consumable.ItemType == ItemType.Food)
+                    //totalPointsPossible += (consumable.maxBaseFreshness - consumable.minBaseFreshness) * 2f;
+            }
+
+            if (item.MaxUses > 1)
+                totalPointsPossible += item.MaxUses;
+
+            return totalPointsPossible;
         }
 
         public virtual bool IsBetterThan(ItemData itemDataToCompare)
@@ -147,6 +242,10 @@ namespace InventorySystem
             damage = itemDataToCopy.damage;
             accuracyModifier = itemDataToCopy.accuracyModifier;
             blockPower = itemDataToCopy.blockPower;
+
+            defense = itemDataToCopy.defense;
+
+            value = itemDataToCopy.value;
         }
 
         public void SwapData(ItemData otherItemData)
@@ -159,6 +258,8 @@ namespace InventorySystem
             temp.damage = damage;
             temp.accuracyModifier = accuracyModifier;
             temp.blockPower = blockPower;
+            temp.defense = defense;
+            temp.value = value;
             temp.hasBeenRandomized = hasBeenRandomized;
 
             item = otherItemData.item;
@@ -168,6 +269,8 @@ namespace InventorySystem
             damage = otherItemData.damage;
             accuracyModifier = otherItemData.accuracyModifier;
             blockPower = otherItemData.blockPower;
+            defense = otherItemData.defense;
+            value = otherItemData.value;
             hasBeenRandomized = otherItemData.hasBeenRandomized;
 
             otherItemData.item = temp.item;
@@ -177,6 +280,8 @@ namespace InventorySystem
             otherItemData.damage = temp.damage;
             otherItemData.accuracyModifier = temp.accuracyModifier;
             otherItemData.blockPower = temp.blockPower;
+            otherItemData.defense = temp.defense;
+            otherItemData.value = temp.value;
             otherItemData.hasBeenRandomized = temp.hasBeenRandomized;
         }
 
@@ -241,6 +346,10 @@ namespace InventorySystem
         public int BlockPower => blockPower;
 
         public int RemainingUses => remainingUses;
+
+        public int Defense => defense;
+
+        public int Value => value;
 
         public bool ShouldRandomize => hasBeenRandomized;
 

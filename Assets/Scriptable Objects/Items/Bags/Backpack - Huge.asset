@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Huge Backpack
   pluralName: 
-  description: A large leather backpack with 5 pockets.
+  description: A pack mule's dream.
   itemType: 140
   mainMaterial: 23
   itemSize: 4
@@ -26,43 +26,50 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  staticValue: 1600
   meshes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   meshRendererMaterials:
   - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  pickupMeshRendererMaterials: []
   equipSlot: 9
   actionTypes: []
+  meshes_Female: []
+  meshRendererMaterials_Female: []
   inventorySections:
   - amountOfSlots: 20
     maxSlotsPerRow: 5
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 4
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 4
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 6
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 6
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 5
     maxSlotsPerRow: 5
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 

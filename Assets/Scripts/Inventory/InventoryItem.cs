@@ -205,7 +205,7 @@ namespace InventorySystem
 
         public void SetItemData(ItemData newItemData) => itemData = newItemData;
 
-        public RectTransform RectTransform() => rectTransform;
+        public RectTransform RectTransform => rectTransform;
 
         public QuiverInventoryItem QuiverInventoryItem => this as QuiverInventoryItem;
     }

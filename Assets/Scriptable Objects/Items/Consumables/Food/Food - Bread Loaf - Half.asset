@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Partial Loaf of Bread
   pluralName: 
-  description: 
+  description: A staple food source for weary wanderers.
   itemType: 190
   mainMaterial: 4
   itemSize: 2
@@ -25,8 +25,8 @@ MonoBehaviour:
   inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
   maxUses: 10
   isUsable: 1
-  valueRange: {x: 0, y: 0}
-  staticValue: 1
+  valueRange: {x: 1, y: 4}
+  staticValue: 0
   meshes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   meshRendererMaterials:
@@ -40,3 +40,4 @@ MonoBehaviour:
   - thresholdPercentage: 25
     newItem: {fileID: 11400000}
     newSprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  consumeAPCostMultiplier: 1

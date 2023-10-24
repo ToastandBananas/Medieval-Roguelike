@@ -117,6 +117,22 @@ namespace ActionSystem
             StartCoroutine(TryTakeTurn());
         }
 
+        public void RemoveActionFromQueue(BaseAction action)
+        {
+            if (queuedActions.Contains(action))
+            {
+                for (int i = queuedActions.Count - 1; i >= 0; i--)
+                {
+                    if (queuedActions[i] != action)
+                        continue;
+
+                    queuedActions.Remove(action);
+                    if (queuedAPs.Count >= i + 1)
+                        queuedAPs.RemoveAt(i);
+                }
+            }
+        }
+
         IEnumerator TryTakeTurn()
         {
             if (unit.IsMyTurn)

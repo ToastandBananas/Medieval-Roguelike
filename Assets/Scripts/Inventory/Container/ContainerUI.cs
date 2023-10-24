@@ -37,6 +37,7 @@ namespace InventorySystem
             }
 
             SetTakeAllText();
+            SetupRectTransform(mainContainerInventory);
             gameObject.SetActive(true);
         }
 
@@ -47,12 +48,12 @@ namespace InventorySystem
                 if (mainContainerInventory.MyUnit != null)
                 {
                     if (mainContainerInventory.MyUnit.IsPlayer)
-                        titleText.text = $"Your {containerItem.name}";
+                        titleText.text = $"Your {containerItem.Name}";
                     else
-                        titleText.text = $"{mainContainerInventory.MyUnit.name}'s {containerItem.name}";
+                        titleText.text = $"{mainContainerInventory.MyUnit.name}'s {containerItem.Name}";
                 }
                 else
-                    titleText.text = containerItem.name;
+                    titleText.text = containerItem.Name;
             }
         }
 
@@ -79,7 +80,7 @@ namespace InventorySystem
             gameObject.SetActive(false);
         }
 
-        public void SetupRectTransform(ContainerInventory mainContainerInventory)
+        void SetupRectTransform(ContainerInventory mainContainerInventory)
         {
             // Left section
             int leftWidth = 0;

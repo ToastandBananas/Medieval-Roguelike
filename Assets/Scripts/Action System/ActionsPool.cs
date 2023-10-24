@@ -102,13 +102,7 @@ namespace ActionSystem
         public static void ReturnToPool(BaseAction action)
         {
             // De-queue the action if necessary
-            if (action.unit.unitActionHandler.queuedActions.Contains(action))
-            {
-                int actionIndex = action.unit.unitActionHandler.queuedActions.IndexOf(action);
-                action.unit.unitActionHandler.queuedActions.RemoveAt(actionIndex);
-                if (action.unit.unitActionHandler.queuedAPs.Count >= actionIndex + 1)
-                    action.unit.unitActionHandler.queuedAPs.RemoveAt(actionIndex);
-            }
+            action.unit.unitActionHandler.RemoveActionFromQueue(action);
 
             action.unit.unitActionHandler.AvailableActions.Remove(action);
             if (action.unit.unitActionHandler.AvailableCombatActions.Contains(action))

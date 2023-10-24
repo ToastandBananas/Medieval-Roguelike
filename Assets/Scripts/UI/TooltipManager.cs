@@ -1,4 +1,5 @@
 using InventorySystem;
+using UnitSystem;
 using UnityEngine;
 
 namespace GeneralUI 
@@ -32,7 +33,44 @@ namespace GeneralUI
             currentSlot = null;
         }
 
-        public static Tooltip GetTooltip()
+        public static void ShowTooltips(Slot slot)
+        {
+            GetTooltip().ShowItemTooltip(slot);
+
+            if (slot.GetItemData().Item is Equipment == false)
+                return;
+
+            if (slot is EquipmentSlot == false || slot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)
+            {
+                EquipSlot equipSlot = slot.GetItemData().Item.Equipment.EquipSlot;
+                if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
+                {
+                    if (UnitManager.player.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                    {
+                        if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
+                            GetTooltip().ShowItemTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1));
+
+                        if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
+                            GetTooltip().ShowItemTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1));
+                    }
+                    else
+                    {
+                        if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem2))
+                            GetTooltip().ShowItemTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem2));
+
+                        if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem2))
+                            GetTooltip().ShowItemTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem2));
+                    }
+                }
+                else
+                {
+                    if (UnitManager.player.UnitEquipment.EquipSlotHasItem(equipSlot))
+                        GetTooltip().ShowItemTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(equipSlot));
+                }
+            }
+        }
+
+        static Tooltip GetTooltip()
         {
             for (int i = 0; i < Instance.tooltips.Length; i++)
             {
@@ -45,5 +83,7 @@ namespace GeneralUI
         }
 
         public static void SetCurrentSlot(Slot slot) => currentSlot = slot;
+
+        public static Tooltip[] Tooltips => Instance.tooltips;
     }
 }

@@ -26,8 +26,7 @@ MonoBehaviour:
   inventorySprite: {fileID: 21300000, guid: cc2771318766e8d4dbac2f98dc048b34, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 0, y: 0}
-  staticValue: 200
+  valueRange: {x: 100, y: 300}
   meshes:
   - {fileID: -2432090755550338912, guid: 1c4817232c101a9428bdbf2577315f0e, type: 3}
   meshRendererMaterials:
@@ -42,4 +41,5 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 675a2e87ce6a81f40b35be6976e33377, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 477f6094a124f7540ae81e53d5e8dafe, type: 2}
+  defenseRange: {x: 20, y: 30}
   fallOffOnDeathChance: 85

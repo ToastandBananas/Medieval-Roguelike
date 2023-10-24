@@ -41,7 +41,6 @@ namespace InventorySystem
 
         [Header("Value")]
         [SerializeField] Vector2Int valueRange;
-        [SerializeField] int staticValue = 1;
 
         [Header("Equipped Mesh")]
         [SerializeField] Mesh[] meshes;
@@ -65,7 +64,6 @@ namespace InventorySystem
         public virtual Sprite InventorySprite(ItemData itemData = null) => inventorySprite;
 
         public Vector2Int ValueRange => valueRange;
-        public int StaticValue => staticValue;
 
         public Mesh[] Meshes => meshes;
         public Material[] MeshRendererMaterials => meshRendererMaterials;
@@ -116,6 +114,8 @@ namespace InventorySystem
 
         public BasicItem BasicItem => this as BasicItem;
 
+        public Backpack Backpack => this as Backpack;
+
         public Consumable Consumable => this as Consumable;
 
         public Equipment Equipment => this as Equipment;
@@ -127,6 +127,8 @@ namespace InventorySystem
         public Shield Shield => this as Shield;
 
         public Weapon Weapon => this as Weapon;
+
+        public Armor Armor => this as Armor;
 
         public Helm Helm => this as Helm;
 

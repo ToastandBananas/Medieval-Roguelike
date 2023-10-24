@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ab3fb55cd43b7147a6cc6dc891ebe5a, type: 3}
   m_Name: Backpack - Standard
   m_EditorClassIdentifier: 
-  name: Backpack
+  name: Leather Backpack
   pluralName: 
-  description: A leather backpack with 2 pockets.
+  description: A basic leather backpack.
   itemType: 140
   mainMaterial: 23
   itemSize: 4
@@ -26,28 +26,32 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  staticValue: 150
   meshes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   meshRendererMaterials:
   - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterial: {fileID: 0}
+  pickupMeshRendererMaterials: []
   equipSlot: 9
   actionTypes: []
+  meshes_Female: []
+  meshRendererMaterials_Female: []
   inventorySections:
   - amountOfSlots: 16
     maxSlotsPerRow: 4
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 4
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 
   - amountOfSlots: 4
     maxSlotsPerRow: 2
     slotWidth: 1
     slotHeight: 1
+    placeholderSprite: {fileID: 0}
     allowedItemTypes: 

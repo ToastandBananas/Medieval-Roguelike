@@ -26,8 +26,8 @@ MonoBehaviour:
   inventorySprite: {fileID: 21300000, guid: 08dc93c0a3709d940bf8d4ee7ce9df5b, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 0, y: 0}
-  staticValue: 1
+  valueRange: {x: 100, y: 300}
+  staticValue: 0
   meshes:
   - {fileID: 7111655374037333773, guid: 8885308fd742f9b4a8cffc75dcf0ae7f, type: 3}
   meshRendererMaterials:
@@ -44,10 +44,8 @@ MonoBehaviour:
   weaponType: 4
   isTwoHanded: 0
   canDualWield: 1
-  minRange: 1
-  maxRange: 1.5
-  minDamage: 5
-  maxDamage: 10
+  attackRange: {x: 1, y: 1.5}
+  damageRange: {x: 5, y: 10}
   blockChanceAddOn: 2
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
