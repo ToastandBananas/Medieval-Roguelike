@@ -393,7 +393,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Default;
+        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Special;
 
         public override bool IsMeleeAttackAction() => true;
 

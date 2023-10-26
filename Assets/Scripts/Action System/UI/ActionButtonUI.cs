@@ -10,13 +10,14 @@ namespace ActionSystem
         [SerializeField] Button button;
         [SerializeField] GameObject selectedImageGameObject;
 
-        ActionType actionType;
+        public ActionType actionType { get; private set; }
 
         PlayerActionHandler playerActionHandler;
 
         void Awake()
         {
             playerActionHandler = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerActionHandler>();
+            DeactivateButton();
         }
 
         public void SetActionType(ActionType actionType)
@@ -29,18 +30,24 @@ namespace ActionSystem
             button.onClick.AddListener(() =>
             {
                 if (playerActionHandler.queuedActions.Count == 0)
+                {
                     playerActionHandler.OnClick_SetSelectedActionType(actionType);
+                    ActionSystemUI.SetSelectedActionButton(this);
+                }
             });
         }
 
         public void ResetButton()
         {
             actionType = null;
-            gameObject.SetActive(false);
+            DeactivateButton();
         }
 
         public void UpdateSelectedVisual()
         {
+            if (actionType == null)
+                return;
+
             // Show the selected visual if the Action assigned to this button is the currently selected Action
             selectedImageGameObject.SetActive(playerActionHandler.selectedActionType == actionType);
         }
@@ -49,25 +56,24 @@ namespace ActionSystem
         {
             if (actionType == null || playerActionHandler.AvailableActionTypes.Contains(actionType) == false)
             {
-                transform.gameObject.SetActive(false);
+                ResetButton();
                 return;
             }
 
             BaseAction action = actionType.GetAction(playerActionHandler.unit);
             if (action == null || action.ActionBarSection() == ActionBarSection.None)
             {
-                transform.gameObject.SetActive(false);
+                ResetButton();
                 return;
             }
 
-            transform.gameObject.SetActive(true);
             if (action.IsValidAction() && playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
                 ActivateButton();
             else
                 DeactivateButton();
         }
 
-        void ActivateButton()
+        public void ActivateButton()
         {
             button.interactable = true;
         }
@@ -76,7 +82,5 @@ namespace ActionSystem
         {
             button.interactable = false;
         }
-
-        public ActionType ActionType => actionType;
     }
 }

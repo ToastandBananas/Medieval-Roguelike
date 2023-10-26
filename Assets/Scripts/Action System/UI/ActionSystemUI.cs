@@ -4,10 +4,11 @@ using UnityEngine;
 using TMPro;
 using GridSystem;
 using UnitSystem;
+using System.Linq;
 
 namespace ActionSystem
 {
-    public enum ActionBarSection { None, Basic, Default, Item }
+    public enum ActionBarSection { None, Basic, Special, Item }
 
     public class ActionSystemUI : MonoBehaviour
     {
@@ -16,19 +17,37 @@ namespace ActionSystem
         [SerializeField] Transform actionButtonPrefab;
 
         [Header("Parent Transforms")]
-        [SerializeField] Transform basicActionButtons_ParentTransform;
-        [SerializeField] Transform otherActions_ParentTransform;
-        [SerializeField] Transform itemActions_ParentTransform;
+        [SerializeField] RectTransform actionButtonContainer;
+        [SerializeField] RectTransform basicActionButtonsBackground;
+        [SerializeField] RectTransform specialActionsBackground;
+        [SerializeField] RectTransform itemActionsBackground;
+        [SerializeField] RectTransform basicActionsParentTransform;
+        [SerializeField] RectTransform specialActionsParentTransform;
+        [SerializeField] RectTransform itemActionsParentTransform;
+        [SerializeField] RectTransform basicActionsRowButtonParentTransform;
+        [SerializeField] RectTransform specialActionsRowButtonParentTransform;
+        [SerializeField] RectTransform itemActionsRowButtonParentTransform;
+
+        [Header("Change Action Button Rows")]
+        [SerializeField] ChangeActionButtonRow basicActionChangeRow;
+        [SerializeField] ChangeActionButtonRow specialActionChangeRow;
+        [SerializeField] ChangeActionButtonRow itemActionChangeRow;
 
         [Header("Stat Texts")]
         [SerializeField] TextMeshProUGUI actionPointsText;
         [SerializeField] TextMeshProUGUI energyText;
         [SerializeField] TextMeshProUGUI healthText;
 
-        int amountActionButtonsToPool = 8;
-        List<ActionButtonUI> actionButtons = new List<ActionButtonUI>();
+        static List<ActionButtonUI> basicActionButtons = new List<ActionButtonUI>();
+        static List<ActionButtonUI> specialActionButtons = new List<ActionButtonUI>();
+        static List<ActionButtonUI> itemActionButtons = new List<ActionButtonUI>();
 
-        PlayerActionHandler playerActionHandler;
+        public static ActionButtonUI selectedActionButton { get; private set; }
+        static PlayerActionHandler playerActionHandler;
+
+        static readonly int maxActionButtonContainerHeight = 224;
+        static readonly int minActionButtonContainerHeight = 96;
+        static readonly int actionButtonRowHeightAdjustment = 64;
 
         void Awake()
         {
@@ -43,15 +62,15 @@ namespace ActionSystem
             playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
             playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
-            InitializeActionButtonPool();
+            basicActionButtons = basicActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
+            specialActionButtons = specialActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
+            itemActionButtons = itemActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
 
             SetupUnitActionButtons();
         }
 
         void Start()
         {
-            UpdateSelectedVisual();
-            
             UpdateActionPointsText();
             UpdateEnergyText();
             UpdateHealthText();
@@ -61,12 +80,12 @@ namespace ActionSystem
 
         public static void SetupUnitActionButtons()
         {
-            for (int i = 0; i < Instance.playerActionHandler.AvailableActionTypes.Count; i++)
+            for (int i = 0; i < playerActionHandler.AvailableActionTypes.Count; i++)
             {
-                if (Instance.playerActionHandler.AvailableActionTypes[i].GetAction(UnitManager.player).ActionBarSection() == ActionBarSection.None)
+                if (playerActionHandler.AvailableActionTypes[i].GetAction(UnitManager.player).ActionBarSection() == ActionBarSection.None)
                     continue;
 
-                AddButton(Instance.playerActionHandler.AvailableActionTypes[i]);
+                AddButton(playerActionHandler.AvailableActionTypes[i]);
             }
 
             UpdateActionVisuals();
@@ -74,118 +93,163 @@ namespace ActionSystem
 
         public static void AddButton(ActionType actionType)
         {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            BaseAction baseAction = actionType.GetAction(UnitManager.player);
+            if (baseAction.ActionBarSection() == ActionBarSection.Basic)
             {
-                if (Instance.actionButtons[i].gameObject.activeSelf && Instance.actionButtons[i].ActionType == actionType)
+                for (int i = 0; i < basicActionButtons.Count; i++)
+                {
+                    if (basicActionButtons[i].actionType != null)
+                        continue;
+
+                    basicActionButtons[i].SetActionType(actionType);
+                    basicActionButtons[i].ActivateButton();
                     return;
+                }
             }
-
-            ActionButtonUI newActionButton = GetActionButtonFromPool();
-            newActionButton.SetActionType(actionType);
-            SetParent(actionType.GetAction(UnitManager.player), newActionButton);
-            newActionButton.transform.SetSiblingIndex(newActionButton.transform.parent.childCount - 1);
-            newActionButton.gameObject.SetActive(true);
-        }
-
-        static void SetParent(BaseAction baseAction, ActionButtonUI actionButton)
-        {
-            switch (baseAction.ActionBarSection())
+            else if (baseAction.ActionBarSection() == ActionBarSection.Special)
             {
-                case ActionBarSection.None:
-                    Debug.LogWarning($"We shouldn't be setting up a button for {baseAction.name}...");
-                    break;
-                case ActionBarSection.Basic:
-                    actionButton.transform.SetParent(Instance.basicActionButtons_ParentTransform, false);
-                    break;
-                case ActionBarSection.Default:
-                    actionButton.transform.SetParent(Instance.otherActions_ParentTransform, false);
-                    break;
-                case ActionBarSection.Item:
-                    actionButton.transform.SetParent(Instance.itemActions_ParentTransform, false);
-                    break;
+                for (int i = 0; i < specialActionButtons.Count; i++)
+                {
+                    if (specialActionButtons[i].actionType != null)
+                        continue;
+
+                    specialActionButtons[i].SetActionType(actionType);
+                    specialActionButtons[i].ActivateButton();
+                    return;
+                }
             }
         }
 
         public static void RemoveButton(ActionType actionType)
         {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            BaseAction baseAction = actionType.GetAction(UnitManager.player);
+            if (baseAction == null)
+                return;
+
+            if (baseAction.ActionBarSection() == ActionBarSection.Basic)
             {
-                if (Instance.actionButtons[i].gameObject.activeSelf && Instance.actionButtons[i].ActionType == actionType)
-                    Instance.actionButtons[i].ResetButton();
+                for (int i = 0; i < basicActionButtons.Count; i++)
+                {
+                    if (basicActionButtons[i].actionType == actionType)
+                        basicActionButtons[i].ResetButton();
+                }
+            }
+            else if (baseAction.ActionBarSection() == ActionBarSection.Special)
+            {
+                for (int i = 0; i < specialActionButtons.Count; i++)
+                {
+                    if (basicActionButtons[i].actionType == actionType)
+                        specialActionButtons[i].ResetButton();
+                }
             }
         }
 
         static void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
         {
-            BaseAction selectedAction = Instance.playerActionHandler.selectedActionType.GetAction(Instance.playerActionHandler.unit);
+            BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
             if (selectedAction.ActionIsUsedInstantly())
                 selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
             else
-            {
-                UpdateSelectedVisual();
                 GridSystemVisual.UpdateAttackRangeGridVisual();
-            }
         }
 
-        static void HideAllActionButtons()
+        public void IncreaseRowCount()
         {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            if (actionButtonContainer.sizeDelta.y < maxActionButtonContainerHeight)
             {
-                Instance.actionButtons[i].ResetButton();
-            }
-        }
+                actionButtonContainer.sizeDelta = new Vector2(actionButtonContainer.sizeDelta.x, actionButtonContainer.sizeDelta.y + actionButtonRowHeightAdjustment);
 
-        static void InitializeActionButtonPool()
-        {
-            for (int i = 0; i < Instance.amountActionButtonsToPool; i++)
+                basicActionButtonsBackground.sizeDelta = new Vector2(basicActionButtonsBackground.sizeDelta.x, basicActionButtonsBackground.sizeDelta.y + actionButtonRowHeightAdjustment);
+                specialActionsBackground.sizeDelta = new Vector2(specialActionsBackground.sizeDelta.x, specialActionsBackground.sizeDelta.y + actionButtonRowHeightAdjustment);
+                itemActionsBackground.sizeDelta = new Vector2(itemActionsBackground.sizeDelta.x, itemActionsBackground.sizeDelta.y + actionButtonRowHeightAdjustment);
+
+                basicActionsRowButtonParentTransform.sizeDelta = new Vector2(basicActionsRowButtonParentTransform.sizeDelta.x, basicActionsRowButtonParentTransform.sizeDelta.y + actionButtonRowHeightAdjustment);
+                specialActionsRowButtonParentTransform.sizeDelta = new Vector2(specialActionsRowButtonParentTransform.sizeDelta.x, specialActionsRowButtonParentTransform.sizeDelta.y + actionButtonRowHeightAdjustment);
+                itemActionsRowButtonParentTransform.sizeDelta = new Vector2(itemActionsRowButtonParentTransform.sizeDelta.x, itemActionsRowButtonParentTransform.sizeDelta.y + actionButtonRowHeightAdjustment);
+            }
+
+            if (actionButtonContainer.sizeDelta.y == maxActionButtonContainerHeight)
             {
-                ActionButtonUI newActionButton = CreateNewActionButton();
-                newActionButton.gameObject.SetActive(false);
-            }
-        }
+                basicActionChangeRow.DeactivateButtons();
+                specialActionChangeRow.DeactivateButtons();
+                itemActionChangeRow.DeactivateButtons();
 
-        static ActionButtonUI GetActionButtonFromPool()
-        {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+                if (basicActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment)
+                    basicActionChangeRow.IncreaseRow();
+
+                if (specialActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment)
+                    basicActionChangeRow.IncreaseRow();
+
+                if (itemActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment)
+                    basicActionChangeRow.IncreaseRow();
+            }
+            else if (actionButtonContainer.sizeDelta.y != minActionButtonContainerHeight)
             {
-                if (Instance.actionButtons[i].gameObject.activeSelf == false)
-                    return Instance.actionButtons[i];
+                if (basicActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment * 2)
+                    basicActionChangeRow.IncreaseRow();
+
+                if (specialActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment * 2)
+                    basicActionChangeRow.IncreaseRow();
+
+                if (itemActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment * 2)
+                    basicActionChangeRow.IncreaseRow();
             }
-
-            return CreateNewActionButton();
         }
-
-        static ActionButtonUI CreateNewActionButton()
+        
+        public void DecreaseRowCount()
         {
-            ActionButtonUI newActionButton = Instantiate(Instance.actionButtonPrefab).GetComponent<ActionButtonUI>();
-            Instance.actionButtons.Add(newActionButton);
-            return newActionButton;
-        }
-
-        public static List<ActionButtonUI> GetActionButtonsList() => Instance.actionButtons;
-
-        public static bool SelectedActionValid() => Instance.playerActionHandler.selectedActionType.GetAction(Instance.playerActionHandler.unit).IsValidAction();
-
-        public static void UpdateSelectedVisual()
-        {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            if (actionButtonContainer.sizeDelta.y > minActionButtonContainerHeight)
             {
-                Instance.actionButtons[i].UpdateSelectedVisual();
+                actionButtonContainer.sizeDelta = new Vector2(actionButtonContainer.sizeDelta.x, actionButtonContainer.sizeDelta.y - actionButtonRowHeightAdjustment);
+
+                basicActionButtonsBackground.sizeDelta = new Vector2(basicActionButtonsBackground.sizeDelta.x, basicActionButtonsBackground.sizeDelta.y - actionButtonRowHeightAdjustment);
+                specialActionsBackground.sizeDelta = new Vector2(specialActionsBackground.sizeDelta.x, specialActionsBackground.sizeDelta.y - actionButtonRowHeightAdjustment);
+                itemActionsBackground.sizeDelta = new Vector2(itemActionsBackground.sizeDelta.x, itemActionsBackground.sizeDelta.y - actionButtonRowHeightAdjustment);
+
+                basicActionsRowButtonParentTransform.sizeDelta = new Vector2(basicActionsRowButtonParentTransform.sizeDelta.x, basicActionsRowButtonParentTransform.sizeDelta.y - actionButtonRowHeightAdjustment);
+                specialActionsRowButtonParentTransform.sizeDelta = new Vector2(specialActionsRowButtonParentTransform.sizeDelta.x, specialActionsRowButtonParentTransform.sizeDelta.y - actionButtonRowHeightAdjustment);
+                itemActionsRowButtonParentTransform.sizeDelta = new Vector2(itemActionsRowButtonParentTransform.sizeDelta.x, itemActionsRowButtonParentTransform.sizeDelta.y - actionButtonRowHeightAdjustment);
             }
+
+            basicActionChangeRow.ActivateButtons();
+            specialActionChangeRow.ActivateButtons();
+            itemActionChangeRow.ActivateButtons();
+        }
+
+        public static bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
+
+        public static void SetSelectedActionButton(ActionButtonUI actionButton)
+        {
+            if (selectedActionButton != null)
+                selectedActionButton.UpdateSelectedVisual();
+
+            selectedActionButton = actionButton;
+            if (selectedActionButton != null)
+                selectedActionButton.UpdateSelectedVisual();
         }
 
         public static void UpdateActionVisuals()
         {
-            for (int i = 0; i < Instance.actionButtons.Count; i++)
+            for (int i = 0; i < basicActionButtons.Count; i++)
             {
-                Instance.actionButtons[i].UpdateActionVisual();
+                basicActionButtons[i].UpdateActionVisual();
+            }
+
+            for (int i = 0; i < specialActionButtons.Count; i++)
+            {
+                specialActionButtons[i].UpdateActionVisual();
+            }
+
+            for (int i = 0; i < itemActionButtons.Count; i++)
+            {
+                itemActionButtons[i].UpdateActionVisual();
             }
         }
 
-        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {Instance.playerActionHandler.unit.stats.lastUsedAP}";
+        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.unit.stats.lastUsedAP}";
 
-        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {Instance.playerActionHandler.unit.stats.currentEnergy}";
+        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.unit.stats.currentEnergy}";
 
-        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {Instance.playerActionHandler.unit.health.CurrentHealth}";
+        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.unit.health.CurrentHealth}";
     }
 }

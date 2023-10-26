@@ -543,7 +543,11 @@ namespace ActionSystem
 
         public virtual void SetSelectedActionType(ActionType actionType) => selectedActionType = actionType;
 
-        public void SetDefaultSelectedAction() => SetSelectedActionType(FindActionTypeByName("MoveAction"));
+        public void SetDefaultSelectedAction()
+        {
+            SetSelectedActionType(FindActionTypeByName("MoveAction"));
+            ActionSystemUI.SetSelectedActionButton(null);
+        }
 
         public bool DefaultActionIsSelected => SelectedAction is MoveAction;
 
