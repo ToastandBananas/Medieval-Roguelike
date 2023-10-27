@@ -76,6 +76,8 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
+        public override string TooltipDescription() => "";
+
         public override bool IsInterruptable() => false;
 
         public override bool CanQueueMultiple() => false;

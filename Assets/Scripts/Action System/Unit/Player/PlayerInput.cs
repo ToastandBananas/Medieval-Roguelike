@@ -52,7 +52,7 @@ namespace ActionSystem
             if (skipTurnCooldownTimer < skipTurnCooldown)
                 skipTurnCooldownTimer += Time.deltaTime;
 
-            if (InventoryUI.isDraggingItem)
+            if (InventoryUI.isDraggingItem || ActionSystemUI.isDraggingAction)
                 return;
 
             if (EventSystem.current.IsPointerOverGameObject())

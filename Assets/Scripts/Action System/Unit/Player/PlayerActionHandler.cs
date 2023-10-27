@@ -171,12 +171,13 @@ namespace ActionSystem
             OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void OnClick_SetSelectedActionType(ActionType actionType)
+        public void OnClick_ActionBarSlot(ActionType actionType)
         {
             if (InventoryUI.isDraggingItem)
                 return;
 
             SetSelectedActionType(actionType);
+            ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.highlightedActionSlot);
         }
     }
 }

@@ -383,6 +383,11 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
+        public override string TooltipDescription()
+        {
+            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
+        }
+
         public override int GetEnergyCost() => 25;
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();

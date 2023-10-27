@@ -58,12 +58,12 @@ namespace GeneralUI
             if (contextMenuHoldTimer < maxContextMenuHoldTime && GameControls.gamePlayActions.menuContext.IsPressed)
                 contextMenuHoldTimer += Time.deltaTime;
 
+            // Don't allow context menu actions while an action is already queued or when dragging items
+            if (UnitManager.player.unitActionHandler.queuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.isDraggingAction)
+                return;
+
             if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.DefaultActionIsSelected)
             {
-                // Don't allow context menu actions while an action is already queued
-                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
-                    return;
-
                 if (contextMenuHoldTimer < maxContextMenuHoldTime)
                     BuildContextMenu();
 

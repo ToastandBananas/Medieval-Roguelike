@@ -547,5 +547,7 @@ namespace ActionSystem
         public override bool CanBeClearedFromActionQueue() => true;
 
         public float DefaultRotateSpeed() => defaultRotateSpeed;
+
+        public override string TooltipDescription() => "Rotate to face a different direction, adjusting your field of vision and altering what you can see.";
     }
 }

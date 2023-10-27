@@ -56,5 +56,7 @@ namespace ActionSystem
         public override bool IsValidAction() => true;
 
         public override bool ActionIsUsedInstantly() => true;
+
+        public override string TooltipDescription() => "";
     }
 }

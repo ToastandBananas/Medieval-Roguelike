@@ -1,3 +1,4 @@
+using InventorySystem;
 using UnitSystem;
 using UnityEngine;
 
@@ -60,5 +61,10 @@ namespace ActionSystem
         public override bool ActionIsUsedInstantly() => true;
 
         public override int GetEnergyCost() => 0;
+
+        public override string TooltipDescription()
+        {
+            return $"Reload your <b>{unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Name}</b>.";
+        }
     }
 }

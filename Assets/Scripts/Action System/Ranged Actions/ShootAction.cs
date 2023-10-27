@@ -436,6 +436,16 @@ namespace ActionSystem
             return false;
         }
 
+        public override string TooltipDescription()
+        {
+            RangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon;
+            if (rangedWeapon.WeaponType == WeaponType.Bow)
+                return $"Draw your <b>{rangedWeapon.Name}'s</b> bowstring taut and release a deadly arrow towards your target.";
+            else if (rangedWeapon.WeaponType == WeaponType.Crossbow)
+                return $"Ready your <b>{rangedWeapon.Name}</b> and release a deadly bolt towards your target.";
+            return "";
+        }
+
         public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
 
         public override int GetEnergyCost() => 0;

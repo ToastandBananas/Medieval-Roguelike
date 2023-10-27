@@ -20,6 +20,6 @@ namespace ActionSystem
         // Convert the stored string back to a Type
         public Type GetActionType() => Type.GetType(actionTypeNamespace + actionTypeName);
 
-        public BaseAction GetAction(Unit unit) => ActionsPool.GetAction(GetActionType(), unit);
+        public BaseAction GetAction(Unit unit) => ActionsPool.GetAction(GetActionType(), this, unit);
     }
 }

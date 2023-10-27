@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Swipe
   actionTypeName: SwipeAction
-  actionIcon: {fileID: 0}
+  actionIcon: {fileID: 21300000, guid: bf647b7ad2e2a6f4597f33ff4f46c671, type: 3}

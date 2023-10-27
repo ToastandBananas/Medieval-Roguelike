@@ -57,5 +57,7 @@ namespace ActionSystem
         public override bool IsInterruptable() => false;
 
         public override bool CanBeClearedFromActionQueue() => false;
+
+        public override string TooltipDescription() => "";
     }
 }

@@ -5,6 +5,7 @@ using InventorySystem;
 using TMPro;
 using System;
 using UnitSystem;
+using ActionSystem;
 
 namespace GeneralUI
 {
@@ -83,6 +84,27 @@ namespace GeneralUI
 
             RecalculateTooltipSize();
             CalculatePosition(slot);
+        }
+
+        public void ShowActionTooltip(ActionBarSlot actionBarSlot)
+        {
+            tooltipStringBuilder.Clear();
+            if (actionBarSlot is ItemActionBarSlot)
+            {
+                ItemActionBarSlot itemActionBarSlot = actionBarSlot as ItemActionBarSlot;
+                tooltipStringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.itemData.Item.Name}</b></size></align>");
+            }
+            else
+            {
+                tooltipStringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.actionType.ActionName}</b></size></align>\n\n");
+                SplitText(actionBarSlot.actionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine);
+            }
+
+            textMesh.text = tooltipStringBuilder.ToString();
+            gameObject.SetActive(true);
+
+            RecalculateTooltipSize();
+            CalculatePosition(actionBarSlot);
         }
 
         public void ClearTooltip()
@@ -207,6 +229,12 @@ namespace GeneralUI
                     rectTransform.position = newTooltipPosition;
                 }
             }
+        }
+
+        void CalculatePosition(ActionBarSlot actionBarSlot)
+        {
+            newTooltipPosition.Set(actionBarSlot.transform.position.x + (rectTransform.rect.width / 2f), ActionSystemUI.ActionButtonContainer.rect.height + (rectTransform.rect.height / 2f), 0);
+            rectTransform.position = newTooltipPosition;
         }
 
         string EnumToSpacedString(Enum enumValue)

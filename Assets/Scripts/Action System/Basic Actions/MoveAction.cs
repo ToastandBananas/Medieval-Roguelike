@@ -585,5 +585,7 @@ namespace ActionSystem
         public override int GetEnergyCost() => 0;
 
         public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition) => null;
+
+        public override string TooltipDescription() => "";
     }
 }

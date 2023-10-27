@@ -57,5 +57,7 @@ namespace ActionSystem
         public override bool IsValidAction() => unit.UnitEquipment != null;
 
         public override bool CanBeClearedFromActionQueue() => false;
+
+        public override string TooltipDescription() => "";
     }
 }

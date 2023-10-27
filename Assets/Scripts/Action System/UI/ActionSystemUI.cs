@@ -5,6 +5,9 @@ using TMPro;
 using GridSystem;
 using UnitSystem;
 using System.Linq;
+using Controls;
+using UnityEngine.UI;
+using InventorySystem;
 
 namespace ActionSystem
 {
@@ -15,6 +18,7 @@ namespace ActionSystem
         public static ActionSystemUI Instance { get; private set; }
 
         [SerializeField] Transform actionButtonPrefab;
+        [SerializeField] Image draggedActionImage;
 
         [Header("Parent Transforms")]
         [SerializeField] RectTransform actionButtonContainer;
@@ -38,16 +42,23 @@ namespace ActionSystem
         [SerializeField] TextMeshProUGUI energyText;
         [SerializeField] TextMeshProUGUI healthText;
 
-        static List<ActionButtonUI> basicActionButtons = new List<ActionButtonUI>();
-        static List<ActionButtonUI> specialActionButtons = new List<ActionButtonUI>();
-        static List<ActionButtonUI> itemActionButtons = new List<ActionButtonUI>();
+        public static bool isDraggingAction { get; private set; }
+        static ActionBarSlot actionSlotDraggedFrom;
 
-        public static ActionButtonUI selectedActionButton { get; private set; }
+        static List<ActionBarSlot> basicActionButtons = new List<ActionBarSlot>();
+        static List<ActionBarSlot> specialActionButtons = new List<ActionBarSlot>();
+        static List<ActionBarSlot> itemActionButtons = new List<ActionBarSlot>();
+
+        public static ActionBarSlot selectedActionSlot { get; private set; }
+        public static ActionBarSlot highlightedActionSlot { get; private set; }
         static PlayerActionHandler playerActionHandler;
 
         static readonly int maxActionButtonContainerHeight = 224;
         static readonly int minActionButtonContainerHeight = 96;
         static readonly int actionButtonRowHeightAdjustment = 64;
+
+        float dragTimer = 0f;
+        float timeToDrag = 0.125f;
 
         void Awake()
         {
@@ -62,9 +73,9 @@ namespace ActionSystem
             playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
             playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
-            basicActionButtons = basicActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
-            specialActionButtons = specialActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
-            itemActionButtons = itemActionsParentTransform.GetComponentsInChildren<ActionButtonUI>().ToList();
+            basicActionButtons = basicActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
+            specialActionButtons = specialActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
+            itemActionButtons = itemActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
 
             SetupUnitActionButtons();
         }
@@ -76,6 +87,63 @@ namespace ActionSystem
             UpdateHealthText();
 
             UpdateActionVisuals();
+        }
+
+        void Update()
+        {
+            if (GameControls.gamePlayActions.menuSelect.IsPressed)
+            {
+                if (dragTimer < timeToDrag)
+                    dragTimer += Time.deltaTime;
+
+                if (isDraggingAction)
+                    draggedActionImage.transform.position = Input.mousePosition;
+                else if (dragTimer >= timeToDrag && highlightedActionSlot != null && highlightedActionSlot.actionType != null)
+                {
+                    playerActionHandler.SetDefaultSelectedAction();
+
+                    Cursor.visible = false;
+                    isDraggingAction = true;
+                    actionSlotDraggedFrom = highlightedActionSlot;
+                    actionSlotDraggedFrom.HideSlot();
+
+                    draggedActionImage.sprite = highlightedActionSlot.actionType.ActionIcon;
+                    draggedActionImage.transform.position = Input.mousePosition;
+                    draggedActionImage.enabled = true;
+                }
+            }
+            else if (isDraggingAction && GameControls.gamePlayActions.menuSelect.WasReleased)
+            {
+                if (highlightedActionSlot != null && highlightedActionSlot != actionSlotDraggedFrom && highlightedActionSlot.ActionBarSection == actionSlotDraggedFrom.ActionBarSection)
+                {
+                    SwapSlots();
+                }
+                else // Return to original slot
+                    actionSlotDraggedFrom.ShowSlot();
+
+                Cursor.visible = true;
+                dragTimer = 0f;
+                isDraggingAction = false;
+                actionSlotDraggedFrom = null;
+                draggedActionImage.sprite = null;
+                draggedActionImage.enabled = false;
+            }
+        }
+
+        void SwapSlots()
+        {
+            ActionType draggedActionType = actionSlotDraggedFrom.actionType;
+            
+            actionSlotDraggedFrom.ResetButton();
+            if (highlightedActionSlot.actionType != null) 
+            {
+                actionSlotDraggedFrom.SetupAction(highlightedActionSlot.actionType);
+                actionSlotDraggedFrom.ShowSlot();
+                highlightedActionSlot.ResetButton();
+            }
+
+            highlightedActionSlot.SetupAction(draggedActionType);
+            highlightedActionSlot.ShowSlot();
         }
 
         public static void SetupUnitActionButtons()
@@ -101,7 +169,7 @@ namespace ActionSystem
                     if (basicActionButtons[i].actionType != null)
                         continue;
 
-                    basicActionButtons[i].SetActionType(actionType);
+                    basicActionButtons[i].SetupAction(actionType);
                     basicActionButtons[i].ActivateButton();
                     return;
                 }
@@ -113,7 +181,7 @@ namespace ActionSystem
                     if (specialActionButtons[i].actionType != null)
                         continue;
 
-                    specialActionButtons[i].SetActionType(actionType);
+                    specialActionButtons[i].SetupAction(actionType);
                     specialActionButtons[i].ActivateButton();
                     return;
                 }
@@ -138,7 +206,7 @@ namespace ActionSystem
             {
                 for (int i = 0; i < specialActionButtons.Count; i++)
                 {
-                    if (basicActionButtons[i].actionType == actionType)
+                    if (specialActionButtons[i].actionType == actionType)
                         specialActionButtons[i].ResetButton();
                 }
             }
@@ -178,10 +246,10 @@ namespace ActionSystem
                     basicActionChangeRow.IncreaseRow();
 
                 if (specialActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment)
-                    basicActionChangeRow.IncreaseRow();
+                    specialActionChangeRow.IncreaseRow();
 
                 if (itemActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment)
-                    basicActionChangeRow.IncreaseRow();
+                    itemActionChangeRow.IncreaseRow();
             }
             else if (actionButtonContainer.sizeDelta.y != minActionButtonContainerHeight)
             {
@@ -189,10 +257,10 @@ namespace ActionSystem
                     basicActionChangeRow.IncreaseRow();
 
                 if (specialActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment * 2)
-                    basicActionChangeRow.IncreaseRow();
+                    specialActionChangeRow.IncreaseRow();
 
                 if (itemActionsParentTransform.offsetMax.y == actionButtonRowHeightAdjustment * 2)
-                    basicActionChangeRow.IncreaseRow();
+                    itemActionChangeRow.IncreaseRow();
             }
         }
         
@@ -218,14 +286,19 @@ namespace ActionSystem
 
         public static bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
 
-        public static void SetSelectedActionButton(ActionButtonUI actionButton)
+        public static void SetSelectedActionSlot(ActionBarSlot actionSlot)
         {
-            if (selectedActionButton != null)
-                selectedActionButton.UpdateSelectedVisual();
+            if (selectedActionSlot != null)
+                selectedActionSlot.UpdateSelectedVisual();
 
-            selectedActionButton = actionButton;
-            if (selectedActionButton != null)
-                selectedActionButton.UpdateSelectedVisual();
+            selectedActionSlot = actionSlot;
+            if (selectedActionSlot != null)
+                selectedActionSlot.UpdateSelectedVisual();
+        }
+
+        public static void SetHighlightedActionSlot(ActionBarSlot actionSlot)
+        {
+            highlightedActionSlot = actionSlot;
         }
 
         public static void UpdateActionVisuals()
@@ -251,5 +324,7 @@ namespace ActionSystem
         public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.unit.stats.currentEnergy}";
 
         public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.unit.health.CurrentHealth}";
+
+        public static RectTransform ActionButtonContainer => Instance.actionButtonContainer;
     }
 }

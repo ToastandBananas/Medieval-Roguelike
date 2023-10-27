@@ -2,13 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using GridSystem;
 using UnitSystem;
+using System.Text;
 
 namespace ActionSystem
 {
     public abstract class BaseAction : MonoBehaviour
     {
+        public ActionType actionType { get; private set; }
         public Unit unit { get; private set; }
         public GridPosition targetGridPosition { get; protected set; }
+
+        static protected StringBuilder stringBuilder = new StringBuilder();
 
         public abstract void TakeAction();
 
@@ -111,11 +115,14 @@ namespace ActionSystem
 
         public BaseAttackAction BaseAttackAction => this as BaseAttackAction;
 
-        public void SetUnit(Unit unit)
+        public void Setup(Unit unit, ActionType actionType)
         {
             this.unit = unit;
+            this.actionType = actionType;
             Initialize();
         }
+
+        public abstract string TooltipDescription();
 
         public abstract ActionBarSection ActionBarSection();
 

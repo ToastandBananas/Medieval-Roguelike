@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 199277a2cb429494a9a91501bf93e6b5, type: 3}
-  m_Name: Melee Action
+  m_Name: Thrust Action
   m_EditorClassIdentifier: 
-  actionName: Melee
-  actionTypeName: MeleeAction
-  actionIcon: {fileID: 21300000, guid: 402420273b9f5c746a393a942beca69b, type: 3}
+  actionName: Thrust
+  actionTypeName: ThrustAction
+  actionIcon: {fileID: 21300000, guid: 79088dfe52345704ebd8477b06e56c85, type: 3}

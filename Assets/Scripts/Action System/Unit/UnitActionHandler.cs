@@ -494,7 +494,7 @@ namespace ActionSystem
             {
                 Type targetType = actionType.GetActionType();
                 if (typeof(T) == targetType)
-                    return ActionsPool.GetAction(targetType, unit) as T;
+                    return ActionsPool.GetAction(targetType, actionType, unit) as T;
             }
             return null;
         }
@@ -546,7 +546,7 @@ namespace ActionSystem
         public void SetDefaultSelectedAction()
         {
             SetSelectedActionType(FindActionTypeByName("MoveAction"));
-            ActionSystemUI.SetSelectedActionButton(null);
+            ActionSystemUI.SetSelectedActionSlot(null);
         }
 
         public bool DefaultActionIsSelected => SelectedAction is MoveAction;

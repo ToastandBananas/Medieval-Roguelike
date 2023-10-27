@@ -49,5 +49,7 @@ namespace ActionSystem
         public override bool CanBeClearedFromActionQueue() => true;
 
         public override bool IsValidAction() => true;
+
+        public override string TooltipDescription() => "";
     }
 }

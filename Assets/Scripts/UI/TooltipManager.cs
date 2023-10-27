@@ -1,3 +1,4 @@
+using ActionSystem;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace GeneralUI
         [SerializeField] Tooltip[] tooltips;
 
         public static Slot currentSlot { get; private set; }
+        public static ActionBarSlot currentActionBarSlot { get; private set; }
 
         void Awake()
         {
@@ -31,6 +33,7 @@ namespace GeneralUI
             }
 
             currentSlot = null;
+            currentActionBarSlot = null;
         }
 
         public static void ShowTooltips(Slot slot)
@@ -70,6 +73,11 @@ namespace GeneralUI
             }
         }
 
+        public static void ShowTooltips(ActionBarSlot actionBarSlot)
+        {
+            GetTooltip().ShowActionTooltip(actionBarSlot);
+        }
+
         static Tooltip GetTooltip()
         {
             for (int i = 0; i < Instance.tooltips.Length; i++)
@@ -83,6 +91,8 @@ namespace GeneralUI
         }
 
         public static void SetCurrentSlot(Slot slot) => currentSlot = slot;
+
+        public static void SetCurrentActionBarSlot(ActionBarSlot actionBarSlot) => currentActionBarSlot = actionBarSlot;
 
         public static Tooltip[] Tooltips => Instance.tooltips;
     }

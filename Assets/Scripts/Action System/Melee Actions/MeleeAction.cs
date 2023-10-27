@@ -504,6 +504,16 @@ namespace ActionSystem
             return maxRange;
         }
 
+        public override string TooltipDescription()
+        {
+            if (unit.UnitEquipment.IsUnarmed())
+                return "Engage in <b>hand-to-hand</b> combat, delivering a swift and powerful strike to your target.";
+            else if (unit.UnitEquipment.IsDualWielding())
+                return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.itemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.itemData.Item.Name}</b>.";
+            else
+                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Name}</b>.";
+        }
+
         public override int GetEnergyCost() => 0;
 
         public override bool IsInterruptable() => false;

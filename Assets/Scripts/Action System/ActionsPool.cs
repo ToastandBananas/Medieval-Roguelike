@@ -43,7 +43,7 @@ namespace ActionSystem
             }
         }
 
-        public static BaseAction GetAction(Type type, Unit unit)
+        public static BaseAction GetAction(Type type, ActionType actionType, Unit unit)
         {
             for (int i = 0; i < unit.unitActionHandler.AvailableActions.Count; i++)
             {
@@ -58,19 +58,19 @@ namespace ActionSystem
                     continue;
 
                 BaseAction action = actions[i];
-                SetupAction(action, unit);
+                SetupAction(action, actionType, unit);
                 return action;
             }
 
             // If no available action of the specified type is found, create a new one
             BaseAction newAction = CreateNewAction(type);
-            SetupAction(newAction, unit);
+            SetupAction(newAction, actionType, unit);
             return newAction;
         }
 
-        static void SetupAction(BaseAction action, Unit unit)
+        static void SetupAction(BaseAction action, ActionType actionType, Unit unit)
         {
-            action.SetUnit(unit);
+            action.Setup(unit, actionType);
 
             unit.unitActionHandler.AvailableActions.Add(action);
             if (action is BaseAttackAction)
