@@ -408,9 +408,10 @@ namespace InventorySystem
                 activeSlot = null;
                 ContextMenu.DisableContextMenu();
                 SplitStack.Instance.Close();
+                TooltipManager.ClearTooltips();
                 CloseAllContainerUI();
 
-                if (Instance.npcInventoryUIParent.activeSelf)
+                if (npcInventoryActive)
                     ToggleNPCInventory();
             }
         }
@@ -437,8 +438,16 @@ namespace InventorySystem
             Instance.npcInventoryUIParent.SetActive(!Instance.npcInventoryUIParent.activeSelf);
             npcInventoryActive = Instance.npcInventoryUIParent.activeSelf;
 
-            if (playerInventoryActive == false)
+            if (npcInventoryActive && playerInventoryActive == false)
                 TogglePlayerInventory();
+            else if (npcInventoryActive == false)
+            {
+                activeSlot = null;
+                ContextMenu.DisableContextMenu();
+                SplitStack.Instance.Close();
+                TooltipManager.ClearTooltips();
+                CloseAllContainerUI();
+            }
         }
 
         public static void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)

@@ -28,13 +28,15 @@ namespace InventorySystem
             StartCoroutine(RotateRangedWeapon(unit.unitActionHandler.targetEnemyUnit.GridPosition));
         }
 
-        public void LoadProjectile()
+        public void LoadProjectile(ItemData projectileItemData)
         {
-            if (unit.UnitEquipment.HasValidAmmunitionEquipped() == false)
+            if (isLoaded || unit.UnitEquipment.HasValidAmmunitionEquipped() == false)
                 return;
 
             Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-            ItemData projectileItemData = unit.UnitEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
+            if (projectileItemData == null)
+                projectileItemData = unit.UnitEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
+
             projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
             // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0
@@ -46,8 +48,11 @@ namespace InventorySystem
 
         public void UnloadProjectile()
         {
-            if (unit.UnitInventoryManager.TryAddItemToInventories(loadedProjectile.ItemData) == false)
-                DropItemManager.DropItem(unit, null, loadedProjectile.ItemData);
+            if (unit.UnitEquipment.TryAddToEquippedAmmunition(loadedProjectile.ItemData) == false)
+            {
+                if (unit.UnitInventoryManager.TryAddItemToInventories(loadedProjectile.ItemData) == false)
+                    DropItemManager.DropItem(unit, null, loadedProjectile.ItemData);
+            }
 
             loadedProjectile.Disable();
             loadedProjectile = null;

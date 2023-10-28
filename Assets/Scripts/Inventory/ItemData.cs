@@ -225,7 +225,7 @@ namespace InventorySystem
             if (otherItemData == null)
                 return false;
 
-            if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower)
+            if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower && defense == otherItemData.defense)
                 return true;
             return false;
         }
@@ -353,7 +353,7 @@ namespace InventorySystem
 
         public bool ShouldRandomize => hasBeenRandomized;
 
-        public SlotCoordinate InventorySlotCoordinate() => inventorySlotCoordinate;
+        public SlotCoordinate InventorySlotCoordinate => inventorySlotCoordinate;
 
         public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
 

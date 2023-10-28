@@ -50,6 +50,53 @@ namespace InventorySystem
             return false;
         }
 
+        public bool HasItemInAnyInventory(ItemData itemData)
+        {
+            for (int i = 0; i < mainInventory.ItemDatas.Count; i++)
+            {
+                if (itemData == mainInventory.ItemDatas[i])
+                    return true;
+            }
+
+            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped())
+            {
+                for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    if (itemData == backpackInventoryManager.ParentInventory.ItemDatas[i])
+                        return true;
+                }
+
+                for (int subInvIndex = 0; subInvIndex < backpackInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < backpackInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        if (itemData == backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i])
+                            return true;
+                    }
+                }
+            }
+
+            if (quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped())
+            {
+                for (int i = 0; i < quiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    if (itemData == quiverInventoryManager.ParentInventory.ItemDatas[i])
+                        return true;
+                }
+
+                for (int subInvIndex = 0; subInvIndex < quiverInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < quiverInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        if (itemData == quiverInventoryManager.SubInventories[subInvIndex].ItemDatas[i])
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public bool HasMeleeWeaponInAnyInventory(out ItemData bestWeaponItemData)
         {
             bestWeaponItemData = null;

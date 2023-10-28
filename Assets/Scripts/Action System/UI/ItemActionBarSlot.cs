@@ -18,10 +18,12 @@ namespace ActionSystem
 
             iconImage.sprite = itemData.Item.InventorySprite(itemData);
             iconImage.enabled = true;
+            ActivateButton();
 
             if (itemData.Item is Equipment)
             {
-                if (itemData.Item is Ammunition && playerActionHandler.unit.UnitEquipment.QuiverEquipped() && playerActionHandler.unit.QuiverInventoryManager.Contains(itemData))
+                if (itemData.Item is Ammunition && playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType 
+                    && playerActionHandler.unit.UnitEquipment.QuiverEquipped() && playerActionHandler.unit.QuiverInventoryManager.Contains(itemData))
                 {
                     actionType = playerActionHandler.GetAction<ReloadAction>().actionType;
                     action = actionType.GetAction(playerActionHandler.unit);
@@ -32,7 +34,7 @@ namespace ActionSystem
                         if (playerActionHandler.queuedActions.Count == 0)
                         {
                             ReloadAction reloadAction = action as ReloadAction;
-                            reloadAction.QueueAction(/*itemData*/);
+                            reloadAction.QueueAction(itemData);
                             if (itemData.CurrentStackSize == 1)
                                 ResetButton();
                         }
@@ -40,20 +42,63 @@ namespace ActionSystem
                 }
                 else
                 {
-                    actionType = playerActionHandler.GetAction<EquipAction>().actionType;
-                    action = actionType.GetAction(playerActionHandler.unit);
-
-                    button.onClick.RemoveAllListeners();
-                    button.onClick.AddListener(() =>
+                    if (itemData.Item is Ammunition && playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                     {
-                        if (playerActionHandler.queuedActions.Count == 0)
+                        actionType = playerActionHandler.GetAction<ReloadAction>().actionType;
+                        action = actionType.GetAction(playerActionHandler.unit);
+
+                        button.onClick.RemoveAllListeners();
+                        button.onClick.AddListener(() =>
                         {
-                            EquipAction equipAction = action as EquipAction;
-                            equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
-                            ResetButton();
-                        }
-                    });
+                            if (playerActionHandler.queuedActions.Count == 0)
+                            {
+                                if (playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                                    return;
+
+                                ReloadAction reloadAction = action as ReloadAction;
+                                reloadAction.QueueAction(itemData);
+                                if (itemData.CurrentStackSize == 1)
+                                    ResetButton();
+                            }
+                        });
+                    }
+                    else
+                    {
+                        actionType = playerActionHandler.GetAction<EquipAction>().actionType;
+                        action = actionType.GetAction(playerActionHandler.unit);
+
+                        button.onClick.RemoveAllListeners();
+                        button.onClick.AddListener(() =>
+                        {
+                            if (playerActionHandler.queuedActions.Count == 0)
+                            {
+                                if (playerActionHandler.unit.UnitEquipment.CanEquipItem(itemData) == false)
+                                    return;
+
+                                EquipAction equipAction = action as EquipAction;
+                                equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
+                                ResetButton();
+                            }
+                        });
+                    }
                 }
+            }
+            else if (itemData.Item is Consumable)
+            {
+                actionType = playerActionHandler.GetAction<ConsumeAction>().actionType;
+                action = actionType.GetAction(playerActionHandler.unit);
+
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    if (playerActionHandler.queuedActions.Count == 0)
+                    {
+                        ConsumeAction consumeAction = action as ConsumeAction;
+                        consumeAction.QueueAction(itemData);
+                        if ((itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize == 1) || (itemData.Item.MaxUses > 1 && itemData.RemainingUses == 1))
+                            ResetButton();
+                    }
+                });
             }
         }
 

@@ -6,9 +6,16 @@ namespace ActionSystem
 {
     public class ReloadAction : BaseAction
     {
+        ItemData projectileItemData;
         // bool isReloading;
 
         readonly int defaultActionPointCost = 200;
+        
+        public void QueueAction(ItemData projectileItemData)
+        {
+            this.projectileItemData = projectileItemData;
+            QueueAction();
+        }
 
         public override void TakeAction()
         {
@@ -21,19 +28,20 @@ namespace ActionSystem
 
         void Reload()
         {
-            unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile();
+            unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile(projectileItemData);
             CompleteAction();
         }
 
-        protected override void StartAction()
+        /*protected override void StartAction()
         {
             base.StartAction();
             // isReloading = true;
-        }
+        }*/
 
         public override void CompleteAction()
         {
             base.CompleteAction();
+            projectileItemData = null;
             // isReloading = false;
 
             if (unit.IsPlayer)

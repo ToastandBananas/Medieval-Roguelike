@@ -9,6 +9,7 @@ using InventorySystem;
 using UnitSystem;
 using Controls;
 using Utilities;
+using Pathfinding.Util;
 
 namespace GeneralUI
 {
@@ -91,7 +92,7 @@ namespace GeneralUI
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
             targetUnit = PlayerInput.Instance.highlightedUnit;
             if (targetUnit != null && targetUnit.health.IsDead())
-                targetUnit.UpdateGridPosition();
+                targetUnit.unitInteractable.UpdateGridPosition();
 
             if (InventoryUI.activeSlot != null)
             {
@@ -121,6 +122,7 @@ namespace GeneralUI
                 CreateOpenContainerButton();
                 CreateUseItemButtons();
                 CreateSplitStackButton();
+                CreateAddItemToHotbarButton();
                 CreateDropItemButton();
 
                 if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
@@ -149,6 +151,75 @@ namespace GeneralUI
                 SetupMenuSize();
                 SetupMenuPosition();
             }
+        }
+
+        public static void BuildReloadContextMenu()
+        {
+            if (onCooldown)
+                return;
+
+            SplitStack.Instance.Close();
+            DisableContextMenu(true); 
+            
+            targetSlot = null;
+            targetInteractable = null;
+            targetUnit = null;
+
+            CreateReloadButtons();
+
+            int buttonCount = 0;
+            for (int i = 0; i < contextButtons.Count; i++)
+            {
+                if (contextButtons[i].gameObject.activeSelf)
+                {
+                    buttonCount++;
+                    break;
+                }
+            }
+
+            if (buttonCount > 0)
+            {
+                isActive = true;
+                Instance.StartCoroutine(BuildContextMenuCooldown());
+
+                SetupMenuSize();
+                SetupMenuPosition();
+            }
+        }
+
+        static void CreateReloadButtons()
+        {
+            if (UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false || UnitManager.player.UnitEquipment.QuiverEquipped() == false)
+                return;
+
+            List<ItemData> uniqueProjectileTypes = ListPool<ItemData>.Claim();
+            for (int i = 0; i < UnitManager.player.QuiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
+            {
+                if (i == 0)
+                    uniqueProjectileTypes.Add(UnitManager.player.QuiverInventoryManager.ParentInventory.ItemDatas[i]);
+                else
+                {
+                    bool isEqual = false;
+                    for (int j = 0; j < uniqueProjectileTypes.Count; j++)
+                    {
+                        if (uniqueProjectileTypes[j].IsEqual(UnitManager.player.QuiverInventoryManager.ParentInventory.ItemDatas[i]))
+                        {
+                            isEqual = true;
+                            break;
+                        }
+                    }
+
+                    if (isEqual == false)
+                        uniqueProjectileTypes.Add(UnitManager.player.QuiverInventoryManager.ParentInventory.ItemDatas[i]);
+                }
+            }
+
+            for (int i = 0; i < uniqueProjectileTypes.Count; i++)
+            {
+                GetContextMenuButton().SetupReloadButton(uniqueProjectileTypes[i]);
+            }
+
+            ListPool<ItemData>.Release(uniqueProjectileTypes);
         }
 
         static void CreateMoveToButton()
@@ -392,7 +463,7 @@ namespace GeneralUI
             if (targetSlot == null || targetSlot.IsFull() == false)
                 return;
 
-            if (targetSlot != null && targetSlot is ContainerEquipmentSlot)
+            if (targetSlot is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerSlot = targetSlot as ContainerEquipmentSlot;
                 if (containerSlot.InventoryItem.myUnitEquipment.MyUnit == UnitManager.player && containerSlot.containerInventoryManager.ContainsAnyItems())
@@ -400,6 +471,18 @@ namespace GeneralUI
             }
 
             GetContextMenuButton().SetupDropItemButton();
+        }
+
+        static void CreateAddItemToHotbarButton()
+        {
+            if (targetSlot == null || targetSlot is EquipmentSlot || targetSlot.IsFull() == false)
+                return;
+            
+            ItemActionBarSlot itemActionSlot = ActionSystemUI.GetNextAvailableItemActionBarSlot();
+            if (itemActionSlot == null || ActionSystemUI.ItemActionBarAlreadyHasItem(targetSlot.GetItemData()))
+                return;
+            
+            GetContextMenuButton().SetupAddItemToHotbarButton(itemActionSlot);
         }
 
         public static void StartContextMenuCooldown() => Instance.StartCoroutine(BuildContextMenuCooldown());

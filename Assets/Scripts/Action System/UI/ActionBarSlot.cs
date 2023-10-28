@@ -110,7 +110,7 @@ namespace ActionSystem
             {
                 TooltipManager.SetCurrentActionBarSlot(this);
 
-                if (InventoryUI.isDraggingItem == false && actionType != null)
+                if (InventoryUI.isDraggingItem == false && ActionSystemUI.isDraggingAction == false && actionType != null)
                     TooltipManager.ShowTooltips(this);
             }
         }

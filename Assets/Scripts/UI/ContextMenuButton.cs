@@ -19,6 +19,17 @@ namespace GeneralUI
 
         StringBuilder stringBuilder = new StringBuilder();
 
+        public void SetupReloadButton(ItemData projectileItemData)
+        {
+            SetupButton($"Reload with {projectileItemData.Item.Name}", delegate { ReloadProjectile(projectileItemData); });
+        }
+
+        void ReloadProjectile(ItemData projectileItemData)
+        {
+            UnitManager.player.unitActionHandler.GetAction<ReloadAction>().QueueAction(projectileItemData);
+            ContextMenu.DisableContextMenu();
+        }
+
         public void SetupMoveToButton(GridPosition targetGridPosition) => SetupButton("Move To", delegate { MoveTo(targetGridPosition); });
 
         void MoveTo(GridPosition targetGridPosition)
@@ -319,6 +330,16 @@ namespace GeneralUI
                 else if (ContextMenu.targetSlot.InventoryItem.myInventory != null)
                     DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.GetMyUnit(), ContextMenu.targetSlot.InventoryItem.myInventory, ContextMenu.targetSlot.GetItemData());
             }
+
+            ContextMenu.DisableContextMenu();
+        }
+
+        public void SetupAddItemToHotbarButton(ItemActionBarSlot itemActionBarSlot) => SetupButton("Add to Hotbar", delegate { AddItemToHotbar(itemActionBarSlot); });
+
+        void AddItemToHotbar(ItemActionBarSlot itemActionBarSlot)
+        {
+            if (ContextMenu.targetSlot != null)
+                itemActionBarSlot.SetupAction(ContextMenu.targetSlot.GetItemData());
 
             ContextMenu.DisableContextMenu();
         }

@@ -309,6 +309,7 @@ namespace InventorySystem
             onProjectileBehaviourComplete?.Invoke();
             onProjectileBehaviourComplete = null;
 
+            itemData = null;
             moveProjectile = false;
             shooter = null;
             projectileCollider.enabled = false;

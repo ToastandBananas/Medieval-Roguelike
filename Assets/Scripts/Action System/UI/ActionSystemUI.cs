@@ -7,6 +7,8 @@ using UnitSystem;
 using System.Linq;
 using Controls;
 using UnityEngine.UI;
+using ContextMenu = GeneralUI.ContextMenu;
+using GeneralUI;
 using InventorySystem;
 
 namespace ActionSystem
@@ -47,7 +49,7 @@ namespace ActionSystem
 
         static List<ActionBarSlot> basicActionButtons = new List<ActionBarSlot>();
         static List<ActionBarSlot> specialActionButtons = new List<ActionBarSlot>();
-        static List<ActionBarSlot> itemActionButtons = new List<ActionBarSlot>();
+        static List<ItemActionBarSlot> itemActionButtons = new List<ItemActionBarSlot>();
 
         public static ActionBarSlot selectedActionSlot { get; private set; }
         public static ActionBarSlot highlightedActionSlot { get; private set; }
@@ -58,7 +60,7 @@ namespace ActionSystem
         static readonly int actionButtonRowHeightAdjustment = 64;
 
         float dragTimer = 0f;
-        float timeToDrag = 0.125f;
+        float startDragTime = 0.15f;
 
         void Awake()
         {
@@ -75,7 +77,7 @@ namespace ActionSystem
 
             basicActionButtons = basicActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
             specialActionButtons = specialActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
-            itemActionButtons = itemActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
+            itemActionButtons = itemActionsParentTransform.GetComponentsInChildren<ItemActionBarSlot>().ToList();
 
             SetupUnitActionButtons();
         }
@@ -93,14 +95,15 @@ namespace ActionSystem
         {
             if (GameControls.gamePlayActions.menuSelect.IsPressed)
             {
-                if (dragTimer < timeToDrag)
+                if (isDraggingAction == false && dragTimer < startDragTime)
                     dragTimer += Time.deltaTime;
 
                 if (isDraggingAction)
                     draggedActionImage.transform.position = Input.mousePosition;
-                else if (dragTimer >= timeToDrag && highlightedActionSlot != null && highlightedActionSlot.actionType != null)
+                else if (dragTimer >= startDragTime && highlightedActionSlot != null && highlightedActionSlot.actionType != null)
                 {
                     playerActionHandler.SetDefaultSelectedAction();
+                    TooltipManager.ClearTooltips();
 
                     Cursor.visible = false;
                     isDraggingAction = true;
@@ -112,21 +115,25 @@ namespace ActionSystem
                     draggedActionImage.enabled = true;
                 }
             }
-            else if (isDraggingAction && GameControls.gamePlayActions.menuSelect.WasReleased)
+            else if (GameControls.gamePlayActions.menuSelect.WasReleased)
             {
-                if (highlightedActionSlot != null && highlightedActionSlot != actionSlotDraggedFrom && highlightedActionSlot.ActionBarSection == actionSlotDraggedFrom.ActionBarSection)
+                if (isDraggingAction)
                 {
-                    SwapSlots();
-                }
-                else // Return to original slot
-                    actionSlotDraggedFrom.ShowSlot();
+                    if (highlightedActionSlot != null && highlightedActionSlot != actionSlotDraggedFrom && highlightedActionSlot.ActionBarSection == actionSlotDraggedFrom.ActionBarSection)
+                        SwapSlots();
+                    else // Return to original slot
+                        actionSlotDraggedFrom.ShowSlot();
 
-                Cursor.visible = true;
+                    TooltipManager.ShowTooltips(highlightedActionSlot);
+
+                    Cursor.visible = true;
+                    isDraggingAction = false;
+                    actionSlotDraggedFrom = null;
+                    draggedActionImage.sprite = null;
+                    draggedActionImage.enabled = false;
+                }
+
                 dragTimer = 0f;
-                isDraggingAction = false;
-                actionSlotDraggedFrom = null;
-                draggedActionImage.sprite = null;
-                draggedActionImage.enabled = false;
             }
         }
 
@@ -216,7 +223,13 @@ namespace ActionSystem
         {
             BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
             if (selectedAction.ActionIsUsedInstantly())
-                selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
+            {
+                // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up
+                if (selectedAction is ReloadAction && selectedAction.unit.UnitEquipment.QuiverEquipped() && selectedAction.unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+                    ContextMenu.BuildReloadContextMenu();
+                else
+                    selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
+            }
             else
                 GridSystemVisual.UpdateAttackRangeGridVisual();
         }
@@ -284,6 +297,26 @@ namespace ActionSystem
             itemActionChangeRow.ActivateButtons();
         }
 
+        public static ItemActionBarSlot GetNextAvailableItemActionBarSlot()
+        {
+            for (int i = 0; i < itemActionButtons.Count; i++)
+            {
+                if (itemActionButtons[i].itemData == null || itemActionButtons[i].itemData.Item == null)
+                    return itemActionButtons[i];
+            }
+            return null;
+        }
+
+        public static bool ItemActionBarAlreadyHasItem(ItemData itemData)
+        {
+            for (int i = 0; i < itemActionButtons.Count; i++)
+            {
+                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData == itemData)
+                    return true;
+            }
+            return false;
+        }
+
         public static bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
 
         public static void SetSelectedActionSlot(ActionBarSlot actionSlot)
@@ -315,7 +348,8 @@ namespace ActionSystem
 
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                itemActionButtons[i].UpdateActionVisual();
+                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData.Item != null && playerActionHandler.unit.UnitInventoryManager.HasItemInAnyInventory(itemActionButtons[i].itemData) == false)
+                    itemActionButtons[i].ResetButton();
             }
         }
 

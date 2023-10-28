@@ -92,6 +92,9 @@ namespace GeneralUI
             if (actionBarSlot is ItemActionBarSlot)
             {
                 ItemActionBarSlot itemActionBarSlot = actionBarSlot as ItemActionBarSlot;
+                if (itemActionBarSlot.itemData == null || itemActionBarSlot.itemData.Item == null)
+                    return;
+
                 tooltipStringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.itemData.Item.Name}</b></size></align>");
             }
             else

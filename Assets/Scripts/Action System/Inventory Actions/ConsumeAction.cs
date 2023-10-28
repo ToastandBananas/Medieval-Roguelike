@@ -35,7 +35,7 @@ namespace ActionSystem
 
             itemsToConsume.Remove(itemToConsume);
 
-            Debug.Log(unit.name + " consumed 1 part of " + itemToConsume.Item.Name); 
+            // Debug.Log(unit.name + " consumed 1 part of " + itemToConsume.Item.Name); 
             CompleteAction();
         }
 

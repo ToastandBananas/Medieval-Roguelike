@@ -31,7 +31,7 @@ namespace InteractableObjects
 
         public override void UpdateGridPosition()
         {
-            gridPosition = LevelGrid.GetGridPosition(transform.position);
+            gridPosition.Set(transform.position);
         }
 
         public override GridPosition GridPosition()

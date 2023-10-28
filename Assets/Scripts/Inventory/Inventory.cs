@@ -106,7 +106,7 @@ namespace InventorySystem
 
             // If the item data hasn't been assigned a slot coordinate, do so now
             SlotCoordinate targetSlotCoordinate;
-            if (newItemData.InventorySlotCoordinate() == null || newItemData.InventorySlotCoordinate().myInventory != this)
+            if (newItemData.InventorySlotCoordinate == null || newItemData.InventorySlotCoordinate.myInventory != this)
             {
                 targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
                 if (targetSlotCoordinate != null)
@@ -116,7 +116,7 @@ namespace InventorySystem
                 }
             }
             else
-                targetSlotCoordinate = newItemData.InventorySlotCoordinate();
+                targetSlotCoordinate = newItemData.InventorySlotCoordinate;
 
             if (targetSlotCoordinate != null)
             {

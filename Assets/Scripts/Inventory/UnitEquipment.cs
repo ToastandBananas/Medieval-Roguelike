@@ -396,7 +396,7 @@ namespace InventorySystem
             // Remove the item from its original character equipment or inventory
             if (InventoryUI.isDraggingItem)
             {
-                if (InventoryUI.DraggedItem.myUnitEquipment != null)
+                if (InventoryUI.DraggedItem.myUnitEquipment != null && InventoryUI.DraggedItem.myUnitEquipment.ItemDataEquipped(itemDataToRemove))
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Backpack)
@@ -412,7 +412,7 @@ namespace InventorySystem
 
                     InventoryUI.DraggedItem.myUnitEquipment.RemoveEquipment(itemDataToRemove);
                 }
-                else if (InventoryUI.DraggedItem.myInventory != null)
+                else if (InventoryUI.DraggedItem.myInventory != null && InventoryUI.DraggedItem.myInventory.ItemDatas.Contains(itemDataToRemove))
                 {
                     // If the Player is removing an Item from a dead Unit's inventory
                     if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead())
@@ -427,7 +427,7 @@ namespace InventorySystem
             {
                 InventoryItem targetInventoryItem = ContextMenu.targetSlot.InventoryItem;
 
-                if (targetInventoryItem.myUnitEquipment != null)
+                if (targetInventoryItem.myUnitEquipment != null && targetInventoryItem.myUnitEquipment.ItemDataEquipped(itemDataToRemove))
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Backpack)
@@ -443,7 +443,7 @@ namespace InventorySystem
 
                     targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.targetSlot.InventoryItem.itemData);
                 }
-                else if (targetInventoryItem.myInventory != null)
+                else if (targetInventoryItem.myInventory != null && targetInventoryItem.myInventory.ItemDatas.Contains(itemDataToRemove))
                 {
                     // If the Player is removing an Item from a dead Unit's inventory
                     if (targetInventoryItem.myInventory.MyUnit.health.IsDead())
@@ -454,15 +454,15 @@ namespace InventorySystem
                     targetInventoryItem.myInventory.RemoveItem(itemDataToRemove);
                 }
             }
-            else if (itemDataToRemove.InventorySlotCoordinate() != null && itemDataToRemove.InventorySlotCoordinate().myInventory.ContainsItemData(itemDataToRemove))
+            else if (itemDataToRemove.InventorySlotCoordinate != null && itemDataToRemove.InventorySlotCoordinate.myInventory.ContainsItemData(itemDataToRemove))
             {
                 // If the Player is removing an Item from a dead Unit's inventory
-                if (itemDataToRemove.InventorySlotCoordinate().myInventory.MyUnit.health.IsDead())
+                if (itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.health.IsDead())
                     myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                 else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                    itemDataToRemove.InventorySlotCoordinate().myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                    itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
 
-                itemDataToRemove.InventorySlotCoordinate().myInventory.RemoveItem(itemDataToRemove);
+                itemDataToRemove.InventorySlotCoordinate.myInventory.RemoveItem(itemDataToRemove);
             }
         }
 

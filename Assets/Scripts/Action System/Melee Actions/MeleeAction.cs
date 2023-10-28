@@ -506,7 +506,7 @@ namespace ActionSystem
 
         public override string TooltipDescription()
         {
-            if (unit.UnitEquipment.IsUnarmed())
+            if (unit.UnitEquipment.IsUnarmed() || unit.UnitEquipment.RangedWeaponEquipped())
                 return "Engage in <b>hand-to-hand</b> combat, delivering a swift and powerful strike to your target.";
             else if (unit.UnitEquipment.IsDualWielding())
                 return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.itemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.itemData.Item.Name}</b>.";

@@ -75,6 +75,9 @@ namespace GeneralUI
 
         public static void ShowTooltips(ActionBarSlot actionBarSlot)
         {
+            if (actionBarSlot == null)
+                return;
+
             GetTooltip().ShowActionTooltip(actionBarSlot);
         }
 
