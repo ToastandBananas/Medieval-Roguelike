@@ -159,13 +159,19 @@ namespace InventorySystem
 
         public override void ClearItem()
         {
+            Debug.Log("Clearing item");
             ClearSlotVisuals();
 
             // Clear the slot coordinates
             myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate).slotCoordinate.ClearItem();
         }
 
-        public override bool IsFull() => slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
+        public override bool IsFull()
+        {
+            // Debug.Log(slotCoordinate.coordinate + " | parent: " + slotCoordinate.parentSlotCoordinate.coordinate + " | itemData: " + slotCoordinate.parentSlotCoordinate.itemData);
+            
+            return slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
+        }
 
         public override void HighlightSlots()
         {

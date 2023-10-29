@@ -55,7 +55,7 @@ namespace ActionSystem
             DeactivateButton();
         }
 
-        public void ShowSlot()
+        public virtual void ShowSlot()
         {
             iconImage.enabled = true;
             UpdateActionVisual();

@@ -23,16 +23,16 @@ MonoBehaviour:
   height: 4
   weight: 0.1
   maxStackSize: 20
-  inventorySprite: {fileID: 21300000, guid: c25b98996d259ad41bd44627ff2fe666, type: 3}
+  inventorySprite: {fileID: 21300000, guid: 910e11a4ba57e4e4998b594e76bcc941, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: 743349af3f32a7c4aad4fb67d03c4153, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  staticValue: 1
   meshes:
   - {fileID: -2432090755550338912, guid: 83c694bbabadef64cb2f7deee38aa41f, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: 12d770ca7c599df42af8120f409d998b, type: 2}
-  - {fileID: 2100000, guid: 7955d74cf9f311a459a23775aa70f21d, type: 2}
+  - {fileID: 2100000, guid: 507b813c5f8dc4b44932b728677a3376, type: 2}
+  - {fileID: 2100000, guid: 63f74593795e0654798a12f9988f0032, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   equipSlot: 10

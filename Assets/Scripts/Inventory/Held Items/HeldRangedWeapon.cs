@@ -40,7 +40,10 @@ namespace InventorySystem
             projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
             // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0
-            unit.UnitEquipment.OnReloadProjectile(projectileItemData);
+            if (projectileItemData.MyInventory != null)
+                projectileItemData.MyInventory.OnReloadProjectile(projectileItemData);
+            else
+                unit.UnitEquipment.OnReloadProjectile(projectileItemData);
 
             loadedProjectile = projectile;
             isLoaded = true;

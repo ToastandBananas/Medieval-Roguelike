@@ -128,7 +128,7 @@ namespace ActionSystem
                                 GetAction<SwapWeaponSetAction>().QueueAction();
                                 return;
                             }
-                            else if (unit.UnitInventoryManager.HasMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                            else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                             {
                                 ClearActionQueue(true);
                                 GetAction<SwapWeaponSetAction>().QueueAction();
@@ -300,7 +300,7 @@ namespace ActionSystem
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         return;
                     }
-                    else if (unit.UnitInventoryManager.HasMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
                         ClearActionQueue(true);
                         GetAction<SwapWeaponSetAction>().QueueAction();

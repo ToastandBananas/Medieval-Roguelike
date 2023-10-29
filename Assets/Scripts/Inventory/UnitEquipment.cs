@@ -173,8 +173,6 @@ namespace InventorySystem
             // Assign the data
             equippedItemDatas[(int)targetEquipSlot] = newItemData;
 
-            InitializeInventories(targetEquipSlot, newItemData);
-
             if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded)
                 equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
             else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded)

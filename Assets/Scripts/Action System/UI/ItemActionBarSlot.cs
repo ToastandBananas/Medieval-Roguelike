@@ -16,16 +16,19 @@ namespace ActionSystem
                 return;
             }
 
-            iconImage.sprite = itemData.Item.InventorySprite(itemData);
-            iconImage.enabled = true;
-            ActivateButton();
+            if (itemData.Item.HotbarSprite != null)
+                iconImage.sprite = itemData.Item.HotbarSprite;
+            else
+                iconImage.sprite = itemData.Item.InventorySprite(itemData);
+
+            ShowSlot();
 
             if (itemData.Item is Equipment)
             {
-                if (itemData.Item is Ammunition && playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType 
-                    && playerActionHandler.unit.UnitEquipment.QuiverEquipped() && playerActionHandler.unit.QuiverInventoryManager.Contains(itemData))
+                if (itemData.Item is Ammunition)
                 {
-                    actionType = playerActionHandler.GetAction<ReloadAction>().actionType;
+                    // We just need to assign any basic action, since the Player might not have a Reload Action at the time of assigning the item to a hotbar slot
+                    actionType = playerActionHandler.GetAction<InventoryAction>().actionType;
                     action = actionType.GetAction(playerActionHandler.unit);
 
                     button.onClick.RemoveAllListeners();
@@ -33,54 +36,34 @@ namespace ActionSystem
                     {
                         if (playerActionHandler.queuedActions.Count == 0)
                         {
-                            ReloadAction reloadAction = action as ReloadAction;
-                            reloadAction.QueueAction(itemData);
-                            if (itemData.CurrentStackSize == 1)
-                                ResetButton();
+                            // Only do something if the Player has a valid ranged weapon equipped
+                            if (playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
+                            {
+                                playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
+                                if (itemData.CurrentStackSize == 1)
+                                    ResetButton();
+                            }
                         }
                     });
                 }
                 else
                 {
-                    if (itemData.Item is Ammunition && playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
+                    actionType = playerActionHandler.GetAction<EquipAction>().actionType;
+                    action = actionType.GetAction(playerActionHandler.unit);
+
+                    button.onClick.RemoveAllListeners();
+                    button.onClick.AddListener(() =>
                     {
-                        actionType = playerActionHandler.GetAction<ReloadAction>().actionType;
-                        action = actionType.GetAction(playerActionHandler.unit);
-
-                        button.onClick.RemoveAllListeners();
-                        button.onClick.AddListener(() =>
+                        if (playerActionHandler.queuedActions.Count == 0)
                         {
-                            if (playerActionHandler.queuedActions.Count == 0)
-                            {
-                                if (playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
-                                    return;
+                            if (playerActionHandler.unit.UnitEquipment.CanEquipItem(itemData) == false)
+                                return;
 
-                                ReloadAction reloadAction = action as ReloadAction;
-                                reloadAction.QueueAction(itemData);
-                                if (itemData.CurrentStackSize == 1)
-                                    ResetButton();
-                            }
-                        });
-                    }
-                    else
-                    {
-                        actionType = playerActionHandler.GetAction<EquipAction>().actionType;
-                        action = actionType.GetAction(playerActionHandler.unit);
-
-                        button.onClick.RemoveAllListeners();
-                        button.onClick.AddListener(() =>
-                        {
-                            if (playerActionHandler.queuedActions.Count == 0)
-                            {
-                                if (playerActionHandler.unit.UnitEquipment.CanEquipItem(itemData) == false)
-                                    return;
-
-                                EquipAction equipAction = action as EquipAction;
-                                equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
-                                ResetButton();
-                            }
-                        });
-                    }
+                            EquipAction equipAction = action as EquipAction;
+                            equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
+                            ResetButton();
+                        }
+                    });
                 }
             }
             else if (itemData.Item is Consumable)
@@ -100,6 +83,12 @@ namespace ActionSystem
                     }
                 });
             }
+        }
+
+        public override void ShowSlot()
+        {
+            iconImage.enabled = true;
+            ActivateButton();
         }
 
         public override void ResetButton()

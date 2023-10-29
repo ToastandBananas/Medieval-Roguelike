@@ -1,3 +1,4 @@
+using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
@@ -20,7 +21,10 @@ namespace ActionSystem
         public override void TakeAction()
         {
             if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)// || isReloading)
+            {
+                CompleteAction();
                 return;
+            }
 
             StartAction();
             Reload();

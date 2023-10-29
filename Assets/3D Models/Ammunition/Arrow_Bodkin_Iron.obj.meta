@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Arrow_Head_Bodkin_Iron_Material
-    second: {fileID: 2100000, guid: 7955d74cf9f311a459a23775aa70f21d, type: 2}
+      name: Arrow_Bodkin_Iron_Head_Material
+    second: {fileID: 2100000, guid: 63f74593795e0654798a12f9988f0032, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Arrow_Shaft_Bodkin_Material
-    second: {fileID: 2100000, guid: 12d770ca7c599df42af8120f409d998b, type: 2}
+      name: Arrow_Bodkin_Iron_Shaft_Material
+    second: {fileID: 2100000, guid: 507b813c5f8dc4b44932b728677a3376, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

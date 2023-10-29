@@ -21,7 +21,7 @@ namespace ActionSystem
         public virtual void SetTargetGridPosition(GridPosition gridPosition) => targetGridPosition = gridPosition;
 
         /// <summary>Only use this version of QueueAction if the target grid position is irrelevant or if it/other necessary variables have already been set.</summary>
-        public void QueueAction() => unit.unitActionHandler.QueueAction(this);
+        public virtual void QueueAction() => unit.unitActionHandler.QueueAction(this);
 
         public virtual void QueueAction(GridPosition targetGridPosition)
         {

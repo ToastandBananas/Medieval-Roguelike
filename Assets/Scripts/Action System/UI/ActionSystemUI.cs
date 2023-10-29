@@ -140,17 +140,36 @@ namespace ActionSystem
         void SwapSlots()
         {
             ActionType draggedActionType = actionSlotDraggedFrom.actionType;
-            
-            actionSlotDraggedFrom.ResetButton();
-            if (highlightedActionSlot.actionType != null) 
+            if (actionSlotDraggedFrom.ActionBarSection == ActionBarSection.Item)
             {
-                actionSlotDraggedFrom.SetupAction(highlightedActionSlot.actionType);
-                actionSlotDraggedFrom.ShowSlot();
-                highlightedActionSlot.ResetButton();
-            }
+                ItemActionBarSlot itemActionSlotDraggedFrom = actionSlotDraggedFrom as ItemActionBarSlot;
+                ItemActionBarSlot highlightedItemActionSlot = highlightedActionSlot as ItemActionBarSlot;
+                ItemData draggedItemData = itemActionSlotDraggedFrom.itemData;
 
-            highlightedActionSlot.SetupAction(draggedActionType);
-            highlightedActionSlot.ShowSlot();
+                actionSlotDraggedFrom.ResetButton();
+                if (highlightedActionSlot.actionType != null)
+                {
+                    itemActionSlotDraggedFrom.SetupAction(highlightedItemActionSlot.itemData);
+                    itemActionSlotDraggedFrom.ShowSlot();
+                    highlightedItemActionSlot.ResetButton();
+                }
+
+                highlightedItemActionSlot.SetupAction(draggedItemData);
+                highlightedItemActionSlot.ShowSlot();
+            }
+            else
+            {
+                actionSlotDraggedFrom.ResetButton();
+                if (highlightedActionSlot.actionType != null)
+                {
+                    actionSlotDraggedFrom.SetupAction(highlightedActionSlot.actionType);
+                    actionSlotDraggedFrom.ShowSlot();
+                    highlightedActionSlot.ResetButton();
+                }
+
+                highlightedActionSlot.SetupAction(draggedActionType);
+                highlightedActionSlot.ShowSlot();
+            }
         }
 
         public static void SetupUnitActionButtons()
@@ -348,7 +367,7 @@ namespace ActionSystem
 
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData.Item != null && playerActionHandler.unit.UnitInventoryManager.HasItemInAnyInventory(itemActionButtons[i].itemData) == false)
+                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData.Item != null && playerActionHandler.unit.UnitInventoryManager.ContainsItemDataInAnyInventory(itemActionButtons[i].itemData) == false)
                     itemActionButtons[i].ResetButton();
             }
         }

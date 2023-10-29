@@ -34,6 +34,7 @@ namespace InventorySystem
         [SerializeField] float weight = 0.1f;
         [SerializeField] protected int maxStackSize = 1;
         [SerializeField] Sprite inventorySprite;
+        [SerializeField] Sprite hotbarSprite;
 
         [Header("Multiple Uses?")]
         [SerializeField] protected int maxUses = 1;
@@ -62,6 +63,7 @@ namespace InventorySystem
         public float Weight => weight;
         public int MaxStackSize => maxStackSize;
         public virtual Sprite InventorySprite(ItemData itemData = null) => inventorySprite;
+        public Sprite HotbarSprite => hotbarSprite;
 
         public Vector2Int ValueRange => valueRange;
 

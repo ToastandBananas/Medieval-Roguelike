@@ -65,12 +65,14 @@ namespace ActionSystem
         #region Action Queue
         public void QueueAction(BaseAction action, GridPosition targetGridPosition, bool addToFrontOfQueue = false)
         {
+            // Debug.Log(unit.name + " queues: " + action.name);
             action.SetTargetGridPosition(targetGridPosition);
             QueueAction(action, addToFrontOfQueue);
         }
 
         public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
+            // Debug.Log(unit.name + " queues: " + action.name);
             GridSystemVisual.HideGridVisual();
 
             if (unit.health.IsDead())
@@ -108,8 +110,8 @@ namespace ActionSystem
             }
 
             // If the newly queued action isn't the next one up
-            if (queuedActions.Count > 0 && action != queuedActions[0])
-                return;
+            //if (queuedActions.Count > 0 && action != queuedActions[0])
+                //return;
 
             if (action is BaseAttackAction)
                 unit.unitAnimator.StopMovingForward();

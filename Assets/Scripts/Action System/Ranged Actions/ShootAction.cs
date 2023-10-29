@@ -16,6 +16,39 @@ namespace ActionSystem
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
+        public override void QueueAction()
+        {
+            if (RangedWeaponIsLoaded() == false)
+            {
+                unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
+                return;
+            }
+
+            base.QueueAction();
+        }
+
+        public override void QueueAction(GridPosition targetGridPosition)
+        {
+            if (RangedWeaponIsLoaded() == false)
+            {
+                unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
+                return;
+            }
+
+            base.QueueAction(targetGridPosition);
+        }
+
+        public override void QueueAction(Unit targetEnemyUnit)
+        {
+            if (RangedWeaponIsLoaded() == false)
+            {
+                unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
+                return;
+            }
+
+            base.QueueAction(targetEnemyUnit);
+        }
+
         public override void SetTargetGridPosition(GridPosition gridPosition)
         {
             base.SetTargetGridPosition(gridPosition);
@@ -50,13 +83,8 @@ namespace ActionSystem
                 unit.unitActionHandler.SetTargetEnemyUnit(targetEnemyUnit);
 
                 ReloadAction reloadAction = unit.unitActionHandler.GetAction<ReloadAction>();
-                if (reloadAction == null)
-                {
-                    CompleteAction();
-                    return;
-                }
-
-                reloadAction.QueueAction();
+                if (reloadAction != null)
+                    reloadAction.QueueAction();
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))

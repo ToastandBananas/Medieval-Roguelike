@@ -24,10 +24,10 @@ MonoBehaviour:
   weight: 0.1
   maxStackSize: 20
   inventorySprite: {fileID: 21300000, guid: c25b98996d259ad41bd44627ff2fe666, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: c530bc9a75e19084abfd8673f4bfd710, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  staticValue: 1
   meshes:
   - {fileID: -2432090755550338912, guid: 764c7485f705dbc4db8f1e92ec6dcb1d, type: 3}
   meshRendererMaterials:

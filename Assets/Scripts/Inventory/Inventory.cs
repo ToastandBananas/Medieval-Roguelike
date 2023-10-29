@@ -283,6 +283,22 @@ namespace InventorySystem
             return true;
         }
 
+        public void OnReloadProjectile(ItemData projectileItemData)
+        {
+            projectileItemData.AdjustCurrentStackSize(-1);
+
+            // If there's still some in the stack
+            if (projectileItemData.CurrentStackSize > 0)
+            {
+                if (slotVisualsCreated)
+                    GetSlotFromItemData(projectileItemData).InventoryItem.UpdateStackSizeVisuals();
+                return;
+            }
+            
+            // Else remove the item from this inventory
+            RemoveItem(projectileItemData);
+        }
+
         void CombineStacks(ItemData itemDataToTakeFrom, ItemData itemDataToCombineWith)
         {
             int roomInStack = itemDataToCombineWith.Item.MaxStackSize - itemDataToCombineWith.CurrentStackSize;

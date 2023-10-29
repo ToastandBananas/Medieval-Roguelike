@@ -92,6 +92,7 @@ namespace UnitSystem
             if (unit.health.IsDead())
             {
                 unit.unitActionHandler.CancelActions();
+                unit.unitActionHandler.ClearActionQueue(true, true);
 
                 // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
                 if (unit.IsNPC)
@@ -113,7 +114,7 @@ namespace UnitSystem
             {
                 if (unit.IsPlayer)
                     GridSystemVisual.UpdateAttackGridVisual();
-
+                
                 unit.unitActionHandler.TakeTurn();
             }
         }
