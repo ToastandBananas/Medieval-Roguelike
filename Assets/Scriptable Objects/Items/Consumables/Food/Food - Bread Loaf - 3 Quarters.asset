@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 18b93a4055c1b9d4faa7dc751e3384ae, type: 3}
-  m_Name: Food - Bread Loaf
+  m_Name: Food - Bread Loaf - 3 Quarters
   m_EditorClassIdentifier: 
-  name: Loaf of Bread
+  name: Partial Loaf of Bread
   pluralName: 
   description: A staple food source for weary wanderers.
   itemType: 190
@@ -20,25 +20,22 @@ MonoBehaviour:
   itemSize: 2
   width: 2
   height: 1
-  weight: 0.4
+  weight: 0.3
   maxStackSize: 1
-  inventorySprite: {fileID: 21300000, guid: 3bb98469c817cd54ba4a17ae99727f06, type: 3}
-  hotbarSprite: {fileID: 21300000, guid: 040f046c7bd4b504ba0769e0b0237cda, type: 3}
+  inventorySprite: {fileID: 21300000, guid: d89575ad465b00f4d879a35b46cc1867, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: 3370459ae05e3d84b8b06aba57ebc227, type: 3}
   maxUses: 4
   isUsable: 1
   valueRange: {x: 1, y: 8}
   meshes:
   - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: feea8d768ddd3574c896cd890d05ee9f, type: 2}
+  - {fileID: 2100000, guid: c4d20c97690110c41ab93d211a84f927, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   itemChangeThresholds:
-  - thresholdPercentage: 100
-    newItem: {fileID: 11400000}
-    newSprite: {fileID: 21300000, guid: 3bb98469c817cd54ba4a17ae99727f06, type: 3}
   - thresholdPercentage: 75
-    newItem: {fileID: 11400000, guid: 6093b3dbe4d35144f99bb98cc4d57309, type: 2}
+    newItem: {fileID: 11400000}
     newSprite: {fileID: 21300000, guid: d89575ad465b00f4d879a35b46cc1867, type: 3}
   - thresholdPercentage: 50
     newItem: {fileID: 11400000, guid: 17329b30bd54bc24dac82e893291348b, type: 2}

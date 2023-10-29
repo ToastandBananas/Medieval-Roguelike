@@ -31,7 +31,7 @@ namespace Utilities
         #endregion
 
         #region private fields
-        private readonly string baseFolderName = "Art/UI/Icons/Inventory/";
+        private readonly string baseFolderName = "Assets/Art/UI/Icons/Inventory/";
         private string folderName = "";
         private GameObject whiteCamGameObject;
         private Camera whiteCam;
@@ -165,33 +165,27 @@ namespace Utilities
         void SavePng()
         {
             int count = 0;
-            string filePath = Path.Combine(Application.dataPath, folderName, saveFileName + ".png");
+            string filePath = Path.Combine(folderName, saveFileName + ".png");
             if (overwriteFile == false)
             {
                 while (File.Exists(filePath))
                 {
                     count++;
-                    filePath = Path.Combine(Application.dataPath, folderName, saveFileName + count + ".png");
+                    filePath = Path.Combine(folderName, saveFileName + count + ".png");
                 }
             }
 
             var pngShot = textureTransparentBackground.EncodeToPNG();
             File.WriteAllBytes(filePath, pngShot);
 
-            string relativePath;
-            if (count == 0 || overwriteFile)
-                relativePath = Path.Combine("Assets", folderName, saveFileName + ".png");
-            else
-                relativePath = Path.Combine("Assets", folderName, saveFileName + count + ".png");
+            AssetDatabase.ImportAsset(filePath);
 
-            AssetDatabase.ImportAsset(relativePath);
-
-            TextureImporter importer = AssetImporter.GetAtPath(relativePath) as TextureImporter;
+            TextureImporter importer = AssetImporter.GetAtPath(filePath) as TextureImporter;
             importer.textureType = TextureImporterType.Sprite;
             importer.spritePixelsPerUnit = 64;
             importer.filterMode = FilterMode.Point;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
-            AssetDatabase.WriteImportSettingsIfDirty(relativePath);
+            AssetDatabase.WriteImportSettingsIfDirty(filePath);
 
             AssetDatabase.Refresh();
         }

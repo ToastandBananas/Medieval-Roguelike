@@ -336,6 +336,19 @@ namespace ActionSystem
             return false;
         }
 
+        public static ItemActionBarSlot GetItemActionBarSlot(ItemData itemData)
+        {
+            if (itemData == null)
+                return null;
+
+            for (int i = 0; i < itemActionButtons.Count; i++)
+            {
+                if (itemActionButtons[i].itemData == itemData)
+                    return itemActionButtons[i];
+            }
+            return null;
+        }
+
         public static bool SelectedActionValid() => playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit).IsValidAction();
 
         public static void SetSelectedActionSlot(ActionBarSlot actionSlot)

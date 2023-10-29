@@ -16,11 +16,7 @@ namespace ActionSystem
                 return;
             }
 
-            if (itemData.Item.HotbarSprite != null)
-                iconImage.sprite = itemData.Item.HotbarSprite;
-            else
-                iconImage.sprite = itemData.Item.InventorySprite(itemData);
-
+            SetupIconSprite();
             ShowSlot();
 
             if (itemData.Item is Equipment)
@@ -39,9 +35,13 @@ namespace ActionSystem
                             // Only do something if the Player has a valid ranged weapon equipped
                             if (playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
-                                playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
                                 if (itemData.CurrentStackSize == 1)
+                                {
+                                    playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
                                     ResetButton();
+                                }
+                                else
+                                    playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
                             }
                         }
                     });
@@ -76,13 +76,28 @@ namespace ActionSystem
                 {
                     if (playerActionHandler.queuedActions.Count == 0)
                     {
-                        ConsumeAction consumeAction = action as ConsumeAction;
-                        consumeAction.QueueAction(itemData);
                         if ((itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize == 1) || (itemData.Item.MaxUses > 1 && itemData.RemainingUses == 1))
+                        {
+                            ConsumeAction consumeAction = action as ConsumeAction;
+                            consumeAction.QueueAction(itemData);
                             ResetButton();
+                        }
+                        else
+                        {
+                            ConsumeAction consumeAction = action as ConsumeAction;
+                            consumeAction.QueueAction(itemData);
+                        }
                     }
                 });
             }
+        }
+
+        public void SetupIconSprite()
+        {
+            if (itemData.Item.HotbarSprite != null)
+                iconImage.sprite = itemData.Item.HotbarSprite;
+            else
+                iconImage.sprite = itemData.Item.InventorySprite(itemData);
         }
 
         public override void ShowSlot()

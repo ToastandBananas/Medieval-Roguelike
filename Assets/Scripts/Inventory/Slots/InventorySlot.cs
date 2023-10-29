@@ -159,7 +159,6 @@ namespace InventorySystem
 
         public override void ClearItem()
         {
-            Debug.Log("Clearing item");
             ClearSlotVisuals();
 
             // Clear the slot coordinates

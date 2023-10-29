@@ -25,12 +25,38 @@ namespace ActionSystem
         public override void TakeAction()
         {
             ItemData itemToConsume = itemsToConsume[0];
-            itemToConsume.Use(1);
+            ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemToConsume, itemToConsume.Item.Consumable.ItemChangeThresholds);
+            itemToConsume.Use(1); 
 
             if (itemToConsume.RemainingUses <= 0)
             {
                 if (itemToConsume.MyInventory != null)
                     itemToConsume.MyInventory.RemoveItem(itemToConsume);
+            }
+            else
+            {
+                if (ItemChangeThreshold.ThresholdReached(itemToConsume, true, currentItemChangeThreshold, itemToConsume.Item.Consumable.ItemChangeThresholds, out ItemChangeThreshold newThreshold))
+                {
+                    if (itemToConsume.MyInventory != null)
+                    {
+                        SlotCoordinate itemsSlotCoordinate = itemToConsume.MyInventory.GetSlotCoordinateFromItemData(itemToConsume);
+                        if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
+                        {
+                            if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
+                                itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
+                        }
+                        else
+                        {
+                            Item oldItem = itemToConsume.Item;
+                            itemToConsume.MyInventory.RemoveItem(itemToConsume);
+                            itemToConsume.SetItem(newThreshold.NewItem);
+                            itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, unit);
+                        }
+
+                        if (ActionSystemUI.ItemActionBarAlreadyHasItem(itemToConsume))
+                            ActionSystemUI.GetItemActionBarSlot(itemToConsume).SetupIconSprite();
+                    }
+                }
             }
 
             itemsToConsume.Remove(itemToConsume);
