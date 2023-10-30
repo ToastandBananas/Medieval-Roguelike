@@ -7,6 +7,14 @@ namespace ActionSystem
     {
         readonly static float swapAPMultiplier = 0.5f;
 
+        public override void QueueAction()
+        {
+            if (unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                unit.unitActionHandler.GetAction<UnloadAction>().QueueAction();
+
+            base.QueueAction();
+        }
+
         public override void TakeAction()
         {
             unit.UnitEquipment.SwapWeaponSet();

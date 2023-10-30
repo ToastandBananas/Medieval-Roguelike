@@ -32,7 +32,26 @@ namespace ActionSystem
         public override void TakeAction()
         {
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault();
-            unit.UnitEquipment.TryAddItemAt((EquipSlot)dictionaryEntry.Value, (ItemData)dictionaryEntry.Key);
+            EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
+            if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+            {
+                if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                {
+                    if (targetEquipSlot == EquipSlot.LeftHeldItem2)
+                        targetEquipSlot = EquipSlot.LeftHeldItem1;
+                    else if (targetEquipSlot == EquipSlot.RightHeldItem2)
+                        targetEquipSlot = EquipSlot.RightHeldItem1;
+                }
+                else // Weapon Set 2
+                {
+                    if (targetEquipSlot == EquipSlot.LeftHeldItem1)
+                        targetEquipSlot = EquipSlot.LeftHeldItem2;
+                    else if (targetEquipSlot == EquipSlot.RightHeldItem1)
+                        targetEquipSlot = EquipSlot.RightHeldItem2;
+                }
+            }
+
+            unit.UnitEquipment.TryAddItemAt(targetEquipSlot, (ItemData)dictionaryEntry.Key);
             CompleteAction();
         }
 

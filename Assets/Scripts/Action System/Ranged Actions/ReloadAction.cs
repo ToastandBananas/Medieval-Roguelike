@@ -1,4 +1,3 @@
-using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
@@ -8,7 +7,6 @@ namespace ActionSystem
     public class ReloadAction : BaseAction
     {
         ItemData projectileItemData;
-        // bool isReloading;
 
         readonly int defaultActionPointCost = 200;
         
@@ -20,7 +18,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)// || isReloading)
+            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)
             {
                 CompleteAction();
                 return;
@@ -36,17 +34,10 @@ namespace ActionSystem
             CompleteAction();
         }
 
-        /*protected override void StartAction()
-        {
-            base.StartAction();
-            // isReloading = true;
-        }*/
-
         public override void CompleteAction()
         {
             base.CompleteAction();
             projectileItemData = null;
-            // isReloading = false;
 
             if (unit.IsPlayer)
                 unit.unitActionHandler.SetDefaultSelectedAction();

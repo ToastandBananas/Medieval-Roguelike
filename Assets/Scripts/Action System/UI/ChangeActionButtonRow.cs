@@ -8,8 +8,8 @@ public class ChangeActionButtonRow : MonoBehaviour
     [SerializeField] RectTransform rowParentRectTransform;
     [SerializeField] RectTransform rowRectTransform;
 
-    readonly int rowAdjustAmount = 64;
-    readonly int padding;
+    readonly int rowAdjustAmount = 66;
+    readonly int maxRowCount = 3;
 
     public void ActivateButtons()
     {
@@ -37,7 +37,7 @@ public class ChangeActionButtonRow : MonoBehaviour
 
     public void DecreaseRow()
     {
-        if (rowRectTransform.offsetMax.y < (rowAdjustAmount * (3 - (rowParentRectTransform.sizeDelta.y - padding) / rowAdjustAmount)))
+        if (rowRectTransform.offsetMax.y < (rowAdjustAmount * (maxRowCount - (rowParentRectTransform.sizeDelta.y / rowAdjustAmount))))
             rowRectTransform.offsetMax = new Vector2(0, rowRectTransform.offsetMax.y + rowAdjustAmount);
     }
 }

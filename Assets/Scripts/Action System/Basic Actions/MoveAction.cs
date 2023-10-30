@@ -157,7 +157,7 @@ namespace ActionSystem
             Vector3 nextPathPosition;
             Direction directionToNextPosition;
 
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
             {
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 

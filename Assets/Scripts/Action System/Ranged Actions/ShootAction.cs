@@ -116,8 +116,11 @@ namespace ActionSystem
             // The unit being attacked becomes aware of this unit
             BecomeVisibleEnemyOfTarget(targetEnemyUnit);
 
+            // We need to skip a frame in case the target Unit's meshes are being enabled
+            yield return null; 
+
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
@@ -163,6 +166,8 @@ namespace ActionSystem
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+
+                unit.unitActionHandler.SetIsAttacking(false);
             }
 
             while (unit.unitActionHandler.isAttacking)
@@ -201,7 +206,6 @@ namespace ActionSystem
                 }
             }
 
-            unit.unitActionHandler.SetIsAttacking(false);
             unit.unitActionHandler.FinishAction();
         }
 

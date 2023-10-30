@@ -148,8 +148,11 @@ namespace ActionSystem
                 }
             }
 
+            // We need to skip a frame in case the target Unit's meshes are being enabled
+            yield return null;
+
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
                 {
@@ -219,9 +222,9 @@ namespace ActionSystem
 
                     // Damage this unit
                     DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot);
-
-                    unit.unitActionHandler.SetIsAttacking(false);
                 }
+
+                unit.unitActionHandler.SetIsAttacking(false);
             }
 
             // Wait until the attack lands before completing the action

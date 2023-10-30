@@ -104,7 +104,7 @@ namespace InventorySystem
                     meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
 
                 meshFilters[i].mesh = itemData.Item.Meshes[i];
-                if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+                if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
                     meshRenderers[i].enabled = true;
                 else
                 {

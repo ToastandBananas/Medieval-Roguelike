@@ -55,9 +55,9 @@ namespace ActionSystem
         public static ActionBarSlot highlightedActionSlot { get; private set; }
         static PlayerActionHandler playerActionHandler;
 
-        static readonly int maxActionButtonContainerHeight = 224;
+        static readonly int maxActionButtonContainerHeight = 228;
         static readonly int minActionButtonContainerHeight = 96;
-        static readonly int actionButtonRowHeightAdjustment = 64;
+        static readonly int actionButtonRowHeightAdjustment = 66;
 
         float dragTimer = 0f;
         float startDragTime = 0.15f;
@@ -124,7 +124,7 @@ namespace ActionSystem
                     else // Return to original slot
                         actionSlotDraggedFrom.ShowSlot();
 
-                    TooltipManager.ShowTooltips(highlightedActionSlot);
+                    TooltipManager.ShowActionBarTooltip(highlightedActionSlot);
 
                     Cursor.visible = true;
                     isDraggingAction = false;

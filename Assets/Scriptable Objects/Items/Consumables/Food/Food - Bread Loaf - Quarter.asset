@@ -28,9 +28,9 @@ MonoBehaviour:
   isUsable: 1
   valueRange: {x: 1, y: 8}
   meshes:
-  - {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  - {fileID: -2432090755550338912, guid: 0a851a712c6bcde4e8dd064e47dad01b, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: c4d20c97690110c41ab93d211a84f927, type: 2}
+  - {fileID: 2100000, guid: bbc1b2160aa1c65448f0dbbdfbbf3855, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   itemChangeThresholds:

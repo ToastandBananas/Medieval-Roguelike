@@ -49,6 +49,7 @@ MonoBehaviour:
   actionTypes:
   - {fileID: 11400000, guid: 44ecde231a7e0124fbec7df445b93ecc, type: 2}
   - {fileID: 11400000, guid: 26a016718e383234091d517a7f6d54c0, type: 2}
+  - {fileID: 11400000, guid: be1a9ca6be3f56341a7e31442d5bd1fe, type: 2}
   idlePosition_Left: {x: 0, y: 0, z: 0}
   idlePosition_Right: {x: 0, y: 0.29, z: -0.3}
   idleRotation_Left: {x: 0, y: 55, z: 270}

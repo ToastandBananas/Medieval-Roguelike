@@ -59,7 +59,7 @@ namespace ActionSystem
             {
                 ActionLineRenderer.Instance.HideLineRenderers();
                 WorldMouse.ChangeCursor(CursorState.Default);
-                highlightedInteractable = null;
+                ClearHighlightedInteractable();
                 return;
             }
             
@@ -324,8 +324,8 @@ namespace ActionSystem
         {
             if (EventSystem.current.IsPointerOverGameObject())
             {
-                highlightedInteractable = null;
                 highlightedUnit = null;
+                ClearHighlightedInteractable();
                 WorldMouse.ChangeCursor(CursorState.Default);
                 return;
             }
@@ -341,7 +341,14 @@ namespace ActionSystem
                         if (highlightedInteractable == null || highlightedInteractable.gameObject != interactableHit.transform.gameObject)
                         {
                             if (interactableHit.transform.TryGetComponent(out Interactable interactable))
+                            {
                                 highlightedInteractable = interactable;
+                                if (interactable is LooseItem)
+                                {
+                                    LooseItem looseItem = interactable as LooseItem;
+                                    TooltipManager.ShowLooseItemTooltip(interactable.transform, looseItem.ItemData);
+                                }
+                            }
                         }
 
                         if (highlightedInteractable == null)
@@ -365,7 +372,7 @@ namespace ActionSystem
                     }
                     else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit unitHit, 1000, unitMask))
                     {
-                        highlightedInteractable = null;
+                        ClearHighlightedInteractable();
                         if (highlightedUnit == null || highlightedUnit.gameObject != unitHit.transform.gameObject)
                         {
                             if (unitHit.transform.TryGetComponent(out Unit unit))
@@ -385,13 +392,13 @@ namespace ActionSystem
                         Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
                         if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
                         {
-                            highlightedInteractable = null;
+                            ClearHighlightedInteractable();
                             SetAttackCursor();
                         }
                         else
                         {
-                            highlightedInteractable = null;
                             highlightedUnit = null;
+                            ClearHighlightedInteractable();
                             WorldMouse.ChangeCursor(CursorState.Default);
                         }
                     }
@@ -400,7 +407,7 @@ namespace ActionSystem
                 }
                 else if (selectedAction is BaseAttackAction)
                 {
-                    highlightedInteractable = null;
+                    ClearHighlightedInteractable();
                     Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
                     highlightedUnit = unitAtGridPosition;
 
@@ -417,12 +424,22 @@ namespace ActionSystem
                 }
                 else if (selectedAction is TurnAction)
                 {
-                    highlightedInteractable = null;
                     highlightedUnit = null;
+                    ClearHighlightedInteractable();
+
                     player.unitActionHandler.turnAction.SetTargetPosition(player.unitActionHandler.turnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition())));
                     ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.turnAction.targetPosition);
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }
+            }
+        }
+
+        void ClearHighlightedInteractable()
+        {
+            if (highlightedInteractable != null)
+            {
+                highlightedInteractable = null;
+                TooltipManager.ClearTooltips();
             }
         }
 

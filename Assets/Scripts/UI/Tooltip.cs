@@ -23,7 +23,7 @@ namespace GeneralUI
 
         Vector3 newTooltipPosition;
 
-        public void ShowItemTooltip(Slot slot)
+        public void ShowInventoryTooltip(Slot slot)
         {
             ItemData itemData = slot.GetItemData();
             if (itemData == null || itemData.Item == null)
@@ -108,6 +108,21 @@ namespace GeneralUI
 
             RecalculateTooltipSize();
             CalculatePosition(actionBarSlot);
+        }
+
+        public void ShowLooseItemTooltip(Transform looseItemTransform, ItemData looseItemData)
+        {
+            tooltipStringBuilder.Clear();
+            tooltipStringBuilder.Append($"<align=center><size=20><b>{looseItemData.Item.Name}");
+            if (looseItemData.CurrentStackSize > 1)
+                tooltipStringBuilder.Append($" x {looseItemData.CurrentStackSize}");
+            tooltipStringBuilder.Append("</b></size></align>");
+
+            textMesh.text = tooltipStringBuilder.ToString();
+            gameObject.SetActive(true);
+
+            RecalculateTooltipSize();
+            CalculatePosition(looseItemTransform);
         }
 
         public void ClearTooltip()
@@ -237,6 +252,14 @@ namespace GeneralUI
         void CalculatePosition(ActionBarSlot actionBarSlot)
         {
             newTooltipPosition.Set(actionBarSlot.transform.position.x + (rectTransform.rect.width / 2f), ActionSystemUI.ActionButtonContainer.rect.height + (rectTransform.rect.height / 2f), 0);
+            rectTransform.position = newTooltipPosition;
+        }
+
+        void CalculatePosition(Transform looseItemTransform)
+        {
+            Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, looseItemTransform.position);
+
+            newTooltipPosition.Set(screenPosition.x + (rectTransform.rect.width / 2f), screenPosition.y + (rectTransform.rect.height * 2f), 0);
             rectTransform.position = newTooltipPosition;
         }
 

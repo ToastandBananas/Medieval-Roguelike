@@ -53,7 +53,7 @@ namespace UnitSystem
         {
             if (meshesHidden == false)
                 return;
-
+            
             meshesHidden = false;
 
             for (int i = 0; i < meshRenderers.Count; i++)
@@ -147,7 +147,7 @@ namespace UnitSystem
                     break;
             }
 
-            if (myUnit.IsPlayer == false && IsVisibleOnScreen() == false)
+            if (myUnit.IsPlayer == false && IsVisibleOnScreen == false)
                 HideMesh(equipSlot);
         }
 
@@ -257,13 +257,11 @@ namespace UnitSystem
         }
 
         public Transform LeftHeldItemParent => leftHeldItemParent;
-
         public Transform RightHeldItemParent => rightHeldItemParent;
 
         public MeshRenderer BodyMeshRenderer => bodyMeshRenderer;
-
         public MeshRenderer HelmMeshRenderer => helmMeshRenderer;
 
-        public bool IsVisibleOnScreen() => bodyMeshRenderer.isVisible && meshesHidden == false && UnitManager.player.vision.IsKnown(myUnit);
+        public bool IsVisibleOnScreen => meshesHidden == false && bodyMeshRenderer.isVisible && UnitManager.player.vision.IsKnown(myUnit);
     }
 }

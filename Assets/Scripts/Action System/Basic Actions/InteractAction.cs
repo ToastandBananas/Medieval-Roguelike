@@ -32,7 +32,7 @@ namespace ActionSystem
         IEnumerator Interact()
         {
             TurnAction turnAction = unit.unitActionHandler.turnAction;
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
                     turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed() * 2f);

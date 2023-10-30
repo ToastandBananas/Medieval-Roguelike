@@ -91,7 +91,7 @@ namespace InventorySystem
                 TooltipManager.SetCurrentSlot(ParentSlot());
 
                 if (InventoryUI.isDraggingItem == false && GetItemData() != null)
-                    TooltipManager.ShowTooltips(this);
+                    TooltipManager.ShowInventoryTooltips(this);
             }
 
             if (InventoryUI.isDraggingItem)

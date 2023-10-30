@@ -39,7 +39,7 @@ namespace ActionSystem
             SetTargetPosition(targetDirection);
             StartAction();
 
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen())
+            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
                 Turn(false);
             else
                 Turn(true);

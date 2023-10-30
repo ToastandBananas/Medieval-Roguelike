@@ -77,7 +77,7 @@ namespace InventorySystem
             transform.localPosition = Vector3.zero;
             transform.localEulerAngles = Vector3.zero;
 
-            if (shooter.IsPlayer == false && shooter.unitMeshManager.IsVisibleOnScreen() == false)
+            if (shooter.IsPlayer == false && shooter.unitMeshManager.IsVisibleOnScreen == false)
                 meshRenderer.enabled = false;
 
             gameObject.SetActive(true);
