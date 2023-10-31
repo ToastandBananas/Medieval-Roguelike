@@ -1,11 +1,11 @@
+using ActionSystem;
+using InteractableObjects;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using ActionSystem;
-using Utilities;
 using UnitSystem;
+using UnityEngine;
+using Utilities;
 using ContextMenu = GeneralUI.ContextMenu;
-using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -584,7 +584,7 @@ namespace InventorySystem
                     equippedItemDatas[(int)targetEquipSlot] = equippedItemDatas[i];
                     equippedItemDatas[i] = null;
 
-                    SetupNewItemIcon(GetEquipmentSlotFromIndex((int)targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
+                    SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
                     SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[i]);
                 }
                 else if (i == (int)EquipSlot.RightHeldItem2 && equippedItemDatas[i].Item is Weapon && equippedItemDatas[i].Item.Weapon.IsTwoHanded)
@@ -593,7 +593,7 @@ namespace InventorySystem
                     equippedItemDatas[(int)targetEquipSlot] = equippedItemDatas[i];
                     equippedItemDatas[i] = null;
 
-                    SetupNewItemIcon(GetEquipmentSlotFromIndex((int)targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
+                    SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
                     SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[i]);
                 }
                 else
@@ -726,6 +726,35 @@ namespace InventorySystem
                 targetSlot.DisableSlotImage();
                 targetSlot.InventoryItem.DisableIconImage();
                 targetSlot.PlaceholderImage.enabled = false;
+
+                EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
+                oppositeWeaponSlot.DisableSlotImage();
+                oppositeWeaponSlot.InventoryItem.DisableIconImage();
+                oppositeWeaponSlot.PlaceholderImage.enabled = false;
+            }
+            else if (currentWeaponSet == WeaponSet.One && (targetSlot.EquipSlot == EquipSlot.LeftHeldItem1 || targetSlot.EquipSlot == EquipSlot.RightHeldItem1))
+            {
+                EquipmentSlot leftHeldItemSlot2 = GetEquipmentSlot(EquipSlot.LeftHeldItem2);
+                leftHeldItemSlot2.DisableSlotImage();
+                leftHeldItemSlot2.InventoryItem.DisableIconImage();
+                leftHeldItemSlot2.PlaceholderImage.enabled = false;
+
+                EquipmentSlot rightHeldItemSlot2 = GetEquipmentSlot(EquipSlot.RightHeldItem2);
+                rightHeldItemSlot2.DisableSlotImage();
+                rightHeldItemSlot2.InventoryItem.DisableIconImage();
+                rightHeldItemSlot2.PlaceholderImage.enabled = false;
+            }
+            else if (currentWeaponSet == WeaponSet.Two && (targetSlot.EquipSlot == EquipSlot.LeftHeldItem2 || targetSlot.EquipSlot == EquipSlot.RightHeldItem2))
+            {
+                EquipmentSlot leftHeldItemSlot1 = GetEquipmentSlot(EquipSlot.LeftHeldItem1);
+                leftHeldItemSlot1.DisableSlotImage();
+                leftHeldItemSlot1.InventoryItem.DisableIconImage();
+                leftHeldItemSlot1.PlaceholderImage.enabled = false;
+
+                EquipmentSlot rightHeldItemSlot1 = GetEquipmentSlot(EquipSlot.RightHeldItem1);
+                rightHeldItemSlot1.DisableSlotImage();
+                rightHeldItemSlot1.InventoryItem.DisableIconImage();
+                rightHeldItemSlot1.PlaceholderImage.enabled = false;
             }
         }
 

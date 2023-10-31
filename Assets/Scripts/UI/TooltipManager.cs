@@ -1,5 +1,6 @@
 using ActionSystem;
 using InventorySystem;
+using System.Collections.Generic;
 using UnitSystem;
 using UnityEngine;
 
@@ -9,10 +10,13 @@ namespace GeneralUI
     {
         public static TooltipManager Instance;
 
-        [SerializeField] Tooltip[] tooltips;
+        static List<Tooltip> tooltips = new List<Tooltip>();
+        [SerializeField] Tooltip tooltipPrefab;
+        [SerializeField] int amountToPool = 3;
 
         public static Slot currentSlot { get; private set; }
         public static ActionBarSlot currentActionBarSlot { get; private set; }
+        public static int activeInventoryTooltips { get; private set; }
 
         void Awake()
         {
@@ -23,17 +27,23 @@ namespace GeneralUI
                 return;
             }
             Instance = this;
+
+            for (int i = 0; i < amountToPool; i++)
+            {
+                CreateNewTooltip();
+            }
         }
 
         public static void ClearTooltips()
         {
-            for (int i = 0; i < Instance.tooltips.Length; i++)
+            for (int i = 0; i < tooltips.Count; i++)
             {
-                Instance.tooltips[i].ClearTooltip();
+                tooltips[i].ClearTooltip();
             }
 
             currentSlot = null;
             currentActionBarSlot = null;
+            activeInventoryTooltips = 0;
         }
 
         public static void ShowInventoryTooltips(Slot slot)
@@ -92,20 +102,29 @@ namespace GeneralUI
 
         static Tooltip GetTooltip()
         {
-            for (int i = 0; i < Instance.tooltips.Length; i++)
+            for (int i = 0; i < tooltips.Count; i++)
             {
-                if (Instance.tooltips[i].gameObject.activeSelf == false)
-                    return Instance.tooltips[i];
+                if (tooltips[i].gameObject.activeSelf == false)
+                    return tooltips[i];
             }
 
-            Debug.LogWarning("Not enough tooltips...");
-            return null;
+            return CreateNewTooltip();
+        }
+
+        static Tooltip CreateNewTooltip()
+        {
+            Tooltip tooltip = Instantiate(Instance.tooltipPrefab, Instance.transform);
+            tooltips.Add(tooltip);
+            tooltip.gameObject.SetActive(false);
+            return tooltip;
         }
 
         public static void SetCurrentSlot(Slot slot) => currentSlot = slot;
 
         public static void SetCurrentActionBarSlot(ActionBarSlot actionBarSlot) => currentActionBarSlot = actionBarSlot;
 
-        public static Tooltip[] Tooltips => Instance.tooltips;
+        public static List<Tooltip> Tooltips => tooltips;
+
+        public static void AddToActiveInventoryTooltips() => activeInventoryTooltips++;
     }
 }

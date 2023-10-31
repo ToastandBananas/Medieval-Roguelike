@@ -183,9 +183,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a833fc587b701c14aba9f1723b153452, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 8666604971230979749}
   button: {fileID: 6229338627508251530}
   iconImage: {fileID: 995891887561221870}
   selectedImageGameObject: {fileID: 7250569779179453064}
+  actionBarSection: 0
 --- !u!1 &8666604971532835094
 GameObject:
   m_ObjectHideFlags: 0

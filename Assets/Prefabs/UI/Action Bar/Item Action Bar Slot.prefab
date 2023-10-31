@@ -155,10 +155,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5af8c97720536dd43a20754f4f23436f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 3064029288105895119}
   button: {fileID: 338727993534130656}
   iconImage: {fileID: 6850669168076596356}
   selectedImageGameObject: {fileID: 3917951245964736738}
   actionBarSection: 3
+--- !u!224 &3064029288105895119 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8666604971230979749, guid: e3d529b31b1eb82489e073dcafbead91,
+    type: 3}
+  m_PrefabInstance: {fileID: 5962881539710288490}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3917951245964736738 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7250569779179453064, guid: e3d529b31b1eb82489e073dcafbead91,

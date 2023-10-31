@@ -19,18 +19,18 @@ MonoBehaviour:
   mainMaterial: 23
   itemSize: 4
   width: 2
-  height: 4
+  height: 3
   weight: 8
   maxStackSize: 1
-  inventorySprite: {fileID: 21300000, guid: c4244a05043c3134ea013822a57a2931, type: 3}
-  hotbarSprite: {fileID: 0}
+  inventorySprite: {fileID: 21300000, guid: dca00f65a9cf133448d7ed65aa95783d, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: f10d3e9bc70031f46b5319ff19e49bf5, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
   meshes:
   - {fileID: -2432090755550338912, guid: 3436092d0c2edcb47befd46f8eca320a, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: 7c36c8b6e0511db429676d251d2c9704, type: 2}
+  - {fileID: 2100000, guid: a7d38616a9cd49248a9a36e0a68ab156, type: 2}
   pickupMesh: {fileID: 0}
   pickupMeshRendererMaterials: []
   equipSlot: 9
