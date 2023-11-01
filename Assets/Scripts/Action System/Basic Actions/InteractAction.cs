@@ -35,7 +35,7 @@ namespace ActionSystem
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
-                    turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed() * 2f);
+                    turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed * 2f);
 
                 while (unit.unitActionHandler.isRotating)
                     yield return null;

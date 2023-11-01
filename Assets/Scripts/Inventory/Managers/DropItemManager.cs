@@ -3,6 +3,7 @@ using InteractableObjects;
 using ActionSystem;
 using UnitSystem;
 using ContextMenu = GeneralUI.ContextMenu;
+using GeneralUI;
 
 namespace InventorySystem
 {
@@ -56,6 +57,8 @@ namespace InventorySystem
                 unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
                 unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
             }
+
+            TooltipManager.UpdateLooseItemTooltips();
         }
 
         public static void DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
@@ -127,6 +130,7 @@ namespace InventorySystem
                 unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
 
             ActionSystemUI.UpdateActionVisuals();
+            TooltipManager.UpdateLooseItemTooltips();
         }
 
         public static void DropHelmOnDeath(ItemData itemData, Unit unit, Transform attackerTransform, bool diedForward)
@@ -161,6 +165,9 @@ namespace InventorySystem
 
             unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
+
+            if (unit.IsNPC)
+                TooltipManager.UpdateLooseItemTooltips();
         }
 
         public static void DropHeldItemOnDeath(HeldItem heldItem, Unit unit, Transform attackerTransform, bool diedForward)
@@ -236,6 +243,9 @@ namespace InventorySystem
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
 
             unit.opportunityAttackTrigger.UpdateColliderRadius();
+
+            if (unit.IsNPC)
+                TooltipManager.UpdateLooseItemTooltips();
         }
 
         static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)

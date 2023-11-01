@@ -8,6 +8,7 @@ namespace Utilities
     {
         const int MOVE_STRAIGHT_COST = 10;
         const int MOVE_DIAGONAL_COST = 14;
+        public readonly static float diaganolDistance = LevelGrid.diaganolDistance;
 
         public static int CalculateDistance_XZ(GridPosition gridPositionA, GridPosition gridPositionB)
         {

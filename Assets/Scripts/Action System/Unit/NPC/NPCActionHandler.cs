@@ -124,13 +124,11 @@ namespace ActionSystem
                         {
                             if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
                             {
-                                ClearActionQueue(true);
                                 GetAction<SwapWeaponSetAction>().QueueAction();
                                 return;
                             }
                             else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                             {
-                                ClearActionQueue(true);
                                 GetAction<SwapWeaponSetAction>().QueueAction();
                                 GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                                 return;
@@ -247,6 +245,7 @@ namespace ActionSystem
 
         public void DetermineAction()
         {
+            // Debug.Log("Determine action");
             if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
 
@@ -296,13 +295,11 @@ namespace ActionSystem
                     // If the Unit has a melee weapon, switch to it
                     if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
                     {
-                        ClearActionQueue(true);
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         return;
                     }
                     else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
-                        ClearActionQueue(true);
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;

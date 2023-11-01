@@ -9,6 +9,7 @@ namespace UnitSystem
     public class UnitAnimator : MonoBehaviour
     {
         [SerializeField] Transform headTransform, bodyTransform;
+        [SerializeField] CapsuleCollider baseCapsuleCollider;
         Animator unitAnim;
 
         public Animator leftHeldItemAnim { get; private set; }
@@ -83,9 +84,10 @@ namespace UnitSystem
         {
             // Hide the Unit's base
             unit.unitMeshManager.DisableBaseMeshRenderer();
+            baseCapsuleCollider.enabled = true;
 
-            float forceMagnitude = Random.Range(30000, 40000);
-            float towardsAttackerChance = 0.3f;
+            float forceMagnitude = Random.Range(100, 300);
+            float towardsAttackerChance = 0.33f;
             Vector3 randomDirection = Random.onUnitSphere;
             randomDirection.y = 0; // Ensure the force is applied horizontally
 
@@ -101,15 +103,15 @@ namespace UnitSystem
             // Apply head rotation
             StartCoroutine(Die_RotateHead(diedForward));
 
-            // Calculate the point where we want to apply the force (near the top of the character)
-            float desiredForceHeight = unit.unitMeshManager.BodyMeshRenderer.bounds.size.y * 0.75f;
-            Vector3 forcePosition = unit.rigidBody.transform.position + (Vector3.up * desiredForceHeight);
-
             unit.rigidBody.useGravity = true;
             unit.rigidBody.isKinematic = false;
             
             // Apply force to the character's Rigidbody at the specified position
-            unit.rigidBody.AddForceAtPosition(forceDirection * forceMagnitude, forcePosition);
+            unit.rigidBody.AddForce(forceDirection * forceMagnitude, ForceMode.Impulse); 
+            
+            Vector3 torqueDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
+            float torqueMagnitude = Random.Range(100, 500); // Adjust this value as needed
+            unit.rigidBody.AddTorque(torqueDirection * torqueMagnitude, ForceMode.Impulse);
 
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
             {

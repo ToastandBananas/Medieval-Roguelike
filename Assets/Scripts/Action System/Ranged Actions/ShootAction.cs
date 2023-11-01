@@ -106,7 +106,7 @@ namespace ActionSystem
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
+                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
                 {
                     MoveToTargetInstead();
                     yield break;

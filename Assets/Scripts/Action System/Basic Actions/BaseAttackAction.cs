@@ -152,7 +152,7 @@ namespace ActionSystem
             yield return null;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
+            if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
             {
                 if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
                 {
@@ -160,7 +160,7 @@ namespace ActionSystem
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
+                    if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
                     {
                         MoveToTargetInstead();
                         yield break;

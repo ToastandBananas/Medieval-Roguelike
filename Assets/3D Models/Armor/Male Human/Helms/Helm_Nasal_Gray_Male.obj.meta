@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1c4817232c101a9428bdbf2577315f0e
+guid: bcb70c09c1af2ea4fb8b86658ab46bd3
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: default_Material
-    second: {fileID: 2100000, guid: e20874e55ce89a446b7d00e3bd5fd4d1, type: 2}
+      name: Helm_Nasal_Male_Material
+    second: {fileID: 2100000, guid: 172688109add5a84293752a2f18b997b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: defaultMat
+    second: {fileID: 2100000, guid: 172688109add5a84293752a2f18b997b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

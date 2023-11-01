@@ -109,10 +109,6 @@ namespace ActionSystem
                 }
             }
 
-            // If the newly queued action isn't the next one up (that way if we queue multiple actions, the Unit doesn't try to take them all at once)
-            if (queuedActions.Count > 0 && action != queuedActions[0])
-                return;
-
             if (action is BaseAttackAction)
                 unit.unitAnimator.StopMovingForward();
 

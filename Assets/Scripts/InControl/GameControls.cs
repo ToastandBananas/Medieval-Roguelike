@@ -94,6 +94,10 @@ namespace Controls
             gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Backspace);
             gamePlayActions.splitStackEnter.AddDefaultBinding(Key.Delete);
             gamePlayActions.splitStackDelete.AddDefaultBinding(InputControlType.Action2); // Circle(PS4) / B(Xbox)
+
+            gamePlayActions.showLooseItemTooltips.AddDefaultBinding(Key.LeftAlt);
+            gamePlayActions.showLooseItemTooltips.AddDefaultBinding(Key.RightAlt);
+            gamePlayActions.showLooseItemTooltips.AddDefaultBinding(InputControlType.RightStickButton);
         }
     }
 }

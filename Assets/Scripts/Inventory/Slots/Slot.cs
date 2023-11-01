@@ -106,7 +106,7 @@ namespace InventorySystem
             if (InventoryUI.isDraggingItem)
                 RemoveSlotHighlights();
             else
-                TooltipManager.ClearTooltips();
+                TooltipManager.ClearInventoryTooltips();
         }
     }
 }

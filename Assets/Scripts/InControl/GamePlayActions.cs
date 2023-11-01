@@ -24,6 +24,7 @@ namespace Controls
         public PlayerAction menuPause, menuSelect, menuContext, menuQuickUse;
         public PlayerAction menuLeft, menuRight, menuUp, menuDown;
         public PlayerAction toggleInventory, splitStackEnter, splitStackDelete;
+        public PlayerAction showLooseItemTooltips;
 
         public GamePlayActions()
         {
@@ -64,6 +65,8 @@ namespace Controls
             toggleInventory = CreatePlayerAction("ToggleInventory");
             splitStackEnter = CreatePlayerAction("SplitStackEnter");
             splitStackDelete = CreatePlayerAction("SplitStackDelete");
+
+            showLooseItemTooltips = CreatePlayerAction("ShowLooseItemTooltips");
         }
     }
 }

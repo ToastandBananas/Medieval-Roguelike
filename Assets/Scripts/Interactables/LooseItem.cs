@@ -27,6 +27,9 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitPickingUpItem)
         {
+            if (UnitManager.player.unitActionHandler.turnAction.IsFacingTarget(gridPosition) == false)
+                UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
+
             // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
             if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
@@ -220,7 +223,7 @@ namespace InteractableObjects
 
         public void HideMeshRenderer() => meshFilter.mesh = null;
 
-        public bool CanSeeMeshRenderer() => meshFilter.mesh != null;
+        public bool CanSeeMeshRenderer => meshFilter.mesh != null;
 
         public override bool CanInteractAtMyGridPosition() => true;
     }

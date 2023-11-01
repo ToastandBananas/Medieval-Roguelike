@@ -121,7 +121,7 @@ namespace ActionSystem
                 ActionSystemUI.SetHighlightedActionSlot(null);
 
             if (InventoryUI.isDraggingItem == false)
-                TooltipManager.ClearTooltips();
+                TooltipManager.ClearInventoryTooltips();
         }
     }
 }

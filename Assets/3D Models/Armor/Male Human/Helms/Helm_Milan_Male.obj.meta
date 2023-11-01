@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Helm_Milan_Male_Material
-    second: {fileID: 2100000, guid: 06a48e0c40576a14f9303b274027abd5, type: 2}
+    second: {fileID: 2100000, guid: a673a9c367f2cc94c818435f85b879b9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

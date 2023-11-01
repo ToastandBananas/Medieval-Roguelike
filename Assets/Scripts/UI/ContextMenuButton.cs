@@ -112,17 +112,16 @@ namespace GeneralUI
                 if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
                     UnitManager.player.UnitInventoryManager.MainInventory.TryAddItem(itemData, UnitManager.player);
             }
+            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
+            {
+                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+            }
             else if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
                 if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
                     InventoryUI.npcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
                 else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
                     LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
-            }
-            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
-            {
-                LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
-                looseItem.FumbleItem();
             }
 
             ContextMenu.DisableContextMenu();
@@ -263,17 +262,18 @@ namespace GeneralUI
             }
             else if (ContextMenu.targetInteractable != null)
             {
-                LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
+                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+                /*LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
                 if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
                     UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
                 else
                 {
                     UnitManager.player.unitActionHandler.ForceQueueAP(100); 
                     if (UnitManager.player.unitActionHandler.turnAction.IsFacingTarget(looseContainerItem.GridPosition()) == false)
-                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition, false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed() * 2f);
+                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition, false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
 
                     InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
-                }
+                }*/
             }
             else if (ContextMenu.targetUnit != null)
                 UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetUnit.unitInteractable);

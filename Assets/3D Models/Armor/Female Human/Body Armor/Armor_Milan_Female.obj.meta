@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Armor_Milan_Female_Material
-    second: {fileID: 2100000, guid: d102dc2ef30f1644dab7e442da3f5bc3, type: 2}
+    second: {fileID: 2100000, guid: 6cba61e335e127e428785c75e4c66940, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

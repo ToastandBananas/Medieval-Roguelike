@@ -78,7 +78,6 @@ namespace ActionSystem
             if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
-                Debug.Log(unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition));
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
@@ -170,7 +169,7 @@ namespace ActionSystem
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
+                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
                 {
                     MoveToTargetInstead();
                     yield break;

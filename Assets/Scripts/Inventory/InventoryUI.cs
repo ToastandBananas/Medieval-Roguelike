@@ -319,7 +319,7 @@ namespace InventorySystem
         {
             SplitStack.Instance.Close();
             ContextMenu.DisableContextMenu(true);
-            TooltipManager.ClearTooltips();
+            TooltipManager.ClearInventoryTooltips();
 
             Cursor.visible = false;
             isDraggingItem = true;
@@ -339,7 +339,7 @@ namespace InventorySystem
         {
             SplitStack.Instance.Close();
             ContextMenu.DisableContextMenu(true);
-            TooltipManager.ClearTooltips();
+            TooltipManager.ClearInventoryTooltips();
 
             Cursor.visible = false;
             isDraggingItem = true;
@@ -408,7 +408,7 @@ namespace InventorySystem
                 activeSlot = null;
                 ContextMenu.DisableContextMenu();
                 SplitStack.Instance.Close();
-                TooltipManager.ClearTooltips();
+                TooltipManager.ClearInventoryTooltips();
                 CloseAllContainerUI();
 
                 if (npcInventoryActive)
@@ -445,7 +445,7 @@ namespace InventorySystem
                 activeSlot = null;
                 ContextMenu.DisableContextMenu();
                 SplitStack.Instance.Close();
-                TooltipManager.ClearTooltips();
+                TooltipManager.ClearInventoryTooltips();
                 CloseAllContainerUI();
             }
         }

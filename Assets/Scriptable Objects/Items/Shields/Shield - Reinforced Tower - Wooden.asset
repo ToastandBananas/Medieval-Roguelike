@@ -41,8 +41,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 85852df1f6c4f754884016641c9d340c, type: 2}
   equipSlot: 0
   actionTypes: []
-  idlePosition_Left: {x: 0.23, y: 0.05, z: -0.23}
-  idlePosition_Right: {x: -0.23, y: 0.05, z: -0.23}
+  idlePosition_Left: {x: 0.23, y: 0, z: -0.23}
+  idlePosition_Right: {x: -0.23, y: 0, z: -0.23}
   idleRotation_Left: {x: 0, y: -30, z: 0}
   idleRotation_Right: {x: 0, y: 30, z: 0}
   blockPowerRange: {x: 12, y: 18}

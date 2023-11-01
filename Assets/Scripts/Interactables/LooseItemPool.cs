@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using InventorySystem;
+using GeneralUI;
 
 namespace InteractableObjects
 {
@@ -159,6 +160,8 @@ namespace InteractableObjects
             looseItem.MeshCollider.enabled = true;
             looseItem.SetItemData(null);
             looseItem.gameObject.SetActive(false);
+
+            TooltipManager.UpdateLooseItemTooltips();
         }
 
         public Transform LooseItemParent => looseItemParent;

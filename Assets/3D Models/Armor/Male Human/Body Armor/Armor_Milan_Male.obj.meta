@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a53cdc07db7e80941bcdb4a1db3487b2
+guid: be6f52c4d5f932741be1ae8d0c51e6e9
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Armor_Milan_Male_Material
-    second: {fileID: 2100000, guid: f438af254008c144687f6912d690136b, type: 2}
+      name: defaultMat
+    second: {fileID: 2100000, guid: 5c4187e05df23a642b193c3fa93a6e4f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

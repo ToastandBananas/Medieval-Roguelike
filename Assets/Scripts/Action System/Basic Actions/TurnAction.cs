@@ -134,29 +134,32 @@ namespace ActionSystem
             unit.unitActionHandler.turnAction.RotateTowards_Direction(unit.unitActionHandler.turnAction.currentDirection, false);
         }
 
-        public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
+        public Direction GetTargetTurnDirection(GridPosition targetGridPosition)
         {
             GridPosition unitGridPosition = unit.GridPosition;
-
             if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
-                targetDirection = Direction.North;
+                return Direction.North;
             else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z == unitGridPosition.z)
-                targetDirection = Direction.East;
+                return Direction.East;
             else if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
-                targetDirection = Direction.South;
+                return Direction.South;
             else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z == unitGridPosition.z)
-                targetDirection = Direction.West;
+                return Direction.West;
             else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
-                targetDirection = Direction.NorthWest;
+                return Direction.NorthWest;
             else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
-                targetDirection = Direction.NorthEast;
+                return Direction.NorthEast;
             else if (targetGridPosition.x < unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
-                targetDirection = Direction.SouthWest;
+                return Direction.SouthWest;
             else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z < unitGridPosition.z)
-                targetDirection = Direction.SouthEast;
+                return Direction.SouthEast;
             else
-                targetDirection = Direction.Center;
+                return Direction.Center;
+        }
 
+        public Direction DetermineTargetTurnDirection(GridPosition targetGridPosition)
+        {
+            targetDirection = GetTargetTurnDirection(targetGridPosition);
             return targetDirection;
         }
 
@@ -528,7 +531,7 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == unit.GridPosition ? true : DetermineTargetTurnDirection(targetGridPosition) == currentDirection;
+        public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == unit.GridPosition ? true : GetTargetTurnDirection(targetGridPosition) == currentDirection;
 
         public override bool IsInterruptable() => false;
 
@@ -546,7 +549,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public float DefaultRotateSpeed() => defaultRotateSpeed;
+        public float DefaultRotateSpeed => defaultRotateSpeed;
 
         public override string TooltipDescription() => "Rotate to face a different direction, adjusting your field of vision and altering what you can see.";
     }

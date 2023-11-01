@@ -475,7 +475,7 @@ namespace GeneralUI
 
         static void CreateAddItemToHotbarButton()
         {
-            if (targetSlot == null || targetSlot is EquipmentSlot || targetSlot.IsFull() == false)
+            if (targetSlot == null || targetSlot is EquipmentSlot || targetSlot.IsFull() == false || targetSlot.InventoryItem.GetMyUnit() != UnitManager.player)
                 return;
             
             ItemActionBarSlot itemActionSlot = ActionSystemUI.GetNextAvailableItemActionBarSlot();

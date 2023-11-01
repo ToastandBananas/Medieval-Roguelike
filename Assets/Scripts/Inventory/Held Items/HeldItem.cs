@@ -19,6 +19,8 @@ namespace InventorySystem
 
         protected Unit unit;
 
+        readonly Vector3 femaleHeldItemOffset = new Vector3(0f, 0.02f, 0f);
+
         void Awake()
         {
             anim = GetComponent<Animator>();
@@ -63,6 +65,9 @@ namespace InventorySystem
             {
                 transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
                 transform.parent.localPosition = itemData.Item.HeldEquipment.IdlePosition_RightHand;
+                if (unit.Gender == Gender.Female)
+                    transform.parent.localPosition += femaleHeldItemOffset;
+
                 transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
                 unit.unitMeshManager.SetRightHeldItem(this);
             }
@@ -70,6 +75,9 @@ namespace InventorySystem
             {
                 transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
                 transform.parent.localPosition = itemData.Item.HeldEquipment.IdlePosition_LeftHand;
+                if (unit.Gender == Gender.Female)
+                    transform.parent.localPosition += femaleHeldItemOffset;
+
                 transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand);
                 unit.unitMeshManager.SetLeftHeldItem(this);
             }

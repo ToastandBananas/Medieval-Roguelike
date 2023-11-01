@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Helm_Nasal_Gray_Female_Material
     second: {fileID: 2100000, guid: 477f6094a124f7540ae81e53d5e8dafe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: defaultMat
+    second: {fileID: 2100000, guid: 477f6094a124f7540ae81e53d5e8dafe, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

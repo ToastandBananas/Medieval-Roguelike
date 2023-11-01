@@ -103,7 +103,7 @@ namespace ActionSystem
                 else if (dragTimer >= startDragTime && highlightedActionSlot != null && highlightedActionSlot.actionType != null)
                 {
                     playerActionHandler.SetDefaultSelectedAction();
-                    TooltipManager.ClearTooltips();
+                    TooltipManager.ClearInventoryTooltips();
 
                     Cursor.visible = false;
                     isDraggingAction = true;

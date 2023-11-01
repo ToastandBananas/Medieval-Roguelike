@@ -9,6 +9,7 @@ namespace ActionSystem
 
         public override void QueueAction()
         {
+            unit.unitActionHandler.ClearActionQueue(true);
             if (unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 unit.unitActionHandler.GetAction<UnloadAction>().QueueAction();
 
@@ -59,6 +60,8 @@ namespace ActionSystem
             // Debug.Log($"Swap Weapon Set Cost for {unit.name}: {cost}");
             return cost;
         }
+
+        public override bool CanQueueMultiple() => false;
 
         public override bool IsInterruptable() => false;
 

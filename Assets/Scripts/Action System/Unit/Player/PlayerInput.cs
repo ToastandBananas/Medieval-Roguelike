@@ -346,7 +346,7 @@ namespace ActionSystem
                                 if (interactable is LooseItem)
                                 {
                                     LooseItem looseItem = interactable as LooseItem;
-                                    TooltipManager.ShowLooseItemTooltip(interactable.transform, looseItem.ItemData);
+                                    TooltipManager.ShowLooseItemTooltip(looseItem, looseItem.ItemData);
                                 }
                             }
                         }
@@ -439,7 +439,8 @@ namespace ActionSystem
             if (highlightedInteractable != null)
             {
                 highlightedInteractable = null;
-                TooltipManager.ClearTooltips();
+                if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed == false)
+                    TooltipManager.ClearTooltips();
             }
         }
 

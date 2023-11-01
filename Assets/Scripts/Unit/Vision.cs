@@ -75,7 +75,7 @@ namespace UnitSystem
             if (knownLooseItems.ContainsKey(looseItemToCheck) == false)
                 return false;
 
-            if (looseItemToCheck.CanSeeMeshRenderer() == false)
+            if (looseItemToCheck.CanSeeMeshRenderer == false)
                 return false;
 
             if (IsInLineOfSight_Raycast(looseItemToCheck) == false)
@@ -511,7 +511,7 @@ namespace UnitSystem
                 knownLooseItems[looseItemToAdd] = loseSightTime;
 
             // If this is the Player's Vision, show the newly visible LooseItem
-            if (unit.IsPlayer && looseItemToAdd.CanSeeMeshRenderer() == false)
+            if (unit.IsPlayer && looseItemToAdd.CanSeeMeshRenderer == false)
                 looseItemToAdd.ShowMeshRenderer();
         }
 
