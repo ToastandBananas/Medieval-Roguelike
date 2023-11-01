@@ -26,6 +26,7 @@ namespace InventorySystem
             anim = GetComponent<Animator>();
         }
 
+        // Used in animation keyframe
         public virtual IEnumerator ResetToIdleRotation()
         {
             Quaternion defaultRotation;
@@ -36,7 +37,7 @@ namespace InventorySystem
 
             Quaternion startRotation = transform.parent.localRotation;
             float time = 0f;
-            float duration = 0.25f;
+            float duration = 0.35f;
             while (time < duration)
             {
                 transform.parent.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);

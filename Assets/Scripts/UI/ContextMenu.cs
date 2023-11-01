@@ -123,6 +123,7 @@ namespace GeneralUI
                 CreateUseItemButtons();
                 CreateSplitStackButton();
                 CreateAddItemToHotbarButton();
+                CreateRemoveFromHotbarButton();
                 CreateDropItemButton();
 
                 if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
@@ -483,6 +484,15 @@ namespace GeneralUI
                 return;
             
             GetContextMenuButton().SetupAddItemToHotbarButton(itemActionSlot);
+        }
+
+        static void CreateRemoveFromHotbarButton()
+        {
+            // This only works for ItemActionBar slots with items in them
+            if (ActionSystemUI.highlightedActionSlot == null || ActionSystemUI.highlightedActionSlot is ItemActionBarSlot == false || ActionSystemUI.highlightedActionSlot.ItemActionBarSlot.itemData == null || ActionSystemUI.highlightedActionSlot.ItemActionBarSlot.itemData.Item == null)
+                return;
+
+            GetContextMenuButton().SetupRemoveFromHotbarButton(ActionSystemUI.highlightedActionSlot as ItemActionBarSlot);
         }
 
         public static void StartContextMenuCooldown() => Instance.StartCoroutine(BuildContextMenuCooldown());

@@ -92,13 +92,7 @@ namespace ActionSystem
             }
         }
 
-        public void SetupIconSprite()
-        {
-            if (itemData.Item.HotbarSprite != null)
-                iconImage.sprite = itemData.Item.HotbarSprite;
-            else
-                iconImage.sprite = itemData.Item.InventorySprite(itemData);
-        }
+        public void SetupIconSprite() => iconImage.sprite = itemData.Item.HotbarSprite(itemData);
 
         public override void ShowSlot()
         {

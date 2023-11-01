@@ -934,7 +934,51 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    remainingUses: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    defense: 0
+    value: 0
+    hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    remainingUses: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    defense: 0
+    value: 0
+    hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    remainingUses: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    defense: 0
+    value: 0
+    hasBeenRandomized: 0
+  - name: 
+    item: {fileID: 0}
+    currentStackSize: 1
+    remainingUses: 1
+    damage: 0
+    accuracyModifier: 0
+    blockPower: 0
+    defense: 0
+    value: 0
+    hasBeenRandomized: 0
   startingEquipment:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -1604,8 +1648,8 @@ MonoBehaviour:
   mainInventory:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
-      amountOfSlots: 20
-      maxSlotsPerRow: 10
+      amountOfSlots: 96
+      maxSlotsPerRow: 12
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}

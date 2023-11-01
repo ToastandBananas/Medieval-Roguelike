@@ -77,6 +77,7 @@ namespace InventorySystem
             loadedProjectile = null;
         }
 
+        // Used in animation keyframe
         public override IEnumerator ResetToIdleRotation()
         {
             Quaternion defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
@@ -111,7 +112,7 @@ namespace InventorySystem
         {
             float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition, targetGridPosition);
             float distanceY = unit.GridPosition.y - targetGridPosition.y;
-            float rotateFactor = 5f;
+            float rotateFactor = 5f; // The degree to which we rotate the weapon per 1 distance
 
             float zRotation = distanceXZ * rotateFactor;
             zRotation += distanceY * rotateFactor;

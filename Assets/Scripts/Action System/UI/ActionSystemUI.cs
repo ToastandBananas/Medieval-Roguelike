@@ -110,7 +110,11 @@ namespace ActionSystem
                     actionSlotDraggedFrom = highlightedActionSlot;
                     actionSlotDraggedFrom.HideSlot();
 
-                    draggedActionImage.sprite = highlightedActionSlot.actionType.ActionIcon;
+                    if (highlightedActionSlot is ItemActionBarSlot)
+                        draggedActionImage.sprite = highlightedActionSlot.ItemActionBarSlot.itemData.Item.HotbarSprite(highlightedActionSlot.ItemActionBarSlot.itemData);
+                    else
+                        draggedActionImage.sprite = highlightedActionSlot.actionType.ActionIcon;
+
                     draggedActionImage.transform.position = Input.mousePosition;
                     draggedActionImage.enabled = true;
                 }

@@ -63,7 +63,7 @@ namespace InventorySystem
         public float Weight => weight;
         public int MaxStackSize => maxStackSize;
         public virtual Sprite InventorySprite(ItemData itemData = null) => inventorySprite;
-        public Sprite HotbarSprite => hotbarSprite;
+        public Sprite HotbarSprite(ItemData itemData) => hotbarSprite == null ? InventorySprite(itemData) : hotbarSprite;
 
         public Vector2Int ValueRange => valueRange;
 
@@ -140,6 +140,10 @@ namespace InventorySystem
 
         public Wearable Wearable => this as Wearable;
 
+        public WearableContainer WearableContainer => this as WearableContainer;
+
         public Quiver Quiver => this as Quiver;
+
+        public Belt Belt => this as Belt;
     }
 }

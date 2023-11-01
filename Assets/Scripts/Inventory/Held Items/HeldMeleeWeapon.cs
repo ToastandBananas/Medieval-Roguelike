@@ -7,26 +7,29 @@ namespace InventorySystem
 {
     public class HeldMeleeWeapon : HeldItem
     {
+        readonly float defaultAttackTransitionTime = 0.1667f;
+        readonly float defaultBlockTransitionTime = 0.33f;
+
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Determine attack animation based on melee weapon type
             if (this == unit.unitMeshManager.rightHeldItem)
             {
                 if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.Play("DefaultAttack_2H");
+                    anim.CrossFadeInFixedTime("DefaultAttack_2H", defaultAttackTransitionTime);
                 else
-                    anim.Play("DefaultAttack_1H_R");
+                    anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
 
                 if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.itemData.Item is Shield)
-                    unit.unitMeshManager.leftHeldItem.anim.Play("MeleeAttack_OtherHand_L");
+                    unit.unitMeshManager.leftHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
             }
             else if (this == unit.unitMeshManager.leftHeldItem)
             {
                 if (itemData.Item.Weapon.IsTwoHanded == false)
-                    anim.Play("DefaultAttack_1H_L");
+                    anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
 
                 if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.itemData.Item is Shield)
-                    unit.unitMeshManager.rightHeldItem.anim.Play("MeleeAttack_OtherHand_R");
+                    unit.unitMeshManager.rightHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
             }
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
@@ -36,7 +39,7 @@ namespace InventorySystem
         public void DoSwipeAttack(GridPosition targetGridPosition)
         {
             // Play the Swipe animation
-            anim.Play("SwipeAttack_2H");
+            anim.CrossFadeInFixedTime("SwipeAttack_2H", defaultAttackTransitionTime);
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
             StartCoroutine(RotateWeaponTowardsTarget(targetGridPosition));
@@ -59,12 +62,12 @@ namespace InventorySystem
             if (unit.unitMeshManager.rightHeldItem == this)
             {
                 if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.Play("RaiseWeapon_2H");
+                    anim.CrossFadeInFixedTime("RaiseWeapon_2H", defaultBlockTransitionTime);
                 else
-                    anim.Play("RaiseWeapon_1H_R");
+                    anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", defaultBlockTransitionTime);
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-                anim.Play("RaiseWeapon_1H_L");
+                anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", defaultBlockTransitionTime);
         }
 
         public void LowerWeapon()

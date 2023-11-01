@@ -102,6 +102,8 @@ namespace ActionSystem
 
         public ActionBarSection ActionBarSection => actionBarSection;
 
+        public ItemActionBarSlot ItemActionBarSlot => this as ItemActionBarSlot;
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             ActionSystemUI.SetHighlightedActionSlot(this);

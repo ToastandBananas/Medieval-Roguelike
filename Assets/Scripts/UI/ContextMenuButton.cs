@@ -261,20 +261,7 @@ namespace GeneralUI
                 InventoryUI.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.ParentSlot().GetItemData().Item);
             }
             else if (ContextMenu.targetInteractable != null)
-            {
                 UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
-                /*LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
-                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
-                    UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
-                else
-                {
-                    UnitManager.player.unitActionHandler.ForceQueueAP(100); 
-                    if (UnitManager.player.unitActionHandler.turnAction.IsFacingTarget(looseContainerItem.GridPosition()) == false)
-                        UnitManager.player.unitActionHandler.turnAction.RotateTowardsPosition(looseContainerItem.GridPosition().WorldPosition, false, UnitManager.player.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
-
-                    InventoryUI.ShowContainerUI(looseContainerItem.ContainerInventoryManager, looseContainerItem.ItemData.Item);
-                }*/
-            }
             else if (ContextMenu.targetUnit != null)
                 UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetUnit.unitInteractable);
 
@@ -341,6 +328,14 @@ namespace GeneralUI
             if (ContextMenu.targetSlot != null)
                 itemActionBarSlot.SetupAction(ContextMenu.targetSlot.GetItemData());
 
+            ContextMenu.DisableContextMenu();
+        }
+
+        public void SetupRemoveFromHotbarButton(ItemActionBarSlot itemActionBarSlot) => SetupButton("Remove from Hotbar", delegate { RemoveItemFromHotbar(itemActionBarSlot); });
+
+        void RemoveItemFromHotbar(ItemActionBarSlot itemActionBarSlot)
+        {
+            itemActionBarSlot.ResetButton();
             ContextMenu.DisableContextMenu();
         }
 

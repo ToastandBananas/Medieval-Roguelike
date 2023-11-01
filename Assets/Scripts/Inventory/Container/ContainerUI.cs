@@ -11,6 +11,7 @@ namespace InventorySystem
         [SerializeField] TextMeshProUGUI takeAllText;
         [SerializeField] RectTransform rectTransform;
         [SerializeField] HorizontalLayoutGroup horizontalLayoutGroup;
+        [SerializeField] ContainerUIDragHandle dragHandle;
 
         [Header("Container Slot Groups")]
         [SerializeField] ContainerSlotGroup mainContainerSlotGroup;
@@ -76,6 +77,7 @@ namespace InventorySystem
                 containerInventoryManager.SubInventories[i].RemoveSlots();
             }
 
+            dragHandle.Reset();
             containerInventoryManager = null;
             gameObject.SetActive(false);
         }

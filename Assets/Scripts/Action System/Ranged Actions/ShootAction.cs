@@ -484,7 +484,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
+        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Special;
 
         public override bool IsInterruptable() => false;
 

@@ -9,7 +9,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 
 namespace InventorySystem
 {
-    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver }
+    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Amulet, Ring1, Ring2 }
     public enum WeaponSet { One = 1, Two = 2 }
 
     public class UnitEquipment : MonoBehaviour
@@ -18,7 +18,7 @@ namespace InventorySystem
 
         [SerializeField] ItemData[] equippedItemDatas = new ItemData[Enum.GetValues(typeof(EquipSlot)).Length];
 
-        [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back", "Quiver" })]
+        [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back", "Quiver", "Belt", "Amulet", "Ring 1", "Ring 2" })]
         [SerializeField] Equipment[] startingEquipment = new Equipment[Enum.GetValues(typeof(EquipSlot)).Length];
 
         public List<EquipmentSlot> slots { get; private set; }
@@ -671,22 +671,36 @@ namespace InventorySystem
 
         public bool EquipSlotHasItem(EquipSlot equipSlot) => EquipSlotHasItem((int)equipSlot);
 
-        public EquipSlot GetOppositeWeaponEquipSlot(EquipSlot equipSlot)
+        public EquipSlot GetOppositeWeaponEquipSlot(EquipSlot weaponEquipSlot)
         {
-            if (equipSlot != EquipSlot.LeftHeldItem1 && equipSlot != EquipSlot.RightHeldItem1 && equipSlot != EquipSlot.LeftHeldItem2 && equipSlot != EquipSlot.RightHeldItem2)
+            if (weaponEquipSlot != EquipSlot.LeftHeldItem1 && weaponEquipSlot != EquipSlot.RightHeldItem1 && weaponEquipSlot != EquipSlot.LeftHeldItem2 && weaponEquipSlot != EquipSlot.RightHeldItem2)
             {
-                Debug.LogWarning($"{equipSlot} is not a weapon slot...");
-                return equipSlot;
+                Debug.LogWarning($"{weaponEquipSlot} is not a weapon slot...");
+                return weaponEquipSlot;
             }
 
-            if (equipSlot == EquipSlot.LeftHeldItem1)
+            if (weaponEquipSlot == EquipSlot.LeftHeldItem1)
                 return EquipSlot.RightHeldItem1;
-            else if (equipSlot == EquipSlot.RightHeldItem1)
+            else if (weaponEquipSlot == EquipSlot.RightHeldItem1)
                 return EquipSlot.LeftHeldItem1;
-            else if (equipSlot == EquipSlot.LeftHeldItem2)
+            else if (weaponEquipSlot == EquipSlot.LeftHeldItem2)
                 return EquipSlot.RightHeldItem2;
             else
                 return EquipSlot.LeftHeldItem2;
+        }
+
+        public EquipSlot GetOppositeRingEquipSlot(EquipSlot ringEquipSlot)
+        {
+            if (ringEquipSlot != EquipSlot.Ring1 && ringEquipSlot != EquipSlot.Ring2)
+            {
+                Debug.LogWarning($"{ringEquipSlot} is not a ring slot...");
+                return ringEquipSlot;
+            }
+
+            if (ringEquipSlot == EquipSlot.Ring1)
+                return EquipSlot.Ring2;
+            else
+                return EquipSlot.Ring1;
         }
 
         EquipmentSlot GetEquipmentSlotFromIndex(int index)
@@ -1025,6 +1039,8 @@ namespace InventorySystem
             || (RangedWeaponEquipped() && HasValidAmmunitionEquipped() == false);
 
         public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
+
+        public static bool IsRingEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
 
         public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Backpack;
 

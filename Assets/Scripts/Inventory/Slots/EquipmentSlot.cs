@@ -101,12 +101,16 @@ namespace InventorySystem
                         inventoryItem.SetupIconSprite(false);
                         oppositeWeaponSlot.inventoryItem.SetupIconSprite(true);
                     }
+
+                    oppositeWeaponSlot.EnableSlotImage();
                 }
                 else
                     inventoryItem.SetupIconSprite(true);
             }
             else
                 inventoryItem.SetupIconSprite(true);
+
+            EnableSlotImage();
         }
 
         public bool IsHeldItemSlot() => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
