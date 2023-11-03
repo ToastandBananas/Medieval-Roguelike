@@ -10,36 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8ab3fb55cd43b7147a6cc6dc891ebe5a, type: 3}
-  m_Name: Backpack - Huge
+  m_Name: Backpack - Travelers
   m_EditorClassIdentifier: 
-  name: Huge Backpack
+  name: Travelers Backpack
   pluralName: 
-  description: A pack mule's dream.
+  description: A rugged and versatile backpack designed for adventurous souls, featuring
+    ample storage space and adjustable straps to keep your essentials organized on
+    the journey.
   itemType: 140
   mainMaterial: 23
   itemSize: 4
   width: 2
   height: 3
-  weight: 8
+  weight: 4
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: dca00f65a9cf133448d7ed65aa95783d, type: 3}
   hotbarSprite: {fileID: 21300000, guid: f10d3e9bc70031f46b5319ff19e49bf5, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  meshes:
-  - {fileID: -2432090755550338912, guid: 3436092d0c2edcb47befd46f8eca320a, type: 3}
-  meshRendererMaterials:
+  pickupMesh: {fileID: -2432090755550338912, guid: 3436092d0c2edcb47befd46f8eca320a,
+    type: 3}
+  pickupMeshRendererMaterials:
   - {fileID: 2100000, guid: a7d38616a9cd49248a9a36e0a68ab156, type: 2}
-  pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterials: []
   equipSlot: 9
   actionTypes: []
-  meshes_Female: []
-  meshRendererMaterials_Female: []
   inventorySections:
-  - amountOfSlots: 20
-    maxSlotsPerRow: 5
+  - amountOfSlots: 16
+    maxSlotsPerRow: 4
     slotWidth: 1
     slotHeight: 1
     placeholderSprite: {fileID: 0}
@@ -52,24 +50,6 @@ MonoBehaviour:
     allowedItemTypes: 
   - amountOfSlots: 4
     maxSlotsPerRow: 2
-    slotWidth: 1
-    slotHeight: 1
-    placeholderSprite: {fileID: 0}
-    allowedItemTypes: 
-  - amountOfSlots: 6
-    maxSlotsPerRow: 2
-    slotWidth: 1
-    slotHeight: 1
-    placeholderSprite: {fileID: 0}
-    allowedItemTypes: 
-  - amountOfSlots: 6
-    maxSlotsPerRow: 2
-    slotWidth: 1
-    slotHeight: 1
-    placeholderSprite: {fileID: 0}
-    allowedItemTypes: 
-  - amountOfSlots: 5
-    maxSlotsPerRow: 5
     slotWidth: 1
     slotHeight: 1
     placeholderSprite: {fileID: 0}

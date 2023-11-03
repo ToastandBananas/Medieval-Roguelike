@@ -138,7 +138,7 @@ namespace GeneralUI
                     if (ContextMenu.targetSlot is ContainerEquipmentSlot)
                     {
                         ContainerEquipmentSlot containerSlot = ContextMenu.targetSlot as ContainerEquipmentSlot;
-                        if ((containerSlot.EquipSlot != EquipSlot.Quiver || containerSlot.GetItemData().Item is Quiver) && containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
+                        if (containerSlot.containerInventoryManager.ContainsAnyItems()) // We always will drop equipped containers if they have items in them, as they can't go in the inventory
                             stringBuilder.Append(" & Drop");
                     }
 
@@ -315,7 +315,7 @@ namespace GeneralUI
                     DropItemManager.DropItem(targetEquipmentSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
                 }
                 else if (ContextMenu.targetSlot.InventoryItem.myInventory != null)
-                    DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.GetMyUnit(), ContextMenu.targetSlot.InventoryItem.myInventory, ContextMenu.targetSlot.GetItemData());
+                    DropItemManager.DropItem(ContextMenu.targetSlot.InventoryItem.myInventory, ContextMenu.targetSlot.InventoryItem.GetMyUnit(), ContextMenu.targetSlot.GetItemData());
             }
 
             ContextMenu.DisableContextMenu();

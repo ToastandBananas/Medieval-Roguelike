@@ -43,10 +43,6 @@ namespace InventorySystem
         [Header("Value")]
         [SerializeField] Vector2Int valueRange;
 
-        [Header("Equipped Mesh")]
-        [SerializeField] Mesh[] meshes;
-        [SerializeField] Material[] meshRendererMaterials;
-
         [Header("Pickup Mesh")]
         [SerializeField] Mesh pickupMesh;
         [SerializeField] Material[] pickupMeshRendererMaterials;
@@ -66,9 +62,6 @@ namespace InventorySystem
         public Sprite HotbarSprite(ItemData itemData) => hotbarSprite == null ? InventorySprite(itemData) : hotbarSprite;
 
         public Vector2Int ValueRange => valueRange;
-
-        public Mesh[] Meshes => meshes;
-        public Material[] MeshRendererMaterials => meshRendererMaterials;
 
         public Mesh PickupMesh => pickupMesh;
         public Material[] PickupMeshRendererMaterials => pickupMeshRendererMaterials;
@@ -139,6 +132,8 @@ namespace InventorySystem
         public RangedWeapon RangedWeapon => this as RangedWeapon;
 
         public Wearable Wearable => this as Wearable;
+
+        public VisibleWearable VisibleWearable => this as VisibleWearable;
 
         public WearableContainer WearableContainer => this as WearableContainer;
 

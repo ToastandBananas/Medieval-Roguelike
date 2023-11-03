@@ -9,12 +9,12 @@ namespace InventorySystem
 {
     public class DropItemManager : MonoBehaviour
     {
-        public static void DropItem(Unit unit, Inventory inventory, ItemData itemDataToDrop)
+        public static void DropItem(Inventory inventory, Unit unit, ItemData itemDataToDrop)
         {
-            if (itemDataToDrop.Item == null)
+            if (itemDataToDrop == null || itemDataToDrop.Item == null)
             {
                 Debug.LogWarning("Item you're trying to drop from inventory is null...");
-                if (inventory != null)
+                if (inventory != null && itemDataToDrop != null)
                     inventory.RemoveItem(itemDataToDrop);
                 return;
             }
@@ -67,10 +67,10 @@ namespace InventorySystem
                 return;
 
             LooseItem looseItem;
-            if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack)
-                looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
-            else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
+            if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
                 looseItem = LooseItemPool.Instance.GetLooseQuiverItemFromPool();
+            else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is WearableContainer)
+                looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
             else
                 looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
 
@@ -81,7 +81,7 @@ namespace InventorySystem
                 SetupHeldItemDrop(unitEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
-            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver))
+            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver) || (equipSlot == EquipSlot.Belt))
             {
                 SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
                 itemsContainerInventoryManager = looseItem.LooseContainerItem.ContainerInventoryManager;
@@ -269,8 +269,14 @@ namespace InventorySystem
                 if (unitEquipment.MyUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
-                LooseContainerItem looseContainerItem = looseItem as LooseContainerItem;
-                looseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BackpackInventoryManager);
+                looseItem.LooseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BackpackInventoryManager);
+            }
+            else if (equipSlot == EquipSlot.Belt)
+            {
+                if (unitEquipment.MyUnit.BeltInventoryManager.ParentInventory.slotVisualsCreated)
+                    InventoryUI.GetContainerUI(unitEquipment.MyUnit.BeltInventoryManager).CloseContainerInventory();
+
+                looseItem.LooseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BeltInventoryManager);
             }
             else if (equipSlot == EquipSlot.Quiver)
             {

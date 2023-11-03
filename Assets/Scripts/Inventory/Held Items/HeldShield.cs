@@ -49,7 +49,7 @@ namespace InventorySystem
         {
             base.SetupHeldItem(itemData, unit, equipSlot);
 
-            meshCollider.sharedMesh = itemData.Item.Meshes[0];
+            meshCollider.sharedMesh = itemData.Item.HeldEquipment.Meshes[0];
         }
 
         public MeshCollider MeshCollider => meshCollider;

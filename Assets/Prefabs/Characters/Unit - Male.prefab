@@ -630,11 +630,68 @@ Transform:
   m_Children:
   - {fileID: 1399477393502689192}
   - {fileID: 340260939284052829}
+  - {fileID: 6946962115030513932}
   - {fileID: 5433956466646616075}
   - {fileID: 5482159175935672585}
   m_Father: {fileID: 1377663264827766488}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3527360981528888809
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6946962115030513932}
+  - component: {fileID: 253173068176739076}
+  m_Layer: 3
+  m_Name: Belt Inventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6946962115030513932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3527360981528888809}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6452321778511306523}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &253173068176739076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3527360981528888809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentInventory:
+    myUnit: {fileID: 4471245059765168945}
+    inventoryLayout:
+      amountOfSlots: 50
+      maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
+    itemDatas: []
+    looseItem: {fileID: 0}
+  subInventories: []
 --- !u!1 &4484332345911659031
 GameObject:
   m_ObjectHideFlags: 0
@@ -808,7 +865,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6452321778511306523}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &504428574042382846
 MonoBehaviour:
@@ -1472,7 +1529,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6452321778511306523}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &478177491740138796
 MonoBehaviour:
@@ -1656,6 +1713,7 @@ MonoBehaviour:
       allowedItemTypes: 
     itemDatas: []
   backpackInventoryManager: {fileID: 2430282970964941548}
+  beltInventoryManager: {fileID: 253173068176739076}
   quiverInventoryManager: {fileID: 478177491740138796}
 --- !u!1 &9200357820980764731
 GameObject:

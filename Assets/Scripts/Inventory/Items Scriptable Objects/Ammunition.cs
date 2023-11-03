@@ -23,9 +23,9 @@ namespace InventorySystem
         [Header("Quiver Sprites")]
         [SerializeField] Sprite[] quiverSprites;
 
-        [Header("Loose Quiver Mesh")]
-        [SerializeField] Mesh looseQuiverMesh;
-        [SerializeField] Material looseQuiverMaterial;
+        [Header("Inside Loose Quiver Mesh")]
+        [SerializeField] Mesh insideLooseQuiverMesh;
+        [SerializeField] Material insideLooseQuiverMaterial;
 
         [Header("Collider Info")]
         [SerializeField] Vector3 capsuleColliderCenter;
@@ -56,8 +56,8 @@ namespace InventorySystem
         public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
         public Sprite[] QuiverSprites => quiverSprites;
 
-        public Mesh LooseQuiverMesh => looseQuiverMesh;
-        public Material LooseQuiverMaterial => looseQuiverMaterial;
+        public Mesh InsideLooseQuiverMesh => insideLooseQuiverMesh;
+        public Material InsideLooseQuiverMaterial => insideLooseQuiverMaterial;
 
         public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
         public float CapsuleColliderRadius => capsuleColliderRadius;

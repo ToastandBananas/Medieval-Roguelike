@@ -197,7 +197,7 @@ namespace InventorySystem
             if (validSlot && InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.parentSlotDraggedFrom as ContainerEquipmentSlot;
-                if (InventoryUI.DraggedItem.itemData.Item is Quiver && containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
+                if (containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
                     validSlot = false;
             }
 

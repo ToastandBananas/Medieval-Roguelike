@@ -27,12 +27,10 @@ MonoBehaviour:
   maxUses: 4
   isUsable: 1
   valueRange: {x: 1, y: 8}
-  meshes:
-  - {fileID: -2432090755550338912, guid: fa96424fc31f9a442973f5a83440a638, type: 3}
-  meshRendererMaterials:
+  pickupMesh: {fileID: -2432090755550338912, guid: fa96424fc31f9a442973f5a83440a638,
+    type: 3}
+  pickupMeshRendererMaterials:
   - {fileID: 2100000, guid: 0308f509e465f7447b991e65537f751a, type: 2}
-  pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterials: []
   itemChangeThresholds:
   - thresholdPercentage: 50
     newItem: {fileID: 11400000}

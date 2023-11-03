@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public class Armor : Wearable
+    public abstract class Armor : VisibleWearable
     {
         [Header("Armor Stats")]
         [SerializeField] Vector2Int defenseRange;

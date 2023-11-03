@@ -193,24 +193,8 @@ namespace InteractableObjects
 
                 meshRenderer.materials = materials;
             }
-            else if (itemData.Item.Meshes[0] != null)
-            {
-                meshFilter.mesh = itemData.Item.Meshes[0];
-                meshCollider.sharedMesh = itemData.Item.Meshes[0];
-
-                Material[] materials = meshRenderer.materials;
-                for (int i = 0; i < materials.Length; i++)
-                {
-                    if (i > itemData.Item.MeshRendererMaterials.Length - 1)
-                        materials[i] = itemData.Item.MeshRendererMaterials[itemData.Item.MeshRendererMaterials.Length - 1];
-                    else
-                        materials[i] = itemData.Item.MeshRendererMaterials[i];
-                }
-
-                meshRenderer.materials = materials;
-            }
             else
-                Debug.LogWarning($"Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
+                Debug.LogWarning($"Pickup Mesh info has not been set on the ScriptableObject for: {itemData.Item.name}");
         }
 
         public LooseContainerItem LooseContainerItem => this as LooseContainerItem;
@@ -229,10 +213,7 @@ namespace InteractableObjects
             if (itemData == null || itemData.Item == null)
                 return;
 
-            if (itemData.Item.PickupMesh != null)
-                meshFilter.mesh = itemData.Item.PickupMesh;
-            else
-                meshFilter.mesh = itemData.Item.Meshes[0];
+            meshFilter.mesh = itemData.Item.PickupMesh;
         }
 
         public void HideMeshRenderer() => meshFilter.mesh = null;

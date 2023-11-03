@@ -9,6 +9,7 @@ namespace InventorySystem
         [SerializeField] Unit unit;
         [SerializeField] Inventory mainInventory;
         [SerializeField] ContainerInventoryManager backpackInventoryManager;
+        [SerializeField] ContainerInventoryManager beltInventoryManager;
         [SerializeField] ContainerInventoryManager quiverInventoryManager;
 
         void Awake()
@@ -25,14 +26,13 @@ namespace InventorySystem
 
             if (unit.UnitEquipment != null)
             {
-                Inventory itemDatasInventory = itemData.MyInventory;
-                if (itemData.Item is Ammunition && unit.UnitEquipment != null && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
+                if (itemData.Item is Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
                 {
                     if (unit.UnitEquipment.slotVisualsCreated)
                         unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
-                    if (itemDatasInventory != null && itemDatasInventory is ContainerInventory && itemDatasInventory.ContainerInventory.LooseItem != null && itemDatasInventory.ContainerInventory.LooseItem is LooseQuiverItem)
-                        itemDatasInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+                    if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory && itemData.MyInventory.ContainerInventory.LooseItem != null && itemData.MyInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                        itemData.MyInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
                     return true;
                 }
@@ -43,6 +43,9 @@ namespace InventorySystem
 
             if (unit.UnitEquipment != null)
             {
+                if (beltInventoryManager != null && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
+                    return true;
+
                 if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
                     return true;
             }
@@ -124,7 +127,7 @@ namespace InventorySystem
         }
 
         public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;
-
+        public ContainerInventoryManager BeltInventoryManager => beltInventoryManager;
         public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
     }
 }

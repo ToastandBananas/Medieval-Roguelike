@@ -157,6 +157,8 @@ namespace InventorySystem
                 ContainerInventoryManager unequippedContainerInventoryManager = null;
                 if (itemDataUnequipping.Item is Backpack)
                     unequippedContainerInventoryManager = myUnit.BackpackInventoryManager;
+                else if (itemDataUnequipping.Item is Belt)
+                    unequippedContainerInventoryManager = myUnit.BeltInventoryManager;
                 else if (itemDataUnequipping.Item is Quiver)
                     unequippedContainerInventoryManager = myUnit.QuiverInventoryManager;
 
@@ -209,6 +211,11 @@ namespace InventorySystem
                     if (backpackSlot.GetItemData().Item is Backpack)
                         myUnit.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
                 }
+                else if (targetEquipSlot == EquipSlot.Belt)
+                {
+                    ContainerEquipmentSlot beltSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
+                    myUnit.BeltInventoryManager.SwapInventories(beltSlot.containerInventoryManager);
+                }
             }
             else if (ContextMenu.targetSlot != null && ContextMenu.targetSlot is ContainerEquipmentSlot && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != this)
             {
@@ -234,6 +241,14 @@ namespace InventorySystem
                         UnitManager.player.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
                     }
                 }
+                else if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt)
+                {
+                    ContainerEquipmentSlot beltSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
+                    if (beltSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                        InventoryUI.GetContainerUI(beltSlot.containerInventoryManager).CloseContainerInventory();
+
+                    UnitManager.player.BeltInventoryManager.SwapInventories(beltSlot.containerInventoryManager);
+                }
             }
             else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
             {
@@ -249,6 +264,8 @@ namespace InventorySystem
                 }
                 else if (targetEquipSlot == EquipSlot.Back)
                     UnitManager.player.BackpackInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
+                else if (targetEquipSlot == EquipSlot.Belt)
+                    UnitManager.player.BeltInventoryManager.SwapInventories(looseContainerItem.ContainerInventoryManager);
             }
         }
 
@@ -399,6 +416,8 @@ namespace InventorySystem
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Backpack)
                         itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.BackpackInventoryManager;
+                    else if (itemDataToRemove.Item is Belt)
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Quiver)
                         itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.QuiverInventoryManager;
 
@@ -430,6 +449,8 @@ namespace InventorySystem
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Backpack)
                         itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.BackpackInventoryManager;
+                    else if (itemDataToRemove.Item is Belt)
+                        itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Quiver)
                         itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.QuiverInventoryManager;
 
@@ -535,6 +556,8 @@ namespace InventorySystem
                     ContainerEquipmentSlot containerEquipmentSlot = slots[i] as ContainerEquipmentSlot;
                     if (containerEquipmentSlot.EquipSlot == EquipSlot.Back)
                         containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.UnitEquipment.MyUnit.BackpackInventoryManager);
+                    else if (containerEquipmentSlot.EquipSlot == EquipSlot.Belt)
+                        containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.UnitEquipment.MyUnit.BeltInventoryManager);
                     else if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)
                         containerEquipmentSlot.SetContainerInventoryManager(containerEquipmentSlot.UnitEquipment.MyUnit.QuiverInventoryManager);
                 }
@@ -778,7 +801,7 @@ namespace InventorySystem
                 return;
 
             // We only show meshes for these types of equipment:
-            if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
+            if (IsHeldItemEquipSlot(equipSlot) == false && itemData.Item is VisibleWearable == false)
                 return;
 
             if (EquipSlotIsFull(equipSlot) == false || itemData == null || itemData.Item == null)
@@ -804,7 +827,7 @@ namespace InventorySystem
                     myUnit.unitActionHandler.SetDefaultSelectedAction();
             }
             else
-                myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (Wearable)itemData.Item);
+                myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (VisibleWearable)itemData.Item);
         }
 
         public void RemoveEquipmentMesh(EquipSlot equipSlot)
@@ -1116,11 +1139,7 @@ namespace InventorySystem
             for (int i = 0; i < slots.Count; i++)
             {
                 if (slots[i].EquipSlot == equipSlot)
-                {
-                    if (slots[i] is ContainerEquipmentSlot)
-                        return slots[i] as ContainerEquipmentSlot;
                     return slots[i];
-                }
             }
             return null;
         }

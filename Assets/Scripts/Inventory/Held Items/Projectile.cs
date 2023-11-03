@@ -55,15 +55,15 @@ namespace InventorySystem
 
             speed = ammunitionItem.Speed;
 
-            meshFilter.mesh = ammunitionItem.Meshes[0];
+            meshFilter.mesh = ammunitionItem.PickupMesh;
 
             Material[] materials = meshRenderer.materials;
             for (int i = 0; i < materials.Length; i++)
             {
-                if (i > ammunitionItem.MeshRendererMaterials.Length - 1)
+                if (i > ammunitionItem.PickupMeshRendererMaterials.Length - 1)
                     materials[i] = null;
                 else
-                    materials[i] = ammunitionItem.MeshRendererMaterials[i];
+                    materials[i] = ammunitionItem.PickupMeshRendererMaterials[i];
             }
 
             meshRenderer.materials = materials;

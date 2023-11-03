@@ -28,15 +28,17 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 100, y: 300}
+  pickupMesh: {fileID: 7111655374037333773, guid: 8885308fd742f9b4a8cffc75dcf0ae7f,
+    type: 3}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
+  equipSlot: 1
+  actionTypes:
+  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   meshes:
   - {fileID: 7111655374037333773, guid: 8885308fd742f9b4a8cffc75dcf0ae7f, type: 3}
   meshRendererMaterials:
   - {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
-  pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterials: []
-  equipSlot: 1
-  actionTypes:
-  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   idlePosition_Left: {x: 0.23, y: 0, z: -0.23}
   idlePosition_Right: {x: -0.23, y: 0, z: -0.23}
   idleRotation_Left: {x: 0, y: 90, z: 0}

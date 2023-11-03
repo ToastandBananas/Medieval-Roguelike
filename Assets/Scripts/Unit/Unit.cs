@@ -95,7 +95,7 @@ namespace UnitSystem
         /*void Update()
         {
             if (isMyTurn && unitActionHandler.isPerformingAction == false)
-                unitActionHandler.TakeTurn();
+                unitActionHandler.SkipTurn();
         }*/
 
         public void UpdateGridPosition()
@@ -154,6 +154,7 @@ namespace UnitSystem
 
         public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
         public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;
+        public ContainerInventoryManager BeltInventoryManager => unitInventoryManager.BeltInventoryManager;
         public ContainerInventoryManager QuiverInventoryManager => unitInventoryManager.QuiverInventoryManager;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;

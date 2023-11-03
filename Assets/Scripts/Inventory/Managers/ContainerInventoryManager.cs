@@ -71,12 +71,12 @@ namespace InventorySystem
 
         public bool TryAddItem(ItemData itemData, Unit unitAdding)
         {
-            if (parentInventory.TryAddItem(itemData, unitAdding))
+            if (parentInventory.InventoryLayout.AmountOfSlots > 0 && parentInventory.TryAddItem(itemData, unitAdding))
                 return true;
 
             for (int i = 0; i < subInventories.Length; i++)
             {
-                if (subInventories[i].TryAddItem(itemData, unitAdding))
+                if (subInventories[i].InventoryLayout.AmountOfSlots > 0 && subInventories[i].TryAddItem(itemData, unitAdding))
                     return true;
             }
             return false;
@@ -85,7 +85,10 @@ namespace InventorySystem
         public void SwapInventories(ContainerInventoryManager containerInventoryManagerToCopy)
         {
             parentInventory.RemoveSlots();
-            parentInventory.RemoveSlots();
+            for (int i = 0; i < subInventories.Length; i++)
+            {
+                subInventories[i].RemoveSlots();
+            }
 
             ContainerInventory currentParentInventory = parentInventory;
             ContainerInventory[] currentSubInventories = subInventories;

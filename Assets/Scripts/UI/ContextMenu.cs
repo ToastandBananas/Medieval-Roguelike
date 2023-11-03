@@ -269,7 +269,7 @@ namespace GeneralUI
                 if (targetLooseItem is LooseContainerItem)
                 {
                     LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
-                    if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
+                    if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // We can't put a container inside an inventory if it has items inside of it
                         return;
                 }
 
@@ -324,7 +324,7 @@ namespace GeneralUI
                 if (targetLooseItem is LooseContainerItem)
                 {
                     LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
-                    if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems())
+                    if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // We can't put containers with items inside of them into an inventory
                         return;
                 }
 
@@ -339,7 +339,7 @@ namespace GeneralUI
 
         static void CreateOpenContainerButton()
         {
-            if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && (targetSlot.GetItemData().Item is Backpack || targetSlot.GetItemData().Item is Quiver))
+            if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && targetSlot.GetItemData().Item is WearableContainer)
             {
                 ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
                 if (containerEquipmentSlot.containerInventoryManager == null)
@@ -347,6 +347,9 @@ namespace GeneralUI
                     Debug.LogWarning($"{containerEquipmentSlot.name} does not have an assigned ContainerInventoryManager...");
                     return;
                 }
+
+                if (containerEquipmentSlot.GetItemData().Item.WearableContainer.HasAnInventory() == false)
+                    return;
 
                 if (containerEquipmentSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
                 {
@@ -356,10 +359,13 @@ namespace GeneralUI
             }
             else if (targetInteractable != null && targetInteractable is LooseContainerItem)
             {
+                LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+                if (looseContainerItem.ItemData.Item is WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
+                    return;
+
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
                     return;
 
-                LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
                 if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
                 {
                     CreateCloseContainerButton();

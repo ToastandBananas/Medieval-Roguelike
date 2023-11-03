@@ -5,8 +5,19 @@ namespace InventorySystem
     public abstract class WearableContainer : Wearable
     {
         [Header("Inventory Layout")]
-        [SerializeField] InventoryLayout[] inventorySections = new InventoryLayout[1];
+        [SerializeField] InventoryLayout[] inventorySections;
 
-        public InventoryLayout[] InventorySections => inventorySections;
+        public InventoryLayout[] InventorySections => inventorySections; 
+        
+        public bool HasAnInventory()
+        {
+            for (int i = 0; i < InventorySections.Length; i++)
+            {
+                if (InventorySections[i].AmountOfSlots > 0)
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

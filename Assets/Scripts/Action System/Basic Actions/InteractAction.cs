@@ -61,7 +61,9 @@ namespace ActionSystem
             else if (targetInteractable is LooseContainerItem)
             {
                 LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
-                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems() == false)
+                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // If a LooseContainerItem has any items in its inventory, then the interaction will be to open it up and look inside, costing AP
+                    return 200; 
+                else
                     return 0;
             }
             else if (targetInteractable is LooseItem)

@@ -72,7 +72,7 @@ namespace ActionSystem
 
         public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
-            // Debug.Log(unit.name + " queues: " + action.name);
+            Debug.Log(unit.name + " queues: " + action.name);
             GridSystemVisual.HideGridVisual();
 
             if (unit.health.IsDead())

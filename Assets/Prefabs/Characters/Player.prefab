@@ -61,6 +61,7 @@ Transform:
   m_Children:
   - {fileID: 5211287562367492748}
   - {fileID: 1093891711875163702}
+  - {fileID: 6794389669553743547}
   - {fileID: 6705474999395802024}
   - {fileID: 2796106821343976387}
   m_Father: {fileID: 8220662913183796560}
@@ -198,7 +199,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3678734075053237888}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4966063475579553678
 MonoBehaviour:
@@ -689,6 +690,7 @@ MonoBehaviour:
       allowedItemTypes: 
     itemDatas: []
   backpackInventoryManager: {fileID: 7264128157382338334}
+  beltInventoryManager: {fileID: 3375556565810912619}
   quiverInventoryManager: {fileID: 1782432552993377815}
 --- !u!1 &3650739709268681387
 GameObject:
@@ -1523,6 +1525,62 @@ Transform:
   m_Father: {fileID: 6498372608485508665}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &8296843384026591742
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6794389669553743547}
+  - component: {fileID: 3375556565810912619}
+  m_Layer: 3
+  m_Name: Belt Inventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6794389669553743547
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8296843384026591742}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3678734075053237888}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3375556565810912619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8296843384026591742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentInventory:
+    myUnit: {fileID: 6440773195933579921}
+    inventoryLayout:
+      amountOfSlots: 20
+      maxSlotsPerRow: 10
+      slotWidth: 1
+      slotHeight: 1
+      placeholderSprite: {fileID: 0}
+      allowedItemTypes: 
+    itemDatas: []
+    looseItem: {fileID: 0}
+  subInventories: []
 --- !u!1 &8990909682710204417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1636,7 +1694,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3678734075053237888}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1782432552993377815
 MonoBehaviour:

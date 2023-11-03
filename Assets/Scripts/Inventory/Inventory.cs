@@ -135,7 +135,7 @@ namespace InventorySystem
                         SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
                 }
 
-                if (unitAdding != null && originalInventory != this)
+                if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
                     unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
                 return true;
@@ -277,7 +277,7 @@ namespace InventorySystem
                     InventoryUI.DisableDraggedItem();
             }
 
-            if (unitAdding != null && originalInventory != this)
+            if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
                 unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
             return true;
@@ -329,7 +329,7 @@ namespace InventorySystem
                         if (unitAdding != null)
                             unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                     }
-                    else // Otherwise, the Unit who has this item equipped can just remove it themselves
+                    else if (InventoryUI.lastInventoryInteractedWith != this) // Otherwise, the Unit who has this item equipped can just remove it themselves
                         InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
@@ -444,6 +444,7 @@ namespace InventorySystem
             else if (GetSlotCoordinateFromItemData(itemDataToRemove) != null)
                 GetSlotCoordinateFromItemData(itemDataToRemove).ClearItem();
 
+            itemDataToRemove.SetInventorySlotCoordinate(null);
             itemDatas.Remove(itemDataToRemove);
 
             if (this is ContainerInventory)

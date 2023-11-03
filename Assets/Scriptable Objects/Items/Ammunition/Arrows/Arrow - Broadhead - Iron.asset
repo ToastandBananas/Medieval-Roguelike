@@ -28,13 +28,11 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 0, y: 0}
-  meshes:
-  - {fileID: -2432090755550338912, guid: 764c7485f705dbc4db8f1e92ec6dcb1d, type: 3}
-  meshRendererMaterials:
+  pickupMesh: {fileID: -2432090755550338912, guid: 764c7485f705dbc4db8f1e92ec6dcb1d,
+    type: 3}
+  pickupMeshRendererMaterials:
   - {fileID: 2100000, guid: 69ccf7874fad05b4d998e3f8423bf61e, type: 2}
   - {fileID: 2100000, guid: 1d081e5b3f5fe624daa839561ca74752, type: 2}
-  pickupMesh: {fileID: 0}
-  pickupMeshRendererMaterials: []
   equipSlot: 10
   actionTypes: []
   itemChangeThresholds:
@@ -64,9 +62,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e2cee2610068a6e4fb5e2f4c1e1f4f0d, type: 3}
   - {fileID: 21300000, guid: 1626c6c220305cd458203b1e05af4cc2, type: 3}
   - {fileID: 21300000, guid: a9c131e4da78b99429925a15816588c7, type: 3}
-  looseQuiverMesh: {fileID: -2432090755550338912, guid: 73300c9f489b252418fd7488ad3e0cff,
+  insideLooseQuiverMesh: {fileID: -2432090755550338912, guid: 73300c9f489b252418fd7488ad3e0cff,
     type: 3}
-  looseQuiverMaterial: {fileID: 2100000, guid: aecc544f4b9fa2243a60916aaf1503f1, type: 2}
+  insideLooseQuiverMaterial: {fileID: 2100000, guid: aecc544f4b9fa2243a60916aaf1503f1,
+    type: 2}
   capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4

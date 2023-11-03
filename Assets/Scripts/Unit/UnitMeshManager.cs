@@ -130,7 +130,7 @@ namespace UnitSystem
             return null;
         }
 
-        public void SetupWearableMesh(EquipSlot equipSlot, Wearable wearable)
+        public void SetupWearableMesh(EquipSlot equipSlot, VisibleWearable wearable)
         {
             if (wearable == null)
                 return;
@@ -151,19 +151,19 @@ namespace UnitSystem
                 HideMesh(equipSlot);
         }
 
-        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Wearable wearable)
+        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, VisibleWearable wearable)
         {
             if (myUnit.Gender == Gender.Male)
             {
-                meshFilter.mesh = wearable.Meshes[0];
+                meshFilter.mesh = wearable.Meshes_Male[0];
 
                 Material[] materials = meshRenderer.materials;
                 for (int i = 0; i < materials.Length; i++)
                 {
-                    if (i > wearable.MeshRendererMaterials.Length - 1)
+                    if (i > wearable.MeshRendererMaterials_Male.Length - 1)
                         materials[i] = null;
                     else
-                        materials[i] = wearable.MeshRendererMaterials[i];
+                        materials[i] = wearable.MeshRendererMaterials_Male[i];
                 }
 
                 meshRenderer.materials = materials;
@@ -173,7 +173,7 @@ namespace UnitSystem
                 if (wearable.Meshes_Female.Length > 0)
                     meshFilter.mesh = wearable.Meshes_Female[0];
                 else
-                    meshFilter.mesh = wearable.Meshes[0];
+                    meshFilter.mesh = wearable.Meshes_Male[0];
 
                 Material[] materials = meshRenderer.materials;
                 for (int i = 0; i < materials.Length; i++)
@@ -187,10 +187,10 @@ namespace UnitSystem
                     }
                     else
                     {
-                        if (i > wearable.MeshRendererMaterials.Length - 1)
+                        if (i > wearable.MeshRendererMaterials_Male.Length - 1)
                             materials[i] = null;
                         else
-                            materials[i] = wearable.MeshRendererMaterials[i];
+                            materials[i] = wearable.MeshRendererMaterials_Male[i];
                     }
                 }
 

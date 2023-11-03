@@ -101,18 +101,18 @@ namespace InventorySystem
                     Material[] materials = meshRenderers[i].materials;
                     for (int j = 0; j < materials.Length; j++)
                     {
-                        if (j > itemData.Item.MeshRendererMaterials.Length - 1)
-                            materials[j] = itemData.Item.MeshRendererMaterials[itemData.Item.MeshRendererMaterials.Length - 1];
+                        if (j > itemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
+                            materials[j] = itemData.Item.HeldEquipment.MeshRendererMaterials[itemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
                         else
-                            materials[j] = itemData.Item.MeshRendererMaterials[j];
+                            materials[j] = itemData.Item.HeldEquipment.MeshRendererMaterials[j];
                     }
 
                     meshRenderers[i].materials = materials;
                 }
                 else // For items like the bow that consist of multiple meshes
-                    meshRenderers[i].material = itemData.Item.MeshRendererMaterials[i];
+                    meshRenderers[i].material = itemData.Item.HeldEquipment.MeshRendererMaterials[i];
 
-                meshFilters[i].mesh = itemData.Item.Meshes[i];
+                meshFilters[i].mesh = itemData.Item.HeldEquipment.Meshes[i];
                 if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
                     meshRenderers[i].enabled = true;
                 else

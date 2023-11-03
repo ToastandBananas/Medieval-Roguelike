@@ -54,7 +54,7 @@ namespace InventorySystem
             if (unit.UnitEquipment.TryAddToEquippedAmmunition(loadedProjectile.ItemData) == false)
             {
                 if (unit.UnitInventoryManager.TryAddItemToInventories(loadedProjectile.ItemData) == false)
-                    DropItemManager.DropItem(unit, null, loadedProjectile.ItemData);
+                    DropItemManager.DropItem(null, unit, loadedProjectile.ItemData);
             }
 
             loadedProjectile.Disable();
