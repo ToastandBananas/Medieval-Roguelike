@@ -43,7 +43,7 @@ namespace InventorySystem
 
             if (unit.UnitEquipment != null)
             {
-                if (beltInventoryManager != null && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
+                if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
                     return true;
 
                 if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
@@ -124,6 +124,21 @@ namespace InventorySystem
             if (bestWeaponItemData != null)
                 return true;
             return false;
+        }
+
+        public ContainerInventoryManager GetContainerInventoryManager(EquipSlot equipSlot)
+        {
+            if (equipSlot == EquipSlot.Back)
+                return backpackInventoryManager;
+            else if (equipSlot == EquipSlot.Belt)
+                return beltInventoryManager;
+            else if (equipSlot == EquipSlot.Quiver)
+                return quiverInventoryManager;
+            else
+            {
+                Debug.LogWarning($"{equipSlot} is not a wearable container equip slot");
+                return null;
+            }    
         }
 
         public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;

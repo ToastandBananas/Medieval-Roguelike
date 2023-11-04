@@ -3950,7 +3950,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4467,7 +4467,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -12910,7 +12910,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: f0ed1c93add60eb49bebe9080164d4b5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -24380,7 +24380,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: f0ed1c93add60eb49bebe9080164d4b5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -29276,11 +29276,6 @@ PrefabInstance:
       propertyPath: parentInventory.inventoryLayout.maxSlots
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 1782432552993377815, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
-        type: 3}
-      propertyPath: parentInventory.inventoryLayout.maxSlotsPerRow
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 2208422553791110067, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_IsActive
@@ -29489,11 +29484,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7264128157382338334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
-      propertyPath: subInventories.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7264128157382338334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
-        type: 3}
       propertyPath: subInventories.Array.data[0].myUnit
       value: 
       objectReference: {fileID: 6419999078298759150}
@@ -29563,7 +29553,7 @@ PrefabInstance:
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -29593,7 +29583,7 @@ PrefabInstance:
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.data[4].item
       value: 
-      objectReference: {fileID: 11400000, guid: 9272f42f9fc8bbc45ab918afade34676,
+      objectReference: {fileID: 11400000, guid: 1955efedb2e8ef4458f2d4eb02a16dae,
         type: 2}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -29734,11 +29724,6 @@ PrefabInstance:
         type: 3}
       propertyPath: inventoryLayout.maxSlotsPerRow
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9107039446166605776, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9cd58403f3e6e864b8d7fded7e5447d4, type: 3}

@@ -23,19 +23,24 @@ namespace InventorySystem
 
         public override void Initialize()
         {
-            // TODO: Figure out out to discern between an equipped container vs one that's in a Unit's inventory and then set it up based off its Item
-
-            if (myUnit != null && containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
-                SetupInventoryLayoutFromItem((Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
-            else if (myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
-                SetupInventoryLayoutFromItem((Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
-            else if (looseItem != null && looseItem.ItemData != null)
+            if (looseItem != null && looseItem.ItemData != null)
                 SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
+            else if (myUnit != null) 
+            {
+                if (containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.BackpackEquipped())
+                    SetupInventoryLayoutFromItem((Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+                else if (containerInventoryManager == myUnit.BeltInventoryManager && myUnit.UnitEquipment.BeltBagEquipped())
+                    SetupInventoryLayoutFromItem((Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
+                else if (containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.QuiverEquipped())
+                    SetupInventoryLayoutFromItem((Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+            }
 
             if (slotCoordinates == null)
                 slotCoordinates = new List<SlotCoordinate>();
 
-            CreateSlotCoordinates();
+            if (slotCoordinates.Count == 0)
+                CreateSlotCoordinates();
+
             SetupItems();
 
             hasBeenInitialized = true;
@@ -105,15 +110,11 @@ namespace InventorySystem
             {
                 InventoryLayout[] inventorySections = null;
                 if (item is Backpack)
-                {
-                    Backpack backpack = item as Backpack;
-                    inventorySections = backpack.InventorySections;
-                }
+                    inventorySections = item.Backpack.InventorySections;
+                else if (item is Belt)
+                    inventorySections = item.Belt.InventorySections;
                 else if (item is Quiver)
-                {
-                    Quiver quiver = item as Quiver;
-                    inventorySections = quiver.InventorySections;
-                }
+                    inventorySections = item.Quiver.InventorySections;
 
                 if (inventorySections == null)
                 {

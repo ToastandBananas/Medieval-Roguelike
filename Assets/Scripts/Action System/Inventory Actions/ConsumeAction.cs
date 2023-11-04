@@ -26,12 +26,12 @@ namespace ActionSystem
         {
             ItemData itemToConsume = itemsToConsume[0];
             ItemChangeThreshold currentItemChangeThreshold = ItemChangeThreshold.GetCurrentItemChangeThreshold(itemToConsume, itemToConsume.Item.Consumable.ItemChangeThresholds);
-            itemToConsume.Use(1); 
+            itemToConsume.Use(1);
 
             if (itemToConsume.RemainingUses <= 0)
             {
                 if (itemToConsume.MyInventory != null)
-                    itemToConsume.MyInventory.RemoveItem(itemToConsume);
+                    itemToConsume.MyInventory.RemoveItem(itemToConsume, true);
             }
             else
             {
@@ -48,7 +48,7 @@ namespace ActionSystem
                         else
                         {
                             Item oldItem = itemToConsume.Item;
-                            itemToConsume.MyInventory.RemoveItem(itemToConsume);
+                            itemToConsume.MyInventory.RemoveItem(itemToConsume, false);
                             itemToConsume.SetItem(newThreshold.NewItem);
                             itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, unit);
                         }

@@ -29,7 +29,7 @@ namespace InventorySystem
         public void ShowContainerInventory(ContainerInventory mainContainerInventory, Item containerItem)
         {
             SetTitleText(mainContainerInventory, containerItem);
-
+            
             containerInventoryManager = mainContainerInventory.ParentInventory.containerInventoryManager;
             containerInventoryManager.ParentInventory.SetupSlots(mainContainerSlotGroup);
             for (int i = 0; i < containerInventoryManager.SubInventories.Length; i++)

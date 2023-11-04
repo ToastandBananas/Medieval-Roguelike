@@ -22,7 +22,7 @@ MonoBehaviour:
   height: 2
   weight: 0.35
   maxStackSize: 1
-  inventorySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  inventorySprite: {fileID: 21300000, guid: 22421aff28c75c041ba4813e4c811656, type: 3}
   hotbarSprite: {fileID: 0}
   maxUses: 1
   isUsable: 1

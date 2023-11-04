@@ -15,7 +15,7 @@ namespace InventorySystem
             {
                 Debug.LogWarning("Item you're trying to drop from inventory is null...");
                 if (inventory != null && itemDataToDrop != null)
-                    inventory.RemoveItem(itemDataToDrop);
+                    inventory.RemoveItem(itemDataToDrop, true);
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace InventorySystem
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
             if (inventory != null)
-                inventory.RemoveItem(itemDataToDrop);
+                inventory.RemoveItem(itemDataToDrop, true);
 
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();

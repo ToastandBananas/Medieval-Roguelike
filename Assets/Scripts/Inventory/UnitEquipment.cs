@@ -45,6 +45,8 @@ namespace InventorySystem
                 SetupItems();
         }
 
+        public ItemData GetEquippedItemData(EquipSlot equipSlot) => equippedItemDatas[(int)equipSlot];
+
         public bool CanEquipItem(ItemData newItemData) => CanEquipItemAt(newItemData, GetTargetEquipSlot(newItemData));
 
         public bool CanEquipItemAt(ItemData newItemData, EquipSlot targetEquipSlot)
@@ -101,23 +103,6 @@ namespace InventorySystem
 
         public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
         {
-            // If drag/dropping an item onto an equipped backpack
-            if ((newItemData.Item is Equipment == false || newItemData.Item.Equipment.EquipSlot != EquipSlot.Back) && targetEquipSlot == EquipSlot.Back && EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)targetEquipSlot].Item is Backpack)
-            {
-                if (myUnit.BackpackInventoryManager.ParentInventory.TryAddItem(newItemData, myUnit))
-                {
-                    if (ItemDataEquipped(newItemData))
-                        RemoveEquipment(newItemData);
-                    return true;
-                }
-                else
-                {
-                    if (InventoryUI.isDraggingItem)
-                        InventoryUI.ReplaceDraggedItem();
-                    return false;
-                }
-            }
-
             // If the item is a two-handed weapon, assign the left held item equip slot
             if (newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded)
             {
@@ -167,7 +152,8 @@ namespace InventorySystem
             }
 
             // If the new item is coming from an NPC's Container Equipment Slot or a Loose Container Item, transfer the inventories
-            TransferContainerInventories(targetEquipSlot, newItemData);
+            if (IsWearableContainerEquipSlot(targetEquipSlot))
+                SwapContainerInventories(targetEquipSlot, newItemData);
 
             // Clear out the item from it's original slot
             RemoveItemFromOrigin(newItemData);
@@ -179,6 +165,9 @@ namespace InventorySystem
                 equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
             else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded)
                 equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
+
+            if (IsWearableContainerEquipSlot(targetEquipSlot))
+                InitializeInventories(targetEquipSlot, newItemData);
 
             // Setup the target slot's item data/sprites and mesh if necessary
             SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), newItemData);
@@ -195,7 +184,7 @@ namespace InventorySystem
             AddActions(newItemData.Item as Equipment);
         }
 
-        void TransferContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
+        void SwapContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
         {
             if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.myUnitEquipment != null)
             {
@@ -402,6 +391,8 @@ namespace InventorySystem
         {
             if (targetEquipSlot == EquipSlot.Back && newItemData.Item is Backpack)
                 myUnit.BackpackInventoryManager.Initialize();
+            else if (targetEquipSlot == EquipSlot.Belt)
+                myUnit.BeltInventoryManager.Initialize();
             else if (targetEquipSlot == EquipSlot.Quiver)
                 myUnit.QuiverInventoryManager.Initialize();
         }
@@ -437,7 +428,7 @@ namespace InventorySystem
                     else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
                         InventoryUI.DraggedItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
 
-                    InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove);
+                    InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove, true);
                 }
             }
             else if (ContextMenu.targetSlot != null)
@@ -470,7 +461,7 @@ namespace InventorySystem
                     else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
                         targetInventoryItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
 
-                    targetInventoryItem.myInventory.RemoveItem(itemDataToRemove);
+                    targetInventoryItem.myInventory.RemoveItem(itemDataToRemove, true);
                 }
             }
             else if (itemDataToRemove.InventorySlotCoordinate != null && itemDataToRemove.InventorySlotCoordinate.myInventory.ContainsItemData(itemDataToRemove))
@@ -481,7 +472,7 @@ namespace InventorySystem
                 else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
                     itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
 
-                itemDataToRemove.InventorySlotCoordinate.myInventory.RemoveItem(itemDataToRemove);
+                itemDataToRemove.InventorySlotCoordinate.myInventory.RemoveItem(itemDataToRemove, true);
             }
         }
 
@@ -500,6 +491,14 @@ namespace InventorySystem
                         InventoryUI.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
                     if (myUnit.BackpackInventoryManager.ContainsAnyItems())
+                        DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
+                }
+                else if (equipSlot == EquipSlot.Belt)
+                {
+                    if (myUnit.BeltInventoryManager.ParentInventory.slotVisualsCreated)
+                        InventoryUI.GetContainerUI(myUnit.BeltInventoryManager).CloseContainerInventory();
+
+                    if (myUnit.BeltInventoryManager.ContainsAnyItems())
                         DropItemManager.DropItem(this, equipSlot); // We can't add a bag with any items to an inventory, so just drop it
                 }
                 else if (equipSlot == EquipSlot.Quiver && equipment is Quiver)
@@ -599,31 +598,25 @@ namespace InventorySystem
                     && ((equippedItemDatas[i].Item is Weapon && equippedItemDatas[i].Item.Weapon.IsTwoHanded && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(targetEquipSlot)] != null && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(targetEquipSlot)].Item != null)
                     || (EquipSlotHasItem((int)GetOppositeWeaponEquipSlot(targetEquipSlot)) && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(targetEquipSlot)].Item is Weapon && equippedItemDatas[(int)GetOppositeWeaponEquipSlot(targetEquipSlot)].Item.Weapon.IsTwoHanded)))
                 {
-                    Debug.LogError($"{myUnit} has 2 two-handed weapons equipped, or a two-handed weapon and a one-handed weapon equipped. That's too many weapons!");
+                    Debug.LogWarning($"{myUnit} has 2 two-handed weapons equipped, or a two-handed weapon and a one-handed weapon equipped. That's too many weapons!");
+                    RemoveEquipment(equippedItemDatas[i]);
+                    continue;
                 }
                 else if (i == (int)EquipSlot.RightHeldItem1 && equippedItemDatas[i].Item is Weapon && equippedItemDatas[i].Item.Weapon.IsTwoHanded)
                 {
                     targetEquipSlot = EquipSlot.LeftHeldItem1;
                     equippedItemDatas[(int)targetEquipSlot] = equippedItemDatas[i];
                     equippedItemDatas[i] = null;
-
-                    SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
-                    SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[i]);
                 }
                 else if (i == (int)EquipSlot.RightHeldItem2 && equippedItemDatas[i].Item is Weapon && equippedItemDatas[i].Item.Weapon.IsTwoHanded)
                 {
                     targetEquipSlot = EquipSlot.LeftHeldItem2;
                     equippedItemDatas[(int)targetEquipSlot] = equippedItemDatas[i];
                     equippedItemDatas[i] = null;
+                }
 
-                    SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
-                    SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[i]);
-                }
-                else
-                {
-                    SetupNewItemIcon(GetEquipmentSlotFromIndex(i), equippedItemDatas[i]);
-                    SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[i]);
-                }
+                SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), equippedItemDatas[(int)targetEquipSlot]);
+                SetupEquipmentMesh(targetEquipSlot, equippedItemDatas[(int)targetEquipSlot]);
 
                 if ((currentWeaponSet == WeaponSet.One && (targetEquipSlot == EquipSlot.LeftHeldItem2 || targetEquipSlot == EquipSlot.RightHeldItem2))
                 || (currentWeaponSet == WeaponSet.Two && (targetEquipSlot == EquipSlot.LeftHeldItem1 || targetEquipSlot == EquipSlot.RightHeldItem1)))
@@ -1063,9 +1056,13 @@ namespace InventorySystem
 
         public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
+        public static bool IsWearableContainerEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Back || equipSlot == EquipSlot.Belt || equipSlot == EquipSlot.Quiver;
+
         public static bool IsRingEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
 
         public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Backpack;
+
+        public bool BeltBagEquipped() => EquipSlotHasItem(EquipSlot.Belt) && equippedItemDatas[(int)EquipSlot.Belt].Item.Belt.HasAnInventory();
 
         public bool QuiverEquipped() => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver;
 
@@ -1129,7 +1126,7 @@ namespace InventorySystem
 
             // If there's now zero in the stack
             if (QuiverEquipped())
-                myUnit.QuiverInventoryManager.ParentInventory.RemoveItem(itemData);
+                myUnit.QuiverInventoryManager.ParentInventory.RemoveItem(itemData, true);
             else if (EquipSlotHasItem(EquipSlot.Quiver))
                 RemoveEquipment(itemData);
         }

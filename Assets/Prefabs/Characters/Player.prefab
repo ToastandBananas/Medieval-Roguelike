@@ -459,8 +459,8 @@ MonoBehaviour:
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
-      amountOfSlots: 20
-      maxSlotsPerRow: 10
+      amountOfSlots: 0
+      maxSlotsPerRow: 0
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}
@@ -1572,8 +1572,8 @@ MonoBehaviour:
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
-      amountOfSlots: 20
-      maxSlotsPerRow: 10
+      amountOfSlots: 0
+      maxSlotsPerRow: 0
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}
@@ -1711,8 +1711,8 @@ MonoBehaviour:
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
-      amountOfSlots: 2
-      maxSlotsPerRow: 5
+      amountOfSlots: 0
+      maxSlotsPerRow: 0
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}

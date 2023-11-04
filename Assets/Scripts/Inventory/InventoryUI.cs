@@ -164,11 +164,35 @@ namespace InventorySystem
                             activeInventorySlot.myInventory.TryAddItemAt(activeInventorySlot.slotCoordinate, draggedItem.itemData, UnitManager.player);
                             lastInventoryInteractedWith = activeInventorySlot.myInventory;
                         }
-                        else
+                        else if (activeSlot is EquipmentSlot)
                         {
-                            EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                            UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
-                            lastInventoryInteractedWith = null;
+                            // If drag/dropping an item onto an equipped backpack
+                            if ((draggedItem.itemData.Item is Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Back) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Back && UnitManager.player.UnitEquipment.BackpackEquipped())
+                            {
+                                if (UnitManager.player.BackpackInventoryManager.TryAddItem(draggedItem.itemData, UnitManager.player))
+                                {
+                                    if (UnitManager.player.UnitEquipment.ItemDataEquipped(draggedItem.itemData))
+                                        UnitManager.player.UnitEquipment.RemoveEquipment(draggedItem.itemData);
+                                }
+                                else
+                                    ReplaceDraggedItem();
+                            }
+                            else if ((draggedItem.itemData.Item is Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Belt) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                            {
+                                if (UnitManager.player.BeltInventoryManager.TryAddItem(draggedItem.itemData, UnitManager.player))
+                                {
+                                    if (UnitManager.player.UnitEquipment.ItemDataEquipped(draggedItem.itemData))
+                                        UnitManager.player.UnitEquipment.RemoveEquipment(draggedItem.itemData);
+                                }
+                                else
+                                    ReplaceDraggedItem();
+                            }
+                            else
+                            {
+                                EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
+                                UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
+                                lastInventoryInteractedWith = null;
+                            }
 
                             DisableDraggedItem();
                         }

@@ -34,7 +34,7 @@ namespace InventorySystem
             CreateSlotCoordinates();
             SetSlotsList();
 
-            if (myUnit.IsPlayer)
+            if (myUnit != null && myUnit.IsPlayer)
                 CreateSlotVisuals();
             else
                 SetupItems();
@@ -85,7 +85,7 @@ namespace InventorySystem
                 if (newItemData.CurrentStackSize <= 0)
                 {
                     if (originalInventory != null && originalInventory != this)
-                        originalInventory.RemoveItem(newItemData);
+                        originalInventory.RemoveItem(newItemData, true);
 
                     if (unitAdding != null && originalInventory != this)
                         unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize, null);
@@ -121,7 +121,7 @@ namespace InventorySystem
             if (targetSlotCoordinate != null)
             {
                 if (originalInventory != null && originalInventory != this)
-                    originalInventory.RemoveItem(newItemData);
+                    originalInventory.RemoveItem(newItemData, false);
 
                 // Only add the item data if it hasn't been added yet
                 if (itemDatas.Contains(newItemData) == false)
@@ -229,7 +229,7 @@ namespace InventorySystem
                     // Clear out the overlapped item
                     Slot overlappedParentSlot = GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate);
                     if (overlappedParentSlot.InventoryItem.myInventory != null)
-                        overlappedParentSlot.InventoryItem.myInventory.RemoveItem(overlappedItemsData);
+                        overlappedParentSlot.InventoryItem.myInventory.RemoveItem(overlappedItemsData, true);
 
                     // If the slots are in different inventories
                     RemoveFromOrigin(newItemData, unitAdding);
@@ -296,7 +296,7 @@ namespace InventorySystem
             }
             
             // Else remove the item from this inventory
-            RemoveItem(projectileItemData);
+            RemoveItem(projectileItemData, true);
         }
 
         void CombineStacks(ItemData itemDataToTakeFrom, ItemData itemDataToCombineWith)
@@ -332,7 +332,7 @@ namespace InventorySystem
                     else if (InventoryUI.lastInventoryInteractedWith != this) // Otherwise, the Unit who has this item equipped can just remove it themselves
                         InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
-                    InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData);
+                    InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData, true);
                 }
                 else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment != null)
                 {
@@ -375,16 +375,19 @@ namespace InventorySystem
                     // Remove the item from its original inventory
                     else if (InventoryUI.DraggedItem.myInventory != null)
                     {
-                        // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead())
+                        if (InventoryUI.DraggedItem.myInventory.myUnit != null)
                         {
-                            if (unitAdding != null)
-                                unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                            // If the unitAdding is taking from a dead Unit's inventory
+                            if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead())
+                            {
+                                if (unitAdding != null)
+                                    unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                            }
+                            else // Otherwise, the Unit who owns this item can just remove it themselves
+                                InventoryUI.DraggedItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                         }
-                        else // Otherwise, the Unit who owns this item can just remove it themselves
-                            InventoryUI.DraggedItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
-                        InventoryUI.DraggedItem.myInventory.RemoveItem(newItemData);
+                        InventoryUI.DraggedItem.myInventory.RemoveItem(newItemData, true);
                         if (InventoryUI.DraggedItem.myInventory is ContainerInventory)
                         {
                             // If we drag arrows out of a Loose Quiver
@@ -434,7 +437,7 @@ namespace InventorySystem
             }
         }
 
-        public void RemoveItem(ItemData itemDataToRemove)
+        public void RemoveItem(ItemData itemDataToRemove, bool clearSlotCoordinate)
         {
             if (itemDatas.Contains(itemDataToRemove) == false)
                 return;
@@ -444,7 +447,9 @@ namespace InventorySystem
             else if (GetSlotCoordinateFromItemData(itemDataToRemove) != null)
                 GetSlotCoordinateFromItemData(itemDataToRemove).ClearItem();
 
-            itemDataToRemove.SetInventorySlotCoordinate(null);
+            if (clearSlotCoordinate)
+                itemDataToRemove.SetInventorySlotCoordinate(null);
+
             itemDatas.Remove(itemDataToRemove);
 
             if (this is ContainerInventory)

@@ -69,7 +69,7 @@ namespace InventorySystem
 
             for (int i = 0; i < itemsToSort.Count; i++)
             {
-                inventory.RemoveItem(itemsToSort[i]);
+                inventory.RemoveItem(itemsToSort[i], true);
             }
 
             for (int i = 0; i < itemsToSort.Count; i++)

@@ -281,17 +281,21 @@ namespace GeneralUI
 
             if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
+                // Skip if this is the backpack itself
                 ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
-                if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null
-                    && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
-                {
+                if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.BackpackEquipped())
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
-                }
+
+                if (containerInventory.containerInventoryManager != UnitManager.player.BeltInventoryManager && UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                    GetContextMenuButton().SetupAddToBeltBagButton(itemData);
             }
             else
             {
-                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Back) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
+                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.BackpackEquipped())
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
+
+                if (UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                    GetContextMenuButton().SetupAddToBeltBagButton(itemData);
             }
         }
 

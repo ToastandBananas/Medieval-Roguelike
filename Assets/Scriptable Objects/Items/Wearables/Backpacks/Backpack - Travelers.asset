@@ -28,7 +28,7 @@ MonoBehaviour:
   hotbarSprite: {fileID: 21300000, guid: f10d3e9bc70031f46b5319ff19e49bf5, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 0, y: 0}
+  valueRange: {x: 1400, y: 1400}
   pickupMesh: {fileID: -2432090755550338912, guid: 3436092d0c2edcb47befd46f8eca320a,
     type: 3}
   pickupMeshRendererMaterials:

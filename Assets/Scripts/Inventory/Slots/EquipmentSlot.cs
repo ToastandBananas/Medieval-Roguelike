@@ -124,6 +124,8 @@ namespace InventorySystem
                 validSlot = false;
             else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
                 validSlot = true;
+            else if (equipSlot == EquipSlot.Belt && myUnitEquipment.BeltBagEquipped())
+                validSlot = true;
             else if (draggedItem is Equipment)
             {
                 if (draggedItem.Equipment.EquipSlot == equipSlot)

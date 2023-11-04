@@ -7,7 +7,7 @@ namespace InventorySystem
     public class ContainerInventoryManager : InventoryManager
     {
         [SerializeField] ContainerInventory parentInventory;
-        [SerializeField] ContainerInventory[] subInventories = new ContainerInventory[5];
+        [SerializeField] ContainerInventory[] subInventories;
 
         void Awake()
         {

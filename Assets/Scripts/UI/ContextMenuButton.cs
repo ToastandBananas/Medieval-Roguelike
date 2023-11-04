@@ -64,19 +64,29 @@ namespace GeneralUI
             ContextMenu.DisableContextMenu();
         }
 
-        public void SetupAddToBackpackButton(ItemData itemData)
-        {
-            stringBuilder.Clear();
-            stringBuilder.Append("Put in ");
-            if (UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item is Backpack)
-                stringBuilder.Append("Bag");
-
-            SetupButton(stringBuilder.ToString(), delegate { AddToBackpack(itemData); });
-        }
+        public void SetupAddToBackpackButton(ItemData itemData) => SetupButton($"Put in Backpack", delegate { AddToBackpack(itemData); });
 
         void AddToBackpack(ItemData itemData)
         {
             if (UnitManager.player.BackpackInventoryManager.TryAddItem(itemData, UnitManager.player))
+            {
+                if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
+                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
+            }
+            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
+            {
+                LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
+                looseItem.FumbleItem();
+            }
+
+            ContextMenu.DisableContextMenu();
+        }
+
+        public void SetupAddToBeltBagButton(ItemData itemData) => SetupButton($"Put in Belt Pouch", delegate { AddToBeltBag(itemData); });
+
+        void AddToBeltBag(ItemData itemData)
+        {
+            if (UnitManager.player.BeltInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
                 if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
                     LooseItemPool.ReturnToPool((LooseItem)ContextMenu.targetInteractable);
