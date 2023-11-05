@@ -15,6 +15,15 @@ namespace InventorySystem
         [Header("Modifiers")]
         [SerializeField] float blockChanceAddOn = 10f;
 
+        void OnEnable()
+        {
+            if (initialized == false)
+            {
+                equipSlot = EquipSlot.LeftHeldItem1;
+                initialized = true;
+            }
+        }
+
         public int MinBlockPower => blockPowerRange.x;
         public int MaxBlockPower => blockPowerRange.y;
 

@@ -111,7 +111,14 @@ namespace InventorySystem
         }
 
         /// <summary>Value = min possible value * the difference between the min/max possible value * how good the item's stats are vs. what its max values could be if the item rolled perfect stats.</summary>
-        public void CalculateValue() => value = Mathf.RoundToInt(item.ValueRange.x + ((item.ValueRange.y - item.ValueRange.x) * CalculatePercentPointValue()));
+        public void CalculateValue()
+        {
+            float percent = CalculatePercentPointValue();
+            if (percent == 0f)
+                value = item.ValueRange.x;
+            else
+                value = Mathf.RoundToInt(item.ValueRange.x + ((item.ValueRange.y - item.ValueRange.x) * percent));
+        }
 
         float CalculatePercentPointValue()
         {
@@ -150,7 +157,6 @@ namespace InventorySystem
                 pointIncrease += remainingUses;
 
             percent = pointIncrease / GetTotalPointValue();
-
             return percent;
         }
 

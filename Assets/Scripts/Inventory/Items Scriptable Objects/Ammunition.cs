@@ -53,6 +53,15 @@ namespace InventorySystem
             return base.InventorySprite();
         }
 
+        void OnEnable()
+        {
+            if (initialized == false)
+            {
+                equipSlot = EquipSlot.Quiver;
+                initialized = true;
+            }
+        }
+
         public ItemChangeThreshold[] ItemChangeThresholds => itemChangeThresholds;
         public Sprite[] QuiverSprites => quiverSprites;
 

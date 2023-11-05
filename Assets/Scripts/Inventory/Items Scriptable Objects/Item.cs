@@ -69,6 +69,8 @@ namespace InventorySystem
         public int MaxUses => maxUses;
         public bool IsUsable => isUsable;
 
+        protected bool initialized;
+
         public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
         {
             return true;
@@ -124,6 +126,10 @@ namespace InventorySystem
         public Weapon Weapon => this as Weapon;
 
         public Armor Armor => this as Armor;
+
+        public BodyArmor BodyArmor => this as BodyArmor;
+
+        public Boots Boots => this as Boots;
 
         public Helm Helm => this as Helm;
 

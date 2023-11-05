@@ -9,6 +9,15 @@ namespace InventorySystem
         [SerializeField] float reloadActionPointCostMultiplier = 1f;
         [SerializeField] ProjectileType projectileType;
 
+        void OnEnable()
+        {
+            if (initialized == false)
+            {
+                equipSlot = EquipSlot.LeftHeldItem1;
+                initialized = true;
+            }
+        }
+
         public float ReloadActionPointCostMultiplier => reloadActionPointCostMultiplier;
         public ProjectileType ProjectileType => projectileType;
     }

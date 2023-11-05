@@ -28,16 +28,16 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 100, y: 300}
-  meshes:
-  - {fileID: -2432090755550338912, guid: bcb70c09c1af2ea4fb8b86658ab46bd3, type: 3}
-  meshRendererMaterials:
-  - {fileID: 2100000, guid: 172688109add5a84293752a2f18b997b, type: 2}
   pickupMesh: {fileID: -2432090755550338912, guid: f68634b4a5fdc5c42bf5eb0af886538b,
     type: 3}
   pickupMeshRendererMaterials:
   - {fileID: 2100000, guid: 18d7b336b74e22147aa42f86402434ae, type: 2}
   equipSlot: 4
   actionTypes: []
+  meshes:
+  - {fileID: -2432090755550338912, guid: bcb70c09c1af2ea4fb8b86658ab46bd3, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: 172688109add5a84293752a2f18b997b, type: 2}
   meshes_Female:
   - {fileID: -2432090755550338912, guid: 675a2e87ce6a81f40b35be6976e33377, type: 3}
   meshRendererMaterials_Female:

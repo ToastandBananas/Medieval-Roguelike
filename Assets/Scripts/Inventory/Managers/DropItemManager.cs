@@ -316,8 +316,8 @@ namespace InventorySystem
         {
             SetupLooseItem(looseItem, itemData);
 
-            // Set the LooseItem's position to match the HeldItem before we add force
-            looseItem.transform.position = unit.unitMeshManager.HelmMeshRenderer.transform.position;
+            // Set the LooseItem's position to match the worn Helm before we add force
+            looseItem.transform.position = unit.unitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, itemData.Item.PickupMesh.bounds.size.y, 0f);
             looseItem.transform.rotation = unit.unitMeshManager.HelmMeshRenderer.transform.rotation;
         }
 
