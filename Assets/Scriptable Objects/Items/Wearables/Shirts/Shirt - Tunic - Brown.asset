@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 801b73498f92ef14c8ee15370a6858b1, type: 3}
+  m_Name: Shirt - Tunic - Brown
+  m_EditorClassIdentifier: 
+  name: Brown Tunic
+  pluralName: 
+  description: A practical and simple piece of clothing suitable for daily wear.
+  itemType: 80
+  mainMaterial: 13
+  itemSize: 2
+  width: 2
+  height: 1
+  weight: 1.3
+  maxStackSize: 1
+  inventorySprite: {fileID: 21300000, guid: cb8b8b6d4525e7d43b49cc83ce846d13, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: 6e9847b472af2514d8ca0db8441d92b2, type: 3}
+  maxUses: 1
+  isUsable: 1
+  valueRange: {x: 8, y: 14}
+  pickupMesh: {fileID: -2432090755550338912, guid: 663816d8c219c8646a110ec27bedf04d,
+    type: 3}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: 6ff28f9b81228b54891dba08e5ae5b09, type: 2}
+  equipSlot: 6
+  actionTypes: []
+  meshes:
+  - {fileID: -2432090755550338912, guid: ea6c4885da80e564483f7b2bfe8c9e01, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: 4a9211030e898cd42bf16f28c037381b, type: 2}
+  meshes_Female:
+  - {fileID: -2432090755550338912, guid: c07b150f54679dd46a34e0219be0b22b, type: 3}
+  meshRendererMaterials_Female:
+  - {fileID: 2100000, guid: 8d640d8eb20a34a418247266a5ae78fc, type: 2}

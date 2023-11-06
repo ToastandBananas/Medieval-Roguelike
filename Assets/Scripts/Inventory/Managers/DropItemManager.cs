@@ -40,6 +40,9 @@ namespace InventorySystem
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
+            if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
+                looseItem.HideMeshRenderer();
+
             if (inventory != null)
                 inventory.RemoveItem(itemDataToDrop, true);
 
@@ -113,6 +116,9 @@ namespace InventorySystem
 
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
+
+            if (unitEquipment.MyUnit != UnitManager.player && UnitManager.player.vision.IsVisible(unitEquipment.MyUnit) == false)
+                looseItem.HideMeshRenderer();
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.itemData)
             {

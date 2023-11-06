@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3436092d0c2edcb47befd46f8eca320a
+guid: 9b0f119e3eb509a47892785c2bfceb6c
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Backpack_Travelers_Material
-    second: {fileID: 2100000, guid: a7d38616a9cd49248a9a36e0a68ab156, type: 2}
+      name: Armor_Steelplate_Pickup_Material.001
+    second: {fileID: 2100000, guid: e58de6eee4f5902408a7946f949bab0d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -40,7 +40,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.8
+    globalScale: 0.9
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -93,7 +93,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.8
+    globalScale: 0.9
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

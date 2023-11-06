@@ -114,10 +114,15 @@ namespace InventorySystem
         public void CalculateValue()
         {
             float percent = CalculatePercentPointValue();
-            if (percent == 0f)
+            if (percent <= 0f)
                 value = item.ValueRange.x;
             else
                 value = Mathf.RoundToInt(item.ValueRange.x + ((item.ValueRange.y - item.ValueRange.x) * percent));
+
+            if (value < item.ValueRange.x)
+                value = item.ValueRange.x;
+            else if (value > item.ValueRange.y)
+                value = item.ValueRange.y;
         }
 
         float CalculatePercentPointValue()
@@ -125,8 +130,6 @@ namespace InventorySystem
             // Calculate the percentage of points that were added to the item's stats when randomized (compared to the total possible points)
             float pointIncrease = 0f; // Amount the stats have been increased by in relation to its base stat values, in total
             float percent; // Percent of possible stat increase this item has
-
-            // ClampMaxValues();
 
             if (item is Equipment)
             {

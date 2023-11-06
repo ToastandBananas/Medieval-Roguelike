@@ -122,8 +122,9 @@ namespace UnitSystem
 
         bool IsInLineOfSight_Raycast(LooseItem looseItem)
         {
-            Vector3 dirToTarget = (looseItem.MeshCollider.bounds.center - transform.position).normalized;
-            float distToTarget = Vector3.Distance(transform.position, looseItem.MeshCollider.bounds.center);
+            Vector3 looseItemCenter = looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center);
+            Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
+            float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
             // If target Unit is in the view angle and no obstacles are in the way
             if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
@@ -399,7 +400,7 @@ namespace UnitSystem
                 if (looseItem == null || knownLooseItems.ContainsKey(looseItem))
                     continue;
 
-                Vector3 looseItemCenter = looseItem.MeshCollider.bounds.center;
+                Vector3 looseItemCenter = looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center);
                 Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
                 // If target LooseItem is in the view angle
@@ -421,12 +422,12 @@ namespace UnitSystem
                 foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
                 {
                     bool shouldHide = true;
+                    Vector3 looseItemCenter = looseItem.Key.transform.TransformPoint(looseItem.Key.MeshCollider.sharedMesh.bounds.center);
                     for (int j = 0; j < looseItemsInViewRadius.Length; j++)
                     {
                         if (looseItem.Key.transform == looseItemsInViewRadius[j].transform)
                         {
                             // Skip if it's in the view radius and there's no obstacles in the way
-                            Vector3 looseItemCenter = looseItem.Key.MeshCollider.bounds.center;
                             Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
                             float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
@@ -439,7 +440,7 @@ namespace UnitSystem
                     }
 
                     // Only hide it if it's outside of the player's perception distance
-                    if (shouldHide && Vector3.Distance(unit.transform.position, looseItem.Key.MeshCollider.bounds.center) > playerPerceptionDistance)
+                    if (shouldHide && Vector3.Distance(transform.position, looseItemCenter) > playerPerceptionDistance)
                         looseItem.Key.HideMeshRenderer();
                     else
                         looseItem.Key.ShowMeshRenderer();
@@ -454,7 +455,7 @@ namespace UnitSystem
             // Check if LooseItems that were in sight are now out of sight
             foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
             {
-                Vector3 looseItemCenter = looseItem.Key.MeshCollider.bounds.center;
+                Vector3 looseItemCenter = looseItem.Key.transform.TransformPoint(looseItem.Key.MeshCollider.sharedMesh.bounds.center);
                 Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
                 // If target LooseItem is in the view angle
@@ -533,7 +534,7 @@ namespace UnitSystem
             float closestLooseItemDistance = 1000000;
             foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.MeshCollider.bounds.center);
+                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
                 if (distToLooseItem < closestLooseItemDistance)
                 {
                     closestLooseItem = knownLooseItem.Key;
