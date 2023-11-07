@@ -14,12 +14,12 @@ namespace UnitSystem
 
         [Header("Mesh Renderers")]
         [SerializeField] MeshRenderer baseMeshRenderer;
-        [SerializeField] MeshRenderer bodyMeshRenderer, headMeshRenderer, hairMeshRenderer, helmMeshRenderer, tunicMeshRenderer, bodyArmorMeshRenderer;
+        [SerializeField] MeshRenderer bodyMeshRenderer, headMeshRenderer, hairMeshRenderer, helmMeshRenderer, shirtMeshRenderer, bodyArmorMeshRenderer;
         List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
 
         [Header("Mesh Filters")]
         [SerializeField] MeshFilter baseMeshFilter;
-        [SerializeField] MeshFilter bodyMeshFilter, headMeshFilter, hairMeshFilter, helmMeshFilter, tunicMeshFilter, bodyArmorMeshFilter;
+        [SerializeField] MeshFilter bodyMeshFilter, headMeshFilter, hairMeshFilter, helmMeshFilter, shirtMeshFilter, bodyArmorMeshFilter;
 
         [Header("Meshes")]
         [SerializeField] Mesh baseMesh;
@@ -43,8 +43,8 @@ namespace UnitSystem
                 meshRenderers.Add(hairMeshRenderer);
             if (helmMeshRenderer != null)
                 meshRenderers.Add(helmMeshRenderer);
-            if (tunicMeshRenderer != null)
-                meshRenderers.Add(tunicMeshRenderer);
+            if (shirtMeshRenderer != null)
+                meshRenderers.Add(shirtMeshRenderer);
             if (bodyArmorMeshRenderer != null)
                 meshRenderers.Add(bodyArmorMeshRenderer);
         }
@@ -143,6 +143,9 @@ namespace UnitSystem
                 case EquipSlot.BodyArmor:
                     AssignMeshAndMaterials(bodyArmorMeshFilter, bodyArmorMeshRenderer, wearable);
                     break;
+                case EquipSlot.Shirt:
+                    AssignMeshAndMaterials(shirtMeshFilter, shirtMeshRenderer, wearable);
+                    break;
                 default:
                     break;
             }
@@ -208,6 +211,9 @@ namespace UnitSystem
                 case EquipSlot.BodyArmor:
                     bodyArmorMeshRenderer.enabled = false;
                     break;
+                case EquipSlot.Shirt:
+                    shirtMeshRenderer.enabled = false;
+                    break;
             }
         }
 
@@ -222,6 +228,10 @@ namespace UnitSystem
                 case EquipSlot.BodyArmor:
                     bodyArmorMeshRenderer.material = null;
                     bodyArmorMeshFilter.mesh = null;
+                    break;
+                case EquipSlot.Shirt:
+                    shirtMeshRenderer.material = null;
+                    shirtMeshFilter.mesh = null;
                     break;
             }
         }

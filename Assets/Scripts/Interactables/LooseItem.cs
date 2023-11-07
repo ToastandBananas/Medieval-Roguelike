@@ -213,12 +213,17 @@ namespace InteractableObjects
             if (itemData == null || itemData.Item == null)
                 return;
 
+            //Debug.Log("Show: " + name);
             meshFilter.mesh = itemData.Item.PickupMesh;
         }
 
-        public void HideMeshRenderer() => meshFilter.mesh = null;
+        public void HideMeshRenderer()
+        {
+            //Debug.Log("Hide: " + name);
+            meshFilter.mesh = null;
+        }
 
-        public bool CanSeeMeshRenderer => meshFilter.mesh != null;
+        public bool CanSeeMeshRenderer => meshFilter.mesh.vertexCount > 0;
 
         public override bool CanInteractAtMyGridPosition() => true;
     }

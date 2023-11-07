@@ -4216,7 +4216,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: b1c6a1d76213e1941b07a2faf7b4e8f4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5472,7 +5472,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: b1c6a1d76213e1941b07a2faf7b4e8f4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8421,7 +8421,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: b1c6a1d76213e1941b07a2faf7b4e8f4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13738,7 +13738,7 @@ GameObject:
   - component: {fileID: 957594387}
   - component: {fileID: 957594386}
   m_Layer: 5
-  m_Name: Amulet
+  m_Name: Accessory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22343,7 +22343,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: b1c6a1d76213e1941b07a2faf7b4e8f4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22742,7 +22742,7 @@ GameObject:
   - component: {fileID: 1660154340}
   - component: {fileID: 1660154339}
   m_Layer: 5
-  m_Name: Amulet
+  m_Name: Accessory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29432,6 +29432,31 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5499396121062417353, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5499396121062417353, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5499396121062417353, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5499396121062417353, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5499396121062417353, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
     - target: {fileID: 6015011726275057026, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: inventoryLayout.maxSlots
@@ -29558,7 +29583,7 @@ PrefabInstance:
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.size
-      value: 10
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -29629,7 +29654,31 @@ PrefabInstance:
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.data[10].item
       value: 
-      objectReference: {fileID: 11400000, guid: c12a1b2f317a9314d8846f3192665c21,
+      objectReference: {fileID: 11400000, guid: 7ae4bec7de84f304db4ed3d5f79208c9,
+        type: 2}
+    - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: mainInventory.itemDatas.Array.data[11].item
+      value: 
+      objectReference: {fileID: 11400000, guid: ca7a82a66527a5c448223e350f6a852d,
+        type: 2}
+    - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: mainInventory.itemDatas.Array.data[12].item
+      value: 
+      objectReference: {fileID: 11400000, guid: 8052ded909a07284686c4459cfa7337e,
+        type: 2}
+    - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: mainInventory.itemDatas.Array.data[13].item
+      value: 
+      objectReference: {fileID: 11400000, guid: ad341dc38cba7674c959eb37fcd14bdf,
+        type: 2}
+    - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: mainInventory.itemDatas.Array.data[14].item
+      value: 
+      objectReference: {fileID: 11400000, guid: ad341dc38cba7674c959eb37fcd14bdf,
         type: 2}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}

@@ -1149,10 +1149,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0329c3a3b84001447b1604acbf182abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 6440773195933579921}
   parentTransform: {fileID: 8220662913183796560}
   viewRadius: 25
   viewAngle: 185
-  opportunityAttackViewAngle: 220
   unitsMask:
     serializedVersion: 2
     m_Bits: 8
@@ -1481,14 +1481,14 @@ MonoBehaviour:
   headMeshRenderer: {fileID: 1355169749607201287}
   hairMeshRenderer: {fileID: 487088377322257086}
   helmMeshRenderer: {fileID: 7622081336976406461}
-  tunicMeshRenderer: {fileID: 4844891633756179713}
+  shirtMeshRenderer: {fileID: 4844891633756179713}
   bodyArmorMeshRenderer: {fileID: 626653059070622638}
   baseMeshFilter: {fileID: 2615831470345035244}
   bodyMeshFilter: {fileID: 4190166550476188983}
   headMeshFilter: {fileID: 8428149901202910843}
   hairMeshFilter: {fileID: 6301170399108387200}
   helmMeshFilter: {fileID: 8934689093820446542}
-  tunicMeshFilter: {fileID: 280487915635489071}
+  shirtMeshFilter: {fileID: 280487915635489071}
   bodyArmorMeshFilter: {fileID: 8038866530934077296}
   baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
     type: 3}

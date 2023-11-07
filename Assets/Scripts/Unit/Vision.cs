@@ -13,6 +13,8 @@ namespace UnitSystem
 {
     public class Vision : MonoBehaviour
     {
+        [SerializeField] Unit unit;
+
         [Header("Field of View")]
         [SerializeField] Transform parentTransform;
         [SerializeField] float viewRadius = 20f;
@@ -38,7 +40,6 @@ namespace UnitSystem
         public Collider[] looseItemsInViewRadius;
         Collider[] unitsInViewRadius;
 
-        Unit unit;
         readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
 
         // The distance at which the player loses sight of something outside of their view radius, even if it is contained in one of the "known" lists
@@ -148,6 +149,21 @@ namespace UnitSystem
             ActionLineRenderer.ResetCurrentPositions();
         }
 
+        public bool TargetInViewAngle(Vector3 directionToTarget)
+        {
+            if (Vector3.Angle(unit.transform.forward, directionToTarget) < viewAngle / 2)
+                return true;
+            return false;
+        }
+
+        public bool TargetInOpportunityAttackViewAngle(Transform targetTransform)
+        {
+            Vector3 directionToTarget = (targetTransform.position + yOffset - transform.position).normalized;
+            if (Vector3.Angle(unit.transform.forward, directionToTarget) < opportunityAttackViewAngle / 2)
+                return true;
+            return false;
+        }
+
         #region Units
         void FindVisibleUnits()
         {
@@ -164,7 +180,7 @@ namespace UnitSystem
                     Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 
                     // If target Unit is in the view angle
-                    if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                    if (TargetInViewAngle(dirToTarget))
                     {
                         float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
@@ -192,7 +208,7 @@ namespace UnitSystem
                             float distToTarget = Vector3.Distance(transform.position, unitsInViewRadius[j].transform.position);
 
                             // If target Unit is in the view angle and no obstacles are in the way
-                            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2 && Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
+                            if (TargetInViewAngle(dirToTarget) && Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
                                 shouldHide = false;
 
                             break;
@@ -227,14 +243,6 @@ namespace UnitSystem
             }
         }
 
-        public bool TargetInOpportunityAttackViewAngle(Transform targetTransform)
-        {
-            Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
-            if (Vector3.Angle(transform.forward, dirToTarget) < opportunityAttackViewAngle / 2)
-                return true;
-            return false;
-        }
-
         void UpdateVisibleUnits()
         {
             unitsToRemove.Clear();
@@ -247,10 +255,10 @@ namespace UnitSystem
                     UpdateDeadUnit(knownUnit.Key);
 
                 Transform targetTransform = knownUnit.Key.transform;
-                Vector3 dirToTarget = ((targetTransform.position + yOffset) - transform.position).normalized;
+                Vector3 dirToTarget = (targetTransform.position + yOffset - transform.position).normalized;
 
                 // If target Unit is in the view angle
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                if (TargetInViewAngle(dirToTarget))
                 {
                     float distToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
@@ -404,16 +412,17 @@ namespace UnitSystem
                 Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
                 // If target LooseItem is in the view angle
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
+                if (TargetInViewAngle(dirToTarget))
                 {
-                    float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
-
                     // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
                     if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
                         AddVisibleLooseItem(looseItem);
                     else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
                         looseItem.HideMeshRenderer();
                 }
+                else
+                    looseItem.HideMeshRenderer();
             }
 
             if (unit.IsPlayer)
@@ -432,9 +441,8 @@ namespace UnitSystem
                             float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
                             // If target LooseItem is in the view angle and no obstacles are in the way
-                            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2 && Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
+                            if (TargetInViewAngle(dirToTarget) && Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
                                 shouldHide = false;
-
                             break;
                         }
                     }
@@ -459,7 +467,7 @@ namespace UnitSystem
                 Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
                 // If target LooseItem is in the view angle
-                if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+                if (TargetInViewAngle(dirToTarget))
                 {
                     float distToTarget = Vector3.Distance(transform.position, looseItemCenter);
 
@@ -551,10 +559,10 @@ namespace UnitSystem
             return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
         }
 
-        public float ViewRadius() => viewRadius;
+        public float ViewRadius => viewRadius;
 
-        public float ViewAngle() => viewAngle;
+        public float ViewAngle => viewAngle;
 
-        public Vector3 YOffset() => yOffset;
+        public Unit Unit => unit;
     }
 }

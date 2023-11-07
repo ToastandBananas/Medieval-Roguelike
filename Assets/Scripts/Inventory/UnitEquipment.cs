@@ -9,7 +9,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 
 namespace InventorySystem
 {
-    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Amulet, Ring1, Ring2 }
+    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Accessory, Ring1, Ring2 }
     public enum WeaponSet { One = 1, Two = 2 }
 
     public class UnitEquipment : MonoBehaviour
@@ -55,7 +55,8 @@ namespace InventorySystem
                 return false;
 
             if ((IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsHeldItemEquipSlot(targetEquipSlot) == false)
-                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
+                || (IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsRingEquipSlot(targetEquipSlot) == false)
+                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
                 return false;
 
             if (targetEquipSlot == EquipSlot.Quiver && newItemData.Item is Ammunition)
@@ -829,7 +830,7 @@ namespace InventorySystem
                 return;
 
             // We only show meshes for these types of equipment:
-            if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor)
+            if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor && equipSlot != EquipSlot.Shirt)
                 return;
 
             if (IsHeldItemEquipSlot(equipSlot))

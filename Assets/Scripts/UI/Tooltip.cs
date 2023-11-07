@@ -123,7 +123,7 @@ namespace GeneralUI
                 ClearTooltip();
 
             tooltipStringBuilder.Clear();
-            tooltipStringBuilder.Append($"<align=center><size=20><b>{looseItemData.Item.Name}");
+            tooltipStringBuilder.Append($"<align=center><size=16><b>{looseItemData.Item.Name}");
             if (looseItemData.CurrentStackSize > 1)
                 tooltipStringBuilder.Append($" x {looseItemData.CurrentStackSize}");
             tooltipStringBuilder.Append("</b></size></align>");

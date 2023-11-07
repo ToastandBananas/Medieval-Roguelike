@@ -9,7 +9,7 @@ namespace InventorySystem
     public enum ItemType
     {
         BasicItem = 0, MeleeWeapon = 1, Shield = 20, Bow = 30, Crossbow = 40, Bomb = 45, Arrow = 50, CrossbowBolt = 60, Quiver = 70, Clothing = 80, Armor = 90, Helm = 100, Boots = 110, Gloves = 120, Belt = 130, BeltPouch = 131, Backpack = 140, Cape = 150, PortableContainer = 160,
-        MedicalSupply = 170, Herb = 180, Food = 190, Drink = 200, Potion = 210, Ingredient = 220, Seed = 230, Readable = 240, Key = 250, QuestItem = 260
+        MedicalSupply = 170, Herb = 180, Food = 190, Drink = 200, Potion = 210, Ingredient = 220, Seed = 230, Jewelry = 240, Readable = 250, Key = 260, QuestItem = 270
     }
 
     public enum ItemMaterial
@@ -131,6 +131,8 @@ namespace InventorySystem
 
         public Boots Boots => this as Boots;
 
+        public Shirt Shirt => this as Shirt;
+
         public Helm Helm => this as Helm;
 
         public MeleeWeapon MeleeWeapon => this as MeleeWeapon;
@@ -146,5 +148,9 @@ namespace InventorySystem
         public Quiver Quiver => this as Quiver;
 
         public Belt Belt => this as Belt;
+
+        public Ring Ring => this as Ring;
+
+        public Accessory Amulet => this as Accessory;
     }
 }

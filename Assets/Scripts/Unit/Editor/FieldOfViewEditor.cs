@@ -12,12 +12,12 @@ namespace UnitSystem
         {
             Vision fov = (Vision)target;
             Handles.color = Color.white;
-            Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.ViewRadius());
-            Vector3 viewAngleA = fov.DirectionFromAngle(-fov.ViewAngle() / 2, false);
-            Vector3 viewAngleB = fov.DirectionFromAngle(fov.ViewAngle() / 2, false);
+            Handles.DrawWireArc(fov.Unit.transform.position, Vector3.up, fov.Unit.transform.forward, 360, fov.ViewRadius);
+            Vector3 viewAngleA = fov.DirectionFromAngle(-fov.ViewAngle / 2, false);
+            Vector3 viewAngleB = fov.DirectionFromAngle(fov.ViewAngle / 2, false);
 
-            Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleA * fov.ViewRadius());
-            Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleB * fov.ViewRadius());
+            Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleA * fov.ViewRadius);
+            Handles.DrawLine(fov.transform.position, fov.transform.position + viewAngleB * fov.ViewRadius);
 
             Handles.color = Color.red;
             if (fov.knownUnits != null && fov.knownUnits.Count > 0)
@@ -37,7 +37,7 @@ namespace UnitSystem
 
                     fov.looseItemsInViewRadius[i].TryGetComponent(out LooseItem looseItem);
                     if (looseItem != null)
-                        Handles.DrawLine(fov.transform.position, looseItem.MeshCollider.bounds.center);
+                        Handles.DrawLine(fov.transform.position, looseItem.transform.TransformPoint(looseItem.MeshCollider.bounds.center));
                 }
             }
         }
