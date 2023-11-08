@@ -141,16 +141,12 @@ namespace InventorySystem
 
         public Wearable Wearable => this as Wearable;
 
-        public VisibleWearable VisibleWearable => this as VisibleWearable;
+        public VisibleArmor VisibleArmor => this as VisibleArmor;
 
         public WearableContainer WearableContainer => this as WearableContainer;
 
         public Quiver Quiver => this as Quiver;
 
         public Belt Belt => this as Belt;
-
-        public Ring Ring => this as Ring;
-
-        public Accessory Amulet => this as Accessory;
     }
 }

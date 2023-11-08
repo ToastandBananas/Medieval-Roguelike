@@ -130,7 +130,7 @@ namespace UnitSystem
             return null;
         }
 
-        public void SetupWearableMesh(EquipSlot equipSlot, VisibleWearable wearable)
+        public void SetupWearableMesh(EquipSlot equipSlot, VisibleArmor wearable)
         {
             if (wearable == null)
                 return;
@@ -154,7 +154,7 @@ namespace UnitSystem
                 HideMesh(equipSlot);
         }
 
-        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, VisibleWearable wearable)
+        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, VisibleArmor wearable)
         {
             if (myUnit.Gender == Gender.Male)
             {

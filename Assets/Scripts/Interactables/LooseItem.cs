@@ -98,7 +98,7 @@ namespace InteractableObjects
                         unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, null);
                     }
                 }
-                else if (UnitEquipment.IsRingEquipSlot(targetEquipSlot))
+                /*else if (UnitEquipment.IsRingEquipSlot(targetEquipSlot))
                 {
                     if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot))
                     {
@@ -114,7 +114,7 @@ namespace InteractableObjects
                         equipped = true;
                         unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, null);
                     }
-                }
+                }*/
                 else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false || (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
                 {
                     equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);

@@ -9,7 +9,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 
 namespace InventorySystem
 {
-    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Accessory, Ring1, Ring2 }
+    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Legs }
     public enum WeaponSet { One = 1, Two = 2 }
 
     public class UnitEquipment : MonoBehaviour
@@ -55,8 +55,8 @@ namespace InventorySystem
                 return false;
 
             if ((IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsHeldItemEquipSlot(targetEquipSlot) == false)
-                || (IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsRingEquipSlot(targetEquipSlot) == false)
-                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
+                //|| (IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsRingEquipSlot(targetEquipSlot) == false)
+                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && /*IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) == false &&*/ newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
                 return false;
 
             if (targetEquipSlot == EquipSlot.Quiver && newItemData.Item is Ammunition)
@@ -706,7 +706,7 @@ namespace InventorySystem
                 return EquipSlot.LeftHeldItem2;
         }
 
-        public EquipSlot GetOppositeRingEquipSlot(EquipSlot ringEquipSlot)
+        /*public EquipSlot GetOppositeRingEquipSlot(EquipSlot ringEquipSlot)
         {
             if (ringEquipSlot != EquipSlot.Ring1 && ringEquipSlot != EquipSlot.Ring2)
             {
@@ -718,7 +718,7 @@ namespace InventorySystem
                 return EquipSlot.Ring2;
             else
                 return EquipSlot.Ring1;
-        }
+        }*/
 
         EquipmentSlot GetEquipmentSlotFromIndex(int index)
         {
@@ -795,7 +795,7 @@ namespace InventorySystem
                 return;
 
             // We only show meshes for these types of equipment:
-            if (IsHeldItemEquipSlot(equipSlot) == false && itemData.Item is VisibleWearable == false)
+            if (IsHeldItemEquipSlot(equipSlot) == false && itemData.Item is VisibleArmor == false)
                 return;
 
             if (EquipSlotIsFull(equipSlot) == false || itemData == null || itemData.Item == null)
@@ -821,7 +821,7 @@ namespace InventorySystem
                     myUnit.unitActionHandler.SetDefaultSelectedAction();
             }
             else
-                myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (VisibleWearable)itemData.Item);
+                myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (VisibleArmor)itemData.Item);
         }
 
         public void RemoveEquipmentMesh(EquipSlot equipSlot)
@@ -1059,7 +1059,7 @@ namespace InventorySystem
 
         public static bool IsWearableContainerEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Back || equipSlot == EquipSlot.Belt || equipSlot == EquipSlot.Quiver;
 
-        public static bool IsRingEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
+        //public static bool IsRingEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
 
         public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Backpack;
 

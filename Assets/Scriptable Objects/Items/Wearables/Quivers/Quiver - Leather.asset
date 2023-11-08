@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Leather Quiver
   pluralName: 
-  description: Holds 2 bundles of arrows.
+  description: A sturdy and practical container crafted from leather to hold and
+    protect your arrows.
   itemType: 70
   mainMaterial: 23
   itemSize: 4

@@ -115,7 +115,7 @@ namespace InventorySystem
 
         public bool IsHeldItemSlot() => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
-        public bool IsRingSlot() => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
+        //public bool IsRingSlot() => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
 
         public override void HighlightSlots()
         {
@@ -134,8 +134,8 @@ namespace InventorySystem
                     validSlot = true;
                 else if ((draggedItem is Weapon || draggedItem is Shield) && IsHeldItemSlot())
                     validSlot = true;
-                else if (draggedItem is Ring && IsRingSlot())
-                    validSlot = true;
+                //else if (draggedItem is Ring && IsRingSlot())
+                    //validSlot = true;
             }
 
             InventoryUI.SetValidDragPosition(validSlot);

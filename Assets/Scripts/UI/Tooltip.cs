@@ -20,8 +20,8 @@ namespace GeneralUI
         [SerializeField] Image image;
         [SerializeField] Button button;
 
-        StringBuilder tooltipStringBuilder = new StringBuilder();
         StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder secondaryStringBuilder = new StringBuilder();
 
         readonly int maxCharactersPerLine_Title = 20;
         readonly int maxCharactersPerLine = 44;
@@ -36,57 +36,80 @@ namespace GeneralUI
             if (itemData == null || itemData.Item == null)
                 return;
 
-            tooltipStringBuilder.Clear();
+            stringBuilder.Clear();
 
             // Name
-            tooltipStringBuilder.Append("<align=center><b><size=22>");
+            stringBuilder.Append("<align=center><b><size=22>");
             SplitText(itemData.Name(), maxCharactersPerLine_Title);
-            tooltipStringBuilder.Append("</size></b></align>");
+            stringBuilder.Append("</size></b></align>");
 
             // If Equipped
             if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.slots.Contains((EquipmentSlot)slot)))
-                tooltipStringBuilder.Append("<align=center><i><b><size=19>- Equipped -</size></b></i></align>\n\n");
+                stringBuilder.Append("<align=center><i><b><size=19>- Equipped -</size></b></i></align>\n\n");
             else
-                tooltipStringBuilder.Append("\n");
+                stringBuilder.Append("\n");
             // tooltipStringBuilder.Append($"- {EnumToSpacedString(itemData.Item.ItemType)} -</align>\n\n");
 
             // Description
-            tooltipStringBuilder.Append("<size=16>");
+            stringBuilder.Append("<size=16>");
             SplitText(itemData.Item.Description, maxCharactersPerLine);
             stringBuilder.Append("</size>");
-            tooltipStringBuilder.Append("\n");
 
             if (itemData.Item.MaxUses > 1)
-                tooltipStringBuilder.Append($"<i>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</i>\n\n");
+                stringBuilder.Append($"\n  <i>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</i>\n");
             else if (itemData.Item.MaxStackSize > 1)
-                tooltipStringBuilder.Append($"<i>{itemData.CurrentStackSize} / {itemData.Item.MaxStackSize}</i>\n\n");
+                stringBuilder.Append($"\n  <i>{itemData.CurrentStackSize} / {itemData.Item.MaxStackSize}</i>\n");
 
             if (itemData.Item is Weapon)
             {
-                tooltipStringBuilder.Append($"Damage: {itemData.Damage}\n");
+                stringBuilder.Append($"\n  Damage: {itemData.Damage}");
+                stringBuilder.Append("\n");
             }
             else if (itemData.Item is Shield)
             {
-                tooltipStringBuilder.Append($"Block Power: {itemData.BlockPower}\n");
-                tooltipStringBuilder.Append($"Bash Damage: {itemData.Damage}\n");
+                stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
+                stringBuilder.Append($"\n  Bash Damage: {itemData.Damage}");
+                stringBuilder.Append("\n");
             }
             else if (itemData.Item is Armor)
             {
-                tooltipStringBuilder.Append($"Armor: {itemData.Defense}\n");
+                stringBuilder.Append($"\n  Armor: {itemData.Defense}");
+                stringBuilder.Append("\n");
             }
             else if (itemData.Item is Backpack)
             {
                 if (itemData.Item.Backpack.InventorySections.Length > 1)
-                    tooltipStringBuilder.Append($"<i>+{itemData.Item.Backpack.InventorySections.Length - 1} additional pockets</i>\n");
+                {
+                    stringBuilder.Append($"\n  <i>+{itemData.Item.Backpack.InventorySections.Length - 1} additional pockets</i>");
+                    stringBuilder.Append("\n");
+                }
             }
             else if (itemData.Item is Quiver)
             {
-                tooltipStringBuilder.Append($"<i>{itemData.Item.Quiver.InventorySections[0].AmountOfSlots} {EnumToSpacedString(itemData.Item.Quiver.InventorySections[0].AllowedItemTypes[0])} slots</i>\n");
+                stringBuilder.Append($"\n  <i>+{itemData.Item.Quiver.InventorySections[0].AmountOfSlots} {EnumToSpacedString(itemData.Item.Quiver.InventorySections[0].AllowedItemTypes[0])} slots</i>");
+                stringBuilder.Append("\n");
+            }
+            else if (itemData.Item is Belt)
+            {
+                // Added Belt Attachments
+                Belt belt = itemData.Item as Belt;
+                if (belt.BeltPouchNames.Length > 0)
+                {
+                    for (int i = 0; i < belt.BeltPouchNames.Length; i++)
+                    {
+                        if (belt.BeltPouchNames[i] != "")
+                            stringBuilder.Append($"\n  <i>+ {belt.BeltPouchNames[i]}</i>");
+                        else
+                            Debug.LogWarning($"{belt.Name} has an empty Belt Pouch Name at index {i}");
+                    }
+
+                    stringBuilder.Append("\n");
+                }
             }
 
-            tooltipStringBuilder.Append($"\nValue: {itemData.Value}");
+            stringBuilder.Append($"\nValue: {itemData.Value}");
 
-            textMesh.text = tooltipStringBuilder.ToString();
+            textMesh.text = stringBuilder.ToString();
             gameObject.SetActive(true);
 
             RecalculateTooltipSize();
@@ -95,22 +118,22 @@ namespace GeneralUI
 
         public void ShowActionTooltip(ActionBarSlot actionBarSlot)
         {
-            tooltipStringBuilder.Clear();
+            stringBuilder.Clear();
             if (actionBarSlot is ItemActionBarSlot)
             {
                 ItemActionBarSlot itemActionBarSlot = actionBarSlot as ItemActionBarSlot;
                 if (itemActionBarSlot.itemData == null || itemActionBarSlot.itemData.Item == null)
                     return;
 
-                tooltipStringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.itemData.Item.Name}</b></size></align>");
+                stringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.itemData.Item.Name}</b></size></align>");
             }
             else
             {
-                tooltipStringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.actionType.ActionName}</b></size></align>\n\n");
+                stringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.actionType.ActionName}</b></size></align>\n\n");
                 SplitText(actionBarSlot.actionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine);
             }
 
-            textMesh.text = tooltipStringBuilder.ToString();
+            textMesh.text = stringBuilder.ToString();
             gameObject.SetActive(true);
 
             RecalculateTooltipSize();
@@ -122,13 +145,13 @@ namespace GeneralUI
             if (looseItem == null || looseItemData == null || looseItemData.Item == null)
                 ClearTooltip();
 
-            tooltipStringBuilder.Clear();
-            tooltipStringBuilder.Append($"<align=center><size=16><b>{looseItemData.Item.Name}");
+            stringBuilder.Clear();
+            stringBuilder.Append($"<align=center><size=16><b>{looseItemData.Item.Name}");
             if (looseItemData.CurrentStackSize > 1)
-                tooltipStringBuilder.Append($" x {looseItemData.CurrentStackSize}");
-            tooltipStringBuilder.Append("</b></size></align>");
+                stringBuilder.Append($" x {looseItemData.CurrentStackSize}");
+            stringBuilder.Append("</b></size></align>");
 
-            textMesh.text = tooltipStringBuilder.ToString();
+            textMesh.text = stringBuilder.ToString();
             if (clickable)
             {
                 button.onClick.AddListener(delegate { InteractWithLooseItem_OnClick(looseItem); });
@@ -151,7 +174,7 @@ namespace GeneralUI
 
         public void ClearTooltip()
         {
-            tooltipStringBuilder.Clear();
+            stringBuilder.Clear();
             button.onClick.RemoveAllListeners();
             gameObject.SetActive(false);
         }
@@ -331,10 +354,10 @@ namespace GeneralUI
 
         string EnumToSpacedString(Enum enumValue)
         {
-            stringBuilder.Clear();
+            secondaryStringBuilder.Clear();
             string enumString = enumValue.ToString();
 
-            stringBuilder.Append(enumString[0]); // Append the first character
+            secondaryStringBuilder.Append(enumString[0]); // Append the first character
             for (int i = 1; i < enumString.Length; i++)
             {
                 char currentChar = enumString[i];
@@ -342,34 +365,34 @@ namespace GeneralUI
                 if (char.IsUpper(currentChar) && char.IsLower(enumString[i - 1]))
                 {
                     // Insert a space before a capital letter that follows a lowercase letter
-                    stringBuilder.Append(' ');
+                    secondaryStringBuilder.Append(' ');
                 }
 
-                stringBuilder.Append(currentChar);
+                secondaryStringBuilder.Append(currentChar);
             }
 
-            return stringBuilder.ToString();
+            return secondaryStringBuilder.ToString();
         }
 
         void SplitText(string originalText, int maxCharsPerLine)
         {
-            stringBuilder.Clear();
+            secondaryStringBuilder.Clear();
             foreach (string word in originalText.Split(' '))
             {
-                if (stringBuilder.Length + word.Length <= maxCharsPerLine)
+                if (secondaryStringBuilder.Length + word.Length <= maxCharsPerLine)
                 {
-                    stringBuilder.Append($"{word} ");
+                    secondaryStringBuilder.Append($"{word} ");
                 }
                 else
                 {
-                    tooltipStringBuilder.AppendLine(stringBuilder.ToString().TrimEnd());
-                    stringBuilder.Clear().Append($"{word} ");
+                    stringBuilder.AppendLine(secondaryStringBuilder.ToString().TrimEnd());
+                    secondaryStringBuilder.Clear().Append($"{word} ");
                 }
             }
 
             // Add the remaining text (if any) as the last line.
-            if (stringBuilder.Length > 0)
-                tooltipStringBuilder.AppendLine($"{stringBuilder.ToString().TrimEnd()}");
+            if (secondaryStringBuilder.Length > 0)
+                stringBuilder.AppendLine($"{secondaryStringBuilder.ToString().TrimEnd()}");
         }
 
         void RecalculateTooltipSize()
