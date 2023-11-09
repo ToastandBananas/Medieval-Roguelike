@@ -328,6 +328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3945c63d399bb904a8e8e95ef2116a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 4471245059765168945}
   endurance:
     baseValue: 5
     minValue: 1

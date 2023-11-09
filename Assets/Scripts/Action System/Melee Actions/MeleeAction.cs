@@ -53,17 +53,22 @@ namespace ActionSystem
         
         void AttackTarget(HeldItem heldWeaponAttackingWith)
         {
-            // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-            bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-            unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
+            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+            if (attackDodged)
+            {
+                Debug.Log($"{targetEnemyUnit.name} dodged {unit.name}'s attack");
+            }
+            else
+            {
+                // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
 
-            if (attackBlocked)
-                itemBlockedWith.BlockAttack(unit);
+                if (attackBlocked)
+                    itemBlockedWith.BlockAttack(unit);
+            }
 
-            // TODO: Come up with a method determining headshots
-            bool headShot = false;
-
-            unit.StartCoroutine(WaitToDamageTargets(heldWeaponAttackingWith, headShot));
+            unit.StartCoroutine(WaitToDamageTargets(heldWeaponAttackingWith));
         }
 
         IEnumerator Attack()
@@ -121,40 +126,62 @@ namespace ActionSystem
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
-                // Try to block the attack
+                // Try to dodge or block the attack
+                bool attackDodged = false;
                 bool attackBlocked = false;
                 bool headShot = false;
                 if (unit.UnitEquipment.IsUnarmed())
                 {
-                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(null, headShot);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    if (attackDodged == false)
+                    {
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        DamageTargets(null, headShot);
+                    }
                 }
                 else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
                 {
-                    bool mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
+                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    bool mainAttackBlocked = false;
+                    bool offhandAttackBlocked = false;
+                    if (mainAttackDodged == false)
+                    {
+                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
+                    }
 
-                    bool offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
+                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    if (offhandAttackDodged == false)
+                    {
+                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
+                    }
+
+                    if (mainAttackDodged || offhandAttackDodged)
+                        attackDodged = true;
 
                     if (mainAttackBlocked || offhandAttackBlocked)
                         attackBlocked = true;
                 }
                 else
                 {
-                    attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
-                        DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot); // Right hand weapon attack
-                    else
-                        DamageTargets(null, headShot); // Fallback to unarmed damage
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    if (attackDodged == false)
+                    {
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                            DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot); // Right hand weapon attack
+                        else
+                            DamageTargets(null, headShot); // Fallback to unarmed damage
+                    }
                 }
 
                 // Rotate towards the target
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
-                // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
-                if (attackBlocked)
+                // If the attack was dodged or blocked and the defending unit isn't facing their attacker, turn to face the attacker
+                if (attackDodged || attackBlocked)
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                 unit.unitActionHandler.SetIsAttacking(false);

@@ -8,6 +8,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 using UnitSystem;
 using ActionSystem;
 using GeneralUI;
+using TMPro;
 
 namespace InventorySystem
 {
@@ -38,6 +39,9 @@ namespace InventorySystem
 
         [Header("Container UI")]
         [SerializeField] ContainerUI[] containerUIs;
+
+        [Header("Other UI")]
+        [SerializeField] TextMeshProUGUI weightText;
 
         public static Slot activeSlot { get; private set; }
 
@@ -521,6 +525,8 @@ namespace InventorySystem
             }
             return null;
         }
+
+        public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.stats.currentCarryWeight} / {UnitManager.player.stats.MaxCarryWeight} lbs";
 
         public static void SetValidDragPosition(bool valid) => validDragPosition = valid;
 

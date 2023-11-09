@@ -152,9 +152,14 @@ namespace ActionSystem
                 // If the player is too far away from the Interactable to interact with it
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
                 {
-                    // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
-                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                    if (player.unitActionHandler.moveAction.canMove)
+                    {
+                        // Queue a Move Action towards the Interactable
+                        player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedInteractable);
+                        player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, highlightedInteractable.CanInteractAtMyGridPosition()));
+                    }
+                    else
+                        Debug.Log("You cannot move...");
                 }
                 else
                 {
@@ -168,9 +173,14 @@ namespace ActionSystem
                 // If the player is too far away from the Interactable to interact with it
                 if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, highlightedUnit.GridPosition) > LevelGrid.diaganolDistance)
                 {
-                    // Queue a Move Action towards the Interactable
-                    player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.unitInteractable);
-                    player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
+                    if (player.unitActionHandler.moveAction.canMove)
+                    {
+                        // Queue a Move Action towards the Interactable
+                        player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(highlightedUnit.unitInteractable);
+                        player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(highlightedUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, highlightedUnit.unitInteractable.CanInteractAtMyGridPosition()));
+                    }
+                    else
+                        Debug.Log("You cannot move...");
                 }
                 else
                 {
@@ -268,12 +278,18 @@ namespace ActionSystem
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
                             {
-                                player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                if (player.unitActionHandler.moveAction.canMove)
+                                    player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                else
+                                    Debug.Log("You cannot move...");
                             }
                             // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                             else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
                             {
-                                player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                if (player.unitActionHandler.moveAction.canMove)
+                                    player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                else
+                                    Debug.Log("You cannot move...");
                             }
                             else
                             {
@@ -315,7 +331,12 @@ namespace ActionSystem
                     if (unitAtGridPosition != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(player.GridPosition, unitAtGridPosition.GridPosition) <= LevelGrid.diaganolDistance && player.vision.IsInLineOfSight_Raycast(unitAtGridPosition))
                         player.unitActionHandler.turnAction.QueueAction(mouseGridPosition);
                     else
-                        player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
+                    {
+                        if (player.unitActionHandler.moveAction.canMove)
+                            player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
+                        else
+                            Debug.Log("You cannot move...");
+                    }
                 }
             }
         }

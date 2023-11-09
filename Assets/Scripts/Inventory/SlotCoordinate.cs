@@ -83,7 +83,5 @@ namespace InventorySystem
             myInventory = inventory;
             parentSlotCoordinate = this;
         }
-
-        void SetInventory(Inventory inventory) => myInventory = inventory;
     }
 }

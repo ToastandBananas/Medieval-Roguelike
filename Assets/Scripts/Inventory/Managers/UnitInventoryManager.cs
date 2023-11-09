@@ -126,6 +126,77 @@ namespace InventorySystem
             return false;
         }
 
+        public float GetTotalInventoryWeight()
+        {
+            float weight = 0f;
+            for (int i = 0; i < mainInventory.ItemDatas.Count; i++)
+            {
+                weight += mainInventory.ItemDatas[i].Weight();
+            }
+
+            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped())
+            {
+                float backpackItemsWeight = 0f;
+                for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    backpackItemsWeight += backpackInventoryManager.ParentInventory.ItemDatas[i].Weight();
+                }
+
+                for (int subInvIndex = 0; subInvIndex < backpackInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < backpackInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        backpackItemsWeight += backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
+                    }
+                }
+
+                backpackItemsWeight *= UnitEquipment.equippedWeightFactor;
+                weight += backpackItemsWeight;
+            }
+
+            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            {
+                float beltItemsWeight = 0f;
+                for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    beltItemsWeight += beltInventoryManager.ParentInventory.ItemDatas[i].Weight();
+                }
+
+                for (int subInvIndex = 0; subInvIndex < beltInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < beltInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        beltItemsWeight += beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
+                    }
+                }
+
+                beltItemsWeight *= UnitEquipment.equippedWeightFactor;
+                weight += beltItemsWeight;
+            }
+
+            if (quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped())
+            {
+                float quiverItemsWeight = 0f;
+                for (int i = 0; i < quiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    quiverItemsWeight += quiverInventoryManager.ParentInventory.ItemDatas[i].Weight();
+                }
+
+                for (int subInvIndex = 0; subInvIndex < quiverInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < quiverInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        quiverItemsWeight += quiverInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
+                    }
+                }
+
+                quiverItemsWeight *= UnitEquipment.equippedWeightFactor;
+                weight += quiverItemsWeight;
+            }
+
+            return weight;
+        }
+
         public ContainerInventoryManager GetContainerInventoryManager(EquipSlot equipSlot)
         {
             if (equipSlot == EquipSlot.Back)

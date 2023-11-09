@@ -12,14 +12,19 @@ namespace UnitSystem
         public int pooledAP { get; private set; }
         public int APUntilTimeTick { get; private set; }
         public int lastUsedAP { get; private set; }
-        readonly int baseAP_PerSecond = 60;
+        // readonly int baseAP_PerSecond = 60;
 
         public int currentEnergy { get; private set; }
         readonly int baseEnergy = 20;
         readonly float energyRegenPerTurn = 0.25f;
         float energyRegenBuildup;
 
+        public float currentCarryWeight { get; private set; }
+
+        [SerializeField] Unit unit;
+
         [Header("Attributes")]
+        [SerializeField] IntStat agility;
         [SerializeField] IntStat endurance;
         [SerializeField] IntStat speed;
         [SerializeField] IntStat strength;
@@ -42,14 +47,38 @@ namespace UnitSystem
         [SerializeField] float unarmedAttackRange = 1.4f;
         [SerializeField] int baseUnarmedDamage = 5;
 
-        Unit unit;
-
         void Awake()
         {
-            unit = GetComponent<Unit>();
-
             APUntilTimeTick = MaxAP();
             currentEnergy = MaxEnergy();
+        }
+
+        void UpdateUnit()
+        {
+            if (unit.IsPlayer)
+                TimeSystem.IncreaseTime();
+
+            unit.vision.UpdateVision();
+
+            // We already are running this after the Move and Turn actions are complete, so no need to run it again
+            if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
+                unit.vision.FindVisibleUnitsAndObjects();
+
+            RegenerateEnergy();
+
+            /*
+            unit.status.UpdateBuffs();
+            unit.status.UpdateInjuries();
+            unit.status.RegenerateStamina();
+            unit.nutrition.DrainStaminaBonus();
+
+            if (unit.unitActionHandler.canPerformActions || unit.IsPlayer)
+            {
+                unit.nutrition.DrainNourishment();
+                unit.nutrition.DrainWater();
+                unit.nutrition.DrainNausea();
+            }
+            */
         }
 
         #region AP
@@ -59,7 +88,7 @@ namespace UnitSystem
             ActionSystemUI.UpdateActionPointsText();
         }
 
-        public int MaxAP() => Mathf.RoundToInt((baseAP_PerSecond * TimeSystem.defaultTimeTickInSeconds) + (speed.GetValue() * 5f));
+        public int MaxAP() => Mathf.RoundToInt(speed.GetValue() * 3f);
 
         public void UseAP(int amount)
         {
@@ -151,6 +180,156 @@ namespace UnitSystem
         public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP();
         #endregion
 
+        #region Blocking
+        public int NaturalBlockPower => Mathf.RoundToInt(strength.GetValue() * 2.5f);
+
+        public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
+        {
+            float blockChance = shieldSkill.GetValue() * 2f;
+            blockChance = Mathf.RoundToInt((blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
+
+            // If attacker is directly beside the Unit
+            if (attackerBesideUnit)
+                blockChance *= 0.5f;
+
+            if (blockChance < 0f) blockChance = 0f;
+            return blockChance;
+        }
+
+        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
+        {
+            Weapon weapon = heldWeapon.itemData.Item.Weapon;
+            float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
+            blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
+
+            if (shieldEquipped)
+                blockChance *= 0.65f;
+
+            // If attacker is directly beside the Unit
+            if (attackerBesideUnit)
+                blockChance *= 0.5f;
+
+            if (blockChance < 0f) blockChance = 0f;
+            return blockChance;
+        }
+
+        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower + (shieldSkill.GetValue() * 2) + heldShield.itemData.BlockPower;
+
+        public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
+        {
+            Weapon weapon = heldWeapon.itemData.Item.Weapon;
+            return Mathf.RoundToInt((NaturalBlockPower + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
+        }
+
+        public float WeaponBlockModifier(Weapon weapon)
+        {
+            switch (weapon.WeaponType)
+            {
+                case WeaponType.Throwing:
+                    return 0.2f;
+                case WeaponType.Dagger:
+                    return 0.4f;
+                case WeaponType.Sword:
+                    if (weapon.IsTwoHanded)
+                        return 1.45f;
+                    return 1.3f;
+                case WeaponType.Axe:
+                    if (weapon.IsTwoHanded)
+                        return 0.9f;
+                    return 0.8f;
+                case WeaponType.Mace:
+                    if (weapon.IsTwoHanded)
+                        return 1.2f;
+                    return 1.1f;
+                case WeaponType.WarHammer:
+                    if (weapon.IsTwoHanded)
+                        return 0.8f;
+                    return 0.65f;
+                case WeaponType.Spear:
+                    return 1f;
+                case WeaponType.Polearm:
+                    return 1.1f;
+                default:
+                    return 0f;
+            }
+        }
+        #endregion
+
+        #region Carry Weight
+        public float MaxCarryWeight => strength.GetValue() * 5f;
+
+        public void AdjustCarryWeight(float amount) => currentCarryWeight += Mathf.RoundToInt(amount * 100f) / 100f;
+
+        public void UpdateCarryWeight()
+        {
+            currentCarryWeight = 0f;
+            if (unit.UnitInventoryManager != null)
+                AdjustCarryWeight(unit.UnitInventoryManager.GetTotalInventoryWeight());
+
+            if (unit.UnitEquipment != null)
+                AdjustCarryWeight(unit.UnitEquipment.GetTotalEquipmentWeight());
+
+            if (CarryWeightRatio() >= 2f)
+                unit.unitActionHandler.moveAction.SetCanMove(false);
+            else
+                unit.unitActionHandler.moveAction.SetCanMove(true);
+
+            if (unit.IsPlayer)
+                InventoryUI.UpdatePlayerCarryWeightText();
+        }
+
+        public float CarryWeightRatio() => currentCarryWeight / MaxCarryWeight;
+
+        public float EncumbranceMoveCostModifier()
+        {
+            float carryWeightRatio = CarryWeightRatio();
+            if (carryWeightRatio <= 0.5f)
+                return 1f;
+            else
+            {
+                if (carryWeightRatio > 2f)
+                    carryWeightRatio = 2f;
+
+                return 1f + ((carryWeightRatio * 1.5f) - 0.5f);
+            }
+        }
+
+        float EncumbranceDodgeChanceMultiplier()
+        {
+            float carryWeightRatio = CarryWeightRatio();
+            if (carryWeightRatio <= 0.5f)
+                return 1f;
+            else
+            {
+                if (carryWeightRatio > 2f)
+                    carryWeightRatio = 2f;
+
+                // Calculate the dodge chance multiplier as a linear reduction
+                if (carryWeightRatio <= 1f)
+                    return 1f - (carryWeightRatio / 3f);
+                else
+                    return 1f - (carryWeightRatio / 2f);
+            }
+        }
+        #endregion
+
+        #region Dodging
+        public float DodgeChance(bool attackerBesideUnit)
+        {
+            float dodgeChance = 0f;
+            if (CarryWeightRatio() < 2f)
+                dodgeChance = (agility.GetValue() / 1.35f) * EncumbranceDodgeChanceMultiplier();
+
+            // If attacker is directly beside the Unit
+            if (attackerBesideUnit)
+                dodgeChance *= 0.5f;
+
+            if (dodgeChance < 0f) dodgeChance = 0f;
+            Debug.Log(dodgeChance);
+            return dodgeChance;
+        }
+        #endregion
+
         #region Energy
         public int MaxEnergy() => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 10f));
 
@@ -202,100 +381,6 @@ namespace UnitSystem
         public bool HasEnoughEnergy(int energyCost) => currentEnergy >= energyCost;
         #endregion
 
-        void UpdateUnit()
-        {
-            if (unit.IsPlayer)
-                TimeSystem.IncreaseTime();
-
-            unit.vision.UpdateVision();
-
-            // We already are running this after the Move and Turn actions are complete, so no need to run it again
-            if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
-                unit.vision.FindVisibleUnitsAndObjects();
-
-            RegenerateEnergy();
-
-            /*
-            unit.status.UpdateBuffs();
-            unit.status.UpdateInjuries();
-            unit.status.RegenerateStamina();
-            unit.nutrition.DrainStaminaBonus();
-
-            if (unit.unitActionHandler.canPerformActions || unit.IsPlayer)
-            {
-                unit.nutrition.DrainNourishment();
-                unit.nutrition.DrainWater();
-                unit.nutrition.DrainNausea();
-            }
-            */
-        }
-
-        public IntStat Speed() => speed;
-
-        public IntStat Strength() => strength;
-
-        public IntStat AxeSkill() => axeSkill;
-
-        public IntStat BowSkill() => bowSkill;
-
-        public IntStat CrossbowSkill() => crossbowSkill;
-
-        public IntStat DaggerSkill() => daggerSkill;
-
-        public IntStat MaceSkill() => maceSkill;
-
-        public IntStat PolearmSkill() => polearmSkill;
-
-        public IntStat ShieldSkill() => shieldSkill;
-
-        public IntStat SpearSkill() => spearSkill;
-
-        public IntStat SwordSkill() => swordSkill;
-
-        public IntStat ThrowingSkill() => throwingSkill;
-
-        public IntStat WarHammerSkill() => warHammerSkill;
-
-        public int NaturalBlockPower() => Mathf.RoundToInt(strength.GetValue() * 2.5f);
-
-        public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
-        {
-            float blockChance = shieldSkill.GetValue() * 2f;
-            blockChance = Mathf.RoundToInt((blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
-
-            // If attacker is directly beside the Unit
-            if (attackerBesideUnit)
-                blockChance *= 0.5f;
-
-            if (blockChance < 0f) blockChance = 0f;
-            return blockChance;
-        }
-
-        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
-        {
-            Weapon weapon = heldWeapon.itemData.Item.Weapon;
-            float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
-            blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
-
-            if (shieldEquipped)
-                blockChance *= 0.65f;
-
-            // If attacker is directly beside the Unit
-            if (attackerBesideUnit)
-                blockChance *= 0.5f;
-
-            if (blockChance < 0f) blockChance = 0f;
-            return blockChance;
-        }
-
-        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower() + (ShieldSkill().GetValue() * 2) + heldShield.itemData.BlockPower;
-
-        public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
-        {
-            Weapon weapon = heldWeapon.itemData.Item.Weapon;
-            return Mathf.RoundToInt((NaturalBlockPower() + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
-        }
-
         public float RangedAccuracy(ItemData rangedWeaponItemData)
         {
             float accuracy = 0f;
@@ -339,43 +424,24 @@ namespace UnitSystem
             }
         }
 
-        public float WeaponBlockModifier(Weapon weapon)
-        {
-            switch (weapon.WeaponType)
-            {
-                case WeaponType.Throwing:
-                    return 0.2f;
-                case WeaponType.Dagger:
-                    return 0.4f;
-                case WeaponType.Sword:
-                    if (weapon.IsTwoHanded)
-                        return 1.45f;
-                    return 1.3f;
-                case WeaponType.Axe:
-                    if (weapon.IsTwoHanded)
-                        return 0.9f;
-                    return 0.8f;
-                case WeaponType.Mace:
-                    if (weapon.IsTwoHanded)
-                        return 1.2f;
-                    return 1.1f;
-                case WeaponType.WarHammer:
-                    if (weapon.IsTwoHanded)
-                        return 0.8f;
-                    return 0.65f;
-                case WeaponType.Spear:
-                    return 1f;
-                case WeaponType.Polearm:
-                    return 1.1f;
-                default:
-                    return 0f;
-            }
-        }
+        public IntStat Agility => agility;
+        public IntStat Speed => speed;
+        public IntStat Strength => strength;
+
+        public IntStat AxeSkill => axeSkill;
+        public IntStat BowSkill => bowSkill;
+        public IntStat CrossbowSkill => crossbowSkill;
+        public IntStat DaggerSkill => daggerSkill;
+        public IntStat MaceSkill => maceSkill;
+        public IntStat PolearmSkill => polearmSkill;
+        public IntStat ShieldSkill => shieldSkill;
+        public IntStat SpearSkill => spearSkill;
+        public IntStat SwordSkill => swordSkill;
+        public IntStat ThrowingSkill => throwingSkill;
+        public IntStat WarHammerSkill => warHammerSkill;
 
         public bool CanFightUnarmed => canFightUnarmed;
-
         public float UnarmedAttackRange => unarmedAttackRange;
-
         public int BaseUnarmedDamage => baseUnarmedDamage;
     }
 }

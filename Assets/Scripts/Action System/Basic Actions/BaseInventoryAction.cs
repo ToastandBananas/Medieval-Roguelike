@@ -12,14 +12,14 @@ namespace ActionSystem
 
         public static int GetItemsActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
-            float cost = CalculateItemsCost(itemData.CurrentWeight, GetItemSizeMultiplier(itemData.Item.ItemSize), stackSize);
+            float cost = CalculateItemsCost(itemData.Weight(), GetItemSizeMultiplier(itemData.Item.ItemSize), stackSize);
 
             if (itemsContainerInventoryManager != null)
             {
                 for (int i = 0; i < itemsContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
                     ItemData itemInContainer = itemsContainerInventoryManager.ParentInventory.ItemDatas[i];
-                    cost += CalculateItemsCost(itemInContainer.CurrentWeight, GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
+                    cost += CalculateItemsCost(itemInContainer.Weight(), GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
                 }
 
                 for (int i = 0; i < itemsContainerInventoryManager.SubInventories.Length; i++)
@@ -27,7 +27,7 @@ namespace ActionSystem
                     for (int j = 0; j < itemsContainerInventoryManager.SubInventories[i].ItemDatas.Count; j++)
                     {
                         ItemData itemInContainer = itemsContainerInventoryManager.SubInventories[i].ItemDatas[j];
-                        cost += CalculateItemsCost(itemInContainer.CurrentWeight, GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
+                        cost += CalculateItemsCost(itemInContainer.Weight(), GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
                     }
                 }
             }

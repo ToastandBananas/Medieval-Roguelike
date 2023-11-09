@@ -509,7 +509,7 @@ namespace UnitSystem
             }
         }
 
-        void AddVisibleLooseItem(LooseItem looseItemToAdd)
+        public void AddVisibleLooseItem(LooseItem looseItemToAdd)
         {
             if (knownLooseItems.ContainsKey(looseItemToAdd) == false)
             {

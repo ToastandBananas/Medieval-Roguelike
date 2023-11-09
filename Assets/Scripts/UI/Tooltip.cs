@@ -107,6 +107,8 @@ namespace GeneralUI
                 }
             }
 
+            stringBuilder.Append($"\nWeight: {itemData.Weight()}\n");
+
             stringBuilder.Append($"\nValue: {itemData.Value}");
 
             textMesh.text = stringBuilder.ToString();

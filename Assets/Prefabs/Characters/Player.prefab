@@ -1129,7 +1129,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8039517263746701573}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.09, y: 0.385, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1153,6 +1153,7 @@ MonoBehaviour:
   parentTransform: {fileID: 8220662913183796560}
   viewRadius: 25
   viewAngle: 185
+  opportunityAttackViewAngle: 220
   unitsMask:
     serializedVersion: 2
     m_Bits: 8
@@ -1371,6 +1372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3945c63d399bb904a8e8e95ef2116a47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unit: {fileID: 6440773195933579921}
   endurance:
     baseValue: 5
     minValue: 1
@@ -1382,7 +1384,7 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   strength:
-    baseValue: 5
+    baseValue: 35
     minValue: 1
     modifiers: 
     percentModifiers: []
@@ -1417,7 +1419,7 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   shieldSkill:
-    baseValue: 5
+    baseValue: 1000
     minValue: 1
     modifiers: 
     percentModifiers: []

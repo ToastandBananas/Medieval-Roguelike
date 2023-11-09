@@ -116,15 +116,17 @@ namespace GeneralUI
 
         void TakeItem(ItemData itemData)
         {
-            if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
-            {
-                ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
-                if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
-                    UnitManager.player.UnitInventoryManager.MainInventory.TryAddItem(itemData, UnitManager.player);
-            }
-            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
+            if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
                 UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+            }
+            else if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
+            {
+                ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
+                if (containerInventory.containerInventoryManager == UnitManager.player.BackpackInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.BeltInventoryManager || containerInventory.containerInventoryManager == UnitManager.player.QuiverInventoryManager)
+                    UnitManager.player.UnitInventoryManager.MainInventory.TryAddItem(itemData, UnitManager.player);
+                else
+                    UnitManager.player.UnitInventoryManager.TryAddItemToInventories(itemData);
             }
             else if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(itemData))
             {

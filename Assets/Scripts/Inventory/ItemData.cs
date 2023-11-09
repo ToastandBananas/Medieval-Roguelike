@@ -332,9 +332,13 @@ namespace InventorySystem
             return item.Name;
         }
 
-        public float CurrentWeight => item.Weight * (remainingUses / item.MaxUses);
-
-        public float CurrentStackWeight => item.Weight * currentStackSize;
+        public float Weight()
+        {
+            if (item.MaxUses > 1)
+                return item.Weight * (remainingUses / item.MaxUses);
+            else
+                return item.Weight * currentStackSize;
+        }
 
         public void Use(int uses) => remainingUses -= uses;
 

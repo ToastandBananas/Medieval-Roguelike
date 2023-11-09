@@ -118,8 +118,11 @@ namespace ActionSystem
             unit.unitActionHandler.targetUnits.Clear();
         }
 
-        public IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith, bool headShot)
+        public IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
         {
+            // TODO: Come up with a headshot method
+            bool headShot = false;
+
             if (heldWeaponAttackingWith != null)
                 yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.itemData.Item as Weapon) / 2f);
             else
@@ -182,19 +185,20 @@ namespace ActionSystem
 
                     Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
 
-                    // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                    bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                    unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
+                    // The targetUnit tries to dodge, and if they fail that, they try to block instead
+                    if (targetUnit.unitActionHandler.TryDodgeAttack(unit) == false)
+                    {
+                        // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
+                        bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
 
-                    // If the target is successfully blocking the attack
-                    if (attackBlocked)
-                        itemBlockedWith.BlockAttack(unit);
+                        // If the target is successfully blocking the attack
+                        if (attackBlocked)
+                            itemBlockedWith.BlockAttack(unit);
+                    }
                 }
 
-                // TODO: Come up with a method determining headshots
-                bool headShot = false;
-
-                unit.StartCoroutine(WaitToDamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot));
+                unit.StartCoroutine(WaitToDamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()));
 
                 // Play the attack animations and handle blocking for each target
                 PlayAttackAnimation();
@@ -214,14 +218,19 @@ namespace ActionSystem
 
                     // Get the unit at this grid position
                     Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-                    bool headShot = false;
 
-                    // The targetUnit tries to block the attack and if they do, they face their attacker
-                    if (targetUnit.unitActionHandler.TryBlockMeleeAttack(unit))
-                        targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+                    // The targetUnit tries to dodge, and if they fail that, they try to block instead
+                    if (targetUnit.unitActionHandler.TryDodgeAttack(unit) == false)
+                    {
+                        bool headShot = false;
 
-                    // Damage this unit
-                    DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot);
+                        // The targetUnit tries to block the attack and if they do, they face their attacker
+                        if (targetUnit.unitActionHandler.TryBlockMeleeAttack(unit))
+                            targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+
+                        // Damage this unit
+                        DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot);
+                    }
                 }
 
                 unit.unitActionHandler.SetIsAttacking(false);

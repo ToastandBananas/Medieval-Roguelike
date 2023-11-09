@@ -35,7 +35,7 @@ MonoBehaviour:
   actionTypes: []
   inventorySections:
   - amountOfSlots: 8
-    maxSlotsPerRow: 4
+    maxSlotsPerRow: 8
     slotWidth: 1
     slotHeight: 1
     placeholderSprite: {fileID: 0}

@@ -40,6 +40,8 @@ namespace InventorySystem
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
+            unit.vision.AddVisibleLooseItem(looseItem);
+
             if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
                 looseItem.HideMeshRenderer();
 
@@ -48,6 +50,9 @@ namespace InventorySystem
 
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
+
+            if (inventory.MyUnit != null)
+                inventory.MyUnit.stats.UpdateCarryWeight();
 
             // In this case, the Player is dropping an item from a dead Unit's inventory
             if (unit.health.IsDead())
@@ -117,6 +122,8 @@ namespace InventorySystem
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
+            unitEquipment.MyUnit.vision.AddVisibleLooseItem(looseItem);
+
             if (unitEquipment.MyUnit != UnitManager.player && UnitManager.player.vision.IsVisible(unitEquipment.MyUnit) == false)
                 looseItem.HideMeshRenderer();
 
@@ -131,6 +138,9 @@ namespace InventorySystem
                 unitEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
             unitEquipment.EquippedItemDatas[(int)equipSlot] = null;
+
+            if (unitEquipment.MyUnit != null)
+                unitEquipment.MyUnit.stats.UpdateCarryWeight();
 
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();

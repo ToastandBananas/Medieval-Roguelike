@@ -16,6 +16,8 @@ namespace ActionSystem
         public GridPosition nextTargetGridPosition { get; private set; }
         Vector3 nextTargetPosition;
 
+        public bool canMove { get; private set; }
+
         List<Vector3> positionList = new List<Vector3>();
         int positionIndex;
 
@@ -61,6 +63,14 @@ namespace ActionSystem
             // If there's no path
             if (positionList.Count == 0 || finalTargetGridPosition == unit.GridPosition)
             {
+                CompleteAction();
+                TurnManager.Instance.StartNextUnitsTurn(unit);
+                yield break;
+            }
+
+            if (canMove == false)
+            {
+                Debug.Log($"{unit.name} tries to move, but they can't.");
                 CompleteAction();
                 TurnManager.Instance.StartNextUnitsTurn(unit);
                 yield break;
@@ -373,7 +383,6 @@ namespace ActionSystem
 
         public override int GetActionPointsCost()
         {
-            // TODO: Cost 600 (6 seconds) per square (or more depending on terrain type)
             int cost = defaultTileMoveCost;
             float floatCost = cost;
 
@@ -443,8 +452,8 @@ namespace ActionSystem
 
             unit.BlockCurrentPosition();
 
-            // if (unit.IsNPC) Debug.Log("Move Cost (" + nextTargetPosition + "): " + cost);
-            return cost;
+            // if (unit.IsPlayer) Debug.Log("Move Cost (" + nextTargetPosition + "): " + Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier()));
+            return Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier());
         }
 
         Vector3 GetNextPathPosition_XZ(Vector3 nextPointOnPath)
@@ -569,6 +578,8 @@ namespace ActionSystem
             // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
             return true;
         }
+
+        public void SetCanMove(bool canMove) => this.canMove = canMove;
 
         public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
 

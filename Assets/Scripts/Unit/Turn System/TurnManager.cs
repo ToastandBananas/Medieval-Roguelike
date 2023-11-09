@@ -190,7 +190,7 @@ namespace UnitSystem
             }
 
             if (npcs_HaventFinishedTurn.Count > 0)
-                npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.stats.Speed().GetValue()).ToList();
+                npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.stats.Speed.GetValue()).ToList();
         }
 
         public bool IsPlayerTurn() => activeUnit == UnitManager.player;
