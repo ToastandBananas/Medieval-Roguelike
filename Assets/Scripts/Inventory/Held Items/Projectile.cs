@@ -25,13 +25,13 @@ namespace InventorySystem
         [Header("Item Data")]
         [SerializeField] ItemData itemData;
 
-        Unit shooter;
+        Unit shooter, targetUnit;
 
         Vector3 targetPosition, movementDirection;
 
+        public bool shouldMoveProjectile { get; private set; }
         int speed;
         float currentVelocity;
-        bool moveProjectile;
 
         Action onProjectileBehaviourComplete;
 
@@ -87,9 +87,19 @@ namespace InventorySystem
 
         public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool hitTarget)
         {
+            this.targetUnit = targetUnit;
             ReadyProjectile();
 
-            if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.isBlocking)
+            bool attackDodged = false;
+            if (hitTarget)
+                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon, false);
+
+            if (attackDodged)
+            {
+                targetPosition = targetUnit.transform.position - (targetUnit.transform.forward * 0.5f);
+                targetUnit.unitAnimator.DoDodge(shooter, this);
+            }
+            else if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.isBlocking)
                 targetPosition = targetUnit.unitMeshManager.leftHeldItem.transform.position;
             else if (targetUnit.unitMeshManager.rightHeldItem != null && targetUnit.unitMeshManager.rightHeldItem.isBlocking)
                 targetPosition = targetUnit.unitMeshManager.rightHeldItem.transform.position;
@@ -97,15 +107,16 @@ namespace InventorySystem
                 targetPosition = targetUnit.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(hitTarget);
+            Vector3 offset = GetOffset(hitTarget, attackDodged);
 
             float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
 
-            while (moveProjectile)
+            while (shouldMoveProjectile)
             {
                 animationTime += speed * Time.deltaTime;
-                Vector3 nextPosition = MathParabola.Parabola(startPos, targetUnit.transform.position + offset, arcHeight, animationTime / 5f);
+                Vector3 nextPosition = MathParabola.Parabola(startPos, targetPosition + offset, arcHeight, animationTime / 5f);
+
                 float displacement = Vector3.Distance(transform.position, nextPosition);
                 currentVelocity = displacement / Time.deltaTime;
                 movementDirection = (nextPosition - transform.position).normalized;
@@ -130,7 +141,7 @@ namespace InventorySystem
             projectileCollider.enabled = true;
             trailRenderer.enabled = true;
             meshRenderer.enabled = true;
-            moveProjectile = true;
+            shouldMoveProjectile = true;
 
             SetupTrail();
         }
@@ -151,12 +162,17 @@ namespace InventorySystem
             return arcHeight;
         }
 
-        Vector3 GetOffset(bool hitTarget)
+        Vector3 GetOffset(bool hitTarget, bool attackDodged)
         {
             float offsetX, offsetZ;
 
             // If the shooter is missing
-            if (hitTarget == false)
+            if (attackDodged)
+            {
+                offsetX = UnityEngine.Random.Range(-0.25f, 0.25f);
+                offsetZ = UnityEngine.Random.Range(-0.25f, 0.25f);
+            }
+            else if (hitTarget == false)
             {
                 float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData);
                 float minOffset = 0.35f;
@@ -179,8 +195,8 @@ namespace InventorySystem
             }
             else // If the shooter is hitting the target, create a slight offset so they don't hit the same exact spot every time
             {
-                offsetX = UnityEngine.Random.Range(-0.1f, 0.1f);
-                offsetZ = UnityEngine.Random.Range(-0.1f, 0.1f);
+                offsetX = UnityEngine.Random.Range(-0.15f, 0.15f);
+                offsetZ = UnityEngine.Random.Range(-0.15f, 0.15f);
             }
 
             return new Vector3(offsetX, 0f, offsetZ);
@@ -199,7 +215,7 @@ namespace InventorySystem
             shooter.unitActionHandler.targetUnits.Clear();
             shooter.unitActionHandler.SetIsAttacking(false);
 
-            moveProjectile = false;
+            shouldMoveProjectile = false;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
 
@@ -277,6 +293,9 @@ namespace InventorySystem
             }
 
             looseProjectile.gameObject.SetActive(true);
+
+            if (targetUnit != null)
+                targetUnit.vision.AddVisibleLooseItem(looseProjectile);
         }
 
         void SetupTrail()
@@ -310,10 +329,12 @@ namespace InventorySystem
             onProjectileBehaviourComplete = null;
 
             itemData = null;
-            moveProjectile = false;
+            shouldMoveProjectile = false;
             shooter = null;
+            targetUnit = null;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
+
             ProjectilePool.ReturnToPool(this);
         }
 

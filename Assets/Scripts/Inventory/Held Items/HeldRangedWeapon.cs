@@ -57,11 +57,20 @@ namespace InventorySystem
                     DropItemManager.DropItem(null, unit, loadedProjectile.ItemData);
             }
 
-            loadedProjectile.Disable();
-            loadedProjectile = null;
-            isLoaded = false;
+            RemoveProjectile();
 
             ActionSystemUI.UpdateActionVisuals();
+        }
+
+        public void RemoveProjectile()
+        {
+            if (loadedProjectile != null)
+            {
+                loadedProjectile.Disable();
+                loadedProjectile = null;
+            }
+
+            isLoaded = false;
         }
 
         void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)

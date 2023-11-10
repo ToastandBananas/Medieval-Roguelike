@@ -12,10 +12,18 @@ namespace Utilities
     {
         void Update()
         {
+            // PauseWhenLessThanTargetFPS(30);
             if (Input.GetKeyDown(KeyCode.T))
             {
                 // PlayTestSound();
             }
+        }
+
+        void PauseWhenLessThanTargetFPS(int targetFPS)
+        {
+            float currentFPS = 1f / Time.deltaTime;
+            if (currentFPS < targetFPS)
+                Debug.Break();
         }
 
         void ShowDebugPathToMousePosition()

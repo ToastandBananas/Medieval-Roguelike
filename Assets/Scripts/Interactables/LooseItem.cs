@@ -213,13 +213,13 @@ namespace InteractableObjects
             if (itemData == null || itemData.Item == null)
                 return;
 
-            //Debug.Log("Show: " + name);
+            // Debug.Log("Show: " + name);
             meshFilter.mesh = itemData.Item.PickupMesh;
         }
 
         public void HideMeshRenderer()
         {
-            //Debug.Log("Hide: " + name);
+            // Debug.Log("Hide: " + name);
             meshFilter.mesh = null;
         }
 

@@ -29,7 +29,7 @@ namespace UnitSystem
         [SerializeField] IntStat speed;
         [SerializeField] IntStat strength;
 
-        [Header("Skills")]
+        [Header("Weapon Skills")]
         [SerializeField] IntStat axeSkill;
         [SerializeField] IntStat bowSkill;
         [SerializeField] IntStat crossbowSkill;
@@ -40,6 +40,7 @@ namespace UnitSystem
         [SerializeField] IntStat spearSkill;
         [SerializeField] IntStat swordSkill;
         [SerializeField] IntStat throwingSkill;
+        [SerializeField] IntStat unarmedSkill;
         [SerializeField] IntStat warHammerSkill;
 
         [Header("Unarmed Combat")]
@@ -183,10 +184,13 @@ namespace UnitSystem
         #region Blocking
         public int NaturalBlockPower => Mathf.RoundToInt(strength.GetValue() * 2.5f);
 
-        public float ShieldBlockChance(HeldShield heldShield, bool attackerBesideUnit)
+        public float ShieldBlockChance(HeldShield heldShield, Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
             float blockChance = shieldSkill.GetValue() * 2f;
-            blockChance = Mathf.RoundToInt((blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn) * 100f) / 100f;
+            blockChance = blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn;
+
+            // Block chance is reduced depending on the attacker's weapon skill
+            blockChance *= EnemyWeaponSkillBlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
 
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
@@ -196,11 +200,14 @@ namespace UnitSystem
             return blockChance;
         }
 
-        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, bool attackerBesideUnit, bool shieldEquipped)
+        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit, bool shieldEquipped)
         {
             Weapon weapon = heldWeapon.itemData.Item.Weapon;
             float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
-            blockChance = Mathf.RoundToInt((blockChance + weapon.BlockChanceAddOn) * 100f) / 100f;
+            blockChance = blockChance + weapon.BlockChanceAddOn;
+
+            // Block chance is reduced depending on the attacker's weapon skill
+            blockChance *= EnemyWeaponSkillBlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
 
             if (shieldEquipped)
                 blockChance *= 0.65f;
@@ -252,6 +259,26 @@ namespace UnitSystem
                 default:
                     return 0f;
             }
+        }
+
+        float EnemyWeaponSkillBlockChanceModifier(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
+        {
+            float modifier;
+            if (weaponAttackingWith != null)
+                modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith.WeaponType) / 100f / 2.5f);
+            else
+                modifier = 1f - (attackingUnit.stats.UnarmedSkill.GetValue() / 100f / 2.5f);
+
+            // Weapon skill effectiveness is reduced when dual wielding
+            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
+            {
+                if (attackerUsingOffhand)
+                    modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
+                else
+                    modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
+            }
+            Debug.Log("Enemy Weapon Skill Block Modifier: " + modifier);
+            return modifier;
         }
         #endregion
 
@@ -314,19 +341,39 @@ namespace UnitSystem
         #endregion
 
         #region Dodging
-        public float DodgeChance(bool attackerBesideUnit)
+        public float DodgeChance(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
             float dodgeChance = 0f;
             if (CarryWeightRatio() < 2f)
-                dodgeChance = (agility.GetValue() / 1.35f) * EncumbranceDodgeChanceMultiplier();
+                dodgeChance = agility.GetValue() / 1.35f * EncumbranceDodgeChanceMultiplier() * EnemyWeaponSkillDodgeChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
 
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
                 dodgeChance *= 0.5f;
 
             if (dodgeChance < 0f) dodgeChance = 0f;
-            Debug.Log(dodgeChance);
+            Debug.Log("Dodge Chance: " + dodgeChance);
             return dodgeChance;
+        }
+
+        float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
+        {
+            float modifier;
+            if (weaponAttackingWith != null)
+                modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith.WeaponType) / 100f / 2f);
+            else
+                modifier = 1f - (attackingUnit.stats.UnarmedSkill.GetValue() / 100f / 2f);
+
+            // Weapon skill effectiveness is reduced when dual wielding
+            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
+            {
+                if (attackerUsingOffhand)
+                    modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
+                else
+                    modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
+            }
+            Debug.Log("Enemy Weapon Skill Dodge Modifier: " + modifier);
+            return modifier;
         }
         #endregion
 
@@ -438,6 +485,7 @@ namespace UnitSystem
         public IntStat SpearSkill => spearSkill;
         public IntStat SwordSkill => swordSkill;
         public IntStat ThrowingSkill => throwingSkill;
+        public IntStat UnarmedSkill => unarmedSkill;
         public IntStat WarHammerSkill => warHammerSkill;
 
         public bool CanFightUnarmed => canFightUnarmed;

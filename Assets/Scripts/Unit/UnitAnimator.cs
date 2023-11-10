@@ -39,16 +39,66 @@ namespace UnitSystem
         // Used in animation Key Frame
         void StopAttacking() => unit.unitActionHandler.SetIsAttacking(false);
 
+        public void DoDodge(Unit attackingUnit, Projectile projectileToDodge) => StartCoroutine(Dodge(attackingUnit, projectileToDodge));
+
+        IEnumerator Dodge(Unit attackingUnit, Projectile projectileToDodge)
+        {
+            // Face the attacker
+            if (unit.unitActionHandler.turnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
+                unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
+
+            float dodgeDistance;
+            if (projectileToDodge != null)
+                dodgeDistance = 0.75f;
+            else
+                dodgeDistance = 0.5f;
+
+            float dodgeDuration = 0.15f;
+            float elapsedTime = 0f;
+
+            Vector3 originalPosition = unit.GridPosition.WorldPosition;
+
+            // Randomly choose to dodge right or left
+            Vector3 dodgeDirection = Random.Range(0, 2) == 0 ? -unit.transform.right : unit.transform.right;
+            dodgeDirection.Normalize();
+
+            Vector3 dodgeTargetPosition = originalPosition + dodgeDirection * dodgeDistance;
+
+            if (projectileToDodge != null)
+            {
+                // Wait until the arrow is close enough to start our dodge
+                while (projectileToDodge.shouldMoveProjectile && Vector3.Distance(unit.transform.position, projectileToDodge.transform.position) > 2f)
+                    yield return null;
+            }
+
+            // Dodge
+            while (elapsedTime < dodgeDuration && unit.health.IsDead() == false)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / dodgeDuration;
+                unit.transform.position = Vector3.Lerp(originalPosition, dodgeTargetPosition, t);
+                yield return null;
+            }
+
+            // Wait until the projectile has landed before moving back
+            if (projectileToDodge != null)
+            {
+                while (projectileToDodge.shouldMoveProjectile)
+                    yield return null;
+            }
+
+            StartCoroutine(ReturnToOriginalPosition(dodgeTargetPosition, originalPosition, 0.1f));
+        }
+
         public void DoSlightKnockback(Transform attackerTransform) => StartCoroutine(SlightKnockback(attackerTransform));
 
         IEnumerator SlightKnockback(Transform attackerTransform)
         {
             float knockbackForce = 0.25f;
             float knockbackDuration = 0.1f;
-            float returnDuration = 0.1f;
-            float elapsedTime = 0;
+            float elapsedTime = 0f;
 
-            Vector3 originalPosition = unit.transform.position;
+            Vector3 originalPosition = unit.GridPosition.WorldPosition;
             Vector3 knockbackDirection = (originalPosition - attackerTransform.position).normalized;
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
@@ -60,14 +110,17 @@ namespace UnitSystem
                 yield return null;
             }
 
-            // Reset the elapsed time for the return movement
-            elapsedTime = 0;
+            StartCoroutine(ReturnToOriginalPosition(knockbackTargetPosition, originalPosition, 0.1f));
+        }
 
+        IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
+        {
             // Return to original position
+            float elapsedTime = 0f;
             while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.isMoving == false)
             {
                 elapsedTime += Time.deltaTime;
-                unit.transform.position = Vector3.Lerp(knockbackTargetPosition, originalPosition, elapsedTime / returnDuration);
+                unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
                 yield return null;
             }
         }

@@ -926,7 +926,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 4042400735961756270}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.12
   m_Height: 0.58
   m_Direction: 2
@@ -1373,18 +1373,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 6440773195933579921}
+  agility:
+    baseValue: 50
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
   endurance:
     baseValue: 5
     minValue: 1
     modifiers: 
     percentModifiers: []
   speed:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   strength:
-    baseValue: 35
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []

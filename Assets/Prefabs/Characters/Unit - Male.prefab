@@ -329,73 +329,83 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 4471245059765168945}
+  agility:
+    baseValue: 50
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
   endurance:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   speed:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   strength:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   axeSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   bowSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   crossbowSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   daggerSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   maceSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   polearmSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   shieldSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   spearSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   swordSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   throwingSkill:
-    baseValue: 5
+    baseValue: 50
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
+  unarmedSkill:
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   warHammerSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
@@ -1434,7 +1444,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 6418375078083463654}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.12
   m_Height: 0.58
   m_Direction: 2

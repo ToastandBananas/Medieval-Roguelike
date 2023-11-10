@@ -6,7 +6,7 @@ namespace Utilities
     [System.Serializable]
     public class IntStat
     {
-        [SerializeField] int baseValue = 5;
+        [SerializeField] int baseValue = 50;
         [SerializeField] int minValue = 1;
 
         [SerializeField] List<int> modifiers = new List<int>();

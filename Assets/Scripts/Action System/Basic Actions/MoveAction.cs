@@ -28,6 +28,7 @@ namespace ActionSystem
 
         void Start()
         {
+            canMove = true;
             moveSpeed = defaultMoveSpeed;
             targetGridPosition = unit.GridPosition;
         }

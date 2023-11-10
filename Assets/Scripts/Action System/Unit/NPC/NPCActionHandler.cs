@@ -375,7 +375,22 @@ namespace ActionSystem
                 foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition))
                 {
                     // For each of these grid positions, get the best one for this combat action
-                    npcAIActions.Add(availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
+                    NPCAIAction npcAIAction = availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange);
+                    npcAIActions.Add(npcAIAction);
+                    /*for (int j = npcAIActions.Count - 1; j >= 0; j--)
+                    {
+                        if (npcAIActions[j].baseAction == npcAIAction.baseAction && npcAIActions[j] != npcAIAction)
+                        {
+                            // If the list already contains an NPCAIAction with the same BaseAction, remove it
+                            npcAIActions.Remove(npcAIAction);
+                            if (npcAIActions[j].actionValue > npcAIAction.actionValue)
+                            {
+                                // If this NPCAIAction has a higher actionValue, replace it with the one alreay in the list
+                                npcAIActions[j] = npcAIAction;
+                                continue;
+                            }
+                        }
+                    }*/
                 }
             }
 
@@ -407,7 +422,7 @@ namespace ActionSystem
                 // Find the index of the first accumulated weight greater than or equal to the random weight
                 int selectedIndex = accumulatedWeights.FindIndex(weight => weight >= randomWeight);
 
-                // Get the BaseAction from the corresponding NPCAIAction
+                // Get the BaseAttackAction from the corresponding NPCAIAction
                 chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction as BaseAttackAction;
 
                 // If an action was found

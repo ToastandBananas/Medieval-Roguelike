@@ -51,17 +51,19 @@ namespace ActionSystem
             unit.StartCoroutine(Attack());
         }
         
-        void AttackTarget(HeldItem heldWeaponAttackingWith)
+        void AttackTarget(HeldItem heldWeaponAttackingWith, bool isUsingOffhandWeapon)
         {
-            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+            Weapon weapon = null;
+            if (heldWeaponAttackingWith != null)
+                weapon = heldWeaponAttackingWith.itemData.Item.Weapon;
+
+            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weapon, isUsingOffhandWeapon);
             if (attackDodged)
-            {
-                Debug.Log($"{targetEnemyUnit.name} dodged {unit.name}'s attack");
-            }
+                targetEnemyUnit.unitAnimator.DoDodge(unit, null);
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, weapon, isUsingOffhandWeapon);
                 unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
 
                 if (attackBlocked)
@@ -94,19 +96,19 @@ namespace ActionSystem
                 if (unit.UnitEquipment.IsUnarmed())
                 {
                     unit.unitAnimator.DoDefaultUnarmedAttack();
-                    AttackTarget(null);
+                    AttackTarget(null, false);
                 }
                 else if (unit.UnitEquipment.IsDualWielding())
                 {
                     // Dual wield attack
                     unit.unitAnimator.StartDualMeleeAttack();
                     unit.unitMeshManager.rightHeldItem.DoDefaultAttack(targetGridPosition);
-                    AttackTarget(unit.unitMeshManager.rightHeldItem);
+                    AttackTarget(unit.unitMeshManager.rightHeldItem, false);
 
                     yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item as Weapon) / 2f) + 0.05f);
 
                     unit.unitMeshManager.leftHeldItem.DoDefaultAttack(targetGridPosition);
-                    AttackTarget(unit.unitMeshManager.leftHeldItem);
+                    AttackTarget(unit.unitMeshManager.leftHeldItem, true);
                 }
                 else
                 {
@@ -115,12 +117,12 @@ namespace ActionSystem
                     if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
                     {
                         unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack(targetGridPosition);
-                        AttackTarget(unit.unitMeshManager.GetPrimaryMeleeWeapon());
+                        AttackTarget(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false);
                     }
                     else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
                     {
                         unit.unitAnimator.DoDefaultUnarmedAttack();
-                        AttackTarget(null);
+                        AttackTarget(null, false);
                     }
                 }
             }
@@ -132,28 +134,28 @@ namespace ActionSystem
                 bool headShot = false;
                 if (unit.UnitEquipment.IsUnarmed())
                 {
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, null, false);
                         DamageTargets(null, headShot);
                     }
                 }
                 else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
                 {
-                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData.Item.Weapon, false);
                     bool mainAttackBlocked = false;
                     bool offhandAttackBlocked = false;
                     if (mainAttackDodged == false)
                     {
-                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData.Item.Weapon, false);
                         DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
                     }
 
-                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData.Item.Weapon, true);
                     if (offhandAttackDodged == false)
                     {
-                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
+                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData.Item.Weapon, true);
                         DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
                     }
 
@@ -165,12 +167,13 @@ namespace ActionSystem
                 }
                 else
                 {
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit);
+                    HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                        if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
-                            DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot); // Right hand weapon attack
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
+                        if (primaryMeleeWeapon != null)
+                            DamageTargets(primaryMeleeWeapon, headShot); // Right hand weapon attack
                         else
                             DamageTargets(null, headShot); // Fallback to unarmed damage
                     }

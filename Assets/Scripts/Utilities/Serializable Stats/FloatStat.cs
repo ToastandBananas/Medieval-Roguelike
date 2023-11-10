@@ -6,7 +6,8 @@ namespace Utilities
     [System.Serializable]
     public class FloatStat
     {
-        [SerializeField] float baseValue = 5f;
+        [SerializeField] float baseValue = 50f;
+        [SerializeField] float minValue = 1f;
 
         [SerializeField] List<float> modifiers = new List<float>();
 

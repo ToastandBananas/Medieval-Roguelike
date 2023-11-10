@@ -421,7 +421,7 @@ namespace UnitSystem
                     else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
                         looseItem.HideMeshRenderer();
                 }
-                else
+                else if (unit.IsPlayer && distToTarget > playerPerceptionDistance)
                     looseItem.HideMeshRenderer();
             }
 

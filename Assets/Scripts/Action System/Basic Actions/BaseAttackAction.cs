@@ -1,5 +1,7 @@
 using GridSystem;
 using InventorySystem;
+using Pathfinding;
+using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -138,21 +140,39 @@ namespace ActionSystem
 
         protected virtual IEnumerator DoAttack()
         {
-            // Target Units become aware of their attacker, if they weren't already
-            foreach (Unit targetUnit in unit.unitActionHandler.targetUnits.Keys)
+            // Get the Units within the attack position
+            List<Unit> targetUnits = ListPool<Unit>.Claim(); 
+            foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
             {
+                if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
+                    continue;
+
+                Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
+                targetUnits.Add(targetUnit);
+                
                 // The unit being attacked becomes aware of this unit
+                // If directly being targeted, become an enemy
                 if (targetUnit.unitActionHandler.targetUnits.Count == 1)
                     BecomeVisibleEnemyOfTarget(targetUnit);
                 else
                 {
+                    // Otherwise, just become visible
                     if (targetUnit.alliance.IsEnemy(unit))
                         BecomeVisibleEnemyOfTarget(targetUnit);
+                    else if (targetUnit.alliance.IsAlly(unit))
+                        BecomeVisibleAllyOfTarget(targetUnit);
+                    else
+                        targetUnit.vision.AddVisibleUnit(unit);
                 }
             }
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
-            yield return null;
+            yield return null; 
+            
+            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+            Weapon weapon = null;
+            if (primaryMeleeWeapon != null)
+                weapon = primaryMeleeWeapon.itemData.Item.Weapon;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
@@ -171,26 +191,31 @@ namespace ActionSystem
                 }
 
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, false);
+                if (targetUnits.Count == 1) // If there's only 1 target Unit in the attack area, they mind as well just face that target
+                {
+                    if (unit.unitActionHandler.turnAction.IsFacingTarget(targetUnits[0].GridPosition) == false)
+                        unit.unitActionHandler.turnAction.RotateTowardsPosition(targetUnits[0].transform.position, false);
+                }
+                else
+                {
+                    if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
+                        unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, false);
+                }
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.isRotating)
-                    yield return null; 
-                
-                foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
+                    yield return null;
+
+                for (int i = 0; i < targetUnits.Count; i++)
                 {
-                    if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
-                        continue;
-
-                    Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnit.unitActionHandler.TryDodgeAttack(unit) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weapon, false))
+                        targetUnits[i].unitAnimator.DoDodge(unit, null);
+                    else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnit.unitActionHandler.TryBlockMeleeAttack(unit);
-                        unit.unitActionHandler.targetUnits.TryGetValue(targetUnit, out HeldItem itemBlockedWith);
+                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weapon, false);
+                        unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
                         if (attackBlocked)
@@ -198,7 +223,7 @@ namespace ActionSystem
                     }
                 }
 
-                unit.StartCoroutine(WaitToDamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon()));
+                unit.StartCoroutine(WaitToDamageTargets(primaryMeleeWeapon));
 
                 // Play the attack animations and handle blocking for each target
                 PlayAttackAnimation();
@@ -209,32 +234,26 @@ namespace ActionSystem
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
                     unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, true);
 
-                // Loop through the grid positions in the attack area
-                foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
+                for (int i = 0; i < targetUnits.Count; i++)
                 {
-                    // Skip this position if there's no unit here
-                    if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
-                        continue;
-
-                    // Get the unit at this grid position
-                    Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
-
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnit.unitActionHandler.TryDodgeAttack(unit) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weapon, false) == false)
                     {
                         bool headShot = false;
 
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnit.unitActionHandler.TryBlockMeleeAttack(unit))
-                            targetUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weapon, false))
+                            targetUnits[i].unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                         // Damage this unit
-                        DamageTargets(unit.unitMeshManager.GetPrimaryMeleeWeapon(), headShot);
+                        DamageTargets(primaryMeleeWeapon, headShot);
                     }
                 }
 
                 unit.unitActionHandler.SetIsAttacking(false);
             }
+
+            ListPool<Unit>.Release(targetUnits);
 
             // Wait until the attack lands before completing the action
             while (unit.unitActionHandler.isAttacking)

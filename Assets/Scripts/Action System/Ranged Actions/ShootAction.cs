@@ -117,9 +117,10 @@ namespace ActionSystem
             BecomeVisibleEnemyOfTarget(targetEnemyUnit);
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
-            yield return null; 
+            yield return null;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
             if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
@@ -138,8 +139,7 @@ namespace ActionSystem
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit);
-                if (attackBlocked)
+                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData.Item.Weapon, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
@@ -154,10 +154,10 @@ namespace ActionSystem
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 bool missedTarget = TryHitTarget();
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData.Item.Weapon, false);
                 bool headShot = false;
                 if (missedTarget == false)
-                    DamageTargets(unit.unitMeshManager.GetHeldRangedWeapon(), headShot);
+                    DamageTargets(heldRangedWeapon, headShot);
 
                 // Rotate towards the target
                 if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
@@ -167,6 +167,7 @@ namespace ActionSystem
                 if (attackBlocked)
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
+                heldRangedWeapon.RemoveProjectile();
                 unit.unitActionHandler.SetIsAttacking(false);
             }
 
