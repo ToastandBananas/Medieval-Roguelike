@@ -48,6 +48,9 @@ namespace UnitSystem
         [SerializeField] float unarmedAttackRange = 1.4f;
         [SerializeField] int baseUnarmedDamage = 5;
 
+        readonly float maxBlockChance = 0.85f;
+        readonly float maxDodgeChance = 0.85f;
+
         void Awake()
         {
             APUntilTimeTick = MaxAP();
@@ -186,8 +189,8 @@ namespace UnitSystem
 
         public float ShieldBlockChance(HeldShield heldShield, Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
-            float blockChance = shieldSkill.GetValue() * 2f;
-            blockChance = blockChance + heldShield.itemData.Item.Shield.BlockChanceAddOn;
+            float blockChance = shieldSkill.GetValue() *  0.75f;
+            blockChance += blockChance * heldShield.itemData.BlockChanceAddOn / 100f;
 
             // Block chance is reduced depending on the attacker's weapon skill
             blockChance *= EnemyWeaponSkillBlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
@@ -196,15 +199,20 @@ namespace UnitSystem
             if (attackerBesideUnit)
                 blockChance *= 0.5f;
 
-            if (blockChance < 0f) blockChance = 0f;
+            if (blockChance < 0f) 
+                blockChance = 0f;
+            else if (blockChance > maxBlockChance) 
+                blockChance = maxBlockChance;
+
+            //Debug.Log($"{unit.name}'s Shield Block Chance: " + blockChance);
             return blockChance;
         }
 
         public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit, bool shieldEquipped)
         {
             Weapon weapon = heldWeapon.itemData.Item.Weapon;
-            float blockChance = swordSkill.GetValue() * 2f * WeaponBlockModifier(weapon);
-            blockChance = blockChance + weapon.BlockChanceAddOn;
+            float blockChance = swordSkill.GetValue() * 0.6f * WeaponBlockModifier(weapon);
+            blockChance += blockChance * weapon.BlockChanceAddOn / 100f;
 
             // Block chance is reduced depending on the attacker's weapon skill
             blockChance *= EnemyWeaponSkillBlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
@@ -216,20 +224,28 @@ namespace UnitSystem
             if (attackerBesideUnit)
                 blockChance *= 0.5f;
 
-            if (blockChance < 0f) blockChance = 0f;
+            if (blockChance < 0f) 
+                blockChance = 0f;
+            else if (blockChance > maxBlockChance) 
+                blockChance = maxBlockChance;
+
+            //Debug.Log($"{unit.name}'s Weapon Block Chance: " + blockChance);
             return blockChance;
         }
 
-        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower + (shieldSkill.GetValue() * 2) + heldShield.itemData.BlockPower;
+        public int ShieldBlockPower(HeldShield heldShield) => NaturalBlockPower + Mathf.RoundToInt(shieldSkill.GetValue() * 0.5f) + heldShield.itemData.BlockPower;
 
         public int WeaponBlockPower(HeldMeleeWeapon heldWeapon)
         {
-            Weapon weapon = heldWeapon.itemData.Item.Weapon;
-            return Mathf.RoundToInt((NaturalBlockPower + (WeaponSkill(weapon.WeaponType) * 2)) * WeaponBlockModifier(weapon));
+            Weapon weapon = heldWeapon.itemData.Item as Weapon;
+            return Mathf.RoundToInt((NaturalBlockPower + Mathf.RoundToInt(WeaponSkill(weapon) * 0.5f)) * WeaponBlockModifier(weapon));
         }
 
         public float WeaponBlockModifier(Weapon weapon)
         {
+            if (weapon == null)
+                return 0f;
+
             switch (weapon.WeaponType)
             {
                 case WeaponType.Throwing:
@@ -238,7 +254,7 @@ namespace UnitSystem
                     return 0.4f;
                 case WeaponType.Sword:
                     if (weapon.IsTwoHanded)
-                        return 1.45f;
+                        return 1.4f;
                     return 1.3f;
                 case WeaponType.Axe:
                     if (weapon.IsTwoHanded)
@@ -250,7 +266,7 @@ namespace UnitSystem
                     return 1.1f;
                 case WeaponType.WarHammer:
                     if (weapon.IsTwoHanded)
-                        return 0.8f;
+                        return 0.75f;
                     return 0.65f;
                 case WeaponType.Spear:
                     return 1f;
@@ -263,11 +279,7 @@ namespace UnitSystem
 
         float EnemyWeaponSkillBlockChanceModifier(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
         {
-            float modifier;
-            if (weaponAttackingWith != null)
-                modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith.WeaponType) / 100f / 2.5f);
-            else
-                modifier = 1f - (attackingUnit.stats.UnarmedSkill.GetValue() / 100f / 2.5f);
+            float modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith) / 100f * 0.4f);
 
             // Weapon skill effectiveness is reduced when dual wielding
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
@@ -277,7 +289,7 @@ namespace UnitSystem
                 else
                     modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
             }
-            Debug.Log("Enemy Weapon Skill Block Modifier: " + modifier);
+            // Debug.Log("Enemy Weapon Skill Block Modifier: " + modifier);
             return modifier;
         }
         #endregion
@@ -333,9 +345,9 @@ namespace UnitSystem
 
                 // Calculate the dodge chance multiplier as a linear reduction
                 if (carryWeightRatio <= 1f)
-                    return 1f - (carryWeightRatio / 3f);
+                    return 1f - (carryWeightRatio * 0.33f);
                 else
-                    return 1f - (carryWeightRatio / 2f);
+                    return 1f - (carryWeightRatio * 0.5f);
             }
         }
         #endregion
@@ -351,18 +363,18 @@ namespace UnitSystem
             if (attackerBesideUnit)
                 dodgeChance *= 0.5f;
 
-            if (dodgeChance < 0f) dodgeChance = 0f;
-            Debug.Log("Dodge Chance: " + dodgeChance);
+            if (dodgeChance < 0f) 
+                dodgeChance = 0f;
+            else if (dodgeChance > maxDodgeChance) 
+                dodgeChance = maxDodgeChance;
+
+            // Debug.Log(unit.name + "'s Dodge Chance: " + dodgeChance);
             return dodgeChance;
         }
 
         float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
         {
-            float modifier;
-            if (weaponAttackingWith != null)
-                modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith.WeaponType) / 100f / 2f);
-            else
-                modifier = 1f - (attackingUnit.stats.UnarmedSkill.GetValue() / 100f / 2f);
+            float modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith) / 100f * 0.5f);
 
             // Weapon skill effectiveness is reduced when dual wielding
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
@@ -372,7 +384,7 @@ namespace UnitSystem
                 else
                     modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
             }
-            Debug.Log("Enemy Weapon Skill Dodge Modifier: " + modifier);
+            
             return modifier;
         }
         #endregion
@@ -441,9 +453,12 @@ namespace UnitSystem
             return accuracy;
         }
 
-        public int WeaponSkill(WeaponType weaponType)
+        public int WeaponSkill(Weapon weapon)
         {
-            switch (weaponType)
+            if (weapon == null) // Unarmed
+                return unarmedSkill.GetValue();
+
+            switch (weapon.WeaponType)
             {
                 case WeaponType.Bow:
                     return bowSkill.GetValue();
@@ -466,7 +481,7 @@ namespace UnitSystem
                 case WeaponType.Polearm:
                     return polearmSkill.GetValue();
                 default:
-                    Debug.LogError(weaponType.ToString() + " has not been implemented in this method. Fix me!");
+                    Debug.LogError(weapon.WeaponType.ToString() + " has not been implemented in this method. Fix me!");
                     return 0;
             }
         }

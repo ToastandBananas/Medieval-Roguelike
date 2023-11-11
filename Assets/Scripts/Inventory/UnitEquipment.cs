@@ -593,6 +593,18 @@ namespace InventorySystem
 
                 GetEquipmentSlot(EquipSlot.LeftHeldItem2).HideItemIcon();
                 GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = false;
+
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem1) == false)
+                {
+                    GetEquipmentSlot(EquipSlot.LeftHeldItem1).EnableSlotImage();
+                    GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = true;
+                }
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem1) == false)
+                {
+                    GetEquipmentSlot(EquipSlot.RightHeldItem1).EnableSlotImage();
+                    GetEquipmentSlot(EquipSlot.RightHeldItem1).PlaceholderImage.enabled = true;
+                }
             }
             else
             {
@@ -601,6 +613,18 @@ namespace InventorySystem
 
                 GetEquipmentSlot(EquipSlot.LeftHeldItem1).HideItemIcon();
                 GetEquipmentSlot(EquipSlot.LeftHeldItem1).PlaceholderImage.enabled = false;
+
+                if (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false)
+                {
+                    GetEquipmentSlot(EquipSlot.LeftHeldItem2).EnableSlotImage();
+                    GetEquipmentSlot(EquipSlot.LeftHeldItem2).PlaceholderImage.enabled = true;
+                }
+
+                if (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false)
+                {
+                    GetEquipmentSlot(EquipSlot.RightHeldItem2).EnableSlotImage();
+                    GetEquipmentSlot(EquipSlot.RightHeldItem2).PlaceholderImage.enabled = true;
+                }
             }
 
             slotVisualsCreated = true;
@@ -1055,6 +1079,41 @@ namespace InventorySystem
                     return true;
             }
             return false;
+        }
+
+        public void GetEquippedWeapons(out Weapon primaryWeapon, out Weapon secondaryWeapon)
+        {
+            if (IsDualWielding())
+            {
+                primaryWeapon = myUnit.unitMeshManager.GetRightHeldMeleeWeapon().itemData.Item.Weapon;
+                secondaryWeapon = myUnit.unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon;
+                return;
+            }
+            else if (MeleeWeaponEquipped())
+            {
+                primaryWeapon = myUnit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon;
+                secondaryWeapon = null;
+                return;
+            }
+            else if (RangedWeaponEquipped())
+            {
+                primaryWeapon = myUnit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon;
+                secondaryWeapon = null;
+                return;
+            }
+
+            primaryWeapon = null;
+            secondaryWeapon = null;
+        }
+
+        public EquipSlot GetEquipSlotFromItemData(ItemData itemData)
+        {
+            for (int i = 0; i < equippedItemDatas.Length; i++)
+            {
+                if (itemData == equippedItemDatas[i])
+                    return (EquipSlot)i;
+            }
+            return EquipSlot.LeftHeldItem1;
         }
 
         public bool IsDualWielding() =>

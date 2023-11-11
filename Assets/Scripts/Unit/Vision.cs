@@ -71,6 +71,15 @@ namespace UnitSystem
             return true;
         }
 
+        public bool IsVisible(GameObject unitGameObject)
+        {
+            Unit targetUnit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitGameObject.transform.position));
+            if (targetUnit == null)
+                return false;
+
+            return IsVisible(targetUnit);
+        }
+
         public bool IsVisible(LooseItem looseItemToCheck)
         {
             if (knownLooseItems.ContainsKey(looseItemToCheck) == false)
@@ -558,6 +567,8 @@ namespace UnitSystem
             if (angleIsGlobal == false) angleInDegrees += transform.eulerAngles.y;
             return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
         }
+
+        public LayerMask UnitsMask => unitsMask;
 
         public float ViewRadius => viewRadius;
 

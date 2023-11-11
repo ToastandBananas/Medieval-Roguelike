@@ -12,11 +12,16 @@ namespace InventorySystem
         public RectTransform IconsParent_RectTransform => iconsParent_RectTransform;
         public Image[] QuiverAmmoImages => quiverAmmoImages;
 
+        void Start()
+        {
+            UpdateQuiverSprites();
+        }
+
         public void UpdateQuiverSprites()
         {
             HideQuiverSprites();
 
-            if (myUnitEquipment.MyUnit.UnitEquipment.QuiverEquipped() == false)
+            if (myUnitEquipment == null || myUnitEquipment.MyUnit.UnitEquipment.QuiverEquipped() == false)
                 return;
 
             int spriteCount = 0;

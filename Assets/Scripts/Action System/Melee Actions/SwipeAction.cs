@@ -5,6 +5,8 @@ using UnityEngine;
 using GridSystem;
 using UnitSystem;
 using Utilities;
+using InventorySystem;
+using System.Collections;
 
 namespace ActionSystem
 {
@@ -12,6 +14,22 @@ namespace ActionSystem
     {
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
+
+        readonly int baseAPCost = 300;
+
+        public override int GetActionPointsCost()
+        {
+            float cost;
+            if (unit.UnitEquipment != null)
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon);
+            else
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
+
+            // If not facing the target position, add the cost of turning towards that position
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
+            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
+            return Mathf.RoundToInt(cost);
+        }
 
         public override void TakeAction()
         {
@@ -41,7 +59,7 @@ namespace ActionSystem
         public override void PlayAttackAnimation()
         {
             unit.unitAnimator.StartMeleeAttack();
-            unit.unitMeshManager.GetPrimaryMeleeWeapon().DoSwipeAttack(targetGridPosition);
+            unit.unitMeshManager.GetPrimaryHelMeleeWeapon().DoSwipeAttack(targetGridPosition);
         }
 
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().GetActionGridPositionsInRange(startGridPosition);
@@ -52,7 +70,7 @@ namespace ActionSystem
             if (targetUnit == null)
                 return validGridPositionsList;
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -115,7 +133,7 @@ namespace ActionSystem
                 return validGridPositionsList;
             }
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
             nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -269,7 +287,7 @@ namespace ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
-                float minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MinRange;
+                float minAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -356,14 +374,14 @@ namespace ActionSystem
             };
         }
 
-        public override int GetActionPointsCost()
+        public override IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
         {
-            int cost = 300;
+            // TODO: Come up with a headshot method
+            bool headShot = false;
 
-            // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
-            return cost;
+            yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
+
+            DamageTargets(heldWeaponAttackingWith, headShot);
         }
 
         protected override void StartAction()
@@ -385,7 +403,7 @@ namespace ActionSystem
 
         public override string TooltipDescription()
         {
-            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
+            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
         }
 
         public override int GetEnergyCost() => 25;

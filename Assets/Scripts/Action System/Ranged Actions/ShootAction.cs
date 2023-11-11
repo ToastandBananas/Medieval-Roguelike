@@ -16,6 +16,8 @@ namespace ActionSystem
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
+        readonly int baseAPCost = 300;
+
         public override void QueueAction()
         {
             if (RangedWeaponIsLoaded() == false)
@@ -236,12 +238,12 @@ namespace ActionSystem
 
         public override int GetActionPointsCost()
         {
-            int cost = 300;
+            float cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon);
 
             // If not facing the target position, add the cost of turning towards that position
             unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
             cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
-            return cost;
+            return Mathf.RoundToInt(cost);
         }
 
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)

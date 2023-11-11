@@ -584,7 +584,7 @@ PrefabInstance:
     - target: {fileID: 1841632322173873611, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
@@ -599,12 +599,12 @@ PrefabInstance:
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
@@ -27634,9 +27634,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1782432552993377815, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
+      propertyPath: parentInventory.itemDatas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1782432552993377815, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
       propertyPath: parentInventory.inventoryLayout.maxSlots
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1782432552993377815, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: parentInventory.itemDatas.Array.data[0].item
+      value: 
+      objectReference: {fileID: 11400000, guid: e65b4b3164a23a5468026be5efd22ff0,
+        type: 2}
     - target: {fileID: 2208422553791110067, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_IsActive
@@ -27647,6 +27658,11 @@ PrefabInstance:
       propertyPath: manager
       value: 
       objectReference: {fileID: 671623199}
+    - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: swordSkill.baseValue
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3857642008309237419, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_IsActive
@@ -27963,7 +27979,7 @@ PrefabInstance:
     - target: {fileID: 8220662913183796560, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8220662913183796560, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}

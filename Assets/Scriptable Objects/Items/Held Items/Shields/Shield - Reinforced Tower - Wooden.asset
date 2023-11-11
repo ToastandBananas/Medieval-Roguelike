@@ -29,11 +29,6 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 150, y: 330}
-  meshes:
-  - {fileID: -2432090755550338912, guid: 50c800bcecc87c64282516b74f8e3b85, type: 3}
-  meshRendererMaterials:
-  - {fileID: 2100000, guid: d706111214f92d2488032ad9a4fda96f, type: 2}
-  - {fileID: 2100000, guid: faab919d05c83814aad7366d0aa7357a, type: 2}
   pickupMesh: {fileID: -2432090755550338912, guid: 8e7bc138b2beaeb429553502bddbfcae,
     type: 3}
   pickupMeshRendererMaterials:
@@ -41,10 +36,15 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 85852df1f6c4f754884016641c9d340c, type: 2}
   equipSlot: 0
   actionTypes: []
+  meshes:
+  - {fileID: -2432090755550338912, guid: 50c800bcecc87c64282516b74f8e3b85, type: 3}
+  meshRendererMaterials:
+  - {fileID: 2100000, guid: d706111214f92d2488032ad9a4fda96f, type: 2}
+  - {fileID: 2100000, guid: faab919d05c83814aad7366d0aa7357a, type: 2}
   idlePosition_Left: {x: 0.23, y: 0, z: -0.23}
   idlePosition_Right: {x: -0.23, y: 0, z: -0.23}
   idleRotation_Left: {x: 0, y: -30, z: 0}
   idleRotation_Right: {x: 0, y: 30, z: 0}
   blockPowerRange: {x: 12, y: 18}
   damageRange: {x: 4, y: 7}
-  blockChanceAddOn: 10
+  blockChanceAddOnRange: {x: 12, y: 15}

@@ -68,6 +68,7 @@ namespace GeneralUI
             else if (itemData.Item is Shield)
             {
                 stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
+                stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn}%");
                 stringBuilder.Append($"\n  Bash Damage: {itemData.Damage}");
                 stringBuilder.Append("\n");
             }

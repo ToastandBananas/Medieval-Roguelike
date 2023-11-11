@@ -62,7 +62,7 @@ namespace ActionSystem
                     damageAmount = heldWeaponAttackingWith.itemData.Damage;
                     if (unit.UnitEquipment.IsDualWielding())
                     {
-                        if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryMeleeWeapon())
+                        if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHelMeleeWeapon())
                             damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);
                         else
                             damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldSecondaryEfficiency);
@@ -118,17 +118,19 @@ namespace ActionSystem
             }
 
             unit.unitActionHandler.targetUnits.Clear();
+
+            TryFumbleWeapon(heldWeaponAttackingWith);
         }
 
-        public IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
+        public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
         {
             // TODO: Come up with a headshot method
             bool headShot = false;
 
             if (heldWeaponAttackingWith != null)
-                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.itemData.Item as Weapon) / 2f);
+                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.itemData.Item as Weapon));
             else
-                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime() / 2f);
+                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
 
             DamageTargets(heldWeaponAttackingWith, headShot);
         }
@@ -169,7 +171,7 @@ namespace ActionSystem
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null; 
             
-            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
             Weapon weapon = null;
             if (primaryMeleeWeapon != null)
                 weapon = primaryMeleeWeapon.itemData.Item.Weapon;
@@ -261,6 +263,84 @@ namespace ActionSystem
 
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
+        }
+
+        public bool OtherUnitInTheWay(Unit unit, GridPosition startGridPosition, GridPosition targetGridPosition)
+        {
+            Unit targetUnit = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
+            if (targetUnit == null)
+                return false;
+
+            // Check if there's a Unit in the way of the attack
+            float raycastDistance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
+            Vector3 attackDir = (targetGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
+            if (Physics.Raycast(startGridPosition.WorldPosition, attackDir, out RaycastHit hit, raycastDistance, unit.vision.UnitsMask))
+            {
+                if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject && unit.vision.IsVisible(hit.collider.gameObject))
+                    return true;
+            }
+            return false;
+        }
+
+        public void TryFumbleWeapon(HeldItem heldItem)
+        {
+            if (heldItem == null)
+                return;
+
+            if (Random.Range(0f, 100f) <= GetFumbleChance(heldItem.itemData.Item.Weapon))
+            {
+                if (unit.UnitEquipment.ItemDataEquipped(heldItem.itemData) == false)
+                    return;
+
+                DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(heldItem.itemData));
+            }
+        }
+
+        protected virtual float GetFumbleChance(Weapon weapon)
+        {
+            int weaponSkill = unit.stats.WeaponSkill(weapon);
+            int strength = unit.stats.Strength.GetValue();
+            float weaponWeight = weapon.Weight;
+
+            float fumbleChance = (50f - weaponSkill) * 0.4f;
+            fumbleChance += weaponWeight / strength * 15f;
+
+            if (fumbleChance < 0f)
+                fumbleChance = 0f;
+            // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
+            return fumbleChance;
+        }
+
+        protected float ActionPointCostModifier_WeaponType(Weapon weapon)
+        {
+            if (weapon == null) // Unarmed
+                return 0.5f;
+
+            switch (weapon.WeaponType)
+            {
+                case WeaponType.Bow:
+                    return 1f;
+                case WeaponType.Crossbow:
+                    return 0.2f;
+                case WeaponType.Throwing:
+                    return 0.6f;
+                case WeaponType.Dagger:
+                    return 0.55f;
+                case WeaponType.Sword:
+                    return 1f;
+                case WeaponType.Axe:
+                    return 1.35f;
+                case WeaponType.Mace:
+                    return 1.3f;
+                case WeaponType.WarHammer:
+                    return 1.5f;
+                case WeaponType.Spear:
+                    return 0.85f;
+                case WeaponType.Polearm:
+                    return 1.25f;
+                default:
+                    return 1f;
+            }
         }
 
         public abstract void PlayAttackAnimation();

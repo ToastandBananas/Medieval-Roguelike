@@ -1379,7 +1379,7 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   endurance:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
@@ -1394,57 +1394,62 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   axeSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   bowSkill:
-    baseValue: 20
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   crossbowSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   daggerSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   maceSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   polearmSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   shieldSkill:
-    baseValue: 1000
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   spearSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   swordSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   throwingSkill:
-    baseValue: 5
+    baseValue: 50
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
+  unarmedSkill:
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []
   warHammerSkill:
-    baseValue: 5
+    baseValue: 50
     minValue: 1
     modifiers: 
     percentModifiers: []

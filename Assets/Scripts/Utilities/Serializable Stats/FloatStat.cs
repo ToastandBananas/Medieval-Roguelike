@@ -18,6 +18,10 @@ namespace Utilities
             {
                 finalValue += modifiers[i];
             }
+
+            if (finalValue < minValue)
+                finalValue = minValue;
+
             return finalValue;
         }
 

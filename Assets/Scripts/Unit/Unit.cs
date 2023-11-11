@@ -127,7 +127,7 @@ namespace UnitSystem
             if (myUnitEquipment.RangedWeaponEquipped() && myUnitEquipment.HasValidAmmunitionEquipped())
                 return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
             else if (myUnitEquipment.MeleeWeaponEquipped())
-                return unitMeshManager.GetPrimaryMeleeWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
+                return unitMeshManager.GetPrimaryHelMeleeWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
             else
                 return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(targetUnit.GridPosition, accountForHeight);
         }

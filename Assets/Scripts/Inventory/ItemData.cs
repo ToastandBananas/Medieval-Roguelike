@@ -15,6 +15,7 @@ namespace InventorySystem
         [SerializeField] float accuracyModifier;
 
         [SerializeField] int blockPower;
+        [SerializeField] float blockChanceAddOn;
         [SerializeField] int defense;
 
         [SerializeField] int value;
@@ -69,7 +70,7 @@ namespace InventorySystem
                     {
                         if (item.GetItemChangeThresholds().Length > 0)
                         {
-                            remainingUses = Random.Range(1, Mathf.RoundToInt((item.GetItemChangeThresholds()[0].ThresholdPercentage / 100f) * item.MaxUses) + 1);
+                            remainingUses = Random.Range(1, Mathf.RoundToInt(item.GetItemChangeThresholds()[0].ThresholdPercentage / 100f * item.MaxUses) + 1);
                             if (ItemChangeThreshold.ThresholdReached(this, true, item.GetItemChangeThresholds()[0], item.GetItemChangeThresholds(), out ItemChangeThreshold newThreshold))
                             {
                                 if (item != newThreshold.NewItem)
@@ -95,6 +96,8 @@ namespace InventorySystem
                     {
                         Shield shield = item as Shield;
                         blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
+                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceAddOn, shield.MaxBlockChanceAddOn) * 100f) / 100f;
+                        damage = Random.Range(shield.MinDamage, shield.MaxDamage + 1);
                     }
                     else if (item is Armor)
                     {
@@ -142,7 +145,8 @@ namespace InventorySystem
                 }
                 else if (item is Shield)
                 {
-                    pointIncrease += (blockPower - item.Shield.MinBlockPower) * 2f; // Block power contributes to value twice as much
+                    pointIncrease += (blockPower - item.Shield.MinBlockPower) * 2f; // Block power & block chance add on contribute to value twice as much
+                    pointIncrease += (blockChanceAddOn - item.Shield.MinBlockChanceAddOn) * 2f;
                     pointIncrease += damage - item.Shield.MinDamage;
                 }
                 else if (item is Armor)
@@ -180,7 +184,8 @@ namespace InventorySystem
 
                 if (item is Shield)
                 {
-                    totalPointsPossible += item.Shield.MaxBlockPower - item.Shield.MinBlockPower;
+                    totalPointsPossible += (item.Shield.MaxBlockPower - item.Shield.MinBlockPower) * 2f;
+                    totalPointsPossible += (item.Shield.MaxBlockChanceAddOn - item.Shield.MinBlockChanceAddOn) * 2f;
                     totalPointsPossible += item.Shield.MaxDamage - item.Shield.MinDamage;
                 }
 
@@ -267,6 +272,7 @@ namespace InventorySystem
             temp.damage = damage;
             temp.accuracyModifier = accuracyModifier;
             temp.blockPower = blockPower;
+            temp.blockChanceAddOn = blockChanceAddOn;
             temp.defense = defense;
             temp.value = value;
             temp.hasBeenRandomized = hasBeenRandomized;
@@ -278,6 +284,7 @@ namespace InventorySystem
             damage = otherItemData.damage;
             accuracyModifier = otherItemData.accuracyModifier;
             blockPower = otherItemData.blockPower;
+            blockChanceAddOn = otherItemData.blockChanceAddOn;
             defense = otherItemData.defense;
             value = otherItemData.value;
             hasBeenRandomized = otherItemData.hasBeenRandomized;
@@ -289,6 +296,7 @@ namespace InventorySystem
             otherItemData.damage = temp.damage;
             otherItemData.accuracyModifier = temp.accuracyModifier;
             otherItemData.blockPower = temp.blockPower;
+            otherItemData.blockChanceAddOn = temp.blockChanceAddOn;
             otherItemData.defense = temp.defense;
             otherItemData.value = temp.value;
             otherItemData.hasBeenRandomized = temp.hasBeenRandomized;
@@ -349,18 +357,15 @@ namespace InventorySystem
         public void SetItem(Item newItem) => item = newItem;
 
         public Item Item => item;
-
         public int CurrentStackSize => currentStackSize;
-
-        public int Damage => damage;
-
-        public float AccuracyModifier => accuracyModifier;
-
-        public int BlockPower => blockPower;
-
         public int RemainingUses => remainingUses;
 
+        public float AccuracyModifier => accuracyModifier;
+        public int Damage => damage;
         public int Defense => defense;
+
+        public int BlockPower => blockPower;
+        public float BlockChanceAddOn => blockChanceAddOn;
 
         public int Value => value;
 

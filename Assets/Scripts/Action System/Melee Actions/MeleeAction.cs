@@ -15,10 +15,40 @@ namespace ActionSystem
         List<GridPosition> validGridPositionsList = new List<GridPosition>();
         List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
+        readonly int baseAPCost = 300;
+
         public override void SetTargetGridPosition(GridPosition gridPosition)
         {
             base.SetTargetGridPosition(gridPosition);
             SetTargetEnemyUnit();
+        }
+
+        public override int GetActionPointsCost()
+        {
+            float cost;
+            if (unit.UnitEquipment != null)
+            {
+                unit.UnitEquipment.GetEquippedWeapons(out Weapon primaryWeapon, out Weapon secondaryWeapon);
+                if (primaryWeapon != null)
+                {
+                    if (secondaryWeapon != null)
+                    {
+                        cost = baseAPCost / 2f * ActionPointCostModifier_WeaponType(primaryWeapon);
+                        cost += baseAPCost / 2f * ActionPointCostModifier_WeaponType(secondaryWeapon);
+                    }
+                    else
+                        cost = baseAPCost * ActionPointCostModifier_WeaponType(primaryWeapon);
+                }
+                else
+                    cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
+            }
+            else
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
+
+            // If not facing the target position, add the cost of turning towards that position
+            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
+            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
+            return Mathf.RoundToInt(cost);
         }
 
         public override void TakeAction()
@@ -46,6 +76,10 @@ namespace ActionSystem
 
         public void DoOpportunityAttack(Unit targetEnemyUnit)
         {
+            // Unit's can't opportunity attack while moving
+            if (unit.unitActionHandler.isMoving)
+                return;
+
             this.targetEnemyUnit = targetEnemyUnit;
             unit.unitActionHandler.SetIsAttacking(true);
             unit.StartCoroutine(Attack());
@@ -114,10 +148,10 @@ namespace ActionSystem
                 {
                     // Primary weapon attack
                     unit.unitAnimator.StartMeleeAttack();
-                    if (unit.unitMeshManager.GetPrimaryMeleeWeapon() != null)
+                    if (unit.unitMeshManager.GetPrimaryHelMeleeWeapon() != null)
                     {
-                        unit.unitMeshManager.GetPrimaryMeleeWeapon().DoDefaultAttack(targetGridPosition);
-                        AttackTarget(unit.unitMeshManager.GetPrimaryMeleeWeapon(), false);
+                        unit.unitMeshManager.GetPrimaryHelMeleeWeapon().DoDefaultAttack(targetGridPosition);
+                        AttackTarget(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), false);
                     }
                     else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
                     {
@@ -167,7 +201,7 @@ namespace ActionSystem
                 }
                 else
                 {
-                    HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+                    HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
                     attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
                     if (attackDodged == false)
                     {
@@ -223,10 +257,14 @@ namespace ActionSystem
             if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
                 return false;
 
+            // Check if there's a Unit in the way of the attack
+            if (OtherUnitInTheWay(unit, startGridPosition, targetGridPosition))
+                return false;
+
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
             if (unit.UnitEquipment.MeleeWeaponEquipped())
             {
-                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon;
+                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon;
                 float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
                 if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
                 
@@ -278,7 +316,7 @@ namespace ActionSystem
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
                 if (unit.UnitEquipment.MeleeWeaponEquipped())
-                    minAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MinRange;
+                    minAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -342,29 +380,19 @@ namespace ActionSystem
             };
         }
 
-        public override int GetActionPointsCost()
-        {
-            int cost = 300;
-
-            // If not facing the target position, add the cost of turning towards that position
-            unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
-            return cost;
-        }
-
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
         {
             float minRange;
             float maxRange;
 
-            if (unit.UnitEquipment.IsUnarmed())
+            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed())
             {
                 minRange = 1f;
                 maxRange = UnarmedAttackRange(startGridPosition, false);
             }
             else
             {
-                HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryMeleeWeapon();
+                HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
                 if (primaryHeldMeleeWeapon != null)
                 {
                     minRange = primaryHeldMeleeWeapon.itemData.Item.Weapon.MinRange;
@@ -399,9 +427,14 @@ namespace ActionSystem
 
                 // Check for obstacles
                 float sphereCastRadius = 0.1f;
+                float raycastDistance = Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition);
                 Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-                Vector3 shootDir = ((nodeGridPosition.WorldPosition + offset) - (startGridPosition.WorldPosition + offset)).normalized;
-                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, nodeGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
+                Vector3 attackDir = (nodeGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
+                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                    continue;
+
+                // Check if there's a Unit in the way of the attack
+                if (OtherUnitInTheWay(unit, startGridPosition, nodeGridPosition))
                     continue;
 
                 validGridPositionsList.Add(nodeGridPosition);
@@ -421,10 +454,15 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             float sphereCastRadius = 0.1f;
+            float raycastDistance = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
             Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-            Vector3 shootDir = ((unit.WorldPosition + offset) - (targetGridPosition.WorldPosition + offset)).normalized;
-            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, targetGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
+            Vector3 attackDir = (unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
+            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
                 return validGridPositionsList; // Blocked by an obstacle
+
+            // Check if there's a Unit in the way of the attack
+            if (OtherUnitInTheWay(unit, unit.GridPosition, targetGridPosition))
+                return validGridPositionsList;
 
             validGridPositionsList.Add(targetGridPosition);
             return validGridPositionsList;
@@ -438,7 +476,7 @@ namespace ActionSystem
 
             float maxAttackRange;
             if (unit.UnitEquipment.MeleeWeaponEquipped())
-                maxAttackRange = unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Weapon.MaxRange;
+                maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
             else
                 maxAttackRange = unit.stats.UnarmedAttackRange;
 
@@ -462,9 +500,19 @@ namespace ActionSystem
                     continue;
 
                 float sphereCastRadius = 0.1f;
-                Vector3 attackDir = ((nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
+                float raycastDistance = Vector3.Distance(nodeGridPosition.WorldPosition, targetUnit.WorldPosition);
+                Vector3 offset = Vector3.up * targetUnit.ShoulderHeight * 2f;
+                Vector3 attackDir = (nodeGridPosition.WorldPosition - targetUnit.WorldPosition).normalized;
+                if (Physics.SphereCast(targetUnit.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
                     continue; // Blocked by an obstacle
+
+                // Check if there's a Unit in the way of the attack
+                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
+                if (Physics.Raycast(targetUnit.WorldPosition, attackDir, out hit, raycastDistance, unit.vision.UnitsMask))
+                {
+                    if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject)
+                        return validGridPositionsList;
+                }
 
                 validGridPositionsList.Add(nodeGridPosition);
             }
@@ -543,7 +591,7 @@ namespace ActionSystem
             else if (unit.UnitEquipment.IsDualWielding())
                 return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.itemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.itemData.Item.Name}</b>.";
             else
-                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryMeleeWeapon().itemData.Item.Name}</b>.";
+                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Name}</b>.";
         }
 
         public override int GetEnergyCost() => 0;
