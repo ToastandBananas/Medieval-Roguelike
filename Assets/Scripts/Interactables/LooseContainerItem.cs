@@ -32,7 +32,7 @@ namespace InteractableObjects
                 if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
                     LooseItemPool.ReturnToPool(this);
                 else
-                    FumbleItem();
+                    JiggleItem();
             }
         }
 

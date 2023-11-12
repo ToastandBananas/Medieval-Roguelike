@@ -26,6 +26,12 @@ namespace ActionSystem
         {
             StartAction();
 
+            if (targetInteractable == null || targetInteractable.gameObject.activeSelf == false)
+            {
+                CompleteAction();
+                return;
+            }
+
             StartCoroutine(Interact());
         }
 
@@ -48,8 +54,6 @@ namespace ActionSystem
                 targetInteractable.Interact(unit);
 
             CompleteAction();
-            targetInteractable = null;
-            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
@@ -58,16 +62,17 @@ namespace ActionSystem
         {
             if (targetInteractable is Door)
                 return 150;
-            else if (targetInteractable is LooseContainerItem)
-            {
-                LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
-                if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // If a LooseContainerItem has any items in its inventory, then the interaction will be to open it up and look inside, costing AP
-                    return 200; 
-                else
-                    return 0;
-            }
             else if (targetInteractable is LooseItem)
-                return 0; // We'll calculate this when we queue an equip or inventory action
+            {
+                if (targetInteractable is LooseContainerItem)
+                {
+                    LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+                    if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // If a LooseContainerItem has any items in its inventory, then the interaction will be to open it up and look inside, costing AP
+                        return 200;
+                }
+
+                return 100; // Bending down to pick it up will take some time
+            }
 
             return 100;
         }
@@ -75,7 +80,9 @@ namespace ActionSystem
         public override void CompleteAction()
         {
             base.CompleteAction();
+            targetInteractable = null;
             unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         public override string TooltipDescription() => "";

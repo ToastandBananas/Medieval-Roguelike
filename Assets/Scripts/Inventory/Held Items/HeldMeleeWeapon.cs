@@ -5,10 +5,26 @@ using UnitSystem;
 
 namespace InventorySystem
 {
+    public enum WeaponStance { Default, Versatile }
+
     public class HeldMeleeWeapon : HeldItem
     {
         readonly float defaultAttackTransitionTime = 0.1667f;
         readonly float defaultBlockTransitionTime = 0.33f;
+
+        public WeaponStance currentWeaponStance { get; private set; }
+
+        public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+        {
+            base.SetupHeldItem(itemData, unit, equipSlot);
+
+            if (this == unit.unitMeshManager.leftHeldItem)
+                anim.SetBool("leftHandItem", true);
+            else
+                anim.SetBool("leftHandItem", false);
+
+            SetDefaultWeaponStance();
+        }
 
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
@@ -20,16 +36,18 @@ namespace InventorySystem
                 else
                     anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
 
-                if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.itemData.Item is Shield)
-                    unit.unitMeshManager.leftHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
+                HeldItem oppositeHeldItem = GetOppositeHeldItem();
+                if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
+                    oppositeHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
             }
             else if (this == unit.unitMeshManager.leftHeldItem)
             {
                 if (itemData.Item.Weapon.IsTwoHanded == false)
                     anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
 
-                if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.itemData.Item is Shield)
-                    unit.unitMeshManager.rightHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
+                HeldItem oppositeHeldItem = GetOppositeHeldItem();
+                if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
+                    oppositeHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
             }
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
@@ -87,6 +105,26 @@ namespace InventorySystem
                 anim.Play("LowerWeapon_1H_L");
         }
 
+        public void SetDefaultWeaponStance()
+        {
+            currentWeaponStance = WeaponStance.Default;
+            anim.SetBool("versatileStance", false);
+        }
+
+        public void SetVersatileWeaponStance()
+        {
+            currentWeaponStance = WeaponStance.Versatile;
+            anim.SetBool("versatileStance", true);
+        }
+
+        public void SwitchVersatileStance()
+        {
+            if (currentWeaponStance == WeaponStance.Versatile)
+                SetDefaultWeaponStance();
+            else
+                SetVersatileWeaponStance();
+        }
+
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
         {
             if (targetGridPosition.y == unit.GridPosition.y)
@@ -105,6 +143,25 @@ namespace InventorySystem
             }
 
             transform.parent.localRotation = targetRotation;
+        }
+
+        protected override float GetFumbleChance()
+        {
+            MeleeWeapon weapon = itemData.Item as MeleeWeapon;
+
+            float fumbleChance = (50f - unit.stats.WeaponSkill(weapon)) * 0.4f; // Weapon skill modifier
+            fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() * 15f; // Weapon weight to strength ratio modifier
+
+            if (fumbleChance < 0f)
+                fumbleChance = 0f;
+            else
+            {
+                // Less likely to fumble when two-handing a melee weapon
+                if (weapon.IsTwoHanded || currentWeaponStance == WeaponStance.Versatile)
+                    fumbleChance *= 0.8f;
+            }
+            // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
+            return fumbleChance;
         }
 
         public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)

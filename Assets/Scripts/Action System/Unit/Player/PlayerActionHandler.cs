@@ -83,7 +83,7 @@ namespace ActionSystem
                         }
 
                         // Handle default ranged attack
-                        if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                        if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
                             if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetEnemyUnit.GridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
@@ -104,7 +104,7 @@ namespace ActionSystem
                                 moveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
                         }
                         // Handle default melee attack
-                        else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+                        else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
                         {
                             if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                             {

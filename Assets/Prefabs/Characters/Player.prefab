@@ -222,6 +222,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -232,6 +233,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -242,6 +244,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -252,6 +255,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -262,6 +266,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -272,6 +277,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -282,6 +288,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -292,6 +299,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -302,6 +310,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -312,6 +321,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -322,6 +332,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -332,6 +343,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -342,6 +354,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -352,6 +365,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -362,6 +376,7 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -808,7 +823,7 @@ GameObject:
   - component: {fileID: 2531134404685777071}
   - component: {fileID: 4485341241154367501}
   - component: {fileID: 6461454062404040532}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}

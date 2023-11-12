@@ -75,6 +75,8 @@ namespace GeneralUI
         {
             if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed)
                 ShowAllLooseItemTooltips();
+            else
+                ClearTooltips();
         }
 
         public static void ClearTooltips()

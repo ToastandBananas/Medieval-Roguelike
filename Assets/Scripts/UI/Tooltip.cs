@@ -42,10 +42,23 @@ namespace GeneralUI
             stringBuilder.Append("<align=center><b><size=22>");
             SplitText(itemData.Name(), maxCharactersPerLine_Title);
             stringBuilder.Append("</size></b></align>");
+            if (itemData.Item is Weapon)
+            {
+                stringBuilder.Append("<align=center><i><size=18>");
+                if (itemData.Item is MeleeWeapon)
+                {
+                    if (itemData.Item.MeleeWeapon.IsTwoHanded)
+                        stringBuilder.Append("Two-Handed ");
+                    else if (itemData.Item.MeleeWeapon.IsVersatile)
+                        stringBuilder.Append("Versatile ");
+                }
 
-            // If Equipped
+                stringBuilder.Append($"{EnumToSpacedString(itemData.Item.Weapon.WeaponType)}</size></i></align>\n");
+            }
+
+                // If Equipped
             if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.slots.Contains((EquipmentSlot)slot)))
-                stringBuilder.Append("<align=center><i><b><size=19>- Equipped -</size></b></i></align>\n\n");
+                stringBuilder.Append("<align=center><i><b><size=18>- Equipped -</size></b></i></align>\n\n");
             else
                 stringBuilder.Append("\n");
             // tooltipStringBuilder.Append($"- {EnumToSpacedString(itemData.Item.ItemType)} -</align>\n\n");
@@ -108,9 +121,9 @@ namespace GeneralUI
                 }
             }
 
-            stringBuilder.Append($"\nWeight: {itemData.Weight()}\n");
-
-            stringBuilder.Append($"\nValue: {itemData.Value}");
+            stringBuilder.Append($"\nWeight: {itemData.Weight()} lbs");
+            stringBuilder.Append($"\nValue: {itemData.Value} g");
+            stringBuilder.Append($"\nValue Ratio: {Mathf.RoundToInt(itemData.Value / itemData.Weight() * 100f) / 100f} g/lb");
 
             textMesh.text = stringBuilder.ToString();
             gameObject.SetActive(true);

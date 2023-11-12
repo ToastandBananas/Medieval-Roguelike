@@ -4,7 +4,8 @@ namespace Controls
 {
     public class GamePlayActions : PlayerActionSet
     {
-        public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons;
+        // Action Buttons
+        public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons, switchVersatileStance;
 
         // Mouse Buttons
         public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
@@ -33,6 +34,7 @@ namespace Controls
             skipTurn = CreatePlayerAction("SkipTurn");
             cancelAction = CreatePlayerAction("CancelAction");
             swapWeapons = CreatePlayerAction("SwapWeapons");
+            switchVersatileStance = CreatePlayerAction("SwitchVersatileStance");
 
             leftMouseClick = CreatePlayerAction("LeftMouseClick");
             rightMouseClick = CreatePlayerAction("RightMouseClick");

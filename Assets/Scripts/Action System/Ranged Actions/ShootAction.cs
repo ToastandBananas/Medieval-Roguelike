@@ -59,7 +59,11 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking) return;
+            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking)
+            {
+                CompleteAction();
+                return;
+            }
 
             if (targetEnemyUnit == null)
             {
@@ -73,11 +77,9 @@ namespace ActionSystem
             {
                 targetEnemyUnit = null;
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
-                unit.unitActionHandler.FinishAction();
+                CompleteAction();
                 return;
             }
-
-            StartAction();
 
             if (RangedWeaponIsLoaded() == false)
             {
@@ -90,7 +92,10 @@ namespace ActionSystem
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
+            {
+                StartAction();
                 unit.StartCoroutine(DoAttack());
+            }
             else
             {
                 CompleteAction();
@@ -190,9 +195,9 @@ namespace ActionSystem
         {
             float random = Random.Range(0f, 100f);
             float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData);
-            if (random > rangedAccuracy)
-                return false;
-            return true;
+            if (random <= rangedAccuracy)
+                return true;
+            return false;
         }
 
         public override void CompleteAction()
@@ -466,7 +471,7 @@ namespace ActionSystem
 
         public override bool IsValidAction()
         {
-            if (unit != null && unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+            if (unit != null && unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                 return true;
             return false;
         }
@@ -481,7 +486,7 @@ namespace ActionSystem
             return "";
         }
 
-        public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped() && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
+        public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
 
         public override int GetEnergyCost() => 0;
 

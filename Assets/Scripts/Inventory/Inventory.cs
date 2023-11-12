@@ -437,7 +437,7 @@ namespace InventorySystem
                         looseProjectile.MeshCollider.enabled = true;
                         looseProjectile.RigidBody.useGravity = true;
                         looseProjectile.RigidBody.isKinematic = false;
-                        looseProjectile.FumbleItem();
+                        looseProjectile.JiggleItem();
                     }
 
                 }

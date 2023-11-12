@@ -19,7 +19,8 @@ namespace InventorySystem
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
-            loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(unit.unitActionHandler.targetEnemyUnit); });
+            Unit targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+            loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 
             isLoaded = false;
             bowLineRenderer.StringStartFollowingTargetPositions();
@@ -84,6 +85,8 @@ namespace InventorySystem
         {
             unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().TryHitTarget()));
             loadedProjectile = null;
+
+            TryFumbleHeldItem();
         }
 
         // Used in animation keyframe
@@ -131,6 +134,20 @@ namespace InventorySystem
 
             // Debug.Log("Z Rotation: " + -zRotation);
             return -zRotation;
+        }
+
+        protected override float GetFumbleChance()
+        {
+            RangedWeapon weapon = itemData.Item as RangedWeapon;
+
+            float fumbleChance = (50f - unit.stats.WeaponSkill(weapon)) * 0.4f; // Weapon skill modifier
+            fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() * 15f; // Weapon weight to strength ratio modifier
+
+            if (fumbleChance < 0f)
+                fumbleChance = 0f;
+
+            // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
+            return fumbleChance;
         }
 
         public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)

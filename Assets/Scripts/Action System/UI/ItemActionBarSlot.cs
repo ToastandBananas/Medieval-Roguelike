@@ -33,7 +33,7 @@ namespace ActionSystem
                         if (playerActionHandler.queuedActions.Count == 0)
                         {
                             // Only do something if the Player has a valid ranged weapon equipped
-                            if (playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped() && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
+                            if (playerActionHandler.unit.UnitEquipment.RangedWeaponEquipped && playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
                                 if (itemData.CurrentStackSize == 1)
                                 {

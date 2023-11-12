@@ -30,6 +30,9 @@ namespace Controls
             gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
             gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4) / Y(Xbox)
 
+            gamePlayActions.switchVersatileStance.AddDefaultBinding(Key.V);
+            gamePlayActions.switchVersatileStance.AddDefaultBinding(InputControlType.Action3);
+
             // Mouse Buttons
             gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);
             gamePlayActions.rightMouseClick.AddDefaultBinding(Mouse.RightButton);

@@ -12,9 +12,6 @@ namespace UnitSystem
         [SerializeField] CapsuleCollider baseCapsuleCollider;
         Animator unitAnim;
 
-        public Animator leftHeldItemAnim { get; private set; }
-        public Animator rightHeldItemAnim { get; private set; }
-
         Unit unit;
 
         void Awake()
@@ -262,13 +259,5 @@ namespace UnitSystem
                 yield return null;
             }
         }
-
-        public void SetLeftHeldItemAnim(Animator leftHeldItemAnim) => this.leftHeldItemAnim = leftHeldItemAnim;
-
-        public void SetRightHeldItemAnim(Animator rightHeldItemAnim) => this.rightHeldItemAnim = rightHeldItemAnim;
-
-        public void SetLeftHeldItemAnimController(RuntimeAnimatorController animController) => leftHeldItemAnim.runtimeAnimatorController = animController;
-
-        public void SetRightHeldItemAnimController(RuntimeAnimatorController animController) => rightHeldItemAnim.runtimeAnimatorController = animController;
     }
 }

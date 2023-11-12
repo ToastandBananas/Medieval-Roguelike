@@ -116,7 +116,7 @@ namespace ActionSystem
                     continue;
 
                 // Only melee Unit's can do an opportunity attack
-                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped() || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped() == false && opportunityAttackingUnit.stats.CanFightUnarmed == false))
+                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped == false && opportunityAttackingUnit.stats.CanFightUnarmed == false))
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
@@ -320,9 +320,9 @@ namespace ActionSystem
             BaseAction selectedAction = unit.unitActionHandler.SelectedAction;
             if (selectedAction is BaseAttackAction)
                 unit.unitActionHandler.moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
-            else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                 unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
-            else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+            else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
                 unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else
             {

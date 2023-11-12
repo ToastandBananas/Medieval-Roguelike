@@ -262,7 +262,7 @@ namespace ActionSystem
 
                 selectedAction.BaseAttackAction.QueueAction(targetEnemyUnit);
             }
-            else if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
             {
                 if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 {
@@ -283,7 +283,7 @@ namespace ActionSystem
                 else
                     GetAction<ReloadAction>().QueueAction();
             }
-            else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+            else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
             {
                 if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
                 {
@@ -305,10 +305,10 @@ namespace ActionSystem
         {
             if (defaultCombatActionsOnly)
             {
-                if (unit.UnitEquipment.RangedWeaponEquipped() && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                if (unit.UnitEquipment.RangedWeaponEquipped && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                if ((unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else
@@ -328,13 +328,13 @@ namespace ActionSystem
             // If the attacker is in front of this Unit (greater chance to block)
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))
             {
-                float random = Random.Range(0.01f, 100f);
+                float random = Random.Range(0f, 100f);
                 return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackerUsingOffhand, false);
             }
             // If the attacker is beside this Unit (less of a chance to block)
             else if (turnAction.AttackerBesideUnit(attackingUnit))
             {
-                float random = Random.Range(0.01f, 100f);
+                float random = Random.Range(0f, 100f);
                 return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackerUsingOffhand, true);
             }
             return false;
@@ -342,12 +342,12 @@ namespace ActionSystem
 
         public bool TryBlockRangedAttack(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
         {
-            if (unit.UnitEquipment.ShieldEquipped())
+            if (unit.UnitEquipment.ShieldEquipped)
             {
                 // If the attacker is in front of this Unit (greater chance to block)
                 if (turnAction.AttackerInFrontOfUnit(attackingUnit))
                 {
-                    float random = Random.Range(0.01f, 100f);
+                    float random = Random.Range(0f, 100f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -358,7 +358,7 @@ namespace ActionSystem
                 // If the attacker is beside this Unit (less of a chance to block)
                 else if (turnAction.AttackerBesideUnit(attackingUnit))
                 {
-                    float random = Random.Range(0.01f, 100f);
+                    float random = Random.Range(0f, 100f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -378,10 +378,10 @@ namespace ActionSystem
             float random;
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))
             {
-                if (unit.UnitEquipment.ShieldEquipped())
+                if (unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
-                    random = Random.Range(0.01f, 100f);
+                    random = Random.Range(0f, 100f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -390,32 +390,32 @@ namespace ActionSystem
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.UnitEquipment.MeleeWeaponEquipped())
+                    if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, true))
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, true))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
-                else if (unit.UnitEquipment.MeleeWeaponEquipped())
+                else if (unit.UnitEquipment.MeleeWeaponEquipped)
                 {
-                    if (unit.UnitEquipment.IsDualWielding())
+                    if (unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * GameManager.dualWieldPrimaryEfficiency)
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * GameManager.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
 
                         // Try blocking with left weapon
-                        random = Random.Range(0.01f, 100f);
+                        random = Random.Range(0f, 100f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * GameManager.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -426,11 +426,11 @@ namespace ActionSystem
                     else
                     {
                         // Try blocking with only weapon
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false))
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
@@ -438,10 +438,10 @@ namespace ActionSystem
             }
             else if (turnAction.AttackerBesideUnit(attackingUnit))
             {
-                if (unit.UnitEquipment.ShieldEquipped())
+                if (unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
-                    random = Random.Range(0.01f, 100f);
+                    random = Random.Range(0f, 100f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -450,32 +450,32 @@ namespace ActionSystem
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.UnitEquipment.MeleeWeaponEquipped())
+                    if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, true))
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, true))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
-                else if (unit.UnitEquipment.MeleeWeaponEquipped())
+                else if (unit.UnitEquipment.MeleeWeaponEquipped)
                 {
-                    if (unit.UnitEquipment.IsDualWielding())
+                    if (unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * GameManager.dualWieldPrimaryEfficiency)
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * GameManager.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
 
                         // Try blocking with left weapon
-                        random = Random.Range(0.01f, 100f);
+                        random = Random.Range(0f, 100f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * GameManager.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -486,11 +486,11 @@ namespace ActionSystem
                     else
                     {
                         // Try blocking with only weapon
-                        random = Random.Range(0.01f, 100f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false))
+                        random = Random.Range(0f, 100f);
+                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHelMeleeWeapon());
+                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
@@ -568,7 +568,11 @@ namespace ActionSystem
 
         public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
-        public void SetIsAttacking(bool isAttacking) => this.isAttacking = isAttacking;
+        public void SetIsAttacking(bool isAttacking)
+        {
+            // Debug.Log(unit.name + " start attacking");
+            this.isAttacking = isAttacking;
+        }
 
         public void SetIsRotating(bool isRotating) => this.isRotating = isRotating;
 

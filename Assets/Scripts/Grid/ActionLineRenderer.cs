@@ -240,7 +240,7 @@ namespace GridSystem
 
         GridPosition GetTargetAttackGridPosition(Unit targetUnit)
         {
-            if (player.UnitEquipment.RangedWeaponEquipped())
+            if (player.UnitEquipment.RangedWeaponEquipped)
             {
                 if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
                     return player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);

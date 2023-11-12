@@ -21,7 +21,12 @@ namespace ActionSystem
         {
             float cost;
             if (unit.UnitEquipment != null)
-                cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon);
+            {
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon);
+
+                if (unit.UnitEquipment.InVersatileStance)
+                    cost *= 1.35f;
+            }
             else
                 cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
 
@@ -43,10 +48,11 @@ namespace ActionSystem
                 return;
             }
 
-            StartAction();
-
             if (IsInAttackRange(null, unit.GridPosition, targetGridPosition))
+            {
+                StartAction();
                 unit.StartCoroutine(DoAttack());
+            }
             else
             {
                 CompleteAction();
@@ -59,7 +65,7 @@ namespace ActionSystem
         public override void PlayAttackAnimation()
         {
             unit.unitAnimator.StartMeleeAttack();
-            unit.unitMeshManager.GetPrimaryHelMeleeWeapon().DoSwipeAttack(targetGridPosition);
+            unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoSwipeAttack(targetGridPosition);
         }
 
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().GetActionGridPositionsInRange(startGridPosition);
@@ -70,7 +76,7 @@ namespace ActionSystem
             if (targetUnit == null)
                 return validGridPositionsList;
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
 
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
@@ -120,7 +126,6 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             // Check if the target position is within the max attack range
-            //if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > maxAttackRange)
             if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
                 return validGridPositionsList;
 
@@ -133,7 +138,7 @@ namespace ActionSystem
                 return validGridPositionsList;
             }
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
             nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -287,7 +292,7 @@ namespace ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
-                float minAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MinRange;
+                float minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -341,26 +346,26 @@ namespace ActionSystem
                 else if (unit.alliance.IsAlly(unitAtGridPosition))
                 {
                     // Allies in the action area decrease this action's value
-                    finalActionValue -= 35f;
+                    finalActionValue -= 75f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 35f - (unitAtGridPosition.health.CurrentHealthNormalized() * 35f);
+                    finalActionValue -= 75f - (unitAtGridPosition.health.CurrentHealthNormalized() * 75f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
-                        finalActionValue -= 100f;
+                        finalActionValue -= 75f;
                 }
                 else // If IsNeutral
                 {
                     // Neutral units in the action area decrease this action's value, but to a lesser extent than allies
-                    finalActionValue -= 15f;
+                    finalActionValue -= 25f;
 
                     // Lower neutral unit health gives this action less value
-                    finalActionValue -= 15f - (unitAtGridPosition.health.CurrentHealthNormalized() * 15f);
+                    finalActionValue -= 25f - (unitAtGridPosition.health.CurrentHealthNormalized() * 25f);
 
                     // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
                     if (unitAtGridPosition.IsPlayer)
-                        finalActionValue -= 50f;
+                        finalActionValue -= 75f;
                 }
             }
 
@@ -403,12 +408,12 @@ namespace ActionSystem
 
         public override string TooltipDescription()
         {
-            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
+            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
         }
 
         public override int GetEnergyCost() => 25;
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped();
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped;
 
         public override bool IsInterruptable() => false;
 

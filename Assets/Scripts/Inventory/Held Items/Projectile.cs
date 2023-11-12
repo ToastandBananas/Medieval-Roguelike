@@ -26,6 +26,7 @@ namespace InventorySystem
         [SerializeField] ItemData itemData;
 
         Unit shooter, targetUnit;
+        ShootAction shootAction;
 
         Vector3 targetPosition, movementDirection;
 
@@ -47,6 +48,7 @@ namespace InventorySystem
         public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
         {
             this.shooter = shooter;
+            shootAction = shooter.unitActionHandler.GetAction<ShootAction>();
 
             this.itemData = new ItemData(itemData);
             this.itemData.SetCurrentStackSize(1);
@@ -225,7 +227,10 @@ namespace InventorySystem
                 // Debug.Log(collisionTransform.name + " hit by projectile");
                 SetupNewLooseItem(true, out LooseItem looseProjectile);
                 if (collisionTransform != null)
+                {
+                    looseProjectile.MeshCollider.isTrigger = true;
                     looseProjectile.transform.SetParent(collisionTransform, true);
+                }
             }
             else if (projectileType == ProjectileType.BluntObject)
             {
@@ -331,6 +336,7 @@ namespace InventorySystem
             itemData = null;
             shouldMoveProjectile = false;
             shooter = null;
+            shootAction = null;
             targetUnit = null;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
@@ -347,7 +353,7 @@ namespace InventorySystem
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
+                        shootAction.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
                         shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
@@ -358,7 +364,7 @@ namespace InventorySystem
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
+                        shootAction.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
                         shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
@@ -367,12 +373,12 @@ namespace InventorySystem
                 else if (collider.CompareTag("Shield"))
                 {
                     // DamageTargets will take into account whether the Unit blocked or not
-                    shooter.unitActionHandler.GetAction<ShootAction>().DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), collider.GetComponent<HeldItem>(), false);
+                    shootAction.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), collider.GetComponent<HeldItem>(), false);
                     shooter.unitActionHandler.targetUnits.Clear();
 
                     Arrived(collider.transform);
                 }
-                else if (collider.CompareTag("Loose Item") == false)
+                else if (collider.CompareTag("Loose Item") == false && collider.CompareTag("Base") == false)
                     Arrived(null);
             }
         }

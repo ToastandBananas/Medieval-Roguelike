@@ -10,7 +10,7 @@ public class OpportunityAttackTrigger : MonoBehaviour
     public void UpdateColliderRadius()
     {
         float maxAttackRange = myUnit.stats.UnarmedAttackRange;
-        if (myUnit.UnitEquipment.MeleeWeaponEquipped())
+        if (myUnit.UnitEquipment.MeleeWeaponEquipped)
         {
             if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem is HeldMeleeWeapon)
                 maxAttackRange = myUnit.unitMeshManager.leftHeldItem.itemData.Item.Weapon.MaxRange;
@@ -18,7 +18,7 @@ public class OpportunityAttackTrigger : MonoBehaviour
             if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.unitMeshManager.rightHeldItem.itemData.Item.Weapon.MaxRange > maxAttackRange)
                 maxAttackRange = myUnit.unitMeshManager.rightHeldItem.itemData.Item.Weapon.MaxRange;
         }
-        else if (myUnit.UnitEquipment.RangedWeaponEquipped())
+        else if (myUnit.UnitEquipment.RangedWeaponEquipped)
             maxAttackRange = 0.1f;
 
         sphereCollider.radius = maxAttackRange;

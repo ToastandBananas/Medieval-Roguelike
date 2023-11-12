@@ -158,6 +158,7 @@ namespace InteractableObjects
             looseItem.RigidBody.isKinematic = false;
             looseItem.RigidBody.useGravity = true;
             looseItem.MeshCollider.enabled = true;
+            looseItem.MeshCollider.isTrigger = false;
             looseItem.SetItemData(null);
             looseItem.gameObject.SetActive(false);
 

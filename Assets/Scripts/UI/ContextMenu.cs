@@ -240,7 +240,7 @@ namespace GeneralUI
         static void CreateAttackButton()
         {
             if (targetUnit == null || targetUnit.health.IsDead() || UnitManager.player.vision.IsVisible(targetUnit) == false
-                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped() == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped() == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
+                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;

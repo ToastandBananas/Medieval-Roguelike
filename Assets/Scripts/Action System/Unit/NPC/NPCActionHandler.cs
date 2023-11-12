@@ -7,6 +7,7 @@ using UnitSystem;
 using Utilities;
 using System.Collections;
 using InventorySystem;
+using InteractableObjects;
 
 namespace ActionSystem
 {
@@ -114,7 +115,7 @@ namespace ActionSystem
                         return;
                     }
 
-                    if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
                         Unit closestEnemy = unit.vision.GetClosestEnemy(true);
                         float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
@@ -160,7 +161,7 @@ namespace ActionSystem
                             return;
                         }
                     }
-                    else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+                    else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
                     {
                         // Melee attack the target enemy
                         if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
@@ -284,13 +285,69 @@ namespace ActionSystem
         #region Fight
         void Fight()
         {
-            if (unit.UnitEquipment.RangedWeaponEquipped())
+            if (unit.UnitEquipment.IsUnarmed)
+            {
+                bool weaponNearby = TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon);
+
+                // If a weapon was found and it's next to this Unit, pick it up (the weapon is likely there from fumbling it)
+                if (weaponNearby && distanceToWeapon <= LevelGrid.diaganolDistance)
+                {
+                    GetAction<InteractAction>().QueueAction(foundLooseWeapon);
+                    return;
+                }
+
+                // If no weapons whatsoever are equipped
+                if (unit.UnitEquipment.OtherWeaponSet_IsEmpty())
+                {
+                    // Equip any weapon from their inventory if they have one
+                    if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    {
+                        GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                        return;
+                    }
+                    // Else, try to find a nearby weapon
+                    else if (weaponNearby)
+                    {
+                        // If one was found, move to it if necessary and then pick it up, but only if nobody could opportunity attack them
+                        if (distanceToWeapon > LevelGrid.diaganolDistance)
+                        {
+                            if (unit.unitsWhoCouldOpportunityAttackMe.Count == 0)
+                            {
+                                GetAction<InteractAction>().SetTargetInteractable(foundLooseWeapon);
+                                GetAction<MoveAction>().QueueAction(LevelGrid.GetNearestSurroundingGridPosition(foundLooseWeapon.GridPosition(), unit.GridPosition, LevelGrid.diaganolDistance, true));
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            GetAction<InteractAction>().QueueAction(foundLooseWeapon);
+                            return;
+                        }
+                    }
+                }
+                else // If there are weapons in the other weapon set
+                {
+                    // Swap to their melee weapon set if they have one
+                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    {
+                        GetAction<SwapWeaponSetAction>().QueueAction();
+                        return;
+                    }
+                    // Else, swap to their ranged weapon set if they have ammo
+                    else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
+                    {
+                        GetAction<SwapWeaponSetAction>().QueueAction();
+                        return;
+                    }
+                }
+            }
+            else if (unit.UnitEquipment.RangedWeaponEquipped)
             {
                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
                 float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
+                if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + LevelGrid.diaganolDistance)
                 {
                     // If the Unit has a melee weapon, switch to it
                     if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
@@ -375,22 +432,7 @@ namespace ActionSystem
                 foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition))
                 {
                     // For each of these grid positions, get the best one for this combat action
-                    NPCAIAction npcAIAction = availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange);
-                    npcAIActions.Add(npcAIAction);
-                    /*for (int j = npcAIActions.Count - 1; j >= 0; j--)
-                    {
-                        if (npcAIActions[j].baseAction == npcAIAction.baseAction && npcAIActions[j] != npcAIAction)
-                        {
-                            // If the list already contains an NPCAIAction with the same BaseAction, remove it
-                            npcAIActions.Remove(npcAIAction);
-                            if (npcAIActions[j].actionValue > npcAIAction.actionValue)
-                            {
-                                // If this NPCAIAction has a higher actionValue, replace it with the one alreay in the list
-                                npcAIActions[j] = npcAIAction;
-                                continue;
-                            }
-                        }
-                    }*/
+                    npcAIActions.Add(availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
                 }
             }
 
@@ -479,15 +521,12 @@ namespace ActionSystem
                 DetermineAction();
                 return;
             }
-
+            
             // If there's no space around the enemy unit, try to find another enemy to attack
             if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange(targetEnemyUnit, false)))
-            {
                 SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
-                moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
-            }
-            else
-                moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
+
+            moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
         }
 
         void FindBestTargetEnemy()
@@ -503,7 +542,7 @@ namespace ActionSystem
                 else
                 {
                     npcAIActions.Clear();
-                    if (unit.UnitEquipment.RangedWeaponEquipped() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
                         ShootAction shootAction = GetAction<ShootAction>();
                         for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
@@ -520,7 +559,7 @@ namespace ActionSystem
                         SetTargetEnemyUnit(LevelGrid.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                     }
-                    else if (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed)
+                    else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
                     {
                         MeleeAction meleeAction = GetAction<MeleeAction>();
                         for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
@@ -574,6 +613,41 @@ namespace ActionSystem
             base.SetTargetEnemyUnit(target);
         }
 
+        public bool TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon)
+        {
+            LooseItem closestLooseWeapon = unit.vision.GetClosestWeapon(out float distanceToClosestWeapon);
+            if (closestLooseWeapon == null)
+            {
+                foundLooseWeapon = null;
+                distanceToWeapon = distanceToClosestWeapon;
+                return false;
+            }
+
+            if (closestLooseWeapon.ItemData.Item is RangedWeapon)
+            {
+                if (unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon)) 
+                {
+                    foundLooseWeapon = closestLooseWeapon;
+                    distanceToWeapon = distanceToClosestWeapon;
+                    return true;
+                }
+                else
+                {
+                    LooseItem closestLooseMeleeWeapon = unit.vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
+                    if (closestLooseMeleeWeapon != null)
+                    {
+                        foundLooseWeapon = closestLooseMeleeWeapon;
+                        distanceToWeapon = distanceToClosestMeleeWeapon;
+                        return true;
+                    }
+                }
+
+            }
+
+            foundLooseWeapon = closestLooseWeapon;
+            distanceToWeapon = distanceToClosestWeapon;
+            return true;
+        }
         #endregion
 
         #region Flee

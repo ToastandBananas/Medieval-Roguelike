@@ -55,7 +55,7 @@ namespace GeneralUI
             else
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                if (UnitManager.player.UnitEquipment.RangedWeaponEquipped() && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
+                if (UnitManager.player.UnitEquipment.RangedWeaponEquipped && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
                     UnitManager.player.unitActionHandler.moveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
                 else // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                     UnitManager.player.unitActionHandler.moveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.targetUnit));
@@ -76,7 +76,7 @@ namespace GeneralUI
             else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
                 LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
-                looseItem.FumbleItem();
+                looseItem.JiggleItem();
             }
 
             ContextMenu.DisableContextMenu();
@@ -94,7 +94,7 @@ namespace GeneralUI
             else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
                 LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
-                looseItem.FumbleItem();
+                looseItem.JiggleItem();
             }
 
             ContextMenu.DisableContextMenu();
@@ -250,7 +250,7 @@ namespace GeneralUI
             else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
                 LooseItem looseItem = ContextMenu.targetInteractable as LooseItem;
-                looseItem.FumbleItem();
+                looseItem.JiggleItem();
             }
 
             ContextMenu.DisableContextMenu();

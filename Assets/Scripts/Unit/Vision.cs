@@ -8,6 +8,7 @@ using UnityEngine;
 using InteractableObjects;
 using ActionSystem;
 using GridSystem;
+using InventorySystem;
 
 namespace UnitSystem
 {
@@ -380,9 +381,9 @@ namespace UnitSystem
         public Unit GetClosestEnemy(bool includeTargetEnemy)
         {
             Unit closestEnemy = unit.unitActionHandler.targetEnemyUnit;
-            float closestEnemyDist = 1000000;
+            float closestEnemyDistance = 1000000;
             if (includeTargetEnemy && unit.unitActionHandler.targetEnemyUnit != null)
-                closestEnemyDist = Vector3.Distance(unit.WorldPosition, unit.unitActionHandler.targetEnemyUnit.WorldPosition);
+                closestEnemyDistance = Vector3.Distance(unit.WorldPosition, unit.unitActionHandler.targetEnemyUnit.WorldPosition);
             for (int i = 0; i < knownEnemies.Count; i++)
             {
                 if (unit.unitActionHandler.targetEnemyUnit != null)
@@ -392,12 +393,13 @@ namespace UnitSystem
                 }
 
                 float distToEnemy = Vector3.Distance(transform.position, knownEnemies[i].transform.position);
-                if (distToEnemy < closestEnemyDist)
+                if (distToEnemy < closestEnemyDistance)
                 {
                     closestEnemy = knownEnemies[i];
-                    closestEnemyDist = distToEnemy;
+                    closestEnemyDistance = distToEnemy;
                 }
             }
+
             return closestEnemy;
         }
         #endregion
@@ -472,6 +474,12 @@ namespace UnitSystem
             // Check if LooseItems that were in sight are now out of sight
             foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
             {
+                if (looseItem.Key == null || looseItem.Key.gameObject.activeSelf == false)
+                {
+                    looseItemsToRemove.Add(looseItem.Key);
+                    continue;
+                }
+
                 Vector3 looseItemCenter = looseItem.Key.transform.TransformPoint(looseItem.Key.MeshCollider.sharedMesh.bounds.center);
                 Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
 
@@ -533,24 +541,27 @@ namespace UnitSystem
                 looseItemToAdd.ShowMeshRenderer();
         }
 
-        void RemoveVisibleLooseItem(LooseItem looseItemToRemove)
+        public void RemoveVisibleLooseItem(LooseItem looseItemToRemove)
         {
             if (knownLooseItems.ContainsKey(looseItemToRemove))
             {
                 knownLooseItems.Remove(looseItemToRemove, out int value);
 
                 // If they are no longer visible to the player, hide them
-                if (unit.IsPlayer)
+                if (looseItemToRemove.gameObject.activeSelf && unit.IsPlayer)
                     looseItemToRemove.HideMeshRenderer();
             }
         }
 
-        public LooseItem GetClosestLooseItem()
+        public LooseItem GetClosestLooseItem(out float distanceToLooseItem)
         {
             LooseItem closestLooseItem = null;
             float closestLooseItemDistance = 1000000;
             foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
             {
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null)
+                    continue;
+
                 float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
                 if (distToLooseItem < closestLooseItemDistance)
                 {
@@ -558,7 +569,68 @@ namespace UnitSystem
                     closestLooseItemDistance = distToLooseItem;
                 }
             }
+            distanceToLooseItem = closestLooseItemDistance;
             return closestLooseItem;
+        }
+
+        public LooseItem GetClosestWeapon(out float distanceToWeapon)
+        {
+            LooseItem closestLooseMeleeWeapon = null;
+            float closestWeaponDistance = 1000000;
+            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            {
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Weapon == false)
+                    continue;
+
+                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                if (distToLooseItem < closestWeaponDistance)
+                {
+                    closestLooseMeleeWeapon = knownLooseItem.Key;
+                    closestWeaponDistance = distToLooseItem;
+                }
+            }
+            distanceToWeapon = closestWeaponDistance;
+            return closestLooseMeleeWeapon;
+        }
+
+        public LooseItem GetClosestMeleeWeapon(out float distanceToWeapon)
+        {
+            LooseItem closestLooseMeleeWeapon = null;
+            float closestMeleeWeaponDistance = 1000000;
+            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            {
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is MeleeWeapon == false)
+                    continue;
+
+                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                if (distToLooseItem < closestMeleeWeaponDistance)
+                {
+                    closestLooseMeleeWeapon = knownLooseItem.Key;
+                    closestMeleeWeaponDistance = distToLooseItem;
+                }
+            }
+            distanceToWeapon = closestMeleeWeaponDistance;
+            return closestLooseMeleeWeapon;
+        }
+
+        public LooseItem GetClosestRangedWeapon(out float distanceToWeapon)
+        {
+            LooseItem closestLooseRangedWeapon = null;
+            float closestRangedWeaponDistance = 1000000;
+            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            {
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is RangedWeapon == false)
+                    continue;
+
+                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                if (distToLooseItem < closestRangedWeaponDistance)
+                {
+                    closestLooseRangedWeapon = knownLooseItem.Key;
+                    closestRangedWeaponDistance = distToLooseItem;
+                }
+            }
+            distanceToWeapon = closestRangedWeaponDistance;
+            return closestLooseRangedWeapon;
         }
         #endregion
 

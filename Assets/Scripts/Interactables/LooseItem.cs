@@ -34,10 +34,11 @@ namespace InteractableObjects
             if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
                 TryTakeStuckProjectiles(unitPickingUpItem);
+                unitPickingUpItem.vision.RemoveVisibleLooseItem(this);
                 LooseItemPool.ReturnToPool(this);
             }
             else
-                FumbleItem();
+                JiggleItem();
         }
 
         void TryTakeStuckProjectiles(Unit unitPickingUpItem)
@@ -58,7 +59,7 @@ namespace InteractableObjects
                         looseProjectile.meshCollider.enabled = true;
                         looseProjectile.rigidBody.useGravity = true;
                         looseProjectile.rigidBody.isKinematic = false;
-                        looseProjectile.FumbleItem();
+                        looseProjectile.JiggleItem();
                     }
                 }
             }
@@ -69,7 +70,12 @@ namespace InteractableObjects
             bool equipped = false;
             if (itemData.Item is Equipment)
             {
-                if (itemData.Item.Equipment is Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped())
+                // Don't equip a second shield
+                if (itemData.Item is Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped)
+                    return false;
+
+                // Don't equip a second weapon or a shield if the character is in Versatile Stance
+                if (unitPickingUpItem.UnitEquipment.InVersatileStance)
                     return false;
 
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
@@ -125,7 +131,7 @@ namespace InteractableObjects
             return equipped;
         }
 
-        public void FumbleItem()
+        public void JiggleItem()
         {
             float fumbleForceMin = rigidBody.mass * 0.8f;   // Minimum force magnitude
             float fumbleForceMax = rigidBody.mass * 2.25f;  // Maximum force magnitude

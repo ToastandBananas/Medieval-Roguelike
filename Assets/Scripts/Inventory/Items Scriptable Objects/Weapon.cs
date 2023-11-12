@@ -9,6 +9,7 @@ namespace InventorySystem
         [Header("Weapon Info")]
         [SerializeField] WeaponType weaponType = WeaponType.Sword;
         [SerializeField] bool isTwoHanded;
+        [SerializeField] bool isVersatile;
         [SerializeField] bool canDualWield;
 
         [Header("Weapon Stats")]
@@ -22,6 +23,7 @@ namespace InventorySystem
 
         public WeaponType WeaponType => weaponType;
         public bool IsTwoHanded => isTwoHanded;
+        public bool IsVersatile => isVersatile;
         public bool CanDualWield => canDualWield;
 
         public float MinRange => attackRange.x;

@@ -50,6 +50,7 @@ namespace UnitSystem
 
         readonly float maxBlockChance = 0.85f;
         readonly float maxDodgeChance = 0.85f;
+        readonly float maxRangedAccuracy = 0.9f;
 
         void Awake()
         {
@@ -282,7 +283,7 @@ namespace UnitSystem
             float modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith) / 100f * 0.4f);
 
             // Weapon skill effectiveness is reduced when dual wielding
-            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
+            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
                     modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
@@ -377,7 +378,7 @@ namespace UnitSystem
             float modifier = 1f - (attackingUnit.stats.WeaponSkill(weaponAttackingWith) / 100f * 0.5f);
 
             // Weapon skill effectiveness is reduced when dual wielding
-            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding())
+            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
                     modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
@@ -445,11 +446,15 @@ namespace UnitSystem
             float accuracy = 0f;
             if (rangedWeaponItemData.Item.Weapon.WeaponType == WeaponType.Bow)
             {
-                accuracy = bowSkill.GetValue() * 4f;
-                accuracy = Mathf.RoundToInt((accuracy + rangedWeaponItemData.AccuracyModifier) * 100f) / 100f;
+                accuracy = WeaponSkill(rangedWeaponItemData.Item.Weapon) * 0.75f;
+                accuracy += Mathf.RoundToInt(accuracy * rangedWeaponItemData.AccuracyModifier / 100f * 100f) / 100f;
             }
 
-            if (accuracy < 0f) accuracy = 0f;
+            if (accuracy < 0f)
+                accuracy = 0f;
+            else if (accuracy > maxRangedAccuracy)
+                accuracy = maxRangedAccuracy;
+
             return accuracy;
         }
 

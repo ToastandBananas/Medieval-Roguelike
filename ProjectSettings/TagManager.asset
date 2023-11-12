@@ -12,6 +12,7 @@ TagManager:
   - Particle Effect
   - Loose Item
   - Unit
+  - Base
   layers:
   - Default
   - TransparentFX

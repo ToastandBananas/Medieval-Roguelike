@@ -56,6 +56,20 @@ namespace InventorySystem
             DoDefaultAttack(targetGridPosition);
         }
 
+        public void TryFumbleHeldItem()
+        {
+            if (Random.Range(0f, 100f) <= GetFumbleChance())
+            {
+                if (unit.UnitEquipment.ItemDataEquipped(itemData) == false)
+                    return;
+
+                unit.unitActionHandler.SetIsAttacking(false);
+                DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(itemData));
+            }
+        }
+
+        protected abstract float GetFumbleChance();
+
         public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
             this.itemData = itemData;
@@ -82,6 +96,10 @@ namespace InventorySystem
                 transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand);
                 unit.unitMeshManager.SetLeftHeldItem(this);
             }
+
+            HeldItem oppositeHeldItem = GetOppositeHeldItem();
+            if (oppositeHeldItem != null && oppositeHeldItem is HeldMeleeWeapon)
+                oppositeHeldItem.HeldMeleeWeapon.SetDefaultWeaponStance();
 
             SetUpMeshes();
 
@@ -153,5 +171,23 @@ namespace InventorySystem
             itemData = null;
             HeldItemBasePool.ReturnToPool(this);
         }
+
+        public HeldItem GetOppositeHeldItem()
+        {
+            if (unit == null)
+            {
+                Debug.LogWarning($"Unit for {name} is null...");
+                return null;
+            }
+
+            if (this == unit.unitMeshManager.leftHeldItem)
+                return unit.unitMeshManager.rightHeldItem;
+            else
+                return unit.unitMeshManager.leftHeldItem;
+        }
+
+        public HeldMeleeWeapon HeldMeleeWeapon => this as HeldMeleeWeapon;
+        public HeldRangedWeapon HeldRangedWeapon => this as HeldRangedWeapon;
+        public HeldShield HeldShield => this as HeldShield;
     }
 }

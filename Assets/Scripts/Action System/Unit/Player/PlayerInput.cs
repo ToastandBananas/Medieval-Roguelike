@@ -97,6 +97,12 @@ namespace ActionSystem
                         return;
                     }
 
+                    if (GameControls.gamePlayActions.switchVersatileStance.WasPressed)
+                    {
+                        player.UnitEquipment.SwitchVersatileStance();
+                        return;
+                    }
+
                     // Display the appropriate mouse cursor and line renderer, depending on what/who is at mouse grid position and which action is currently selected by the player
                     SetupCursorAndLineRenderer();
 
@@ -229,7 +235,7 @@ namespace ActionSystem
                             }
                         }
                         // If the player has a ranged weapon equipped and the target enemy is within attack range
-                        else if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped())
+                        else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.health.IsDead())
@@ -244,7 +250,7 @@ namespace ActionSystem
                             }
                         }
                         // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                        else if (player.UnitEquipment.MeleeWeaponEquipped() || player.UnitEquipment.IsUnarmed() || (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() == false))
+                        else if (player.UnitEquipment.MeleeWeaponEquipped || player.UnitEquipment.IsUnarmed || (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() == false))
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.health.IsDead())
@@ -276,7 +282,7 @@ namespace ActionSystem
                         if (selectedAction.IsDefaultAttackAction() || selectedAction is MoveAction)
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                            if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
+                            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
                             {
                                 if (player.unitActionHandler.moveAction.canMove)
                                     player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
@@ -284,7 +290,7 @@ namespace ActionSystem
                                     Debug.Log("You cannot move...");
                             }
                             // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
-                            else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
+                            else if (player.UnitEquipment.MeleeWeaponEquipped || player.stats.CanFightUnarmed)
                             {
                                 if (player.unitActionHandler.moveAction.canMove)
                                     player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
@@ -467,9 +473,9 @@ namespace ActionSystem
 
         void SetAttackCursor()
         {
-            if (player.UnitEquipment.RangedWeaponEquipped() && player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
+            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
-            else if (player.UnitEquipment.MeleeWeaponEquipped() || player.stats.CanFightUnarmed)
+            else if (player.UnitEquipment.MeleeWeaponEquipped || player.stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);
             else
                 WorldMouse.ChangeCursor(CursorState.Default);

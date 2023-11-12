@@ -45,6 +45,7 @@ MonoBehaviour:
   idleRotation_Right: {x: 0, y: 90, z: 0}
   weaponType: 4
   isTwoHanded: 0
+  isVersatile: 1
   canDualWield: 1
   attackRange: {x: 1, y: 1.5}
   damageRange: {x: 5, y: 10}

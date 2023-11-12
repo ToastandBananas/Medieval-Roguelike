@@ -56,28 +56,30 @@ namespace ActionSystem
             {
                 targetUnit.unitActionHandler.InterruptActions();
 
-                int damageAmount = 0;
+                float damageAmount;
                 if (heldWeaponAttackingWith != null)
                 {
                     damageAmount = heldWeaponAttackingWith.itemData.Damage;
-                    if (unit.UnitEquipment.IsDualWielding())
+                    if (unit.UnitEquipment.IsDualWielding)
                     {
-                        if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHelMeleeWeapon())
-                            damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldPrimaryEfficiency);
+                        if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                            damageAmount *= GameManager.dualWieldPrimaryEfficiency;
                         else
-                            damageAmount = Mathf.RoundToInt(damageAmount * GameManager.dualWieldSecondaryEfficiency);
+                            damageAmount *= GameManager.dualWieldSecondaryEfficiency;
                     }
+                    else if (unit.UnitEquipment.InVersatileStance)
+                        damageAmount *= 1.25f;
                 }
                 else
                     damageAmount = UnarmedAttackDamage();
 
                 // TODO: Calculate armor's damage absorbtion
-                int armorAbsorbAmount = 0;
+                float armorAbsorbAmount = 0f;
 
                 // If the attack was blocked
                 if (heldItemBlockedWith != null)
                 {
-                    int blockAmount = 0;
+                    float blockAmount = 0f;
                     if (heldItemBlockedWith is HeldShield)
                     {
                         HeldShield shield = heldItemBlockedWith as HeldShield;
@@ -92,19 +94,19 @@ namespace ActionSystem
 
                         blockAmount = targetUnit.stats.WeaponBlockPower(meleeWeapon);
 
-                        if (unit.UnitEquipment.IsDualWielding())
+                        if (unit.UnitEquipment.IsDualWielding)
                         {
                             if (meleeWeapon == unit.unitMeshManager.GetRightHeldMeleeWeapon())
-                                blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldPrimaryEfficiency);
+                                blockAmount = blockAmount * GameManager.dualWieldPrimaryEfficiency;
                             else
-                                blockAmount = Mathf.RoundToInt(blockAmount * GameManager.dualWieldSecondaryEfficiency);
+                                blockAmount = blockAmount * GameManager.dualWieldSecondaryEfficiency;
                         }
                     }
 
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount - blockAmount, unit);
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount - blockAmount), unit);
                 }
                 else
-                    targetUnit.health.TakeDamage(damageAmount - armorAbsorbAmount, unit);
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount), unit);
             }
         }
 
@@ -119,7 +121,7 @@ namespace ActionSystem
 
             unit.unitActionHandler.targetUnits.Clear();
 
-            TryFumbleWeapon(heldWeaponAttackingWith);
+            heldWeaponAttackingWith.TryFumbleHeldItem();
         }
 
         public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
@@ -171,7 +173,7 @@ namespace ActionSystem
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null; 
             
-            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
+            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
             Weapon weapon = null;
             if (primaryMeleeWeapon != null)
                 weapon = primaryMeleeWeapon.itemData.Item.Weapon;
@@ -280,35 +282,6 @@ namespace ActionSystem
                     return true;
             }
             return false;
-        }
-
-        public void TryFumbleWeapon(HeldItem heldItem)
-        {
-            if (heldItem == null)
-                return;
-
-            if (Random.Range(0f, 100f) <= GetFumbleChance(heldItem.itemData.Item.Weapon))
-            {
-                if (unit.UnitEquipment.ItemDataEquipped(heldItem.itemData) == false)
-                    return;
-
-                DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(heldItem.itemData));
-            }
-        }
-
-        protected virtual float GetFumbleChance(Weapon weapon)
-        {
-            int weaponSkill = unit.stats.WeaponSkill(weapon);
-            int strength = unit.stats.Strength.GetValue();
-            float weaponWeight = weapon.Weight;
-
-            float fumbleChance = (50f - weaponSkill) * 0.4f;
-            fumbleChance += weaponWeight / strength * 15f;
-
-            if (fumbleChance < 0f)
-                fumbleChance = 0f;
-            // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
-            return fumbleChance;
         }
 
         protected float ActionPointCostModifier_WeaponType(Weapon weapon)

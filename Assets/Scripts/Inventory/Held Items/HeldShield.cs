@@ -8,6 +8,13 @@ namespace InventorySystem
     {
         [SerializeField] MeshCollider meshCollider;
 
+        public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+        {
+            base.SetupHeldItem(itemData, unit, equipSlot);
+
+            meshCollider.sharedMesh = itemData.Item.HeldEquipment.Meshes[0];
+        }
+
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             Debug.LogWarning("Default attack for Shields is not created yet.");
@@ -45,11 +52,18 @@ namespace InventorySystem
                 anim.Play("LowerShield_R");
         }
 
-        public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
+        protected override float GetFumbleChance()
         {
-            base.SetupHeldItem(itemData, unit, equipSlot);
+            Shield shield = itemData.Item as Shield;
 
-            meshCollider.sharedMesh = itemData.Item.HeldEquipment.Meshes[0];
+            float fumbleChance = (50f - unit.stats.ShieldSkill.GetValue()) * 0.4f; // Shield skill modifier
+            fumbleChance += shield.Weight / unit.stats.Strength.GetValue() * 15f; // Shield weight to strength ratio modifier
+
+            if (fumbleChance < 0f)
+                fumbleChance = 0f;
+
+            // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
+            return fumbleChance;
         }
 
         public MeshCollider MeshCollider => meshCollider;

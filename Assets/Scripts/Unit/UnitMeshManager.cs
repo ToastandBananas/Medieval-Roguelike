@@ -96,7 +96,7 @@ namespace UnitSystem
 
         public void SetRightHeldItem(HeldItem heldItem) => rightHeldItem = heldItem;
 
-        public HeldMeleeWeapon GetPrimaryHelMeleeWeapon()
+        public HeldMeleeWeapon GetPrimaryHeldMeleeWeapon()
         {
             if (rightHeldItem != null && rightHeldItem.itemData.Item is MeleeWeapon)
                 return rightHeldItem as HeldMeleeWeapon;

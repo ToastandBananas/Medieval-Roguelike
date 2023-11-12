@@ -41,6 +41,9 @@ namespace ActionSystem
                 }
                 else
                     cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
+
+                if (unit.UnitEquipment.InVersatileStance)
+                    cost *= 1.35f;
             }
             else
                 cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
@@ -66,10 +69,11 @@ namespace ActionSystem
                 return;
             }
 
-            StartAction();
-
             if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
+            {
+                StartAction();
                 unit.StartCoroutine(DoAttack());
+            }
             else
                 MoveToTargetInstead();
         }
@@ -127,12 +131,12 @@ namespace ActionSystem
                     yield return null;
 
                 // Play the attack animations and handle blocking for the target
-                if (unit.UnitEquipment.IsUnarmed())
+                if (unit.UnitEquipment.IsUnarmed)
                 {
                     unit.unitAnimator.DoDefaultUnarmedAttack();
                     AttackTarget(null, false);
                 }
-                else if (unit.UnitEquipment.IsDualWielding())
+                else if (unit.UnitEquipment.IsDualWielding)
                 {
                     // Dual wield attack
                     unit.unitAnimator.StartDualMeleeAttack();
@@ -148,10 +152,10 @@ namespace ActionSystem
                 {
                     // Primary weapon attack
                     unit.unitAnimator.StartMeleeAttack();
-                    if (unit.unitMeshManager.GetPrimaryHelMeleeWeapon() != null)
+                    if (unit.unitMeshManager.GetPrimaryHeldMeleeWeapon() != null)
                     {
-                        unit.unitMeshManager.GetPrimaryHelMeleeWeapon().DoDefaultAttack(targetGridPosition);
-                        AttackTarget(unit.unitMeshManager.GetPrimaryHelMeleeWeapon(), false);
+                        unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoDefaultAttack(targetGridPosition);
+                        AttackTarget(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), false);
                     }
                     else if (unit.stats.CanFightUnarmed) // Fallback to unarmed attack
                     {
@@ -166,7 +170,7 @@ namespace ActionSystem
                 bool attackDodged = false;
                 bool attackBlocked = false;
                 bool headShot = false;
-                if (unit.UnitEquipment.IsUnarmed())
+                if (unit.UnitEquipment.IsUnarmed)
                 {
                     attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, false);
                     if (attackDodged == false)
@@ -175,7 +179,7 @@ namespace ActionSystem
                         DamageTargets(null, headShot);
                     }
                 }
-                else if (unit.UnitEquipment.IsDualWielding()) // Dual wield attack
+                else if (unit.UnitEquipment.IsDualWielding) // Dual wield attack
                 {
                     bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData.Item.Weapon, false);
                     bool mainAttackBlocked = false;
@@ -201,7 +205,7 @@ namespace ActionSystem
                 }
                 else
                 {
-                    HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
+                    HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
                     attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
                     if (attackDodged == false)
                     {
@@ -262,9 +266,9 @@ namespace ActionSystem
                 return false;
 
             float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
-            if (unit.UnitEquipment.MeleeWeaponEquipped())
+            if (unit.UnitEquipment.MeleeWeaponEquipped)
             {
-                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon;
+                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon;
                 float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
                 if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
                 
@@ -315,8 +319,8 @@ namespace ActionSystem
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
                 float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
-                if (unit.UnitEquipment.MeleeWeaponEquipped())
-                    minAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MinRange;
+                if (unit.UnitEquipment.MeleeWeaponEquipped)
+                    minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -385,14 +389,14 @@ namespace ActionSystem
             float minRange;
             float maxRange;
 
-            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed())
+            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed)
             {
                 minRange = 1f;
                 maxRange = UnarmedAttackRange(startGridPosition, false);
             }
             else
             {
-                HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHelMeleeWeapon();
+                HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
                 if (primaryHeldMeleeWeapon != null)
                 {
                     minRange = primaryHeldMeleeWeapon.itemData.Item.Weapon.MinRange;
@@ -475,8 +479,8 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             float maxAttackRange;
-            if (unit.UnitEquipment.MeleeWeaponEquipped())
-                maxAttackRange = unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            if (unit.UnitEquipment.MeleeWeaponEquipped)
+                maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
             else
                 maxAttackRange = unit.stats.UnarmedAttackRange;
 
@@ -569,7 +573,7 @@ namespace ActionSystem
 
         public override bool IsValidAction()
         {
-            if (unit != null && (unit.UnitEquipment.MeleeWeaponEquipped() || unit.stats.CanFightUnarmed))
+            if (unit != null && (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed))
                 return true;
             return false;
         }
@@ -586,12 +590,12 @@ namespace ActionSystem
 
         public override string TooltipDescription()
         {
-            if (unit.UnitEquipment.IsUnarmed() || unit.UnitEquipment.RangedWeaponEquipped())
+            if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
                 return "Engage in <b>hand-to-hand</b> combat, delivering a swift and powerful strike to your target.";
-            else if (unit.UnitEquipment.IsDualWielding())
+            else if (unit.UnitEquipment.IsDualWielding)
                 return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.itemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.itemData.Item.Name}</b>.";
             else
-                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHelMeleeWeapon().itemData.Item.Name}</b>.";
+                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b>.";
         }
 
         public override int GetEnergyCost() => 0;

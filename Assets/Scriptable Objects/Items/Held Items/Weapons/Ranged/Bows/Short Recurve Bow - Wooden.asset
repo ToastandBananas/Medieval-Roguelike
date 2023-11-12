@@ -29,6 +29,15 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 50, y: 220}
+  pickupMesh: {fileID: -2432090755550338912, guid: 5d0f19d750f7fe44e8eed22e33a1f53d,
+    type: 3}
+  pickupMeshRendererMaterials:
+  - {fileID: 2100000, guid: 2bf507bdc9a801645bd7e735644c8a5a, type: 2}
+  equipSlot: 0
+  actionTypes:
+  - {fileID: 11400000, guid: 44ecde231a7e0124fbec7df445b93ecc, type: 2}
+  - {fileID: 11400000, guid: 26a016718e383234091d517a7f6d54c0, type: 2}
+  - {fileID: 11400000, guid: be1a9ca6be3f56341a7e31442d5bd1fe, type: 2}
   meshes:
   - {fileID: 2858289826068144650, guid: 46ffb20919493cf4cbe0491996d25635, type: 3}
   - {fileID: -6567934382552847019, guid: 899b553669bfdfb4fb0ef105a9ace7e5, type: 3}
@@ -41,26 +50,18 @@ MonoBehaviour:
   - {fileID: 7298417193033885815, guid: e9cc73cd0e18a7941819414ff718494d, type: 3}
   - {fileID: 3543470844453102860, guid: f2c24415ef08f0e4c80d61a40c428a9e, type: 3}
   - {fileID: -7085867950720389769, guid: f86f0040792db3e46a4f2cb377fd37f9, type: 3}
-  pickupMesh: {fileID: -2432090755550338912, guid: 5d0f19d750f7fe44e8eed22e33a1f53d,
-    type: 3}
-  pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: 2bf507bdc9a801645bd7e735644c8a5a, type: 2}
-  equipSlot: 0
-  actionTypes:
-  - {fileID: 11400000, guid: 44ecde231a7e0124fbec7df445b93ecc, type: 2}
-  - {fileID: 11400000, guid: 26a016718e383234091d517a7f6d54c0, type: 2}
-  - {fileID: 11400000, guid: be1a9ca6be3f56341a7e31442d5bd1fe, type: 2}
   idlePosition_Left: {x: 0, y: 0, z: 0}
   idlePosition_Right: {x: 0, y: 0.24, z: -0.3}
   idleRotation_Left: {x: 0, y: 55, z: 270}
   idleRotation_Right: {x: 55, y: -35, z: 35}
   weaponType: 0
   isTwoHanded: 1
+  isVersatile: 0
   canDualWield: 0
   attackRange: {x: 2, y: 10}
   damageRange: {x: 4, y: 8}
   blockChanceAddOn: 0
-  minAccuracyModifier: -60
-  maxAccuracyModifier: -50
+  minAccuracyModifier: 5
+  maxAccuracyModifier: 10
   reloadActionPointCostMultiplier: 0.8
   projectileType: 0
