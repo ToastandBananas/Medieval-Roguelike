@@ -15,8 +15,7 @@ MonoBehaviour:
   name: Steelplate Armor
   pluralName: 
   description: A formidable suit of full plate armor known for its exceptional protection
-    and flexibility, offering top-tier defensive capabilities for warriors in the
-    heat of battle.
+    and flexibility.
   itemType: 90
   mainMaterial: 37
   itemSize: 5
@@ -35,6 +34,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e58de6eee4f5902408a7946f949bab0d, type: 2}
   equipSlot: 5
   actionTypes: []
+  defenseRange: {x: 82, y: 90}
   meshes:
   - {fileID: -2432090755550338912, guid: be6f52c4d5f932741be1ae8d0c51e6e9, type: 3}
   meshRendererMaterials:
@@ -43,4 +43,3 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 1067aeaeb0e120f489f78a2e50aac7c8, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 6cba61e335e127e428785c75e4c66940, type: 2}
-  defenseRange: {x: 82, y: 90}

@@ -1,10 +1,8 @@
 using GridSystem;
 using InventorySystem;
-using Pathfinding;
 using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnitSystem;
 using UnityEngine;
 using Utilities;
@@ -40,9 +38,8 @@ namespace ActionSystem
 
         protected void SetTargetEnemyUnit()
         {
-            if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition))
+            if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition, out Unit unitAtGridPosition))
             {
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
                 unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                 targetEnemyUnit = unitAtGridPosition;
             }
@@ -86,6 +83,8 @@ namespace ActionSystem
                         shield.LowerShield();
 
                         blockAmount = targetUnit.stats.ShieldBlockPower(shield);
+
+                        shield.TryFumbleHeldItem();
                     }
                     else if (heldItemBlockedWith is HeldMeleeWeapon)
                     {
@@ -97,10 +96,12 @@ namespace ActionSystem
                         if (unit.UnitEquipment.IsDualWielding)
                         {
                             if (meleeWeapon == unit.unitMeshManager.GetRightHeldMeleeWeapon())
-                                blockAmount = blockAmount * GameManager.dualWieldPrimaryEfficiency;
+                                blockAmount *= GameManager.dualWieldPrimaryEfficiency;
                             else
-                                blockAmount = blockAmount * GameManager.dualWieldSecondaryEfficiency;
+                                blockAmount *= GameManager.dualWieldSecondaryEfficiency;
                         }
+
+                        meleeWeapon.TryFumbleHeldItem();
                     }
 
                     targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount - blockAmount), unit);
@@ -148,10 +149,9 @@ namespace ActionSystem
             List<Unit> targetUnits = ListPool<Unit>.Claim(); 
             foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
             {
-                if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
+                if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition, out Unit targetUnit) == false)
                     continue;
 
-                Unit targetUnit = LevelGrid.GetUnitAtGridPosition(gridPosition);
                 targetUnits.Add(targetUnit);
                 
                 // The unit being attacked becomes aware of this unit
@@ -174,9 +174,9 @@ namespace ActionSystem
             yield return null; 
             
             HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            Weapon weapon = null;
+            ItemData weaponItemData = null;
             if (primaryMeleeWeapon != null)
-                weapon = primaryMeleeWeapon.itemData.Item.Weapon;
+                weaponItemData = primaryMeleeWeapon.itemData;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
@@ -213,12 +213,12 @@ namespace ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weapon, false))
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, false))
                         targetUnits[i].unitAnimator.DoDodge(unit, null);
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weapon, false);
+                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, false);
                         unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
@@ -241,12 +241,12 @@ namespace ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weapon, false) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, false) == false)
                     {
                         bool headShot = false;
 
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weapon, false))
+                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, false))
                             targetUnits[i].unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                         // Damage this unit

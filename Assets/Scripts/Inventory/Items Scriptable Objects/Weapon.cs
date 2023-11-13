@@ -17,9 +17,10 @@ namespace InventorySystem
         [SerializeField] Vector2Int damageRange;
 
         [Header("Modifiers")]
-        [SerializeField] float blockChanceAddOn;
-        [Range(-100f, 100f)][SerializeField] float minAccuracyModifier;
-        [Range(-100f, 100f)][SerializeField] float maxAccuracyModifier;
+        [SerializeField, Range(-1f, 1f)] float minBlockChanceAddOn;
+        [SerializeField, Range(-1f, 1f)] float maxBlockChanceAddOn;
+        [SerializeField, Range(-1f, 1f)] float minAccuracyModifier;
+        [SerializeField, Range(-1f, 1f)] float maxAccuracyModifier;
 
         public WeaponType WeaponType => weaponType;
         public bool IsTwoHanded => isTwoHanded;
@@ -32,7 +33,8 @@ namespace InventorySystem
         public int MinDamage => damageRange.x;
         public int MaxDamage => damageRange.y;
 
-        public float BlockChanceAddOn => blockChanceAddOn;
+        public float MinBlockChanceAddOn => minBlockChanceAddOn;
+        public float MaxBlockChanceAddOn => maxBlockChanceAddOn;
         public float MinAccuracyModifier => minAccuracyModifier;
         public float MaxAccuracyModifier => maxAccuracyModifier;
     }

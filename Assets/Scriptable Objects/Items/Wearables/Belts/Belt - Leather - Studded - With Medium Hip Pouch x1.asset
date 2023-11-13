@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Studded Leather Belt
   pluralName: 
-  description: A simple, yet sturdy belt made from durable cowhide.
+  description: A simple, yet sturdy belt made from durable cowhide and reinforced
+    with metal studs.
   itemType: 130
   mainMaterial: 23
   itemSize: 2

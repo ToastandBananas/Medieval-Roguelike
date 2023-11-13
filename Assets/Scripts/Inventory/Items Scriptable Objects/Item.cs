@@ -23,7 +23,7 @@ namespace InventorySystem
         [Header("General Item Info")]
         [SerializeField] new string name = "New Item";
         [SerializeField] string pluralName;
-        [SerializeField] string description;
+        [SerializeField, TextArea(1, 5)] string description;
         [SerializeField] protected ItemType itemType;
         [SerializeField] ItemMaterial mainMaterial;
         [SerializeField] ItemSize itemSize;

@@ -337,12 +337,12 @@ namespace GridSystem
         public static bool GridPositionObstructed(GridPosition gridPosition)
         {
             GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
-            if (IsValidGridPosition(gridPosition) == false || (HasAnyUnitOnGridPosition(gridPosition) && GetUnitAtGridPosition(gridPosition).health.IsDead() == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
+            if (IsValidGridPosition(gridPosition) == false || (HasAnyUnitOnGridPosition(gridPosition, out Unit unit) && unit.health.IsDead() == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
                 return true;
             return false;
         }
 
-        public static bool HasAnyUnitOnGridPosition(GridPosition gridPosition) => units.TryGetValue(gridPosition, out Unit unit);
+        public static bool HasAnyUnitOnGridPosition(GridPosition gridPosition, out Unit unit) => units.TryGetValue(gridPosition, out unit);
 
         public static bool HasAnyInteractableOnGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
 

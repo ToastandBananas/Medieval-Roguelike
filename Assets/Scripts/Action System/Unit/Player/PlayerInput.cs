@@ -402,8 +402,12 @@ namespace ActionSystem
                         ClearHighlightedInteractable();
                         if (highlightedUnit == null || highlightedUnit.gameObject != unitHit.transform.gameObject)
                         {
-                            if (unitHit.transform.TryGetComponent(out Unit unit))
-                                highlightedUnit = unit;
+                            if (LevelGrid.HasAnyUnitOnGridPosition(LevelGrid.GetGridPosition(unitHit.transform.position), out Unit targetUnit) && targetUnit != player)
+                            {
+                                highlightedUnit = targetUnit;
+                                if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
+                                    TooltipManager.ShowUnitTooltip(targetUnit, player.unitActionHandler.GetAction<MeleeAction>());
+                            }
                         }
                         if (highlightedUnit == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
@@ -420,7 +424,12 @@ namespace ActionSystem
                         if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
                         {
                             ClearHighlightedInteractable();
-                            SetAttackCursor();
+                            SetAttackCursor(); 
+                            
+                            if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
+                                TooltipManager.ShowUnitTooltip(unitAtGridPosition, player.unitActionHandler.GetAction<MeleeAction>());
+
+                            highlightedUnit = unitAtGridPosition;
                         }
                         else
                         {
@@ -436,15 +445,20 @@ namespace ActionSystem
                 {
                     ClearHighlightedInteractable();
                     Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
-                    highlightedUnit = unitAtGridPosition;
 
                     if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                     {
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                         SetAttackCursor();
+
+                        if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
+                            TooltipManager.ShowUnitTooltip(unitAtGridPosition, player.unitActionHandler.GetAction<MeleeAction>());
+
+                        highlightedUnit = unitAtGridPosition;
                     }
                     else
                     {
+                        highlightedUnit = null;
                         ActionLineRenderer.Instance.HideLineRenderers();
                         WorldMouse.ChangeCursor(CursorState.Default);
                     }

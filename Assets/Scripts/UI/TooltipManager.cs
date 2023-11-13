@@ -19,6 +19,7 @@ namespace GeneralUI
 
         static List<Tooltip> worldTooltips = new List<Tooltip>();
 
+        public static Unit currentTargetUnit { get; private set; }
         public static Slot currentSlot { get; private set; }
         public static ActionBarSlot currentActionBarSlot { get; private set; }
         public static int activeInventoryTooltips { get; private set; }
@@ -101,6 +102,7 @@ namespace GeneralUI
                 Instance.inventoryTooltips[i].ClearTooltip();
             }
 
+            currentTargetUnit = null;
             currentSlot = null;
             currentActionBarSlot = null;
             activeInventoryTooltips = 0;
@@ -178,6 +180,16 @@ namespace GeneralUI
             
             playersLastPosition = UnitManager.player.transform.position;
             playersLastDirection = UnitManager.player.unitActionHandler.turnAction.currentDirection;
+        }
+
+        public static void ShowUnitTooltip(Unit targetUnit, BaseAction selectedAction)
+        {
+            if (selectedAction == null || targetUnit == null)
+                return;
+
+            currentTargetUnit = targetUnit;
+
+            GetTooltip().ShowUnitTooltip(targetUnit, selectedAction);
         }
 
         static Tooltip GetInventoryTooltip()

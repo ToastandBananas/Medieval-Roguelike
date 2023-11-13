@@ -83,7 +83,7 @@ namespace InventorySystem
         // Used in keyframe animation
         void ShootProjectile()
         {
-            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().TryHitTarget()));
+            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
             loadedProjectile = null;
 
             TryFumbleHeldItem();

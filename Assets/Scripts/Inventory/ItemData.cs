@@ -89,14 +89,15 @@ namespace InventorySystem
                     if (item is Weapon)
                     {
                         Weapon weapon = item as Weapon;
+                        accuracyModifier = Mathf.RoundToInt(Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier) * 1000f) / 1000f;
+                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(weapon.MinBlockChanceAddOn, weapon.MaxBlockChanceAddOn) * 1000f) / 1000f;
                         damage = Random.Range(weapon.MinDamage, weapon.MaxDamage + 1);
-                        accuracyModifier = Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier);
                     }
                     else if (item is Shield)
                     {
                         Shield shield = item as Shield;
+                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceAddOn, shield.MaxBlockChanceAddOn) * 1000f) / 1000f;
                         blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
-                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceAddOn, shield.MaxBlockChanceAddOn) * 100f) / 100f;
                         damage = Random.Range(shield.MinDamage, shield.MaxDamage + 1);
                     }
                     else if (item is Armor)
@@ -132,30 +133,35 @@ namespace InventorySystem
         {
             // Calculate the percentage of points that were added to the item's stats when randomized (compared to the total possible points)
             float pointIncrease = 0f; // Amount the stats have been increased by in relation to its base stat values, in total
-            float percent; // Percent of possible stat increase this item has
 
             if (item is Equipment)
             {
                 //if (item.Equipment.maxBaseDurability > 0)
                     //pointIncrease += (maxDurability - equipment.minBaseDurability);
 
-                if (item is Weapon)
+                if (item is Armor)
                 {
-                    pointIncrease += (damage - item.Weapon.MinDamage) * 2f; // Damage contributes to value twice as much
+                    Armor armor = item as Armor;
+                    pointIncrease += (defense - armor.MinDefense) * 2f;
                 }
                 else if (item is Shield)
                 {
-                    pointIncrease += (blockPower - item.Shield.MinBlockPower) * 2f; // Block power & block chance add on contribute to value twice as much
-                    pointIncrease += (blockChanceAddOn - item.Shield.MinBlockChanceAddOn) * 2f;
-                    pointIncrease += damage - item.Shield.MinDamage;
+                    Shield shield = item as Shield;
+                    pointIncrease += (blockChanceAddOn - shield.MinBlockChanceAddOn) * 200f;
+                    pointIncrease += (blockPower - shield.MinBlockPower) * 2f;
+                    pointIncrease += damage - shield.MinDamage;
                 }
-                else if (item is Armor)
+                else if (item is Weapon)
                 {
-                    pointIncrease += (defense - item.Armor.MinDefense) * 2f; // Armor contributes to value twice as much
+                    Weapon weapon = item as Weapon;
+                    pointIncrease += (accuracyModifier - weapon.MinAccuracyModifier) * 200f;
+                    pointIncrease += (blockChanceAddOn - weapon.MinBlockChanceAddOn) * 100f;
+                    pointIncrease += (damage - weapon.MinDamage) * 3f;
                 }
             }
             else if (item is Consumable)
             {
+                Consumable consumable = item as Consumable;
                 //if (item.Consumable.ItemType == ItemType.Food)
                     //pointIncrease += (freshness - consumable.minBaseFreshness) * 2f;
             }
@@ -163,8 +169,7 @@ namespace InventorySystem
             if (item.MaxUses > 1)
                 pointIncrease += remainingUses;
 
-            percent = pointIncrease / GetTotalPointValue();
-            return percent;
+            return pointIncrease / GetTotalPointValue(); // Return the percent of possible stat increases this item has
         }
 
         float GetTotalPointValue()
@@ -177,21 +182,24 @@ namespace InventorySystem
                 //if (equipment.maxBaseDurability > 0)
                     //totalPointsPossible += (equipment.maxBaseDurability - equipment.minBaseDurability);
 
-                if (item is Weapon)
-                {
-                    totalPointsPossible += (item.Weapon.MaxDamage - item.Weapon.MinDamage) * 2f;
-                }
-
-                if (item is Shield)
-                {
-                    totalPointsPossible += (item.Shield.MaxBlockPower - item.Shield.MinBlockPower) * 2f;
-                    totalPointsPossible += (item.Shield.MaxBlockChanceAddOn - item.Shield.MinBlockChanceAddOn) * 2f;
-                    totalPointsPossible += item.Shield.MaxDamage - item.Shield.MinDamage;
-                }
-
                 if (item is Armor)
                 {
-                    totalPointsPossible += (item.Armor.MaxDefense - item.Armor.MinDefense) * 2f;
+                    Armor armor = item as Armor;
+                    totalPointsPossible += (armor.MaxDefense - armor.MinDefense) * 2f;
+                }
+                else if (item is Shield)
+                {
+                    Shield shield = item as Shield;
+                    totalPointsPossible += (shield.MaxBlockChanceAddOn - shield.MinBlockChanceAddOn) * 200f;
+                    totalPointsPossible += (shield.MaxBlockPower - shield.MinBlockPower) * 2f;
+                    totalPointsPossible += shield.MaxDamage - shield.MinDamage;
+                }
+                else if (item is Weapon)
+                {
+                    Weapon weapon = item as Weapon;
+                    totalPointsPossible += (weapon.MaxAccuracyModifier - weapon.MinAccuracyModifier) * 200f;
+                    totalPointsPossible += (weapon.MaxBlockChanceAddOn - weapon.MinBlockChanceAddOn) * 100f;
+                    totalPointsPossible += (weapon.MaxDamage - weapon.MinDamage) * 3f;
                 }
             }
             else if (item is Consumable)
@@ -217,16 +225,35 @@ namespace InventorySystem
                 return false;
             }
 
-            if (itemDataToCompare.item is Weapon)
+            if (item is Armor)
             {
+                thisItemDatasPoints += defense * 2;
+                itemDataToComparesPoints += defense * 2;
+            }
+            else if (item is Shield)
+            {
+                thisItemDatasPoints += blockChanceAddOn * 200f;
+                itemDataToComparesPoints += itemDataToCompare.blockChanceAddOn * 200f;
+
+                thisItemDatasPoints += blockPower * 2;
+                itemDataToComparesPoints += itemDataToCompare.blockPower * 2;
+
                 thisItemDatasPoints += damage;
                 itemDataToComparesPoints += itemDataToCompare.damage;
+            }
+            else if (item is Weapon)
+            {
+                thisItemDatasPoints += accuracyModifier * 200f;
+                itemDataToComparesPoints += itemDataToCompare.accuracyModifier * 200f;
+
+                thisItemDatasPoints += blockChanceAddOn * 100f;
+                itemDataToComparesPoints += itemDataToCompare.blockChanceAddOn * 100f;
 
                 thisItemDatasPoints += blockPower;
-                itemDataToComparesPoints += itemDataToCompare.damage;
+                itemDataToComparesPoints += itemDataToCompare.blockPower;
 
-                thisItemDatasPoints += accuracyModifier;
-                itemDataToComparesPoints += itemDataToCompare.accuracyModifier;
+                thisItemDatasPoints += damage * 3;
+                itemDataToComparesPoints += itemDataToCompare.damage * 3;
             }
 
             if (itemDataToComparesPoints > thisItemDatasPoints)
@@ -239,7 +266,12 @@ namespace InventorySystem
             if (otherItemData == null)
                 return false;
 
-            if (item == otherItemData.item && damage == otherItemData.damage && accuracyModifier == otherItemData.accuracyModifier && blockPower == otherItemData.blockPower && defense == otherItemData.defense)
+            if (item == otherItemData.item 
+                && accuracyModifier == otherItemData.accuracyModifier 
+                && blockPower == otherItemData.blockPower 
+                && blockChanceAddOn == otherItemData.blockChanceAddOn
+                && damage == otherItemData.damage
+                && defense == otherItemData.defense)
                 return true;
             return false;
         }

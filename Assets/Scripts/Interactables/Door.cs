@@ -23,6 +23,9 @@ namespace InteractableObjects
 
         public override void Interact(Unit unit)
         {
+            if (unit.unitActionHandler.turnAction.IsFacingTarget(gridPosition) == false)
+                unit.unitActionHandler.turnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unit.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
+
             isOpen = !isOpen;
 
             if (isOpen)

@@ -69,8 +69,8 @@ namespace ActionSystem
             {
                 if (unit.unitActionHandler.targetEnemyUnit != null)
                     targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
-                else if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition))
-                    targetEnemyUnit = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
+                else if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition, out Unit targetUnit))
+                    targetEnemyUnit = targetUnit;
             }
 
             if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
@@ -86,9 +86,12 @@ namespace ActionSystem
                 CompleteAction();
                 unit.unitActionHandler.SetTargetEnemyUnit(targetEnemyUnit);
 
+                // ReloadAction can become null if the Unit drops their weapon or switches their loadout
                 ReloadAction reloadAction = unit.unitActionHandler.GetAction<ReloadAction>();
                 if (reloadAction != null)
                     reloadAction.QueueAction();
+                else
+                    TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
             else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
@@ -146,7 +149,7 @@ namespace ActionSystem
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData.Item.Weapon, false))
+                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
@@ -160,8 +163,8 @@ namespace ActionSystem
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
-                bool missedTarget = TryHitTarget();
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData.Item.Weapon, false);
+                bool missedTarget = TryHitTarget(targetEnemyUnit.GridPosition);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData, false);
                 bool headShot = false;
                 if (missedTarget == false)
                     DamageTargets(heldRangedWeapon, headShot);
@@ -191,10 +194,10 @@ namespace ActionSystem
             unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack(targetGridPosition);
         }
 
-        public bool TryHitTarget()
+        public bool TryHitTarget(GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 100f);
-            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData);
+            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData, targetGridPosition);
             if (random <= rangedAccuracy)
                 return true;
             return false;
@@ -276,8 +279,8 @@ namespace ActionSystem
                     continue;
 
                 float sphereCastRadius = 0.1f;
-                Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-                Vector3 shootDir = ((nodeGridPosition.WorldPosition + offset) - (startGridPosition.WorldPosition + offset)).normalized;
+                Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+                Vector3 shootDir = (nodeGridPosition.WorldPosition + offset - (startGridPosition.WorldPosition + offset)).normalized;
                 if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, nodeGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
                     continue;
 
@@ -299,8 +302,8 @@ namespace ActionSystem
                 return validGridPositionsList;
 
             float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-            Vector3 shootDir = ((unit.WorldPosition + offset) - (targetGridPosition.WorldPosition + offset)).normalized;
+            Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+            Vector3 shootDir = (unit.WorldPosition + offset - (targetGridPosition.WorldPosition + offset)).normalized;
             if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, targetGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
                 return validGridPositionsList; // Blocked by an obstacle
 
@@ -328,7 +331,7 @@ namespace ActionSystem
                     continue;
 
                 // Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition))
+                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out _))
                     continue;
 
                 // If target is out of attack range
@@ -336,8 +339,10 @@ namespace ActionSystem
                     continue;
 
                 float sphereCastRadius = 0.1f;
-                Vector3 shootDir = ((nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
+                Vector3 unitOffset = 2f * unit.ShoulderHeight * Vector3.up;
+                Vector3 targetUnitOffset = 2f * targetUnit.ShoulderHeight * Vector3.up;
+                Vector3 shootDir = (nodeGridPosition.WorldPosition + unitOffset - (targetUnit.WorldPosition + targetUnitOffset)).normalized;
+                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, shootDir, out _, Vector3.Distance(nodeGridPosition.WorldPosition + unitOffset, targetUnit.WorldPosition + targetUnitOffset), unit.unitActionHandler.AttackObstacleMask))
                     continue; // Blocked by an obstacle
 
                 // Debug.Log(gridPosition);
@@ -420,11 +425,10 @@ namespace ActionSystem
             float finalActionValue = 0f;
 
             // Make sure there's a Unit at this grid position
-            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition))
+            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(actionGridPosition);
-                if (unit.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
+                if (unitAtGridPosition.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;

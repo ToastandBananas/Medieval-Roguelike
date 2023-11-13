@@ -38,7 +38,8 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking) return;
+            if (unit == null || /*unit.unitActionHandler.AvailableActions.Contains(this) == false ||*/ unit.unitActionHandler.isAttacking) 
+                return;
 
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {
@@ -90,7 +91,7 @@ namespace ActionSystem
                     continue;
 
                 // If Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition))
+                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out _))
                     continue;
 
                 // If target is out of attack range from this Grid Position
@@ -260,10 +261,9 @@ namespace ActionSystem
             attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
             for (int i = 0; i < attackGridPositions.Count; i++)
             {
-                if (LevelGrid.HasAnyUnitOnGridPosition(attackGridPositions[i]) == false)
+                if (LevelGrid.HasAnyUnitOnGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
                     continue;
 
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(attackGridPositions[i]);
                 if (unitAtGridPosition.health.IsDead())
                     continue;
 
@@ -325,11 +325,8 @@ namespace ActionSystem
             for (int i = 0; i < actionAreaGridPositions.Count; i++)
             {
                 // Make sure there's a Unit at this grid position
-                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i]) == false)
+                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i], out Unit unitAtGridPosition) == false)
                     continue;
-
-                // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(actionAreaGridPositions[i]);
 
                 // Skip this unit if they're dead
                 if (unitAtGridPosition.health.IsDead())
@@ -346,14 +343,14 @@ namespace ActionSystem
                 else if (unit.alliance.IsAlly(unitAtGridPosition))
                 {
                     // Allies in the action area decrease this action's value
-                    finalActionValue -= 75f;
+                    finalActionValue -= 100f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 75f - (unitAtGridPosition.health.CurrentHealthNormalized() * 75f);
+                    finalActionValue -= 100f - (unitAtGridPosition.health.CurrentHealthNormalized() * 100f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
-                        finalActionValue -= 75f;
+                        finalActionValue -= 100f;
                 }
                 else // If IsNeutral
                 {

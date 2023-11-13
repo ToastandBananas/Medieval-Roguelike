@@ -323,7 +323,7 @@ namespace ActionSystem
             return false;
         }
 
-        public bool TryDodgeAttack(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
+        public bool TryDodgeAttack(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
         {
             // If the attacker is in front of this Unit (greater chance to block)
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))
@@ -340,7 +340,7 @@ namespace ActionSystem
             return false;
         }
 
-        public bool TryBlockRangedAttack(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
+        public bool TryBlockRangedAttack(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
         {
             if (unit.UnitEquipment.ShieldEquipped)
             {
@@ -373,7 +373,7 @@ namespace ActionSystem
             return false;
         }
 
-        public bool TryBlockMeleeAttack(Unit attackingUnit, Weapon weaponAttackingWith, bool attackerUsingOffhand)
+        public bool TryBlockMeleeAttack(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
         {
             float random;
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))

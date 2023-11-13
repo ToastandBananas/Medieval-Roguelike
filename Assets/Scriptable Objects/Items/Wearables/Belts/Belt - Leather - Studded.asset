@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Studded Leather Belt
   pluralName: 
   description: A simple, yet sturdy belt made from durable cowhide and reinforced
-    with steel studs.
+    with metal studs.
   itemType: 130
   mainMaterial: 23
   itemSize: 2
@@ -35,3 +35,4 @@ MonoBehaviour:
   equipSlot: 11
   actionTypes: []
   inventorySections: []
+  beltPouchNames: []

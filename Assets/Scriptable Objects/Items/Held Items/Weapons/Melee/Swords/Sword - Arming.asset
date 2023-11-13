@@ -49,6 +49,7 @@ MonoBehaviour:
   canDualWield: 1
   attackRange: {x: 1, y: 1.5}
   damageRange: {x: 5, y: 10}
-  blockChanceAddOn: 2
-  minAccuracyModifier: 0
-  maxAccuracyModifier: 0
+  minBlockChanceAddOn: 0.02
+  maxBlockChanceAddOn: 0.05
+  minAccuracyModifier: 0.1
+  maxAccuracyModifier: 0.15

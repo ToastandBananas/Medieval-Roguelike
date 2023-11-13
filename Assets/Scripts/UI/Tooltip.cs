@@ -56,12 +56,11 @@ namespace GeneralUI
                 stringBuilder.Append($"{EnumToSpacedString(itemData.Item.Weapon.WeaponType)}</size></i></align>\n");
             }
 
-                // If Equipped
+            // If Equipped
             if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.slots.Contains((EquipmentSlot)slot)))
                 stringBuilder.Append("<align=center><i><b><size=18>- Equipped -</size></b></i></align>\n\n");
             else
                 stringBuilder.Append("\n");
-            // tooltipStringBuilder.Append($"- {EnumToSpacedString(itemData.Item.ItemType)} -</align>\n\n");
 
             // Description
             stringBuilder.Append("<size=16>");
@@ -76,18 +75,46 @@ namespace GeneralUI
             if (itemData.Item is Weapon)
             {
                 stringBuilder.Append($"\n  Damage: {itemData.Damage}");
+
+                if (itemData.AccuracyModifier != 0f)
+                {
+                    if (itemData.AccuracyModifier < 0f)
+                        stringBuilder.Append($"\n  Accuracy: -{itemData.AccuracyModifier * 100f}%");
+                    else
+                        stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
+                }
+
+                if (itemData.BlockChanceAddOn != 0f)
+                {
+                    if (itemData.BlockChanceAddOn < 0f)
+                        stringBuilder.Append($"\n  Block Chance: -{itemData.BlockChanceAddOn * 100f}%");
+                    else
+                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
+                }
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Shield)
             {
-                stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
-                stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn}%");
+                if (itemData.BlockPower < 0)
+                    stringBuilder.Append($"\n  Block Power: -{itemData.BlockPower}");
+                else
+                    stringBuilder.Append($"\n  Block Power: +{itemData.BlockPower}");
+
+                if (itemData.BlockChanceAddOn != 0f)
+                {
+                    if (itemData.BlockChanceAddOn < 0f)
+                        stringBuilder.Append($"\n  Block Chance: -{itemData.BlockChanceAddOn * 100f}%");
+                    else
+                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
+                }
+
                 stringBuilder.Append($"\n  Bash Damage: {itemData.Damage}");
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Armor)
             {
-                stringBuilder.Append($"\n  Armor: {itemData.Defense}");
+                if (itemData.Defense != 0)
+                    stringBuilder.Append($"\n  Armor: {itemData.Defense}");
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Backpack)
@@ -121,9 +148,8 @@ namespace GeneralUI
                 }
             }
 
-            stringBuilder.Append($"\nWeight: {itemData.Weight()} lbs");
-            stringBuilder.Append($"\nValue: {itemData.Value} g");
-            stringBuilder.Append($"\nValue Ratio: {Mathf.RoundToInt(itemData.Value / itemData.Weight() * 100f) / 100f} g/lb");
+            stringBuilder.Append($"\n<size=16>Weight: {itemData.Weight()} lbs</size>");
+            stringBuilder.Append($"\n<size=16>Value: {itemData.Value} g ({Mathf.RoundToInt(itemData.Value / itemData.Weight() * 100f) / 100f} g/lb)</size>");
 
             textMesh.text = stringBuilder.ToString();
             gameObject.SetActive(true);
@@ -186,6 +212,16 @@ namespace GeneralUI
 
             targetTransform = looseItem.transform;
             StartCoroutine(CalculatePosition(targetTransform));
+        }
+
+        public void ShowUnitTooltip(Unit targetUnit, BaseAction selectedAction)
+        {
+            if (selectedAction is BaseAttackAction)
+            {
+                Debug.Log($"Show Unit Tooltip for {targetUnit.name} | Hit Chance: {UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction)}");
+                stringBuilder.Clear();
+                stringBuilder.Append($"{UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction)}");
+            }
         }
 
         public void ClearTooltip()

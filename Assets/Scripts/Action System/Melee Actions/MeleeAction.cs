@@ -91,17 +91,17 @@ namespace ActionSystem
         
         void AttackTarget(HeldItem heldWeaponAttackingWith, bool isUsingOffhandWeapon)
         {
-            Weapon weapon = null;
+            ItemData weaponItemData = null;
             if (heldWeaponAttackingWith != null)
-                weapon = heldWeaponAttackingWith.itemData.Item.Weapon;
+                weaponItemData = heldWeaponAttackingWith.itemData;
 
-            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weapon, isUsingOffhandWeapon);
+            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weaponItemData, isUsingOffhandWeapon);
             if (attackDodged)
                 targetEnemyUnit.unitAnimator.DoDodge(unit, null);
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, weapon, isUsingOffhandWeapon);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, isUsingOffhandWeapon);
                 unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
 
                 if (attackBlocked)
@@ -181,19 +181,19 @@ namespace ActionSystem
                 }
                 else if (unit.UnitEquipment.IsDualWielding) // Dual wield attack
                 {
-                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData.Item.Weapon, false);
+                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, false);
                     bool mainAttackBlocked = false;
                     bool offhandAttackBlocked = false;
                     if (mainAttackDodged == false)
                     {
-                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData.Item.Weapon, false);
+                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, false);
                         DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
                     }
 
-                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData.Item.Weapon, true);
+                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, true);
                     if (offhandAttackDodged == false)
                     {
-                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData.Item.Weapon, true);
+                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, true);
                         DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
                     }
 
@@ -206,10 +206,10 @@ namespace ActionSystem
                 else
                 {
                     HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon.itemData.Item.Weapon, false);
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon.itemData, false);
                         if (primaryMeleeWeapon != null)
                             DamageTargets(primaryMeleeWeapon, headShot); // Right hand weapon attack
                         else
@@ -348,12 +348,10 @@ namespace ActionSystem
             float finalActionValue = 0f;
 
             // Make sure there's a Unit at this grid position
-            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition))
+            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(actionGridPosition);
-
-                if (unit.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
+                if (unitAtGridPosition.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;
@@ -496,7 +494,7 @@ namespace ActionSystem
                     continue;
 
                 // If Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition))
+                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out Unit _))
                     continue;
 
                 // If target is out of attack range from this Grid Position
@@ -511,7 +509,6 @@ namespace ActionSystem
                     continue; // Blocked by an obstacle
 
                 // Check if there's a Unit in the way of the attack
-                Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
                 if (Physics.Raycast(targetUnit.WorldPosition, attackDir, out hit, raycastDistance, unit.vision.UnitsMask))
                 {
                     if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject)

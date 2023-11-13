@@ -112,10 +112,7 @@ namespace ActionSystem
             unit.vision.FindVisibleUnitsAndObjects();
         }
 
-        public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly)
-        {
-            RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, defaultRotateSpeed * 2f);
-        }
+        public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly) => RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, defaultRotateSpeed * 2f);
 
         public void RotateTowardsAttackPosition(Vector3 targetPosition) => unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
 

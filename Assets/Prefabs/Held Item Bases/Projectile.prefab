@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2964047115981917315}
   - component: {fileID: 2135768502737961380}
   - component: {fileID: 9134640562095437968}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,6 @@ MonoBehaviour:
   meshFilter: {fileID: 5543258945124015132}
   meshRenderer: {fileID: 7988317198904808471}
   projectileCollider: {fileID: 2135768502737961380}
-  rigidBody: {fileID: 2964047115981917315}
   obstaclesMask:
     serializedVersion: 2
     m_Bits: 64
@@ -94,6 +93,9 @@ MonoBehaviour:
     damage: 0
     accuracyModifier: 0
     blockPower: 0
+    blockChanceAddOn: 0
+    defense: 0
+    value: 0
     hasBeenRandomized: 0
 --- !u!1 &4438465932938341583
 GameObject:
@@ -105,7 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7535696446791217808}
   - component: {fileID: 8035050159209521831}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,7 +248,7 @@ GameObject:
   - component: {fileID: 3485159751945269861}
   - component: {fileID: 5543258945124015132}
   - component: {fileID: 7988317198904808471}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

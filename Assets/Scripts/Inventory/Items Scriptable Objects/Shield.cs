@@ -13,7 +13,8 @@ namespace InventorySystem
         [SerializeField] Vector2Int damageRange;
 
         [Header("Modifiers")]
-        [SerializeField] Vector2 blockChanceAddOnRange;
+        [SerializeField, Range(-1f, 1f)] float minBlockChanceAddOn;
+        [SerializeField, Range(-1f, 1f)] float maxBlockChanceAddOn;
 
         void OnEnable()
         {
@@ -30,7 +31,7 @@ namespace InventorySystem
         public int MinDamage => damageRange.x;
         public int MaxDamage => damageRange.y;
 
-        public float MinBlockChanceAddOn => blockChanceAddOnRange.x;
-        public float MaxBlockChanceAddOn => blockChanceAddOnRange.y;
+        public float MinBlockChanceAddOn => minBlockChanceAddOn;
+        public float MaxBlockChanceAddOn => maxBlockChanceAddOn;
     }
 }

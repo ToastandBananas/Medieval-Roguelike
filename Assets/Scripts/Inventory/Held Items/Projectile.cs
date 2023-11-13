@@ -94,7 +94,7 @@ namespace InventorySystem
 
             bool attackDodged = false;
             if (hitTarget)
-                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon, false);
+                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData, false);
 
             if (attackDodged)
             {
@@ -109,7 +109,7 @@ namespace InventorySystem
                 targetPosition = targetUnit.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(hitTarget, attackDodged);
+            Vector3 offset = GetOffset(targetUnit, hitTarget, attackDodged);
 
             float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
@@ -164,7 +164,7 @@ namespace InventorySystem
             return arcHeight;
         }
 
-        Vector3 GetOffset(bool hitTarget, bool attackDodged)
+        Vector3 GetOffset(Unit targetUnit, bool hitTarget, bool attackDodged)
         {
             float offsetX, offsetZ;
 
@@ -176,7 +176,7 @@ namespace InventorySystem
             }
             else if (hitTarget == false)
             {
-                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData);
+                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData, targetUnit.GridPosition);
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
@@ -373,12 +373,15 @@ namespace InventorySystem
                 else if (collider.CompareTag("Shield"))
                 {
                     // DamageTargets will take into account whether the Unit blocked or not
-                    shootAction.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), collider.GetComponent<HeldItem>(), false);
+                    HeldShield heldShield = collider.GetComponent<HeldShield>();
+                    shootAction.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
                     shooter.unitActionHandler.targetUnits.Clear();
+
+                    heldShield.TryFumbleHeldItem();
 
                     Arrived(collider.transform);
                 }
-                else if (collider.CompareTag("Loose Item") == false && collider.CompareTag("Base") == false)
+                else if (collider.CompareTag("Loose Item") == false)
                     Arrived(null);
             }
         }

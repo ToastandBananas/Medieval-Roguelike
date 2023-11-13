@@ -10,6 +10,8 @@ namespace Utilities
         const int MOVE_DIAGONAL_COST = 14;
         public readonly static float diaganolDistance = LevelGrid.diaganolDistance;
 
+        public static float CalculateHeightDifferenceToTarget(GridPosition startGridPosition, GridPosition targetGridPosition) => startGridPosition.y - targetGridPosition.y;
+
         public static int CalculateDistance_XZ(GridPosition gridPositionA, GridPosition gridPositionB)
         {
             GridPosition gridPositionDistance = gridPositionA - gridPositionB;

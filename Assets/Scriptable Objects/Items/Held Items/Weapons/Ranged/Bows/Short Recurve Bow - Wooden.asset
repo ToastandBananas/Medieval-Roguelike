@@ -61,7 +61,7 @@ MonoBehaviour:
   attackRange: {x: 2, y: 10}
   damageRange: {x: 4, y: 8}
   blockChanceAddOn: 0
-  minAccuracyModifier: 5
-  maxAccuracyModifier: 10
+  minAccuracyModifier: 0.05
+  maxAccuracyModifier: 0.1
   reloadActionPointCostMultiplier: 0.8
   projectileType: 0

@@ -84,10 +84,9 @@ namespace ActionSystem
 
                         foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
                         {
-                            if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition) == false)
+                            if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition, out Unit unitAtGridPosition) == false)
                                 continue;
 
-                            Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(gridPosition);
                             if (unit.alliance.IsEnemy(unitAtGridPosition))
                             {
                                 canAttack = true;

@@ -12,12 +12,16 @@ namespace ActionSystem
 
         public void QueueAction(Interactable targetInteractable)
         {
+            if (unit.IsPlayer)
+                Debug.Log("queue interact");
             this.targetInteractable = targetInteractable;
             unit.unitActionHandler.QueueAction(this);
         }
 
         public void QueueActionImmediately(Interactable targetInteractable)
         {
+            if (unit.IsPlayer)
+                Debug.Log("queue interact");
             this.targetInteractable = targetInteractable;
             unit.unitActionHandler.QueueAction(this, true);
         }
@@ -32,6 +36,8 @@ namespace ActionSystem
                 return;
             }
 
+            if (unit.IsPlayer)
+                Debug.Log("Interact with " + targetInteractable);
             StartCoroutine(Interact());
         }
 
@@ -50,7 +56,7 @@ namespace ActionSystem
                 turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, true);
 
             // Perform the interaction
-            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasAnyUnitOnGridPosition(targetInteractable.GridPosition()) == false)
+            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasAnyUnitOnGridPosition(targetInteractable.GridPosition(), out _) == false)
                 targetInteractable.Interact(unit);
 
             CompleteAction();
