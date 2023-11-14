@@ -42,8 +42,13 @@ namespace InventorySystem
 
             unit.vision.AddVisibleLooseItem(looseItem);
 
-            if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
-                looseItem.HideMeshRenderer();
+            if (unit != UnitManager.player)
+            {
+                if (UnitManager.player.vision.IsVisible(unit) == false)
+                    looseItem.HideMeshRenderer();
+                else
+                    UnitManager.player.vision.AddVisibleLooseItem(looseItem);
+            }
 
             if (inventory != null)
                 inventory.RemoveItem(itemDataToDrop, true);
@@ -124,8 +129,13 @@ namespace InventorySystem
 
             unitEquipment.MyUnit.vision.AddVisibleLooseItem(looseItem);
 
-            if (unitEquipment.MyUnit != UnitManager.player && UnitManager.player.vision.IsVisible(unitEquipment.MyUnit) == false)
-                looseItem.HideMeshRenderer();
+            if (unitEquipment.MyUnit != UnitManager.player)
+            {
+                if (UnitManager.player.vision.IsVisible(unitEquipment.MyUnit) == false)
+                    looseItem.HideMeshRenderer();
+                else
+                    UnitManager.player.vision.AddVisibleLooseItem(looseItem);
+            }
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.itemData)
             {
@@ -176,8 +186,13 @@ namespace InventorySystem
             // Get the Rigidbody component(s) and apply force
             looseHelm.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-            if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
-                looseHelm.HideMeshRenderer();
+            if (unit != UnitManager.player)
+            {
+                if (UnitManager.player.vision.IsVisible(unit) == false)
+                    looseHelm.HideMeshRenderer();
+                else
+                    UnitManager.player.vision.AddVisibleLooseItem(looseHelm);
+            }
 
             unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
@@ -217,16 +232,27 @@ namespace InventorySystem
                 {
                     heldRangedWeapon.loadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
                     looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
-                    if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
-                        looseProjectile.HideMeshRenderer();
+
+                    if (unit != UnitManager.player)
+                    {
+                        if (UnitManager.player.vision.IsVisible(unit) == false)
+                            looseProjectile.HideMeshRenderer();
+                        else
+                            UnitManager.player.vision.AddVisibleLooseItem(looseProjectile);
+                    }
                 }
             }
 
             // Get the Rigidbody component(s) and apply force
             looseWeapon.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-            if (unit != UnitManager.player && UnitManager.player.vision.IsVisible(unit) == false)
-                looseWeapon.HideMeshRenderer();
+            if (unit != UnitManager.player)
+            {
+                if (UnitManager.player.vision.IsVisible(unit) == false)
+                    looseWeapon.HideMeshRenderer();
+                else
+                    UnitManager.player.vision.AddVisibleLooseItem(looseWeapon);
+            }
 
             // Get rid of the HeldItem
             EquipSlot equipSlot;
@@ -319,7 +345,7 @@ namespace InventorySystem
                     if (heldItem.transform.GetChild(i).CompareTag("Loose Item") == false)
                         continue;
 
-                    SetupLooseProjectile(heldItem.transform.GetChild(i), looseItem, yOffset);
+                    SetupStuckLooseProjectile(heldItem.transform.GetChild(i), looseItem, yOffset);
                 }
             }
 
@@ -348,7 +374,7 @@ namespace InventorySystem
             looseItem.gameObject.SetActive(true);
         }
 
-        static void SetupLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem, Vector3 yOffset)
+        static void SetupStuckLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem, Vector3 yOffset)
         {
             Vector3 projectilePosition = looseProjectileTransform.localPosition;
             Quaternion projectileRotation = looseProjectileTransform.localRotation;

@@ -35,9 +35,7 @@ namespace ActionSystem
         [SerializeField] LayerMask attackObstacleMask;
         [SerializeField] LayerMask moveObstacleMask;
 
-        public bool isMoving { get; private set; }
         public bool isAttacking { get; private set; }
-        public bool isRotating { get; private set; }
         public bool isPerformingAction { get; protected set; }
         public bool canPerformActions { get; protected set; }
 
@@ -140,7 +138,7 @@ namespace ActionSystem
 
                 if (canPerformActions == false)
                     TurnManager.Instance.FinishTurn(unit);
-                else if (isMoving == false)
+                else if (moveAction.isMoving == false)
                     StartCoroutine(GetNextQueuedAction());
             }
         }
@@ -158,7 +156,7 @@ namespace ActionSystem
 
         public virtual void SkipTurn()
         {
-            if (isMoving == false)
+            if (moveAction.isMoving == false)
                 unit.unitAnimator.StopMovingForward();
         }
 
@@ -230,7 +228,7 @@ namespace ActionSystem
             isPerformingAction = false;
 
             // If the Unit isn't moving, they might still be in a move animation, so cancel that
-            if (stopMoveAnimation && isMoving == false)
+            if (stopMoveAnimation && moveAction.isMoving == false)
                 unit.unitAnimator.StopMovingForward();
         }
 
@@ -248,9 +246,9 @@ namespace ActionSystem
             BaseAction selectedAction = selectedActionType.GetAction(unit);
             if (selectedAction is BaseAttackAction)
             {
-                if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
 
                     if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
@@ -266,9 +264,9 @@ namespace ActionSystem
             {
                 if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 {
-                    if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                    if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                     {
-                        while (targetEnemyUnit.unitActionHandler.isMoving)
+                        while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                             yield return null;
 
                         if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
@@ -285,9 +283,9 @@ namespace ActionSystem
             }
             else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
             {
-                if (targetEnemyUnit.unitActionHandler.isMoving) // Wait for the targetEnemyUnit to stop moving
+                if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
 
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
@@ -328,13 +326,13 @@ namespace ActionSystem
             // If the attacker is in front of this Unit (greater chance to block)
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))
             {
-                float random = Random.Range(0f, 100f);
+                float random = Random.Range(0f, 1f);
                 return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackerUsingOffhand, false);
             }
             // If the attacker is beside this Unit (less of a chance to block)
             else if (turnAction.AttackerBesideUnit(attackingUnit))
             {
-                float random = Random.Range(0f, 100f);
+                float random = Random.Range(0f, 1f);
                 return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackerUsingOffhand, true);
             }
             return false;
@@ -347,7 +345,7 @@ namespace ActionSystem
                 // If the attacker is in front of this Unit (greater chance to block)
                 if (turnAction.AttackerInFrontOfUnit(attackingUnit))
                 {
-                    float random = Random.Range(0f, 100f);
+                    float random = Random.Range(0f, 1f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -358,7 +356,7 @@ namespace ActionSystem
                 // If the attacker is beside this Unit (less of a chance to block)
                 else if (turnAction.AttackerBesideUnit(attackingUnit))
                 {
-                    float random = Random.Range(0f, 100f);
+                    float random = Random.Range(0f, 1f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -381,7 +379,7 @@ namespace ActionSystem
                 if (unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
-                    random = Random.Range(0f, 100f);
+                    random = Random.Range(0f, 1f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -392,7 +390,7 @@ namespace ActionSystem
                     // Still have a chance to block with weapon
                     if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, true))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -406,7 +404,7 @@ namespace ActionSystem
                     if (unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * GameManager.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -415,7 +413,7 @@ namespace ActionSystem
                         }
 
                         // Try blocking with left weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * GameManager.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -426,7 +424,7 @@ namespace ActionSystem
                     else
                     {
                         // Try blocking with only weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -441,7 +439,7 @@ namespace ActionSystem
                 if (unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
-                    random = Random.Range(0f, 100f);
+                    random = Random.Range(0f, 1f);
                     if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
                         if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -452,7 +450,7 @@ namespace ActionSystem
                     // Still have a chance to block with weapon
                     if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, true))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -466,7 +464,7 @@ namespace ActionSystem
                     if (unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * GameManager.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -475,7 +473,7 @@ namespace ActionSystem
                         }
 
                         // Try blocking with left weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * GameManager.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -486,7 +484,7 @@ namespace ActionSystem
                     else
                     {
                         // Try blocking with only weapon
-                        random = Random.Range(0f, 100f);
+                        random = Random.Range(0f, 1f);
                         if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false))
                         {
                             if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
@@ -566,15 +564,11 @@ namespace ActionSystem
 
         public bool DefaultActionIsSelected => SelectedAction is MoveAction;
 
-        public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
-
         public void SetIsAttacking(bool isAttacking)
         {
             // Debug.Log(unit.name + " start attacking");
             this.isAttacking = isAttacking;
         }
-
-        public void SetIsRotating(bool isRotating) => this.isRotating = isRotating;
 
         public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
 

@@ -214,18 +214,33 @@ namespace GeneralUI
             StartCoroutine(CalculatePosition(targetTransform));
         }
 
-        public void ShowUnitTooltip(Unit targetUnit, BaseAction selectedAction)
+        public void ShowUnitHitChanceTooltip(Unit targetUnit, BaseAction selectedAction)
         {
             if (selectedAction is BaseAttackAction)
             {
-                Debug.Log($"Show Unit Tooltip for {targetUnit.name} | Hit Chance: {UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction)}");
+                if (targetUnit.health.IsDead())
+                    return;
+
+                float hitChance = UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;
+                if (hitChance < 0f) hitChance = 0f;
+                else if (hitChance > 100f) hitChance = 100f;
+
                 stringBuilder.Clear();
-                stringBuilder.Append($"{UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction)}");
+                stringBuilder.Append($"{hitChance}%");
+                textMesh.text = stringBuilder.ToString();
             }
+
+            gameObject.SetActive(true);
+
+            RecalculateTooltipSize();
+            StartCoroutine(CalculatePosition(targetUnit));
         }
 
         public void ClearTooltip()
         {
+            if (gameObject.activeSelf == false)
+                return;
+
             stringBuilder.Clear();
             button.onClick.RemoveAllListeners();
             gameObject.SetActive(false);
@@ -384,7 +399,40 @@ namespace GeneralUI
                 // Loop through WorldTooltips and adjust positions to prevent vertical overlap
                 foreach (Tooltip tooltip in TooltipManager.WorldTooltips)
                 {
-                    if (tooltip.gameObject.activeSelf == false || tooltip == this)
+                    if (tooltip == this)
+                        continue;
+
+                    // Check if the tooltip will overlap with the previous tooltip vertically
+                    if (Mathf.Abs(newTooltipPosition.y - tooltip.rectTransform.position.y) < maxTooltipHeight)
+                    {
+                        // Adjust the tooltip's vertical position to stack them vertically
+                        newTooltipPosition.y = tooltip.rectTransform.position.y + maxTooltipHeight + verticalSpacing;
+                    }
+                }
+
+                // Set the tooltip's position after adjusting
+                rectTransform.position = newTooltipPosition;
+
+                // Wait for the next frame before checking positions again
+                yield return null;
+                yield return null;
+            }
+        }
+
+        IEnumerator CalculatePosition(Unit targetUnit)
+        {
+            float maxTooltipHeight = rectTransform.rect.height;
+            float verticalSpacing = 2f;
+
+            while (gameObject.activeSelf)
+            {
+                Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, targetUnit.transform.position);
+                newTooltipPosition.Set(screenPosition.x, screenPosition.y + (rectTransform.rect.height * 2f), 0);
+
+                // Loop through WorldTooltips and adjust positions to prevent vertical overlap
+                foreach (Tooltip tooltip in TooltipManager.WorldTooltips)
+                {
+                    if (tooltip == this)
                         continue;
 
                     // Check if the tooltip will overlap with the previous tooltip vertically

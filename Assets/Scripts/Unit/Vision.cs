@@ -38,7 +38,7 @@ namespace UnitSystem
         List<LooseItem> looseItemsToRemove = new List<LooseItem>();
         List<Unit> unitsToRemove = new List<Unit>();
 
-        public Collider[] looseItemsInViewRadius;
+        Collider[] looseItemsInViewRadius;
         Collider[] unitsInViewRadius;
 
         readonly int loseSightTime = 60; // The amount of turns it takes to lose sight of a Unit, when out of their direct vision
@@ -58,7 +58,7 @@ namespace UnitSystem
             yOffset.Set(0, transform.localPosition.y, 0);
         }
 
-        public bool IsVisible(Unit unitToCheck)
+        public bool IsDirectlyVisible(Unit unitToCheck)
         {
             if (knownUnits.ContainsKey(unitToCheck) == false)
                 return false;
@@ -70,6 +70,26 @@ namespace UnitSystem
                 return false;
 
             return true;
+        }
+
+        public bool IsVisible(Unit unitToCheck)
+        {
+            if (knownUnits.ContainsKey(unitToCheck) == false)
+                return false;
+
+            if (unitToCheck.unitMeshManager.meshesHidden)
+                return false;
+
+            return true;
+        }
+
+        public bool IsDirectlyVisible(GameObject unitGameObject)
+        {
+            Unit targetUnit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitGameObject.transform.position));
+            if (targetUnit == null)
+                return false;
+
+            return IsDirectlyVisible(targetUnit);
         }
 
         public bool IsVisible(GameObject unitGameObject)
@@ -642,8 +662,9 @@ namespace UnitSystem
 
         public LayerMask UnitsMask => unitsMask;
 
-        public float ViewRadius => viewRadius;
+        public Collider[] LooseItemsInViewRadius => looseItemsInViewRadius;
 
+        public float ViewRadius => viewRadius;
         public float ViewAngle => viewAngle;
 
         public Unit Unit => unit;

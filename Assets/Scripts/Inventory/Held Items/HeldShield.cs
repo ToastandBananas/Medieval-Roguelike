@@ -56,8 +56,8 @@ namespace InventorySystem
         {
             Shield shield = itemData.Item as Shield;
 
-            float fumbleChance = (50f - unit.stats.ShieldSkill.GetValue()) * 0.4f; // Shield skill modifier
-            fumbleChance += shield.Weight / unit.stats.Strength.GetValue() * 15f; // Shield weight to strength ratio modifier
+            float fumbleChance = (0.5f - (unit.stats.ShieldSkill.GetValue() / 100f)) * 0.4f; // Shield skill modifier
+            fumbleChance += shield.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Shield weight to strength ratio modifier
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

@@ -38,7 +38,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || /*unit.unitActionHandler.AvailableActions.Contains(this) == false ||*/ unit.unitActionHandler.isAttacking) 
+            if (unit == null || unit.unitActionHandler.isAttacking) 
                 return;
 
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
@@ -270,7 +270,7 @@ namespace ActionSystem
                 if (unit.alliance.IsAlly(unitAtGridPosition))
                     continue;
 
-                if (unit.vision.IsVisible(unitAtGridPosition) == false)
+                if (unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
                     continue;
 
                 // If the loop makes it to this point, then it found a valid unit

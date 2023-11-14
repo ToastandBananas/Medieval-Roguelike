@@ -28,14 +28,14 @@ namespace UnitSystem
                 }
             }
 
-            if (fov.looseItemsInViewRadius != null && fov.looseItemsInViewRadius.Length > 0)
+            if (fov.LooseItemsInViewRadius != null && fov.LooseItemsInViewRadius.Length > 0)
             {
-                for (int i = 0; i < fov.looseItemsInViewRadius.Length; i++)
+                for (int i = 0; i < fov.LooseItemsInViewRadius.Length; i++)
                 {
-                    if (fov.looseItemsInViewRadius[i].CompareTag("Loose Item") == false)
+                    if (fov.LooseItemsInViewRadius[i].CompareTag("Loose Item") == false)
                         continue;
 
-                    fov.looseItemsInViewRadius[i].TryGetComponent(out LooseItem looseItem);
+                    fov.LooseItemsInViewRadius[i].TryGetComponent(out LooseItem looseItem);
                     if (looseItem != null)
                         Handles.DrawLine(fov.transform.position, looseItem.transform.TransformPoint(looseItem.MeshCollider.bounds.center));
                 }

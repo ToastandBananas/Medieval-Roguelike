@@ -14,6 +14,8 @@ namespace ActionSystem
         public Direction targetDirection { get; private set; }
         public Vector3 targetPosition { get; private set; }
 
+        public bool isRotating { get; private set; }
+
         readonly float defaultRotateSpeed = 10f;
         readonly int singleTurnSegmentAPCost = 25;
 
@@ -89,8 +91,16 @@ namespace ActionSystem
 
             if (rotateInstantly == false)
             {
-                unit.unitActionHandler.SetIsRotating(true);
-                while (true)
+                // Wait to do rotations already in progress
+                while (isRotating)
+                {
+                    isRotating = false;
+                    yield return null;
+                    yield return null;
+                }
+
+                isRotating = true;
+                while (isRotating)
                 {
                     // Just in case the targetPosition changes from another call to one of the rotation methods
                     if (rotateTargetPosition != targetPosition)
@@ -99,7 +109,7 @@ namespace ActionSystem
                     unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 
                     if (Quaternion.Angle(unit.transform.rotation, targetRotation) < 0.1f)
-                        break;
+                        isRotating = false;
 
                     yield return null;
                 }
@@ -107,7 +117,6 @@ namespace ActionSystem
 
             unit.transform.rotation = targetRotation;
             SetCurrentDirection();
-            unit.unitActionHandler.SetIsRotating(false);
 
             unit.vision.FindVisibleUnitsAndObjects();
         }
@@ -118,6 +127,14 @@ namespace ActionSystem
 
         IEnumerator RotateTowardsAttackPosition_Coroutine(Vector3 targetPosition)
         {
+            // This will cancel out of any rotations in progress
+            if (isRotating)
+            {
+                isRotating = false;
+                yield return null;
+                yield return null;
+            }
+
             while (unit.unitActionHandler.isAttacking)
             {
                 Vector3 lookPos = (new Vector3(targetPosition.x, unit.transform.position.y, targetPosition.z) - unit.transform.position).normalized;
@@ -127,9 +144,11 @@ namespace ActionSystem
             }
 
             // After this Unit is done shooting, rotate back towards their TurnAction's currentDirection
-            unit.unitActionHandler.turnAction.SetCurrentDirection();
-            unit.unitActionHandler.turnAction.RotateTowards_Direction(unit.unitActionHandler.turnAction.currentDirection, false);
+            SetCurrentDirection();
+            RotateTowards_Direction(currentDirection, false);
         }
+
+        public void SetIsRotating(bool isRotating) => this.isRotating = isRotating;
 
         public Direction GetTargetTurnDirection(GridPosition targetGridPosition)
         {

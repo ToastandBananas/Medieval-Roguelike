@@ -6,7 +6,7 @@ namespace InventorySystem
     public class Helm : VisibleArmor
     {
         [Header("Helm Info")]
-        [SerializeField, Range(0f, 100f)] float fallOffOnDeathChance;
+        [SerializeField, Range(0f, 1f)] float fallOffOnDeathChance;
 
         void OnEnable()
         {

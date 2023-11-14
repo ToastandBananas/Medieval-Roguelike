@@ -110,9 +110,9 @@ namespace ActionSystem
 
         protected override IEnumerator DoAttack()
         {
-            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
+            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
             {
-                while (targetEnemyUnit.unitActionHandler.isMoving)
+                while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
@@ -138,7 +138,7 @@ namespace ActionSystem
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
-                while (unit.unitActionHandler.isRotating)
+                while (unit.unitActionHandler.turnAction.isRotating)
                     yield return null;
                 
                 // If the target Unit moved out of range, queue a movement instead
@@ -196,7 +196,7 @@ namespace ActionSystem
 
         public bool TryHitTarget(GridPosition targetGridPosition)
         {
-            float random = Random.Range(0f, 100f);
+            float random = Random.Range(0f, 1f);
             float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData, targetGridPosition);
             if (random <= rangedAccuracy)
                 return true;
@@ -468,7 +468,7 @@ namespace ActionSystem
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }

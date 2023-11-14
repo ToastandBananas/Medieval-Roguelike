@@ -81,7 +81,7 @@ namespace ActionSystem
         public void DoOpportunityAttack(Unit targetEnemyUnit)
         {
             // Unit's can't opportunity attack while moving
-            if (unit.unitActionHandler.isMoving)
+            if (unit.unitActionHandler.moveAction.isMoving)
                 return;
 
             this.targetEnemyUnit = targetEnemyUnit;
@@ -104,7 +104,7 @@ namespace ActionSystem
                 bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, isUsingOffhandWeapon);
                 unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
 
-                if (attackBlocked)
+                if (attackBlocked && itemBlockedWith != null)
                     itemBlockedWith.BlockAttack(unit);
             }
 
@@ -127,11 +127,11 @@ namespace ActionSystem
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
-                while (unit.unitActionHandler.isRotating)
+                while (unit.unitActionHandler.turnAction.isRotating)
                     yield return null;
 
                 // Play the attack animations and handle blocking for the target
-                if (unit.UnitEquipment.IsUnarmed)
+                if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
                 {
                     unit.unitAnimator.DoDefaultUnarmedAttack();
                     AttackTarget(null, false);
@@ -170,7 +170,7 @@ namespace ActionSystem
                 bool attackDodged = false;
                 bool attackBlocked = false;
                 bool headShot = false;
-                if (unit.UnitEquipment.IsUnarmed)
+                if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped) // Unarmed or has a ranged weapon equipped, but no ammo
                 {
                     attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, false);
                     if (attackDodged == false)
@@ -231,9 +231,9 @@ namespace ActionSystem
 
         protected override IEnumerator DoAttack()
         {
-            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
+            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
             {
-                while (targetEnemyUnit.unitActionHandler.isMoving)
+                while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
@@ -387,7 +387,7 @@ namespace ActionSystem
             float minRange;
             float maxRange;
 
-            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed)
+            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
             {
                 minRange = 1f;
                 maxRange = UnarmedAttackRange(startGridPosition, false);
@@ -563,7 +563,7 @@ namespace ActionSystem
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }

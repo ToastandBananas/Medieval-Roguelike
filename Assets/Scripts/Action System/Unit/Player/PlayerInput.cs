@@ -22,6 +22,9 @@ namespace ActionSystem
         public Unit highlightedUnit { get; private set; }
         public bool autoAttack { get; private set; }
 
+        GridPosition mouseGridPosition;
+        GridPosition lastMouseGridPosition;
+
         Unit player;
 
         float skipTurnCooldown = 0.1f;
@@ -86,7 +89,7 @@ namespace ActionSystem
                     ContextMenu.StartContextMenuCooldown();
                 }
                 // If it's time for the Player to choose an action
-                else if (player.IsMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.isMoving == false)
+                else if (player.IsMyTurn && player.unitActionHandler.isPerformingAction == false && player.unitActionHandler.moveAction.isMoving == false)
                 {
                     // If the player wants to skip their turn
                     if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
@@ -121,7 +124,7 @@ namespace ActionSystem
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
                 }
-                else if (player.unitActionHandler.queuedActions.Count > 0 || player.unitActionHandler.isMoving)
+                else if (player.unitActionHandler.queuedActions.Count > 0 || player.unitActionHandler.moveAction.isMoving)
                 {
                     ActionLineRenderer.Instance.HideLineRenderers();
                     WorldMouse.ChangeCursor(CursorState.Default);
@@ -140,13 +143,14 @@ namespace ActionSystem
             player.unitActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
             WorldMouse.ChangeCursor(CursorState.Default);
 
-            if (GameControls.gamePlayActions.select.WasPressed && WorldMouse.CurrentGridPosition() != player.GridPosition)
-                turnAction.QueueAction(WorldMouse.CurrentGridPosition());
+            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
+            if (GameControls.gamePlayActions.select.WasPressed && mouseGridPosition != player.GridPosition)
+                turnAction.QueueAction(mouseGridPosition);
         }
 
         void HandleActions()
         {
-            GridPosition mouseGridPosition = WorldMouse.CurrentGridPosition();
+            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
             
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
@@ -229,6 +233,9 @@ namespace ActionSystem
                                     return;
                                 }
 
+                                highlightedUnit = null;
+                                TooltipManager.ClearUnitTooltips();
+
                                 // Turn towards and attack the target enemy
                                 player.unitActionHandler.AttackTarget();
                                 return;
@@ -244,13 +251,16 @@ namespace ActionSystem
                             // If the target is in shooting range
                             if (player.unitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
+                                highlightedUnit = null;
+                                TooltipManager.ClearUnitTooltips();
+
                                 // Turn towards and attack the target enemy
                                 player.unitActionHandler.AttackTarget();
                                 return;
                             }
                         }
                         // If the player has a melee weapon equipped or is unarmed and the target enemy is within attack range
-                        else if (player.UnitEquipment.MeleeWeaponEquipped || player.UnitEquipment.IsUnarmed || (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() == false))
+                        else if (player.UnitEquipment.MeleeWeaponEquipped || player.UnitEquipment.IsUnarmed || player.UnitEquipment.RangedWeaponEquipped)
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.health.IsDead())
@@ -267,6 +277,9 @@ namespace ActionSystem
                                     player.unitActionHandler.SetTargetEnemyUnit(null);
                                     return;
                                 }
+
+                                highlightedUnit = null;
+                                TooltipManager.ClearUnitTooltips();
 
                                 // Turn towards and attack the target enemy
                                 player.unitActionHandler.AttackTarget();
@@ -357,7 +370,9 @@ namespace ActionSystem
                 return;
             }
 
+            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
             BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+
             if (selectedAction != null)
             {
                 if (selectedAction is MoveAction)
@@ -402,13 +417,21 @@ namespace ActionSystem
                         ClearHighlightedInteractable();
                         if (highlightedUnit == null || highlightedUnit.gameObject != unitHit.transform.gameObject)
                         {
-                            if (LevelGrid.HasAnyUnitOnGridPosition(LevelGrid.GetGridPosition(unitHit.transform.position), out Unit targetUnit) && targetUnit != player)
+                            if (unitHit.transform.TryGetComponent(out Unit targetUnit) && targetUnit != player)
                             {
                                 highlightedUnit = targetUnit;
                                 if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
-                                    TooltipManager.ShowUnitTooltip(targetUnit, player.unitActionHandler.GetAction<MeleeAction>());
+                                {
+                                    if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
+                                    else
+                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.unitActionHandler.GetAction<MeleeAction>());
+                                }
                             }
+                            else
+                                TooltipManager.ClearUnitTooltips();
                         }
+                        
                         if (highlightedUnit == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
                         else if (highlightedUnit.health.IsDead() && player.vision.IsVisible(highlightedUnit))
@@ -420,19 +443,27 @@ namespace ActionSystem
                     }
                     else
                     {
-                        Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
+                        Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
                         if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
                         {
                             ClearHighlightedInteractable();
                             SetAttackCursor(); 
                             
                             if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
-                                TooltipManager.ShowUnitTooltip(unitAtGridPosition, player.unitActionHandler.GetAction<MeleeAction>());
+                            {
+                                if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
+                                else
+                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.unitActionHandler.GetAction<MeleeAction>());
+                            }
 
                             highlightedUnit = unitAtGridPosition;
                         }
                         else
                         {
+                            if (highlightedUnit != null)
+                                TooltipManager.ClearUnitTooltips();
+
                             highlightedUnit = null;
                             ClearHighlightedInteractable();
                             WorldMouse.ChangeCursor(CursorState.Default);
@@ -444,15 +475,19 @@ namespace ActionSystem
                 else if (selectedAction is BaseAttackAction)
                 {
                     ClearHighlightedInteractable();
-                    Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(WorldMouse.CurrentGridPosition());
+                    Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
+
+                    if (lastMouseGridPosition != mouseGridPosition)
+                    {
+                        TooltipManager.ClearUnitTooltips();
+                        if (selectedAction.BaseAttackAction.IsValidUnitInActionArea(mouseGridPosition))
+                            TooltipManager.ShowUnitHitChanceTooltips(mouseGridPosition, selectedAction);
+                    }
 
                     if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                     {
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                         SetAttackCursor();
-
-                        if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
-                            TooltipManager.ShowUnitTooltip(unitAtGridPosition, player.unitActionHandler.GetAction<MeleeAction>());
 
                         highlightedUnit = unitAtGridPosition;
                     }
@@ -465,6 +500,9 @@ namespace ActionSystem
                 }
                 else if (selectedAction is TurnAction)
                 {
+                    if (highlightedUnit != null)
+                        TooltipManager.ClearUnitTooltips();
+
                     highlightedUnit = null;
                     ClearHighlightedInteractable();
 
@@ -473,6 +511,8 @@ namespace ActionSystem
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }
             }
+
+            lastMouseGridPosition.Set(mouseGridPosition);
         }
 
         void ClearHighlightedInteractable()
@@ -481,7 +521,7 @@ namespace ActionSystem
             {
                 highlightedInteractable = null;
                 if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed == false)
-                    TooltipManager.ClearTooltips();
+                    TooltipManager.ClearAllTooltips();
             }
         }
 

@@ -23,6 +23,8 @@ namespace InteractableObjects
             itemData.RandomizeData();
             if (itemData.Item != startingItem) // If an Item Change Threshold was reached and the Item changed, we will need to update the mesh
                 SetupMesh();
+
+            HideMeshRenderer();
         }
 
         public override void Interact(Unit unitPickingUpItem)

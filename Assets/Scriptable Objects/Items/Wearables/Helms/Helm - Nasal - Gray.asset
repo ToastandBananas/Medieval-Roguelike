@@ -43,4 +43,4 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 675a2e87ce6a81f40b35be6976e33377, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 477f6094a124f7540ae81e53d5e8dafe, type: 2}
-  fallOffOnDeathChance: 85
+  fallOffOnDeathChance: 0.85

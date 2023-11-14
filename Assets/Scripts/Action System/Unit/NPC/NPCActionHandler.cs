@@ -470,9 +470,9 @@ namespace ActionSystem
                 if (chosenCombatAction != null)
                 {
                     Unit unitAtActionGridPosition = LevelGrid.GetUnitAtGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
-                    if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.isMoving)
+                    if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.moveAction.isMoving)
                     {
-                        while (unitAtActionGridPosition.unitActionHandler.isMoving)
+                        while (unitAtActionGridPosition.unitActionHandler.moveAction.isMoving)
                             yield return null;
 
                         if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, unit.GridPosition, unitAtActionGridPosition.GridPosition) == false) // If the target Unit moved out of range
@@ -720,7 +720,7 @@ namespace ActionSystem
 
             if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition, leader.GridPosition) <= stopFollowDistance)
                 TurnManager.Instance.FinishTurn(unit);
-            else if (isMoving == false)
+            else if (moveAction.isMoving == false)
                 moveAction.QueueAction(leader.unitActionHandler.turnAction.GetGridPositionBehindUnit());
         }
 
@@ -755,7 +755,7 @@ namespace ActionSystem
                 needsNewSoundInspectPosition = true;
                 InspectSound();
             }
-            else if (isMoving == false)
+            else if (moveAction.isMoving == false)
             {
                 // Get a new Inspect Sound Position if there's now another Unit or obstruction there
                 if (LevelGrid.GridPositionObstructed(inspectSoundGridPosition))
@@ -841,7 +841,7 @@ namespace ActionSystem
                 }
 
                 // Queue the Move Action if the Unit isn't already moving
-                if (isMoving == false)
+                if (moveAction.isMoving == false)
                     moveAction.QueueAction(moveAction.targetGridPosition);
             }
             else // If no Patrol Points set
@@ -915,7 +915,7 @@ namespace ActionSystem
                 }
 
                 // Queue the Move Action if the Unit isn't already moving
-                if (isMoving == false)
+                if (moveAction.isMoving == false)
                     moveAction.QueueAction(wanderGridPosition);
             }
             // If the NPC has arrived at their destination
@@ -925,7 +925,7 @@ namespace ActionSystem
                 wanderPositionSet = false;
                 Wander();
             }
-            else if (isMoving == false)
+            else if (moveAction.isMoving == false)
             {
                 // Get a new Wander Position if there's now another Unit or obstruction there
                 if (LevelGrid.GridPositionObstructed(wanderGridPosition))

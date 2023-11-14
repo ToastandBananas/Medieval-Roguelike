@@ -8,7 +8,7 @@ namespace InventorySystem
     {
         public void SwapWeaponSet()
         {
-            if (UnitManager.player.IsMyTurn && UnitManager.player.unitActionHandler.isPerformingAction == false && UnitManager.player.unitActionHandler.isMoving == false)
+            if (UnitManager.player.IsMyTurn && UnitManager.player.unitActionHandler.isPerformingAction == false && UnitManager.player.unitActionHandler.moveAction.isMoving == false)
                 UnitManager.player.unitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
         }
     }

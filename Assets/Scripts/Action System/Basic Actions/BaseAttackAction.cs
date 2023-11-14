@@ -82,7 +82,7 @@ namespace ActionSystem
                         HeldShield shield = heldItemBlockedWith as HeldShield;
                         shield.LowerShield();
 
-                        blockAmount = targetUnit.stats.ShieldBlockPower(shield);
+                        blockAmount = targetUnit.stats.BlockPower(shield);
 
                         shield.TryFumbleHeldItem();
                     }
@@ -91,7 +91,7 @@ namespace ActionSystem
                         HeldMeleeWeapon meleeWeapon = heldItemBlockedWith as HeldMeleeWeapon;
                         meleeWeapon.LowerWeapon();
 
-                        blockAmount = targetUnit.stats.WeaponBlockPower(meleeWeapon);
+                        blockAmount = targetUnit.stats.BlockPower(meleeWeapon);
 
                         if (unit.UnitEquipment.IsDualWielding)
                         {
@@ -122,7 +122,8 @@ namespace ActionSystem
 
             unit.unitActionHandler.targetUnits.Clear();
 
-            heldWeaponAttackingWith.TryFumbleHeldItem();
+            if (heldWeaponAttackingWith != null)
+                heldWeaponAttackingWith.TryFumbleHeldItem();
         }
 
         public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
@@ -181,9 +182,9 @@ namespace ActionSystem
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
             {
-                if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.isMoving)
+                if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                 {
-                    while (targetEnemyUnit.unitActionHandler.isMoving)
+                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
@@ -207,7 +208,7 @@ namespace ActionSystem
                 }
 
                 // Wait to finish any rotations already in progress
-                while (unit.unitActionHandler.isRotating)
+                while (unit.unitActionHandler.turnAction.isRotating)
                     yield return null;
 
                 for (int i = 0; i < targetUnits.Count; i++)
@@ -222,7 +223,7 @@ namespace ActionSystem
                         unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
-                        if (attackBlocked)
+                        if (attackBlocked && itemBlockedWith != null)
                             itemBlockedWith.BlockAttack(unit);
                     }
                 }
@@ -312,6 +313,7 @@ namespace ActionSystem
                 case WeaponType.Polearm:
                     return 1.25f;
                 default:
+                    Debug.LogError(weapon.WeaponType.ToString() + " has not been implemented in this method. Fix me!");
                     return 1f;
             }
         }

@@ -58,7 +58,7 @@ namespace InventorySystem
 
         public void TryFumbleHeldItem()
         {
-            if (Random.Range(0f, 100f) <= GetFumbleChance())
+            if (Random.Range(0f, 1f) <= GetFumbleChance())
             {
                 if (unit.UnitEquipment.ItemDataEquipped(itemData) == false)
                     return;

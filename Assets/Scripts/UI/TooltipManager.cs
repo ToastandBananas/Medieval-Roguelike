@@ -3,6 +3,7 @@ using Controls;
 using GridSystem;
 using InteractableObjects;
 using InventorySystem;
+using Pathfinding.Util;
 using System.Collections.Generic;
 using UnitSystem;
 using UnityEngine;
@@ -14,12 +15,13 @@ namespace GeneralUI
         public static TooltipManager Instance;
 
         [SerializeField] Tooltip tooltipPrefab;
-        [SerializeField] int amountToPool = 3;
+        [SerializeField] int looseItemTooltipsToPool = 5;
+        [SerializeField] int unitTooltipsToPool = 3;
         [SerializeField] Tooltip[] inventoryTooltips;
 
-        static List<Tooltip> worldTooltips = new List<Tooltip>();
+        static List<Tooltip> looseItemTooltips = new List<Tooltip>();
+        static List<Tooltip> unitTooltips = new List<Tooltip>();
 
-        public static Unit currentTargetUnit { get; private set; }
         public static Slot currentSlot { get; private set; }
         public static ActionBarSlot currentActionBarSlot { get; private set; }
         public static int activeInventoryTooltips { get; private set; }
@@ -40,9 +42,14 @@ namespace GeneralUI
             }
             Instance = this;
 
-            for (int i = 0; i < amountToPool; i++)
+            for (int i = 0; i < looseItemTooltipsToPool; i++)
             {
-                CreateNewWorldTooltip();
+                CreateNewLooseItemTooltip();
+            }
+
+            for (int i = 0; i < unitTooltipsToPool; i++)
+            {
+                CreateNewUnitTooltip();
             }
 
             for (int i = 0; i < inventoryTooltips.Length; i++)
@@ -57,7 +64,7 @@ namespace GeneralUI
             if (GameControls.gamePlayActions.showLooseItemTooltips.WasPressed)
                 ShowAllLooseItemTooltips();
             else if (GameControls.gamePlayActions.showLooseItemTooltips.WasReleased)
-                ClearWorldTooltips();
+                ClearLooseItemTooltips();
 
             if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed)
             {
@@ -77,24 +84,34 @@ namespace GeneralUI
             if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed)
                 ShowAllLooseItemTooltips();
             else
-                ClearTooltips();
+                ClearLooseItemTooltips();
         }
 
-        public static void ClearTooltips()
+        public static void ClearAllTooltips()
         {
-            ClearWorldTooltips();
             ClearInventoryTooltips();
+            ClearLooseItemTooltips();
+            ClearUnitTooltips();
         }
 
-        public static void ClearWorldTooltips()
+        public static void ClearLooseItemTooltips()
         {
             cooldown = 0f;
-            for (int i = 0; i < worldTooltips.Count; i++)
+            for (int i = 0; i < looseItemTooltips.Count; i++)
             {
-                worldTooltips[i].ClearTooltip();
+                looseItemTooltips[i].ClearTooltip();
             }
         }
-        
+
+        public static void ClearUnitTooltips()
+        {
+            cooldown = 0f;
+            for (int i = 0; i < unitTooltips.Count; i++)
+            {
+                unitTooltips[i].ClearTooltip();
+            }
+        }
+
         public static void ClearInventoryTooltips()
         {
             for (int i = 0; i < Instance.inventoryTooltips.Length; i++)
@@ -102,7 +119,6 @@ namespace GeneralUI
                 Instance.inventoryTooltips[i].ClearTooltip();
             }
 
-            currentTargetUnit = null;
             currentSlot = null;
             currentActionBarSlot = null;
             activeInventoryTooltips = 0;
@@ -161,13 +177,13 @@ namespace GeneralUI
             if (GameControls.gamePlayActions.showLooseItemTooltips.IsPressed)
                 return;
 
-            ClearWorldTooltips();
-            GetTooltip().ShowLooseItemTooltip(looseItem, looseItemData, false);
+            ClearLooseItemTooltips();
+            GetLooseItemTooltip().ShowLooseItemTooltip(looseItem, looseItemData, false);
         }
 
         public static void ShowAllLooseItemTooltips()
         {
-            ClearWorldTooltips();
+            ClearLooseItemTooltips();
 
             foreach (KeyValuePair<LooseItem, int> looseItem in UnitManager.player.vision.knownLooseItems)
             {
@@ -175,21 +191,29 @@ namespace GeneralUI
                     continue;
 
                 if (UnitManager.player.vision.IsVisible(looseItem.Key))
-                    GetTooltip().ShowLooseItemTooltip(looseItem.Key, looseItem.Key.ItemData, true);
+                    GetLooseItemTooltip().ShowLooseItemTooltip(looseItem.Key, looseItem.Key.ItemData, true);
             }
             
             playersLastPosition = UnitManager.player.transform.position;
             playersLastDirection = UnitManager.player.unitActionHandler.turnAction.currentDirection;
         }
 
-        public static void ShowUnitTooltip(Unit targetUnit, BaseAction selectedAction)
+        public static void ShowUnitHitChanceTooltips(GridPosition targetGridPosition, BaseAction selectedAction)
         {
-            if (selectedAction == null || targetUnit == null)
+            ClearUnitTooltips();
+
+            if (selectedAction == null)
                 return;
 
-            currentTargetUnit = targetUnit;
+            List<GridPosition> actionAreaGridPositions = ListPool<GridPosition>.Claim();
+            actionAreaGridPositions = selectedAction.GetActionAreaGridPositions(targetGridPosition);
+            for (int i = 0; i < actionAreaGridPositions.Count; i++)
+            {
+                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i], out Unit targetUnit))
+                    GetUnitTooltip().ShowUnitHitChanceTooltip(targetUnit, selectedAction);
+            }
 
-            GetTooltip().ShowUnitTooltip(targetUnit, selectedAction);
+            ListPool<GridPosition>.Release(actionAreaGridPositions);
         }
 
         static Tooltip GetInventoryTooltip()
@@ -202,20 +226,40 @@ namespace GeneralUI
             return Instance.inventoryTooltips[Instance.inventoryTooltips.Length - 1];
         }
 
-        static Tooltip GetTooltip()
+        static Tooltip GetLooseItemTooltip()
         {
-            for (int i = 0; i < worldTooltips.Count; i++)
+            for (int i = 0; i < looseItemTooltips.Count; i++)
             {
-                if (worldTooltips[i].gameObject.activeSelf == false)
-                    return worldTooltips[i];
+                if (looseItemTooltips[i].gameObject.activeSelf == false)
+                    return looseItemTooltips[i];
             }
-            return CreateNewWorldTooltip();
+            return CreateNewLooseItemTooltip();
         }
 
-        static Tooltip CreateNewWorldTooltip()
+        static Tooltip GetUnitTooltip()
+        {
+            for (int i = 0; i < unitTooltips.Count; i++)
+            {
+                if (unitTooltips[i].gameObject.activeSelf == false)
+                    return unitTooltips[i];
+            }
+            return CreateNewUnitTooltip();
+        }
+
+        static Tooltip CreateNewLooseItemTooltip()
         {
             Tooltip tooltip = Instantiate(Instance.tooltipPrefab, Instance.transform);
-            worldTooltips.Add(tooltip);
+            looseItemTooltips.Add(tooltip);
+            tooltip.gameObject.SetActive(false);
+            return tooltip;
+        }
+
+        static Tooltip CreateNewUnitTooltip()
+        {
+            Tooltip tooltip = Instantiate(Instance.tooltipPrefab, Instance.transform);
+            unitTooltips.Add(tooltip);
+            tooltip.Button.interactable = false;
+            tooltip.Image.enabled = false;
             tooltip.gameObject.SetActive(false);
             return tooltip;
         }
@@ -224,7 +268,7 @@ namespace GeneralUI
 
         public static void SetCurrentActionBarSlot(ActionBarSlot actionBarSlot) => currentActionBarSlot = actionBarSlot;
 
-        public static List<Tooltip> WorldTooltips => worldTooltips;
+        public static List<Tooltip> WorldTooltips => looseItemTooltips;
 
         public static void AddToActiveInventoryTooltips() => activeInventoryTooltips++;
     }

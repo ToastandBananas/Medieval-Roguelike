@@ -7,6 +7,7 @@ using ActionSystem;
 using EffectsSystem;
 using UnitSystem;
 using Utilities;
+using Random = UnityEngine.Random;
 
 namespace InventorySystem
 {
@@ -109,7 +110,7 @@ namespace InventorySystem
                 targetPosition = targetUnit.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(targetUnit, hitTarget, attackDodged);
+            Vector3 offset = GetOffset(targetUnit, hitTarget);
 
             float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
@@ -164,44 +165,40 @@ namespace InventorySystem
             return arcHeight;
         }
 
-        Vector3 GetOffset(Unit targetUnit, bool hitTarget, bool attackDodged)
+        Vector3 GetOffset(Unit targetUnit, bool hitTarget)
         {
-            float offsetX, offsetZ;
-
-            // If the shooter is missing
-            if (attackDodged)
+            Vector3 shootOffset = Vector3.zero;
+            if (hitTarget == false) // If the shooter is missing
             {
-                offsetX = UnityEngine.Random.Range(-0.25f, 0.25f);
-                offsetZ = UnityEngine.Random.Range(-0.25f, 0.25f);
-            }
-            else if (hitTarget == false)
-            {
+                float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
                 float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData, targetUnit.GridPosition);
+
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
-                float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
-                offsetX = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f)); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
-                offsetZ = UnityEngine.Random.Range(minOffset, maxOffset - (rangedAccuracy * 0.01f) - (distToEnemy * 0.1f));
+                float offsetReduction = rangedAccuracy - (distToEnemy * 0.1f); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
+                if (offsetReduction > maxOffset - minOffset)
+                    offsetReduction = 0f;
 
-                if (offsetX < minOffset) offsetX = minOffset;
-                if (offsetZ < minOffset) offsetZ = minOffset;
-
-                // Randomize whether the offsets will be negative or positive values
-                int randomX = UnityEngine.Random.Range(0, 2);
-                int randomZ = UnityEngine.Random.Range(0, 2);
-
-                if (randomX == 0)
-                    offsetX *= -1f;
-                if (randomZ == 0)
-                    offsetZ *= -1f;
+                shootOffset = (shooter.transform.right * Random.Range(minOffset, maxOffset - offsetReduction)) + (shooter.transform.forward * Random.Range(-maxOffset, maxOffset - offsetReduction)); // minOffset is unnecessary for randomizing the forward direction, so use -maxOffset instead
             }
-            else // If the shooter is hitting the target, create a slight offset so they don't hit the same exact spot every time
+            else // If the shooter is hitting the target, even if they dodge it, create a slight offset so they don't hit the same exact spot every time
             {
-                offsetX = UnityEngine.Random.Range(-0.15f, 0.15f);
-                offsetZ = UnityEngine.Random.Range(-0.15f, 0.15f);
+                float maxOffset = 0.15f;
+                shootOffset.Set(Random.Range(-maxOffset, maxOffset), 0f, Random.Range(-maxOffset, maxOffset));
             }
 
-            return new Vector3(offsetX, 0f, offsetZ);
+            int randomX = Random.Range(0, 2);
+            int randomZ = Random.Range(0, 2);
+
+            // Randomize left/right of target
+            if (randomX == 0)
+                shootOffset.x *= -1f;
+
+            // Randomize towards/away from shooter
+            if (randomZ == 0)
+                shootOffset.z *= -1f;
+
+            return shootOffset;
         }
 
         void RotateTowardsNextPosition(Vector3 nextPosition)
@@ -249,7 +246,7 @@ namespace InventorySystem
                     {
                         float sphereCastRadius = 0.1f;
                         Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight;
-                        Vector3 shootDir = ((targetPosition + heightOffset) - (collider.transform.localPosition + heightOffset)).normalized;
+                        Vector3 shootDir = (targetPosition + heightOffset - (collider.transform.localPosition + heightOffset)).normalized;
 
                         if (Physics.SphereCast(collider.transform.localPosition + heightOffset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(collider.transform.localPosition + heightOffset, targetPosition + heightOffset), obstaclesMask))
                             continue; // Explosion blocked by an obstacle
@@ -299,6 +296,7 @@ namespace InventorySystem
 
             looseProjectile.gameObject.SetActive(true);
 
+            shooter.vision.AddVisibleLooseItem(looseProjectile);
             if (targetUnit != null)
                 targetUnit.vision.AddVisibleLooseItem(looseProjectile);
         }
@@ -377,7 +375,8 @@ namespace InventorySystem
                     shootAction.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
                     shooter.unitActionHandler.targetUnits.Clear();
 
-                    heldShield.TryFumbleHeldItem();
+                    if (heldShield.itemData != null && heldShield.itemData.Item != null)
+                        heldShield.TryFumbleHeldItem();
 
                     Arrived(collider.transform);
                 }

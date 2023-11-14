@@ -16,6 +16,7 @@ namespace ActionSystem
         public GridPosition nextTargetGridPosition { get; private set; }
         Vector3 nextTargetPosition;
 
+        public bool isMoving { get; private set; }
         public bool canMove { get; private set; }
 
         List<Vector3> positionList = new List<Vector3>();
@@ -41,7 +42,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.isMoving) return;
+            if (unit == null || isMoving) return;
 
             StartAction();
             StartCoroutine(Move());
@@ -120,7 +121,7 @@ namespace ActionSystem
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
-                if (opportunityAttackingUnit.vision.IsVisible(unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
+                if (opportunityAttackingUnit.vision.IsDirectlyVisible(unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
@@ -147,7 +148,7 @@ namespace ActionSystem
 
             // Unblock the Unit's current position since they're about to move
             unit.UnblockCurrentPosition();
-            unit.unitActionHandler.SetIsMoving(true);
+            isMoving = true;
 
             // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
             unit.BlockAtPosition(nextTargetPosition);
@@ -559,7 +560,7 @@ namespace ActionSystem
             else if (unit.health.IsDead() == false)
                 unit.BlockCurrentPosition();
 
-            unit.unitActionHandler.SetIsMoving(false);
+            isMoving = false;
             unit.unitActionHandler.FinishAction();
         }
 
@@ -579,6 +580,8 @@ namespace ActionSystem
             // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
             return true;
         }
+
+        public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
         public void SetCanMove(bool canMove) => this.canMove = canMove;
 

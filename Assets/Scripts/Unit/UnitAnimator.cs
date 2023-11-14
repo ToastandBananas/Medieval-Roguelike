@@ -114,7 +114,7 @@ namespace UnitSystem
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.isMoving == false)
+            while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.moveAction.isMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
@@ -166,7 +166,7 @@ namespace UnitSystem
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
             {
                 Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Helm;
-                if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 100f) <= helm.FallOffOnDeathChance)
+                if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 1f) <= helm.FallOffOnDeathChance)
                     DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
             }
 

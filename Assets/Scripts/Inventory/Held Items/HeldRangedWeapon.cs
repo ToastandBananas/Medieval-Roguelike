@@ -140,8 +140,8 @@ namespace InventorySystem
         {
             RangedWeapon weapon = itemData.Item as RangedWeapon;
 
-            float fumbleChance = (50f - unit.stats.WeaponSkill(weapon)) * 0.4f; // Weapon skill modifier
-            fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() * 15f; // Weapon weight to strength ratio modifier
+            float fumbleChance = (0.5f - (unit.stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
+            fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;
