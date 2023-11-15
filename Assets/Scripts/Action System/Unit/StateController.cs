@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnitSystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public enum State { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
 

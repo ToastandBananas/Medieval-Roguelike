@@ -4,7 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using InteractableObjects;
 using GridSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using InventorySystem;
 using UnitSystem;
 using Controls;
@@ -63,7 +64,7 @@ namespace GeneralUI
             if (UnitManager.player.unitActionHandler.queuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.isDraggingAction)
                 return;
 
-            if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.DefaultActionIsSelected)
+            if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.PlayerActionHandler.DefaultActionIsSelected)
             {
                 if (contextMenuHoldTimer < maxContextMenuHoldTime)
                     BuildContextMenu();
@@ -108,7 +109,7 @@ namespace GeneralUI
                 }
             }
 
-            if (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+            if (targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
             {
                 targetUnit = null;
                 CreateMoveToButton();
@@ -127,8 +128,8 @@ namespace GeneralUI
                 CreateDropItemButton();
 
                 if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
-                    || (targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
-                    || (targetUnit != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetUnit.GridPosition, UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
+                    || (targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                    || (targetUnit != null && TacticsUtilities.CalculateDistance_XYZ(targetUnit.GridPosition, UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
                 {
                     CreateMoveToButton();
                 }
@@ -367,7 +368,7 @@ namespace GeneralUI
                 if (looseContainerItem.ItemData.Item is WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
                     return;
 
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                if (TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
                     return;
 
                 if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
@@ -378,7 +379,7 @@ namespace GeneralUI
             }
             else if (targetUnit != null && targetUnit.health.IsDead())
             {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.GetGridPosition(targetUnit.transform.position), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                if (TacticsUtilities.CalculateDistance_XYZ(LevelGrid.GetGridPosition(targetUnit.transform.position), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
                     return;
 
                 if (targetUnit.UnitEquipment.slotVisualsCreated)

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using GridSystem;
 using InventorySystem;
-using UnitSystem;
+using UnitSystem.ActionSystem.UI;
 using Utilities;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class MeleeAction : BaseAttackAction
     {
@@ -56,7 +56,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking) return;
+            if (unit.unitActionHandler.isAttacking) return;
 
             if (targetEnemyUnit == null)
                 SetTargetEnemyUnit();
@@ -69,7 +69,7 @@ namespace ActionSystem
                 return;
             }
 
-            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
+            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
             {
                 StartAction();
                 unit.StartCoroutine(DoAttack());
@@ -95,7 +95,7 @@ namespace ActionSystem
             if (heldWeaponAttackingWith != null)
                 weaponItemData = heldWeaponAttackingWith.itemData;
 
-            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weaponItemData, isUsingOffhandWeapon);
+            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, isUsingOffhandWeapon);
             if (attackDodged)
                 targetEnemyUnit.unitAnimator.DoDodge(unit, null);
             else
@@ -111,10 +111,32 @@ namespace ActionSystem
             unit.StartCoroutine(WaitToDamageTargets(heldWeaponAttackingWith));
         }
 
+        protected override IEnumerator DoAttack()
+        {
+            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                yield return null;
+
+            // If the target Unit moved out of range, queue a movement instead
+            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
+            {
+                MoveToTargetInstead();
+                yield break;
+            }
+
+            StartCoroutine(Attack());
+
+            // Wait until the attack lands before completing the action
+            while (unit.unitActionHandler.isAttacking)
+                yield return null;
+
+            CompleteAction();
+            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompleteAction early within MoveToTargetInstead
+        }
+
         IEnumerator Attack()
         {
             // The unit being attacked becomes aware of this unit
-            BecomeVisibleEnemyOfTarget(targetEnemyUnit);
+            unit.vision.BecomeVisibleUnitOfTarget(targetEnemyUnit, true);
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null;
@@ -172,7 +194,7 @@ namespace ActionSystem
                 bool headShot = false;
                 if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped) // Unarmed or has a ranged weapon equipped, but no ammo
                 {
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, false);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, this, false);
                     if (attackDodged == false)
                     {
                         attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, null, false);
@@ -181,7 +203,7 @@ namespace ActionSystem
                 }
                 else if (unit.UnitEquipment.IsDualWielding) // Dual wield attack
                 {
-                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, false);
+                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, this, false);
                     bool mainAttackBlocked = false;
                     bool offhandAttackBlocked = false;
                     if (mainAttackDodged == false)
@@ -190,7 +212,7 @@ namespace ActionSystem
                         DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
                     }
 
-                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, true);
+                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, this, true);
                     if (offhandAttackDodged == false)
                     {
                         offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, true);
@@ -206,7 +228,7 @@ namespace ActionSystem
                 else
                 {
                     HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData, false);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData, this, false);
                     if (attackDodged == false)
                     {
                         attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon.itemData, false);
@@ -229,31 +251,6 @@ namespace ActionSystem
             }
         }
 
-        protected override IEnumerator DoAttack()
-        {
-            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
-            {
-                while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
-                    yield return null;
-
-                // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
-                {
-                    MoveToTargetInstead();
-                    yield break;
-                }
-            }
-
-            StartCoroutine(Attack());
-
-            // Wait until the attack lands before completing the action
-            while (unit.unitActionHandler.isAttacking)
-                yield return null;
-
-            CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
-        }
-
         public override void PlayAttackAnimation() { }
 
         public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -265,7 +262,7 @@ namespace ActionSystem
             if (OtherUnitInTheWay(unit, startGridPosition, targetGridPosition))
                 return false;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
+            float distance = TacticsUtilities.CalculateDistance_XZ(startGridPosition, targetGridPosition);
             if (unit.UnitEquipment.MeleeWeaponEquipped)
             {
                 Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon;
@@ -299,7 +296,7 @@ namespace ActionSystem
             
             if (unit.IsPlayer)
             {
-                unit.unitActionHandler.SetDefaultSelectedAction();
+                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 if (PlayerInput.Instance.autoAttack == false)
                 {
                     targetEnemyUnit = null;
@@ -317,7 +314,7 @@ namespace ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
                 if (unit.UnitEquipment.MeleeWeaponEquipped)
                     minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
@@ -423,7 +420,7 @@ namespace ActionSystem
                 float maxRangeToNodePosition = maxRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y);
                 if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
 
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XZ(startGridPosition, nodeGridPosition);
                 if (distance > maxRangeToNodePosition || distance < minRange)
                     continue;
 
@@ -595,13 +592,15 @@ namespace ActionSystem
                 return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b>.";
         }
 
+        public override float AccuracyModifier() => 1f;
+
         public override int GetEnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Special;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Special;
 
         public override bool CanBeClearedFromActionQueue() => true;
 

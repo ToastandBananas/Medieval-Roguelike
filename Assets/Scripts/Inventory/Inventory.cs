@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using InteractableObjects;
 using UnitSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 
 namespace InventorySystem
 {

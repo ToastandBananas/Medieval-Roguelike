@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem.UI
 {
     public class ActionBarSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

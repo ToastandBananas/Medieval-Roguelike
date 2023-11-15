@@ -5,10 +5,10 @@ using UnityEngine;
 using InteractableObjects;
 using GridSystem;
 using InventorySystem;
-using UnitSystem;
+using UnitSystem.ActionSystem.UI;
 using Utilities;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class MoveAction : BaseAction
     {
@@ -42,7 +42,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || isMoving) return;
+            if (isMoving) return;
 
             StartAction();
             StartCoroutine(Move());
@@ -276,8 +276,8 @@ namespace ActionSystem
             if (unit.IsPlayer)
             {
                 // If the Player has a target Interactable
-                InteractAction interactAction = unit.unitActionHandler.GetAction<InteractAction>();
-                if (interactAction.targetInteractable != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
+                InteractAction interactAction = unit.unitActionHandler.interactAction;
+                if (interactAction.targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
@@ -286,7 +286,7 @@ namespace ActionSystem
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.IsInAttackRange(unit.unitActionHandler.targetEnemyUnit, true))
                 {
                     unit.unitAnimator.StopMovingForward();
-                    unit.unitActionHandler.AttackTarget();
+                    unit.unitActionHandler.PlayerActionHandler.AttackTarget();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition)
@@ -318,9 +318,8 @@ namespace ActionSystem
         {
             unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.GridPosition);
 
-            BaseAction selectedAction = unit.unitActionHandler.SelectedAction;
-            if (selectedAction is BaseAttackAction)
-                unit.unitActionHandler.moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+            if (unit.IsPlayer && unit.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction)
+                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                 unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
             else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
@@ -420,7 +419,7 @@ namespace ActionSystem
                     Door door = interactable as Door;
                     if (door.isOpen == false)
                     {
-                        unit.unitActionHandler.GetAction<InteractAction>().QueueActionImmediately(door);
+                        unit.unitActionHandler.interactAction.QueueActionImmediately(door);
                         return 0;
                     }
                 }
@@ -569,10 +568,10 @@ namespace ActionSystem
             if (unit.IsPlayer)
                 return;
 
-            if (((float)pooledAP) / defaultTileMoveCost <= 1f)
+            if ((float)pooledAP / defaultTileMoveCost <= 1f)
                 moveSpeed = defaultMoveSpeed;
             else
-                moveSpeed = Mathf.FloorToInt((((float)pooledAP) / defaultTileMoveCost) * defaultMoveSpeed);
+                moveSpeed = Mathf.FloorToInt((float)pooledAP / defaultTileMoveCost * defaultMoveSpeed);
         }
 
         public override bool IsValidAction()
@@ -591,7 +590,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.None;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.None;
 
         public override bool ActionIsUsedInstantly() => false;
 

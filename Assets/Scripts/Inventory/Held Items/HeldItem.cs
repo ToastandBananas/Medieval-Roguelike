@@ -3,6 +3,7 @@ using UnityEngine;
 using UnitSystem;
 using Utilities;
 using GridSystem;
+using InteractableObjects;
 
 namespace InventorySystem
 {
@@ -64,7 +65,16 @@ namespace InventorySystem
                     return;
 
                 unit.unitActionHandler.SetIsAttacking(false);
-                DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(itemData));
+
+                if (unit.IsNPC && unit.health.IsDead() == false) // NPCs will try to pick the item back up immediately
+                {
+                    Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
+                    LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(itemData));
+                    myUnit.unitActionHandler.ClearActionQueue(true);
+                    myUnit.unitActionHandler.interactAction.QueueAction(looseItem);
+                }
+                else
+                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(itemData));
             }
         }
 

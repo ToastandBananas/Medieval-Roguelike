@@ -1,7 +1,7 @@
 using Pathfinding;
 using System.Collections;
 using UnityEngine;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 using GeneralUI;
 using UnitSystem;
 using Utilities;
@@ -67,7 +67,7 @@ namespace GridSystem
                 {
                     targetUnit = null;
                     currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
-                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(player.GridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+                    if (TacticsUtilities.CalculateDistance_XYZ(player.GridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
                         targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
                     else
                     {
@@ -77,7 +77,7 @@ namespace GridSystem
                 }
                 else if (PlayerInput.Instance.highlightedUnit != null)
                 {
-                    BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
                     targetUnit = PlayerInput.Instance.highlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
@@ -102,7 +102,7 @@ namespace GridSystem
                     }
                     else if (targetUnit.health.IsDead())
                     {
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(targetUnit.GridPosition, player.GridPosition) > LevelGrid.diaganolDistance)
+                        if (TacticsUtilities.CalculateDistance_XYZ(targetUnit.GridPosition, player.GridPosition) > LevelGrid.diaganolDistance)
                             targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
                         else
                         {
@@ -124,7 +124,7 @@ namespace GridSystem
                 else
                 {
                     targetUnit = LevelGrid.GetUnitAtGridPosition(currentMouseGridPosition);
-                    BaseAction selectedAction = player.unitActionHandler.selectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
 
                     if (targetUnit != null && player.vision.IsVisible(targetUnit))
                     {
@@ -242,7 +242,7 @@ namespace GridSystem
         {
             if (player.UnitEquipment.RangedWeaponEquipped)
             {
-                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.SelectedAction is MeleeAction == false)
+                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
                     return player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
                 else
                     return player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);

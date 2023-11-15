@@ -5,7 +5,8 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using InteractableObjects;
 using GridSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using InventorySystem;
 using UnitSystem;
 
@@ -51,7 +52,7 @@ namespace GeneralUI
             UnitManager.player.unitActionHandler.SetTargetEnemyUnit(ContextMenu.targetUnit);
 
             if (isInAttackRange)
-                UnitManager.player.unitActionHandler.AttackTarget();
+                UnitManager.player.unitActionHandler.PlayerActionHandler.AttackTarget();
             else
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
@@ -118,7 +119,7 @@ namespace GeneralUI
         {
             if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseItem)
             {
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+                UnitManager.player.unitActionHandler.interactAction.QueueAction(ContextMenu.targetInteractable);
             }
             else if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
@@ -273,9 +274,9 @@ namespace GeneralUI
                 InventoryUI.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.ParentSlot().GetItemData().Item);
             }
             else if (ContextMenu.targetInteractable != null)
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetInteractable);
+                UnitManager.player.unitActionHandler.interactAction.QueueAction(ContextMenu.targetInteractable);
             else if (ContextMenu.targetUnit != null)
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(ContextMenu.targetUnit.unitInteractable);
+                UnitManager.player.unitActionHandler.interactAction.QueueAction(ContextMenu.targetUnit.unitInteractable);
 
             ContextMenu.DisableContextMenu();
         }

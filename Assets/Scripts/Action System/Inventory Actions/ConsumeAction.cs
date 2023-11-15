@@ -1,8 +1,9 @@
 using InventorySystem;
+using UnitSystem.ActionSystem.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class ConsumeAction : BaseInventoryAction
     {

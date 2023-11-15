@@ -30,18 +30,21 @@ namespace InventorySystem
             {
                 meleeWeaponBases.Add(meleeWeaponBase);
                 meleeWeaponBase.transform.SetParent(transform);
+                meleeWeaponBase.gameObject.SetActive(false);
             }
 
             foreach (HeldRangedWeapon rangedWeaponBase in FindObjectsOfType<HeldRangedWeapon>())
             {
                 rangedWeaponBases.Add(rangedWeaponBase);
                 rangedWeaponBase.transform.SetParent(transform);
+                rangedWeaponBase.gameObject.SetActive(false);
             }
 
             foreach (HeldShield shieldBase in FindObjectsOfType<HeldShield>())
             {
                 shieldBases.Add(shieldBase);
                 shieldBase.transform.SetParent(transform);
+                shieldBase.gameObject.SetActive(false);
             }
 
             if (Instance != null)

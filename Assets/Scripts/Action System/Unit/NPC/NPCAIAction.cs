@@ -1,6 +1,6 @@
 using GridSystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class NPCAIAction
     {

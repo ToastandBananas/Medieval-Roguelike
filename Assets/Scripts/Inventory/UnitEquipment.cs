@@ -1,8 +1,9 @@
-using ActionSystem;
 using InteractableObjects;
 using System;
 using System.Collections.Generic;
 using UnitSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 using Utilities;
 using ContextMenu = GeneralUI.ContextMenu;
@@ -865,7 +866,7 @@ namespace InventorySystem
                 heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
 
                 if (myUnit.IsPlayer)
-                    myUnit.unitActionHandler.SetDefaultSelectedAction();
+                    myUnit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
             }
             else
                 myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (VisibleArmor)itemData.Item);
@@ -899,7 +900,7 @@ namespace InventorySystem
                 myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
 
                 if (myUnit.IsPlayer)
-                    myUnit.unitActionHandler.SetDefaultSelectedAction();
+                    myUnit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
             }
             else
                 myUnit.unitMeshManager.RemoveMesh(equipSlot);

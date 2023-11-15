@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnitSystem;
-using InventorySystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class ActionsPool : MonoBehaviour
     {

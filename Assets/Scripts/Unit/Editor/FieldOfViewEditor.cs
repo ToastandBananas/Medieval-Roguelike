@@ -37,7 +37,7 @@ namespace UnitSystem
 
                     fov.LooseItemsInViewRadius[i].TryGetComponent(out LooseItem looseItem);
                     if (looseItem != null)
-                        Handles.DrawLine(fov.transform.position, looseItem.transform.TransformPoint(looseItem.MeshCollider.bounds.center));
+                        Handles.DrawLine(fov.transform.position, looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center));
                 }
             }
         }

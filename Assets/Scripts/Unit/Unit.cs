@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using InteractableObjects;
 using GridSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 using InventorySystem;
 
 namespace UnitSystem
@@ -109,7 +109,7 @@ namespace UnitSystem
             }
         }
 
-        public void SetGridPosition(GridPosition gridPosition) => this.gridPosition = gridPosition;
+        public void SetGridPosition(GridPosition gridPosition) => this.gridPosition.Set(gridPosition);
 
         public bool IsCompletelySurrounded(float range)
         {
@@ -150,7 +150,7 @@ namespace UnitSystem
 
         public void CenterPosition() => transform.position = LevelGrid.SnapPosition(transform.position);
 
-        public BaseAction SelectedAction => unitActionHandler.selectedActionType.GetAction(this);
+        public BaseAction SelectedAction => unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(this);
 
         public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
         public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;

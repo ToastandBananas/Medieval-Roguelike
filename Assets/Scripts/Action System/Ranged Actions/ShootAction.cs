@@ -6,10 +6,10 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using GridSystem;
 using InventorySystem;
-using UnitSystem;
+using UnitSystem.ActionSystem.UI;
 using Utilities;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class ShootAction : BaseAttackAction
     {
@@ -59,11 +59,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false || unit.unitActionHandler.isAttacking)
-            {
-                CompleteAction();
-                return;
-            }
+            if (unit.unitActionHandler.isAttacking) return;
 
             if (targetEnemyUnit == null)
             {
@@ -78,6 +74,7 @@ namespace ActionSystem
                 targetEnemyUnit = null;
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
                 CompleteAction();
+                TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
 
@@ -94,7 +91,7 @@ namespace ActionSystem
                     TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
-            else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
+            else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
             {
                 StartAction();
                 unit.StartCoroutine(DoAttack());
@@ -102,29 +99,25 @@ namespace ActionSystem
             else
             {
                 CompleteAction();
-                if (unit.IsPlayer)
-                    unit.unitActionHandler.TakeTurn();
+                TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
         }
 
         protected override IEnumerator DoAttack()
         {
-            if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
-            {
-                while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
-                    yield return null;
+            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                yield return null;
 
-                // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
-                {
-                    MoveToTargetInstead();
-                    yield break;
-                }
+            // If the target Unit moved out of range, queue a movement instead
+            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
+            {
+                MoveToTargetInstead();
+                yield break;
             }
 
             // The unit being attacked becomes aware of this unit
-            BecomeVisibleEnemyOfTarget(targetEnemyUnit);
+            unit.vision.BecomeVisibleUnitOfTarget(targetEnemyUnit, true);
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null;
@@ -197,7 +190,7 @@ namespace ActionSystem
         public bool TryHitTarget(GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 1f);
-            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData, targetGridPosition);
+            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData, targetGridPosition, this);
             if (random <= rangedAccuracy)
                 return true;
             return false;
@@ -209,7 +202,7 @@ namespace ActionSystem
             base.CompleteAction();
             if (unit.IsPlayer)
             {
-                unit.unitActionHandler.SetDefaultSelectedAction();
+                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 if (PlayerInput.Instance.autoAttack == false)
                 {
                     targetEnemyUnit = null;
@@ -220,7 +213,7 @@ namespace ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
+        public override bool IsInAttackRange(Unit targetUnit, GridPosition shootGridPosition, GridPosition targetGridPosition)
         {
             if (unit.unitMeshManager.GetHeldRangedWeapon() == null)
                 return false;
@@ -228,11 +221,18 @@ namespace ActionSystem
             if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
                 return false;
 
-            float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
+            float distance;
+            if (targetUnit != null)
+                distance = TacticsUtilities.CalculateDistance_XZ(shootGridPosition, targetUnit.GridPosition);
+            else
+                distance = TacticsUtilities.CalculateDistance_XZ(shootGridPosition, targetGridPosition);
+
             Weapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon;
-            float maxRangeToTargetPosition = rangedWeapon.MaxRange + (startGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
+            float maxRangeToTargetPosition = rangedWeapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
+            if (unit != null && unit.IsPlayer && targetUnit != null)
+                Debug.Log("Distance to " + targetUnit + ": " + distance);
             if (distance > maxRangeToTargetPosition || distance < rangedWeapon.MinRange)
                 return false;
             return true;
@@ -274,7 +274,7 @@ namespace ActionSystem
                 float maxRangeToNodePosition = maxRange + (startGridPosition.y - nodeGridPosition.y);
                 if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
 
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, nodeGridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XZ(startGridPosition, nodeGridPosition);
                 if (distance > maxRangeToNodePosition || distance < minRange)
                     continue;
 
@@ -398,7 +398,7 @@ namespace ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                     finalActionValue = 0f;
                 else
@@ -440,7 +440,7 @@ namespace ActionSystem
                     if (unit.unitActionHandler.targetEnemyUnit != null && unitAtGridPosition == unit.unitActionHandler.targetEnemyUnit)
                         finalActionValue += 15f;
 
-                    float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, actionGridPosition);
+                    float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, actionGridPosition);
                     if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                         finalActionValue = -1f;
                     else
@@ -492,11 +492,13 @@ namespace ActionSystem
 
         public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
 
+        public override float AccuracyModifier() => 1f;
+
         public override int GetEnergyCost() => 0;
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Special;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Special;
 
         public override bool IsInterruptable() => false;
 

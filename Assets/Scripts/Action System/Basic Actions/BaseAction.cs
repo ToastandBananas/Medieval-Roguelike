@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnitSystem.ActionSystem.UI;
 using GridSystem;
-using UnitSystem;
 using System.Text;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public abstract class BaseAction : MonoBehaviour
     {
@@ -18,7 +18,7 @@ namespace ActionSystem
 
         protected virtual void StartAction() { }
 
-        public virtual void SetTargetGridPosition(GridPosition gridPosition) => targetGridPosition = gridPosition;
+        public virtual void SetTargetGridPosition(GridPosition gridPosition) => targetGridPosition.Set(gridPosition);
 
         /// <summary>Only use this version of QueueAction if the target grid position is irrelevant or if it/other necessary variables have already been set.</summary>
         public virtual void QueueAction()
@@ -43,36 +43,6 @@ namespace ActionSystem
         {
             npcAIActionList.Sort((NPCAIAction a, NPCAIAction b) => b.actionValue - a.actionValue);
             return npcAIActionList[0];
-        }
-
-        public void BecomeVisibleEnemyOfTarget(Unit targetUnit)
-        {
-            // The target Unit becomes an enemy of this Unit's faction if they weren't already
-            if (unit.alliance.IsEnemy(targetUnit) == false)
-            {
-                targetUnit.vision.RemoveVisibleUnit(unit);
-                unit.vision.RemoveVisibleUnit(targetUnit);
-
-                targetUnit.alliance.AddEnemy(unit);
-                unit.vision.AddVisibleUnit(targetUnit);
-            }
-
-            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
-        }
-
-        public void BecomeVisibleAllyOfTarget(Unit targetUnit)
-        {
-            // The target Unit becomes an enemy of this Unit's faction if they weren't already
-            if (unit.alliance.IsAlly(targetUnit) == false)
-            {
-                targetUnit.vision.RemoveVisibleUnit(unit);
-                unit.vision.RemoveVisibleUnit(targetUnit);
-
-                targetUnit.alliance.AddAlly(unit);
-                unit.vision.AddVisibleUnit(targetUnit);
-            }
-
-            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
         }
 
         public virtual bool IsValidUnitInActionArea(GridPosition targetGridPosition)
@@ -128,7 +98,7 @@ namespace ActionSystem
 
         public abstract string TooltipDescription();
 
-        public abstract ActionBarSection ActionBarSection();
+        public abstract UI.ActionBarSection ActionBarSection();
 
         public abstract bool IsValidAction();
 

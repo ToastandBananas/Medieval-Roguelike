@@ -6,9 +6,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 using InteractableObjects;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 using GridSystem;
 using InventorySystem;
+using Utilities;
 
 namespace UnitSystem
 {
@@ -386,6 +387,55 @@ namespace UnitSystem
             }
         }
 
+        public void BecomeVisibleUnitOfTarget(Unit targetUnit, bool becomeEnemy)
+        {
+            if (targetUnit == null)
+                return;
+
+            if (becomeEnemy)
+                BecomeVisibleEnemyOfTarget(targetUnit);
+            else
+            {
+                // Otherwise, just become visible
+                if (targetUnit.alliance.IsEnemy(unit))
+                    BecomeVisibleEnemyOfTarget(targetUnit);
+                else if (targetUnit.alliance.IsAlly(unit))
+                    BecomeVisibleAllyOfTarget(targetUnit);
+                else
+                    targetUnit.vision.AddVisibleUnit(unit);
+            }
+        }
+
+        void BecomeVisibleEnemyOfTarget(Unit targetUnit)
+        {
+            // The target Unit becomes an enemy of this Unit's faction if they weren't already
+            if (unit.alliance.IsEnemy(targetUnit) == false)
+            {
+                targetUnit.vision.RemoveVisibleUnit(unit);
+                RemoveVisibleUnit(targetUnit);
+
+                targetUnit.alliance.AddEnemy(unit);
+                AddVisibleUnit(targetUnit);
+            }
+
+            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
+        }
+
+        void BecomeVisibleAllyOfTarget(Unit targetUnit)
+        {
+            // The target Unit becomes an enemy of this Unit's faction if they weren't already
+            if (unit.alliance.IsAlly(targetUnit) == false)
+            {
+                targetUnit.vision.RemoveVisibleUnit(unit);
+                RemoveVisibleUnit(targetUnit);
+
+                targetUnit.alliance.AddAlly(unit);
+                AddVisibleUnit(targetUnit);
+            }
+
+            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
+        }
+
         void UpdateDeadUnit(Unit deadUnit)
         {
             if (knownDeadUnits.Contains(deadUnit) == false)
@@ -433,10 +483,8 @@ namespace UnitSystem
                 if (looseItemsInViewRadius[i].CompareTag("Loose Item") == false)
                     continue;
 
-                looseItemsInViewRadius[i].transform.TryGetComponent(out LooseItem looseItem);
-
                 // If the LooseItem in the view radius is already "known", skip it
-                if (looseItem == null || knownLooseItems.ContainsKey(looseItem))
+                if (looseItemsInViewRadius[i].transform.TryGetComponent(out LooseItem looseItem) == false || knownLooseItems.ContainsKey(looseItem))
                     continue;
 
                 Vector3 looseItemCenter = looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center);
@@ -582,7 +630,7 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null)
                     continue;
 
-                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
                 if (distToLooseItem < closestLooseItemDistance)
                 {
                     closestLooseItem = knownLooseItem.Key;
@@ -602,13 +650,14 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Weapon == false)
                     continue;
 
-                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
                 if (distToLooseItem < closestWeaponDistance)
                 {
                     closestLooseMeleeWeapon = knownLooseItem.Key;
                     closestWeaponDistance = distToLooseItem;
                 }
             }
+
             distanceToWeapon = closestWeaponDistance;
             return closestLooseMeleeWeapon;
         }
@@ -622,13 +671,14 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is MeleeWeapon == false)
                     continue;
 
-                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
                 if (distToLooseItem < closestMeleeWeaponDistance)
                 {
                     closestLooseMeleeWeapon = knownLooseItem.Key;
                     closestMeleeWeaponDistance = distToLooseItem;
                 }
             }
+
             distanceToWeapon = closestMeleeWeaponDistance;
             return closestLooseMeleeWeapon;
         }
@@ -642,13 +692,14 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is RangedWeapon == false)
                     continue;
 
-                float distToLooseItem = Vector3.Distance(transform.position, knownLooseItem.Key.transform.TransformPoint(knownLooseItem.Key.MeshCollider.sharedMesh.bounds.center));
+                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
                 if (distToLooseItem < closestRangedWeaponDistance)
                 {
                     closestLooseRangedWeapon = knownLooseItem.Key;
                     closestRangedWeaponDistance = distToLooseItem;
                 }
             }
+
             distanceToWeapon = closestRangedWeaponDistance;
             return closestLooseRangedWeapon;
         }

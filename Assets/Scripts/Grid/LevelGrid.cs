@@ -201,14 +201,14 @@ namespace GridSystem
                 if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit or is otherwise unwalkable
                     continue;
 
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startingGridPosition, nodeGridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XZ(startingGridPosition, nodeGridPosition);
                 if (distance > maxRange || distance < minRange)
                     continue;
 
                 if (checkForObstacles)
                 {
                     float sphereCastRadius = 0.1f;
-                    Vector3 shootDir = ((nodeGridPosition.WorldPosition + Vector3.up) - (startingGridPosition.WorldPosition + Vector3.up)).normalized;
+                    Vector3 shootDir = (nodeGridPosition.WorldPosition + Vector3.up - (startingGridPosition.WorldPosition + Vector3.up)).normalized;
                     if (Physics.SphereCast(startingGridPosition.WorldPosition + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + Vector3.up, startingGridPosition.WorldPosition + Vector3.up), unit.unitActionHandler.AttackObstacleMask))
                         continue; // Blocked by an obstacle
                 }
@@ -256,7 +256,7 @@ namespace GridSystem
                 if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                     continue;
 
-                float distanceToEnemy = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(enemyUnit.GridPosition, nodeGridPosition);
+                float distanceToEnemy = TacticsUtilities.CalculateDistance_XZ(enemyUnit.GridPosition, nodeGridPosition);
                 if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                     continue;
 
@@ -293,7 +293,7 @@ namespace GridSystem
                 if (obstructedGridPositionsValid == false && GridPositionObstructed(nodeGridPosition))
                     continue;
 
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startingGridPosition, nodeGridPosition) > range)
+                if (TacticsUtilities.CalculateDistance_XYZ(startingGridPosition, nodeGridPosition) > range)
                     continue;
 
                 gridPositionsList.Add(nodeGridPosition);

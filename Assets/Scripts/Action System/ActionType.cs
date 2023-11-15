@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using UnitSystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     [CreateAssetMenu(fileName = "New Action Type", menuName = "Actions/Action Type")]
     public class ActionType : ScriptableObject
@@ -15,7 +14,7 @@ namespace ActionSystem
         public string ActionTypeName => actionTypeName;
         public Sprite ActionIcon => actionIcon;
 
-        readonly string actionTypeNamespace = "ActionSystem.";
+        readonly string actionTypeNamespace = "UnitSystem.ActionSystem.";
 
         // Convert the stored string back to a Type
         public Type GetActionType() => Type.GetType(actionTypeNamespace + actionTypeName);

@@ -1,7 +1,7 @@
-using UnitSystem;
 using UnityEngine;
+using UnitSystem.ActionSystem.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class UnloadAction : BaseAction
     {
@@ -30,7 +30,7 @@ namespace ActionSystem
             base.CompleteAction();
 
             if (unit.IsPlayer)
-                unit.unitActionHandler.SetDefaultSelectedAction();
+                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -49,7 +49,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Basic;
 
         public override bool ActionIsUsedInstantly() => true;
 

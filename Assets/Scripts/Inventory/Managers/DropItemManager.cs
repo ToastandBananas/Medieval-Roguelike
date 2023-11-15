@@ -1,7 +1,8 @@
 using UnityEngine;
 using InteractableObjects;
-using ActionSystem;
 using UnitSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
 
@@ -74,10 +75,10 @@ namespace InventorySystem
             TooltipManager.UpdateLooseItemTooltips();
         }
 
-        public static void DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
+        public static LooseItem DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
         {
             if (unitEquipment.EquipSlotIsFull(equipSlot) == false)
-                return;
+                return null;
 
             LooseItem looseItem;
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
@@ -157,6 +158,8 @@ namespace InventorySystem
 
             ActionSystemUI.UpdateActionVisuals();
             TooltipManager.UpdateLooseItemTooltips();
+
+            return looseItem;
         }
 
         public static void DropHelmOnDeath(ItemData itemData, Unit unit, Transform attackerTransform, bool diedForward)
@@ -338,7 +341,7 @@ namespace InventorySystem
             if (heldItem.itemData.Item is Shield && heldItem.transform.childCount > 1)
             {
                 HeldShield heldShield = heldItem as HeldShield;
-                Vector3 yOffset = new Vector3(0f, FindHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
+                Vector3 yOffset = new Vector3(0f, FindMeshHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
 
                 for (int i = heldItem.transform.childCount - 1; i > 0; i--)
                 {
@@ -363,7 +366,7 @@ namespace InventorySystem
             looseItem.transform.rotation = unit.unitMeshManager.HelmMeshRenderer.transform.rotation;
         }
 
-        static float FindHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;
+        static float FindMeshHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;
 
         static void SetupLooseItem(LooseItem looseItem, ItemData itemData)
         {

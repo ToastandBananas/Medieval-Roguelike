@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using GridSystem;
-using UnitSystem;
 using Utilities;
 using System.Collections;
 using InventorySystem;
 using InteractableObjects;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class NPCActionHandler : UnitActionHandler
     {
@@ -120,7 +119,7 @@ namespace ActionSystem
                         float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
-                        if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
+                        if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
                         {
                             if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
                             {
@@ -291,7 +290,7 @@ namespace ActionSystem
                 // If a weapon was found and it's next to this Unit, pick it up (the weapon is likely there from fumbling it)
                 if (weaponNearby && distanceToWeapon <= LevelGrid.diaganolDistance)
                 {
-                    GetAction<InteractAction>().QueueAction(foundLooseWeapon);
+                    interactAction.QueueAction(foundLooseWeapon);
                     return;
                 }
 
@@ -304,24 +303,11 @@ namespace ActionSystem
                         GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
                     }
-                    // Else, try to find a nearby weapon
+                    // Else, try pickup the nearby weapon
                     else if (weaponNearby)
                     {
-                        // If one was found, move to it if necessary and then pick it up, but only if nobody could opportunity attack them
-                        if (distanceToWeapon > LevelGrid.diaganolDistance)
-                        {
-                            if (unit.unitsWhoCouldOpportunityAttackMe.Count == 0)
-                            {
-                                GetAction<InteractAction>().SetTargetInteractable(foundLooseWeapon);
-                                GetAction<MoveAction>().QueueAction(LevelGrid.GetNearestSurroundingGridPosition(foundLooseWeapon.GridPosition(), unit.GridPosition, LevelGrid.diaganolDistance, true));
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            GetAction<InteractAction>().QueueAction(foundLooseWeapon);
-                            return;
-                        }
+                        interactAction.QueueAction(foundLooseWeapon);
+                        return;
                     }
                 }
                 else // If there are weapons in the other weapon set
@@ -346,7 +332,7 @@ namespace ActionSystem
                 float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if (closestEnemy != null && TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + LevelGrid.diaganolDistance)
+                if (closestEnemy != null && TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + LevelGrid.diaganolDistance)
                 {
                     // If the Unit has a melee weapon, switch to it
                     if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
@@ -380,7 +366,7 @@ namespace ActionSystem
             }
             else
             {
-                if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(startChaseGridPosition, unit.GridPosition) >= maxChaseDistance)
+                if (TacticsUtilities.CalculateDistance_XYZ(startChaseGridPosition, unit.GridPosition) >= maxChaseDistance)
                 {
                     shouldStopChasing = true;
                     moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
@@ -660,7 +646,7 @@ namespace ActionSystem
                 return;
             }
 
-            float distanceFromUnitToFleeFrom = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
+            float distanceFromUnitToFleeFrom = TacticsUtilities.CalculateDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
 
             // If the Unit has fled far enough
             if (distanceFromUnitToFleeFrom >= fleeDistance)
@@ -678,7 +664,7 @@ namespace ActionSystem
             if (needsNewFleeDestination)
             {
                 needsNewFleeDestination = false;
-                unitToFleeFrom_PreviousDistance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
+                unitToFleeFrom_PreviousDistance = TacticsUtilities.CalculateDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
                 targetGridPosition = GetFleeDestination();
             }
 
@@ -718,7 +704,7 @@ namespace ActionSystem
                 return;
             }
 
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition, leader.GridPosition) <= stopFollowDistance)
+            if (TacticsUtilities.CalculateDistance_XZ(unit.GridPosition, leader.GridPosition) <= stopFollowDistance)
                 TurnManager.Instance.FinishTurn(unit);
             else if (moveAction.isMoving == false)
                 moveAction.QueueAction(leader.unitActionHandler.turnAction.GetGridPositionBehindUnit());
@@ -808,7 +794,7 @@ namespace ActionSystem
                     patrolIterationCount++;
 
                     // Find the nearest Grid Position to the Patrol Point
-                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.FindNearestValidGridPosition(patrolPointGridPosition, unit, 7);
+                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.FindNearestValidGridPosition(patrolPointGridPosition, unit, 5);
                     if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
                         IncreasePatrolPointIndex();
 

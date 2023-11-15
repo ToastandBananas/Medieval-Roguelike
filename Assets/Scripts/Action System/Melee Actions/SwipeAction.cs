@@ -3,12 +3,12 @@ using Pathfinding.Util;
 using System.Collections.Generic;
 using UnityEngine;
 using GridSystem;
-using UnitSystem;
 using Utilities;
 using InventorySystem;
+using UnitSystem.ActionSystem.UI;
 using System.Collections;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class SwipeAction : BaseAttackAction
     {
@@ -38,8 +38,7 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.isAttacking) 
-                return;
+            if (unit.unitActionHandler.isAttacking) return;
 
             if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
             {
@@ -57,8 +56,7 @@ namespace ActionSystem
             else
             {
                 CompleteAction();
-                if (unit.IsPlayer)
-                    unit.unitActionHandler.TakeTurn();
+                TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
         }
@@ -291,7 +289,7 @@ namespace ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
-                float distance = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
+                float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
@@ -408,6 +406,8 @@ namespace ActionSystem
             return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
         }
 
+        public override float AccuracyModifier() => 0.75f;
+
         public override int GetEnergyCost() => 25;
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped;
@@ -418,7 +418,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Special;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Special;
 
         public override bool IsMeleeAttackAction() => true;
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 using GridSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using EffectsSystem;
 
 namespace UnitSystem
@@ -85,7 +85,7 @@ namespace UnitSystem
             unit.unitAnimator.Die(attacker.transform);
 
             if (attacker.IsPlayer)
-                attacker.unitActionHandler.SetDefaultSelectedAction();
+                attacker.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
         }
 
         public bool IsDead() => currentHealth <= 0;

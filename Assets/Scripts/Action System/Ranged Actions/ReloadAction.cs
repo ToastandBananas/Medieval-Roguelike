@@ -1,8 +1,8 @@
 using InventorySystem;
-using UnitSystem;
 using UnityEngine;
+using UnitSystem.ActionSystem.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class ReloadAction : BaseAction
     {
@@ -18,12 +18,6 @@ namespace ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)
-            {
-                CompleteAction();
-                return;
-            }
-
             StartAction();
             Reload();
         }
@@ -40,7 +34,7 @@ namespace ActionSystem
             projectileItemData = null;
 
             if (unit.IsPlayer)
-                unit.unitActionHandler.SetDefaultSelectedAction();
+                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -59,7 +53,7 @@ namespace ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Basic;
 
         public override bool ActionIsUsedInstantly() => true;
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using InventorySystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class SwapWeaponSetAction : BaseInventoryAction
     {

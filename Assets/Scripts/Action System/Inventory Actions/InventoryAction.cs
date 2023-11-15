@@ -1,7 +1,7 @@
 using InventorySystem;
 using UnityEngine;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     // We use Equip & Unequip for when we need to use the Action Point cost for these actions, but don't actually want to queue an Equip or Unequip action
     public enum InventoryActionType { Default, Equip, Unequip, Drop }

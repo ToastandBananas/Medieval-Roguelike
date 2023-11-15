@@ -5,11 +5,10 @@ using InventorySystem;
 using TMPro;
 using System;
 using UnitSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using System.Collections;
 using InteractableObjects;
-using Utilities;
-using GridSystem;
 
 namespace GeneralUI
 {
@@ -246,16 +245,7 @@ namespace GeneralUI
             gameObject.SetActive(false);
         }
 
-        void InteractWithLooseItem_OnClick(LooseItem looseItem)
-        {
-            if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(UnitManager.player.GridPosition, looseItem.GridPosition()) > TacticsPathfindingUtilities.diaganolDistance)
-            {
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().SetTargetInteractable(looseItem);
-                UnitManager.player.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(looseItem.GridPosition(), UnitManager.player.GridPosition, TacticsPathfindingUtilities.diaganolDistance, looseItem.CanInteractAtMyGridPosition()));
-            }
-            else
-                UnitManager.player.unitActionHandler.GetAction<InteractAction>().QueueAction(looseItem);
-        }
+        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.unitActionHandler.interactAction.QueueAction(looseItem);
 
         void CalculatePosition(Slot slot)
         {

@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using UnityEngine;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class EquipAction : BaseInventoryAction
     {

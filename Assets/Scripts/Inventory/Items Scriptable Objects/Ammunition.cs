@@ -1,8 +1,4 @@
 using UnityEngine;
-using InteractableObjects;
-using UnitSystem;
-using ContextMenu = GeneralUI.ContextMenu;
-using ActionSystem;
 
 namespace InventorySystem
 {

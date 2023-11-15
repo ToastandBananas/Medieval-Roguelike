@@ -1,8 +1,9 @@
 using System.Collections;
 using UnityEngine;
 using GridSystem;
-using ActionSystem;
 using UnitSystem;
+using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.UI;
 using Utilities;
 
 namespace InventorySystem
@@ -83,7 +84,8 @@ namespace InventorySystem
         // Used in keyframe animation
         void ShootProjectile()
         {
-            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, unit.unitActionHandler.GetAction<ShootAction>().TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
+            ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
+            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
             loadedProjectile = null;
 
             TryFumbleHeldItem();
@@ -122,7 +124,7 @@ namespace InventorySystem
 
         float CalculateZRotation(GridPosition targetGridPosition)
         {
-            float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(unit.GridPosition, targetGridPosition);
+            float distanceXZ = TacticsUtilities.CalculateDistance_XZ(unit.GridPosition, targetGridPosition);
             float distanceY = unit.GridPosition.y - targetGridPosition.y;
             float rotateFactor = 5f; // The degree to which we rotate the weapon per 1 distance
 

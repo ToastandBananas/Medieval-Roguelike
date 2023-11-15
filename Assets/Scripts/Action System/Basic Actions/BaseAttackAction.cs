@@ -3,11 +3,10 @@ using InventorySystem;
 using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
-using UnitSystem;
 using UnityEngine;
 using Utilities;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public abstract class BaseAttackAction : BaseAction
     {
@@ -25,8 +24,7 @@ namespace ActionSystem
             CompleteAction();
             unit.unitActionHandler.SetIsAttacking(false);
             unit.unitActionHandler.moveAction.QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
-            if (unit.IsPlayer)
-                unit.unitActionHandler.TakeTurn();
+            TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
         protected override void StartAction()
@@ -134,7 +132,7 @@ namespace ActionSystem
             if (heldWeaponAttackingWith != null)
                 yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.itemData.Item as Weapon));
             else
-                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime());
+                yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime() * 0.5f);
 
             DamageTargets(heldWeaponAttackingWith, headShot);
         }
@@ -154,24 +152,12 @@ namespace ActionSystem
                     continue;
 
                 targetUnits.Add(targetUnit);
-                
+
                 // The unit being attacked becomes aware of this unit
-                // If directly being targeted, become an enemy
-                if (targetUnit.unitActionHandler.targetUnits.Count == 1)
-                    BecomeVisibleEnemyOfTarget(targetUnit);
-                else
-                {
-                    // Otherwise, just become visible
-                    if (targetUnit.alliance.IsEnemy(unit))
-                        BecomeVisibleEnemyOfTarget(targetUnit);
-                    else if (targetUnit.alliance.IsAlly(unit))
-                        BecomeVisibleAllyOfTarget(targetUnit);
-                    else
-                        targetUnit.vision.AddVisibleUnit(unit);
-                }
+                unit.vision.BecomeVisibleUnitOfTarget(targetUnit, targetUnit.unitActionHandler.targetUnits.Count == 1);
             }
 
-            // We need to skip a frame in case the target Unit's meshes are being enabled
+            // We need to skip a frame in case the target Unit's meshes are being enabled due to becoming visible
             yield return null; 
             
             HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
@@ -182,7 +168,7 @@ namespace ActionSystem
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
             {
-                if (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                if (targetEnemyUnit != null)
                 {
                     while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
@@ -214,7 +200,7 @@ namespace ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, false))
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, false))
                         targetUnits[i].unitAnimator.DoDodge(unit, null);
                     else
                     {
@@ -242,7 +228,7 @@ namespace ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, false) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, false) == false)
                     {
                         bool headShot = false;
 
@@ -320,7 +306,7 @@ namespace ActionSystem
 
         public abstract void PlayAttackAnimation();
 
-        public abstract bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition);
+        public abstract bool IsInAttackRange(Unit targetUnit, GridPosition attackGridPosition, GridPosition targetGridPosition);
 
         public virtual bool IsInAttackRange(Unit targetUnit)
         {
@@ -331,6 +317,8 @@ namespace ActionSystem
         }
 
         public abstract GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit);
+
+        public abstract float AccuracyModifier();
 
         public abstract bool IsMeleeAttackAction();
 

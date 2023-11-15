@@ -1,8 +1,8 @@
 using InventorySystem;
-using UnitSystem;
 using UnityEngine;
+using UnitSystem.ActionSystem.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public abstract class BaseInventoryAction : BaseAction
     {
@@ -76,7 +76,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => true;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.None;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.None;
 
         public override bool ActionIsUsedInstantly() => true;
     }

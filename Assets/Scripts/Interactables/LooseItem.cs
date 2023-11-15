@@ -2,7 +2,7 @@ using UnityEngine;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 
 namespace InteractableObjects
 {
@@ -171,10 +171,10 @@ namespace InteractableObjects
 
         public override void UpdateGridPosition()
         {
-            if (Physics.Raycast(meshCollider.bounds.center, Vector3.down, out RaycastHit hit, 100f, LevelGrid.GroundMask))
+            if (Physics.Raycast(transform.TransformPoint(meshCollider.sharedMesh.bounds.center), Vector3.down, out RaycastHit hit, 50f, LevelGrid.GroundMask))
                 gridPosition.Set(hit.point);
             else
-                gridPosition.Set(meshCollider.bounds.center);
+                gridPosition.Set(transform.TransformPoint(meshCollider.sharedMesh.bounds.center));
         }
 
         public override GridPosition GridPosition()

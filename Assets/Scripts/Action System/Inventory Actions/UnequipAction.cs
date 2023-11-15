@@ -2,7 +2,7 @@ using InventorySystem;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ActionSystem 
+namespace UnitSystem.ActionSystem 
 {
     public class UnequipAction : BaseInventoryAction
     {

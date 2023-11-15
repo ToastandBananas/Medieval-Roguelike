@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnitSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 
 namespace InventorySystem
 {

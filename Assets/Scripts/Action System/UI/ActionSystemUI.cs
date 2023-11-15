@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using GridSystem;
-using UnitSystem;
 using System.Linq;
 using Controls;
 using UnityEngine.UI;
@@ -11,7 +10,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
 using InventorySystem;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem.UI
 {
     public enum ActionBarSection { None, Basic, Special, Item }
 

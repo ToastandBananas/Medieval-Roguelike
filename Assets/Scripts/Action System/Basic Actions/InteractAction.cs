@@ -1,10 +1,11 @@
 using System.Collections;
 using GridSystem;
 using InteractableObjects;
-using UnitSystem;
+using UnitSystem.ActionSystem.UI;
 using UnityEngine;
+using Utilities;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public class InteractAction : BaseAction
     {
@@ -13,13 +14,25 @@ namespace ActionSystem
         public void QueueAction(Interactable targetInteractable)
         {
             this.targetInteractable = targetInteractable;
-            unit.unitActionHandler.QueueAction(this);
+            targetGridPosition = targetInteractable.GridPosition();
+
+            // If the Unit is too far away to Interact, move to it first
+            if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetGridPosition) > LevelGrid.diaganolDistance)
+                unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
+            else
+                unit.unitActionHandler.QueueAction(this);
         }
 
         public void QueueActionImmediately(Interactable targetInteractable)
         {
             this.targetInteractable = targetInteractable;
-            unit.unitActionHandler.QueueAction(this, true);
+            targetGridPosition = targetInteractable.GridPosition();
+
+            // If the Unit is too far away to Interact, move to it first
+            if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetGridPosition) > LevelGrid.diaganolDistance)
+                unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
+            else
+                unit.unitActionHandler.QueueAction(this, true);
         }
 
         public override void TakeAction()
@@ -48,6 +61,12 @@ namespace ActionSystem
             }
             else
                 turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, true);
+
+            if (targetInteractable == null)
+            {
+                CompleteAction();
+                yield break;
+            }
 
             // Perform the interaction
             if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasAnyUnitOnGridPosition(targetInteractable.GridPosition(), out _) == false)
@@ -91,7 +110,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.None;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.None;
 
         public override bool IsValidAction() => true;
 

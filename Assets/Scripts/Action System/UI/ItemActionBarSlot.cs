@@ -1,7 +1,6 @@
 using InventorySystem;
-using UnityEngine;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem.UI
 {
     public class ItemActionBarSlot : ActionBarSlot
     {

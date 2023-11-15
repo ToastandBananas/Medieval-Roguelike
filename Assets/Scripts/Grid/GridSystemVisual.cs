@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 using GeneralUI;
 using UnitSystem;
 
@@ -133,10 +133,10 @@ namespace GridSystem
             if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            if (Instance.player.unitActionHandler.SelectedAction is BaseAttackAction == false)
+            if (Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false)
                 return;
 
-            Instance.ShowAttackRange(Instance.player.unitActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
+            Instance.ShowAttackRange(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
         }
 
         /// <summary>Highlights grid spaces that will be hit by the currently selected attack, based off of the current mouse position. Color depends on Alliance to Player.</summary>
@@ -147,10 +147,10 @@ namespace GridSystem
             if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.queuedActions.Count > 0)
                 return;
 
-            if (Instance.player.unitActionHandler.SelectedAction is BaseAttackAction == false)
+            if (Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false)
                 return;
 
-            Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
+            Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
         }
 
         Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem.UI
 {
     public class ChangeActionButtonRow : MonoBehaviour
     {

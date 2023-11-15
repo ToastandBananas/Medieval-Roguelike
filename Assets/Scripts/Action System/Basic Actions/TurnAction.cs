@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using GridSystem;
 using GeneralUI;
-using UnitSystem;
+using UnitSystem.ActionSystem.UI;
 
-namespace ActionSystem
+namespace UnitSystem.ActionSystem
 {
     public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
 
@@ -54,8 +54,11 @@ namespace ActionSystem
 
             CompleteAction();
 
+            // Don't start the next Unit's turn after doing a TurnAction, it costs so few AP it's not worth it. If they don't have enough AP for another action, their turn will end in the TakeTurn method anyways
             if (unit.IsNPC)
-                unit.unitActionHandler.TakeTurn();
+                unit.unitActionHandler.TakeTurn(); 
+            // But we DO want to start the next Unit's turn after the Player does a TurnAction because we'll be adding to each NPC's pooled AP
+            // (We don't want to allow infinite Player TurnActions in a row, building the pooled AP up to a massive amount, plus this will add to the realism of rotating taking in game time)
             else
                 TurnManager.Instance.StartNextUnitsTurn(unit);
         }
@@ -553,7 +556,7 @@ namespace ActionSystem
 
         public override bool CanQueueMultiple() => false;
 
-        public override ActionBarSection ActionBarSection() => ActionSystem.ActionBarSection.Basic;
+        public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Basic;
 
         public override bool IsValidAction() => true;
 

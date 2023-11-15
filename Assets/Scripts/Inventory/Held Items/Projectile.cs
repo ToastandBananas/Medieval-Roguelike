@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using InteractableObjects;
 using GridSystem;
-using ActionSystem;
+using UnitSystem.ActionSystem;
 using EffectsSystem;
 using UnitSystem;
 using Utilities;
@@ -27,7 +27,7 @@ namespace InventorySystem
         [SerializeField] ItemData itemData;
 
         Unit shooter, targetUnit;
-        ShootAction shootAction;
+        BaseAttackAction attackActionUsed;
 
         Vector3 targetPosition, movementDirection;
 
@@ -49,8 +49,6 @@ namespace InventorySystem
         public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
         {
             this.shooter = shooter;
-            shootAction = shooter.unitActionHandler.GetAction<ShootAction>();
-
             this.itemData = new ItemData(itemData);
             this.itemData.SetCurrentStackSize(1);
 
@@ -88,14 +86,15 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, bool hitTarget)
+        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget)
         {
             this.targetUnit = targetUnit;
+            this.attackActionUsed = attackActionUsed;
             ReadyProjectile();
 
             bool attackDodged = false;
             if (hitTarget)
-                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData, false);
+                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData, attackActionUsed, false);
 
             if (attackDodged)
             {
@@ -110,7 +109,7 @@ namespace InventorySystem
                 targetPosition = targetUnit.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(targetUnit, hitTarget);
+            Vector3 offset = GetOffset(targetUnit, attackActionUsed, hitTarget);
 
             float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
@@ -151,7 +150,7 @@ namespace InventorySystem
 
         float CalculateProjectileArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)
         {
-            float distanceXZ = TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XZ(startGridPosition, targetGridPosition);
+            float distanceXZ = TacticsUtilities.CalculateDistance_XZ(startGridPosition, targetGridPosition);
             float distanceY = startGridPosition.y - targetGridPosition.y;
             float arcHeightFactor = 0.1f;
 
@@ -165,13 +164,13 @@ namespace InventorySystem
             return arcHeight;
         }
 
-        Vector3 GetOffset(Unit targetUnit, bool hitTarget)
+        Vector3 GetOffset(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget)
         {
             Vector3 shootOffset = Vector3.zero;
             if (hitTarget == false) // If the shooter is missing
             {
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
-                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData, targetUnit.GridPosition);
+                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData, targetUnit.GridPosition, attackActionUsed);
 
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
@@ -242,7 +241,7 @@ namespace InventorySystem
 
                 foreach (Collider collider in colliderArray)
                 {
-                    if (TacticsPathfindingUtilities.CalculateWorldSpaceDistance_XYZ(LevelGrid.GetGridPosition(collider.transform.localPosition), LevelGrid.GetGridPosition(targetPosition)) <= damageRadius)
+                    if (TacticsUtilities.CalculateDistance_XYZ(LevelGrid.GetGridPosition(collider.transform.localPosition), LevelGrid.GetGridPosition(targetPosition)) <= damageRadius)
                     {
                         float sphereCastRadius = 0.1f;
                         Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight;
@@ -253,7 +252,7 @@ namespace InventorySystem
 
                         if (collider.TryGetComponent(out Unit targetUnit))
                         {
-                            shooter.unitActionHandler.GetAction<ShootAction>().BecomeVisibleEnemyOfTarget(targetUnit);
+                            shooter.vision.BecomeVisibleUnitOfTarget(targetUnit, true);
 
                             // TODO: Less damage the further away from explosion
                             targetUnit.health.TakeDamage(30, shooter);
@@ -334,7 +333,7 @@ namespace InventorySystem
             itemData = null;
             shouldMoveProjectile = false;
             shooter = null;
-            shootAction = null;
+            attackActionUsed = null;
             targetUnit = null;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
@@ -351,7 +350,7 @@ namespace InventorySystem
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        shootAction.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
+                        attackActionUsed.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
                         shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
@@ -362,7 +361,7 @@ namespace InventorySystem
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
                     if (targetUnit != shooter)
                     {
-                        shootAction.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
+                        attackActionUsed.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
                         shooter.unitActionHandler.targetUnits.Clear();
 
                         Arrived(collider.transform);
@@ -372,7 +371,7 @@ namespace InventorySystem
                 {
                     // DamageTargets will take into account whether the Unit blocked or not
                     HeldShield heldShield = collider.GetComponent<HeldShield>();
-                    shootAction.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
+                    attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
                     shooter.unitActionHandler.targetUnits.Clear();
 
                     if (heldShield.itemData != null && heldShield.itemData.Item != null)
