@@ -1,6 +1,7 @@
 using InventorySystem;
 using UnityEngine;
 using UnitSystem.ActionSystem.UI;
+using Utilities;
 
 namespace UnitSystem.ActionSystem
 {
@@ -19,12 +20,22 @@ namespace UnitSystem.ActionSystem
         public override void TakeAction()
         {
             StartAction();
-            Reload();
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (heldRangedWeapon.isLoaded)
+                Unload(heldRangedWeapon);
+            else
+                Reload(heldRangedWeapon);
         }
 
-        void Reload()
+        void Reload(HeldRangedWeapon heldRangedWeapon)
         {
-            unit.unitMeshManager.GetHeldRangedWeapon().LoadProjectile(projectileItemData);
+            heldRangedWeapon.LoadProjectile(projectileItemData);
+            CompleteAction();
+        }
+
+        void Unload(HeldRangedWeapon heldRangedWeapon)
+        {
+            heldRangedWeapon.UnloadProjectile();
             CompleteAction();
         }
 
@@ -45,7 +56,7 @@ namespace UnitSystem.ActionSystem
             return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.UnitEquipment.HasValidAmmunitionEquipped();
+        public override bool IsValidAction() => unit.UnitEquipment.RangedWeaponEquipped && (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded || unit.UnitEquipment.HasValidAmmunitionEquipped());
 
         public override bool IsInterruptable() => false;
 
@@ -59,9 +70,43 @@ namespace UnitSystem.ActionSystem
 
         public override int GetEnergyCost() => 0;
 
+        public override Sprite ActionIcon()
+        {
+            if (unit.UnitEquipment.RangedWeaponEquipped == false)
+                return actionType.ActionIcon;
+
+            if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                return actionType.CancelActionIcon;
+            return actionType.ActionIcon;
+        }
+
+        public override string ActionName()
+        {
+            if (unit.UnitEquipment.RangedWeaponEquipped == false)
+                return "";
+
+            HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (rangedWeapon.isLoaded)
+                return $"Unload {StringUtilities.EnumToSpacedString(rangedWeapon.itemData.Item.Weapon.WeaponType)}";
+            else
+                return $"Reload {StringUtilities.EnumToSpacedString(rangedWeapon.itemData.Item.Weapon.WeaponType)}";
+        }
+
         public override string TooltipDescription()
         {
-            return $"Reload your <b>{unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Name}</b>.";
+            if (unit.UnitEquipment.RangedWeaponEquipped == false)
+                return "";
+
+            HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (rangedWeapon.isLoaded)
+            {
+                if (rangedWeapon.loadedProjectile != null)
+                    return $"Unload the <b>{rangedWeapon.loadedProjectile.ItemData.Item.Name}</b> from your <b>{rangedWeapon.itemData.Item.Name}</b>.";
+                else
+                    return $"Unload your <b>{rangedWeapon.itemData.Item.Name}</b>.";
+            }
+            else
+                return $"Reload your <b>{rangedWeapon.itemData.Item.Name}</b>.";
         }
     }
 }

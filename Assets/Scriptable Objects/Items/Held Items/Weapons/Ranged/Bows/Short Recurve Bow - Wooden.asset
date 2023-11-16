@@ -37,7 +37,7 @@ MonoBehaviour:
   actionTypes:
   - {fileID: 11400000, guid: 44ecde231a7e0124fbec7df445b93ecc, type: 2}
   - {fileID: 11400000, guid: 26a016718e383234091d517a7f6d54c0, type: 2}
-  - {fileID: 11400000, guid: be1a9ca6be3f56341a7e31442d5bd1fe, type: 2}
+  stanceStatModifiers: []
   meshes:
   - {fileID: 2858289826068144650, guid: 46ffb20919493cf4cbe0491996d25635, type: 3}
   - {fileID: -6567934382552847019, guid: 899b553669bfdfb4fb0ef105a9ace7e5, type: 3}
@@ -60,7 +60,8 @@ MonoBehaviour:
   canDualWield: 0
   attackRange: {x: 2, y: 10}
   damageRange: {x: 4, y: 8}
-  blockChanceAddOn: 0
+  minBlockChanceAddOn: 0
+  maxBlockChanceAddOn: 0
   minAccuracyModifier: 0.05
   maxAccuracyModifier: 0.1
   reloadActionPointCostMultiplier: 0.8

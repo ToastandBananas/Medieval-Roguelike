@@ -10,6 +10,7 @@ namespace Utilities
         [SerializeField] float minValue = 1f;
 
         [SerializeField] List<float> modifiers = new List<float>();
+        [SerializeField] List<float> percentModifiers = new List<float>();
 
         public float GetValue()
         {
@@ -19,6 +20,13 @@ namespace Utilities
                 finalValue += modifiers[i];
             }
 
+            float percentModifierTotal = 0f;
+            for (int i = 0; i < percentModifiers.Count; i++)
+            {
+                percentModifierTotal += percentModifiers[i];
+            }
+
+            finalValue += Mathf.Round(baseValue * percentModifierTotal);
             if (finalValue < minValue)
                 finalValue = minValue;
 
@@ -52,9 +60,16 @@ namespace Utilities
                 modifiers.Remove(modifier);
         }
 
-        public void ClearModifiers()
+        public void AddPercentModifier(float percentModifier)
         {
-            modifiers.Clear();
+            if (percentModifier != 0f)
+                percentModifiers.Add(percentModifier);
+        }
+
+        public void RemovePercentModifier(float percentModifier)
+        {
+            if (percentModifier != 0f)
+                percentModifiers.Remove(percentModifier);
         }
     }
 }

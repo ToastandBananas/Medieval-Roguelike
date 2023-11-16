@@ -1042,29 +1042,20 @@ namespace InventorySystem
 
         public void SwitchVersatileStance()
         {
-            HeldItem leftHeldItem = myUnit.unitMeshManager.leftHeldItem;
-            HeldItem rightHeldItem = myUnit.unitMeshManager.rightHeldItem;
-
-            if ((leftHeldItem != null && rightHeldItem != null) || (leftHeldItem == null && rightHeldItem == null))
+            if (IsDualWielding || MeleeWeaponEquipped == false)
                 return;
 
-            if (leftHeldItem != null)
+            HeldMeleeWeapon primaryHeldMeleeWeapon = myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            if (primaryHeldMeleeWeapon != null)
             {
-                if (leftHeldItem is HeldMeleeWeapon == false || leftHeldItem.itemData.Item.Weapon.IsVersatile == false || leftHeldItem.itemData.Item.Weapon.IsTwoHanded)
+                if (primaryHeldMeleeWeapon.itemData.Item.Weapon.IsVersatile == false || primaryHeldMeleeWeapon.itemData.Item.Weapon.IsTwoHanded)
                     return;
 
-                leftHeldItem.HeldMeleeWeapon.SwitchVersatileStance();
-            }
-            else if (rightHeldItem != null)
-            {
-                if (rightHeldItem is HeldMeleeWeapon == false || rightHeldItem.itemData.Item.Weapon.IsVersatile == false || rightHeldItem.itemData.Item.Weapon.IsTwoHanded)
-                    return;
-
-                rightHeldItem.HeldMeleeWeapon.SwitchVersatileStance();
+                primaryHeldMeleeWeapon.HeldMeleeWeapon.SwitchVersatileStance();
             }
         }
 
-        public bool InVersatileStance => MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentWeaponStance == WeaponStance.Versatile;
+        public bool InVersatileStance => MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance == HeldItemStance.Versatile;
 
         public ItemData GetRangedWeaponFromOtherWeaponSet()
         {

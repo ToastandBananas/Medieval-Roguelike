@@ -245,7 +245,7 @@ namespace GeneralUI
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction() == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange(targetUnit, false)) && UnitManager.player.GetAttackRange(targetUnit, false) < 2f))
+            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange(targetUnit, false)) && UnitManager.player.GetAttackRange(targetUnit, false) < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();

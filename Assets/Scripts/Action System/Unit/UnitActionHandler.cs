@@ -468,6 +468,16 @@ namespace UnitSystem.ActionSystem
             return null;
         }
 
+        public bool ActionTypeIsAvailable(string actionName)
+        {
+            foreach (ActionType actionType in availableActionTypes)
+            {
+                if (actionType.ActionTypeName == actionName)
+                    return true;
+            }
+            return false;
+        }
+
         public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
 
         public virtual void SetTargetEnemyUnit(Unit target)

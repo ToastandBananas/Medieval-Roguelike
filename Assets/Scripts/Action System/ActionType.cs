@@ -9,10 +9,12 @@ namespace UnitSystem.ActionSystem
         [SerializeField] string actionName; // The name used in game
         [SerializeField] string actionTypeName; // Store the Type's full name as a string (for example: MeleeAction Type is just MeleeAction)
         [SerializeField] Sprite actionIcon;
+        [SerializeField] Sprite cancelActionIcon;
 
         public string ActionName => actionName;
         public string ActionTypeName => actionTypeName;
         public Sprite ActionIcon => actionIcon;
+        public Sprite CancelActionIcon => cancelActionIcon;
 
         readonly string actionTypeNamespace = "UnitSystem.ActionSystem.";
 

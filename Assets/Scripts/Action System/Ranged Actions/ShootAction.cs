@@ -231,8 +231,6 @@ namespace UnitSystem.ActionSystem
             float maxRangeToTargetPosition = rangedWeapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
-            if (unit != null && unit.IsPlayer && targetUnit != null)
-                Debug.Log("Distance to " + targetUnit + ": " + distance);
             if (distance > maxRangeToTargetPosition || distance < rangedWeapon.MinRange)
                 return false;
             return true;

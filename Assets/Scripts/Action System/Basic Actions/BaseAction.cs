@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnitSystem.ActionSystem.UI;
 using GridSystem;
-using System.Text;
 
 namespace UnitSystem.ActionSystem
 {
@@ -11,8 +10,6 @@ namespace UnitSystem.ActionSystem
         public ActionType actionType { get; private set; }
         public Unit unit { get; private set; }
         public GridPosition targetGridPosition { get; protected set; }
-
-        static protected StringBuilder stringBuilder = new StringBuilder();
 
         public abstract void TakeAction();
 
@@ -85,7 +82,7 @@ namespace UnitSystem.ActionSystem
 
         public abstract bool CanQueueMultiple();
 
-        public bool IsDefaultAttackAction() => this is MeleeAction || this is ShootAction;
+        public bool IsDefaultAttackAction => this is MeleeAction || this is ShootAction;
 
         public BaseAttackAction BaseAttackAction => this as BaseAttackAction;
 
@@ -96,9 +93,13 @@ namespace UnitSystem.ActionSystem
             Initialize();
         }
 
+        public virtual Sprite ActionIcon() => actionType.ActionIcon;
+
+        public virtual string ActionName() => actionType.ActionName;
+
         public abstract string TooltipDescription();
 
-        public abstract UI.ActionBarSection ActionBarSection();
+        public abstract ActionBarSection ActionBarSection();
 
         public abstract bool IsValidAction();
 

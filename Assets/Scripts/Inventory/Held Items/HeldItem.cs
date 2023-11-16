@@ -7,6 +7,8 @@ using InteractableObjects;
 
 namespace InventorySystem
 {
+    public enum HeldItemStance { Default, Versatile, RaiseShield }
+
     public abstract class HeldItem : MonoBehaviour
     {
         [Header("Mesh Components")]

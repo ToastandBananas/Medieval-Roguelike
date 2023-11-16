@@ -26,7 +26,7 @@ namespace Utilities
                 percentModifierTotal += percentModifiers[i];
             }
 
-            finalValue += Mathf.FloorToInt(baseValue * percentModifierTotal);
+            finalValue += Mathf.RoundToInt(baseValue * percentModifierTotal);
             if (finalValue < minValue)
                 finalValue = minValue;
 
@@ -70,11 +70,6 @@ namespace Utilities
         {
             if (percentModifier != 0f)
                 percentModifiers.Remove(percentModifier);
-        }
-
-        public void ClearModifiers()
-        {
-            modifiers.Clear();
         }
     }
 }

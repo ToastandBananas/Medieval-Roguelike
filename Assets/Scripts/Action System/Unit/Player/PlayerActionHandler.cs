@@ -29,7 +29,7 @@ namespace UnitSystem.ActionSystem
         {
             base.QueueAction(action, addToFrontOfQueue);
 
-            if (selectedActionType.GetAction(unit).IsDefaultAttackAction() == false)
+            if (selectedActionType.GetAction(unit).IsDefaultAttackAction == false)
                 SetDefaultSelectedAction();
         }
 
@@ -52,7 +52,7 @@ namespace UnitSystem.ActionSystem
                 else if (queuedActions.Count == 0)
                 {
                     // If the queued attack is not a default attack
-                    if (queuedAttack != null && queuedAttack.IsDefaultAttackAction() == false)
+                    if (queuedAttack != null && queuedAttack.IsDefaultAttackAction == false)
                     {
                         // If the target attack position is in range and there are valid units within the attack area
                         if (queuedAttack.IsInAttackRange(null, unit.GridPosition, queuedAttack.targetGridPosition) && queuedAttack.IsValidUnitInActionArea(queuedAttack.targetGridPosition))

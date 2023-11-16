@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Text;
 using InventorySystem;
 using TMPro;
-using System;
+using Utilities;
 using UnitSystem;
 using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
@@ -20,7 +20,6 @@ namespace GeneralUI
         [SerializeField] Button button;
 
         StringBuilder stringBuilder = new StringBuilder();
-        StringBuilder secondaryStringBuilder = new StringBuilder();
 
         readonly int maxCharactersPerLine_Title = 20;
         readonly int maxCharactersPerLine = 44;
@@ -38,9 +37,7 @@ namespace GeneralUI
             stringBuilder.Clear();
 
             // Name
-            stringBuilder.Append("<align=center><b><size=22>");
-            SplitText(itemData.Name(), maxCharactersPerLine_Title);
-            stringBuilder.Append("</size></b></align>");
+            stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}</size></b></align>");
             if (itemData.Item is Weapon)
             {
                 stringBuilder.Append("<align=center><i><size=18>");
@@ -52,7 +49,7 @@ namespace GeneralUI
                         stringBuilder.Append("Versatile ");
                 }
 
-                stringBuilder.Append($"{EnumToSpacedString(itemData.Item.Weapon.WeaponType)}</size></i></align>\n");
+                stringBuilder.Append($"{StringUtilities.EnumToSpacedString(itemData.Item.Weapon.WeaponType)}</size></i></align>\n");
             }
 
             // If Equipped
@@ -62,9 +59,7 @@ namespace GeneralUI
                 stringBuilder.Append("\n");
 
             // Description
-            stringBuilder.Append("<size=16>");
-            SplitText(itemData.Item.Description, maxCharactersPerLine);
-            stringBuilder.Append("</size>");
+            stringBuilder.Append($"<size=16>{StringUtilities.SplitTextIntoParagraphs(itemData.Item.Description, maxCharactersPerLine)}</size>");
 
             if (itemData.Item.MaxUses > 1)
                 stringBuilder.Append($"\n  <i>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</i>\n");
@@ -126,7 +121,7 @@ namespace GeneralUI
             }
             else if (itemData.Item is Quiver)
             {
-                stringBuilder.Append($"\n  <i>+{itemData.Item.Quiver.InventorySections[0].AmountOfSlots} {EnumToSpacedString(itemData.Item.Quiver.InventorySections[0].AllowedItemTypes[0])} slots</i>");
+                stringBuilder.Append($"\n  <i>+{itemData.Item.Quiver.InventorySections[0].AmountOfSlots} {StringUtilities.EnumToSpacedString(itemData.Item.Quiver.InventorySections[0].AllowedItemTypes[0])} slots</i>");
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Belt)
@@ -170,8 +165,8 @@ namespace GeneralUI
             }
             else
             {
-                stringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.actionType.ActionName}</b></size></align>\n\n");
-                SplitText(actionBarSlot.actionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine);
+                stringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.action.ActionName()}</b></size></align>\n\n");
+                stringBuilder.Append(StringUtilities.SplitTextIntoParagraphs(actionBarSlot.actionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine));
             }
 
             textMesh.text = stringBuilder.ToString();
@@ -440,49 +435,6 @@ namespace GeneralUI
                 yield return null;
                 yield return null;
             }
-        }
-
-        string EnumToSpacedString(Enum enumValue)
-        {
-            secondaryStringBuilder.Clear();
-            string enumString = enumValue.ToString();
-
-            secondaryStringBuilder.Append(enumString[0]); // Append the first character
-            for (int i = 1; i < enumString.Length; i++)
-            {
-                char currentChar = enumString[i];
-
-                if (char.IsUpper(currentChar) && char.IsLower(enumString[i - 1]))
-                {
-                    // Insert a space before a capital letter that follows a lowercase letter
-                    secondaryStringBuilder.Append(' ');
-                }
-
-                secondaryStringBuilder.Append(currentChar);
-            }
-
-            return secondaryStringBuilder.ToString();
-        }
-
-        void SplitText(string originalText, int maxCharsPerLine)
-        {
-            secondaryStringBuilder.Clear();
-            foreach (string word in originalText.Split(' '))
-            {
-                if (secondaryStringBuilder.Length + word.Length <= maxCharsPerLine)
-                {
-                    secondaryStringBuilder.Append($"{word} ");
-                }
-                else
-                {
-                    stringBuilder.AppendLine(secondaryStringBuilder.ToString().TrimEnd());
-                    secondaryStringBuilder.Clear().Append($"{word} ");
-                }
-            }
-
-            // Add the remaining text (if any) as the last line.
-            if (secondaryStringBuilder.Length > 0)
-                stringBuilder.AppendLine($"{secondaryStringBuilder.ToString().TrimEnd()}");
         }
 
         void RecalculateTooltipSize()

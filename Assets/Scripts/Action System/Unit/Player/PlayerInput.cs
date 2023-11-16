@@ -102,7 +102,8 @@ namespace UnitSystem.ActionSystem
 
                     if (GameControls.gamePlayActions.switchVersatileStance.WasPressed)
                     {
-                        player.UnitEquipment.SwitchVersatileStance();
+                        if (player.unitActionHandler.ActionTypeIsAvailable("VersatileStanceAction"))
+                            player.unitActionHandler.GetAction<VersatileStanceAction>().QueueAction();
                         return;
                     }
 
@@ -262,7 +263,7 @@ namespace UnitSystem.ActionSystem
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                         // If the player has a Move, Melee, or Shoot Action selected
-                        if (selectedAction.IsDefaultAttackAction() || selectedAction is MoveAction)
+                        if (selectedAction.IsDefaultAttackAction || selectedAction is MoveAction)
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
@@ -414,7 +415,7 @@ namespace UnitSystem.ActionSystem
                     else
                     {
                         Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
-                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction()))
+                        if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction))
                         {
                             ClearHighlightedInteractable();
                             SetAttackCursor(); 

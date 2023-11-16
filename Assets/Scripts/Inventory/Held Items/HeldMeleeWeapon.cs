@@ -5,14 +5,12 @@ using UnitSystem;
 
 namespace InventorySystem
 {
-    public enum WeaponStance { Default, Versatile }
-
     public class HeldMeleeWeapon : HeldItem
     {
         readonly float defaultAttackTransitionTime = 0.1667f;
         readonly float defaultBlockTransitionTime = 0.33f;
 
-        public WeaponStance currentWeaponStance { get; private set; }
+        public HeldItemStance currentHeldItemStance { get; private set; }
 
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
@@ -107,19 +105,19 @@ namespace InventorySystem
 
         public void SetDefaultWeaponStance()
         {
-            currentWeaponStance = WeaponStance.Default;
+            currentHeldItemStance = HeldItemStance.Default;
             anim.SetBool("versatileStance", false);
         }
 
         public void SetVersatileWeaponStance()
         {
-            currentWeaponStance = WeaponStance.Versatile;
+            currentHeldItemStance = HeldItemStance.Versatile;
             anim.SetBool("versatileStance", true);
         }
 
         public void SwitchVersatileStance()
         {
-            if (currentWeaponStance == WeaponStance.Versatile)
+            if (currentHeldItemStance == HeldItemStance.Versatile)
                 SetDefaultWeaponStance();
             else
                 SetVersatileWeaponStance();
@@ -157,7 +155,7 @@ namespace InventorySystem
             else
             {
                 // Less likely to fumble when two-handing a melee weapon
-                if (weapon.IsTwoHanded || currentWeaponStance == WeaponStance.Versatile)
+                if (weapon.IsTwoHanded || currentHeldItemStance == HeldItemStance.Versatile)
                     fumbleChance *= 0.8f;
             }
             // Debug.Log(unit.name + " fumble chance: " + fumbleChance);

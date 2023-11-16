@@ -1,27 +1,43 @@
 using UnityEngine;
-using UnitSystem;
 
-namespace InventorySystem
+namespace UnitSystem
 {
     [System.Serializable]
-    public class Modifier
+    public class StatModifier
     {
-        [Header("Stats")]
+        [Header("Attributes")]
+        [SerializeField] int agility;
+        [SerializeField] float percentAgility;
+
+        [SerializeField] int endurance;
+        [SerializeField] float percentEndurance;
+
         [SerializeField] int speed;
         [SerializeField] float percentSpeed;
 
         [SerializeField] int strength;
         [SerializeField] float percentStrength;
 
-        [Header("Skills")]
-        [SerializeField] int axeSkill;
-        [SerializeField] float percentAxeSkill;
+        [Header("Defensive Skills")]
+        [SerializeField] int shieldSkill;
+        [SerializeField] float percentShieldSkill;
 
+        [Header("Ranged Weapon Skills")]
         [SerializeField] int bowSkill;
         [SerializeField] float percentBowSkill;
 
         [SerializeField] int crossBowSkill;
         [SerializeField] float percentCrossBowSkill;
+
+        [SerializeField] int throwingSkill;
+        [SerializeField] float percentThrowingSkill;
+
+        [Header("Melee Weapon Skills")]
+        [SerializeField] int unarmedSkill;
+        [SerializeField] float percentUnarmedSkill;
+
+        [SerializeField] int axeSkill;
+        [SerializeField] float percentAxeSkill;
 
         [SerializeField] int daggerSkill;
         [SerializeField] float percentDaggerSkill;
@@ -32,37 +48,47 @@ namespace InventorySystem
         [SerializeField] int polearmSkill;
         [SerializeField] float percentPolearmSkill;
 
-        [SerializeField] int shieldSkill;
-        [SerializeField] float percentShieldSkill;
-
         [SerializeField] int spearSkill;
         [SerializeField] float percentSpearSkill;
 
         [SerializeField] int swordSkill;
         [SerializeField] float percentSwordSkill;
 
-        [SerializeField] int throwingSkill;
-        [SerializeField] float percentThrowingSkill;
-
         [SerializeField] int warHammerSkill;
         [SerializeField] float percentWarHammerSkill;
 
         public void ApplyModifiers(Stats stats)
         {
+            // Attributes
+            stats.Agility.AddModifier(agility);
+            stats.Agility.AddPercentModifier(percentAgility);
+
+            stats.Endurance.AddModifier(endurance);
+            stats.Endurance.AddPercentModifier(percentEndurance);
+
             stats.Speed.AddModifier(speed);
             stats.Speed.AddPercentModifier(percentSpeed);
 
             stats.Strength.AddModifier(strength);
             stats.Strength.AddPercentModifier(percentStrength);
 
-            stats.AxeSkill.AddModifier(axeSkill);
-            stats.AxeSkill.AddPercentModifier(percentAxeSkill);
+            // Defensive Skills
+            stats.ShieldSkill.AddModifier(shieldSkill);
+            stats.ShieldSkill.AddPercentModifier(percentShieldSkill);
 
+            // Ranged Weapon Skills
             stats.BowSkill.AddModifier(bowSkill);
             stats.BowSkill.AddPercentModifier(percentBowSkill);
 
             stats.CrossbowSkill.AddModifier(crossBowSkill);
             stats.CrossbowSkill.AddPercentModifier(percentCrossBowSkill);
+
+            // Melee Weapon Skills
+            stats.UnarmedSkill.AddModifier(unarmedSkill);
+            stats.UnarmedSkill.AddPercentModifier(percentUnarmedSkill);
+
+            stats.AxeSkill.AddModifier(axeSkill);
+            stats.AxeSkill.AddPercentModifier(percentAxeSkill);
 
             stats.DaggerSkill.AddModifier(daggerSkill);
             stats.DaggerSkill.AddPercentModifier(percentDaggerSkill);
@@ -72,9 +98,6 @@ namespace InventorySystem
 
             stats.PolearmSkill.AddModifier(polearmSkill);
             stats.PolearmSkill.AddPercentModifier(percentPolearmSkill);
-
-            stats.ShieldSkill.AddModifier(shieldSkill);
-            stats.ShieldSkill.AddPercentModifier(percentShieldSkill);
 
             stats.SpearSkill.AddModifier(spearSkill);
             stats.SpearSkill.AddPercentModifier(percentSpearSkill);
@@ -91,6 +114,13 @@ namespace InventorySystem
 
         public void RemoveModifiers(Stats stats)
         {
+            // Attributes
+            stats.Agility.RemoveModifier(agility);
+            stats.Agility.RemovePercentModifier(percentAgility);
+
+            stats.Endurance.RemoveModifier(endurance);
+            stats.Endurance.RemovePercentModifier(percentEndurance);
+
             stats.Speed.RemoveModifier(speed);
             stats.Speed.RemovePercentModifier(percentSpeed);
 
@@ -126,6 +156,9 @@ namespace InventorySystem
 
             stats.ThrowingSkill.RemoveModifier(throwingSkill);
             stats.ThrowingSkill.RemovePercentModifier(percentThrowingSkill);
+
+            stats.UnarmedSkill.RemoveModifier(unarmedSkill);
+            stats.UnarmedSkill.RemovePercentModifier(percentUnarmedSkill);
 
             stats.WarHammerSkill.RemoveModifier(warHammerSkill);
             stats.WarHammerSkill.RemovePercentModifier(percentWarHammerSkill);

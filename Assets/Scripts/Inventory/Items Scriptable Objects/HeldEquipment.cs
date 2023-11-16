@@ -1,9 +1,13 @@
+using UnitSystem;
 using UnityEngine;
 
 namespace InventorySystem
 {
     public abstract class HeldEquipment : Equipment
     {
+        [Header("Stance Stat Modifiers")]
+        [SerializeField] StanceStatModifier_ScriptableObject[] stanceStatModifiers;
+
         [Header("Equipped Mesh")]
         [SerializeField] Mesh[] meshes;
         [SerializeField] Material[] meshRendererMaterials;
@@ -21,5 +25,7 @@ namespace InventorySystem
         public Vector3 IdlePosition_RightHand => idlePosition_Right;
         public Vector3 IdleRotation_LeftHand => idleRotation_Left;
         public Vector3 IdleRotation_RightHand => idleRotation_Right;
+
+        public StanceStatModifier_ScriptableObject[] StanceStatModifier => stanceStatModifiers;
     }
 }

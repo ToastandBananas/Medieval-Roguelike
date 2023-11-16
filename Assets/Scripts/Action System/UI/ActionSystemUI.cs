@@ -112,7 +112,7 @@ namespace UnitSystem.ActionSystem.UI
                     if (highlightedActionSlot is ItemActionBarSlot)
                         draggedActionImage.sprite = highlightedActionSlot.ItemActionBarSlot.itemData.Item.HotbarSprite(highlightedActionSlot.ItemActionBarSlot.itemData);
                     else
-                        draggedActionImage.sprite = highlightedActionSlot.actionType.ActionIcon;
+                        draggedActionImage.sprite = highlightedActionSlot.action.ActionIcon();
 
                     draggedActionImage.transform.position = Input.mousePosition;
                     draggedActionImage.enabled = true;
@@ -246,9 +246,12 @@ namespace UnitSystem.ActionSystem.UI
             BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
             if (selectedAction.ActionIsUsedInstantly())
             {
-                // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up
-                if (selectedAction is ReloadAction && selectedAction.unit.UnitEquipment.QuiverEquipped() && selectedAction.unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+                // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
+                if (selectedAction is ReloadAction && selectedAction.unit.UnitEquipment.QuiverEquipped() && selectedAction.unit.UnitEquipment.RangedWeaponEquipped
+                    && selectedAction.unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && selectedAction.unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+                {
                     ContextMenu.BuildReloadContextMenu();
+                }
                 else
                     selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
             }

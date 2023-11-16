@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 199277a2cb429494a9a91501bf93e6b5, type: 3}
-  m_Name: Unload Action
+  m_Name: Versatile Stance Action
   m_EditorClassIdentifier: 
-  actionName: Unload
-  actionTypeName: UnloadAction
-  actionIcon: {fileID: 21300000, guid: 047cab462c5dbe049a4f411e0ac46914, type: 3}
+  actionName: Versatile Stance
+  actionTypeName: VersatileStanceAction
+  actionIcon: {fileID: 21300000, guid: 0ed72547a9ae8ad4c9a8402f8660d980, type: 3}
+  cancelActionIcon: {fileID: 21300000, guid: ec69606c0e0c0a140b6e5a3a311a4a4f, type: 3}

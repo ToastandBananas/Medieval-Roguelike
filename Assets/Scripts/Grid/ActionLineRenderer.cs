@@ -81,12 +81,12 @@ namespace GridSystem
                     targetUnit = PlayerInput.Instance.highlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
-                    if (targetUnit.health.IsDead() == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction()))
+                    if (targetUnit.health.IsDead() == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
                     {
                         if (player.vision.IsVisible(targetUnit))
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction() == false && selectedAction is MoveAction == false))
+                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -128,10 +128,10 @@ namespace GridSystem
 
                     if (targetUnit != null && player.vision.IsVisible(targetUnit))
                     {
-                        if (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction())
+                        if (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction)
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction() == false && selectedAction is MoveAction == false))
+                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
                             {
                                 HideLineRenderers();
                                 yield break;

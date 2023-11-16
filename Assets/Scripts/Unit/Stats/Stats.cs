@@ -564,6 +564,7 @@ namespace UnitSystem
         }
 
         public IntStat Agility => agility;
+        public IntStat Endurance => endurance;
         public IntStat Speed => speed;
         public IntStat Strength => strength;
 

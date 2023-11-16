@@ -28,7 +28,7 @@ namespace UnitSystem.ActionSystem.UI
         {
             this.actionType = actionType;
             action = actionType.GetAction(playerActionHandler.unit);
-            iconImage.sprite = actionType.ActionIcon;
+            iconImage.sprite = action.ActionIcon();
             iconImage.enabled = true;
 
             button.onClick.RemoveAllListeners();
@@ -37,6 +37,9 @@ namespace UnitSystem.ActionSystem.UI
                 if (playerActionHandler.queuedActions.Count == 0)
                 {
                     playerActionHandler.OnClick_ActionBarSlot(actionType);
+                    iconImage.sprite = action.ActionIcon();
+                    TooltipManager.ClearInventoryTooltips();
+                    TooltipManager.ShowActionBarTooltip(this);
                 }
             });
         }

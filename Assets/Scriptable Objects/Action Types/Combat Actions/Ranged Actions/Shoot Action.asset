@@ -15,3 +15,4 @@ MonoBehaviour:
   actionName: Shoot
   actionTypeName: ShootAction
   actionIcon: {fileID: 21300000, guid: 2b496b0590387f34a8df2b753224caf5, type: 3}
+  cancelActionIcon: {fileID: 21300000, guid: 047cab462c5dbe049a4f411e0ac46914, type: 3}
