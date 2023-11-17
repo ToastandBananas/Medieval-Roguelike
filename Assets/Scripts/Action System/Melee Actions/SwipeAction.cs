@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem
 
         readonly int baseAPCost = 300;
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             float cost;
             if (unit.UnitEquipment != null)
@@ -32,7 +32,7 @@ namespace UnitSystem.ActionSystem
 
             // If not facing the target position, add the cost of turning towards that position
             unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
+            cost += unit.unitActionHandler.turnAction.ActionPointsCost();
             return Mathf.RoundToInt(cost);
         }
 
@@ -40,7 +40,7 @@ namespace UnitSystem.ActionSystem
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(GetEnergyCost()) == false)
+            if (IsValidUnitInActionArea(targetGridPosition) == false || unit.stats.HasEnoughEnergy(InitialEnergyCost()) == false)
             {
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
                 unit.unitActionHandler.ClearQueuedAttack();
@@ -388,7 +388,7 @@ namespace UnitSystem.ActionSystem
         {
             base.StartAction();
             unit.unitActionHandler.SetIsAttacking(true);
-            unit.stats.UseEnergy(GetEnergyCost());
+            unit.stats.UseEnergy(InitialEnergyCost());
         }
 
         public override void CompleteAction()
@@ -408,7 +408,7 @@ namespace UnitSystem.ActionSystem
 
         public override float AccuracyModifier() => 0.75f;
 
-        public override int GetEnergyCost() => 25;
+        public override int InitialEnergyCost() => 25;
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.MeleeWeaponEquipped;
 

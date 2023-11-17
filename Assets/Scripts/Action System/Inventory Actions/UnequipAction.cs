@@ -40,7 +40,7 @@ namespace UnitSystem.ActionSystem
             return Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * unequipAPCostMultiplier);
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             int cost = 0;
             if (unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))

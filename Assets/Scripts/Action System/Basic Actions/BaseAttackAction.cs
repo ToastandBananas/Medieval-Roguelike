@@ -58,12 +58,12 @@ namespace UnitSystem.ActionSystem
                     if (unit.UnitEquipment.IsDualWielding)
                     {
                         if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
-                            damageAmount *= GameManager.dualWieldPrimaryEfficiency;
+                            damageAmount *= Weapon.dualWieldPrimaryEfficiency;
                         else
-                            damageAmount *= GameManager.dualWieldSecondaryEfficiency;
+                            damageAmount *= Weapon.dualWieldSecondaryEfficiency;
                     }
                     else if (unit.UnitEquipment.InVersatileStance)
-                        damageAmount *= 1.25f;
+                        damageAmount *= VersatileStanceAction.damageModifier;
                 }
                 else
                     damageAmount = UnarmedAttackDamage();
@@ -78,7 +78,8 @@ namespace UnitSystem.ActionSystem
                     if (heldItemBlockedWith is HeldShield)
                     {
                         HeldShield shield = heldItemBlockedWith as HeldShield;
-                        shield.LowerShield();
+                        if (shield.currentHeldItemStance != HeldItemStance.RaiseShield)
+                            shield.LowerShield();
 
                         blockAmount = targetUnit.stats.BlockPower(shield);
 
@@ -94,9 +95,9 @@ namespace UnitSystem.ActionSystem
                         if (unit.UnitEquipment.IsDualWielding)
                         {
                             if (meleeWeapon == unit.unitMeshManager.GetRightHeldMeleeWeapon())
-                                blockAmount *= GameManager.dualWieldPrimaryEfficiency;
+                                blockAmount *= Weapon.dualWieldPrimaryEfficiency;
                             else
-                                blockAmount *= GameManager.dualWieldSecondaryEfficiency;
+                                blockAmount *= Weapon.dualWieldSecondaryEfficiency;
                         }
 
                         meleeWeapon.TryFumbleHeldItem();

@@ -80,6 +80,8 @@ namespace UnitSystem.ActionSystem
 
         protected virtual void Initialize() { }
 
+        public virtual void OnReturnToPool() { }
+
         public abstract bool CanQueueMultiple();
 
         public bool IsDefaultAttackAction => this is MeleeAction || this is ShootAction;
@@ -109,8 +111,10 @@ namespace UnitSystem.ActionSystem
 
         public abstract bool ActionIsUsedInstantly();
 
-        public abstract int GetActionPointsCost();
+        public abstract int ActionPointsCost();
 
-        public abstract int GetEnergyCost();
+        public abstract int InitialEnergyCost();
+
+        public virtual float EnergyCostPerTurn() => 0f;
     }
 }

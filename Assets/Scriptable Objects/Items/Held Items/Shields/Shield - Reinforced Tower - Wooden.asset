@@ -35,7 +35,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 056a2c88228ca0743a696b8caa6b89f5, type: 2}
   - {fileID: 2100000, guid: 85852df1f6c4f754884016641c9d340c, type: 2}
   equipSlot: 0
-  actionTypes: []
+  actionTypes:
+  - {fileID: 11400000, guid: 803ab56efdab7ad49b75dcb6740d71cc, type: 2}
+  stanceStatModifiers:
+  - {fileID: 11400000, guid: 6dffe6eaf2f80b44ebd8fe3db71ee600, type: 2}
   meshes:
   - {fileID: -2432090755550338912, guid: 50c800bcecc87c64282516b74f8e3b85, type: 3}
   meshRendererMaterials:
@@ -47,4 +50,5 @@ MonoBehaviour:
   idleRotation_Right: {x: 0, y: 30, z: 0}
   blockPowerRange: {x: 12, y: 18}
   damageRange: {x: 4, y: 7}
-  blockChanceAddOnRange: {x: 0.12, y: 0.15}
+  minBlockChanceAddOn: 0
+  maxBlockChanceAddOn: 0

@@ -390,6 +390,7 @@ namespace InventorySystem
                 if (slotVisualsCreated)
                     GetEquipmentSlotFromIndex(targetEquipSlotIndex).ClearItem();
 
+                RemoveActions(itemData.Item.Equipment, (EquipSlot)targetEquipSlotIndex);
                 RemoveEquipmentMesh((EquipSlot)targetEquipSlotIndex);
                 equippedItemDatas[targetEquipSlotIndex] = null;
 
@@ -547,7 +548,7 @@ namespace InventorySystem
                 GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
 
             equippedItemDatas[(int)equipSlot] = null;
-            RemoveActions(equipment);
+            RemoveActions(equipment, equipSlot);
 
             if (myUnit != null)
                 myUnit.stats.UpdateCarryWeight();
@@ -698,7 +699,7 @@ namespace InventorySystem
                 ActionSystemUI.UpdateActionVisuals();
         }
 
-        public void RemoveActions(Equipment equipment)
+        public void RemoveActions(Equipment equipment, EquipSlot equipSlot)
         {
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
@@ -706,11 +707,33 @@ namespace InventorySystem
                 if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
                     continue;
 
-                ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
-                myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
+                if (IsHeldItemEquipSlot(equipSlot))
+                {
+                    EquipSlot oppositeEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
+                    if (EquipSlotHasItem(oppositeEquipSlot))
+                    {
+                        // Don't remove the action if the opposite equipped item has that action
+                        bool shouldSkip = false;
+                        ItemData oppositeHeldItem = GetEquippedItemData(oppositeEquipSlot);
+                        for (int j = 0; j < oppositeHeldItem.Item.Equipment.ActionTypes.Length; j++)
+                        {
+                            if (oppositeHeldItem.Item.Equipment.ActionTypes[j] == equipment.ActionTypes[i])
+                            {
+                                shouldSkip = true;
+                                break;
+                            }
+                        }
+
+                        if (shouldSkip)
+                            continue;
+                    }
+                }
 
                 if (myUnit.IsPlayer)
                     ActionSystemUI.RemoveButton(equipment.ActionTypes[i]);
+
+                ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
+                myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
             }
 
             if (myUnit.IsPlayer)
@@ -921,13 +944,13 @@ namespace InventorySystem
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                 {
                     RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
-                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item.Equipment);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item.Equipment, EquipSlot.LeftHeldItem1);
                 }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem1))
                 {
                     RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
-                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.Equipment);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.Equipment, EquipSlot.RightHeldItem1);
                 }
 
                 // Create held item bases for the other weapon set
@@ -982,13 +1005,13 @@ namespace InventorySystem
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem2))
                 {
                     RemoveEquipmentMesh(EquipSlot.LeftHeldItem2);
-                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item.Equipment);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item.Equipment, EquipSlot.LeftHeldItem2);
                 }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem2))
                 {
                     RemoveEquipmentMesh(EquipSlot.RightHeldItem2);
-                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.Equipment);
+                    RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.Equipment, EquipSlot.RightHeldItem2);
                 }
 
                 // Create held item bases for the other weapon set
@@ -1038,21 +1061,6 @@ namespace InventorySystem
 
             myUnit.opportunityAttackTrigger.UpdateColliderRadius();
             ActionSystemUI.UpdateActionVisuals();
-        }
-
-        public void SwitchVersatileStance()
-        {
-            if (IsDualWielding || MeleeWeaponEquipped == false)
-                return;
-
-            HeldMeleeWeapon primaryHeldMeleeWeapon = myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            if (primaryHeldMeleeWeapon != null)
-            {
-                if (primaryHeldMeleeWeapon.itemData.Item.Weapon.IsVersatile == false || primaryHeldMeleeWeapon.itemData.Item.Weapon.IsTwoHanded)
-                    return;
-
-                primaryHeldMeleeWeapon.HeldMeleeWeapon.SwitchVersatileStance();
-            }
         }
 
         public bool InVersatileStance => MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance == HeldItemStance.Versatile;

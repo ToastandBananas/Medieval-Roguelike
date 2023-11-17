@@ -33,20 +33,11 @@ namespace Utilities
             return finalValue;
         }
 
-        public int GetBaseValue()
-        {
-            return baseValue;
-        }
+        public int BaseValue => baseValue;
 
-        public void EditBaseValue(int amount)
-        {
-            baseValue += amount;
-        }
+        public void EditBaseValue(int amount) => baseValue += amount;
 
-        public void SetBaseValue(int value)
-        {
-            baseValue = value;
-        }
+        public void SetBaseValue(int value) => baseValue = value;
 
         public void AddModifier(int modifier)
         {

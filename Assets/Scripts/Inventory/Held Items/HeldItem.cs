@@ -4,6 +4,7 @@ using UnitSystem;
 using Utilities;
 using GridSystem;
 using InteractableObjects;
+using UnitSystem.ActionSystem.UI;
 
 namespace InventorySystem
 {
@@ -14,6 +15,8 @@ namespace InventorySystem
         [Header("Mesh Components")]
         [SerializeField] protected MeshRenderer[] meshRenderers;
         [SerializeField] protected MeshFilter[] meshFilters;
+
+        public HeldItemStance currentHeldItemStance { get; private set; }
 
         public Animator anim { get; private set; }
         public ItemData itemData { get; private set; }
@@ -111,7 +114,10 @@ namespace InventorySystem
 
             HeldItem oppositeHeldItem = GetOppositeHeldItem();
             if (oppositeHeldItem != null && oppositeHeldItem is HeldMeleeWeapon)
+            {
                 oppositeHeldItem.HeldMeleeWeapon.SetDefaultWeaponStance();
+                oppositeHeldItem.UpdateActionIcons();
+            }
 
             SetUpMeshes();
 
@@ -120,6 +126,19 @@ namespace InventorySystem
             transform.localScale = Vector3.one;
 
             gameObject.SetActive(true);
+        }
+
+        protected void UpdateActionIcons()
+        {
+            if (unit.IsPlayer)
+            {
+                for (int i = 0; i < itemData.Item.Equipment.ActionTypes.Length; i++)
+                {
+                    ActionBarSlot actionBarSlot = ActionSystemUI.GetActionBarSlot(itemData.Item.Equipment.ActionTypes[i]);
+                    if (actionBarSlot != null)
+                        actionBarSlot.UpdateIcon();
+                }
+            }
         }
 
         public void SetUpMeshes()
@@ -161,6 +180,28 @@ namespace InventorySystem
 
         public virtual void StopBlocking() { }
 
+        public void SwitchVersatileStance()
+        {
+            if (currentHeldItemStance == HeldItemStance.Versatile)
+                SetDefaultWeaponStance();
+            else
+                SetVersatileWeaponStance();
+        }
+
+        public void SetDefaultWeaponStance()
+        {
+            currentHeldItemStance = HeldItemStance.Default;
+            anim.SetBool("versatileStance", false);
+        }
+
+        public void SetVersatileWeaponStance()
+        {
+            currentHeldItemStance = HeldItemStance.Versatile;
+            anim.SetBool("versatileStance", true);
+        }
+
+        public void SetHeldItemStance(HeldItemStance heldItemStance) => currentHeldItemStance = heldItemStance;
+
         public virtual void HideMeshes()
         {
             for (int i = 0; i < meshRenderers.Length; i++)
@@ -194,8 +235,10 @@ namespace InventorySystem
 
             if (this == unit.unitMeshManager.leftHeldItem)
                 return unit.unitMeshManager.rightHeldItem;
-            else
+            else if (this == unit.unitMeshManager.rightHeldItem)
                 return unit.unitMeshManager.leftHeldItem;
+            else
+                return null;
         }
 
         public HeldMeleeWeapon HeldMeleeWeapon => this as HeldMeleeWeapon;

@@ -5,6 +5,7 @@ using InventorySystem;
 using WorldSystem;
 using Utilities;
 using GridSystem;
+using System.Collections.Generic;
 
 namespace UnitSystem
 {
@@ -16,10 +17,12 @@ namespace UnitSystem
         public int lastUsedAP { get; private set; }
         // readonly int baseAP_PerSecond = 60;
 
+        public List<BaseAction> energyUseActions { get; private set; }
+
         public int currentEnergy { get; private set; }
         readonly int baseEnergy = 20;
         readonly float energyRegenPerTurn = 0.25f;
-        float energyRegenBuildup;
+        float energyRegenBuildup, energyUseBuildup;
 
         public float currentCarryWeight { get; private set; }
 
@@ -57,6 +60,8 @@ namespace UnitSystem
 
         void Awake()
         {
+            energyUseActions = new List<BaseAction>();
+
             APUntilTimeTick = MaxAP();
             currentEnergy = MaxEnergy();
         }
@@ -72,7 +77,7 @@ namespace UnitSystem
             if (unit.unitActionHandler.lastQueuedAction is MoveAction == false && unit.unitActionHandler.lastQueuedAction is TurnAction == false)
                 unit.vision.FindVisibleUnitsAndObjects();
 
-            RegenerateEnergy();
+            UpdateEnergy();
 
             /*
             unit.status.UpdateBuffs();
@@ -202,6 +207,9 @@ namespace UnitSystem
             // Block chance affected by height differences between this Unit and the attackingUnit
             blockChance += blockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
+            if (heldShield.currentHeldItemStance == HeldItemStance.RaiseShield)
+                blockChance += blockChance * RaiseShieldAction.blockChanceModifier;
+
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
                 blockChance *= 0.5f;
@@ -303,9 +311,9 @@ namespace UnitSystem
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
+                    modifier += modifier * (1f - Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
+                    modifier += modifier * (1f - Weapon.dualWieldPrimaryEfficiency);
             }
             // Debug.Log("Enemy Weapon Skill Block Modifier: " + modifier);
             return modifier;
@@ -410,9 +418,9 @@ namespace UnitSystem
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += modifier * (1f - GameManager.dualWieldSecondaryEfficiency);
+                    modifier += modifier * (1f - Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += modifier * (1f - GameManager.dualWieldPrimaryEfficiency);
+                    modifier += modifier * (1f - Weapon.dualWieldPrimaryEfficiency);
             }
             
             return modifier;
@@ -492,8 +500,9 @@ namespace UnitSystem
                 ActionSystemUI.UpdateEnergyText();
         }
 
-        void RegenerateEnergy()
+        void UpdateEnergy()
         {
+            // Regenerate Energy
             energyRegenBuildup += energyRegenPerTurn;
             if (energyRegenBuildup >= 1f)
             {
@@ -501,6 +510,19 @@ namespace UnitSystem
                 AddToCurrentEnergy(amountToAdd);
                 energyRegenBuildup -= amountToAdd;
             }
+
+            // Use Energy from Actions (stances, etc.)
+            for (int i = 0; i < energyUseActions.Count; i++)
+            {
+                if (HasEnoughEnergy(Mathf.CeilToInt(energyUseActions[i].EnergyCostPerTurn())))
+                    energyUseBuildup += energyUseActions[i].EnergyCostPerTurn();
+                else
+                    energyUseActions[i].QueueAction(); // Multi-state actions that are actively performing (such as a Raise Shield Action) are canceled by queueing the action again
+            }
+
+            int amountToUse = Mathf.FloorToInt(energyUseBuildup);
+            UseEnergy(amountToUse);
+            energyUseBuildup -= amountToUse;
         }
 
         public bool HasEnoughEnergy(int energyCost) => currentEnergy >= energyCost;

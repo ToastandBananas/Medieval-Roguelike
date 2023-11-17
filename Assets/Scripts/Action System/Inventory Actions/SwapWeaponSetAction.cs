@@ -22,7 +22,7 @@ namespace UnitSystem.ActionSystem
             CompleteAction();
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             int cost = 0;
             if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One) // Weapon Set 1 --> Weapon Set 2

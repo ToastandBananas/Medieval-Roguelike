@@ -410,7 +410,7 @@ namespace UnitSystem.ActionSystem
                 if (availableCombatActions[i].IsValidAction() == false)
                     continue;
 
-                if (unit.stats.HasEnoughEnergy(availableCombatActions[i].GetEnergyCost()) == false)
+                if (unit.stats.HasEnoughEnergy(availableCombatActions[i].InitialEnergyCost()) == false)
                     continue;
 
                 // Loop through every grid position in range of the combat action

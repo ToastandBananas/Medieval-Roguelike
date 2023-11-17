@@ -26,6 +26,16 @@ namespace InventorySystem
         public Vector3 IdleRotation_LeftHand => idleRotation_Left;
         public Vector3 IdleRotation_RightHand => idleRotation_Right;
 
-        public StanceStatModifier_ScriptableObject[] StanceStatModifier => stanceStatModifiers;
+        public StanceStatModifier_ScriptableObject GetStanceStatModifier(HeldItemStance heldItemStance)
+        {
+            for (int i = 0; i < stanceStatModifiers.Length; i++)
+            {
+                if (stanceStatModifiers[i].HeldItemStance == heldItemStance)
+                    return stanceStatModifiers[i];
+            }
+            return null;
+        }
+
+        public StanceStatModifier_ScriptableObject[] StanceStatModifiers => stanceStatModifiers;
     }
 }

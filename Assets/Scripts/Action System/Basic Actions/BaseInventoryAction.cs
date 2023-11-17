@@ -72,7 +72,7 @@ namespace UnitSystem.ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override bool CanQueueMultiple() => true;
 

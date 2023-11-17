@@ -29,7 +29,7 @@ namespace UnitSystem.ActionSystem
             CompleteAction();
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             int cost;
             if (inventoryActionType == InventoryActionType.Default)
@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem
             return cost;
         }
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 

@@ -18,7 +18,7 @@ MonoBehaviour:
     endurance: 0
     percentEndurance: 0
     speed: 0
-    percentSpeed: 0
+    percentSpeed: -0.4
     strength: 0
     percentStrength: 0
     shieldSkill: 0

@@ -382,7 +382,7 @@ namespace UnitSystem.ActionSystem
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             int cost = defaultTileMoveCost;
             float floatCost = cost;
@@ -596,7 +596,7 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition) => null;
 

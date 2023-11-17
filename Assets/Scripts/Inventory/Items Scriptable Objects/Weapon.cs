@@ -6,6 +6,9 @@ namespace InventorySystem
 
     public abstract class Weapon : HeldEquipment
     {
+        public static float dualWieldPrimaryEfficiency = 0.8f;
+        public static float dualWieldSecondaryEfficiency = 0.6f;
+
         [Header("Weapon Info")]
         [SerializeField] WeaponType weaponType = WeaponType.Sword;
         [SerializeField] bool isTwoHanded;

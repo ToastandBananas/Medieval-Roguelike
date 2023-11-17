@@ -23,7 +23,7 @@ namespace UnitSystem.ActionSystem
             SetTargetEnemyUnit();
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             float cost;
             if (unit.UnitEquipment != null)
@@ -43,14 +43,14 @@ namespace UnitSystem.ActionSystem
                     cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
 
                 if (unit.UnitEquipment.InVersatileStance)
-                    cost *= 1.35f;
+                    cost *= VersatileStanceAction.APCostModifier;
             }
             else
                 cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
 
             // If not facing the target position, add the cost of turning towards that position
             unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
+            cost += unit.unitActionHandler.turnAction.ActionPointsCost();
             return Mathf.RoundToInt(cost);
         }
 
@@ -594,7 +594,7 @@ namespace UnitSystem.ActionSystem
 
         public override float AccuracyModifier() => 1f;
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 

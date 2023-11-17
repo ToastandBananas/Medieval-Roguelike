@@ -242,13 +242,13 @@ namespace UnitSystem.ActionSystem
             unit.unitActionHandler.SetIsAttacking(true);
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             float cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon);
 
             // If not facing the target position, add the cost of turning towards that position
             unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
-            cost += unit.unitActionHandler.turnAction.GetActionPointsCost();
+            cost += unit.unitActionHandler.turnAction.ActionPointsCost();
             return Mathf.RoundToInt(cost);
         }
 
@@ -492,7 +492,7 @@ namespace UnitSystem.ActionSystem
 
         public override float AccuracyModifier() => 1f;
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override bool CanQueueMultiple() => false;
 

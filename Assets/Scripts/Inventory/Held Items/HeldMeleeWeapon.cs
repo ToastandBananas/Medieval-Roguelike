@@ -10,8 +10,6 @@ namespace InventorySystem
         readonly float defaultAttackTransitionTime = 0.1667f;
         readonly float defaultBlockTransitionTime = 0.33f;
 
-        public HeldItemStance currentHeldItemStance { get; private set; }
-
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
             base.SetupHeldItem(itemData, unit, equipSlot);
@@ -22,6 +20,7 @@ namespace InventorySystem
                 anim.SetBool("leftHandItem", false);
 
             SetDefaultWeaponStance();
+            UpdateActionIcons();
         }
 
         public override void DoDefaultAttack(GridPosition targetGridPosition)
@@ -101,26 +100,6 @@ namespace InventorySystem
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
                 anim.Play("LowerWeapon_1H_L");
-        }
-
-        public void SetDefaultWeaponStance()
-        {
-            currentHeldItemStance = HeldItemStance.Default;
-            anim.SetBool("versatileStance", false);
-        }
-
-        public void SetVersatileWeaponStance()
-        {
-            currentHeldItemStance = HeldItemStance.Versatile;
-            anim.SetBool("versatileStance", true);
-        }
-
-        public void SwitchVersatileStance()
-        {
-            if (currentHeldItemStance == HeldItemStance.Versatile)
-                SetDefaultWeaponStance();
-            else
-                SetVersatileWeaponStance();
         }
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

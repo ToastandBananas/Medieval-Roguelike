@@ -77,7 +77,7 @@ namespace UnitSystem.ActionSystem
 
         public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             if (targetInteractable is Door)
                 return 150;
@@ -118,6 +118,6 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
     }
 }

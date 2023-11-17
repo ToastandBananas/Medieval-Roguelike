@@ -560,9 +560,9 @@ namespace UnitSystem.ActionSystem
 
         public override bool IsValidAction() => true;
 
-        public override int GetActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
+        public override int ActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override bool ActionIsUsedInstantly() => false;
 

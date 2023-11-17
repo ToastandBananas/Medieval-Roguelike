@@ -107,7 +107,7 @@ namespace UnitSystem.ActionSystem
             return Mathf.RoundToInt(GetItemsActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * (float)costMultiplier);
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             ItemData itemDataToEquip = (ItemData)itemDatasToEquip.Cast<DictionaryEntry>().LastOrDefault().Key;
             int cost = GetItemsEquipActionPointCost(itemDataToEquip, itemDataToEquip.CurrentStackSize, itemsContainerInventoryManager);

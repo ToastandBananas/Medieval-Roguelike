@@ -123,10 +123,16 @@ namespace UnitSystem
 
         public void StopBlocking()
         {
-            if (unit.unitMeshManager.leftHeldItem != null && unit.unitMeshManager.leftHeldItem.isBlocking)
-                unit.unitMeshManager.leftHeldItem.StopBlocking();
-            else if (unit.unitMeshManager.rightHeldItem != null && unit.unitMeshManager.rightHeldItem.isBlocking)
-                unit.unitMeshManager.rightHeldItem.StopBlocking();
+            if (unit.unitMeshManager.leftHeldItem != null)
+            {
+                if (unit.unitMeshManager.leftHeldItem.isBlocking && unit.unitMeshManager.leftHeldItem.currentHeldItemStance != HeldItemStance.RaiseShield)
+                    unit.unitMeshManager.leftHeldItem.StopBlocking();
+            }
+            else if (unit.unitMeshManager.rightHeldItem != null)
+            {
+                if (unit.unitMeshManager.rightHeldItem.isBlocking && unit.unitMeshManager.rightHeldItem.currentHeldItemStance != HeldItemStance.RaiseShield)
+                  unit.unitMeshManager.rightHeldItem.StopBlocking();
+            }
         }
 
         public void Die(Transform attackerTransform)

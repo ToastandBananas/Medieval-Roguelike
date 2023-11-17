@@ -27,7 +27,7 @@ namespace UnitSystem
         [SerializeField] float percentBowSkill;
 
         [SerializeField] int crossBowSkill;
-        [SerializeField] float percentCrossBowSkill;
+        [SerializeField] float percentCrossbowSkill;
 
         [SerializeField] int throwingSkill;
         [SerializeField] float percentThrowingSkill;
@@ -81,7 +81,7 @@ namespace UnitSystem
             stats.BowSkill.AddPercentModifier(percentBowSkill);
 
             stats.CrossbowSkill.AddModifier(crossBowSkill);
-            stats.CrossbowSkill.AddPercentModifier(percentCrossBowSkill);
+            stats.CrossbowSkill.AddPercentModifier(percentCrossbowSkill);
 
             // Melee Weapon Skills
             stats.UnarmedSkill.AddModifier(unarmedSkill);
@@ -127,14 +127,20 @@ namespace UnitSystem
             stats.Strength.RemoveModifier(strength);
             stats.Strength.RemovePercentModifier(percentStrength);
 
-            stats.AxeSkill.RemoveModifier(axeSkill);
-            stats.AxeSkill.RemovePercentModifier(percentAxeSkill);
+            // Defensive Skills
+            stats.ShieldSkill.RemoveModifier(shieldSkill);
+            stats.ShieldSkill.RemovePercentModifier(percentShieldSkill);
 
+            // Ranged Weapon Skills
             stats.BowSkill.RemoveModifier(bowSkill);
             stats.BowSkill.RemovePercentModifier(percentBowSkill);
 
             stats.CrossbowSkill.RemoveModifier(crossBowSkill);
-            stats.CrossbowSkill.RemovePercentModifier(percentCrossBowSkill);
+            stats.CrossbowSkill.RemovePercentModifier(percentCrossbowSkill);
+
+            // Melee Weapon Skills
+            stats.AxeSkill.RemoveModifier(axeSkill);
+            stats.AxeSkill.RemovePercentModifier(percentAxeSkill);
 
             stats.DaggerSkill.RemoveModifier(daggerSkill);
             stats.DaggerSkill.RemovePercentModifier(percentDaggerSkill);
@@ -163,5 +169,54 @@ namespace UnitSystem
             stats.WarHammerSkill.RemoveModifier(warHammerSkill);
             stats.WarHammerSkill.RemovePercentModifier(percentWarHammerSkill);
         }
+
+        // Attributes
+        public int Agility => agility;
+        public float PercentAgility => percentAgility;
+        public int Endurance => endurance;
+        public float PercentEndurance => percentEndurance;
+        public int Speed => speed;
+        public float PercentSpeed => percentSpeed;
+        public int Strength => strength;
+        public float PercentStrength => percentStrength;
+
+        // Defensive Skills
+        public int ShieldSkill => shieldSkill;
+        public float PercentShieldSkill => percentShieldSkill;
+
+        // Ranged Weapon Skills
+        public int BowSkill => bowSkill;
+        public float PercentBowSkill => percentBowSkill;
+
+        public int CrossbowSkill => crossBowSkill;
+        public float PercentCrossbowSkill => percentCrossbowSkill;
+
+        public int ThrowingSkill => throwingSkill;
+        public float PercentThrowingSkill => percentThrowingSkill;
+
+        // Melee Weapon Skills
+        public int UnarmedSkill => unarmedSkill;
+        public float PercentUnarmedSkill => percentUnarmedSkill;
+
+        public int AxeSkill => axeSkill;
+        public float PercentAxeSkill => percentAxeSkill;
+
+        public int DaggerSkill => daggerSkill;
+        public float PercentDaggerSkill => percentDaggerSkill;
+
+        public int MaceSkill => maceSkill;
+        public float PercentMaceSkill => percentMaceSkill;
+
+        public int PolearmSkill => polearmSkill;
+        public float PercentPolearmSkill => percentPolearmSkill;
+
+        public int SpearSkill => spearSkill;
+        public float PercentSpearSkill => percentSpearSkill;
+
+        public int SwordSkill => swordSkill;
+        public float PercentSwordSkill => percentSwordSkill;
+
+        public int WarHammerSkill => warHammerSkill;
+        public float PercentWarHammerSkill => percentWarHammerSkill;
     }
 }

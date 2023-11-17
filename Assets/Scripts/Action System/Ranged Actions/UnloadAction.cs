@@ -36,7 +36,7 @@ namespace UnitSystem.ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
@@ -53,7 +53,7 @@ namespace UnitSystem.ActionSystem
 
         public override bool ActionIsUsedInstantly() => true;
 
-        public override int GetEnergyCost() => 0;
+        public override int InitialEnergyCost() => 0;
 
         public override string TooltipDescription()
         {

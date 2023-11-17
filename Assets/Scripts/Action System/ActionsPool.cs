@@ -43,16 +43,17 @@ namespace UnitSystem.ActionSystem
 
         public static BaseAction GetAction(Type type, ActionType actionType, Unit unit)
         {
+            // Try to get the action from the Unit's list of available actions first
             for (int i = 0; i < unit.unitActionHandler.AvailableActions.Count; i++)
             {
                 if (unit.unitActionHandler.AvailableActions[i].GetType() == type)
                     return unit.unitActionHandler.AvailableActions[i];
             }
 
-            // Find an available action of the specified type
+            // Else, find an available action of the specified type from the pool
             for (int i = 0; i < actions.Count; i++)
             {
-                if (actions[i].GetType() != type)
+                if (actions[i].gameObject.activeSelf || actions[i].GetType() != type)
                     continue;
 
                 BaseAction action = actions[i];
@@ -74,9 +75,9 @@ namespace UnitSystem.ActionSystem
             if (action is BaseAttackAction)
                 unit.unitActionHandler.AvailableCombatActions.Add(action as BaseAttackAction);
 
+            actions.Remove(action);
             action.transform.SetParent(unit.ActionsParent);
             action.gameObject.SetActive(true);
-            actions.Remove(action);
         }
 
         static BaseAction CreateNewAction(Type type)
@@ -103,11 +104,13 @@ namespace UnitSystem.ActionSystem
             action.unit.unitActionHandler.RemoveActionFromQueue(action);
 
             action.unit.unitActionHandler.AvailableActions.Remove(action);
-            if (action.unit.unitActionHandler.AvailableCombatActions.Contains(action))
+            if (action is BaseAttackAction)
                 action.unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
 
             action.transform.SetParent(Instance.transform);
             actions.Add(action);
+
+            action.OnReturnToPool();
             action.gameObject.SetActive(false);
         }
     }

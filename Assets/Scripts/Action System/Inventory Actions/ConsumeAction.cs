@@ -66,7 +66,7 @@ namespace UnitSystem.ActionSystem
             CompleteAction();
         }
 
-        public override int GetActionPointsCost()
+        public override int ActionPointsCost()
         {
             return Mathf.RoundToInt(consumeAPCostPerPart * GetItemSizeMultiplier(itemsToConsume[0].Item.ItemSize) * itemsToConsume[0].Item.Consumable.ConsumeAPCostMultiplier);
         }

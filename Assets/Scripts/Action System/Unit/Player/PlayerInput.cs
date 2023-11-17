@@ -184,7 +184,7 @@ namespace UnitSystem.ActionSystem
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                    if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction is BaseAttackAction)))
+                    if (player.stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction is BaseAttackAction)))
                     {
                         // Set the Unit as the target enemy
                         player.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
@@ -294,7 +294,7 @@ namespace UnitSystem.ActionSystem
                     else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                     {
                         // Set the selected action to Move if the Player doesn't have enough energy for their selected action
-                        if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
+                        if (player.stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) == false)
                             player.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
                         player.unitActionHandler.SetTargetEnemyUnit(null);
@@ -304,7 +304,7 @@ namespace UnitSystem.ActionSystem
                 else if (selectedAction is BaseAttackAction)
                 {
                     // Make sure the Player has enough energy for the attack
-                    if (player.stats.HasEnoughEnergy(selectedAction.GetEnergyCost()) == false)
+                    if (player.stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) == false)
                         return;
 
                     // If there's any enemy or neutral unit within the attack positions

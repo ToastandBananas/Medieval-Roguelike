@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
 using InventorySystem;
+using UnityEngine.TextCore.Text;
 
 namespace UnitSystem.ActionSystem.UI
 {
@@ -351,6 +352,22 @@ namespace UnitSystem.ActionSystem.UI
             {
                 if (itemActionButtons[i].itemData == itemData)
                     return itemActionButtons[i];
+            }
+            return null;
+        }
+
+        public static ActionBarSlot GetActionBarSlot(ActionType actionType)
+        {
+            for (int i = 0; i < basicActionButtons.Count; i++)
+            {
+                if (basicActionButtons[i].actionType == actionType)
+                    return basicActionButtons[i];
+            }
+
+            for (int i = 0; i < specialActionButtons.Count; i++)
+            {
+                if (specialActionButtons[i].actionType == actionType)
+                    return specialActionButtons[i];
             }
             return null;
         }

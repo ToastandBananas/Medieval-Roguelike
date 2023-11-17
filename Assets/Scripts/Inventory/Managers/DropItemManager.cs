@@ -120,7 +120,7 @@ namespace InventorySystem
                 unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
 
-            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
+            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment, equipSlot);
             unitEquipment.RemoveEquipmentMesh(equipSlot);
 
             float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);
@@ -197,7 +197,6 @@ namespace InventorySystem
                     UnitManager.player.vision.AddVisibleLooseItem(looseHelm);
             }
 
-            unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
 
             if (unit.IsNPC)
@@ -284,9 +283,7 @@ namespace InventorySystem
                     equipSlot = EquipSlot.LeftHeldItem2;
             }
 
-            unit.UnitEquipment.RemoveActions(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment);
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
-
             unit.opportunityAttackTrigger.UpdateColliderRadius();
 
             if (unit.IsNPC)

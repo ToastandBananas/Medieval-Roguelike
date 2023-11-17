@@ -28,7 +28,7 @@ namespace UnitSystem.ActionSystem.UI
         {
             this.actionType = actionType;
             action = actionType.GetAction(playerActionHandler.unit);
-            iconImage.sprite = action.ActionIcon();
+            UpdateIcon();
             iconImage.enabled = true;
 
             button.onClick.RemoveAllListeners();
@@ -37,11 +37,17 @@ namespace UnitSystem.ActionSystem.UI
                 if (playerActionHandler.queuedActions.Count == 0)
                 {
                     playerActionHandler.OnClick_ActionBarSlot(actionType);
-                    iconImage.sprite = action.ActionIcon();
+                    UpdateIcon();
                     TooltipManager.ClearInventoryTooltips();
                     TooltipManager.ShowActionBarTooltip(this);
                 }
             });
+        }
+
+        public void UpdateIcon() 
+        {
+            if (action != null)
+                iconImage.sprite = action.ActionIcon();
         }
 
         public virtual void ResetButton()
@@ -87,7 +93,7 @@ namespace UnitSystem.ActionSystem.UI
                 return;
             }
 
-            if (action.IsValidAction() && playerActionHandler.unit.stats.HasEnoughEnergy(action.GetEnergyCost()))
+            if (action.IsValidAction() && playerActionHandler.unit.stats.HasEnoughEnergy(action.InitialEnergyCost()))
                 ActivateButton();
             else
                 DeactivateButton();
