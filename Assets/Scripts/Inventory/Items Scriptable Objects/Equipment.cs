@@ -23,7 +23,8 @@ namespace InventorySystem
             else if (looseItemUsing != null && looseItemUsing is LooseContainerItem)
                 itemsContainerInventoryManager = looseItemUsing.LooseContainerItem.ContainerInventoryManager;
 
-            unit.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, equipSlot, itemsContainerInventoryManager);
+            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, amountToUse, itemsContainerInventoryManager, InventoryActionType.Equip);
+            unit.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, equipSlot, itemsContainerInventoryManager);
             return canEquipItem;
         }
 

@@ -3,6 +3,8 @@ using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using UnitSystem.ActionSystem;
+using Pathfinding.Util;
+using System.Collections.Generic;
 
 namespace InteractableObjects
 {
@@ -32,19 +34,7 @@ namespace InteractableObjects
             if (unitPickingUpItem.unitActionHandler.turnAction.IsFacingTarget(gridPosition) == false)
                 unitPickingUpItem.unitActionHandler.turnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
 
-            // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
-            if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
-            {
-                TryTakeStuckProjectiles(unitPickingUpItem);
-                unitPickingUpItem.vision.RemoveVisibleLooseItem(this);
-                LooseItemPool.ReturnToPool(this);
-            }
-            else
-                JiggleItem();
-        }
-
-        void TryTakeStuckProjectiles(Unit unitPickingUpItem)
-        {
+            List<LooseItem> looseProjectiles = ListPool<LooseItem>.Claim();
             if (itemData.Item is Shield && transform.childCount > 1)
             {
                 for (int i = transform.childCount - 1; i > 0; i--)
@@ -52,17 +42,36 @@ namespace InteractableObjects
                     if (transform.GetChild(i).CompareTag("Loose Item") == false)
                         continue;
 
-                    LooseItem looseProjectile = transform.GetChild(i).GetComponent<LooseItem>();
-                    if (unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(looseProjectile.itemData))
-                        LooseItemPool.ReturnToPool(looseProjectile);
-                    else
-                    {
-                        looseProjectile.transform.SetParent(LooseItemPool.Instance.LooseItemParent);
-                        looseProjectile.meshCollider.enabled = true;
-                        looseProjectile.rigidBody.useGravity = true;
-                        looseProjectile.rigidBody.isKinematic = false;
-                        looseProjectile.JiggleItem();
-                    }
+                    looseProjectiles.Add(transform.GetChild(i).GetComponent<LooseItem>());
+                }
+            }
+
+            // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
+            if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
+            {
+                TryTakeStuckProjectiles(unitPickingUpItem, looseProjectiles);
+                unitPickingUpItem.vision.RemoveVisibleLooseItem(this);
+                LooseItemPool.ReturnToPool(this);
+            }
+            else
+                JiggleItem();
+
+            ListPool<LooseItem>.Release(looseProjectiles);
+        }
+
+        void TryTakeStuckProjectiles(Unit unitPickingUpItem, List<LooseItem> looseProjectiles)
+        {
+            for (int i = looseProjectiles.Count - 1; i > 0; i--)
+            {
+                if (unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(looseProjectiles[i].itemData))
+                    LooseItemPool.ReturnToPool(looseProjectiles[i]);
+                else
+                {
+                    looseProjectiles[i].transform.SetParent(LooseItemPool.Instance.LooseItemParent);
+                    looseProjectiles[i].meshCollider.enabled = true;
+                    looseProjectiles[i].rigidBody.useGravity = true;
+                    looseProjectiles[i].rigidBody.isKinematic = false;
+                    looseProjectiles[i].JiggleItem();
                 }
             }
         }
@@ -74,6 +83,9 @@ namespace InteractableObjects
             {
                 // Don't equip a second shield
                 if (itemData.Item is Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped)
+                    return false;
+
+                if (itemData.Item is Weapon && itemData.Item.Weapon.IsTwoHanded && unitPickingUpItem.UnitEquipment.MeleeWeaponEquipped)
                     return false;
 
                 // Don't equip a second weapon or a shield if the character is in Versatile Stance
@@ -97,13 +109,15 @@ namespace InteractableObjects
                         if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot) == false)
                         {
                             equipped = true;
-                            unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, oppositeEquipSlot, null);
+                            unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
+                            unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, oppositeEquipSlot, null);
                         }
                     }
                     else
                     {
                         equipped = true;
-                        unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, null);
+                        unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
+                        unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, null);
                     }
                 }
                 /*else if (UnitEquipment.IsRingEquipSlot(targetEquipSlot))
@@ -126,7 +140,8 @@ namespace InteractableObjects
                 else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false || (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
                 {
                     equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
-                    unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
+                    unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null, InventoryActionType.Equip);
+                    unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
                 }
             }
             

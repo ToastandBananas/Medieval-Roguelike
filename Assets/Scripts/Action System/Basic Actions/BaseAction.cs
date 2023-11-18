@@ -8,6 +8,7 @@ namespace UnitSystem.ActionSystem
     public abstract class BaseAction : MonoBehaviour
     {
         public ActionType actionType { get; private set; }
+        public ActionBarSlot actionBarSlot { get; private set; }
         public Unit unit { get; private set; }
         public GridPosition targetGridPosition { get; protected set; }
 
@@ -30,10 +31,16 @@ namespace UnitSystem.ActionSystem
             QueueAction();
         }
 
+        public virtual void CancelAction() { }
+
         public virtual void CompleteAction()
         {
             if (unit.IsPlayer)
+            {
                 ActionSystemUI.UpdateActionVisuals();
+                if (actionBarSlot != null)
+                    actionBarSlot.UpdateIcon();
+            }
         }
 
         public NPCAIAction GetBestNPCAIActionFromList(List<NPCAIAction> npcAIActionList)
@@ -78,9 +85,11 @@ namespace UnitSystem.ActionSystem
             return null;
         }
 
+        public void SetActionBarSlot(ActionBarSlot slot) => actionBarSlot = slot;
+
         protected virtual void Initialize() { }
 
-        public virtual void OnReturnToPool() { }
+        public virtual void OnReturnToPool() => CancelAction();
 
         public abstract bool CanQueueMultiple();
 

@@ -99,7 +99,7 @@ namespace InventorySystem
             if (attackDodged)
             {
                 targetPosition = targetUnit.transform.position - (targetUnit.transform.forward * 0.5f);
-                targetUnit.unitAnimator.DoDodge(shooter, this);
+                targetUnit.unitAnimator.DoDodge(shooter, null, this);
             }
             else if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.isBlocking)
                 targetPosition = targetUnit.unitMeshManager.leftHeldItem.transform.position;
@@ -369,13 +369,11 @@ namespace InventorySystem
                 }
                 else if (collider.CompareTag("Shield"))
                 {
-                    // DamageTargets will take into account whether the Unit blocked or not
                     HeldShield heldShield = collider.GetComponent<HeldShield>();
+
+                    // DamageTarget will take into account whether the Unit blocked or not
                     attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
                     shooter.unitActionHandler.targetUnits.Clear();
-
-                    if (heldShield.itemData != null && heldShield.itemData.Item != null)
-                        heldShield.TryFumbleHeldItem();
 
                     Arrived(collider.transform);
                 }

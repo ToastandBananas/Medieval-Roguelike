@@ -94,7 +94,7 @@ namespace InventorySystem
             if (isDraggingItem == false)
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                if (UnitManager.player.IsMyTurn == false || UnitManager.player.unitActionHandler.queuedActions.Count > 0)
                     return;
 
                 // If we select an item

@@ -215,7 +215,8 @@ namespace UnitSystem.ActionSystem
 
         public override bool IsInAttackRange(Unit targetUnit, GridPosition shootGridPosition, GridPosition targetGridPosition)
         {
-            if (unit.unitMeshManager.GetHeldRangedWeapon() == null)
+            HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (rangedWeapon == null)
                 return false;
 
             if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
@@ -227,11 +228,10 @@ namespace UnitSystem.ActionSystem
             else
                 distance = TacticsUtilities.CalculateDistance_XZ(shootGridPosition, targetGridPosition);
 
-            Weapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon;
-            float maxRangeToTargetPosition = rangedWeapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
+            float maxRangeToTargetPosition = rangedWeapon.itemData.Item.Weapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
             if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
-            if (distance > maxRangeToTargetPosition || distance < rangedWeapon.MinRange)
+            if (distance > maxRangeToTargetPosition || distance < rangedWeapon.itemData.Item.Weapon.MinRange)
                 return false;
             return true;
         }

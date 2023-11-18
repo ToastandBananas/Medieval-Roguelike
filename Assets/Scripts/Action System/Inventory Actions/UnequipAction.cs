@@ -52,7 +52,7 @@ namespace UnitSystem.ActionSystem
             return cost;
         }
 
-        public override bool IsValidAction() => unit.UnitEquipment != null;
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment != null;
 
         public override bool IsInterruptable() => false;
 

@@ -517,7 +517,7 @@ namespace UnitSystem
                 if (HasEnoughEnergy(Mathf.CeilToInt(energyUseActions[i].EnergyCostPerTurn())))
                     energyUseBuildup += energyUseActions[i].EnergyCostPerTurn();
                 else
-                    energyUseActions[i].QueueAction(); // Multi-state actions that are actively performing (such as a Raise Shield Action) are canceled by queueing the action again
+                    energyUseActions[i].CancelAction();
             }
 
             int amountToUse = Mathf.FloorToInt(energyUseBuildup);

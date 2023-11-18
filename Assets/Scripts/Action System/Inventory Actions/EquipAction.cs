@@ -29,6 +29,26 @@ namespace UnitSystem.ActionSystem
             unit.unitActionHandler.QueueAction(this);
         }
 
+        /// <summary>For when it's too risky to queue an EquipAction, such as when equipping on pickup, there would be a chance that the action gets cancelled and the item disappears after picking it up, but before equipping it.
+        /// In such a case, we should queue an InventoryAction instead of type Equip and then call this method.</summary>
+        public void TakeActionImmediately(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
+        {
+            if (itemDataToEquip.Item is Equipment == false)
+            {
+                Debug.LogWarning($"{itemDataToEquip.Item.Name} is not a type of Equipment, but you're trying to queue an EquipAction...");
+                return;
+            }
+
+            this.itemsContainerInventoryManager = itemsContainerInventoryManager;
+
+            if (itemDatasToEquip.Contains(itemDataToEquip))
+                itemDatasToEquip.Remove(itemDataToEquip);
+
+            itemDatasToEquip.Insert(0, itemDataToEquip, targetEquipSlot);
+
+            TakeAction();
+        }
+
         public override void TakeAction()
         {
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault();
@@ -116,7 +136,7 @@ namespace UnitSystem.ActionSystem
             return cost;
         }
 
-        public override bool IsValidAction() => unit.UnitEquipment != null;
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment != null;
 
         public override bool IsInterruptable() => false;
 

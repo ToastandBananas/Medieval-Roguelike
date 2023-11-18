@@ -35,9 +35,9 @@ namespace UnitSystem
         // Used in animation Key Frame
         void StopAttacking() => unit.unitActionHandler.SetIsAttacking(false);
 
-        public void DoDodge(Unit attackingUnit, Projectile projectileToDodge) => StartCoroutine(Dodge(attackingUnit, projectileToDodge));
+        public void DoDodge(Unit attackingUnit, HeldItem heldItemToDodge, Projectile projectileToDodge) => StartCoroutine(Dodge(attackingUnit, heldItemToDodge, projectileToDodge));
 
-        IEnumerator Dodge(Unit attackingUnit, Projectile projectileToDodge)
+        IEnumerator Dodge(Unit attackingUnit, HeldItem heldItemToDodge, Projectile projectileToDodge)
         {
             // Face the attacker
             if (unit.unitActionHandler.turnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
@@ -54,8 +54,18 @@ namespace UnitSystem
 
             Vector3 originalPosition = unit.GridPosition.WorldPosition;
 
-            // Randomly choose to dodge right or left
-            Vector3 dodgeDirection = Random.Range(0, 2) == 0 ? -unit.transform.right : unit.transform.right;
+            // Choose whether to dodge left or right
+            Vector3 dodgeDirection;
+            if (heldItemToDodge == null)
+                dodgeDirection = Random.Range(0, 2) == 0 ? -unit.transform.right : unit.transform.right;
+            else
+            {
+                if (heldItemToDodge == attackingUnit.unitMeshManager.leftHeldItem)
+                    dodgeDirection = -unit.transform.right;
+                else
+                    dodgeDirection = unit.transform.right;
+            }
+
             dodgeDirection.Normalize();
 
             Vector3 dodgeTargetPosition = originalPosition + dodgeDirection * dodgeDistance;

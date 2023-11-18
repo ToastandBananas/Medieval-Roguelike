@@ -92,6 +92,8 @@ namespace InventorySystem
 
                 if (InventoryUI.isDraggingItem == false && GetItemData() != null)
                     TooltipManager.ShowInventoryTooltips(this);
+
+                TooltipManager.ClearUnitTooltips();
             }
 
             if (InventoryUI.isDraggingItem)

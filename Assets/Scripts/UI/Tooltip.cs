@@ -37,7 +37,7 @@ namespace GeneralUI
             stringBuilder.Clear();
 
             // Name
-            stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}</size></b></align>");
+            stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}</size></b></align>\n");
             if (itemData.Item is Weapon)
             {
                 stringBuilder.Append("<align=center><i><size=18>");
@@ -59,7 +59,7 @@ namespace GeneralUI
                 stringBuilder.Append("\n");
 
             // Description
-            stringBuilder.Append($"<size=16>{StringUtilities.SplitTextIntoParagraphs(itemData.Item.Description, maxCharactersPerLine)}</size>");
+            stringBuilder.Append($"<size=16>{StringUtilities.SplitTextIntoParagraphs(itemData.Item.Description, maxCharactersPerLine)}</size>\n");
 
             if (itemData.Item.MaxUses > 1)
                 stringBuilder.Append($"\n  <i>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</i>\n");
@@ -73,7 +73,7 @@ namespace GeneralUI
                 if (itemData.AccuracyModifier != 0f)
                 {
                     if (itemData.AccuracyModifier < 0f)
-                        stringBuilder.Append($"\n  Accuracy: -{itemData.AccuracyModifier * 100f}%");
+                        stringBuilder.Append($"\n  Accuracy: {itemData.AccuracyModifier * 100f}%");
                     else
                         stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
                 }
@@ -81,7 +81,7 @@ namespace GeneralUI
                 if (itemData.BlockChanceAddOn != 0f)
                 {
                     if (itemData.BlockChanceAddOn < 0f)
-                        stringBuilder.Append($"\n  Block Chance: -{itemData.BlockChanceAddOn * 100f}%");
+                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceAddOn * 100f}%");
                     else
                         stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
                 }
@@ -90,14 +90,14 @@ namespace GeneralUI
             else if (itemData.Item is Shield)
             {
                 if (itemData.BlockPower < 0)
-                    stringBuilder.Append($"\n  Block Power: -{itemData.BlockPower}");
+                    stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
                 else
                     stringBuilder.Append($"\n  Block Power: +{itemData.BlockPower}");
 
                 if (itemData.BlockChanceAddOn != 0f)
                 {
                     if (itemData.BlockChanceAddOn < 0f)
-                        stringBuilder.Append($"\n  Block Chance: -{itemData.BlockChanceAddOn * 100f}%");
+                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceAddOn * 100f}%");
                     else
                         stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
                 }

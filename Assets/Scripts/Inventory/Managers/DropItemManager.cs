@@ -53,6 +53,7 @@ namespace InventorySystem
 
             if (inventory != null)
                 inventory.RemoveItem(itemDataToDrop, true);
+            itemDataToDrop.SetInventorySlotCoordinate(null);
 
             if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
                 InventoryUI.DisableDraggedItem();
@@ -79,6 +80,8 @@ namespace InventorySystem
         {
             if (unitEquipment.EquipSlotIsFull(equipSlot) == false)
                 return null;
+
+            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment, equipSlot);
 
             LooseItem looseItem;
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
@@ -120,9 +123,6 @@ namespace InventorySystem
                 unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
 
-            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment, equipSlot);
-            unitEquipment.RemoveEquipmentMesh(equipSlot);
-
             float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);
 
             // Apply force to the dropped item
@@ -148,7 +148,7 @@ namespace InventorySystem
             else if (unitEquipment.slotVisualsCreated)
                 unitEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
-            unitEquipment.EquippedItemDatas[(int)equipSlot] = null;
+            unitEquipment.RemoveEquipment(unitEquipment.EquippedItemDatas[(int)equipSlot]);
 
             if (unitEquipment.MyUnit != null)
                 unitEquipment.MyUnit.stats.UpdateCarryWeight();

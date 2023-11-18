@@ -16,8 +16,8 @@ namespace InventorySystem
         [SerializeField] bool canDualWield;
 
         [Header("Weapon Stats")]
-        [SerializeField] Vector2 attackRange;
-        [SerializeField] Vector2Int damageRange;
+        [SerializeField] Vector2 attackRange = Vector2.one;
+        [SerializeField] Vector2Int damageRange = Vector2Int.one;
 
         [Header("Modifiers")]
         [SerializeField, Range(-1f, 1f)] float minBlockChanceAddOn;

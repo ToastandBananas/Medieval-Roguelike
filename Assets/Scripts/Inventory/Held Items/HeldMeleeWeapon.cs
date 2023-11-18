@@ -8,7 +8,7 @@ namespace InventorySystem
     public class HeldMeleeWeapon : HeldItem
     {
         readonly float defaultAttackTransitionTime = 0.1667f;
-        readonly float defaultBlockTransitionTime = 0.33f;
+        readonly float defaultBlockTransitionTime = 0.2f;
 
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
@@ -100,6 +100,19 @@ namespace InventorySystem
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
                 anim.Play("LowerWeapon_1H_L");
+        }
+
+        public void Recoil()
+        {
+            if (unit.unitMeshManager.rightHeldItem == this)
+            {
+                if (itemData.Item.Weapon.IsTwoHanded)
+                    anim.Play("BlockRecoil_2H");
+                else
+                    anim.Play("BlockRecoil_1H_R");
+            }
+            else if (unit.unitMeshManager.leftHeldItem == this)
+                anim.Play("BlockRecoil_1H_L");
         }
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)

@@ -97,7 +97,7 @@ namespace UnitSystem.ActionSystem
 
             bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, isUsingOffhandWeapon);
             if (attackDodged)
-                targetEnemyUnit.unitAnimator.DoDodge(unit, null);
+                targetEnemyUnit.unitAnimator.DoDodge(unit, heldWeaponAttackingWith, null);
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
@@ -174,7 +174,7 @@ namespace UnitSystem.ActionSystem
                 {
                     // Primary weapon attack
                     unit.unitAnimator.StartMeleeAttack();
-                    if (unit.unitMeshManager.GetPrimaryHeldMeleeWeapon() != null)
+                    if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
                         unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoDefaultAttack(targetGridPosition);
                         AttackTarget(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), false);
@@ -263,13 +263,13 @@ namespace UnitSystem.ActionSystem
                 return false;
 
             float distance = TacticsUtilities.CalculateDistance_XZ(startGridPosition, targetGridPosition);
-            if (unit.UnitEquipment.MeleeWeaponEquipped)
+            HeldMeleeWeapon meleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            if (meleeWeapon != null)
             {
-                Weapon meleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon;
-                float maxRangeToTargetPosition = meleeWeapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
+                float maxRangeToTargetPosition = meleeWeapon.itemData.Item.Weapon.MaxRange - Mathf.Abs(targetGridPosition.y - startGridPosition.y);
                 if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
                 
-                if (distance > maxRangeToTargetPosition || distance < meleeWeapon.MinRange)
+                if (distance > maxRangeToTargetPosition || distance < meleeWeapon.itemData.Item.Weapon.MinRange)
                     return false;
             }
             else

@@ -5,6 +5,7 @@ using Utilities;
 using GridSystem;
 using InteractableObjects;
 using UnitSystem.ActionSystem.UI;
+using UnitSystem.ActionSystem;
 
 namespace InventorySystem
 {
@@ -134,9 +135,9 @@ namespace InventorySystem
             {
                 for (int i = 0; i < itemData.Item.Equipment.ActionTypes.Length; i++)
                 {
-                    ActionBarSlot actionBarSlot = ActionSystemUI.GetActionBarSlot(itemData.Item.Equipment.ActionTypes[i]);
-                    if (actionBarSlot != null)
-                        actionBarSlot.UpdateIcon();
+                    BaseAction baseAction = unit.unitActionHandler.GetActionFromType(itemData.Item.Equipment.ActionTypes[i]);
+                    if (baseAction != null && baseAction.actionBarSlot != null)
+                        baseAction.actionBarSlot.UpdateIcon();
                 }
             }
         }

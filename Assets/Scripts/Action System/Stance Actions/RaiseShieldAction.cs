@@ -39,6 +39,8 @@ namespace UnitSystem.ActionSystem
             StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.itemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
 
             shieldRaised = true;
+            heldShield.SetShouldKeepBlocking(true);
+
             heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.RaiseShield);
             heldShield.RaiseShield();
             heldShield.anim.SetBool("keepShieldRaised", true);
@@ -58,6 +60,8 @@ namespace UnitSystem.ActionSystem
             StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.itemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
 
             shieldRaised = false;
+            heldShield.SetShouldKeepBlocking(false);
+
             heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.Default);
             heldShield.LowerShield();
             heldShield.anim.SetBool("keepShieldRaised", false);
@@ -76,14 +80,13 @@ namespace UnitSystem.ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
-        public override void OnReturnToPool()
+        public override void CancelAction()
         {
-            base.OnReturnToPool();
-            if (shieldRaised)
-                LowerShield();
+            base.CancelAction();
+            LowerShield();
         }
 
-        public override bool IsValidAction() => unit.UnitEquipment.ShieldEquipped;
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.ShieldEquipped;
 
         public override Sprite ActionIcon()
         {

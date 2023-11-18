@@ -78,18 +78,17 @@ namespace UnitSystem.ActionSystem
                     if (heldItemBlockedWith is HeldShield)
                     {
                         HeldShield shield = heldItemBlockedWith as HeldShield;
-                        if (shield.currentHeldItemStance != HeldItemStance.RaiseShield)
-                            shield.LowerShield();
-
                         blockAmount = targetUnit.stats.BlockPower(shield);
 
+                        // Play the recoil animation & then lower the shield if not in Raise Shield Stance
+                        shield.Recoil();
+
+                        // Potentially fumble & drop the shield
                         shield.TryFumbleHeldItem();
                     }
                     else if (heldItemBlockedWith is HeldMeleeWeapon)
                     {
                         HeldMeleeWeapon meleeWeapon = heldItemBlockedWith as HeldMeleeWeapon;
-                        meleeWeapon.LowerWeapon();
-
                         blockAmount = targetUnit.stats.BlockPower(meleeWeapon);
 
                         if (unit.UnitEquipment.IsDualWielding)
@@ -100,6 +99,10 @@ namespace UnitSystem.ActionSystem
                                 blockAmount *= Weapon.dualWieldSecondaryEfficiency;
                         }
 
+                        // Play the recoil animation & then lower the weapon
+                        meleeWeapon.Recoil();
+
+                        // Potentially fumble & drop the weapon
                         meleeWeapon.TryFumbleHeldItem();
                     }
 
@@ -202,7 +205,7 @@ namespace UnitSystem.ActionSystem
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
                     if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, false))
-                        targetUnits[i].unitAnimator.DoDodge(unit, null);
+                        targetUnits[i].unitAnimator.DoDodge(unit, primaryMeleeWeapon, null);
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary

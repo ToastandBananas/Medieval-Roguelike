@@ -62,7 +62,9 @@ namespace UnitSystem.ActionSystem
         #region Action Queue
         public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
-            // Debug.Log(unit.name + " queues: " + action.name);
+            //if (unit.IsPlayer)
+                //Debug.Log(unit.name + " queues: " + action.name);
+
             GridSystemVisual.HideGridVisual();
 
             if (unit.health.IsDead())
@@ -452,6 +454,16 @@ namespace UnitSystem.ActionSystem
                 Type targetType = actionType.GetActionType();
                 if (typeof(T) == targetType)
                     return ActionsPool.GetAction(targetType, actionType, unit) as T;
+            }
+            return null;
+        }
+
+        public BaseAction GetActionFromType(ActionType actionType)
+        {
+            for (int i = 0; i < availableActions.Count; i++)
+            {
+                if (availableActions[i].GetType() == actionType.GetActionType())
+                    return availableActions[i];
             }
             return null;
         }

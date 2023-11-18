@@ -28,6 +28,9 @@ namespace UnitSystem.ActionSystem.UI
         {
             this.actionType = actionType;
             action = actionType.GetAction(playerActionHandler.unit);
+            if (action != null)
+                action.SetActionBarSlot(this);
+
             UpdateIcon();
             iconImage.enabled = true;
 
@@ -37,7 +40,6 @@ namespace UnitSystem.ActionSystem.UI
                 if (playerActionHandler.queuedActions.Count == 0)
                 {
                     playerActionHandler.OnClick_ActionBarSlot(actionType);
-                    UpdateIcon();
                     TooltipManager.ClearInventoryTooltips();
                     TooltipManager.ShowActionBarTooltip(this);
                 }
@@ -53,6 +55,9 @@ namespace UnitSystem.ActionSystem.UI
         public virtual void ResetButton()
         {
             actionType = null;
+            if (action != null)
+                action.SetActionBarSlot(null);
+
             action = null;
             iconImage.sprite = null;
             HideSlot();

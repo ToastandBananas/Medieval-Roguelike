@@ -15,6 +15,9 @@ namespace UnitSystem.ActionSystem
 
         public ActionType selectedActionType { get; private set; }
 
+        float onClickActionBarCooldown;
+        float onClickActionBarCooldownTime = 0.25f;
+
         public override void Awake()
         {
             base.Awake();
@@ -23,6 +26,12 @@ namespace UnitSystem.ActionSystem
 
             // Default to the MoveAction
             SetDefaultSelectedAction();
+        }
+
+        void Update()
+        {
+            if (onClickActionBarCooldown < onClickActionBarCooldownTime)
+                onClickActionBarCooldown += Time.deltaTime;
         }
 
         public override void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
@@ -253,9 +262,10 @@ namespace UnitSystem.ActionSystem
 
         public void OnClick_ActionBarSlot(ActionType actionType)
         {
-            if (InventoryUI.isDraggingItem)
+            if (InventoryUI.isDraggingItem || onClickActionBarCooldown < onClickActionBarCooldownTime)
                 return;
 
+            onClickActionBarCooldown = 0f;
             SetSelectedActionType(actionType);
             ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.highlightedActionSlot);
         }

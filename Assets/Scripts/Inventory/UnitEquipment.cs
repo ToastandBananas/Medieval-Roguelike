@@ -154,13 +154,14 @@ namespace InventorySystem
                 myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
                 UnequipItem(targetEquipSlot);
             }
-
+            
             // If the new item is coming from an NPC's Container Equipment Slot or a Loose Container Item, transfer the inventories
             if (IsWearableContainerEquipSlot(targetEquipSlot))
                 SwapContainerInventories(targetEquipSlot, newItemData);
 
             // Clear out the item from it's original slot
             RemoveItemFromOrigin(newItemData);
+            newItemData.SetInventorySlotCoordinate(null);
 
             // Assign the data
             equippedItemDatas[(int)targetEquipSlot] = newItemData;
@@ -505,6 +506,8 @@ namespace InventorySystem
                 return;
 
             Equipment equipment = equippedItemDatas[(int)equipSlot].Item as Equipment;
+            RemoveActions(equipment, equipSlot);
+
             if (GetEquipmentSlot(equipSlot) != InventoryUI.parentSlotDraggedFrom)
             {
                 // If this is the Unit's equipped backpack
@@ -548,7 +551,6 @@ namespace InventorySystem
                 GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.HideQuiverSprites();
 
             equippedItemDatas[(int)equipSlot] = null;
-            RemoveActions(equipment, equipSlot);
 
             if (myUnit != null)
                 myUnit.stats.UpdateCarryWeight();
@@ -943,14 +945,14 @@ namespace InventorySystem
                 // Remove held item bases for current held items
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                 {
-                    RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
                     RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item.Equipment, EquipSlot.LeftHeldItem1);
+                    RemoveEquipmentMesh(EquipSlot.LeftHeldItem1);
                 }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem1))
                 {
-                    RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
                     RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item.Equipment, EquipSlot.RightHeldItem1);
+                    RemoveEquipmentMesh(EquipSlot.RightHeldItem1);
                 }
 
                 // Create held item bases for the other weapon set
@@ -1004,14 +1006,14 @@ namespace InventorySystem
                 // Remove held item bases for current held items
                 if (EquipSlotHasItem(EquipSlot.LeftHeldItem2))
                 {
-                    RemoveEquipmentMesh(EquipSlot.LeftHeldItem2);
                     RemoveActions(equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item.Equipment, EquipSlot.LeftHeldItem2);
+                    RemoveEquipmentMesh(EquipSlot.LeftHeldItem2);
                 }
 
                 if (EquipSlotHasItem(EquipSlot.RightHeldItem2))
                 {
-                    RemoveEquipmentMesh(EquipSlot.RightHeldItem2);
                     RemoveActions(equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item.Equipment, EquipSlot.RightHeldItem2);
+                    RemoveEquipmentMesh(EquipSlot.RightHeldItem2);
                 }
 
                 // Create held item bases for the other weapon set
@@ -1063,7 +1065,7 @@ namespace InventorySystem
             ActionSystemUI.UpdateActionVisuals();
         }
 
-        public bool InVersatileStance => MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance == HeldItemStance.Versatile;
+        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance == HeldItemStance.Versatile;
 
         public ItemData GetRangedWeaponFromOtherWeaponSet()
         {
@@ -1145,21 +1147,28 @@ namespace InventorySystem
 
         public void GetEquippedWeapons(out Weapon primaryWeapon, out Weapon secondaryWeapon)
         {
-            if (IsDualWielding)
+            HeldMeleeWeapon primaryHeldMeleeWeapon = myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon secondaryHeldMeleeWeapon = myUnit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            if (primaryHeldMeleeWeapon != null && secondaryHeldMeleeWeapon != null)
             {
-                primaryWeapon = myUnit.unitMeshManager.GetRightHeldMeleeWeapon().itemData.Item.Weapon;
-                secondaryWeapon = myUnit.unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon;
+                primaryWeapon = primaryHeldMeleeWeapon.itemData.Item.Weapon;
+                secondaryWeapon = secondaryHeldMeleeWeapon.itemData.Item.Weapon;
                 return;
             }
-            else if (MeleeWeaponEquipped)
+            else if (primaryHeldMeleeWeapon != null)
             {
-                primaryWeapon = myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon;
+                primaryWeapon = primaryHeldMeleeWeapon.itemData.Item.Weapon;
                 secondaryWeapon = null;
                 return;
             }
             else if (RangedWeaponEquipped)
             {
-                primaryWeapon = myUnit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon;
+                HeldRangedWeapon heldRangedWeapon = myUnit.unitMeshManager.GetHeldRangedWeapon();
+                if (heldRangedWeapon != null)
+                    primaryWeapon = heldRangedWeapon.itemData.Item.Weapon;
+                else
+                    primaryWeapon = null;
+
                 secondaryWeapon = null;
                 return;
             }
@@ -1178,26 +1187,15 @@ namespace InventorySystem
             return EquipSlot.LeftHeldItem1;
         }
 
-        public bool IsDualWielding =>
-            (currentWeaponSet == WeaponSet.One && EquipSlotHasItem(EquipSlot.LeftHeldItem1) && EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is MeleeWeapon && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is MeleeWeapon)
-            || (currentWeaponSet == WeaponSet.Two && EquipSlotHasItem(EquipSlot.LeftHeldItem2) && EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is MeleeWeapon && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is MeleeWeapon);
+        public bool IsDualWielding => myUnit.unitMeshManager.GetLeftHeldMeleeWeapon() != null && myUnit.unitMeshManager.GetRightHeldMeleeWeapon() != null;
 
-        public bool MeleeWeaponEquipped =>
-            (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is MeleeWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is MeleeWeapon)))
-            || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is MeleeWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is MeleeWeapon)));
+        public bool MeleeWeaponEquipped => myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon() != null;
 
-        public bool RangedWeaponEquipped =>
-            (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is RangedWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is RangedWeapon)))
-            || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is RangedWeapon) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is RangedWeapon)));
+        public bool RangedWeaponEquipped => myUnit.unitMeshManager.GetHeldRangedWeapon() != null;
 
-        public bool ShieldEquipped =>
-            (currentWeaponSet == WeaponSet.One && ((EquipSlotHasItem(EquipSlot.LeftHeldItem1) && equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is Shield) || (EquipSlotHasItem(EquipSlot.RightHeldItem1) && equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is Shield)))
-            || (currentWeaponSet == WeaponSet.Two && ((EquipSlotHasItem(EquipSlot.LeftHeldItem2) && equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Shield) || (EquipSlotHasItem(EquipSlot.RightHeldItem2) && equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Shield)));
+        public bool ShieldEquipped => myUnit.unitMeshManager.GetHeldShield() != null;
 
-        public bool IsUnarmed =>
-            (currentWeaponSet == WeaponSet.One && (EquipSlotHasItem(EquipSlot.LeftHeldItem1) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem1].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem1) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem1].Item is Weapon == false))
-            || (currentWeaponSet == WeaponSet.Two && (EquipSlotHasItem(EquipSlot.LeftHeldItem2) == false || equippedItemDatas[(int)EquipSlot.LeftHeldItem2].Item is Weapon == false) && (EquipSlotHasItem(EquipSlot.RightHeldItem2) == false || equippedItemDatas[(int)EquipSlot.RightHeldItem2].Item is Weapon == false))
-            || (RangedWeaponEquipped && HasValidAmmunitionEquipped() == false);
+        public bool IsUnarmed => (MeleeWeaponEquipped == false && RangedWeaponEquipped == false) || (RangedWeaponEquipped && HasValidAmmunitionEquipped() == false);
 
         public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 

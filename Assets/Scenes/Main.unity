@@ -3601,7 +3601,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355335, z: -0.14644659, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3987,7 +3987,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355335, z: -0.14644659, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8531,7 +8531,7 @@ PrefabInstance:
     - target: {fileID: 187963916082105945, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 187963916082105950, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
@@ -8541,7 +8541,7 @@ PrefabInstance:
     - target: {fileID: 187963916082105950, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4
+      value: 5.026
       objectReference: {fileID: 0}
     - target: {fileID: 187963916082105950, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
@@ -8551,7 +8551,7 @@ PrefabInstance:
     - target: {fileID: 187963916082105950, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 9
+      value: 4.035
       objectReference: {fileID: 0}
     - target: {fileID: 187963916082105950, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
@@ -8719,7 +8719,7 @@ PrefabInstance:
     - target: {fileID: 3596824596407286067, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: maxHealth
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8959350574188631530, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
@@ -27758,22 +27758,22 @@ PrefabInstance:
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.6903456
       objectReference: {fileID: 0}
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.15304591
       objectReference: {fileID: 0}
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0.6903456
       objectReference: {fileID: 0}
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.15304591
       objectReference: {fileID: 0}
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -27788,7 +27788,7 @@ PrefabInstance:
     - target: {fileID: 3302223880752615606, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 3489051163152912302, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -28007,7 +28007,7 @@ PrefabInstance:
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.size
-      value: 12
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
@@ -28090,7 +28090,8 @@ PrefabInstance:
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.data[12].item
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: 0ff339caddbd4504a8b1ca3250bf6a6b,
+        type: 2}
     - target: {fileID: 7995056210117479334, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: mainInventory.itemDatas.Array.data[13].item

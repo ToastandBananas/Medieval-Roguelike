@@ -48,7 +48,15 @@ namespace UnitSystem.ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
-        public override bool IsValidAction() => unit.UnitEquipment.IsDualWielding == false && unit.UnitEquipment.MeleeWeaponEquipped && unit.UnitEquipment.ShieldEquipped == false && unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.IsVersatile;
+        public override void CancelAction()
+        {
+            base.CancelAction();
+            HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            if (primaryHeldMeleeWeapon != null && primaryHeldMeleeWeapon.currentHeldItemStance == HeldItemStance())
+                primaryHeldMeleeWeapon.HeldMeleeWeapon.SwitchVersatileStance();
+        }
+
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.IsDualWielding == false && unit.UnitEquipment.MeleeWeaponEquipped && unit.UnitEquipment.ShieldEquipped == false && unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.IsVersatile;
 
         public override Sprite ActionIcon()
         {

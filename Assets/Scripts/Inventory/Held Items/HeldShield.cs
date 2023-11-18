@@ -8,6 +8,10 @@ namespace InventorySystem
     {
         [SerializeField] MeshCollider meshCollider;
 
+        bool shouldKeepBlocking;
+
+        readonly float defaultBlockTransitionTime = 0.2f;
+
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
             base.SetupHeldItem(itemData, unit, equipSlot);
@@ -30,19 +34,17 @@ namespace InventorySystem
 
         public void RaiseShield()
         {
-            if (isBlocking)
-                return;
-
             isBlocking = true;
             if (unit.unitMeshManager.leftHeldItem == this)
-                anim.Play("RaiseShield_L");
+                anim.CrossFadeInFixedTime("RaiseShield_L", defaultBlockTransitionTime);
             else if (unit.unitMeshManager.rightHeldItem == this)
-                anim.Play("RaiseShield_R");
+                anim.CrossFadeInFixedTime("RaiseShield_R", defaultBlockTransitionTime);
         }
 
         public void LowerShield()
         {
-            if (isBlocking == false)
+            // Don't lower the Unit's shield if they should keep blocking (due to Raise Shield Action)
+            if (shouldKeepBlocking || isBlocking == false)
                 return;
 
             isBlocking = false;
@@ -50,6 +52,17 @@ namespace InventorySystem
                 anim.Play("LowerShield_L");
             else if (unit.unitMeshManager.rightHeldItem == this)
                 anim.Play("LowerShield_R");
+        }
+
+        public void Recoil()
+        {
+            if (isBlocking)
+            {
+                if (unit.unitMeshManager.leftHeldItem == this)
+                    anim.Play("BlockRecoil_L");
+                else if (unit.unitMeshManager.rightHeldItem == this)
+                    anim.Play("BlockRecoil_R");
+            }
         }
 
         protected override float GetFumbleChance()
@@ -65,6 +78,8 @@ namespace InventorySystem
             // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
             return fumbleChance;
         }
+
+        public void SetShouldKeepBlocking(bool shouldKeepBlocking) => this.shouldKeepBlocking = shouldKeepBlocking;
 
         public MeshCollider MeshCollider => meshCollider;
     }

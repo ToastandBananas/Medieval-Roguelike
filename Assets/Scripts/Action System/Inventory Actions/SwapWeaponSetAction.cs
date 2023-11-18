@@ -9,6 +9,7 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction()
         {
+            Debug.Log(unit.name);
             unit.unitActionHandler.ClearActionQueue(true);
             if (unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 unit.unitActionHandler.GetAction<UnloadAction>().QueueAction();
@@ -65,7 +66,7 @@ namespace UnitSystem.ActionSystem
 
         public override bool IsInterruptable() => false;
 
-        public override bool IsValidAction() => unit.UnitEquipment != null;
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment != null;
 
         public override bool CanBeClearedFromActionQueue() => false;
 
