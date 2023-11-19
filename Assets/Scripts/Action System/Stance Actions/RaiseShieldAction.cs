@@ -36,8 +36,6 @@ namespace UnitSystem.ActionSystem
             if (heldShield == null)
                 return;
 
-            StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.itemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
-
             shieldRaised = true;
             heldShield.SetShouldKeepBlocking(true);
 
@@ -47,8 +45,7 @@ namespace UnitSystem.ActionSystem
 
             unit.stats.energyUseActions.Add(this);
 
-            if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.ApplyModifiers(unit.stats);
+            ApplyStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
         }
 
         void LowerShield()
@@ -56,8 +53,6 @@ namespace UnitSystem.ActionSystem
             HeldShield heldShield = unit.unitMeshManager.GetHeldShield();
             if (heldShield == null)
                 return;
-
-            StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.itemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
 
             shieldRaised = false;
             heldShield.SetShouldKeepBlocking(false);
@@ -68,8 +63,7 @@ namespace UnitSystem.ActionSystem
 
             unit.stats.energyUseActions.Remove(this);
 
-            if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.RemoveModifiers(unit.stats);
+            RemoveStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
         }
 
         public override void CompleteAction()
@@ -121,7 +115,11 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            if (unit.unitMeshManager.GetHeldShield().currentHeldItemStance != HeldItemStance())
+            HeldShield heldShield = unit.unitMeshManager.GetHeldShield();
+            if (heldShield == null)
+                return "Raise Shield";
+
+            if (heldShield.currentHeldItemStance != HeldItemStance())
                 return "Raise Shield";
             else
                 return "Lower Shield";

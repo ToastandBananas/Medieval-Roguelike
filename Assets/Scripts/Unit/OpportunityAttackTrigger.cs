@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class OpportunityAttackTrigger : MonoBehaviour
 {
+    public delegate void EnemyEnterTriggerHandler(Unit enemyUnit);
+    public event EnemyEnterTriggerHandler OnEnemyEnterTrigger;
+
     [SerializeField] SphereCollider sphereCollider;
     [SerializeField] Unit myUnit;
 
@@ -31,7 +34,9 @@ public class OpportunityAttackTrigger : MonoBehaviour
             if (other.transform == transform.parent)
                 return;
 
-            other.gameObject.GetComponent<Unit>().unitsWhoCouldOpportunityAttackMe.Add(myUnit);
+            Unit unit = other.gameObject.GetComponent<Unit>();
+            unit.unitsWhoCouldOpportunityAttackMe.Add(myUnit);
+            OnEnemyEnterTrigger?.Invoke(unit);
         }
     }
 

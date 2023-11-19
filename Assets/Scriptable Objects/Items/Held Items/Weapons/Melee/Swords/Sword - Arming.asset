@@ -36,6 +36,7 @@ MonoBehaviour:
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   - {fileID: 11400000, guid: da478114a011c4c4ab7f2f9cb4a01145, type: 2}
+  stanceStatModifiers: []
   meshes:
   - {fileID: 7111655374037333773, guid: 8885308fd742f9b4a8cffc75dcf0ae7f, type: 3}
   meshRendererMaterials:
@@ -54,3 +55,4 @@ MonoBehaviour:
   maxBlockChanceAddOn: 0.05
   minAccuracyModifier: 0.1
   maxAccuracyModifier: 0.15
+  defaultMeleeAttackType: 2

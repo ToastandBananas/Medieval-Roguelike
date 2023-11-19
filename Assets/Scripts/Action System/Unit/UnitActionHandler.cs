@@ -63,7 +63,7 @@ namespace UnitSystem.ActionSystem
         public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
             //if (unit.IsPlayer)
-                //Debug.Log(unit.name + " queues: " + action.name);
+                //Debug.Log(unit.name + " queues: " + action.name + " for " + action.ActionPointsCost() + " AP");
 
             GridSystemVisual.HideGridVisual();
 

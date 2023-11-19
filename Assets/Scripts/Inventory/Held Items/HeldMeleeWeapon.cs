@@ -7,8 +7,8 @@ namespace InventorySystem
 {
     public class HeldMeleeWeapon : HeldItem
     {
-        readonly float defaultAttackTransitionTime = 0.1667f;
-        readonly float defaultBlockTransitionTime = 0.2f;
+        readonly float defaultAttackTransitionTime = 0.1f;
+        readonly float defaultBlockTransitionTime = 0.1f;
 
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
@@ -17,7 +17,14 @@ namespace InventorySystem
             if (this == unit.unitMeshManager.leftHeldItem)
                 anim.SetBool("leftHandItem", true);
             else
+            {
                 anim.SetBool("leftHandItem", false);
+
+                if (itemData.Item.Weapon.IsTwoHanded)
+                    anim.SetBool("twoHanded", true);
+                else
+                    anim.SetBool("twoHanded", false);
+            }
 
             SetDefaultWeaponStance();
             UpdateActionIcons();
@@ -28,10 +35,20 @@ namespace InventorySystem
             // Determine attack animation based on melee weapon type
             if (this == unit.unitMeshManager.rightHeldItem)
             {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.CrossFadeInFixedTime("DefaultAttack_2H", defaultAttackTransitionTime);
-                else
-                    anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
+                if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
+                {
+                    if (itemData.Item.Weapon.IsTwoHanded)
+                        anim.CrossFadeInFixedTime("DefaultAttack_2H", defaultAttackTransitionTime);
+                    else
+                        anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
+                }
+                else if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
+                {
+                    if (itemData.Item.Weapon.IsTwoHanded)
+                        anim.CrossFadeInFixedTime("DefaultThrustAttack_2H", defaultAttackTransitionTime);
+                    else
+                        anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_R", defaultAttackTransitionTime);
+                }
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
                 if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
@@ -39,8 +56,10 @@ namespace InventorySystem
             }
             else if (this == unit.unitMeshManager.leftHeldItem)
             {
-                if (itemData.Item.Weapon.IsTwoHanded == false)
+                if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
                     anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
+                else if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
+                    anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_L", defaultAttackTransitionTime);
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
                 if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
@@ -64,6 +83,26 @@ namespace InventorySystem
         {
             base.BlockAttack(attackingUnit);
             RaiseWeapon();
+        }
+
+        public void RaiseSpearWall()
+        {
+            anim.SetBool("spearWall", true);
+            if (this == unit.unitMeshManager.leftHeldItem)
+                anim.CrossFadeInFixedTime("SpearWall_1H_L", defaultBlockTransitionTime);
+            else
+            {
+                if (itemData.Item.Weapon.IsTwoHanded)
+                    anim.CrossFadeInFixedTime("SpearWall_2H", defaultBlockTransitionTime);
+                else
+                    anim.CrossFadeInFixedTime("SpearWall_1H_R", defaultBlockTransitionTime);
+            }
+        }
+
+        public void LowerSpearWall()
+        {
+            anim.SetBool("spearWall", false);
+            anim.CrossFadeInFixedTime("Idle", defaultBlockTransitionTime);
         }
 
         public override void StopBlocking() => LowerWeapon();

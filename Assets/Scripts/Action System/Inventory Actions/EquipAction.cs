@@ -99,25 +99,25 @@ namespace UnitSystem.ActionSystem
                     switch (itemData.Item.Equipment.EquipSlot)
                     {
                         case EquipSlot.Helm:
-                            costMultiplier = 1.2f;
+                            costMultiplier = 2f;
                             break;
                         case EquipSlot.BodyArmor:
-                            costMultiplier = 5f;
+                            costMultiplier = 1f; // Body armor is generally quite heavy, so avoid making it cost too much
                             break;
                         case EquipSlot.Shirt:
                             costMultiplier = 1.8f;
                             break;
                         case EquipSlot.Gloves:
-                            costMultiplier = 2f;
+                            costMultiplier = 2.5f;
                             break;
                         case EquipSlot.Boots:
                             costMultiplier = 3.5f;
                             break;
                         case EquipSlot.Back:
-                            costMultiplier = 1.4f;
+                            costMultiplier = 1f;
                             break;
                         case EquipSlot.Quiver:
-                            costMultiplier = 1.2f;
+                            costMultiplier = 1.8f;
                             break;
                     }
                 }

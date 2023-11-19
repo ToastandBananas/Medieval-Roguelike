@@ -134,9 +134,9 @@ namespace UnitSystem
 
         public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
 
-        public void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
-
         public void BlockAtPosition(Vector3 position) => singleNodeBlocker.BlockAt(position);
+
+        public void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
 
         public bool IsNPC => gameObject.CompareTag("Player") == false;
 

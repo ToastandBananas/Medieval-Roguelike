@@ -27,6 +27,8 @@ namespace GeneralUI
         public static ActionBarSlot currentActionBarSlot { get; private set; }
         public static int activeInventoryTooltips { get; private set; }
 
+        public static Canvas canvas { get; private set; }
+
         static Vector3 playersLastPosition;
         static Direction playersLastDirection;
 
@@ -58,6 +60,8 @@ namespace GeneralUI
                 inventoryTooltips[i].Button.interactable = false;
                 inventoryTooltips[i].Image.raycastTarget = false;
             }
+
+            canvas = GetComponentInParent<Canvas>();
         }
 
         void Update()

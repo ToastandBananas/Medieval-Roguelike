@@ -86,7 +86,11 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            if (unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance != HeldItemStance())
+            HeldMeleeWeapon heldMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            if (heldMeleeWeapon == null)
+                return "Two-Hand Weapon Stance";
+
+            if (heldMeleeWeapon.currentHeldItemStance != HeldItemStance())
                 return "Two-Hand Weapon Stance";
             else
                 return "One-Hand Weapon Stance";

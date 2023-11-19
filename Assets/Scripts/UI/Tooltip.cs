@@ -244,24 +244,28 @@ namespace GeneralUI
 
         void CalculatePosition(Slot slot)
         {
+            float tooltipWidth = rectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+            float tooltipHeight = rectTransform.rect.height * TooltipManager.canvas.scaleFactor;
             if (TooltipManager.activeInventoryTooltips == 0)
             {
                 TooltipManager.AddToActiveInventoryTooltips();
 
-                float slotWidth = slot.InventoryItem.RectTransform.rect.width;
+                float slotWidth;
                 newTooltipPosition = slot.ParentSlot().transform.position;
 
                 if (slot is EquipmentSlot)
                 {
+                    slotWidth = slot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+
                     // Determine x position
-                    if (newTooltipPosition.x <= rectTransform.rect.width + slotWidth) // Too far left
-                        newTooltipPosition.Set(newTooltipPosition.x + ((rectTransform.rect.width + slotWidth) / 2f), newTooltipPosition.y, 0);
+                    if (newTooltipPosition.x <= tooltipWidth + slotWidth) // Too far left
+                        newTooltipPosition.Set(newTooltipPosition.x + ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
                     else
-                        newTooltipPosition.Set(newTooltipPosition.x - ((rectTransform.rect.width + slotWidth) / 2f), newTooltipPosition.y, 0);
+                        newTooltipPosition.Set(newTooltipPosition.x - ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
 
                     // Determine y position
-                    if (newTooltipPosition.y >= Screen.height - (rectTransform.rect.height / 2f)) // Too close to the top
-                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (rectTransform.rect.height / 2f) - defaultSlotSize, 0);
+                    if (newTooltipPosition.y >= Screen.height - (tooltipHeight / 2f)) // Too close to the top
+                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (tooltipHeight / 2f) - defaultSlotSize, 0);
                 }
                 else if (slot is InventorySlot)
                 {
@@ -269,28 +273,26 @@ namespace GeneralUI
                     int itemHeight = slot.GetItemData().Item.Height;
                     float slotHeight;
 
-                    if (slot == slot.ParentSlot())
-                    {
-                        slotWidth = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1).InventoryItem.RectTransform.rect.width;
-                        slotHeight = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1).InventoryItem.RectTransform.rect.height;
-                    }
-                    else
-                        slotHeight = slot.InventoryItem.RectTransform.rect.height;
+                    InventorySlot inventorySlot = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1);
+                    slotWidth = inventorySlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                    slotHeight = inventorySlot.InventoryItem.RectTransform.rect.height * TooltipManager.canvas.scaleFactor;
 
                     // Determine x position
-                    if (newTooltipPosition.x <= rectTransform.rect.width + slotWidth) // Too far left
-                        newTooltipPosition.Set(newTooltipPosition.x + ((rectTransform.rect.width + slotWidth) / 2f), newTooltipPosition.y, 0);
+                    if (newTooltipPosition.x <= tooltipWidth + slotWidth) // Too far left
+                        newTooltipPosition.Set(newTooltipPosition.x + ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
                     else
-                        newTooltipPosition.Set(newTooltipPosition.x - (rectTransform.rect.width / 2f) - (itemWidth * slotWidth) + (slotWidth / 2f), newTooltipPosition.y, 0);
+                        newTooltipPosition.Set(newTooltipPosition.x - (tooltipWidth / 2f) - (itemWidth * slotWidth) + (slotWidth / 2f), newTooltipPosition.y, 0);
 
                     // Determine y position
-                    if (newTooltipPosition.y >= Screen.height - (rectTransform.rect.height / 2f)) // Too close to the top
-                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (rectTransform.rect.height / 2f) - defaultSlotSize, 0);
+                    if (newTooltipPosition.y >= Screen.height - (tooltipHeight / 2f)) // Too close to the top
+                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (tooltipHeight / 2f) - defaultSlotSize, 0);
                     else if (Mathf.RoundToInt(slotHeight) == defaultSlotSize) // Abnormal slot size (i.e. arrow slot)
                         newTooltipPosition.Set(newTooltipPosition.x, newTooltipPosition.y + (itemHeight * (slotHeight / 2f)) - (slotHeight / 2f), 0);
+                    else
+                        newTooltipPosition.Set(newTooltipPosition.x, newTooltipPosition.y + (itemHeight * slotHeight / 2f) - (slotHeight / 2f), 0);
 
-                    if (newTooltipPosition.y <= rectTransform.rect.height / 2f) // Too close to the bottom
-                        newTooltipPosition.Set(newTooltipPosition.x, (rectTransform.rect.height / 2f) + defaultSlotSize, 0);
+                    if (newTooltipPosition.y <= tooltipHeight / 2f) // Too close to the bottom
+                        newTooltipPosition.Set(newTooltipPosition.x, (tooltipHeight / 2f) + defaultSlotSize, 0);
                 }
 
                 rectTransform.position = newTooltipPosition;
@@ -326,20 +328,19 @@ namespace GeneralUI
 
                 if (equipmentSlot != null)
                 {
+                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
                     newTooltipPosition = equipmentSlot.transform.position;
-                    newTooltipPosition.Set(newTooltipPosition.x - ((rectTransform.rect.width + equipmentSlot.InventoryItem.RectTransform.rect.width) / 2f), newTooltipPosition.y, 0);
+                    newTooltipPosition.Set(newTooltipPosition.x - ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
 
                     // Determine y position
-                    if (newTooltipPosition.y >= Screen.height - (rectTransform.rect.height / 2f)) // Too close to the top
-                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (rectTransform.rect.height / 2f) - defaultSlotSize, 0);
+                    if (newTooltipPosition.y >= Screen.height - (tooltipHeight / 2f)) // Too close to the top
+                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (tooltipHeight / 2f) - defaultSlotSize, 0);
 
                     rectTransform.position = newTooltipPosition;
                 }
             }
             else // Second weapon tooltip (always right hand weapon)
             {
-                // TooltipManager.AddToActiveInventoryTooltips();
-
                 EquipmentSlot equipmentSlot = null;
                 if (UnitManager.player.UnitEquipment.currentWeaponSet == WeaponSet.One)
                 {
@@ -354,12 +355,13 @@ namespace GeneralUI
 
                 if (equipmentSlot != null)
                 {
+                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
                     newTooltipPosition = equipmentSlot.transform.position;
-                    newTooltipPosition.Set(newTooltipPosition.x - ((rectTransform.rect.width + equipmentSlot.InventoryItem.RectTransform.rect.width) / 2f), newTooltipPosition.y, 0);
+                    newTooltipPosition.Set(newTooltipPosition.x - ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
 
                     // Determine y position
-                    if (newTooltipPosition.y >= Screen.height - (rectTransform.rect.height / 2f)) // Too close to the top
-                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (rectTransform.rect.height / 2f) - defaultSlotSize, 0);
+                    if (newTooltipPosition.y >= Screen.height - (tooltipHeight / 2f)) // Too close to the top
+                        newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (tooltipHeight / 2f) - defaultSlotSize, 0);
 
                     rectTransform.position = newTooltipPosition;
                 }

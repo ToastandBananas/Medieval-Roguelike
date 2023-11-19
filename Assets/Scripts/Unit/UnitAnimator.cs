@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using InventorySystem;
 using Utilities;
+using GeneralUI;
+using GridSystem;
 
 namespace UnitSystem
 {
@@ -12,6 +14,8 @@ namespace UnitSystem
         Animator unitAnim;
 
         Unit unit;
+
+        public bool knockback { get; private set; }
 
         void Awake()
         {
@@ -78,7 +82,7 @@ namespace UnitSystem
             }
 
             // Dodge
-            while (elapsedTime < dodgeDuration && unit.health.IsDead() == false)
+            while (knockback == false && elapsedTime < dodgeDuration && unit.health.IsDead() == false)
             {
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / dodgeDuration;
@@ -86,14 +90,17 @@ namespace UnitSystem
                 yield return null;
             }
 
-            // Wait until the projectile has landed before moving back
-            if (projectileToDodge != null)
+            if (knockback == false)
             {
-                while (projectileToDodge.shouldMoveProjectile)
-                    yield return null;
-            }
+                // Wait until the projectile has landed before moving back
+                if (projectileToDodge != null)
+                {
+                    while (projectileToDodge.shouldMoveProjectile)
+                        yield return null;
+                }
 
-            StartCoroutine(ReturnToOriginalPosition(dodgeTargetPosition, originalPosition, 0.1f));
+                StartCoroutine(ReturnToOriginalPosition(dodgeTargetPosition, originalPosition, 0.1f));
+            }
         }
 
         public void DoSlightKnockback(Transform attackerTransform) => StartCoroutine(SlightKnockback(attackerTransform));
@@ -109,21 +116,81 @@ namespace UnitSystem
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
-            while (elapsedTime < knockbackDuration && unit.health.IsDead() == false)
+            while (knockback == false && elapsedTime < knockbackDuration && unit.health.IsDead() == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
                 yield return null;
             }
 
-            StartCoroutine(ReturnToOriginalPosition(knockbackTargetPosition, originalPosition, 0.1f));
+            if (knockback == false)
+                StartCoroutine(ReturnToOriginalPosition(knockbackTargetPosition, originalPosition, 0.1f));
+        }
+
+        public void Knockback(Unit attackingUnit) => StartCoroutine(DoKnockback(attackingUnit));
+
+        IEnumerator DoKnockback(Unit attackingUnit)
+        {
+            Vector3 knockbackTargetPosition;
+            if (unit.unitActionHandler.moveAction.isMoving)
+                knockbackTargetPosition = unit.unitActionHandler.moveAction.lastGridPosition.WorldPosition;
+            else
+            {
+                Vector3 direction = (unit.WorldPosition - attackingUnit.WorldPosition).normalized;
+                knockbackTargetPosition = unit.transform.position + direction;
+                if (Physics.Raycast(unit.transform.position + Vector3.up, -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.MousePlaneLayerMask))
+                    knockbackTargetPosition.Set(Mathf.RoundToInt(knockbackTargetPosition.x), hit.point.y, Mathf.RoundToInt(knockbackTargetPosition.z));
+                else
+                    knockbackTargetPosition.Set(Mathf.RoundToInt(knockbackTargetPosition.x), knockbackTargetPosition.y, Mathf.RoundToInt(knockbackTargetPosition.z));
+
+                Debug.Log(unit.name + " knocked back to " + knockbackTargetPosition);
+
+                // Don't knockback if the position behind this Unit is obstructed
+                if (LevelGrid.GridPositionObstructed(LevelGrid.GetGridPosition(knockbackTargetPosition)))
+                    yield break;
+            }
+
+            knockback = true;
+            Vector3 startPosition = unit.transform.position;
+            unit.UnblockCurrentPosition();
+
+            // Don't play the animation if the NPC is off-screen
+            if (unit.IsNPC && unit.unitMeshManager.IsVisibleOnScreen == false)
+            {
+                unit.transform.position = knockbackTargetPosition;
+                unit.UpdateGridPosition();
+                knockback = false;
+                yield break;
+            }
+
+            float speed = 25f;
+            float arcMultiplier = 2f;
+            float arcHeight = TacticsUtilities.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition) * arcMultiplier;
+            float animationTime = 0f;
+
+            while (true)
+            {
+                animationTime += speed * Time.deltaTime;
+                Vector3 nextPosition = MathParabola.Parabola(startPosition, knockbackTargetPosition, arcHeight, animationTime / 5f);
+                unit.transform.position = nextPosition;
+
+                if (Vector3.Distance(unit.transform.position, knockbackTargetPosition) <= 0.1f)
+                    break;
+
+                yield return null;
+            }
+
+            unit.unitActionHandler.moveAction.SetNextPathPosition(knockbackTargetPosition);
+            unit.transform.position = knockbackTargetPosition;
+            unit.UpdateGridPosition();
+            knockback = false;
         }
 
         IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.moveAction.isMoving == false)
+            while (knockback == false && elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.moveAction.isMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);

@@ -111,6 +111,10 @@ namespace UnitSystem.ActionSystem
                 else
                     targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount), unit);
             }
+
+            // Don't try to knockback if the Unit blocked or died
+            if (heldItemBlockedWith == null && targetUnit.health.IsDead() == false)
+                targetUnit.unitAnimator.Knockback(unit);
         }
 
         public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, bool headShot)

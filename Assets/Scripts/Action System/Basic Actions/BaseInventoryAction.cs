@@ -46,19 +46,19 @@ namespace UnitSystem.ActionSystem
             switch (itemSize)
             {
                 case ItemSize.ExtraSmall:
-                    return 0.25f;
+                    return 0.55f;
                 case ItemSize.VerySmall:
-                    return 0.5f;
+                    return 0.7f;
                 case ItemSize.Small:
-                    return 0.75f;
+                    return 0.85f;
                 case ItemSize.Medium:
                     return 1f;
                 case ItemSize.Large:
-                    return 1.25f;
+                    return 1.1f;
                 case ItemSize.VeryLarge:
-                    return 1.5f;
+                    return 1.2f;
                 case ItemSize.ExtraLarge:
-                    return 1.75f;
+                    return 1.3f;
                 default:
                     return 1f;
             }

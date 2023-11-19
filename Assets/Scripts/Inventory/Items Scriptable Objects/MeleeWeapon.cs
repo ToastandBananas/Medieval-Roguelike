@@ -2,9 +2,14 @@ using UnityEngine;
 
 namespace InventorySystem
 {
+    public enum MeleeAttackType { Slash, Thrust, Overhead }
+
     [CreateAssetMenu(fileName = "New Melee Weapon", menuName = "Inventory/Weapon - Melee")]
     public class MeleeWeapon : Weapon
     {
+        [Header("Default Attack Type")]
+        [SerializeField] MeleeAttackType defaultMeleeAttackType;
+
         void OnEnable()
         {
             if (initialized == false)
@@ -17,5 +22,7 @@ namespace InventorySystem
                 initialized = true;
             }
         }
+
+        public MeleeAttackType DefaultMeleeAttackType => defaultMeleeAttackType;
     }
 }

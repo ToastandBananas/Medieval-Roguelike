@@ -36,6 +36,7 @@ MonoBehaviour:
   actionTypes:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   - {fileID: 11400000, guid: 4a8c6127ccbd3d74f940e7fc6b52c543, type: 2}
+  stanceStatModifiers: []
   meshes:
   - {fileID: -84310869803615449, guid: d9e7c5c5772014945977b91ffef2bd6f, type: 3}
   meshRendererMaterials:
@@ -46,9 +47,12 @@ MonoBehaviour:
   idleRotation_Right: {x: 0, y: 90, z: 25}
   weaponType: 4
   isTwoHanded: 1
+  isVersatile: 0
   canDualWield: 0
   attackRange: {x: 1, y: 2.2}
   damageRange: {x: 10, y: 15}
-  blockChanceAddOn: 1.5
+  minBlockChanceAddOn: 0
+  maxBlockChanceAddOn: 0
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
+  defaultMeleeAttackType: 2

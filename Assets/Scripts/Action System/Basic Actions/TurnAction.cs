@@ -445,12 +445,12 @@ namespace UnitSystem.ActionSystem
             }
 
             // Get the Y position for the Grid Position using a raycast
-            Physics.Raycast(gridPositionBehindUnit.WorldPosition + new Vector3(0, 1, 0), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.Instance.MousePlaneLayerMask());
+            Physics.Raycast(gridPositionBehindUnit.WorldPosition + Vector3.up, -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.MousePlaneLayerMask);
             if (hit.collider != null)
-                gridPositionBehindUnit = new GridPosition(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
+                gridPositionBehindUnit.Set(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
             if (LevelGrid.GridPositionObstructed(gridPositionBehindUnit))
-                gridPositionBehindUnit = LevelGrid.FindNearestValidGridPosition(unit.GridPosition, unit, 1.4f);
+                gridPositionBehindUnit = LevelGrid.FindNearestValidGridPosition(unit.GridPosition, unit, LevelGrid.diaganolDistance);
             return gridPositionBehindUnit;
         }
 

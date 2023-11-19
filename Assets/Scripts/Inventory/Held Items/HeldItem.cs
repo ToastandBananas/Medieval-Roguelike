@@ -9,7 +9,7 @@ using UnitSystem.ActionSystem;
 
 namespace InventorySystem
 {
-    public enum HeldItemStance { Default, Versatile, RaiseShield }
+    public enum HeldItemStance { Default, Versatile, RaiseShield, SpearWall }
 
     public abstract class HeldItem : MonoBehaviour
     {

@@ -111,7 +111,7 @@ namespace InventorySystem
             Vector3 startPos = transform.position;
             Vector3 offset = GetOffset(targetUnit, attackActionUsed, hitTarget);
 
-            float arcHeight = CalculateProjectileArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+            float arcHeight = TacticsUtilities.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
 
             while (shouldMoveProjectile)
@@ -119,6 +119,7 @@ namespace InventorySystem
                 animationTime += speed * Time.deltaTime;
                 Vector3 nextPosition = MathParabola.Parabola(startPos, targetPosition + offset, arcHeight, animationTime / 5f);
 
+                // Current velocity & movement direction needed if this is a blunt projectile (so that it can properly bounce off the target when it becomes a LooseItem)
                 float displacement = Vector3.Distance(transform.position, nextPosition);
                 currentVelocity = displacement / Time.deltaTime;
                 movementDirection = (nextPosition - transform.position).normalized;
@@ -146,22 +147,6 @@ namespace InventorySystem
             shouldMoveProjectile = true;
 
             SetupTrail();
-        }
-
-        float CalculateProjectileArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)
-        {
-            float distanceXZ = TacticsUtilities.CalculateDistance_XZ(startGridPosition, targetGridPosition);
-            float distanceY = startGridPosition.y - targetGridPosition.y;
-            float arcHeightFactor = 0.1f;
-
-            float arcHeight = distanceXZ * arcHeightFactor;
-            arcHeight += distanceY * arcHeightFactor;
-
-            float maxArcHeight = 3f;
-            arcHeight = Mathf.Clamp(arcHeight, 0f, maxArcHeight);
-
-            // Debug.Log("Arc Height: " + arcHeight);
-            return arcHeight;
         }
 
         Vector3 GetOffset(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget)

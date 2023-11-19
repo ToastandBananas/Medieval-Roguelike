@@ -59,7 +59,7 @@ namespace GeneralUI
             return currentGridPosition;
         }
 
-        public LayerMask MousePlaneLayerMask() => mousePlaneLayerMask;
+        public static LayerMask MousePlaneLayerMask => Instance.mousePlaneLayerMask;
 
         public static void ChangeCursor(CursorState cursorState)
         {

@@ -34,7 +34,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 8315e77439a5da644a8ba98b9f87d64d, type: 2}
   - {fileID: 2100000, guid: 9725b62ec08eab64089977b3bb9ca0ef, type: 2}
   equipSlot: 1
-  actionTypes: []
+  actionTypes:
+  - {fileID: 11400000, guid: 3719d9bbbcf39b2499abd64c16f9af84, type: 2}
   stanceStatModifiers: []
   meshes:
   - {fileID: -2432090755550338912, guid: 701b337cd3b436a40899c822a9856f72, type: 3}
@@ -49,9 +50,10 @@ MonoBehaviour:
   isTwoHanded: 0
   isVersatile: 1
   canDualWield: 1
-  attackRange: {x: 1, y: 1.8}
+  attackRange: {x: 1, y: 1.5}
   damageRange: {x: 4, y: 9}
   minBlockChanceAddOn: -0.15
   maxBlockChanceAddOn: -0.1
   minAccuracyModifier: 0.11
   maxAccuracyModifier: 0.14
+  defaultMeleeAttackType: 1

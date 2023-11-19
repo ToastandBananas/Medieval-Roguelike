@@ -49,6 +49,35 @@ namespace Utilities
             return distance;
         }
 
-        public static float CalculateDistanceY(GridPosition gridPositionA, GridPosition gridPositionB) => Mathf.Abs(gridPositionA.y - gridPositionB.y);
+        public static float CalculateDistanceY(GridPosition gridPositionA, GridPosition gridPositionB) => Mathf.Abs(gridPositionA.y - gridPositionB.y); 
+        
+        public static float CalculateParabolaArcHeight(GridPosition startGridPosition, GridPosition targetGridPosition)
+        {
+            float distanceXZ = CalculateDistance_XZ(startGridPosition, targetGridPosition);
+            float distanceY = startGridPosition.y - targetGridPosition.y;
+            float arcHeightFactor = 0.1f;
+
+            float arcHeight = distanceXZ * arcHeightFactor;
+            arcHeight += distanceY * arcHeightFactor;
+
+            float maxArcHeight = 3f;
+            arcHeight = Mathf.Clamp(arcHeight, 0f, maxArcHeight);
+
+            // Debug.Log("Arc Height: " + arcHeight);
+            return arcHeight;
+        }
+
+        public static float CalculateParabolaArcHeight(Vector3 startPosition, Vector3 targetPosition)
+        {
+            float distanceXYZ = Vector3.Distance(startPosition,targetPosition);
+            float arcHeightFactor = 0.1f;
+            float arcHeight = distanceXYZ * arcHeightFactor;
+
+            float maxArcHeight = 3f;
+            arcHeight = Mathf.Clamp(arcHeight, 0f, maxArcHeight);
+
+            // Debug.Log("Arc Height: " + arcHeight);
+            return arcHeight;
+        }
     }
 }

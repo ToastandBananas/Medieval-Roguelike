@@ -14,7 +14,9 @@ namespace UnitSystem.ActionSystem
     {
         public GridPosition finalTargetGridPosition { get; private set; }
         public GridPosition nextTargetGridPosition { get; private set; }
+        public GridPosition lastGridPosition { get; private set; }
         Vector3 nextTargetPosition;
+        Vector3 nextPathPosition;
 
         public bool isMoving { get; private set; }
         public bool canMove { get; private set; }
@@ -31,7 +33,8 @@ namespace UnitSystem.ActionSystem
         {
             canMove = true;
             moveSpeed = defaultMoveSpeed;
-            targetGridPosition = unit.GridPosition;
+            targetGridPosition.Set(unit.GridPosition);
+            lastGridPosition.Set(unit.GridPosition);
         }
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
@@ -103,6 +106,11 @@ namespace UnitSystem.ActionSystem
                 yield break;
             }
 
+            lastGridPosition.Set(unit.GridPosition);
+
+            while (unit.unitAnimator.knockback)
+                yield return null;
+
             // Check for Opportunity Attacks
             for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
@@ -166,7 +174,6 @@ namespace UnitSystem.ActionSystem
             ActionLineRenderer.Instance.HideLineRenderers();
 
             Vector3 nextPointOnPath = positionList[positionIndex];
-            Vector3 nextPathPosition;
             Direction directionToNextPosition;
 
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
@@ -202,7 +209,7 @@ namespace UnitSystem.ActionSystem
                 Vector3 unitPosition = unit.transform.position;
                 Vector3 targetPosition = unitPosition;
 
-                while (Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
+                while (unit.unitAnimator.knockback == false && Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
                 {
                     unitPosition = unit.transform.position;
 
@@ -213,8 +220,8 @@ namespace UnitSystem.ActionSystem
                         if (moveUpchecked == false && nextPointOnPath.y - unitPosition.y > 0f)
                         {
                             moveUpchecked = true;
-                            targetPosition = new Vector3(unitPosition.x, nextPointOnPath.y, unitPosition.z);
-                            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                            targetPosition.Set(unitPosition.x, nextPointOnPath.y, unitPosition.z);
+                            nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
                         }
                         // If the Unit is directly above the next path position
                         else if (moveDownChecked == false && nextPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
@@ -226,8 +233,8 @@ namespace UnitSystem.ActionSystem
                         else if (moveAboveChecked == false && nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
                         {
                             moveAboveChecked = true;
-                            targetPosition = new Vector3(nextPointOnPath.x, unitPosition.y, nextPointOnPath.z);
-                            nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                            targetPosition.Set(nextPointOnPath.x, unitPosition.y, nextPointOnPath.z);
+                            nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
                         }
                     }
                     else // Otherwise, the target position is simply the next position on the Path
@@ -257,7 +264,10 @@ namespace UnitSystem.ActionSystem
                 TurnManager.Instance.StartNextUnitsTurn(unit);
             }
 
-            nextPathPosition = new Vector3(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
+            while (unit.unitAnimator.knockback)
+                yield return null;
+
+            nextPathPosition.Set(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
             unit.transform.position = nextPathPosition;
 
             // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
@@ -579,6 +589,8 @@ namespace UnitSystem.ActionSystem
             // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
             return true;
         }
+
+        public void SetNextPathPosition(Vector3 position) => nextPathPosition = position;
 
         public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
