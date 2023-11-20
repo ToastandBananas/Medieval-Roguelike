@@ -75,7 +75,7 @@ namespace UnitSystem
 
             if (IsNPC)
             {
-                if (health.IsDead())
+                if (health.IsDead)
                 {
                     UnblockCurrentPosition();
                     if (unitInteractable != null)
@@ -94,8 +94,8 @@ namespace UnitSystem
         // Used for debugging
         /*void Update()
         {
-            if (isMyTurn && unitActionHandler.isPerformingAction == false)
-                unitActionHandler.SkipTurn();
+            //if (IsMyTurn && unitActionHandler.isPerformingAction == false)
+                //unitActionHandler.SkipTurn();
         }*/
 
         public void UpdateGridPosition()
@@ -161,7 +161,7 @@ namespace UnitSystem
 
         public Transform ActionsParent => actionsParent;
 
-        public GridPosition GridPosition => health.IsDead() ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
+        public GridPosition GridPosition => health.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
 
         public Gender Gender => gender;
     }

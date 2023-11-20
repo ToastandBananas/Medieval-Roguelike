@@ -12,14 +12,14 @@ namespace UnitSystem.ActionSystem
 
         public static int GetItemsActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
-            float cost = CalculateItemsCost(itemData.Weight(), GetItemSizeMultiplier(itemData.Item.ItemSize), stackSize);
+            float cost = CalculateItemsCost(itemData.Weight(), stackSize);
 
             if (itemsContainerInventoryManager != null)
             {
                 for (int i = 0; i < itemsContainerInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
                     ItemData itemInContainer = itemsContainerInventoryManager.ParentInventory.ItemDatas[i];
-                    cost += CalculateItemsCost(itemInContainer.Weight(), GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
+                    cost += CalculateItemsCost(itemInContainer.Weight(), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
                 }
 
                 for (int i = 0; i < itemsContainerInventoryManager.SubInventories.Length; i++)
@@ -27,7 +27,7 @@ namespace UnitSystem.ActionSystem
                     for (int j = 0; j < itemsContainerInventoryManager.SubInventories[i].ItemDatas.Count; j++)
                     {
                         ItemData itemInContainer = itemsContainerInventoryManager.SubInventories[i].ItemDatas[j];
-                        cost += CalculateItemsCost(itemInContainer.Weight(), GetItemSizeMultiplier(itemInContainer.Item.ItemSize), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
+                        cost += CalculateItemsCost(itemInContainer.Weight(), itemInContainer.CurrentStackSize) * insideBagAPCostMultiplier;
                     }
                 }
             }
@@ -39,30 +39,7 @@ namespace UnitSystem.ActionSystem
             return Mathf.RoundToInt(cost);
         }
 
-        static float CalculateItemsCost(float itemWeight, float itemSizeMultiplier, int stackSize) => itemWeight * defaultAPCostPerPound * itemSizeMultiplier * stackSize;
-
-        protected static float GetItemSizeMultiplier(ItemSize itemSize)
-        {
-            switch (itemSize)
-            {
-                case ItemSize.ExtraSmall:
-                    return 0.55f;
-                case ItemSize.VerySmall:
-                    return 0.7f;
-                case ItemSize.Small:
-                    return 0.85f;
-                case ItemSize.Medium:
-                    return 1f;
-                case ItemSize.Large:
-                    return 1.1f;
-                case ItemSize.VeryLarge:
-                    return 1.2f;
-                case ItemSize.ExtraLarge:
-                    return 1.3f;
-                default:
-                    return 1f;
-            }
-        }
+        static float CalculateItemsCost(float itemWeight, int stackSize) => itemWeight * defaultAPCostPerPound * stackSize;
 
         public override void CompleteAction()
         {

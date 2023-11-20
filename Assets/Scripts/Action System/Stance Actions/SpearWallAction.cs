@@ -66,7 +66,7 @@ namespace UnitSystem.ActionSystem
 
         void AttackEnemy(Unit enemyUnit)
         {
-            if (enemyUnit.health.IsDead())
+            if (enemyUnit.health.IsDead)
                 return;
 
             if (unit.alliance.IsEnemy(enemyUnit) == false)

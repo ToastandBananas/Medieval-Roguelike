@@ -81,7 +81,7 @@ namespace GridSystem
                     targetUnit = PlayerInput.Instance.highlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
-                    if (targetUnit.health.IsDead() == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
+                    if (targetUnit.health.IsDead == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
                     {
                         if (player.vision.IsVisible(targetUnit))
                         {
@@ -100,7 +100,7 @@ namespace GridSystem
                             targetGridPosition = targetUnit.GridPosition;
                         }
                     }
-                    else if (targetUnit.health.IsDead())
+                    else if (targetUnit.health.IsDead)
                     {
                         if (TacticsUtilities.CalculateDistance_XYZ(targetUnit.GridPosition, player.GridPosition) > LevelGrid.diaganolDistance)
                             targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
@@ -174,7 +174,7 @@ namespace GridSystem
                     yield break;
 
                 // Re-block the unit's position, in case it was unblocked
-                if (targetUnit != null && targetUnit.health.IsDead() == false)
+                if (targetUnit != null && targetUnit.health.IsDead == false)
                     targetUnit.BlockCurrentPosition();
 
                 int verticeIndex = 0;

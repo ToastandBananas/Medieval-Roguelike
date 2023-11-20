@@ -10,6 +10,7 @@ namespace UnitSystem
     {
         public List<Unit> npcs_HaventFinishedTurn { get; private set; }
         public List<Unit> npcs_FinishedTurn { get; private set; }
+        public static int turnNumber { get; private set; }
         int npcTurnIndex;
 
         public Unit activeUnit { get; private set; }
@@ -47,7 +48,7 @@ namespace UnitSystem
             if (unit != activeUnit)
                 return;
 
-            if (unit.health.IsDead() == false)
+            if (unit.health.IsDead == false)
                 unit.BlockCurrentPosition();
 
             if (unit.IsNPC)
@@ -84,12 +85,13 @@ namespace UnitSystem
 
         void StartUnitsTurn(Unit unit)
         {
-            if (UnitManager.player.health.IsDead())
+            if (UnitManager.player.health.IsDead)
                 return;
             
             activeUnit = unit;
+            turnNumber++;
 
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
             {
                 unit.unitActionHandler.CancelActions();
                 unit.unitActionHandler.ClearActionQueue(true, true);

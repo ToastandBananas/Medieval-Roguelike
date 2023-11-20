@@ -212,7 +212,7 @@ namespace GeneralUI
         {
             if (selectedAction is BaseAttackAction)
             {
-                if (targetUnit.health.IsDead())
+                if (targetUnit.health.IsDead)
                     return;
 
                 float hitChance = UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;

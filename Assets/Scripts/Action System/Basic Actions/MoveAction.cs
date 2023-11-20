@@ -33,8 +33,8 @@ namespace UnitSystem.ActionSystem
         {
             canMove = true;
             moveSpeed = defaultMoveSpeed;
-            targetGridPosition.Set(unit.GridPosition);
-            lastGridPosition.Set(unit.GridPosition);
+            targetGridPosition = unit.GridPosition;
+            lastGridPosition = unit.GridPosition;
         }
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
@@ -106,16 +106,16 @@ namespace UnitSystem.ActionSystem
                 yield break;
             }
 
-            lastGridPosition.Set(unit.GridPosition);
+            lastGridPosition = unit.GridPosition;
 
-            while (unit.unitAnimator.knockback)
+            while (unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             // Check for Opportunity Attacks
             for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
                 Unit opportunityAttackingUnit = unit.unitsWhoCouldOpportunityAttackMe[i];
-                if (opportunityAttackingUnit.health.IsDead())
+                if (opportunityAttackingUnit.health.IsDead)
                 {
                     unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
                     continue;
@@ -148,7 +148,7 @@ namespace UnitSystem.ActionSystem
             }
 
             // This Unit can die during an opportunity attack
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
             {
                 CompleteAction();
                 yield break;
@@ -209,7 +209,7 @@ namespace UnitSystem.ActionSystem
                 Vector3 unitPosition = unit.transform.position;
                 Vector3 targetPosition = unitPosition;
 
-                while (unit.unitAnimator.knockback == false && Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
+                while (unit.unitAnimator.beingKnockedBack == false && Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
                 {
                     unitPosition = unit.transform.position;
 
@@ -264,11 +264,12 @@ namespace UnitSystem.ActionSystem
                 TurnManager.Instance.StartNextUnitsTurn(unit);
             }
 
-            while (unit.unitAnimator.knockback)
+            while (unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             nextPathPosition.Set(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
             unit.transform.position = nextPathPosition;
+            unit.UpdateGridPosition();
 
             // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
             if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition)
@@ -290,7 +291,7 @@ namespace UnitSystem.ActionSystem
                 if (interactAction.targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
-                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead)
                     unit.unitActionHandler.CancelActions();
                 // If the Player is trying to attack an enemy and they are in range, stop moving and attack
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.IsInAttackRange(unit.unitActionHandler.targetEnemyUnit, true))
@@ -318,7 +319,7 @@ namespace UnitSystem.ActionSystem
                         npcActionHandler.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
-                    else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead() == false && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition)
+                    else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead == false && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition)
                         QueueMoveToTargetEnemy();
                 }
             }
@@ -345,7 +346,7 @@ namespace UnitSystem.ActionSystem
         void GetPathToTargetPosition(GridPosition targetGridPosition)
         {
             Unit unitAtTargetGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead() == false)
+            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
                 targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, false);
@@ -388,7 +389,7 @@ namespace UnitSystem.ActionSystem
             }
 
             unit.BlockCurrentPosition();
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead() == false)
+            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
 
@@ -566,7 +567,7 @@ namespace UnitSystem.ActionSystem
             // Unblock the Unit's position, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
             if (unit.IsPlayer)
                 unit.UnblockCurrentPosition();
-            else if (unit.health.IsDead() == false)
+            else if (unit.health.IsDead == false)
                 unit.BlockCurrentPosition();
 
             isMoving = false;

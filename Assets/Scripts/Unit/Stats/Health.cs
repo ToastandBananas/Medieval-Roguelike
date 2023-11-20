@@ -38,7 +38,7 @@ namespace UnitSystem
 
             if (currentHealth == 0)
                 Die(attacker);
-            else
+            else if (attacker != null)
                 unit.unitAnimator.DoSlightKnockback(attacker.transform);
         }
 
@@ -82,17 +82,21 @@ namespace UnitSystem
 
             unit.unitActionHandler.ClearActionQueue(true, true);
 
-            unit.unitAnimator.Die(attacker.transform);
-
-            if (attacker.IsPlayer)
-                attacker.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+            if (attacker != null)
+            {
+                unit.unitAnimator.Die(attacker.transform);
+                if (attacker.IsPlayer)
+                    attacker.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+            }
+            else // Took damage from something like a fall, status effect, etc.
+                unit.unitAnimator.Die(null);
         }
 
-        public bool IsDead() => currentHealth <= 0;
+        public bool IsDead => currentHealth <= 0;
 
-        public float CurrentHealthNormalized() => (float)currentHealth / maxHealth;
+        public float CurrentHealthNormalized => (float)currentHealth / maxHealth;
 
-        public int MaxHealth() => maxHealth;
+        public int MaxHealth => maxHealth;
 
         public int CurrentHealth => currentHealth;
     }

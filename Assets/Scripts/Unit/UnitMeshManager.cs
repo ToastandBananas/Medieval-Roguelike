@@ -61,7 +61,7 @@ namespace UnitSystem
                 meshRenderers[i].enabled = true;
             }
 
-            if (myUnit.health.IsDead() == false)
+            if (myUnit.health.IsDead == false)
                 baseMeshFilter.mesh = baseMesh;
 
             if (leftHeldItem != null)

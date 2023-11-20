@@ -45,7 +45,10 @@ namespace UnitSystem.ActionSystem
             projectileItemData = null;
 
             if (unit.IsPlayer)
+            {
                 unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                actionBarSlot.UpdateIcon();
+            }
 
             unit.unitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(unit);

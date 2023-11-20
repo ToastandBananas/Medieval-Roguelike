@@ -92,7 +92,7 @@ namespace GeneralUI
             targetSlot = null;
             targetInteractable = PlayerInput.Instance.highlightedInteractable;
             targetUnit = PlayerInput.Instance.highlightedUnit;
-            if (targetUnit != null && targetUnit.health.IsDead())
+            if (targetUnit != null && targetUnit.health.IsDead)
                 targetUnit.unitInteractable.UpdateGridPosition();
 
             if (InventoryUI.activeSlot != null)
@@ -240,7 +240,7 @@ namespace GeneralUI
 
         static void CreateAttackButton()
         {
-            if (targetUnit == null || targetUnit.health.IsDead() || UnitManager.player.vision.IsVisible(targetUnit) == false
+            if (targetUnit == null || targetUnit.health.IsDead || UnitManager.player.vision.IsVisible(targetUnit) == false
                 || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
                 return;
 
@@ -377,7 +377,7 @@ namespace GeneralUI
                     return;
                 }
             }
-            else if (targetUnit != null && targetUnit.health.IsDead())
+            else if (targetUnit != null && targetUnit.health.IsDead)
             {
                 if (TacticsUtilities.CalculateDistance_XYZ(LevelGrid.GetGridPosition(targetUnit.transform.position), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
                     return;

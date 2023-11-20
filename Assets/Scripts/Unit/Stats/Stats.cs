@@ -358,24 +358,6 @@ namespace UnitSystem
                 return 1f + ((carryWeightRatio * 1.5f) - 0.5f);
             }
         }
-
-        float EncumbranceDodgeChanceMultiplier()
-        {
-            float carryWeightRatio = CarryWeightRatio();
-            if (carryWeightRatio <= 0.5f)
-                return 1f;
-            else
-            {
-                if (carryWeightRatio > 2f)
-                    carryWeightRatio = 2f;
-
-                // Calculate the dodge chance multiplier as a linear reduction
-                if (carryWeightRatio <= 1f)
-                    return 1f - (carryWeightRatio * 0.33f);
-                else
-                    return 1f - (carryWeightRatio * 0.5f);
-            }
-        }
         #endregion
 
         #region Dodging
@@ -402,6 +384,24 @@ namespace UnitSystem
 
             // Debug.Log(unit.name + "'s Dodge Chance: " + dodgeChance);
             return dodgeChance;
+        }
+
+        float EncumbranceDodgeChanceMultiplier()
+        {
+            float carryWeightRatio = CarryWeightRatio();
+            if (carryWeightRatio <= 0.5f)
+                return 1f;
+            else
+            {
+                if (carryWeightRatio > 2f)
+                    carryWeightRatio = 2f;
+
+                // Calculate the dodge chance multiplier as a linear reduction
+                if (carryWeightRatio <= 1f)
+                    return 1f - (carryWeightRatio * 0.2f);
+                else
+                    return 1f - (carryWeightRatio * 0.4f);
+            }
         }
 
         float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)

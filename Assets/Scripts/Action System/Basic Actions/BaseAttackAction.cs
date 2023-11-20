@@ -47,7 +47,7 @@ namespace UnitSystem.ActionSystem
 
         public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
-            if (targetUnit != null && targetUnit.health.IsDead() == false)
+            if (targetUnit != null && targetUnit.health.IsDead == false)
             {
                 targetUnit.unitActionHandler.InterruptActions();
 
@@ -113,7 +113,7 @@ namespace UnitSystem.ActionSystem
             }
 
             // Don't try to knockback if the Unit blocked or died
-            if (heldItemBlockedWith == null && targetUnit.health.IsDead() == false)
+            if (heldItemBlockedWith == null && targetUnit.health.IsDead == false)
                 targetUnit.unitAnimator.Knockback(unit);
         }
 
@@ -178,7 +178,7 @@ namespace UnitSystem.ActionSystem
             {
                 if (targetEnemyUnit != null)
                 {
-                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving || targetEnemyUnit.unitAnimator.beingKnockedBack)
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead

@@ -40,7 +40,7 @@ namespace UnitSystem
         {
             for (int i = 0; i < livingNPCs.Count; i++)
             {
-                if (livingNPCs[i].health.IsDead())
+                if (livingNPCs[i].health.IsDead)
                 {
                     deadNPCs.Add(livingNPCs[i]);
                     livingNPCs.Remove(livingNPCs[i]);

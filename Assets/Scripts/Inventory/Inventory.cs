@@ -333,7 +333,7 @@ namespace InventorySystem
                     if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit != null)
                     {
                         // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.health.IsDead())
+                        if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.health.IsDead)
                         {
                             if (unitAdding != null)
                                 unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
@@ -348,7 +348,7 @@ namespace InventorySystem
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.health.IsDead())
+                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.health.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
@@ -370,7 +370,7 @@ namespace InventorySystem
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.health.IsDead())
+                    if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.health.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
@@ -386,7 +386,7 @@ namespace InventorySystem
                     if (InventoryUI.DraggedItem.myInventory.myUnit != null)
                     {
                         // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead())
+                        if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead)
                         {
                             if (unitAdding != null)
                                 unitAdding.unitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);

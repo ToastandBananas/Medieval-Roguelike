@@ -44,7 +44,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && unit.health.IsDead() == false)
+            if (unit.IsMyTurn && unit.health.IsDead == false)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 
@@ -91,7 +91,7 @@ namespace UnitSystem.ActionSystem
                     else if (targetEnemyUnit != null)
                     {
                         // If the target enemy is dead, cancel the action
-                        if (targetEnemyUnit.health.IsDead())
+                        if (targetEnemyUnit.health.IsDead)
                         {
                             CancelActions();
                             return;
@@ -154,7 +154,7 @@ namespace UnitSystem.ActionSystem
 
         public override IEnumerator GetNextQueuedAction()
         {
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
             {
                 ClearActionQueue(true, true);
                 GridSystemVisual.HideGridVisual();
@@ -193,8 +193,14 @@ namespace UnitSystem.ActionSystem
             {
                 if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                    while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
+
+                    if (targetEnemyUnit == null)
+                    {
+                        Debug.LogWarning("Target Unit became null during AttackTarget");
+                        yield break;
+                    }
 
                     if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
@@ -211,8 +217,14 @@ namespace UnitSystem.ActionSystem
                 {
                     if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                     {
-                        while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                        while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                             yield return null;
+
+                        if (targetEnemyUnit == null)
+                        {
+                            Debug.LogWarning("Target Unit became null during AttackTarget");
+                            yield break;
+                        }
 
                         if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                         {
@@ -230,8 +242,14 @@ namespace UnitSystem.ActionSystem
             {
                 if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                    while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
                         yield return null;
+
+                    if (targetEnemyUnit == null)
+                    {
+                        Debug.LogWarning("Target Unit became null during AttackTarget");
+                        yield break;
+                    }
 
                     if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {

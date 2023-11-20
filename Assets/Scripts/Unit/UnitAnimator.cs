@@ -4,6 +4,7 @@ using InventorySystem;
 using Utilities;
 using GeneralUI;
 using GridSystem;
+using UnitSystem.ActionSystem;
 
 namespace UnitSystem
 {
@@ -15,7 +16,7 @@ namespace UnitSystem
 
         Unit unit;
 
-        public bool knockback { get; private set; }
+        public bool beingKnockedBack { get; private set; }
 
         void Awake()
         {
@@ -82,7 +83,7 @@ namespace UnitSystem
             }
 
             // Dodge
-            while (knockback == false && elapsedTime < dodgeDuration && unit.health.IsDead() == false)
+            while (beingKnockedBack == false && elapsedTime < dodgeDuration && unit.health.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / dodgeDuration;
@@ -90,7 +91,7 @@ namespace UnitSystem
                 yield return null;
             }
 
-            if (knockback == false)
+            if (beingKnockedBack == false)
             {
                 // Wait until the projectile has landed before moving back
                 if (projectileToDodge != null)
@@ -116,14 +117,14 @@ namespace UnitSystem
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
-            while (knockback == false && elapsedTime < knockbackDuration && unit.health.IsDead() == false)
+            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.health.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
                 yield return null;
             }
 
-            if (knockback == false)
+            if (beingKnockedBack == false)
                 StartCoroutine(ReturnToOriginalPosition(knockbackTargetPosition, originalPosition, 0.1f));
         }
 
@@ -131,40 +132,49 @@ namespace UnitSystem
 
         IEnumerator DoKnockback(Unit attackingUnit)
         {
+            unit.unitActionHandler.CancelActions();
+
             Vector3 knockbackTargetPosition;
             if (unit.unitActionHandler.moveAction.isMoving)
                 knockbackTargetPosition = unit.unitActionHandler.moveAction.lastGridPosition.WorldPosition;
             else
             {
                 Vector3 direction = (unit.WorldPosition - attackingUnit.WorldPosition).normalized;
+                float maxKnockbackY = 0.33f;
                 knockbackTargetPosition = unit.transform.position + direction;
-                if (Physics.Raycast(unit.transform.position + Vector3.up, -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.MousePlaneLayerMask))
+                if (Physics.Raycast(knockbackTargetPosition + (maxKnockbackY * Vector3.up), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.MousePlaneLayerMask))
                     knockbackTargetPosition.Set(Mathf.RoundToInt(knockbackTargetPosition.x), hit.point.y, Mathf.RoundToInt(knockbackTargetPosition.z));
                 else
                     knockbackTargetPosition.Set(Mathf.RoundToInt(knockbackTargetPosition.x), knockbackTargetPosition.y, Mathf.RoundToInt(knockbackTargetPosition.z));
-
-                Debug.Log(unit.name + " knocked back to " + knockbackTargetPosition);
 
                 // Don't knockback if the position behind this Unit is obstructed
                 if (LevelGrid.GridPositionObstructed(LevelGrid.GetGridPosition(knockbackTargetPosition)))
                     yield break;
             }
 
-            knockback = true;
+            float fallDistance = unit.transform.position.y - knockbackTargetPosition.y;
+            if (fallDistance < 0f)
+                fallDistance = 0f;
+
+            beingKnockedBack = true;
             Vector3 startPosition = unit.transform.position;
             unit.UnblockCurrentPosition();
+
+            // Wait a frame to allow projectiles to "Arrive" properly before moving
+            yield return null;
 
             // Don't play the animation if the NPC is off-screen
             if (unit.IsNPC && unit.unitMeshManager.IsVisibleOnScreen == false)
             {
-                unit.transform.position = knockbackTargetPosition;
-                unit.UpdateGridPosition();
-                knockback = false;
+                CompleteKnockback(knockbackTargetPosition, fallDistance);
                 yield break;
             }
 
             float speed = 25f;
             float arcMultiplier = 2f;
+            if (fallDistance > 0f)
+                arcMultiplier *= 2f;
+
             float arcHeight = TacticsUtilities.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition) * arcMultiplier;
             float animationTime = 0f;
 
@@ -180,17 +190,66 @@ namespace UnitSystem
                 yield return null;
             }
 
+            CompleteKnockback(knockbackTargetPosition, fallDistance);
+        }
+
+        const float minFallDistance = 1f; // No damage under this distance
+        void CompleteKnockback(Vector3 knockbackTargetPosition, float fallDistance)
+        {
             unit.unitActionHandler.moveAction.SetNextPathPosition(knockbackTargetPosition);
             unit.transform.position = knockbackTargetPosition;
             unit.UpdateGridPosition();
-            knockback = false;
+            beingKnockedBack = false;
+
+            if (fallDistance > minFallDistance)
+                unit.health.TakeDamage(CalculateFallDamage(fallDistance), null);
+        }
+
+        int CalculateFallDamage(float fallDistance)
+        {
+            float modifiedMaxFallDistance = CalculateModifiedMaxFallDistance();
+
+            if (fallDistance <= minFallDistance) return 0;
+            if (fallDistance >= modifiedMaxFallDistance) return unit.health.MaxHealth; // Instant death
+
+            // Calculate the damage percentage based on fall distance
+            float damagePercent = (fallDistance - minFallDistance) / (modifiedMaxFallDistance - minFallDistance);
+            int damage = Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
+            if (damage < 1)
+                damage = 1;
+
+            //Debug.Log(unit.name + " fell " + fallDistance + " units for " + damage + " damage");
+            return Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
+        }
+
+        float CalculateModifiedMaxFallDistance()
+        {
+            float baseLethalFallDistance = 6f;
+            float strengthFactor = 0.035f;
+            float carryWeightFactor = 2f;
+            float strengthBonus = unit.stats.Strength.GetValue() * strengthFactor;
+
+            // Calculate the carry weight ratio. This can exceed 1 if carrying more than max capacity
+            float carryWeightRatio = unit.stats.CarryWeightRatio();
+
+            // Adjust carry weight penalty to be more severe if carrying beyond max capacity
+            float carryWeightPenalty;
+            if (carryWeightRatio <= 1) // Up to 100% capacity, use a linear scale
+                carryWeightPenalty = carryWeightRatio * carryWeightFactor;
+            else // Beyond 100% capacity, you can increase the penalty exponentially
+                carryWeightPenalty = Mathf.Pow(carryWeightRatio, 2) * carryWeightFactor;
+
+            //Debug.Log("Strength bonus: " + strengthBonus);
+            //Debug.Log("Carry weight penalty: " + carryWeightPenalty);
+            //Debug.Log("Max Fall Distance: " + Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1));
+            return Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1); // Ensure it doesn't go below 1
         }
 
         IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (knockback == false && elapsedTime < returnDuration && unit.health.IsDead() == false && unit.unitActionHandler.moveAction.isMoving == false)
+            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.health.IsDead == false && unit.unitActionHandler.moveAction.isMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
@@ -223,8 +282,12 @@ namespace UnitSystem
             Vector3 randomDirection = Random.onUnitSphere;
             randomDirection.y = 0; // Ensure the force is applied horizontally
 
-            // Calculate a direction away from the attacker
-            Vector3 directionAwayFromAttacker = (transform.position - attackerTransform.position).normalized;
+            // Calculate a direction away from the attacker (or choose a random direction if attacker is null)
+            Vector3 directionAwayFromAttacker;
+            if (attackerTransform != null)
+                directionAwayFromAttacker = (transform.position - attackerTransform.position).normalized;
+            else
+                directionAwayFromAttacker = new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f)).normalized;
 
             // Interpolate between randomDirection and directionAwayFromAttacker
             Vector3 forceDirection = Vector3.Lerp(randomDirection, directionAwayFromAttacker, towardsAttackerChance);

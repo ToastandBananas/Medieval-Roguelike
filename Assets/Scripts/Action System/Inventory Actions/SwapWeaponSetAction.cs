@@ -9,7 +9,6 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction()
         {
-            Debug.Log(unit.name);
             unit.unitActionHandler.ClearActionQueue(true);
             if (unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
                 unit.unitActionHandler.GetAction<UnloadAction>().QueueAction();

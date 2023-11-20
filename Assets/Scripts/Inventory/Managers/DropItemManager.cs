@@ -62,7 +62,7 @@ namespace InventorySystem
                 inventory.MyUnit.stats.UpdateCarryWeight();
 
             // In this case, the Player is dropping an item from a dead Unit's inventory
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
             {
                 UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
                 UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
@@ -94,7 +94,7 @@ namespace InventorySystem
             ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
-            if (unitEquipment.MyUnit.health.IsDead() == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield))
+            if (unitEquipment.MyUnit.health.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield))
                 SetupHeldItemDrop(unitEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
@@ -107,7 +107,7 @@ namespace InventorySystem
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
 
             // We queue each action twice to account for unequipping the item before dropping it
-            if (unitEquipment.MyUnit.health.IsDead()) // In this case, the player is dropping an item from a dead Unit's equipment
+            if (unitEquipment.MyUnit.health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
                 if (ContextMenu.targetSlot == null || InventoryUI.isDraggingItem)
                     UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
@@ -170,8 +170,12 @@ namespace InventorySystem
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
 
             // Get the attacker's position and the character's position
-            Vector3 attackerPosition = attackerTransform.position;
             Vector3 unitPosition = unit.transform.position;
+            Vector3 attackerPosition;
+            if (attackerTransform != null)
+                attackerPosition = attackerTransform.position;
+            else
+                attackerPosition = unitPosition + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
 
             // Calculate the force direction (depending on whether they fall forward or backward)
             Vector3 forceDirection;
@@ -211,8 +215,12 @@ namespace InventorySystem
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
 
             // Get the attacker's position and the character's position
-            Vector3 attackerPosition = attackerTransform.position;
             Vector3 unitPosition = unit.transform.position;
+            Vector3 attackerPosition;
+            if (attackerTransform != null)
+                attackerPosition = attackerTransform.position;
+            else
+                attackerPosition = unitPosition + new Vector3(Random.Range(-1f, 1f), 0f, Random.Range(-1f, 1f));
 
             // Calculate the force direction (depending on whether they fall forward or backward)
             Vector3 forceDirection;

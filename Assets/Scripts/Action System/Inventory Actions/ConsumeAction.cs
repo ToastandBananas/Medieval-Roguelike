@@ -68,7 +68,7 @@ namespace UnitSystem.ActionSystem
 
         public override int ActionPointsCost()
         {
-            return Mathf.RoundToInt(consumeAPCostPerPart * GetItemSizeMultiplier(itemsToConsume[0].Item.ItemSize) * itemsToConsume[0].Item.Consumable.ConsumeAPCostMultiplier);
+            return Mathf.RoundToInt(consumeAPCostPerPart * itemsToConsume[0].Item.Consumable.ConsumeAPCostMultiplier);
         }
 
         public override bool IsInterruptable() => true;

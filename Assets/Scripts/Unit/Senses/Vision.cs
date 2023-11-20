@@ -282,7 +282,7 @@ namespace UnitSystem
             foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
             {
                 // If the visible Unit is now dead, update the appropriate lists
-                if (knownUnit.Key.health.IsDead())
+                if (knownUnit.Key.health.IsDead)
                     UpdateDeadUnit(knownUnit.Key);
 
                 Transform targetTransform = knownUnit.Key.transform;
@@ -342,7 +342,7 @@ namespace UnitSystem
                 // Add the unit to the dictionary
                 knownUnits.TryAdd(unitToAdd, loseSightTime);
 
-                if (unitToAdd.health.IsDead())
+                if (unitToAdd.health.IsDead)
                     knownDeadUnits.Add(unitToAdd);
                 else if (unit.alliance.IsEnemy(unitToAdd))
                 {
@@ -458,7 +458,7 @@ namespace UnitSystem
             {
                 if (unit.unitActionHandler.targetEnemyUnit != null)
                 {
-                    if (unit.unitActionHandler.targetEnemyUnit.health.IsDead() || (includeTargetEnemy == false && knownEnemies[i] == unit.unitActionHandler.targetEnemyUnit))
+                    if (unit.unitActionHandler.targetEnemyUnit.health.IsDead || (includeTargetEnemy == false && knownEnemies[i] == unit.unitActionHandler.targetEnemyUnit))
                         continue;
                 }
 

@@ -312,6 +312,7 @@ namespace InventorySystem
 
         public void Disable()
         {
+            // Target unit stops blocking
             onProjectileBehaviourComplete?.Invoke();
             onProjectileBehaviourComplete = null;
 
@@ -330,6 +331,7 @@ namespace InventorySystem
         {
             if (collider.isTrigger == false)
             {
+                Debug.Log("Projectile stuck in: " + collider.gameObject.name);
                 if (collider.CompareTag("Unit Body"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();

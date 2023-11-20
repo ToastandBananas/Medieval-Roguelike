@@ -72,7 +72,7 @@ namespace InventorySystem
 
                 unit.unitActionHandler.SetIsAttacking(false);
 
-                if (unit.IsNPC && unit.health.IsDead() == false) // NPCs will try to pick the item back up immediately
+                if (unit.IsNPC && unit.health.IsDead == false) // NPCs will try to pick the item back up immediately
                 {
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
                     LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(itemData));

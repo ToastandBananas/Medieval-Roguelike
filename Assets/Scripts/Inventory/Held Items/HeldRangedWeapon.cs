@@ -77,7 +77,7 @@ namespace InventorySystem
 
         void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
         {
-            if (targetUnit != null && targetUnit.health.IsDead() == false)
+            if (targetUnit != null && targetUnit.health.IsDead == false)
                 targetUnit.unitAnimator.StopBlocking();
         }
 

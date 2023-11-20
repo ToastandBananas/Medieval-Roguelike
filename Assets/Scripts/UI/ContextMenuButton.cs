@@ -320,7 +320,7 @@ namespace GeneralUI
                     EquipmentSlot targetEquipmentSlot = ContextMenu.targetSlot as EquipmentSlot;
 
                     // If the slot owner is dead, then it just means the Player is trying to drop a dead Unit's equipment
-                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.health.IsDead())
+                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.health.IsDead)
                         UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
                     else
                         targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(ContextMenu.targetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);

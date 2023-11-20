@@ -24,6 +24,9 @@ namespace UnitSystem.ActionSystem
 
         GridPosition mouseGridPosition;
         GridPosition lastMouseGridPosition;
+        GridPosition playerLastGridPosition;
+        BaseAction lastSelectedAction;
+        int lastTurnNumber = -1;
 
         Unit player;
 
@@ -47,6 +50,7 @@ namespace UnitSystem.ActionSystem
         void Start()
         {
             player = GetComponent<Unit>();
+            playerLastGridPosition = player.GridPosition;
             GridSystemVisual.UpdateAttackGridVisual();
         }
 
@@ -66,7 +70,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
             
-            if (player.health.IsDead() == false)
+            if (player.health.IsDead == false)
             {
                 // If the Player was holding the button for turn mode (the Turn Action) and then they release it
                 if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player) is TurnAction)
@@ -151,7 +155,7 @@ namespace UnitSystem.ActionSystem
 
         void HandleActions()
         {
-            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
+            // mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
             
             // If the mouse is hovering over an Interactable
             if (highlightedInteractable != null)
@@ -164,7 +168,7 @@ namespace UnitSystem.ActionSystem
                 player.unitActionHandler.interactAction.QueueAction(highlightedInteractable);
             }
             // If the mouse is hovering over a dead Unit
-            else if (highlightedUnit != null && highlightedUnit.health.IsDead())
+            else if (highlightedUnit != null && highlightedUnit.health.IsDead)
             {
                 // Interact with or move to the dead Unit
                 player.unitActionHandler.interactAction.QueueAction(highlightedUnit.unitInteractable);
@@ -179,9 +183,9 @@ namespace UnitSystem.ActionSystem
             {
                 Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
                 BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
-                
+
                 // If the mouse is hovering over a living unit that's in the player's Vision
-                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
+                if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && player.vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
                     if (player.stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) && (player.alliance.IsEnemy(unitAtGridPosition) || (player.alliance.IsNeutral(unitAtGridPosition) && selectedAction is BaseAttackAction)))
@@ -216,7 +220,7 @@ namespace UnitSystem.ActionSystem
                         else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // Do nothing if the target unit is dead
-                            if (unitAtGridPosition.health.IsDead())
+                            if (unitAtGridPosition.health.IsDead)
                                 return;
 
                             // If the target is in shooting range
@@ -234,7 +238,7 @@ namespace UnitSystem.ActionSystem
                         else if (player.UnitEquipment.MeleeWeaponEquipped || player.UnitEquipment.IsUnarmed || player.UnitEquipment.RangedWeaponEquipped)
                         {
                             // Do nothing if the target unit is dead
-                            if (unitAtGridPosition.health.IsDead())
+                            if (unitAtGridPosition.health.IsDead)
                                 return;
 
                             // If the target is in attack range
@@ -289,7 +293,10 @@ namespace UnitSystem.ActionSystem
                             }
                         }
                         else // The player either doesn't have an attack action selected or has a non-default attack action selected
+                        {
                             player.unitActionHandler.SetTargetEnemyUnit(null);
+                            return;
+                        }
                     }
                     else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                     {
@@ -298,6 +305,7 @@ namespace UnitSystem.ActionSystem
                             player.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
                         player.unitActionHandler.SetTargetEnemyUnit(null);
+                        return;
                     }
                 }
                 // If there's no unit or a dead unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
@@ -343,6 +351,10 @@ namespace UnitSystem.ActionSystem
 
             mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
             BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
+
+            // Don't run this if nothing has changed
+            if (lastTurnNumber == TurnManager.turnNumber && mouseGridPosition == lastMouseGridPosition && player.GridPosition == playerLastGridPosition && selectedAction == lastSelectedAction)
+                return;
 
             if (selectedAction != null)
             {
@@ -391,7 +403,7 @@ namespace UnitSystem.ActionSystem
                             if (unitHit.transform.TryGetComponent(out Unit targetUnit) && targetUnit != player)
                             {
                                 highlightedUnit = targetUnit;
-                                if (highlightedUnit.health.IsDead() == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
+                                if (highlightedUnit.health.IsDead == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
@@ -405,7 +417,7 @@ namespace UnitSystem.ActionSystem
                         
                         if (highlightedUnit == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
-                        else if (highlightedUnit.health.IsDead() && player.vision.IsVisible(highlightedUnit))
+                        else if (highlightedUnit.health.IsDead && player.vision.IsVisible(highlightedUnit))
                             WorldMouse.ChangeCursor(CursorState.LootBag);
                         else if (player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
                             SetAttackCursor();
@@ -420,7 +432,7 @@ namespace UnitSystem.ActionSystem
                             ClearHighlightedInteractable();
                             SetAttackCursor(); 
                             
-                            if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead() == false && player.vision.IsVisible(unitAtGridPosition))
+                            if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead == false && player.vision.IsVisible(unitAtGridPosition))
                             {
                                 if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
@@ -455,7 +467,7 @@ namespace UnitSystem.ActionSystem
                             TooltipManager.ShowUnitHitChanceTooltips(mouseGridPosition, selectedAction);
                     }
 
-                    if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
+                    if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && player.alliance.IsAlly(unitAtGridPosition) == false && player.vision.IsVisible(unitAtGridPosition))
                     {
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                         SetAttackCursor();
@@ -484,6 +496,9 @@ namespace UnitSystem.ActionSystem
             }
 
             lastMouseGridPosition.Set(mouseGridPosition);
+            playerLastGridPosition.Set(player.GridPosition);
+            lastSelectedAction = selectedAction;
+            lastTurnNumber = TurnManager.turnNumber;
         }
 
         void ClearHighlightedInteractable()

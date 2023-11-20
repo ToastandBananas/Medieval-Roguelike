@@ -262,7 +262,7 @@ namespace UnitSystem.ActionSystem
                 if (LevelGrid.HasAnyUnitOnGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
                     continue;
 
-                if (unitAtGridPosition.health.IsDead())
+                if (unitAtGridPosition.health.IsDead)
                     continue;
 
                 if (unit.alliance.IsAlly(unitAtGridPosition))
@@ -285,10 +285,10 @@ namespace UnitSystem.ActionSystem
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead() == false)
+            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
+                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
                 float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
@@ -327,7 +327,7 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // Skip this unit if they're dead
-                if (unitAtGridPosition.health.IsDead())
+                if (unitAtGridPosition.health.IsDead)
                     continue;
 
                 if (unit.alliance.IsEnemy(unitAtGridPosition))
@@ -336,7 +336,7 @@ namespace UnitSystem.ActionSystem
                     finalActionValue += 50f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 50f - (unitAtGridPosition.health.CurrentHealthNormalized() * 50f);
+                    finalActionValue += 50f - (unitAtGridPosition.health.CurrentHealthNormalized * 50f);
                 }
                 else if (unit.alliance.IsAlly(unitAtGridPosition))
                 {
@@ -344,7 +344,7 @@ namespace UnitSystem.ActionSystem
                     finalActionValue -= 100f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 100f - (unitAtGridPosition.health.CurrentHealthNormalized() * 100f);
+                    finalActionValue -= 100f - (unitAtGridPosition.health.CurrentHealthNormalized * 100f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
@@ -356,7 +356,7 @@ namespace UnitSystem.ActionSystem
                     finalActionValue -= 25f;
 
                     // Lower neutral unit health gives this action less value
-                    finalActionValue -= 25f - (unitAtGridPosition.health.CurrentHealthNormalized() * 25f);
+                    finalActionValue -= 25f - (unitAtGridPosition.health.CurrentHealthNormalized * 25f);
 
                     // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
                     if (unitAtGridPosition.IsPlayer)

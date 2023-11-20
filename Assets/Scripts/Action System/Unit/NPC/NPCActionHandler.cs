@@ -61,7 +61,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && unit.health.IsDead() == false)
+            if (unit.IsMyTurn && unit.health.IsDead == false)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 
@@ -105,7 +105,7 @@ namespace UnitSystem.ActionSystem
                 }
                 else if (unit.stateController.currentState == State.Fight && queuedActions.Count > 0 && queuedActions[0] == moveAction && targetEnemyUnit != null)
                 {
-                    if (targetEnemyUnit.health.IsDead())
+                    if (targetEnemyUnit.health.IsDead)
                     {
                         unit.stateController.SetToDefaultState();
                         CancelActions();
@@ -198,7 +198,7 @@ namespace UnitSystem.ActionSystem
             {
                 int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
                 lastQueuedAction = queuedActions[0];
-                if (unit.health.IsDead())
+                if (unit.health.IsDead)
                 {
                     ClearActionQueue(true, true);
                     yield break;
@@ -245,7 +245,7 @@ namespace UnitSystem.ActionSystem
         public void DetermineAction()
         {
             // Debug.Log("Determine action");
-            if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead())
+            if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead)
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
 
             switch (unit.stateController.currentState)
@@ -377,7 +377,7 @@ namespace UnitSystem.ActionSystem
             FindBestTargetEnemy();
 
             // If there's no target enemy Unit, try to find one, else switch States
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
+            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
             {
                 SetTargetEnemyUnit(null);
                 unit.stateController.SetToDefaultState();
@@ -490,7 +490,7 @@ namespace UnitSystem.ActionSystem
             FindBestTargetEnemy();
             ClearActionQueue(false);
 
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
+            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
             {
                 SetTargetEnemyUnit(null);
                 unit.stateController.SetToDefaultState();
@@ -516,7 +516,7 @@ namespace UnitSystem.ActionSystem
 
         void FindBestTargetEnemy()
         {
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
                 return;
 
             if (unit.vision.knownEnemies.Count > 0)
@@ -639,7 +639,7 @@ namespace UnitSystem.ActionSystem
         void Flee()
         {
             // If there's no Unit to flee from or if the Unit to flee from died
-            if (unitToFleeFrom == null || unitToFleeFrom.health.IsDead())
+            if (unitToFleeFrom == null || unitToFleeFrom.health.IsDead)
             {
                 unit.stateController.SetToDefaultState(); // Variables are reset in this method
                 DetermineAction();
@@ -695,7 +695,7 @@ namespace UnitSystem.ActionSystem
         #region Follow
         void Follow()
         {
-            if (leader == null || leader.health.IsDead())
+            if (leader == null || leader.health.IsDead)
             {
                 Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
                 shouldFollowLeader = false;

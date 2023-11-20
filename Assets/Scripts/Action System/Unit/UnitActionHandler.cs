@@ -67,7 +67,7 @@ namespace UnitSystem.ActionSystem
 
             GridSystemVisual.HideGridVisual();
 
-            if (unit.health.IsDead())
+            if (unit.health.IsDead)
             {
                 ClearActionQueue(true, true);
                 return;
@@ -252,7 +252,7 @@ namespace UnitSystem.ActionSystem
                 if (unit.UnitEquipment.RangedWeaponEquipped && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                if ((unit.SelectedAction is MeleeAction || unit.UnitEquipment.MeleeWeaponEquipped || (unit.stats.CanFightUnarmed && (unit.UnitEquipment.RangedWeaponEquipped == false || unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else
@@ -494,7 +494,7 @@ namespace UnitSystem.ActionSystem
 
         public virtual void SetTargetEnemyUnit(Unit target)
         {
-            if (target != null && target.health.IsDead())
+            if (target != null && target.health.IsDead)
             {
                 targetEnemyUnit = null;
                 return;

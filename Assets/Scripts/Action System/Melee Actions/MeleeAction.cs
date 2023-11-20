@@ -61,7 +61,7 @@ namespace UnitSystem.ActionSystem
             if (targetEnemyUnit == null)
                 SetTargetEnemyUnit();
 
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead())
+            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
             {
                 targetEnemyUnit = null;
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -113,7 +113,7 @@ namespace UnitSystem.ActionSystem
 
         protected override IEnumerator DoAttack()
         {
-            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving || targetEnemyUnit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             // If the target Unit moved out of range, queue a movement instead
@@ -310,10 +310,10 @@ namespace UnitSystem.ActionSystem
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead() == false)
+            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized() * 100f);
+                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
                 float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
                 float minAttackRange = 1f;
                 if (unit.UnitEquipment.MeleeWeaponEquipped)
@@ -348,13 +348,13 @@ namespace UnitSystem.ActionSystem
             if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                if (unitAtGridPosition.health.IsDead() == false && unit.alliance.IsEnemy(unitAtGridPosition))
+                if (unitAtGridPosition.health.IsDead == false && unit.alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 70f - (unitAtGridPosition.health.CurrentHealthNormalized() * 70f);
+                    finalActionValue += 70f - (unitAtGridPosition.health.CurrentHealthNormalized * 70f);
 
                     // Favor the targetEnemyUnit
                     if (unit.unitActionHandler.targetEnemyUnit != null && unitAtGridPosition == unit.unitActionHandler.targetEnemyUnit)
@@ -560,7 +560,7 @@ namespace UnitSystem.ActionSystem
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead() == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }
