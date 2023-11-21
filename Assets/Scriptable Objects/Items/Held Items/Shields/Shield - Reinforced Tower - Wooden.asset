@@ -50,5 +50,5 @@ MonoBehaviour:
   idleRotation_Right: {x: 0, y: 30, z: 0}
   blockPowerRange: {x: 12, y: 18}
   damageRange: {x: 4, y: 7}
-  minBlockChanceAddOn: 0
-  maxBlockChanceAddOn: 0
+  minBlockChanceModifier: 0.1
+  maxBlockChanceModifier: 0.15

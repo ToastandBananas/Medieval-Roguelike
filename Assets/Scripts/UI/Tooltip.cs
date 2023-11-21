@@ -78,12 +78,12 @@ namespace GeneralUI
                         stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
                 }
 
-                if (itemData.BlockChanceAddOn != 0f)
+                if (itemData.BlockChanceModifier != 0f)
                 {
-                    if (itemData.BlockChanceAddOn < 0f)
-                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceAddOn * 100f}%");
+                    if (itemData.BlockChanceModifier < 0f)
+                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
                     else
-                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
+                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
                 }
                 stringBuilder.Append("\n");
             }
@@ -94,12 +94,12 @@ namespace GeneralUI
                 else
                     stringBuilder.Append($"\n  Block Power: +{itemData.BlockPower}");
 
-                if (itemData.BlockChanceAddOn != 0f)
+                if (itemData.BlockChanceModifier != 0f)
                 {
-                    if (itemData.BlockChanceAddOn < 0f)
-                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceAddOn * 100f}%");
+                    if (itemData.BlockChanceModifier < 0f)
+                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
                     else
-                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceAddOn * 100f}%");
+                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
                 }
 
                 stringBuilder.Append($"\n  Bash Damage: {itemData.Damage}");
@@ -216,8 +216,12 @@ namespace GeneralUI
                     return;
 
                 float hitChance = UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;
-                if (hitChance < 0f) hitChance = 0f;
-                else if (hitChance > 100f) hitChance = 100f;
+                if (hitChance < 0f) 
+                    hitChance = 0f;
+                else if (hitChance > 100f) 
+                    hitChance = 100f;
+                else
+                    hitChance = Mathf.RoundToInt(hitChance * 100f) / 100f;
 
                 stringBuilder.Clear();
                 stringBuilder.Append($"{hitChance}%");

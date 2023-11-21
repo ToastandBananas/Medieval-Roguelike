@@ -12,7 +12,7 @@ namespace UnitSystem
     {
         [SerializeField] Transform headTransform, bodyTransform;
         [SerializeField] CapsuleCollider baseCapsuleCollider;
-        Animator unitAnim;
+        Animator anim;
 
         Unit unit;
 
@@ -21,20 +21,20 @@ namespace UnitSystem
         void Awake()
         {
             unit = transform.parent.GetComponent<Unit>();
-            unitAnim = GetComponent<Animator>();
+            anim = GetComponent<Animator>();
         }
 
-        public void StartMovingForward() => unitAnim.SetBool("isMoving", true);
+        public void StartMovingForward() => anim.SetBool("isMoving", true);
 
-        public void StopMovingForward() => unitAnim.SetBool("isMoving", false);
+        public void StopMovingForward() => anim.SetBool("isMoving", false);
 
-        public void StartMeleeAttack() => unitAnim.Play("Melee Attack");
+        public void StartMeleeAttack() => anim.Play("Melee Attack");
 
-        public void StartDualMeleeAttack() => unitAnim.Play("Dual Melee Attack");
+        public void StartDualMeleeAttack() => anim.Play("Dual Melee Attack");
 
         public void DoDefaultUnarmedAttack()
         {
-            unitAnim.Play("Unarmed Attack");
+            anim.Play("Unarmed Attack");
         }
 
         // Used in animation Key Frame
@@ -196,9 +196,14 @@ namespace UnitSystem
         const float minFallDistance = 1f; // No damage under this distance
         void CompleteKnockback(Vector3 knockbackTargetPosition, float fallDistance)
         {
-            unit.unitActionHandler.moveAction.SetNextPathPosition(knockbackTargetPosition);
             unit.transform.position = knockbackTargetPosition;
             unit.UpdateGridPosition();
+
+            unit.unitActionHandler.moveAction.SetNextPathPosition(knockbackTargetPosition);
+            unit.unitActionHandler.moveAction.SetFinalTargetGridPosition(unit.GridPosition);
+            unit.unitActionHandler.moveAction.SetTargetGridPosition(unit.GridPosition);
+
+            StopMovingForward();
             beingKnockedBack = false;
 
             if (fallDistance > minFallDistance)

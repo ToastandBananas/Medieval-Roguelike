@@ -51,8 +51,10 @@ MonoBehaviour:
   canDualWield: 0
   attackRange: {x: 1, y: 2.2}
   damageRange: {x: 10, y: 15}
-  minBlockChanceAddOn: 0
-  maxBlockChanceAddOn: 0
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
+  minBlockChanceModifier: -0.06
+  maxBlockChanceModifier: -0.03
+  minKnockbackModifier: 0.15
+  maxKnockbackModifier: 0.2
   defaultMeleeAttackType: 2

@@ -148,7 +148,7 @@ namespace UnitSystem.ActionSystem
             player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
             WorldMouse.ChangeCursor(CursorState.Default);
 
-            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
+            mouseGridPosition = WorldMouse.CurrentGridPosition();
             if (GameControls.gamePlayActions.select.WasPressed && mouseGridPosition != player.GridPosition)
                 turnAction.QueueAction(mouseGridPosition);
         }
@@ -349,7 +349,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
 
-            mouseGridPosition.Set(WorldMouse.CurrentGridPosition());
+            mouseGridPosition = WorldMouse.CurrentGridPosition();
             BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
 
             // Don't run this if nothing has changed
@@ -495,8 +495,8 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            lastMouseGridPosition.Set(mouseGridPosition);
-            playerLastGridPosition.Set(player.GridPosition);
+            lastMouseGridPosition= mouseGridPosition;
+            playerLastGridPosition = player.GridPosition;
             lastSelectedAction = selectedAction;
             lastTurnNumber = TurnManager.turnNumber;
         }

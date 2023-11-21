@@ -11,11 +11,12 @@ namespace InventorySystem
         [SerializeField] int currentStackSize = 1;
         [SerializeField] int remainingUses = 1;
 
-        [SerializeField] int damage;
         [SerializeField] float accuracyModifier;
+        [SerializeField] int damage;
+        [SerializeField] float knockbackChanceModifier;
 
         [SerializeField] int blockPower;
-        [SerializeField] float blockChanceAddOn;
+        [SerializeField] float blockChanceModifier;
         [SerializeField] int defense;
 
         [SerializeField] int value;
@@ -86,24 +87,26 @@ namespace InventorySystem
                     else
                         remainingUses = 1;
 
-                    if (item is Weapon)
+
+                    if (item is Armor)
                     {
-                        Weapon weapon = item as Weapon;
-                        accuracyModifier = Mathf.RoundToInt(Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier) * 1000f) / 1000f;
-                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(weapon.MinBlockChanceAddOn, weapon.MaxBlockChanceAddOn) * 1000f) / 1000f;
-                        damage = Random.Range(weapon.MinDamage, weapon.MaxDamage + 1);
+                        Armor armor = item as Armor;
+                        defense = Random.Range(armor.MinDefense, armor.MaxDefense + 1);
                     }
                     else if (item is Shield)
                     {
                         Shield shield = item as Shield;
-                        blockChanceAddOn = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceAddOn, shield.MaxBlockChanceAddOn) * 1000f) / 1000f;
+                        blockChanceModifier = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceModifier, shield.MaxBlockChanceModifier) * 100f) / 100f;
                         blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
                         damage = Random.Range(shield.MinDamage, shield.MaxDamage + 1);
                     }
-                    else if (item is Armor)
+                    else if (item is Weapon)
                     {
-                        Armor armor = item as Armor;
-                        defense = Random.Range(armor.MinDefense, armor.MaxDefense + 1);
+                        Weapon weapon = item as Weapon;
+                        accuracyModifier = Mathf.RoundToInt(Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier) * 100f) / 100f;
+                        blockChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinBlockChanceModifier, weapon.MaxBlockChanceModifier) * 100f) / 100f;
+                        damage = Random.Range(weapon.MinDamage, weapon.MaxDamage + 1);
+                        knockbackChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinKnockbackModifier, weapon.MaxKnockbackModifier) * 100f) / 100f;
                     }
 
                     if (item.ValueRange.x == item.ValueRange.y)
@@ -147,7 +150,7 @@ namespace InventorySystem
                 else if (item is Shield)
                 {
                     Shield shield = item as Shield;
-                    pointIncrease += (blockChanceAddOn - shield.MinBlockChanceAddOn) * 200f;
+                    pointIncrease += (blockChanceModifier - shield.MinBlockChanceModifier) * 200f;
                     pointIncrease += (blockPower - shield.MinBlockPower) * 2f;
                     pointIncrease += damage - shield.MinDamage;
                 }
@@ -155,8 +158,9 @@ namespace InventorySystem
                 {
                     Weapon weapon = item as Weapon;
                     pointIncrease += (accuracyModifier - weapon.MinAccuracyModifier) * 200f;
-                    pointIncrease += (blockChanceAddOn - weapon.MinBlockChanceAddOn) * 100f;
+                    pointIncrease += (blockChanceModifier - weapon.MinBlockChanceModifier) * 100f;
                     pointIncrease += (damage - weapon.MinDamage) * 3f;
+                    pointIncrease += (knockbackChanceModifier - weapon.MinKnockbackModifier) * 100f;
                 }
             }
             else if (item is Consumable)
@@ -190,7 +194,7 @@ namespace InventorySystem
                 else if (item is Shield)
                 {
                     Shield shield = item as Shield;
-                    totalPointsPossible += (shield.MaxBlockChanceAddOn - shield.MinBlockChanceAddOn) * 200f;
+                    totalPointsPossible += (shield.MaxBlockChanceModifier - shield.MinBlockChanceModifier) * 200f;
                     totalPointsPossible += (shield.MaxBlockPower - shield.MinBlockPower) * 2f;
                     totalPointsPossible += shield.MaxDamage - shield.MinDamage;
                 }
@@ -198,8 +202,9 @@ namespace InventorySystem
                 {
                     Weapon weapon = item as Weapon;
                     totalPointsPossible += (weapon.MaxAccuracyModifier - weapon.MinAccuracyModifier) * 200f;
-                    totalPointsPossible += (weapon.MaxBlockChanceAddOn - weapon.MinBlockChanceAddOn) * 100f;
+                    totalPointsPossible += (weapon.MaxBlockChanceModifier - weapon.MinBlockChanceModifier) * 100f;
                     totalPointsPossible += (weapon.MaxDamage - weapon.MinDamage) * 3f;
+                    totalPointsPossible += (weapon.MaxKnockbackModifier - weapon.MinKnockbackModifier) * 100f;
                 }
             }
             else if (item is Consumable)
@@ -214,49 +219,52 @@ namespace InventorySystem
             return totalPointsPossible;
         }
 
-        public virtual bool IsBetterThan(ItemData itemDataToCompare)
+        public virtual bool IsBetterThan(ItemData otherItemData)
         {
             float thisItemDatasPoints = 0f;
-            float itemDataToComparesPoints = 0f;
+            float otherItemDatasPoints = 0f;
 
-            if (item.GetType() != itemDataToCompare.item.GetType())
+            if (item.GetType() != otherItemData.item.GetType())
             {
-                Debug.LogWarning($"{item.Name} and {itemDataToCompare.item.Name} are not the same type of Item and should not be compared...");
+                Debug.LogWarning($"{item.Name} and {otherItemData.item.Name} are not the same type of Item and should not be compared...");
                 return false;
             }
 
             if (item is Armor)
             {
                 thisItemDatasPoints += defense * 2;
-                itemDataToComparesPoints += defense * 2;
+                otherItemDatasPoints += defense * 2;
             }
             else if (item is Shield)
             {
-                thisItemDatasPoints += blockChanceAddOn * 200f;
-                itemDataToComparesPoints += itemDataToCompare.blockChanceAddOn * 200f;
+                thisItemDatasPoints += blockChanceModifier * 200f;
+                otherItemDatasPoints += otherItemData.blockChanceModifier * 200f;
 
                 thisItemDatasPoints += blockPower * 2;
-                itemDataToComparesPoints += itemDataToCompare.blockPower * 2;
+                otherItemDatasPoints += otherItemData.blockPower * 2;
 
                 thisItemDatasPoints += damage;
-                itemDataToComparesPoints += itemDataToCompare.damage;
+                otherItemDatasPoints += otherItemData.damage;
             }
             else if (item is Weapon)
             {
                 thisItemDatasPoints += accuracyModifier * 200f;
-                itemDataToComparesPoints += itemDataToCompare.accuracyModifier * 200f;
+                otherItemDatasPoints += otherItemData.accuracyModifier * 200f;
 
-                thisItemDatasPoints += blockChanceAddOn * 100f;
-                itemDataToComparesPoints += itemDataToCompare.blockChanceAddOn * 100f;
+                thisItemDatasPoints += blockChanceModifier * 100f;
+                otherItemDatasPoints += otherItemData.blockChanceModifier * 100f;
 
                 thisItemDatasPoints += blockPower;
-                itemDataToComparesPoints += itemDataToCompare.blockPower;
+                otherItemDatasPoints += otherItemData.blockPower;
 
                 thisItemDatasPoints += damage * 3;
-                itemDataToComparesPoints += itemDataToCompare.damage * 3;
+                otherItemDatasPoints += otherItemData.damage * 3;
+
+                thisItemDatasPoints += knockbackChanceModifier * 100f;
+                otherItemDatasPoints += otherItemData.knockbackChanceModifier * 100f;
             }
 
-            if (itemDataToComparesPoints > thisItemDatasPoints)
+            if (otherItemDatasPoints > thisItemDatasPoints)
                 return false;
             return true;
         }
@@ -266,12 +274,13 @@ namespace InventorySystem
             if (otherItemData == null)
                 return false;
 
-            if (item == otherItemData.item 
-                && accuracyModifier == otherItemData.accuracyModifier 
-                && blockPower == otherItemData.blockPower 
-                && blockChanceAddOn == otherItemData.blockChanceAddOn
+            if (item == otherItemData.item
+                && accuracyModifier == otherItemData.accuracyModifier
+                && blockPower == otherItemData.blockPower
+                && blockChanceModifier == otherItemData.blockChanceModifier
                 && damage == otherItemData.damage
-                && defense == otherItemData.defense)
+                && defense == otherItemData.defense
+                && knockbackChanceModifier == otherItemData.knockbackChanceModifier)
                 return true;
             return false;
         }
@@ -285,10 +294,12 @@ namespace InventorySystem
             currentStackSize = itemDataToCopy.currentStackSize;
             remainingUses = itemDataToCopy.remainingUses;
 
-            damage = itemDataToCopy.damage;
             accuracyModifier = itemDataToCopy.accuracyModifier;
-            blockPower = itemDataToCopy.blockPower;
+            damage = itemDataToCopy.damage;
+            knockbackChanceModifier = itemDataToCopy.knockbackChanceModifier;
 
+            blockPower = itemDataToCopy.blockPower;
+            blockChanceModifier = itemDataToCopy.blockChanceModifier;
             defense = itemDataToCopy.defense;
 
             value = itemDataToCopy.value;
@@ -303,8 +314,9 @@ namespace InventorySystem
             temp.remainingUses = remainingUses;
             temp.damage = damage;
             temp.accuracyModifier = accuracyModifier;
+            temp.knockbackChanceModifier = knockbackChanceModifier;
             temp.blockPower = blockPower;
-            temp.blockChanceAddOn = blockChanceAddOn;
+            temp.blockChanceModifier = blockChanceModifier;
             temp.defense = defense;
             temp.value = value;
             temp.hasBeenRandomized = hasBeenRandomized;
@@ -315,8 +327,9 @@ namespace InventorySystem
             remainingUses = otherItemData.remainingUses;
             damage = otherItemData.damage;
             accuracyModifier = otherItemData.accuracyModifier;
+            knockbackChanceModifier = otherItemData.knockbackChanceModifier;
             blockPower = otherItemData.blockPower;
-            blockChanceAddOn = otherItemData.blockChanceAddOn;
+            blockChanceModifier = otherItemData.blockChanceModifier;
             defense = otherItemData.defense;
             value = otherItemData.value;
             hasBeenRandomized = otherItemData.hasBeenRandomized;
@@ -327,8 +340,9 @@ namespace InventorySystem
             otherItemData.remainingUses = temp.remainingUses;
             otherItemData.damage = temp.damage;
             otherItemData.accuracyModifier = temp.accuracyModifier;
+            otherItemData.knockbackChanceModifier = temp.knockbackChanceModifier;
             otherItemData.blockPower = temp.blockPower;
-            otherItemData.blockChanceAddOn = temp.blockChanceAddOn;
+            otherItemData.blockChanceModifier = temp.blockChanceModifier;
             otherItemData.defense = temp.defense;
             otherItemData.value = temp.value;
             otherItemData.hasBeenRandomized = temp.hasBeenRandomized;
@@ -394,10 +408,11 @@ namespace InventorySystem
 
         public float AccuracyModifier => accuracyModifier;
         public int Damage => damage;
-        public int Defense => defense;
+        public float KnockbackChanceModifier => knockbackChanceModifier;
 
         public int BlockPower => blockPower;
-        public float BlockChanceAddOn => blockChanceAddOn;
+        public float BlockChanceModifier => blockChanceModifier;
+        public int Defense => defense;
 
         public int Value => value;
 

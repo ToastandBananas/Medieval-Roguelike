@@ -326,6 +326,7 @@ namespace UnitSystem.ActionSystem
 
         public abstract GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit);
 
+        /// <summary>A weapon's accuracy will be multiplied by this amount at the end of the calculation, rather than directly added or subtracted. Affects Ranged Accuracy & Dodge Chance.</summary>
         public abstract float AccuracyModifier();
 
         public abstract bool IsMeleeAttackAction();

@@ -109,7 +109,7 @@ namespace UnitSystem
             }
         }
 
-        public void SetGridPosition(GridPosition gridPosition) => this.gridPosition.Set(gridPosition);
+        public void SetGridPosition(GridPosition gridPosition) => this.gridPosition = gridPosition;
 
         public bool IsCompletelySurrounded(float range)
         {

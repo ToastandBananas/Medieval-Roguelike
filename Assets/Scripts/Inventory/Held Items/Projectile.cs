@@ -49,7 +49,7 @@ namespace InventorySystem
         public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
         {
             this.shooter = shooter;
-            this.itemData = new ItemData(itemData);
+            this.itemData.TransferData(itemData);
             this.itemData.SetCurrentStackSize(1);
 
             Ammunition ammunitionItem = this.itemData.Item.Ammunition;

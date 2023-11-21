@@ -515,7 +515,7 @@ namespace UnitSystem.ActionSystem
                 nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1);
             else // Debug.LogWarning("Next Position is " + unit.name + "'s current position...");
                 nextTargetPosition = unit.transform.position;
-            nextTargetPosition = new Vector3(Mathf.RoundToInt(nextTargetPosition.x), nextTargetPosition.y, Mathf.RoundToInt(nextTargetPosition.z));
+            nextTargetPosition.Set(Mathf.RoundToInt(nextTargetPosition.x), nextTargetPosition.y, Mathf.RoundToInt(nextTargetPosition.z));
             return nextTargetPosition;
         }
 
