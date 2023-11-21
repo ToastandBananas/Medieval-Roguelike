@@ -219,7 +219,7 @@ namespace UnitSystem
             else if (blockChance > maxBlockChance) 
                 blockChance = maxBlockChance;
 
-            Debug.Log($"{unit.name}'s Shield Block Chance: " + blockChance);
+            // Debug.Log($"{unit.name}'s Shield Block Chance: " + blockChance);
             return blockChance;
         }
 
@@ -248,7 +248,7 @@ namespace UnitSystem
             else if (blockChance > maxBlockChance) 
                 blockChance = maxBlockChance;
 
-            Debug.Log($"{unit.name}'s Weapon Block Chance: " + blockChance);
+            // Debug.Log($"{unit.name}'s Weapon Block Chance: " + blockChance);
             return blockChance;
         }
 
@@ -297,6 +297,7 @@ namespace UnitSystem
             }
         }
 
+        ///<summary>A lower number is worse for the Unit being attacked, as their block chance will be multiplied by this.</summary>
         float EnemyWeaponSkill_BlockChanceModifier(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
         {
             Weapon weapon = null;
@@ -319,7 +320,7 @@ namespace UnitSystem
             if (modifier < 0f)
                 modifier = 0f;
 
-            Debug.Log(attackingUnit.name + " Weapon Skill Block Modifier against " + unit.name + ": " + modifier);
+            // Debug.Log(attackingUnit.name + " Weapon Skill Block Modifier against " + unit.name + ": " + modifier);
             return modifier;
         }
         #endregion
@@ -338,7 +339,7 @@ namespace UnitSystem
             if (unit.UnitEquipment != null)
                 AdjustCarryWeight(unit.UnitEquipment.GetTotalEquipmentWeight());
 
-            if (CarryWeightRatio() >= 2f)
+            if (CarryWeightRatio >= 2f)
                 unit.unitActionHandler.moveAction.SetCanMove(false);
             else
                 unit.unitActionHandler.moveAction.SetCanMove(true);
@@ -347,11 +348,11 @@ namespace UnitSystem
                 InventoryUI.UpdatePlayerCarryWeightText();
         }
 
-        public float CarryWeightRatio() => currentCarryWeight / MaxCarryWeight;
+        public float CarryWeightRatio => currentCarryWeight / MaxCarryWeight;
 
         public float EncumbranceMoveCostModifier()
         {
-            float carryWeightRatio = CarryWeightRatio();
+            float carryWeightRatio = CarryWeightRatio;
             if (carryWeightRatio <= 0.5f)
                 return 1f;
             else
@@ -359,7 +360,10 @@ namespace UnitSystem
                 if (carryWeightRatio > 2f)
                     carryWeightRatio = 2f;
 
-                return 1f + ((carryWeightRatio * 1.5f) - 0.5f);
+                if (carryWeightRatio <= 1f)
+                    return 1f + ((carryWeightRatio * 1.5f) - 0.5f);
+                else
+                    return 1f + ((Mathf.Pow(carryWeightRatio, 2) * 1.5f) - 0.5f);
             }
         }
         #endregion
@@ -367,9 +371,11 @@ namespace UnitSystem
         #region Dodging
         public float DodgeChance(Unit attackingUnit, ItemData weaponBeingAttackedWith, BaseAttackAction attackAction, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
-            float dodgeChance = 0f;
-            if (CarryWeightRatio() < 2f)
+            float dodgeChance;
+            if (CarryWeightRatio < 2f)
                 dodgeChance = agility.GetValue() / 100f * 0.75f * EncumbranceDodgeChanceMultiplier() * EnemyWeaponSkillDodgeChanceModifier(attackingUnit, weaponBeingAttackedWith, attackerUsingOffhand);
+            else
+                return 0f;
 
             // Dodge chance affected by height differences between this Unit and the attackingUnit
             dodgeChance += dodgeChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
@@ -390,9 +396,10 @@ namespace UnitSystem
             return dodgeChance;
         }
 
+        ///<summary>A lower number is worse for the Unit being attacked, as their dodge chance will be multiplied by this.</summary>
         float EncumbranceDodgeChanceMultiplier()
         {
-            float carryWeightRatio = CarryWeightRatio();
+            float carryWeightRatio = CarryWeightRatio;
             if (carryWeightRatio <= 0.5f)
                 return 1f;
             else
@@ -404,10 +411,11 @@ namespace UnitSystem
                 if (carryWeightRatio <= 1f)
                     return 1f - (carryWeightRatio * 0.2f);
                 else
-                    return 1f - (carryWeightRatio * 0.4f);
+                    return 1f - (Mathf.Pow(carryWeightRatio, 2) * 0.2f);
             }
         }
 
+        ///<summary>A lower number is worse for the Unit being attacked, as their dodge chance will be multiplied by this.</summary>
         float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
         {
             Weapon weapon = null;
@@ -429,7 +437,8 @@ namespace UnitSystem
 
             if (modifier < 0f)
                 modifier = 0f;
-            
+
+            // Debug.Log($"{attackingUnit.name}'s Weapon Skill Dodge Chance Modifier against {unit.name}: {modifier}");
             return modifier;
         }
 

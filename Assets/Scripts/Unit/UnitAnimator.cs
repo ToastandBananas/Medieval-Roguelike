@@ -235,7 +235,7 @@ namespace UnitSystem
             float strengthBonus = unit.stats.Strength.GetValue() * strengthFactor;
 
             // Calculate the carry weight ratio. This can exceed 1 if carrying more than max capacity
-            float carryWeightRatio = unit.stats.CarryWeightRatio();
+            float carryWeightRatio = unit.stats.CarryWeightRatio;
 
             // Adjust carry weight penalty to be more severe if carrying beyond max capacity
             float carryWeightPenalty;
