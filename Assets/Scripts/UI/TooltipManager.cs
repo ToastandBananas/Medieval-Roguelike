@@ -214,7 +214,7 @@ namespace GeneralUI
             actionAreaGridPositions = selectedAction.GetActionAreaGridPositions(targetGridPosition);
             for (int i = 0; i < actionAreaGridPositions.Count; i++)
             {
-                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i], out Unit targetUnit))
+                if (LevelGrid.HasUnitAtGridPosition(actionAreaGridPositions[i], out Unit targetUnit))
                     GetUnitTooltip().ShowUnitHitChanceTooltip(targetUnit, selectedAction);
             }
 

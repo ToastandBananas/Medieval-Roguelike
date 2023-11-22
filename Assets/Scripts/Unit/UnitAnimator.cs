@@ -17,6 +17,7 @@ namespace UnitSystem
         Unit unit;
 
         public bool beingKnockedBack { get; private set; }
+        public bool isDodging { get; private set; }
 
         void Awake()
         {
@@ -44,6 +45,8 @@ namespace UnitSystem
 
         IEnumerator Dodge(Unit attackingUnit, HeldItem heldItemToDodge, Projectile projectileToDodge)
         {
+            isDodging = true;
+
             // Face the attacker
             if (unit.unitActionHandler.turnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
                 unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
@@ -102,6 +105,8 @@ namespace UnitSystem
 
                 StartCoroutine(ReturnToOriginalPosition(dodgeTargetPosition, originalPosition, 0.1f));
             }
+            else
+                isDodging = false;
         }
 
         public void DoSlightKnockback(Transform attackerTransform) => StartCoroutine(SlightKnockback(attackerTransform));
@@ -163,6 +168,8 @@ namespace UnitSystem
             // Wait a frame to allow projectiles to "Arrive" properly before moving
             yield return null;
 
+            StopMovingForward();
+
             // Don't play the animation if the NPC is off-screen
             if (unit.IsNPC && unit.unitMeshManager.IsVisibleOnScreen == false)
             {
@@ -193,7 +200,6 @@ namespace UnitSystem
             CompleteKnockback(knockbackTargetPosition, fallDistance);
         }
 
-        const float minFallDistance = 1f; // No damage under this distance
         void CompleteKnockback(Vector3 knockbackTargetPosition, float fallDistance)
         {
             unit.transform.position = knockbackTargetPosition;
@@ -203,51 +209,10 @@ namespace UnitSystem
             unit.unitActionHandler.moveAction.SetFinalTargetGridPosition(unit.GridPosition);
             unit.unitActionHandler.moveAction.SetTargetGridPosition(unit.GridPosition);
 
-            StopMovingForward();
             beingKnockedBack = false;
 
-            if (fallDistance > minFallDistance)
-                unit.health.TakeDamage(CalculateFallDamage(fallDistance), null);
-        }
-
-        int CalculateFallDamage(float fallDistance)
-        {
-            float modifiedMaxFallDistance = CalculateModifiedMaxFallDistance();
-
-            if (fallDistance <= minFallDistance) return 0;
-            if (fallDistance >= modifiedMaxFallDistance) return unit.health.MaxHealth; // Instant death
-
-            // Calculate the damage percentage based on fall distance
-            float damagePercent = (fallDistance - minFallDistance) / (modifiedMaxFallDistance - minFallDistance);
-            int damage = Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
-            if (damage < 1)
-                damage = 1;
-
-            //Debug.Log(unit.name + " fell " + fallDistance + " units for " + damage + " damage");
-            return Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
-        }
-
-        float CalculateModifiedMaxFallDistance()
-        {
-            float baseLethalFallDistance = 6f;
-            float strengthFactor = 0.035f;
-            float carryWeightFactor = 2f;
-            float strengthBonus = unit.stats.Strength.GetValue() * strengthFactor;
-
-            // Calculate the carry weight ratio. This can exceed 1 if carrying more than max capacity
-            float carryWeightRatio = unit.stats.CarryWeightRatio;
-
-            // Adjust carry weight penalty to be more severe if carrying beyond max capacity
-            float carryWeightPenalty;
-            if (carryWeightRatio <= 1) // Up to 100% capacity, use a linear scale
-                carryWeightPenalty = carryWeightRatio * carryWeightFactor;
-            else // Beyond 100% capacity, you can increase the penalty exponentially
-                carryWeightPenalty = Mathf.Pow(carryWeightRatio, 2) * carryWeightFactor;
-
-            //Debug.Log("Strength bonus: " + strengthBonus);
-            //Debug.Log("Carry weight penalty: " + carryWeightPenalty);
-            //Debug.Log("Max Fall Distance: " + Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1));
-            return Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1); // Ensure it doesn't go below 1
+            if (fallDistance > Health.minFallDistance)
+                unit.health.TakeFallDamage(fallDistance);
         }
 
         IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
@@ -260,6 +225,9 @@ namespace UnitSystem
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
                 yield return null;
             }
+
+            if (isDodging)
+                isDodging = false;
         }
 
         public void StopBlocking()

@@ -127,6 +127,8 @@ namespace GridSystem
 
         public static GridPosition GetGridPosition(Vector3 worldPosition) => new GridPosition(worldPosition);
 
+        public static GridPosition GetGridPosition(float x, float y, float z) => new GridPosition(Mathf.RoundToInt(x), y, Mathf.RoundToInt(z));
+
         public static Vector3 GetWorldPosition(GridPosition gridPosition) => new Vector3(gridPosition.x, gridPosition.y, gridPosition.z);
 
         public static bool IsValidGridPosition(GridPosition gridPosition)
@@ -278,22 +280,22 @@ namespace GridSystem
             return validGridPositionsList[Random.Range(0, validGridPositionsList.Count - 1)];
         }
 
-        public static List<GridPosition> GetSurroundingGridPositions(GridPosition startingGridPosition, float range, bool obstructedGridPositionsValid, bool startingGridPositionValid)
+        public static List<GridPosition> GetSurroundingGridPositions(GridPosition startGridPosition, float range, bool obstructedGridPositionsValid, bool startGridPositionValid)
         {
             gridPositionsList.Clear();
             float boundsDimension = (range * 2f) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
             for (int i = 0; i < nodes.Count; i++)
             {
                 GridPosition nodeGridPosition = GetGridPosition((Vector3)nodes[i].position);
-                if (startingGridPositionValid == false && nodeGridPosition == startingGridPosition)
+                if (startGridPositionValid == false && nodeGridPosition == startGridPosition)
                     continue;
 
                 if (obstructedGridPositionsValid == false && GridPositionObstructed(nodeGridPosition))
                     continue;
 
-                if (TacticsUtilities.CalculateDistance_XYZ(startingGridPosition, nodeGridPosition) > range)
+                if (TacticsUtilities.CalculateDistance_XYZ(startGridPosition, nodeGridPosition) > range)
                     continue;
 
                 gridPositionsList.Add(nodeGridPosition);
@@ -320,6 +322,27 @@ namespace GridSystem
             return nearestGridPosition;
         }
 
+        public static bool HasAnyUnitWithinRange(Unit unit, GridPosition startGridPosition, float range, bool startGridPositionValid, bool mustBeDirectlyVisible)
+        {
+            validGridPositionsList = GetSurroundingGridPositions(startGridPosition, range, true, startGridPositionValid);
+            for (int i = 0; i < gridPositionsList.Count; i++)
+            {
+                if (gridPositionsList[i] == startGridPosition && !startGridPositionValid)
+                    continue;
+
+                if (!HasUnitAtGridPosition(gridPositionsList[i], out Unit unitAtGridPosition))
+                    continue;
+                
+                if (unitAtGridPosition == unit)
+                    continue;
+
+                if (unit != null && mustBeDirectlyVisible && !unit.vision.IsDirectlyVisible(unitAtGridPosition))
+                    continue;
+                return true;
+            }
+            return false;
+        }
+
         public static bool IsDiagonal(GridPosition startGridPosition, GridPosition endGridPosition)
         {
             if (Mathf.RoundToInt(startGridPosition.x) != Mathf.RoundToInt(endGridPosition.x) && Mathf.RoundToInt(startGridPosition.z) != Mathf.RoundToInt(endGridPosition.z))
@@ -337,14 +360,14 @@ namespace GridSystem
         public static bool GridPositionObstructed(GridPosition gridPosition)
         {
             GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
-            if (IsValidGridPosition(gridPosition) == false || (HasAnyUnitOnGridPosition(gridPosition, out Unit unitAtGridPosition) && unitAtGridPosition.health.IsDead == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
+            if (IsValidGridPosition(gridPosition) == false || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && unitAtGridPosition.health.IsDead == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
                 return true;
             return false;
         }
 
-        public static bool HasAnyUnitOnGridPosition(GridPosition gridPosition, out Unit unit) => units.TryGetValue(gridPosition, out unit);
+        public static bool HasUnitAtGridPosition(GridPosition gridPosition, out Unit unit) => units.TryGetValue(gridPosition, out unit);
 
-        public static bool HasAnyInteractableOnGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
+        public static bool HasInteractableAtGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
 
         public static BlockManager BlockManager => Instance.blockManager;
 

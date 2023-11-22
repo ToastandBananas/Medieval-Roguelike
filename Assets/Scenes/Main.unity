@@ -648,6 +648,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2108678774539729225, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
+      propertyPath: agility.baseValue
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 2108678774539729225, guid: ff4a3bcfd4479e548afb849e53fccd64,
+        type: 3}
       propertyPath: swordSkill.baseValue
       value: 10
       objectReference: {fileID: 0}

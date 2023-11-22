@@ -12,6 +12,9 @@ namespace UnitSystem.ActionSystem
 {
     public class MoveAction : BaseAction
     {
+        public delegate void OnMoveHandler();
+        public event OnMoveHandler OnMove;
+
         public GridPosition finalTargetGridPosition { get; private set; }
         public GridPosition nextTargetGridPosition { get; private set; }
         public GridPosition lastGridPosition { get; private set; }
@@ -107,6 +110,7 @@ namespace UnitSystem.ActionSystem
             }
 
             lastGridPosition = unit.GridPosition;
+            OnMove?.Invoke();
 
             while (unit.unitAnimator.beingKnockedBack)
                 yield return null;
@@ -212,6 +216,12 @@ namespace UnitSystem.ActionSystem
                 while (unit.unitAnimator.beingKnockedBack == false && Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
                 {
                     unitPosition = unit.transform.position;
+
+                    if (unit.unitAnimator.isDodging)
+                    {
+                        while (unit.unitAnimator.isDodging)
+                            yield return null;
+                    }
 
                     // If the next point on the path is above or below the Unit
                     if (Mathf.Abs(Mathf.Abs(nextPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
@@ -422,7 +432,7 @@ namespace UnitSystem.ActionSystem
 
             // If there's an Interactable on the next path position
             GridPosition nextGridPosition = LevelGrid.GetGridPosition(nextPathPosition);
-            if (LevelGrid.HasAnyInteractableOnGridPosition(nextGridPosition))
+            if (LevelGrid.HasInteractableAtGridPosition(nextGridPosition))
             {
                 Interactable interactable = LevelGrid.GetInteractableAtGridPosition(nextGridPosition);
                 if (interactable is Door)

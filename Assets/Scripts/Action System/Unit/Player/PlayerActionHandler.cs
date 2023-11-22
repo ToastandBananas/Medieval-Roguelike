@@ -165,7 +165,7 @@ namespace UnitSystem.ActionSystem
             {
                 ContextMenu.DisableContextMenu(true);
 
-                while (isAttacking)
+                while (isAttacking || unit.unitAnimator.beingKnockedBack)
                     yield return null;
 
                 unit.stats.UseAP(queuedAPs[0]);

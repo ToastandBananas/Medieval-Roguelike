@@ -36,7 +36,7 @@ namespace UnitSystem.ActionSystem
 
         protected void SetTargetEnemyUnit()
         {
-            if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition, out Unit unitAtGridPosition))
+            if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit unitAtGridPosition))
             {
                 unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                 targetEnemyUnit = unitAtGridPosition;
@@ -49,6 +49,7 @@ namespace UnitSystem.ActionSystem
         {
             if (targetUnit != null && targetUnit.health.IsDead == false)
             {
+                bool attackBlocked = false;
                 targetUnit.unitActionHandler.InterruptActions();
 
                 float damageAmount;
@@ -75,46 +76,60 @@ namespace UnitSystem.ActionSystem
                 if (heldItemBlockedWith != null)
                 {
                     float blockAmount = 0f;
+                    attackBlocked = true;
                     if (heldItemBlockedWith is HeldShield)
                     {
-                        HeldShield shield = heldItemBlockedWith as HeldShield;
-                        blockAmount = targetUnit.stats.BlockPower(shield);
+                        HeldShield shieldBlockedWith = heldItemBlockedWith as HeldShield;
+                        blockAmount = targetUnit.stats.BlockPower(shieldBlockedWith);
 
                         // Play the recoil animation & then lower the shield if not in Raise Shield Stance
-                        shield.Recoil();
+                        shieldBlockedWith.Recoil();
 
                         // Potentially fumble & drop the shield
-                        shield.TryFumbleHeldItem();
+                        shieldBlockedWith.TryFumbleHeldItem();
                     }
                     else if (heldItemBlockedWith is HeldMeleeWeapon)
                     {
-                        HeldMeleeWeapon meleeWeapon = heldItemBlockedWith as HeldMeleeWeapon;
-                        blockAmount = targetUnit.stats.BlockPower(meleeWeapon);
+                        HeldMeleeWeapon meleeWeaponBlockedWith = heldItemBlockedWith as HeldMeleeWeapon;
+                        blockAmount = targetUnit.stats.BlockPower(meleeWeaponBlockedWith);
 
                         if (unit.UnitEquipment.IsDualWielding)
                         {
-                            if (meleeWeapon == unit.unitMeshManager.GetRightHeldMeleeWeapon())
+                            if (meleeWeaponBlockedWith == unit.unitMeshManager.GetRightHeldMeleeWeapon())
                                 blockAmount *= Weapon.dualWieldPrimaryEfficiency;
                             else
                                 blockAmount *= Weapon.dualWieldSecondaryEfficiency;
                         }
 
                         // Play the recoil animation & then lower the weapon
-                        meleeWeapon.Recoil();
+                        meleeWeaponBlockedWith.Recoil();
 
                         // Potentially fumble & drop the weapon
-                        meleeWeapon.TryFumbleHeldItem();
+                        meleeWeaponBlockedWith.TryFumbleHeldItem();
                     }
 
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount - blockAmount), unit);
+                    damageAmount = damageAmount - armorAbsorbAmount - blockAmount;
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), unit);
                 }
                 else
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount - armorAbsorbAmount), unit);
-            }
+                {
+                    damageAmount -= armorAbsorbAmount;
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), unit);
+                }
 
-            // Don't try to knockback if the Unit blocked or died
-            if (heldItemBlockedWith == null && targetUnit.health.IsDead == false)
-                targetUnit.unitAnimator.Knockback(unit);
+                // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
+                if ((damageAmount > 0f || attackBlocked) && targetUnit.health.IsDead == false) 
+                {
+                    bool knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, attackBlocked);
+                    if (heldWeaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
+                    {
+                        if (knockedBack)
+                            unit.unitActionHandler.GetAction<SpearWallAction>().OnKnockback();
+                        else
+                            unit.unitActionHandler.GetAction<SpearWallAction>().OnFailedKnockback();
+                    }
+                }
+            }
         }
 
         public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, bool headShot)
@@ -156,7 +171,7 @@ namespace UnitSystem.ActionSystem
             List<Unit> targetUnits = ListPool<Unit>.Claim(); 
             foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
             {
-                if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition, out Unit targetUnit) == false)
+                if (LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit targetUnit) == false)
                     continue;
 
                 targetUnits.Add(targetUnit);
@@ -169,9 +184,6 @@ namespace UnitSystem.ActionSystem
             yield return null; 
             
             HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            ItemData weaponItemData = null;
-            if (primaryMeleeWeapon != null)
-                weaponItemData = primaryMeleeWeapon.itemData;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
@@ -208,12 +220,12 @@ namespace UnitSystem.ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, false))
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false))
                         targetUnits[i].unitAnimator.DoDodge(unit, primaryMeleeWeapon, null);
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, false);
+                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false);
                         unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
@@ -236,12 +248,12 @@ namespace UnitSystem.ActionSystem
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, false) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false) == false)
                     {
                         bool headShot = false;
 
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, false))
+                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false))
                             targetUnits[i].unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                         // Damage this unit

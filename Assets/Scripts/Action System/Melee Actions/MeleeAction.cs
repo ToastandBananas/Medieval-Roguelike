@@ -82,7 +82,10 @@ namespace UnitSystem.ActionSystem
         {
             // Unit's can't opportunity attack while moving
             if (unit.unitActionHandler.moveAction.isMoving)
+            {
+                Debug.Log("Here");
                 return;
+            }
 
             this.targetEnemyUnit = targetEnemyUnit;
             unit.unitActionHandler.SetIsAttacking(true);
@@ -91,17 +94,13 @@ namespace UnitSystem.ActionSystem
         
         void AttackTarget(HeldItem heldWeaponAttackingWith, bool isUsingOffhandWeapon)
         {
-            ItemData weaponItemData = null;
-            if (heldWeaponAttackingWith != null)
-                weaponItemData = heldWeaponAttackingWith.itemData;
-
-            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, weaponItemData, this, isUsingOffhandWeapon);
+            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, heldWeaponAttackingWith, this, isUsingOffhandWeapon);
             if (attackDodged)
                 targetEnemyUnit.unitAnimator.DoDodge(unit, heldWeaponAttackingWith, null);
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, weaponItemData, isUsingOffhandWeapon);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, heldWeaponAttackingWith, isUsingOffhandWeapon);
                 unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
 
                 if (attackBlocked && itemBlockedWith != null)
@@ -140,7 +139,7 @@ namespace UnitSystem.ActionSystem
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null;
-
+            
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
@@ -151,7 +150,7 @@ namespace UnitSystem.ActionSystem
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.turnAction.isRotating)
                     yield return null;
-
+                
                 // Play the attack animations and handle blocking for the target
                 if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
                 {
@@ -203,19 +202,19 @@ namespace UnitSystem.ActionSystem
                 }
                 else if (unit.UnitEquipment.IsDualWielding) // Dual wield attack
                 {
-                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, this, false);
+                    bool mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem, this, false);
                     bool mainAttackBlocked = false;
                     bool offhandAttackBlocked = false;
                     if (mainAttackDodged == false)
                     {
-                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem.itemData, false);
+                        mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem, false);
                         DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
                     }
 
-                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, this, true);
+                    bool offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem, this, true);
                     if (offhandAttackDodged == false)
                     {
-                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem.itemData, true);
+                        offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem, true);
                         DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
                     }
 
@@ -228,10 +227,10 @@ namespace UnitSystem.ActionSystem
                 else
                 {
                     HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon.itemData, this, false);
+                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon.itemData, false);
+                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false);
                         if (primaryMeleeWeapon != null)
                             DamageTargets(primaryMeleeWeapon, headShot); // Right hand weapon attack
                         else
@@ -345,7 +344,7 @@ namespace UnitSystem.ActionSystem
             float finalActionValue = 0f;
 
             // Make sure there's a Unit at this grid position
-            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition, out Unit unitAtGridPosition))
+            if (LevelGrid.HasUnitAtGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
                 if (unitAtGridPosition.health.IsDead == false && unit.alliance.IsEnemy(unitAtGridPosition))
@@ -491,7 +490,7 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // If Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out Unit _))
+                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out Unit _))
                     continue;
 
                 // If target is out of attack range from this Grid Position

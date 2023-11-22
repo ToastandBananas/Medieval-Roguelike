@@ -87,6 +87,8 @@ namespace InventorySystem
 
         public void RaiseSpearWall()
         {
+            unit.unitAnimator.StopMovingForward();
+
             anim.SetBool("spearWall", true);
             if (this == unit.unitMeshManager.leftHeldItem)
                 anim.CrossFadeInFixedTime("SpearWall_1H_L", defaultBlockTransitionTime);
@@ -97,12 +99,19 @@ namespace InventorySystem
                 else
                     anim.CrossFadeInFixedTime("SpearWall_1H_R", defaultBlockTransitionTime);
             }
+
+            currentHeldItemStance = HeldItemStance.SpearWall;
         }
 
         public void LowerSpearWall()
         {
             anim.SetBool("spearWall", false);
             anim.CrossFadeInFixedTime("Idle", defaultBlockTransitionTime);
+
+            if (anim.GetBool("versatileStance") == false)
+                currentHeldItemStance = HeldItemStance.Default;
+            else
+                currentHeldItemStance = HeldItemStance.Versatile;
         }
 
         public override void StopBlocking() => LowerWeapon();

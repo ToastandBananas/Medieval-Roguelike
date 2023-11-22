@@ -79,7 +79,8 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            itemDatasToEquip.Remove((ItemData)itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault().Key);
+            if (itemDatasToEquip.Count > 0)
+                itemDatasToEquip.Remove((ItemData)itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault().Key);
         }
 
         public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)

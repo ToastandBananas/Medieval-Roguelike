@@ -17,7 +17,7 @@ namespace InventorySystem
         [SerializeField] protected MeshRenderer[] meshRenderers;
         [SerializeField] protected MeshFilter[] meshFilters;
 
-        public HeldItemStance currentHeldItemStance { get; private set; }
+        public HeldItemStance currentHeldItemStance { get; protected set; }
 
         public Animator anim { get; private set; }
         public ItemData itemData { get; private set; }
@@ -181,23 +181,17 @@ namespace InventorySystem
 
         public virtual void StopBlocking() { }
 
-        public void SwitchVersatileStance()
-        {
-            if (currentHeldItemStance == HeldItemStance.Versatile)
-                SetDefaultWeaponStance();
-            else
-                SetVersatileWeaponStance();
-        }
-
         public void SetDefaultWeaponStance()
         {
-            currentHeldItemStance = HeldItemStance.Default;
+            if (currentHeldItemStance == HeldItemStance.Versatile)
+                currentHeldItemStance = HeldItemStance.Default;
             anim.SetBool("versatileStance", false);
         }
 
         public void SetVersatileWeaponStance()
         {
-            currentHeldItemStance = HeldItemStance.Versatile;
+            if (currentHeldItemStance == HeldItemStance.Default)
+                currentHeldItemStance = HeldItemStance.Versatile;
             anim.SetBool("versatileStance", true);
         }
 

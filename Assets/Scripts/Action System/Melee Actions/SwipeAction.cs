@@ -89,7 +89,7 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // If Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out _))
+                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out _))
                     continue;
 
                 // If target is out of attack range from this Grid Position
@@ -259,7 +259,7 @@ namespace UnitSystem.ActionSystem
             attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
             for (int i = 0; i < attackGridPositions.Count; i++)
             {
-                if (LevelGrid.HasAnyUnitOnGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
+                if (LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
                     continue;
 
                 if (unitAtGridPosition.health.IsDead)
@@ -323,7 +323,7 @@ namespace UnitSystem.ActionSystem
             for (int i = 0; i < actionAreaGridPositions.Count; i++)
             {
                 // Make sure there's a Unit at this grid position
-                if (LevelGrid.HasAnyUnitOnGridPosition(actionAreaGridPositions[i], out Unit unitAtGridPosition) == false)
+                if (LevelGrid.HasUnitAtGridPosition(actionAreaGridPositions[i], out Unit unitAtGridPosition) == false)
                     continue;
 
                 // Skip this unit if they're dead

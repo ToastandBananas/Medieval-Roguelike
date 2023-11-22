@@ -106,7 +106,8 @@ namespace UnitSystem.ActionSystem
 
                     if (GameControls.gamePlayActions.switchVersatileStance.WasPressed)
                     {
-                        if (player.unitActionHandler.ActionTypeIsAvailable("VersatileStanceAction"))
+                        VersatileStanceAction versatileStanceAction = player.unitActionHandler.GetAction<VersatileStanceAction>();
+                        if (versatileStanceAction != null && versatileStanceAction.IsValidAction())
                             player.unitActionHandler.GetAction<VersatileStanceAction>().QueueAction();
                         return;
                     }
@@ -346,14 +347,19 @@ namespace UnitSystem.ActionSystem
                 highlightedUnit = null;
                 ClearHighlightedInteractable();
                 WorldMouse.ChangeCursor(CursorState.Default);
+                lastMouseGridPosition = player.GridPosition;
+                lastSelectedAction = null;
                 return;
             }
 
             mouseGridPosition = WorldMouse.CurrentGridPosition();
+            if (mouseGridPosition != lastMouseGridPosition)
+                highlightedUnit = null;
+
             BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
 
             // Don't run this if nothing has changed
-            if (lastTurnNumber == TurnManager.turnNumber && mouseGridPosition == lastMouseGridPosition && player.GridPosition == playerLastGridPosition && selectedAction == lastSelectedAction)
+            if (lastTurnNumber == TurnManager.turnNumber && mouseGridPosition == lastMouseGridPosition && player.GridPosition == playerLastGridPosition && selectedAction == lastSelectedAction && (highlightedUnit == null || highlightedUnit.GridPosition == mouseGridPosition))
                 return;
 
             if (selectedAction != null)
@@ -398,18 +404,21 @@ namespace UnitSystem.ActionSystem
                     else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit unitHit, 1000, unitMask))
                     {
                         ClearHighlightedInteractable();
+
                         if (highlightedUnit == null || highlightedUnit.gameObject != unitHit.transform.gameObject)
                         {
-                            if (unitHit.transform.TryGetComponent(out Unit targetUnit) && targetUnit != player)
+                            if (unitHit.transform.TryGetComponent(out Unit targetUnit))
                             {
                                 highlightedUnit = targetUnit;
-                                if (highlightedUnit.health.IsDead == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
+                                if (highlightedUnit != player && highlightedUnit.health.IsDead == false && player.alliance.IsEnemy(highlightedUnit) && player.vision.IsVisible(highlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
                                     else
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.unitActionHandler.GetAction<MeleeAction>());
                                 }
+                                else
+                                    TooltipManager.ClearUnitTooltips();
                             }
                             else
                                 TooltipManager.ClearUnitTooltips();
@@ -430,22 +439,23 @@ namespace UnitSystem.ActionSystem
                         if (unitAtGridPosition != null && player.vision.IsVisible(unitAtGridPosition) && (player.alliance.IsEnemy(unitAtGridPosition) || selectedAction.IsDefaultAttackAction))
                         {
                             ClearHighlightedInteractable();
-                            SetAttackCursor(); 
+                            SetAttackCursor();
                             
-                            if (highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead == false && player.vision.IsVisible(unitAtGridPosition))
+                            if (unitAtGridPosition != player && highlightedUnit != unitAtGridPosition && unitAtGridPosition.health.IsDead == false && player.vision.IsVisible(unitAtGridPosition))
                             {
                                 if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.unitActionHandler.GetAction<ShootAction>());
                                 else
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.unitActionHandler.GetAction<MeleeAction>());
                             }
+                            else
+                                TooltipManager.ClearUnitTooltips();
 
                             highlightedUnit = unitAtGridPosition;
                         }
                         else
                         {
-                            if (highlightedUnit != null)
-                                TooltipManager.ClearUnitTooltips();
+                            TooltipManager.ClearUnitTooltips();
 
                             highlightedUnit = null;
                             ClearHighlightedInteractable();

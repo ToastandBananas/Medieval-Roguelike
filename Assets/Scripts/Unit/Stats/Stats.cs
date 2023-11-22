@@ -196,16 +196,19 @@ namespace UnitSystem
         #region Blocking
         public int NaturalBlockPower => Mathf.RoundToInt(strength.GetValue() * 0.4f);
 
-        public float ShieldBlockChance(HeldShield heldShield, Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit)
+        public float ShieldBlockChance(HeldShield heldShield, Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
             float blockChance = shieldSkill.GetValue() / 100f * 0.75f;
-            blockChance += heldShield.itemData.BlockChanceModifier;
+            float baseBlockChance = blockChance;
+
+            // Add the shield's bonus block chance
+            blockChance += baseBlockChance * heldShield.itemData.BlockChanceModifier;
 
             // Block chance affected by height differences between this Unit and the attackingUnit
-            blockChance += blockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
+            blockChance += baseBlockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
             if (heldShield.currentHeldItemStance == HeldItemStance.RaiseShield)
-                blockChance += blockChance * RaiseShieldAction.blockChanceModifier;
+                blockChance += baseBlockChance * RaiseShieldAction.blockChanceModifier;
 
             // Block chance is reduced depending on the attacker's weapon skill
             blockChance *= EnemyWeaponSkill_BlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
@@ -223,14 +226,17 @@ namespace UnitSystem
             return blockChance;
         }
 
-        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, Unit attackingUnit, ItemData weaponBeingAttackedWith, bool attackerUsingOffhand, bool attackerBesideUnit, bool shieldEquipped)
+        public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, Unit attackingUnit, HeldItem weaponBeingAttackedWith, bool attackerUsingOffhand, bool attackerBesideUnit, bool shieldEquipped)
         {
             Weapon weapon = heldWeapon.itemData.Item.Weapon;
             float blockChance = swordSkill.GetValue() / 100f * 0.6f * WeaponBlockModifier(weapon);
-            blockChance += heldWeapon.itemData.BlockChanceModifier;
+            float baseBlockChance = blockChance;
+
+            // Add the weapon's bonus block chance
+            blockChance += baseBlockChance * heldWeapon.itemData.BlockChanceModifier;
 
             // Block chance affected by height differences between this Unit and the attackingUnit
-            blockChance += blockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
+            blockChance += baseBlockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
             // Block chance is reduced depending on the attacker's weapon skill
             blockChance *= EnemyWeaponSkill_BlockChanceModifier(attackingUnit, weaponBeingAttackedWith, attackerUsingOffhand);
@@ -298,23 +304,24 @@ namespace UnitSystem
         }
 
         ///<summary>A lower number is worse for the Unit being attacked, as their block chance will be multiplied by this.</summary>
-        float EnemyWeaponSkill_BlockChanceModifier(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
+        float EnemyWeaponSkill_BlockChanceModifier(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
             Weapon weapon = null;
             if (weaponAttackingWith != null)
-                weapon = weaponAttackingWith.Item.Weapon;
+                weapon = weaponAttackingWith.itemData.Item.Weapon;
 
             float modifier = 1f - (attackingUnit.stats.WeaponSkill(weapon) / 100f * 0.4f);
+            float baseModifier = modifier;
             if (weaponAttackingWith != null)
-                modifier -= modifier * weaponAttackingWith.AccuracyModifier;
+                modifier -= baseModifier * weaponAttackingWith.itemData.AccuracyModifier;
 
             // Weapon skill effectiveness is reduced when dual wielding
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += modifier * (1f - Weapon.dualWieldSecondaryEfficiency);
+                    modifier += baseModifier * (1f - Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += modifier * (1f - Weapon.dualWieldPrimaryEfficiency);
+                    modifier += baseModifier * (1f - Weapon.dualWieldPrimaryEfficiency);
             }
 
             if (modifier < 0f)
@@ -369,7 +376,7 @@ namespace UnitSystem
         #endregion
 
         #region Dodging
-        public float DodgeChance(Unit attackingUnit, ItemData weaponBeingAttackedWith, BaseAttackAction attackAction, bool attackerUsingOffhand, bool attackerBesideUnit)
+        public float DodgeChance(Unit attackingUnit, HeldItem weaponBeingAttackedWith, BaseAttackAction attackAction, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
             float dodgeChance;
             if (CarryWeightRatio < 2f)
@@ -377,11 +384,13 @@ namespace UnitSystem
             else
                 return 0f;
 
-            // Dodge chance affected by height differences between this Unit and the attackingUnit
-            dodgeChance += dodgeChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
+            float baseDodgeChance = dodgeChance;
 
             // Dodge chance affected by the inverse of the attack action's accuracy modifier
-            dodgeChance += dodgeChance * (1f - attackAction.AccuracyModifier());
+            dodgeChance += baseDodgeChance * (1f - attackAction.AccuracyModifier());
+
+            // Dodge chance affected by height differences between this Unit and the attackingUnit
+            dodgeChance += baseDodgeChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
@@ -407,7 +416,7 @@ namespace UnitSystem
                 if (carryWeightRatio > 2f)
                     carryWeightRatio = 2f;
 
-                // Calculate the dodge chance multiplier as a linear reduction
+                // Calculate the dodge chance multiplier as a linear reduction, until the carryWeightRatio is greater than 1, which it will then be an exponential reduction
                 if (carryWeightRatio <= 1f)
                     return 1f - (carryWeightRatio * 0.2f);
                 else
@@ -416,23 +425,25 @@ namespace UnitSystem
         }
 
         ///<summary>A lower number is worse for the Unit being attacked, as their dodge chance will be multiplied by this.</summary>
-        float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
+        float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
             Weapon weapon = null;
             if (weaponAttackingWith != null)
-                weapon = weaponAttackingWith.Item.Weapon;
+                weapon = weaponAttackingWith.itemData.Item.Weapon;
 
             float modifier = 1f - (attackingUnit.stats.WeaponSkill(weapon) / 100f * 0.5f);
+            float baseModifier = modifier;
+
             if (weaponAttackingWith != null)
-                modifier -= weaponAttackingWith.AccuracyModifier;
+                modifier -= baseModifier * weaponAttackingWith.itemData.AccuracyModifier;
 
             // Weapon skill effectiveness is reduced when dual wielding
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += modifier * (1f - Weapon.dualWieldSecondaryEfficiency);
+                    modifier += baseModifier * (1f - Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += modifier * (1f - Weapon.dualWieldPrimaryEfficiency);
+                    modifier += baseModifier * (1f - Weapon.dualWieldPrimaryEfficiency);
             }
 
             if (modifier < 0f)
@@ -453,12 +464,12 @@ namespace UnitSystem
                     if (unit.UnitEquipment.IsDualWielding)
                     {
                         bool attackerBesideUnit = targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit);
-                        float mainWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetRightHeldMeleeWeapon().itemData, actionToUse, false, attackerBesideUnit);
-                        float secondaryWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon().itemData, actionToUse, true, attackerBesideUnit);
+                        float mainWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetRightHeldMeleeWeapon(), actionToUse, false, attackerBesideUnit);
+                        float secondaryWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon(), actionToUse, true, attackerBesideUnit);
                         hitChance = 1f - (mainWeaponHitChance * secondaryWeaponHitChance);
                     }
                     else if (unit.UnitEquipment.MeleeWeaponEquipped)
-                        hitChance = 1f - targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData, actionToUse, false, targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit));
+                        hitChance = 1f - targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), actionToUse, false, targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit));
                     else
                         hitChance = 1f - targetUnit.stats.DodgeChance(unit, null, actionToUse, false, targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit));
                 }
@@ -469,9 +480,9 @@ namespace UnitSystem
             {
                 if (unit.UnitEquipment != null)
                 {
-                    ItemData rangedWeaponItemData = unit.unitMeshManager.GetHeldRangedWeapon().itemData;
+                    HeldItem rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
                     if (unit.UnitEquipment.RangedWeaponEquipped)
-                        hitChance = RangedAccuracy(rangedWeaponItemData, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, rangedWeaponItemData, actionToUse, false, targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit)));
+                        hitChance = RangedAccuracy(rangedWeapon, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, rangedWeapon, actionToUse, false, targetUnit.unitActionHandler.turnAction.AttackerBesideUnit(unit)));
                 }
             }
 
@@ -489,10 +500,7 @@ namespace UnitSystem
 
             currentEnergy -= amount;
             if (currentEnergy < 0)
-            {
-                Debug.LogWarning($"Trying to use more energy than {unit.name} has...");
                 currentEnergy = 0;
-            }
 
             if (unit.IsPlayer)
                 ActionSystemUI.UpdateEnergyText();
@@ -545,14 +553,34 @@ namespace UnitSystem
         #endregion
 
         #region Knockback
-        public float KnockbackChance(ItemData weaponItemData, Unit targetUnit, bool attackBlocked)
+        public bool TryKnockback(Unit targetUnit, HeldItem heldItemAttackingWith, bool attackBlocked)
+        {
+            float random = Random.Range(0f, 1f);
+            if (random <= unit.stats.KnockbackChance(heldItemAttackingWith, targetUnit, attackBlocked))
+            {
+                targetUnit.unitAnimator.Knockback(unit);
+                return true;
+            }
+            return false;
+        }
+
+        public float KnockbackChance(HeldItem heldItem, Unit targetUnit, bool attackBlocked)
         {
             Weapon weapon = null;
-            if (weaponItemData.Item is Weapon)
-                weapon = weaponItemData.Item.Weapon;
+            if (heldItem != null && heldItem.itemData.Item is Weapon)
+                weapon = heldItem.itemData.Item.Weapon;
 
             float knockbackChance = WeaponKnockbackChance(weapon);
-            knockbackChance += weaponItemData.KnockbackChanceModifier;
+            float baseKnockbackChance = knockbackChance;
+
+            // Less likely to knock back a stronger opponent and more likely to knockback a weaker one
+            knockbackChance += strength.GetValue() / 100f * 0.25f;
+            knockbackChance -= targetUnit.stats.strength.GetValue() / 100f * 0.25f;
+
+            knockbackChance += baseKnockbackChance * heldItem.itemData.KnockbackChanceModifier;
+
+            if (heldItem != null && heldItem.currentHeldItemStance == HeldItemStance.SpearWall)
+                knockbackChance += baseKnockbackChance * SpearWallAction.knockbackChanceModifier;
 
             if (attackBlocked)
                 knockbackChance *= 0.25f;
@@ -565,44 +593,37 @@ namespace UnitSystem
             if (weapon == null) // Unarmed
                 return 0.1f;
 
-            switch (weapon.WeaponType)
+            return weapon.WeaponType switch
             {
-                case WeaponType.Bow:
-                    return 0.05f;
-                case WeaponType.Crossbow:
-                    return 0.2f;
-                case WeaponType.Throwing:
-                    return 0.025f;
-                case WeaponType.Dagger:
-                    return 0.015f;
-                case WeaponType.Sword:
-                    return 0.1f;
-                case WeaponType.Axe:
-                    return 0.2f;
-                case WeaponType.Mace:
-                    return 0.25f;
-                case WeaponType.WarHammer:
-                    return 0.4f;
-                case WeaponType.Spear:
-                    return 0.1f;
-                case WeaponType.Polearm:
-                    return 0.35f;
-                default:
-                    return 0.05f;
-            }
+                WeaponType.Bow => 0.05f,
+                WeaponType.Crossbow => 0.2f,
+                WeaponType.Throwing => 0.025f,
+                WeaponType.Dagger => 0.01f,
+                WeaponType.Sword => 0.1f,
+                WeaponType.Axe => 0.15f,
+                WeaponType.Mace => 0.2f,
+                WeaponType.WarHammer => 0.3f,
+                WeaponType.Spear => 0.1f,
+                WeaponType.Polearm => 0.25f,
+                _ => 0.1f,
+            };
         }
         #endregion
 
-        public float RangedAccuracy(ItemData rangedWeaponItemData, GridPosition targetGridPosition, BaseAttackAction attackAction)
+        public float RangedAccuracy(HeldItem rangedWeapon, GridPosition targetGridPosition, BaseAttackAction attackAction)
         {
-            float accuracy = WeaponSkill(rangedWeaponItemData.Item.Weapon) / 100f * 0.5f;
+            if (rangedWeapon == null)
+                return 0f;
+
+            float accuracy = WeaponSkill(rangedWeapon.itemData.Item.Weapon) / 100f * 0.5f;
+            float baseAccuracy = accuracy;
 
             // Accuracy affected by height differences between this Unit and the attackingUnit
-            accuracy += accuracy * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, targetGridPosition);
+            accuracy += baseAccuracy * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, targetGridPosition);
 
-            // Accuracy affected by the weapon's & action's accuracy modifier
-            accuracy += rangedWeaponItemData.AccuracyModifier;
-            accuracy *= attackAction.AccuracyModifier();
+            // Accuracy affected by the weapon & action accuracy modifiers
+            accuracy += baseAccuracy * rangedWeapon.itemData.AccuracyModifier;
+            accuracy += baseAccuracy * attackAction.AccuracyModifier();
 
             if (accuracy < 0f)
                 accuracy = 0f;

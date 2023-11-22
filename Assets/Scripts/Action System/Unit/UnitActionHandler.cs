@@ -127,7 +127,7 @@ namespace UnitSystem.ActionSystem
         {
             if (unit.IsMyTurn)
             {
-                while (isAttacking) // Wait in case the Unit is performing an opportunity attack
+                while (isAttacking || unit.unitAnimator.beingKnockedBack) // Wait in case the Unit is performing an opportunity attack or is being knocked back
                     yield return null;
 
                 if (canPerformActions == false)
@@ -267,24 +267,28 @@ namespace UnitSystem.ActionSystem
             return false;
         }
 
-        public bool TryDodgeAttack(Unit attackingUnit, ItemData weaponAttackingWith, BaseAttackAction attackAction, bool attackerUsingOffhand)
+        public bool TryDodgeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, BaseAttackAction attackAction, bool attackerUsingOffhand)
         {
             // If the attacker is in front of this Unit (greater chance to block)
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))
             {
                 float random = Random.Range(0f, 1f);
-                return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
+                bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
+                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
+                    attackingUnit.unitActionHandler.GetAction<SpearWallAction>().CancelAction();
+                return attackDodged;
             }
             // If the attacker is beside this Unit (less of a chance to block)
             else if (turnAction.AttackerBesideUnit(attackingUnit))
             {
                 float random = Random.Range(0f, 1f);
-                return random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, true);
+                bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, true);
+                return attackDodged;
             }
             return false;
         }
 
-        public bool TryBlockRangedAttack(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
+        public bool TryBlockRangedAttack(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
             if (unit.UnitEquipment.ShieldEquipped)
             {
@@ -317,7 +321,7 @@ namespace UnitSystem.ActionSystem
             return false;
         }
 
-        public bool TryBlockMeleeAttack(Unit attackingUnit, ItemData weaponAttackingWith, bool attackerUsingOffhand)
+        public bool TryBlockMeleeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
             float random;
             if (turnAction.AttackerInFrontOfUnit(attackingUnit))

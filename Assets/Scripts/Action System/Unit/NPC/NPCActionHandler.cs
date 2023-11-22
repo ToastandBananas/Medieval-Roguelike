@@ -83,7 +83,7 @@ namespace UnitSystem.ActionSystem
 
                         foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
                         {
-                            if (LevelGrid.HasAnyUnitOnGridPosition(gridPosition, out Unit unitAtGridPosition) == false)
+                            if (LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) == false)
                                 continue;
 
                             if (unit.alliance.IsEnemy(unitAtGridPosition))
@@ -188,7 +188,7 @@ namespace UnitSystem.ActionSystem
 
         public override IEnumerator GetNextQueuedAction()
         {
-            while (isAttacking)
+            while (isAttacking || unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             if (unit.IsMyTurn == false)

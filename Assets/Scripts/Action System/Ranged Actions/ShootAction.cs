@@ -65,7 +65,7 @@ namespace UnitSystem.ActionSystem
             {
                 if (unit.unitActionHandler.targetEnemyUnit != null)
                     targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
-                else if (LevelGrid.HasAnyUnitOnGridPosition(targetGridPosition, out Unit targetUnit))
+                else if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
                     targetEnemyUnit = targetUnit;
             }
 
@@ -142,7 +142,7 @@ namespace UnitSystem.ActionSystem
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData, false))
+                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                     targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
@@ -157,7 +157,7 @@ namespace UnitSystem.ActionSystem
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 bool missedTarget = TryHitTarget(targetEnemyUnit.GridPosition);
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon.itemData, false);
+                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false);
                 bool headShot = false;
                 if (missedTarget == false)
                     DamageTargets(heldRangedWeapon, headShot);
@@ -190,7 +190,7 @@ namespace UnitSystem.ActionSystem
         public bool TryHitTarget(GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 1f);
-            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon().itemData, targetGridPosition, this);
+            float rangedAccuracy = unit.stats.RangedAccuracy(unit.unitMeshManager.GetHeldRangedWeapon(), targetGridPosition, this);
             if (random <= rangedAccuracy)
                 return true;
             return false;
@@ -334,7 +334,7 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // Grid Position has a Unit there already
-                if (LevelGrid.HasAnyUnitOnGridPosition(nodeGridPosition, out _))
+                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out _))
                     continue;
 
                 // If target is out of attack range
@@ -428,7 +428,7 @@ namespace UnitSystem.ActionSystem
             float finalActionValue = 0f;
 
             // Make sure there's a Unit at this grid position
-            if (LevelGrid.HasAnyUnitOnGridPosition(actionGridPosition, out Unit unitAtGridPosition))
+            if (LevelGrid.HasUnitAtGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
                 if (unitAtGridPosition.health.IsDead == false && unit.alliance.IsEnemy(unitAtGridPosition))

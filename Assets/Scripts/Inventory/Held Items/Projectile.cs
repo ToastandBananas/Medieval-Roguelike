@@ -94,7 +94,7 @@ namespace InventorySystem
 
             bool attackDodged = false;
             if (hitTarget)
-                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon().itemData, attackActionUsed, false);
+                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon(), attackActionUsed, false);
 
             if (attackDodged)
             {
@@ -155,7 +155,7 @@ namespace InventorySystem
             if (hitTarget == false) // If the shooter is missing
             {
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
-                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon().itemData, targetUnit.GridPosition, attackActionUsed);
+                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon(), targetUnit.GridPosition, attackActionUsed);
 
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;

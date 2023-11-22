@@ -13,6 +13,8 @@ namespace UnitSystem
 
         Unit unit;
 
+        public static float minFallDistance = 1f; // No damage under this distance
+
         void Awake()
         {
             unit = GetComponent<Unit>();
@@ -40,6 +42,48 @@ namespace UnitSystem
                 Die(attacker);
             else if (attacker != null)
                 unit.unitAnimator.DoSlightKnockback(attacker.transform);
+        }
+
+        public void TakeFallDamage(float fallDistance) => TakeDamage(CalculateFallDamage(fallDistance), null);
+
+        int CalculateFallDamage(float fallDistance)
+        {
+            float modifiedMaxFallDistance = CalculateModifiedMaxFallDistance();
+
+            if (fallDistance <= minFallDistance) return 0;
+            if (fallDistance >= modifiedMaxFallDistance) return unit.health.MaxHealth; // Instant death
+
+            // Calculate the damage percentage based on fall distance
+            float damagePercent = (fallDistance - minFallDistance) / (modifiedMaxFallDistance - minFallDistance);
+            int damage = Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
+            if (damage < 1)
+                damage = 1;
+
+            //Debug.Log(unit.name + " fell " + fallDistance + " units for " + damage + " damage");
+            return damage;
+        }
+
+        float CalculateModifiedMaxFallDistance()
+        {
+            float baseLethalFallDistance = 6f;
+            float strengthFactor = 0.035f;
+            float carryWeightFactor = 2f;
+            float strengthBonus = unit.stats.Strength.GetValue() * strengthFactor;
+
+            // Calculate the carry weight ratio. This can exceed 1 if carrying more than max capacity
+            float carryWeightRatio = unit.stats.CarryWeightRatio;
+
+            // Adjust carry weight penalty to be more severe if carrying beyond max capacity
+            float carryWeightPenalty;
+            if (carryWeightRatio <= 1) // Up to 100% capacity, use a linear scale
+                carryWeightPenalty = carryWeightRatio * carryWeightFactor;
+            else // Beyond 100% capacity, you can increase the penalty exponentially
+                carryWeightPenalty = Mathf.Pow(carryWeightRatio, 2) * carryWeightFactor;
+
+            //Debug.Log("Strength bonus: " + strengthBonus);
+            //Debug.Log("Carry weight penalty: " + carryWeightPenalty);
+            //Debug.Log("Max Fall Distance: " + Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1));
+            return Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1); // Ensure it doesn't go below 1
         }
 
         public void IncreaseHealth(int healAmount)

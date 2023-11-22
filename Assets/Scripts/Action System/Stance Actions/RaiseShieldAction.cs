@@ -78,6 +78,8 @@ namespace UnitSystem.ActionSystem
         {
             base.CancelAction();
             LowerShield();
+            if (actionBarSlot != null)
+                actionBarSlot.UpdateIcon();
         }
 
         public override bool IsValidAction() => unit != null && unit.UnitEquipment.ShieldEquipped;

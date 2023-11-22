@@ -69,7 +69,7 @@ namespace UnitSystem.ActionSystem
             }
 
             // Perform the interaction
-            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasAnyUnitOnGridPosition(targetInteractable.GridPosition(), out _) == false)
+            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasUnitAtGridPosition(targetInteractable.GridPosition(), out _) == false)
                 targetInteractable.Interact(unit);
 
             CompleteAction();

@@ -35,6 +35,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 9725b62ec08eab64089977b3bb9ca0ef, type: 2}
   equipSlot: 1
   actionTypes:
+  - {fileID: 11400000, guid: da478114a011c4c4ab7f2f9cb4a01145, type: 2}
   - {fileID: 11400000, guid: 3719d9bbbcf39b2499abd64c16f9af84, type: 2}
   stanceStatModifiers: []
   meshes:
