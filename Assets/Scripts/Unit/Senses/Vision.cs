@@ -630,7 +630,7 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null)
                     continue;
 
-                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
+                float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
                 if (distToLooseItem < closestLooseItemDistance)
                 {
                     closestLooseItem = knownLooseItem.Key;
@@ -650,7 +650,7 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Weapon == false)
                     continue;
 
-                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
+                float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
                 if (distToLooseItem < closestWeaponDistance)
                 {
                     closestLooseMeleeWeapon = knownLooseItem.Key;
@@ -671,7 +671,7 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is MeleeWeapon == false)
                     continue;
 
-                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
+                float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
                 if (distToLooseItem < closestMeleeWeaponDistance)
                 {
                     closestLooseMeleeWeapon = knownLooseItem.Key;
@@ -692,7 +692,7 @@ namespace UnitSystem
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is RangedWeapon == false)
                     continue;
 
-                float distToLooseItem = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, knownLooseItem.Key.GridPosition());
+                float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
                 if (distToLooseItem < closestRangedWeaponDistance)
                 {
                     closestLooseRangedWeapon = knownLooseItem.Key;

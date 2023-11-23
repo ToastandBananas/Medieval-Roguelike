@@ -289,7 +289,7 @@ namespace UnitSystem.ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
-                float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
+                float distance = Vector3.Distance(unit.WorldPosition, targetUnit.WorldPosition);
                 float minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)

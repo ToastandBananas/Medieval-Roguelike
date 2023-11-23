@@ -118,15 +118,28 @@ namespace UnitSystem.ActionSystem
                 }
 
                 // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
-                if ((damageAmount > 0f || attackBlocked) && targetUnit.health.IsDead == false) 
+                bool knockedBack = false;
+                if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
                 {
-                    bool knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, attackBlocked);
-                    if (heldWeaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
+                    knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, attackBlocked);
+                    if (IsMeleeAttackAction())
+                        targetUnit.health.OnHitByMeleeAttack();
+                }
+
+                if (heldWeaponAttackingWith != null && heldWeaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
+                {
+                    SpearWallAction spearWallAction = unit.unitActionHandler.GetAction<SpearWallAction>();
+                    if (spearWallAction != null)
                     {
                         if (knockedBack)
-                            unit.unitActionHandler.GetAction<SpearWallAction>().OnKnockback();
+                            spearWallAction.OnKnockback();
                         else
-                            unit.unitActionHandler.GetAction<SpearWallAction>().OnFailedKnockback();
+                        {
+                            if (targetUnit.unitActionHandler.moveAction.aboutToMove)
+                                spearWallAction.OnFailedKnockback(targetUnit.unitActionHandler.moveAction.nextTargetGridPosition);
+                            else
+                                spearWallAction.OnFailedKnockback(targetUnit.GridPosition);
+                        }
                     }
                 }
             }
@@ -140,8 +153,6 @@ namespace UnitSystem.ActionSystem
                 HeldItem itemBlockedWith = target.Value;
                 DamageTarget(targetUnit, heldWeaponAttackingWith, itemBlockedWith, headShot);
             }
-
-            unit.unitActionHandler.targetUnits.Clear();
 
             if (heldWeaponAttackingWith != null)
                 heldWeaponAttackingWith.TryFumbleHeldItem();
@@ -272,6 +283,13 @@ namespace UnitSystem.ActionSystem
 
             CompleteAction();
             TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
+        }
+
+        public override void CompleteAction()
+        {
+            base.CompleteAction();
+
+            unit.unitActionHandler.targetUnits.Clear();
         }
 
         public bool OtherUnitInTheWay(Unit unit, GridPosition startGridPosition, GridPosition targetGridPosition)

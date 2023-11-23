@@ -57,12 +57,6 @@ namespace InventorySystem
 
         public abstract void DoDefaultAttack(GridPosition targetGridPosition);
 
-        public IEnumerator DelayDoDefaultAttack(GridPosition targetGridPosition)
-        {
-            yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(unit.unitMeshManager.rightHeldItem.itemData.Item as Weapon) / 2f) + 0.05f);
-            DoDefaultAttack(targetGridPosition);
-        }
-
         public void TryFumbleHeldItem()
         {
             if (Random.Range(0f, 1f) <= GetFumbleChance())

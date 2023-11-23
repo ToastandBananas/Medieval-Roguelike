@@ -49,7 +49,10 @@ namespace UnitSystem
 
             // Face the attacker
             if (unit.unitActionHandler.turnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
-                unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
+                unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false, 30f);
+
+            while (unit.unitActionHandler.turnAction.isRotating)
+                yield return null;
 
             float dodgeDistance;
             if (projectileToDodge != null)
@@ -119,6 +122,7 @@ namespace UnitSystem
 
             Vector3 originalPosition = unit.GridPosition.WorldPosition;
             Vector3 knockbackDirection = (originalPosition - attackerTransform.position).normalized;
+            knockbackDirection.y = 0;
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
@@ -145,6 +149,7 @@ namespace UnitSystem
             else
             {
                 Vector3 direction = (unit.WorldPosition - attackingUnit.WorldPosition).normalized;
+                direction.y = 0;
                 float maxKnockbackY = 0.33f;
                 knockbackTargetPosition = unit.transform.position + direction;
                 if (Physics.Raycast(knockbackTargetPosition + (maxKnockbackY * Vector3.up), -Vector3.up, out RaycastHit hit, 1000f, WorldMouse.MousePlaneLayerMask))
@@ -182,7 +187,7 @@ namespace UnitSystem
             if (fallDistance > 0f)
                 arcMultiplier *= 2f;
 
-            float arcHeight = TacticsUtilities.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition) * arcMultiplier;
+            float arcHeight = MathParabola.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition) * arcMultiplier;
             float animationTime = 0f;
 
             while (true)

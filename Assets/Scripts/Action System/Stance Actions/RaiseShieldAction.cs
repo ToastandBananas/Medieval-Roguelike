@@ -51,19 +51,20 @@ namespace UnitSystem.ActionSystem
         void LowerShield()
         {
             HeldShield heldShield = unit.unitMeshManager.GetHeldShield();
-            if (heldShield == null)
-                return;
-
             shieldRaised = false;
-            heldShield.SetShouldKeepBlocking(false);
 
-            heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.Default);
-            heldShield.LowerShield();
-            heldShield.anim.SetBool("keepShieldRaised", false);
+            if (heldShield != null)
+            {
+                heldShield.SetShouldKeepBlocking(false);
+
+                heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.Default);
+                heldShield.LowerShield();
+                heldShield.anim.SetBool("keepShieldRaised", false);
+
+                RemoveStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
+            }
 
             unit.stats.energyUseActions.Remove(this);
-
-            RemoveStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
         }
 
         public override void CompleteAction()

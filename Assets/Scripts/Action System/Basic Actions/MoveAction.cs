@@ -21,6 +21,7 @@ namespace UnitSystem.ActionSystem
         Vector3 nextTargetPosition;
         Vector3 nextPathPosition;
 
+        public bool aboutToMove { get; private set; }
         public bool isMoving { get; private set; }
         public bool canMove { get; private set; }
 
@@ -112,10 +113,12 @@ namespace UnitSystem.ActionSystem
             lastGridPosition = unit.GridPosition;
             OnMove?.Invoke();
 
+            aboutToMove = true;
+
             while (unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
-            // Check for Opportunity Attacks
+            // Check for Opportunity Attacks & Spear Wall attacks
             for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
                 Unit opportunityAttackingUnit = unit.unitsWhoCouldOpportunityAttackMe[i];
@@ -143,7 +146,10 @@ namespace UnitSystem.ActionSystem
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
                 if (opponentsMeleeAction.IsInAttackRange(unit, opportunityAttackingUnit.GridPosition, nextTargetGridPosition))
+                {
+                    opportunityAttackingUnit.opportunityAttackTrigger.OnEnemyUnitMoved(unit, nextTargetGridPosition);
                     continue;
+                }
 
                 opponentsMeleeAction.DoOpportunityAttack(unit);
 
@@ -159,8 +165,8 @@ namespace UnitSystem.ActionSystem
             }
 
             // Unblock the Unit's current position since they're about to move
-            unit.UnblockCurrentPosition();
             isMoving = true;
+            unit.UnblockCurrentPosition();
 
             // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
             unit.BlockAtPosition(nextTargetPosition);
@@ -298,7 +304,7 @@ namespace UnitSystem.ActionSystem
             {
                 // If the Player has a target Interactable
                 InteractAction interactAction = unit.unitActionHandler.interactAction;
-                if (interactAction.targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
+                if (interactAction.targetInteractable != null && Vector3.Distance(unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
                 else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead)
@@ -581,6 +587,7 @@ namespace UnitSystem.ActionSystem
                 unit.BlockCurrentPosition();
 
             isMoving = false;
+            aboutToMove = false;
             unit.unitActionHandler.FinishAction();
         }
 
@@ -602,8 +609,6 @@ namespace UnitSystem.ActionSystem
         }
 
         public void SetNextPathPosition(Vector3 position) => nextPathPosition = position;
-
-        public void SetIsMoving(bool isMoving) => this.isMoving = isMoving;
 
         public void SetCanMove(bool canMove) => this.canMove = canMove;
 

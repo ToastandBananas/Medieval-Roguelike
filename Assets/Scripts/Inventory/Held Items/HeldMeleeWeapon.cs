@@ -201,15 +201,5 @@ namespace InventorySystem
             // Debug.Log(unit.name + " fumble chance: " + fumbleChance);
             return fumbleChance;
         }
-
-        public float MaxRange(GridPosition attackerGridPosition, GridPosition targetGridPosition, bool accountForHeight)
-        {
-            if (accountForHeight == false)
-                return itemData.Item.Weapon.MaxRange;
-
-            float maxRange = itemData.Item.Weapon.MaxRange - Mathf.Abs(targetGridPosition.y - attackerGridPosition.y);
-            if (maxRange < 0f) maxRange = 0f;
-            return maxRange;
-        }
     }
 }

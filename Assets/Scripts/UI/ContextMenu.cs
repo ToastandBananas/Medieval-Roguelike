@@ -109,7 +109,7 @@ namespace GeneralUI
                 }
             }
 
-            if (targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+            if (targetInteractable != null && Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
             {
                 targetUnit = null;
                 CreateMoveToButton();
@@ -128,8 +128,8 @@ namespace GeneralUI
                 CreateDropItemButton();
 
                 if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
-                    || (targetInteractable != null && TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
-                    || (targetUnit != null && TacticsUtilities.CalculateDistance_XYZ(targetUnit.GridPosition, UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)))
+                    || (targetInteractable != null && Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
+                    || (targetUnit != null && Vector3.Distance(targetUnit.WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)))
                 {
                     CreateMoveToButton();
                 }
@@ -245,7 +245,7 @@ namespace GeneralUI
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange(targetUnit, false)) && UnitManager.player.GetAttackRange(targetUnit, false) < 2f))
+            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();
@@ -368,7 +368,7 @@ namespace GeneralUI
                 if (looseContainerItem.ItemData.Item is WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
                     return;
 
-                if (TacticsUtilities.CalculateDistance_XYZ(targetInteractable.GridPosition(), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                if (Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
 
                 if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
@@ -379,7 +379,7 @@ namespace GeneralUI
             }
             else if (targetUnit != null && targetUnit.health.IsDead)
             {
-                if (TacticsUtilities.CalculateDistance_XYZ(LevelGrid.GetGridPosition(targetUnit.transform.position), UnitManager.player.GridPosition) > LevelGrid.diaganolDistance)
+                if (Vector3.Distance(LevelGrid.GetGridPosition(targetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
 
                 if (targetUnit.UnitEquipment.slotVisualsCreated)

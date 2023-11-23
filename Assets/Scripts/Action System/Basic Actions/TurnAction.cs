@@ -95,7 +95,7 @@ namespace UnitSystem.ActionSystem
             if (rotateInstantly == false)
             {
                 // Wait to do rotations already in progress
-                while (isRotating)
+                if (isRotating)
                 {
                     isRotating = false;
                     yield return null;
@@ -111,7 +111,7 @@ namespace UnitSystem.ActionSystem
 
                     unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 
-                    if (Quaternion.Angle(unit.transform.rotation, targetRotation) < 0.1f)
+                    if (Quaternion.Angle(unit.transform.rotation, targetRotation) < 1f)
                         isRotating = false;
 
                     yield return null;
@@ -124,7 +124,7 @@ namespace UnitSystem.ActionSystem
             unit.vision.FindVisibleUnitsAndObjects();
         }
 
-        public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly) => RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, defaultRotateSpeed * 2f);
+        public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly, float rotateSpeed = 20f) => RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, rotateSpeed);
 
         public void RotateTowardsAttackPosition(Vector3 targetPosition) => unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
 

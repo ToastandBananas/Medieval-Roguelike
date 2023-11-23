@@ -122,14 +122,20 @@ namespace UnitSystem
             return true;
         }
 
-        public float GetAttackRange(Unit targetUnit, bool accountForHeight)
+        public float GetAttackRange()
         {
             if (myUnitEquipment.RangedWeaponEquipped && myUnitEquipment.HasValidAmmunitionEquipped())
-                return unitMeshManager.GetHeldRangedWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
+                return unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
+            else if (myUnitEquipment.IsDualWielding)
+            {
+                float primaryWeaponAttackRange = unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+                float secondaryWeaponAttackRange = unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+                return Mathf.Max(primaryWeaponAttackRange, secondaryWeaponAttackRange);
+            }
             else if (myUnitEquipment.MeleeWeaponEquipped)
-                return unitMeshManager.GetPrimaryHeldMeleeWeapon().MaxRange(gridPosition, targetUnit.GridPosition, accountForHeight);
+                return unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
             else
-                return unitActionHandler.GetAction<MeleeAction>().UnarmedAttackRange(targetUnit.GridPosition, accountForHeight);
+                return stats.UnarmedAttackRange;
         }
 
         public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();

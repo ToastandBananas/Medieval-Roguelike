@@ -51,7 +51,7 @@ MonoBehaviour:
   isTwoHanded: 0
   isVersatile: 1
   canDualWield: 1
-  attackRange: {x: 1, y: 1.5}
+  attackRange: {x: 1, y: 1.7}
   damageRange: {x: 4, y: 9}
   minAccuracyModifier: 0.11
   maxAccuracyModifier: 0.14

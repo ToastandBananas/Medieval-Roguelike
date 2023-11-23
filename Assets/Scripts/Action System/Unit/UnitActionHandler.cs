@@ -274,8 +274,12 @@ namespace UnitSystem.ActionSystem
             {
                 float random = Random.Range(0f, 1f);
                 bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
-                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
-                    attackingUnit.unitActionHandler.GetAction<SpearWallAction>().CancelAction();
+                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
+                {
+                    SpearWallAction spearWallAction = attackingUnit.unitActionHandler.GetAction<SpearWallAction>();
+                    if (spearWallAction != null)
+                        spearWallAction.CancelAction();
+                }
                 return attackDodged;
             }
             // If the attacker is beside this Unit (less of a chance to block)

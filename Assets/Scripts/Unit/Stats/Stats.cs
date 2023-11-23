@@ -53,9 +53,10 @@ namespace UnitSystem
         [SerializeField] float unarmedAttackRange = 1.4f;
         [SerializeField] int baseUnarmedDamage = 5;
 
-        readonly float maxBlockChance = 85f;
-        readonly float maxDodgeChance = 85f;
-        readonly float maxRangedAccuracy = 90f;
+        readonly float maxKnockbackChance = 0.9f;
+        readonly float maxBlockChance = 0.85f;
+        readonly float maxDodgeChance = 0.85f;
+        readonly float maxRangedAccuracy = 0.9f;
         readonly float accuracyModifierPerHeightDifference = 0.1f;
 
         void Awake()
@@ -578,13 +579,26 @@ namespace UnitSystem
             knockbackChance -= targetUnit.stats.strength.GetValue() / 100f * 0.25f;
 
             knockbackChance += baseKnockbackChance * heldItem.itemData.KnockbackChanceModifier;
+            
+            // Knockback effectiveness is reduced when dual wielding
+            if (heldItem != null && unit.UnitEquipment.IsDualWielding)
+            {
+                if (heldItem == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                    knockbackChance *= Weapon.dualWieldPrimaryEfficiency;
+                else
+                    knockbackChance *= Weapon.dualWieldSecondaryEfficiency;
+            }
 
             if (heldItem != null && heldItem.currentHeldItemStance == HeldItemStance.SpearWall)
-                knockbackChance += baseKnockbackChance * SpearWallAction.knockbackChanceModifier;
+                knockbackChance *= SpearWallAction.knockbackChanceModifier;
 
             if (attackBlocked)
                 knockbackChance *= 0.25f;
 
+            if (knockbackChance > maxKnockbackChance)
+                knockbackChance = maxKnockbackChance;
+
+            // Debug.Log($"{unit.name}'s knockback chance (was blocked = {attackBlocked}): {knockbackChance}");
             return knockbackChance;
         }
 

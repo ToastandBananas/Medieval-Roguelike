@@ -55,7 +55,7 @@ namespace UnitSystem.ActionSystem
                 }
                 else if (interactAction.targetInteractable != null)
                 {
-                    if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, interactAction.targetInteractable.GridPosition()) <= 1.4f)
+                    if (Vector3.Distance(unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
                         interactAction.QueueAction(interactAction.targetInteractable);
                 }
                 else if (queuedActions.Count == 0)
@@ -71,7 +71,7 @@ namespace UnitSystem.ActionSystem
                                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
 
                                 // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                                if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, queuedAttack.targetGridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                                if (Vector3.Distance(unit.WorldPosition, queuedAttack.targetGridPosition.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                                 {
                                     CancelActions();
                                     return;
@@ -101,7 +101,7 @@ namespace UnitSystem.ActionSystem
                         if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
-                            if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetEnemyUnit.GridPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                            if (Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                             {
                                 CancelActions();
                                 return;

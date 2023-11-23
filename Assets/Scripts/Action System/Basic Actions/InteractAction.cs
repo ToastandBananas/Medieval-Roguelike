@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem
             targetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
-            if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetGridPosition) > LevelGrid.diaganolDistance)
+            if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
                 unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
                 unit.unitActionHandler.QueueAction(this);
@@ -29,7 +29,7 @@ namespace UnitSystem.ActionSystem
             targetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
-            if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetGridPosition) > LevelGrid.diaganolDistance)
+            if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
                 unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
                 unit.unitActionHandler.QueueAction(this, true);

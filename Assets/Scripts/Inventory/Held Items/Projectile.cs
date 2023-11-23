@@ -111,7 +111,7 @@ namespace InventorySystem
             Vector3 startPos = transform.position;
             Vector3 offset = GetOffset(targetUnit, attackActionUsed, hitTarget);
 
-            float arcHeight = TacticsUtilities.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+            float arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
             float animationTime = 0f;
 
             while (shouldMoveProjectile)
@@ -159,7 +159,7 @@ namespace InventorySystem
 
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
-                float offsetReduction = rangedAccuracy - (distToEnemy * 0.1f); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
+                float offsetReduction = rangedAccuracy - (distToEnemy * 0.025f); // More accurate Units will miss by a smaller margin. Distance to the enemy also plays a factor.
                 if (offsetReduction > maxOffset - minOffset)
                     offsetReduction = 0f;
 
@@ -226,7 +226,7 @@ namespace InventorySystem
 
                 foreach (Collider collider in colliderArray)
                 {
-                    if (TacticsUtilities.CalculateDistance_XYZ(LevelGrid.GetGridPosition(collider.transform.localPosition), LevelGrid.GetGridPosition(targetPosition)) <= damageRadius)
+                    if (Vector3.Distance(LevelGrid.GetGridPosition(collider.transform.localPosition).WorldPosition, LevelGrid.GetGridPosition(targetPosition).WorldPosition) <= damageRadius)
                     {
                         float sphereCastRadius = 0.1f;
                         Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight;

@@ -6,7 +6,6 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using Controls;
 using GeneralUI;
-using Utilities;
 using ContextMenu = GeneralUI.ContextMenu;
 
 namespace UnitSystem.ActionSystem
@@ -24,9 +23,6 @@ namespace UnitSystem.ActionSystem
 
         GridPosition mouseGridPosition;
         GridPosition lastMouseGridPosition;
-        GridPosition playerLastGridPosition;
-        BaseAction lastSelectedAction;
-        int lastTurnNumber = -1;
 
         Unit player;
 
@@ -50,7 +46,6 @@ namespace UnitSystem.ActionSystem
         void Start()
         {
             player = GetComponent<Unit>();
-            playerLastGridPosition = player.GridPosition;
             GridSystemVisual.UpdateAttackGridVisual();
         }
 
@@ -201,7 +196,7 @@ namespace UnitSystem.ActionSystem
                             if (selectedAction.BaseAttackAction.IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
-                                float attackRange = player.GetAttackRange(unitAtGridPosition, false);
+                                float attackRange = player.GetAttackRange();
                                 if (unitAtGridPosition.IsCompletelySurrounded(attackRange) && attackRange < 2f)
                                 {
                                     // Remove the unit as the target enemy
@@ -246,7 +241,7 @@ namespace UnitSystem.ActionSystem
                             if (player.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
-                                float attackRange = player.GetAttackRange(unitAtGridPosition, false);
+                                float attackRange = player.GetAttackRange();
                                 if (unitAtGridPosition.IsCompletelySurrounded(attackRange) && attackRange < 2f)
                                 {
                                     // Remove the unit as the target enemy
@@ -327,7 +322,7 @@ namespace UnitSystem.ActionSystem
                 else if (selectedAction is MoveAction)
                 {
                     // If there's a non-visible Unit at this position and they're one tile away and could directly be within the line of sight (basically just meaning there's no obstacles in the way), just turn to face that tile
-                    if (unitAtGridPosition != null && TacticsUtilities.CalculateDistance_XZ(player.GridPosition, unitAtGridPosition.GridPosition) <= LevelGrid.diaganolDistance && player.vision.IsInLineOfSight_Raycast(unitAtGridPosition))
+                    if (unitAtGridPosition != null && Vector3.Distance(player.WorldPosition, unitAtGridPosition.WorldPosition) <= LevelGrid.diaganolDistance && player.vision.IsInLineOfSight_Raycast(unitAtGridPosition))
                         player.unitActionHandler.turnAction.QueueAction(mouseGridPosition);
                     else
                     {
@@ -348,7 +343,6 @@ namespace UnitSystem.ActionSystem
                 ClearHighlightedInteractable();
                 WorldMouse.ChangeCursor(CursorState.Default);
                 lastMouseGridPosition = player.GridPosition;
-                lastSelectedAction = null;
                 return;
             }
 
@@ -357,10 +351,6 @@ namespace UnitSystem.ActionSystem
                 highlightedUnit = null;
 
             BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
-
-            // Don't run this if nothing has changed
-            if (lastTurnNumber == TurnManager.turnNumber && mouseGridPosition == lastMouseGridPosition && player.GridPosition == playerLastGridPosition && selectedAction == lastSelectedAction && (highlightedUnit == null || highlightedUnit.GridPosition == mouseGridPosition))
-                return;
 
             if (selectedAction != null)
             {
@@ -505,10 +495,7 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            lastMouseGridPosition= mouseGridPosition;
-            playerLastGridPosition = player.GridPosition;
-            lastSelectedAction = selectedAction;
-            lastTurnNumber = TurnManager.turnNumber;
+            lastMouseGridPosition = mouseGridPosition;
         }
 
         void ClearHighlightedInteractable()

@@ -119,7 +119,7 @@ namespace UnitSystem.ActionSystem
                         float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
-                        if (TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + 1.4f)
+                        if (Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
                         {
                             if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
                             {
@@ -332,7 +332,7 @@ namespace UnitSystem.ActionSystem
                 float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if (closestEnemy != null && TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, closestEnemy.GridPosition) < minShootRange + LevelGrid.diaganolDistance)
+                if (closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
                 {
                     // If the Unit has a melee weapon, switch to it
                     if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
@@ -366,7 +366,7 @@ namespace UnitSystem.ActionSystem
             }
             else
             {
-                if (TacticsUtilities.CalculateDistance_XYZ(startChaseGridPosition, unit.GridPosition) >= maxChaseDistance)
+                if (Vector3.Distance(startChaseGridPosition.WorldPosition, unit.WorldPosition) >= maxChaseDistance)
                 {
                     shouldStopChasing = true;
                     moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
@@ -508,7 +508,7 @@ namespace UnitSystem.ActionSystem
             }
             
             // If there's no space around the enemy unit, try to find another enemy to attack
-            if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange(targetEnemyUnit, false)))
+            if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange()))
                 SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
 
             moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
@@ -646,7 +646,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
 
-            float distanceFromUnitToFleeFrom = TacticsUtilities.CalculateDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
+            float distanceFromUnitToFleeFrom = Vector3.Distance(unitToFleeFrom.WorldPosition, unit.WorldPosition);
 
             // If the Unit has fled far enough
             if (distanceFromUnitToFleeFrom >= fleeDistance)
@@ -664,7 +664,7 @@ namespace UnitSystem.ActionSystem
             if (needsNewFleeDestination)
             {
                 needsNewFleeDestination = false;
-                unitToFleeFrom_PreviousDistance = TacticsUtilities.CalculateDistance_XZ(unitToFleeFrom.GridPosition, unit.GridPosition);
+                unitToFleeFrom_PreviousDistance = Vector3.Distance(unitToFleeFrom.WorldPosition, unit.WorldPosition);
                 targetGridPosition = GetFleeDestination();
             }
 
@@ -704,7 +704,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
 
-            if (TacticsUtilities.CalculateDistance_XZ(unit.GridPosition, leader.GridPosition) <= stopFollowDistance)
+            if (Vector3.Distance(unit.WorldPosition, leader.WorldPosition) <= stopFollowDistance)
                 TurnManager.Instance.FinishTurn(unit);
             else if (moveAction.isMoving == false)
                 moveAction.QueueAction(leader.unitActionHandler.turnAction.GetGridPositionBehindUnit());

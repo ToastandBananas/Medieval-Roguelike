@@ -7,6 +7,9 @@ namespace UnitSystem
 {
     public class Health : MonoBehaviour
     {
+        public delegate void TakeMeleeDamageHandler();
+        public event TakeMeleeDamageHandler OnTakeDamageFromMeleeAttack;
+
         [Header("Health")]
         [SerializeField] int maxHealth = 100;
         [SerializeField] int currentHealth = -1;
@@ -43,6 +46,8 @@ namespace UnitSystem
             else if (attacker != null)
                 unit.unitAnimator.DoSlightKnockback(attacker.transform);
         }
+
+        public void OnHitByMeleeAttack() => OnTakeDamageFromMeleeAttack?.Invoke();
 
         public void TakeFallDamage(float fallDistance) => TakeDamage(CalculateFallDamage(fallDistance), null);
 

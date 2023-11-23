@@ -67,7 +67,7 @@ namespace GridSystem
                 {
                     targetUnit = null;
                     currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
-                    if (TacticsUtilities.CalculateDistance_XYZ(player.GridPosition, PlayerInput.Instance.highlightedInteractable.GridPosition()) > LevelGrid.diaganolDistance)
+                    if (Vector3.Distance(player.WorldPosition, PlayerInput.Instance.highlightedInteractable.GridPosition().WorldPosition) > LevelGrid.diaganolDistance)
                         targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
                     else
                     {
@@ -102,7 +102,7 @@ namespace GridSystem
                     }
                     else if (targetUnit.health.IsDead)
                     {
-                        if (TacticsUtilities.CalculateDistance_XYZ(targetUnit.GridPosition, player.GridPosition) > LevelGrid.diaganolDistance)
+                        if (Vector3.Distance(targetUnit.WorldPosition, player.WorldPosition) > LevelGrid.diaganolDistance)
                             targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
                         else
                         {

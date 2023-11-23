@@ -1,11 +1,15 @@
+using GridSystem;
 using InventorySystem;
 using UnitSystem;
 using UnityEngine;
 
 public class OpportunityAttackTrigger : MonoBehaviour
 {
-    public delegate void EnemyEnterTriggerHandler(Unit enemyUnit);
+    public delegate void EnemyEnterTriggerHandler(Unit enemyUnit, GridPosition enemyGridPosition);
     public event EnemyEnterTriggerHandler OnEnemyEnterTrigger;
+
+    public delegate void EnemyMovedHandler(Unit enemyUnit, GridPosition enemyGridPosition);
+    public event EnemyMovedHandler OnEnemyMoved;
 
     [SerializeField] SphereCollider sphereCollider;
     [SerializeField] Unit myUnit;
@@ -27,6 +31,9 @@ public class OpportunityAttackTrigger : MonoBehaviour
         sphereCollider.radius = maxAttackRange;
     }
 
+    ///<summary>Used when the enemy moves, but an opportunity attack isn't triggered because they are still within range.</summary>
+    public void OnEnemyUnitMoved(Unit enemyUnit, GridPosition enemyGridPosition) => OnEnemyMoved?.Invoke(enemyUnit, enemyGridPosition);
+
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Unit") || other.CompareTag("Player"))
@@ -36,13 +43,18 @@ public class OpportunityAttackTrigger : MonoBehaviour
 
             Unit unit = other.gameObject.GetComponent<Unit>();
             unit.unitsWhoCouldOpportunityAttackMe.Add(myUnit);
-            OnEnemyEnterTrigger?.Invoke(unit);
+            OnEnemyEnterTrigger?.Invoke(unit, unit.GridPosition);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Unit") || other.CompareTag("Player"))
+        {
+            if (other.transform == transform.parent)
+                return;
+
             other.gameObject.GetComponent<Unit>().unitsWhoCouldOpportunityAttackMe.Remove(myUnit);
+        }
     }
 }

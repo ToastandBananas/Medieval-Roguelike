@@ -30,7 +30,7 @@ namespace GridSystem
         static Vector3 collisionCheckOffset = new Vector3(0f, 0.025f, 0f);
         static Collider[] collisionsCheckArray;
 
-        public static readonly float diaganolDistance = 1.4142f;
+        public static readonly float diaganolDistance = 1.42f;
         public static readonly int gridSize = 1;
 
         void Awake()
@@ -203,7 +203,7 @@ namespace GridSystem
                 if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit or is otherwise unwalkable
                     continue;
 
-                float distance = TacticsUtilities.CalculateDistance_XZ(startingGridPosition, nodeGridPosition);
+                float distance = Vector3.Distance(startingGridPosition.WorldPosition, nodeGridPosition.WorldPosition);
                 if (distance > maxRange || distance < minRange)
                     continue;
 
@@ -258,7 +258,7 @@ namespace GridSystem
                 if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                     continue;
 
-                float distanceToEnemy = TacticsUtilities.CalculateDistance_XZ(enemyUnit.GridPosition, nodeGridPosition);
+                float distanceToEnemy = Vector3.Distance(enemyUnit.WorldPosition, nodeGridPosition.WorldPosition);
                 if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                     continue;
 
@@ -295,7 +295,7 @@ namespace GridSystem
                 if (obstructedGridPositionsValid == false && GridPositionObstructed(nodeGridPosition))
                     continue;
 
-                if (TacticsUtilities.CalculateDistance_XYZ(startGridPosition, nodeGridPosition) > range)
+                if (Vector3.Distance(startGridPosition.WorldPosition, nodeGridPosition.WorldPosition) > range)
                     continue;
 
                 gridPositionsList.Add(nodeGridPosition);

@@ -28,6 +28,18 @@ namespace InventorySystem
             return canEquipItem;
         }
 
+        public bool HasAccessToAction(BaseAction baseAction) => HasAccessToAction(baseAction.actionType);
+
+        public bool HasAccessToAction(ActionType actionType)
+        {
+            for (int i = 0; i < actionTypes.Length; i++)
+            {
+                if (actionTypes[i] == actionType)
+                    return true;
+            }
+            return false;
+        }
+
         public EquipSlot EquipSlot => equipSlot;
 
         public ActionType[] ActionTypes => actionTypes;

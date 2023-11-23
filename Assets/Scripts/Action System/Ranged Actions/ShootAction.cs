@@ -229,14 +229,14 @@ namespace UnitSystem.ActionSystem
 
             float distance;
             if (targetUnit != null)
-                distance = TacticsUtilities.CalculateDistance_XZ(shootGridPosition, targetUnit.GridPosition);
+                distance = Vector3.Distance(shootGridPosition.WorldPosition, targetUnit.WorldPosition);
             else
-                distance = TacticsUtilities.CalculateDistance_XZ(shootGridPosition, targetGridPosition);
+                distance = Vector3.Distance(shootGridPosition.WorldPosition, targetGridPosition.WorldPosition);
 
-            float maxRangeToTargetPosition = rangedWeapon.itemData.Item.Weapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
-            if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
+            //float maxRangeToTargetPosition = rangedWeapon.itemData.Item.Weapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
+            //if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
 
-            if (distance > maxRangeToTargetPosition || distance < rangedWeapon.itemData.Item.Weapon.MinRange)
+            if (distance > rangedWeapon.itemData.Item.Weapon.MaxRange || distance < rangedWeapon.itemData.Item.Weapon.MinRange)
                 return false;
             return true;
         }
@@ -259,8 +259,9 @@ namespace UnitSystem.ActionSystem
 
         public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
         {
-            float minRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
-            float maxRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            float minRange = heldRangedWeapon.itemData.Item.Weapon.MinRange;
+            float maxRange = heldRangedWeapon.itemData.Item.Weapon.MaxRange;
             float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
 
             validGridPositionsList.Clear();
@@ -274,11 +275,11 @@ namespace UnitSystem.ActionSystem
                 if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
                     continue;
 
-                float maxRangeToNodePosition = maxRange + (startGridPosition.y - nodeGridPosition.y);
-                if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
+                //float maxRangeToNodePosition = maxRange + (startGridPosition.y - nodeGridPosition.y);
+                //if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
 
-                float distance = TacticsUtilities.CalculateDistance_XZ(startGridPosition, nodeGridPosition);
-                if (distance > maxRangeToNodePosition || distance < minRange)
+                float distance = Vector3.Distance(startGridPosition.WorldPosition, nodeGridPosition.WorldPosition);
+                if (distance > maxRange || distance < minRange)
                     continue;
 
                 float sphereCastRadius = 0.1f;
@@ -401,7 +402,7 @@ namespace UnitSystem.ActionSystem
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
-                float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, targetUnit.GridPosition);
+                float distance = Vector3.Distance(unit.WorldPosition, targetUnit.WorldPosition);
                 if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                     finalActionValue = 0f;
                 else
@@ -443,7 +444,7 @@ namespace UnitSystem.ActionSystem
                     if (unit.unitActionHandler.targetEnemyUnit != null && unitAtGridPosition == unit.unitActionHandler.targetEnemyUnit)
                         finalActionValue += 15f;
 
-                    float distance = TacticsUtilities.CalculateDistance_XYZ(unit.GridPosition, actionGridPosition);
+                    float distance = Vector3.Distance(unit.WorldPosition, actionGridPosition.WorldPosition);
                     if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
                         finalActionValue = -1f;
                     else
