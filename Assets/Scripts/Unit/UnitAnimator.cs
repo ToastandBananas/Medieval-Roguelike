@@ -210,7 +210,6 @@ namespace UnitSystem
             unit.transform.position = knockbackTargetPosition;
             unit.UpdateGridPosition();
 
-            unit.unitActionHandler.moveAction.SetNextPathPosition(knockbackTargetPosition);
             unit.unitActionHandler.moveAction.SetFinalTargetGridPosition(unit.GridPosition);
             unit.unitActionHandler.moveAction.SetTargetGridPosition(unit.GridPosition);
 

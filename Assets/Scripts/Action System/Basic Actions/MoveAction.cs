@@ -19,7 +19,6 @@ namespace UnitSystem.ActionSystem
         public GridPosition nextTargetGridPosition { get; private set; }
         public GridPosition lastGridPosition { get; private set; }
         Vector3 nextTargetPosition;
-        Vector3 nextPathPosition;
 
         public bool aboutToMove { get; private set; }
         public bool isMoving { get; private set; }
@@ -29,6 +28,9 @@ namespace UnitSystem.ActionSystem
         int positionIndex;
 
         readonly float defaultMoveSpeed = 3.5f;
+        readonly float defaultParabolaMoveSpeed = 20f;
+        float moveSpeedMultiplier = 1f;
+        float travelDistanceMultiplier = 1f;
         float moveSpeed;
 
         readonly int defaultTileMoveCost = 200;
@@ -188,84 +190,69 @@ namespace UnitSystem.ActionSystem
 
             if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
             {
+                Vector3 unitStartPosition = unit.transform.position;
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
                 // Start rotating towards the target position
                 unit.unitActionHandler.turnAction.SetTargetPosition(directionToNextPosition);
                 unit.unitActionHandler.turnAction.RotateTowards_CurrentTargetPosition(false);
 
-                // Get the next path position, not including the Y coordinate
-                nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
+                float heightDifference = nextTargetPosition.y - unitStartPosition.y;
+                if (heightDifference == 0f) moveSpeed = defaultMoveSpeed;
+                else moveSpeed = defaultParabolaMoveSpeed;
 
-                float moveSpeedMultiplier = 1f;
-
+                float finalMoveSpeed = moveSpeed * travelDistanceMultiplier;
                 if (unit.IsNPC)
                 {
                     moveSpeedMultiplier = 1.1f;
-                    if (LevelGrid.IsDiagonal(unit.transform.position, nextTargetPosition))
-                        moveSpeedMultiplier *= 1.4f;
-                    if (nextTargetPosition.y != unit.transform.position.y)
-                        moveSpeedMultiplier *= 2f;
+                    finalMoveSpeed *= moveSpeedMultiplier;
+                    if (LevelGrid.IsDiagonal(unitStartPosition, nextTargetPosition))
+                        finalMoveSpeed *= 1.4f;
+
+                    if (heightDifference != 0f)
+                        finalMoveSpeed += finalMoveSpeed * Mathf.Abs(heightDifference);
                 }
 
                 unit.unitAnimator.StartMovingForward(); // Move animation
 
-                bool moveUpchecked = false;
-                bool moveDownChecked = false;
-                bool moveAboveChecked = false;
                 float stoppingDistance = 0.00625f;
                 float distanceToTriggerStopAnimation = 0.75f;
 
-                Vector3 unitPosition = unit.transform.position;
-                Vector3 targetPosition = unitPosition;
+                float arcMultiplier = 1.6f;
+                if (heightDifference < 0f) // If moving down
+                    arcMultiplier *= 2f;
+                else // If moving up
+                    arcMultiplier += arcMultiplier * heightDifference;
 
-                while (unit.unitAnimator.beingKnockedBack == false && Vector3.Distance(unit.transform.position, nextPathPosition) > stoppingDistance)
+                float arcHeight = MathParabola.CalculateParabolaArcHeight(unitStartPosition, nextTargetPosition) * arcMultiplier;
+                float animationTime = 0f;
+                
+                while (!unit.unitAnimator.beingKnockedBack && Vector3.Distance(unit.transform.position, nextTargetPosition) > stoppingDistance)
                 {
-                    unitPosition = unit.transform.position;
+                    while (unit.unitAnimator.isDodging)
+                        yield return null;
 
-                    if (unit.unitAnimator.isDodging)
+                    // If the target position is on the same Y coordinate, just move directly towards it
+                    if (heightDifference == 0f)
+                        unit.transform.position = Vector3.MoveTowards(unit.transform.position, nextTargetPosition, finalMoveSpeed * Time.deltaTime);
+                    else // If the target position is higher or lower than the Unit, use a parabola movement animation
                     {
-                        while (unit.unitAnimator.isDodging)
-                            yield return null;
-                    }
+                        animationTime += finalMoveSpeed * Time.deltaTime;
+                        unit.transform.position = MathParabola.Parabola(unitStartPosition, nextTargetPosition, arcHeight, animationTime / 5f);
 
-                    // If the next point on the path is above or below the Unit
-                    if (Mathf.Abs(Mathf.Abs(nextPointOnPath.y) - Mathf.Abs(unitPosition.y)) > stoppingDistance)
-                    {
-                        // If the next path position is above the unit's current position
-                        if (moveUpchecked == false && nextPointOnPath.y - unitPosition.y > 0f)
+                        // Determine if the Unit should stop their move animation
+                        if (unit.unitActionHandler.targetEnemyUnit == null)
                         {
-                            moveUpchecked = true;
-                            targetPosition.Set(unitPosition.x, nextPointOnPath.y, unitPosition.z);
-                            nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                            float distanceToFinalPosition = Vector3.Distance(unitStartPosition, LevelGrid.GetWorldPosition(finalTargetGridPosition));
+                            if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
+                                unit.unitAnimator.StopMovingForward();
                         }
-                        // If the Unit is directly above the next path position
-                        else if (moveDownChecked == false && nextPointOnPath.y - unitPosition.y < 0f && Mathf.Abs(nextPathPosition.x - unitPosition.x) < stoppingDistance && Mathf.Abs(nextPathPosition.z - unitPosition.z) < stoppingDistance)
-                        {
-                            moveDownChecked = true;
-                            targetPosition = nextPathPosition;
-                        }
-                        // If the next path position is below the unit's current position
-                        else if (moveAboveChecked == false && nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
-                        {
-                            moveAboveChecked = true;
-                            targetPosition.Set(nextPointOnPath.x, unitPosition.y, nextPointOnPath.z);
-                            nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
-                        }
-                    }
-                    else // Otherwise, the target position is simply the next position on the Path
-                        targetPosition = nextPathPosition;
 
-                    // Determine if the Unit should stop their move animation
-                    if (unit.unitActionHandler.targetEnemyUnit == null)
-                    {
-                        float distanceToFinalPosition = Vector3.Distance(unitPosition, LevelGrid.GetWorldPosition(finalTargetGridPosition));
-                        if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
-                            unit.unitAnimator.StopMovingForward();
+                        if (heightDifference < 0f && unit.transform.position.y < nextTargetPosition.y)
+                            break;
+                        else if (heightDifference > 0f && Mathf.Approximately(unit.transform.position.x, nextTargetPosition.x) && Mathf.Approximately(unit.transform.position.z, nextTargetPosition.z) && unit.transform.position.y < nextTargetPosition.y)
+                            break;
                     }
-
-                    // Move to the target position
-                    unit.transform.position = Vector3.MoveTowards(unit.transform.position, targetPosition, moveSpeed * moveSpeedMultiplier * Time.deltaTime);
 
                     yield return null;
                 }
@@ -275,16 +262,13 @@ namespace UnitSystem.ActionSystem
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
                 unit.unitActionHandler.turnAction.RotateTowards_Direction(directionToNextPosition, true);
 
-                nextPathPosition = nextTargetPosition;
-
                 TurnManager.Instance.StartNextUnitsTurn(unit);
             }
 
             while (unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
-            nextPathPosition.Set(Mathf.RoundToInt(nextPathPosition.x), nextPathPosition.y, Mathf.RoundToInt(nextPathPosition.z));
-            unit.transform.position = nextPathPosition;
+            unit.transform.position = nextTargetPosition;
             unit.UpdateGridPosition();
 
             // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
@@ -431,10 +415,10 @@ namespace UnitSystem.ActionSystem
 
             // If the next path position is above the unit's current position
             if (nextPointOnPath.y - unitPosition.y > 0f)
-                nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
             // If the next path position is below the unit's current position
             else if (nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
-                nextPathPosition = new Vector3(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
+                nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
 
             // If there's an Interactable on the next path position
             GridPosition nextGridPosition = LevelGrid.GetGridPosition(nextPathPosition);
@@ -591,15 +575,15 @@ namespace UnitSystem.ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public void SetMoveSpeed(int pooledAP)
+        public void SetTravelDistanceSpeedMultiplier()
         {
             if (unit.IsPlayer)
                 return;
 
-            if ((float)pooledAP / defaultTileMoveCost <= 1f)
-                moveSpeed = defaultMoveSpeed;
+            if ((float)unit.stats.lastPooledAP / defaultTileMoveCost <= 1f)
+                travelDistanceMultiplier = 1f;
             else
-                moveSpeed = Mathf.FloorToInt((float)pooledAP / defaultTileMoveCost * defaultMoveSpeed);
+                travelDistanceMultiplier = Mathf.FloorToInt((float)unit.stats.lastPooledAP / defaultTileMoveCost);
         }
 
         public override bool IsValidAction()
@@ -607,8 +591,6 @@ namespace UnitSystem.ActionSystem
             // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
             return true;
         }
-
-        public void SetNextPathPosition(Vector3 position) => nextPathPosition = position;
 
         public void SetCanMove(bool canMove) => this.canMove = canMove;
 

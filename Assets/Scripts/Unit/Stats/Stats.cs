@@ -13,6 +13,7 @@ namespace UnitSystem
     {
         public int currentAP { get; private set; }
         public int pooledAP { get; private set; }
+        public int lastPooledAP { get; private set; }
         public int APUntilTimeTick { get; private set; }
         public int lastUsedAP { get; private set; }
         // readonly int baseAP_PerSecond = 60;
@@ -118,9 +119,9 @@ namespace UnitSystem
                 {
                     // Every time the Player takes an action that costs AP, a correlating amount of AP is added to each NPCs AP pool (based off percentage of the Player's MaxAP used)
                     UnitManager.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].stats.MaxAP()));
-
+                    
                     // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
-                    UnitManager.livingNPCs[i].unitActionHandler.moveAction.SetMoveSpeed(pooledAP);
+                    UnitManager.livingNPCs[i].unitActionHandler.moveAction.SetTravelDistanceSpeedMultiplier();
                 }
             }
             else
@@ -155,7 +156,11 @@ namespace UnitSystem
 
         public void AddToCurrentAP(int amountToAdd) => currentAP += amountToAdd;
 
-        public void AddToAPPool(int amountToAdd) => pooledAP += amountToAdd;
+        public void AddToAPPool(int amountToAdd)
+        {
+            pooledAP += amountToAdd;
+            lastPooledAP = pooledAP;
+        }
 
         public void GetAPFromPool()
         {
