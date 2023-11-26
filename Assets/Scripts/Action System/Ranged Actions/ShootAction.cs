@@ -7,20 +7,16 @@ using Random = UnityEngine.Random;
 using GridSystem;
 using InventorySystem;
 using UnitSystem.ActionSystem.UI;
-using Utilities;
 
 namespace UnitSystem.ActionSystem
 {
     public class ShootAction : BaseAttackAction
     {
-        List<GridPosition> validGridPositionsList = new List<GridPosition>();
-        List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
         readonly int baseAPCost = 300;
 
         public override void QueueAction()
         {
-            if (RangedWeaponIsLoaded() == false)
+            if (!RangedWeaponIsLoaded())
             {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
                 return;
@@ -31,7 +27,7 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction(GridPosition targetGridPosition)
         {
-            if (RangedWeaponIsLoaded() == false)
+            if (!RangedWeaponIsLoaded())
             {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
                 return;
@@ -42,7 +38,7 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction(Unit targetEnemyUnit)
         {
-            if (RangedWeaponIsLoaded() == false)
+            if (!RangedWeaponIsLoaded())
             {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
                 return;
@@ -78,7 +74,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
 
-            if (RangedWeaponIsLoaded() == false)
+            if (!RangedWeaponIsLoaded())
             {
                 CompleteAction();
                 unit.unitActionHandler.SetTargetEnemyUnit(targetEnemyUnit);
@@ -110,7 +106,7 @@ namespace UnitSystem.ActionSystem
                 yield return null;
 
             // If the target Unit moved out of range, queue a movement instead
-            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
+            if (!IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
             {
                 MoveToTargetInstead();
                 yield break;
@@ -127,7 +123,7 @@ namespace UnitSystem.ActionSystem
             if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                if (!unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition))
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
@@ -135,7 +131,7 @@ namespace UnitSystem.ActionSystem
                     yield return null;
                 
                 // If the target Unit moved out of range, queue a movement instead
-                if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition) == false)
+                if (!IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
                 {
                     MoveToTargetInstead();
                     yield break;
@@ -159,11 +155,11 @@ namespace UnitSystem.ActionSystem
                 bool missedTarget = TryHitTarget(targetEnemyUnit.GridPosition);
                 bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false);
                 bool headShot = false;
-                if (missedTarget == false)
+                if (!missedTarget)
                     DamageTargets(heldRangedWeapon, headShot);
 
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
+                if (!unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition))
                     unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, true);
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
@@ -203,7 +199,7 @@ namespace UnitSystem.ActionSystem
             if (unit.IsPlayer)
             {
                 unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
-                if (PlayerInput.Instance.autoAttack == false)
+                if (!PlayerInput.Instance.autoAttack)
                 {
                     targetEnemyUnit = null;
                     unit.unitActionHandler.SetTargetEnemyUnit(null);
@@ -218,35 +214,6 @@ namespace UnitSystem.ActionSystem
             unit.unitActionHandler.FinishAction();
         }
 
-        public override bool IsInAttackRange(Unit targetUnit, GridPosition shootGridPosition, GridPosition targetGridPosition)
-        {
-            HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            if (rangedWeapon == null)
-                return false;
-
-            if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
-                return false;
-
-            float distance;
-            if (targetUnit != null)
-                distance = Vector3.Distance(shootGridPosition.WorldPosition, targetUnit.WorldPosition);
-            else
-                distance = Vector3.Distance(shootGridPosition.WorldPosition, targetGridPosition.WorldPosition);
-
-            //float maxRangeToTargetPosition = rangedWeapon.itemData.Item.Weapon.MaxRange + (shootGridPosition.y - targetGridPosition.y); // Take into account grid position y differences
-            //if (maxRangeToTargetPosition < 0f) maxRangeToTargetPosition = 0f;
-
-            if (distance > rangedWeapon.itemData.Item.Weapon.MaxRange || distance < rangedWeapon.itemData.Item.Weapon.MinRange)
-                return false;
-            return true;
-        }
-
-        protected override void StartAction()
-        {
-            base.StartAction();
-            unit.unitActionHandler.SetIsAttacking(true);
-        }
-
         public override int ActionPointsCost()
         {
             float cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon);
@@ -257,148 +224,10 @@ namespace UnitSystem.ActionSystem
             return Mathf.RoundToInt(cost);
         }
 
-        public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
-        {
-            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            float minRange = heldRangedWeapon.itemData.Item.Weapon.MinRange;
-            float maxRange = heldRangedWeapon.itemData.Item.Weapon.MaxRange;
-            float boundsDimension = ((startGridPosition.y + maxRange) * 2) + 0.1f;
-
-            validGridPositionsList.Clear();
-            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                    continue;
-
-                //float maxRangeToNodePosition = maxRange + (startGridPosition.y - nodeGridPosition.y);
-                //if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-
-                float distance = Vector3.Distance(startGridPosition.WorldPosition, nodeGridPosition.WorldPosition);
-                if (distance > maxRange || distance < minRange)
-                    continue;
-
-                float sphereCastRadius = 0.1f;
-                Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
-                Vector3 shootDir = (nodeGridPosition.WorldPosition + offset - (startGridPosition.WorldPosition + offset)).normalized;
-                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, nodeGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
-                    continue;
-
-                // Debug.Log(gridPosition);
-                validGridPositionsList.Add(nodeGridPosition);
-            }
-
-            ListPool<GraphNode>.Release(nodes);
-            return validGridPositionsList;
-        }
-
-        public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
-        {
-            validGridPositionsList.Clear();
-            if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
-                return validGridPositionsList;
-
-            if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
-                return validGridPositionsList;
-
-            float sphereCastRadius = 0.1f;
-            Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
-            Vector3 shootDir = (unit.WorldPosition + offset - (targetGridPosition.WorldPosition + offset)).normalized;
-            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(unit.WorldPosition + offset, targetGridPosition.WorldPosition + offset), unit.unitActionHandler.AttackObstacleMask))
-                return validGridPositionsList; // Blocked by an obstacle
-
-            validGridPositionsList.Add(targetGridPosition);
-            return validGridPositionsList;
-        }
-
-        public List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
-        {
-            validGridPositionsList.Clear();
-            if (targetUnit == null)
-                return validGridPositionsList;
-
-            float maxAttackRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
-            float boundsDimension = ((targetUnit.GridPosition.y + maxAttackRange) * 2) + 0.1f;
-
-            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.transform.position, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                    continue;
-
-                // Grid Position has a Unit there already
-                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out _))
-                    continue;
-
-                // If target is out of attack range
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
-                    continue;
-
-                float sphereCastRadius = 0.1f;
-                Vector3 unitOffset = 2f * unit.ShoulderHeight * Vector3.up;
-                Vector3 targetUnitOffset = 2f * targetUnit.ShoulderHeight * Vector3.up;
-                Vector3 shootDir = (nodeGridPosition.WorldPosition + unitOffset - (targetUnit.WorldPosition + targetUnitOffset)).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, shootDir, out _, Vector3.Distance(nodeGridPosition.WorldPosition + unitOffset, targetUnit.WorldPosition + targetUnitOffset), unit.unitActionHandler.AttackObstacleMask))
-                    continue; // Blocked by an obstacle
-
-                // Debug.Log(gridPosition);
-                validGridPositionsList.Add(nodeGridPosition);
-            }
-
-            ListPool<GraphNode>.Release(nodes);
-            return validGridPositionsList;
-        }
-
-        public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
-        {
-            nearestGridPositionsList.Clear();
-            List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-            gridPositions = GetValidGridPositionsInRange(targetUnit);
-            float nearestDistance = 10000000f;
-
-            // First find the nearest valid Grid Positions to the Player
-            for (int i = 0; i < gridPositions.Count; i++)
-            {
-                float distance = Vector3.Distance(gridPositions[i].WorldPosition, startGridPosition.WorldPosition);
-                if (distance < nearestDistance)
-                {
-                    nearestGridPositionsList.Clear();
-                    nearestGridPositionsList.Add(gridPositions[i]);
-                    nearestDistance = distance;
-                }
-                else if (Mathf.Approximately(distance, nearestDistance))
-                    nearestGridPositionsList.Add(gridPositions[i]);
-            }
-
-            GridPosition nearestGridPosition = startGridPosition;
-            float nearestDistanceToTarget = 10000000f;
-            for (int i = 0; i < nearestGridPositionsList.Count; i++)
-            {
-                // Get the Grid Position that is closest to the target Grid Position
-                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition, targetUnit.transform.position);
-                if (distance < nearestDistanceToTarget)
-                {
-                    nearestDistanceToTarget = distance;
-                    nearestGridPosition = nearestGridPositionsList[i];
-                }
-            }
-
-            ListPool<GridPosition>.Release(gridPositions);
-            return nearestGridPosition;
-        }
-
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead == false)
+            if (IsValidAction() && targetUnit != null && !targetUnit.health.IsDead)
             {
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
@@ -432,7 +261,7 @@ namespace UnitSystem.ActionSystem
             if (LevelGrid.HasUnitAtGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                if (unitAtGridPosition.health.IsDead == false && unit.alliance.IsEnemy(unitAtGridPosition))
+                if (!unitAtGridPosition.health.IsDead && unit.alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;
@@ -472,7 +301,7 @@ namespace UnitSystem.ActionSystem
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && !unitAtGridPosition.health.IsDead && !unit.alliance.IsAlly(unitAtGridPosition) && unit.vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }
@@ -513,5 +342,37 @@ namespace UnitSystem.ActionSystem
         public override bool IsMeleeAttackAction() => false;
 
         public override bool IsRangedAttackAction() => true;
+
+        public override float MinAttackRange()
+        {
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (heldRangedWeapon != null)
+                return heldRangedWeapon.itemData.Item.Weapon.MinRange;
+            else
+                return 100f;
+        }
+
+        public override float MaxAttackRange()
+        {
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (heldRangedWeapon != null)
+                return heldRangedWeapon.itemData.Item.Weapon.MaxRange;
+            else
+                return 0f;
+        }
+
+        public override bool CanAttackThroughUnits()
+        {
+            HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+            if (heldRangedWeapon != null)
+            {
+                if (heldRangedWeapon.itemData.Item.Weapon.WeaponType == WeaponType.Bow)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return true;
+        }
     }
 }

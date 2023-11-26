@@ -9,7 +9,6 @@ using UnitSystem.ActionSystem.UI;
 using InventorySystem;
 using UnitSystem;
 using Controls;
-using Utilities;
 using Pathfinding.Util;
 
 namespace GeneralUI
@@ -148,7 +147,7 @@ namespace GeneralUI
             if (buttonCount > 0)
             {
                 isActive = true;
-                Instance.StartCoroutine(BuildContextMenuCooldown());
+                StartContextMenuCooldown();
 
                 SetupMenuSize();
                 SetupMenuPosition();
@@ -167,30 +166,21 @@ namespace GeneralUI
             targetInteractable = null;
             targetUnit = null;
 
-            CreateReloadButtons();
-
-            int buttonCount = 0;
-            for (int i = 0; i < contextButtons.Count; i++)
-            {
-                if (contextButtons[i].gameObject.activeSelf)
-                {
-                    buttonCount++;
-                    break;
-                }
-            }
+            CreateReloadButtons(out int buttonCount);
 
             if (buttonCount > 0)
             {
                 isActive = true;
-                Instance.StartCoroutine(BuildContextMenuCooldown());
+                StartContextMenuCooldown();
 
                 SetupMenuSize();
                 SetupMenuPosition();
             }
         }
 
-        static void CreateReloadButtons()
+        static void CreateReloadButtons(out int buttonCount)
         {
+            buttonCount = 0;
             if (UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false || UnitManager.player.UnitEquipment.QuiverEquipped() == false)
                 return;
 
@@ -219,9 +209,53 @@ namespace GeneralUI
             for (int i = 0; i < uniqueProjectileTypes.Count; i++)
             {
                 GetContextMenuButton().SetupReloadButton(uniqueProjectileTypes[i]);
+                buttonCount++;
             }
 
             ListPool<ItemData>.Release(uniqueProjectileTypes);
+        }
+
+        public static void BuildThrowWeaponContextMenu()
+        {
+            if (onCooldown)
+                return;
+
+            SplitStack.Instance.Close();
+            DisableContextMenu(true);
+
+            targetSlot = null;
+            targetInteractable = null;
+            targetUnit = null;
+
+            CreateThrowWeaponButtons(out int buttonCount);
+
+            if (buttonCount > 0)
+            {
+                isActive = true;
+                StartContextMenuCooldown();
+
+                SetupMenuSize();
+                SetupMenuPosition();
+            }
+        }
+
+        static void CreateThrowWeaponButtons(out int buttonCount)
+        {
+            buttonCount = 0;
+
+            HeldMeleeWeapon leftMeleeWeapon = UnitManager.player.unitMeshManager.GetLeftHeldMeleeWeapon();
+            if (leftMeleeWeapon != null)
+            {
+                GetContextMenuButton().SetupThrowWeaponButton(leftMeleeWeapon.itemData);
+                buttonCount++;
+            }
+
+            HeldMeleeWeapon rightMeleeWeapon = UnitManager.player.unitMeshManager.GetRightHeldMeleeWeapon();
+            if (rightMeleeWeapon != null)
+            {
+                GetContextMenuButton().SetupThrowWeaponButton(rightMeleeWeapon.itemData);
+                buttonCount++;
+            }
         }
 
         static void CreateMoveToButton()
@@ -506,9 +540,9 @@ namespace GeneralUI
             GetContextMenuButton().SetupRemoveFromHotbarButton(ActionSystemUI.highlightedActionSlot as ItemActionBarSlot);
         }
 
-        public static void StartContextMenuCooldown() => Instance.StartCoroutine(BuildContextMenuCooldown());
+        public static void StartContextMenuCooldown() => Instance.StartCoroutine(StartContextMenuCooldown_Coroutine());
 
-        static IEnumerator BuildContextMenuCooldown()
+        static IEnumerator StartContextMenuCooldown_Coroutine()
         {
             if (onCooldown == false)
             {

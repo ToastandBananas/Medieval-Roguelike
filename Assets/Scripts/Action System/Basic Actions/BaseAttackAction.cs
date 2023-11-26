@@ -1,5 +1,6 @@
 using GridSystem;
 using InventorySystem;
+using Pathfinding;
 using Pathfinding.Util;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,10 +13,21 @@ namespace UnitSystem.ActionSystem
     {
         protected Unit targetEnemyUnit;
 
+        protected List<GridPosition> validGridPositionsList = new List<GridPosition>();
+        protected List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
+
         public virtual void QueueAction(Unit targetEnemyUnit)
         {
             this.targetEnemyUnit = targetEnemyUnit;
             targetGridPosition = targetEnemyUnit.GridPosition;
+            QueueAction();
+        }
+
+        public override void QueueAction(GridPosition targetGridPosition)
+        {
+            this.targetGridPosition = targetGridPosition;
+            if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
+                targetEnemyUnit = targetUnit;
             QueueAction();
         }
 
@@ -30,6 +42,8 @@ namespace UnitSystem.ActionSystem
         protected override void StartAction()
         {
             base.StartAction();
+            unit.unitActionHandler.SetIsAttacking(true);
+            unit.stats.UseEnergy(InitialEnergyCost());
             if (unit.IsPlayer && targetEnemyUnit != null)
                 targetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(targetEnemyUnit.GridPosition);
         }
@@ -295,17 +309,188 @@ namespace UnitSystem.ActionSystem
         public bool OtherUnitInTheWay(Unit unit, GridPosition startGridPosition, GridPosition targetGridPosition)
         {
             Unit targetUnit = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (targetUnit == null)
+            if (unit == null || targetUnit == null)
                 return false;
 
             // Check if there's a Unit in the way of the attack
             float raycastDistance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
             Vector3 attackDir = (targetGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
-            if (Physics.Raycast(startGridPosition.WorldPosition, attackDir, out RaycastHit hit, raycastDistance, unit.vision.UnitsMask))
+            Vector3 offset = 0.1f * Vector3.up;
+            if (Physics.Raycast(startGridPosition.WorldPosition + offset, attackDir, out RaycastHit hit, raycastDistance, unit.vision.UnitsMask))
             {
                 if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject && unit.vision.IsVisible(hit.collider.gameObject))
                     return true;
             }
+            return false;
+        }
+
+        public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
+        {
+            validGridPositionsList.Clear();
+            if (!LevelGrid.IsValidGridPosition(targetGridPosition))
+                return validGridPositionsList;
+
+            if (!IsInAttackRange(null, unit.GridPosition, targetGridPosition))
+                return validGridPositionsList;
+
+            float sphereCastRadius = 0.1f;
+            float raycastDistance = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
+            Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+            Vector3 attackDir = (unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
+            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                return validGridPositionsList; // Blocked by an obstacle
+
+            // Check if there's a Unit in the way of the attack
+            if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, unit.GridPosition, targetGridPosition))
+                return validGridPositionsList;
+
+            validGridPositionsList.Add(targetGridPosition);
+            return validGridPositionsList;
+        }
+
+        public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
+        {
+            float boundsDimension = (MaxAttackRange() * 2) + 0.1f;
+
+            validGridPositionsList.Clear();
+            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
+
+                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
+                    continue;
+
+                if (!IsInAttackRange(null, startGridPosition, nodeGridPosition))
+                    continue;
+
+                // Check for obstacles
+                float sphereCastRadius = 0.1f;
+                float raycastDistance = Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition);
+                Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+                Vector3 attackDir = (nodeGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
+                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                    continue;
+
+                // Check if there's a Unit in the way of the attack (but only if the attack can't be performed through or over other Units)
+                if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, startGridPosition, nodeGridPosition))
+                    continue;
+
+                validGridPositionsList.Add(nodeGridPosition);
+            }
+
+            ListPool<GraphNode>.Release(nodes);
+            return validGridPositionsList;
+        }
+
+        public virtual GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
+        {
+            nearestGridPositionsList.Clear();
+            List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
+            gridPositions = GetValidGridPositionsInRange(targetUnit);
+            float nearestDistance = 100000f;
+
+            // First find the nearest valid Grid Positions to the Player
+            for (int i = 0; i < gridPositions.Count; i++)
+            {
+                float distance = Vector3.Distance(gridPositions[i].WorldPosition, startGridPosition.WorldPosition);
+                if (distance < nearestDistance)
+                {
+                    nearestGridPositionsList.Clear();
+                    nearestGridPositionsList.Add(gridPositions[i]);
+                    nearestDistance = distance;
+                }
+                else if (Mathf.Approximately(distance, nearestDistance))
+                    nearestGridPositionsList.Add(gridPositions[i]);
+            }
+
+            GridPosition nearestGridPosition = startGridPosition;
+            float nearestDistanceToTarget = 100000f;
+            for (int i = 0; i < nearestGridPositionsList.Count; i++)
+            {
+                // Get the Grid Position that is closest to the target Grid Position
+                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition, targetUnit.WorldPosition);
+                if (distance < nearestDistanceToTarget)
+                {
+                    nearestDistanceToTarget = distance;
+                    nearestGridPosition = nearestGridPositionsList[i];
+                }
+            }
+
+            ListPool<GridPosition>.Release(gridPositions);
+            return nearestGridPosition;
+        }
+
+        protected List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
+        {
+            validGridPositionsList.Clear();
+            if (targetUnit == null)
+                return validGridPositionsList;
+
+            float boundsDimension = (MaxAttackRange() * 2) + 0.1f;
+            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
+            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
+
+                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
+                    continue;
+
+                // If Grid Position has a Unit there already
+                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out _))
+                    continue;
+
+                // If target is out of attack range from this Grid Position
+                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
+                    continue;
+
+                // Check for obstacles
+                float sphereCastRadius = 0.1f;
+                Vector3 unitOffset = 2f * unit.ShoulderHeight * Vector3.up;
+                Vector3 targetUnitOffset = 2f * targetUnit.ShoulderHeight * Vector3.up;
+                float raycastDistance = Vector3.Distance(nodeGridPosition.WorldPosition + unitOffset, targetUnit.WorldPosition + targetUnitOffset);
+                Vector3 attackDir = (nodeGridPosition.WorldPosition + unitOffset - (targetUnit.WorldPosition + targetUnitOffset)).normalized;
+                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                    continue;
+
+                if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, nodeGridPosition, targetUnit.GridPosition))
+                    continue;
+
+                validGridPositionsList.Add(nodeGridPosition);
+            }
+
+            ListPool<GraphNode>.Release(nodes);
+            return validGridPositionsList;
+        }
+
+        public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
+        {
+            List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
+            attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
+            for (int i = 0; i < attackGridPositions.Count; i++)
+            {
+                if (LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
+                    continue;
+
+                if (unitAtGridPosition.health.IsDead)
+                    continue;
+
+                if (unit.alliance.IsAlly(unitAtGridPosition))
+                    continue;
+
+                if (unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
+                    continue;
+
+                // If the loop makes it to this point, then it found a valid unit
+                ListPool<GridPosition>.Release(attackGridPositions);
+                return true;
+            }
+
+            ListPool<GridPosition>.Release(attackGridPositions);
             return false;
         }
 
@@ -342,9 +527,26 @@ namespace UnitSystem.ActionSystem
             }
         }
 
-        public abstract void PlayAttackAnimation();
+        public virtual bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
+        {
+            // Check for obstacles
+            if (targetUnit != null)
+            {
+                if (!unit.vision.IsInLineOfSight_SphereCast(targetUnit))
+                    return false;
+            }
+            else if (!unit.vision.IsInLineOfSight_SphereCast(targetGridPosition))
+                return false;
 
-        public abstract bool IsInAttackRange(Unit targetUnit, GridPosition attackGridPosition, GridPosition targetGridPosition);
+            // Check if there's a Unit in the way of the attack (but only for actions that can't attack through or over other Units)
+            if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, startGridPosition, targetGridPosition))
+                return false;
+
+            float distance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
+            if (distance < MinAttackRange() || distance > MaxAttackRange())
+                return false;
+            return true;
+        }
 
         public virtual bool IsInAttackRange(Unit targetUnit)
         {
@@ -354,13 +556,18 @@ namespace UnitSystem.ActionSystem
                 return IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition);
         }
 
-        public abstract GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit);
+        public abstract float MinAttackRange();
+        public abstract float MaxAttackRange();
 
         /// <summary>A weapon's accuracy will be multiplied by this amount at the end of the calculation, rather than directly added or subtracted. Affects Ranged Accuracy & Dodge Chance.</summary>
         public abstract float AccuracyModifier();
 
+        public abstract bool CanAttackThroughUnits();
+
         public abstract bool IsMeleeAttackAction();
 
         public abstract bool IsRangedAttackAction();
+
+        public abstract void PlayAttackAnimation();
     }
 }

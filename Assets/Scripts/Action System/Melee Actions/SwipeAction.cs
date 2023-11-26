@@ -12,9 +12,6 @@ namespace UnitSystem.ActionSystem
 {
     public class SwipeAction : BaseAttackAction
     {
-        List<GridPosition> validGridPositionsList = new List<GridPosition>();
-        List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
         readonly int baseAPCost = 300;
 
         public override int ActionPointsCost()
@@ -67,48 +64,6 @@ namespace UnitSystem.ActionSystem
             unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoSwipeAttack(targetGridPosition);
         }
 
-        public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().GetActionGridPositionsInRange(startGridPosition);
-
-        public List<GridPosition> GetValidGridPositionsInRange(Unit targetUnit)
-        {
-            validGridPositionsList.Clear();
-            if (targetUnit == null)
-                return validGridPositionsList;
-
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
-
-            float boundsDimension = (maxAttackRange * 2) + 0.1f;
-            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                    continue;
-
-                // If Grid Position has a Unit there already
-                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out _))
-                    continue;
-
-                // If target is out of attack range from this Grid Position
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
-                    continue;
-
-                // Check for obstacles
-                float sphereCastRadius = 0.1f;
-                Vector3 attackDir = ((nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f)) - (targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f))).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f), sphereCastRadius, attackDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + (Vector3.up * unit.ShoulderHeight * 2f), targetUnit.WorldPosition + (Vector3.up * targetUnit.ShoulderHeight * 2f)), unit.unitActionHandler.AttackObstacleMask))
-                    continue;
-
-                validGridPositionsList.Add(nodeGridPosition);
-            }
-
-            ListPool<GraphNode>.Release(nodes);
-            return validGridPositionsList;
-        }
-
         public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
         {
             validGridPositionsList.Clear();
@@ -130,7 +85,7 @@ namespace UnitSystem.ActionSystem
 
             // Check for obstacles
             float sphereCastRadius = 0.1f;
-            Vector3 heightOffset = Vector3.up * unit.ShoulderHeight * 2f;
+            Vector3 heightOffset = 2f * unit.ShoulderHeight * Vector3.up;
             if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
             {
                 // Debug.Log(targetGridPosition.WorldPosition + " (the target position) is blocked by " + hit.collider.name);
@@ -172,7 +127,7 @@ namespace UnitSystem.ActionSystem
 
                 // Check for obstacles
                 Vector3 directionToAttackPosition = (nodeGridPosition.WorldPosition + heightOffset - (unit.WorldPosition + heightOffset)).normalized;
-                if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out hit, Vector3.Distance(nodeGridPosition.WorldPosition + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out _, Vector3.Distance(nodeGridPosition.WorldPosition + heightOffset, unit.WorldPosition + heightOffset), unit.unitActionHandler.AttackObstacleMask))
                 {
                     // Debug.Log(nodeGridPosition.WorldPosition + " is blocked by " + hit.collider.name);
                     continue;
@@ -215,73 +170,6 @@ namespace UnitSystem.ActionSystem
             return generalDirection;
         }
 
-        public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
-        {
-            nearestGridPositionsList.Clear();
-            List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-            gridPositions = GetValidGridPositionsInRange(targetUnit);
-            float nearestDistance = 10000f;
-
-            // First, find the nearest valid Grid Positions to the Player
-            for (int i = 0; i < gridPositions.Count; i++)
-            {
-                float distance = Vector3.Distance(gridPositions[i].WorldPosition, startGridPosition.WorldPosition);
-                if (distance < nearestDistance)
-                {
-                    nearestGridPositionsList.Clear();
-                    nearestGridPositionsList.Add(gridPositions[i]);
-                    nearestDistance = distance;
-                }
-                else if (Mathf.Approximately(distance, nearestDistance))
-                    nearestGridPositionsList.Add(gridPositions[i]);
-            }
-
-            GridPosition nearestGridPosition = startGridPosition;
-            float nearestDistanceToTarget = 10000f;
-            for (int i = 0; i < nearestGridPositionsList.Count; i++)
-            {
-                // Get the Grid Position that is closest to the target Grid Position
-                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition, targetUnit.transform.position);
-                if (distance < nearestDistanceToTarget)
-                {
-                    nearestDistanceToTarget = distance;
-                    nearestGridPosition = nearestGridPositionsList[i];
-                }
-            }
-
-            ListPool<GridPosition>.Release(gridPositions);
-            return nearestGridPosition;
-        }
-
-        public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
-        {
-            List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
-            attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
-            for (int i = 0; i < attackGridPositions.Count; i++)
-            {
-                if (LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
-                    continue;
-
-                if (unitAtGridPosition.health.IsDead)
-                    continue;
-
-                if (unit.alliance.IsAlly(unitAtGridPosition))
-                    continue;
-
-                if (unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
-                    continue;
-
-                // If the loop makes it to this point, then it found a valid unit
-                ListPool<GridPosition>.Release(attackGridPositions);
-                return true;
-            }
-            
-            ListPool<GridPosition>.Release(attackGridPositions);
-            return false;
-        }
-
-        public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition) => unit.unitActionHandler.GetAction<MeleeAction>().IsInAttackRange(targetUnit, startGridPosition, targetGridPosition);
-
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
@@ -290,9 +178,8 @@ namespace UnitSystem.ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(unit.WorldPosition, targetUnit.WorldPosition);
-                float minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
 
-                if (distance < minAttackRange)
+                if (distance < MinAttackRange())
                     finalActionValue = 0f;
                 else
                     finalActionValue -= distance * 10f;
@@ -384,13 +271,6 @@ namespace UnitSystem.ActionSystem
             DamageTargets(heldWeaponAttackingWith, headShot);
         }
 
-        protected override void StartAction()
-        {
-            base.StartAction();
-            unit.unitActionHandler.SetIsAttacking(true);
-            unit.stats.UseEnergy(InitialEnergyCost());
-        }
-
         public override void CompleteAction()
         {
             base.CompleteAction();
@@ -425,5 +305,11 @@ namespace UnitSystem.ActionSystem
         public override bool IsRangedAttackAction() => false;
 
         public override bool ActionIsUsedInstantly() => false;
+
+        public override bool CanAttackThroughUnits() => true;
+
+        public override float MinAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
+
+        public override float MaxAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
     }
 }

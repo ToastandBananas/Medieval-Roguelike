@@ -20,14 +20,27 @@ namespace GeneralUI
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        public void SetupReloadButton(ItemData projectileItemData)
-        {
-            SetupButton($"Reload with {projectileItemData.Item.Name}", delegate { ReloadProjectile(projectileItemData); });
-        }
+        public void SetupReloadButton(ItemData projectileItemData) => SetupButton($"Reload with {projectileItemData.Item.Name}", delegate { ReloadProjectile(projectileItemData); });
 
         void ReloadProjectile(ItemData projectileItemData)
         {
-            UnitManager.player.unitActionHandler.GetAction<ReloadAction>().QueueAction(projectileItemData);
+            ReloadAction reloadAction = UnitManager.player.unitActionHandler.GetAction<ReloadAction>();
+            if (reloadAction != null)
+                reloadAction.QueueAction(projectileItemData);
+            ContextMenu.DisableContextMenu();
+        }
+
+        public void SetupThrowWeaponButton(ItemData itemDataToThrow) => SetupButton($"Throw {itemDataToThrow.Item.Name}", delegate { ReadyThrownWeapon(itemDataToThrow); });
+
+        void ReadyThrownWeapon(ItemData itemDataToThrow)
+        {
+            ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
+            if (throwAction != null && itemDataToThrow != null)
+            {
+                throwAction.SetItemToThrow(itemDataToThrow);
+                UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.actionType);
+            }
+
             ContextMenu.DisableContextMenu();
         }
 

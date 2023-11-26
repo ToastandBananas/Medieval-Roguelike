@@ -85,6 +85,14 @@ namespace UnitSystem.ActionSystem
             return null;
         }
 
+        public virtual void OnActionSelected() 
+        {
+            if (ActionIsUsedInstantly())
+                QueueAction();
+            else
+                GridSystemVisual.UpdateAttackRangeGridVisual();
+        }
+
         public void SetActionBarSlot(ActionBarSlot slot) => actionBarSlot = slot;
 
         protected virtual void Initialize() { }

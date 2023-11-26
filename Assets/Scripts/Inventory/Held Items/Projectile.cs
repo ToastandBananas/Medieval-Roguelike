@@ -48,9 +48,13 @@ namespace InventorySystem
 
         public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
         {
-            this.shooter = shooter;
-            this.itemData.TransferData(itemData);
+            if (this.itemData == null)
+                this.itemData = new ItemData(itemData);
+            else
+                this.itemData.TransferData(itemData);
+            
             this.itemData.SetCurrentStackSize(1);
+            this.shooter = shooter;
 
             Ammunition ammunitionItem = this.itemData.Item.Ammunition;
 
@@ -331,7 +335,7 @@ namespace InventorySystem
         {
             if (collider.isTrigger == false)
             {
-                Debug.Log("Projectile stuck in: " + collider.gameObject.name);
+                // Debug.Log("Projectile stuck in: " + collider.gameObject.name);
                 if (collider.CompareTag("Unit Body"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();

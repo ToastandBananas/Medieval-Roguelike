@@ -12,9 +12,6 @@ namespace UnitSystem.ActionSystem
 {
     public class MeleeAction : BaseAttackAction
     {
-        List<GridPosition> validGridPositionsList = new List<GridPosition>();
-        List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
-
         readonly int baseAPCost = 300;
 
         public override void SetTargetGridPosition(GridPosition gridPosition)
@@ -286,44 +283,6 @@ namespace UnitSystem.ActionSystem
 
         public override void PlayAttackAnimation() { }
 
-        public override bool IsInAttackRange(Unit targetUnit, GridPosition startGridPosition, GridPosition targetGridPosition)
-        {
-            if (targetUnit != null && unit.vision.IsInLineOfSight_SphereCast(targetUnit) == false)
-                return false;
-
-            // Check if there's a Unit in the way of the attack
-            if (OtherUnitInTheWay(unit, startGridPosition, targetGridPosition))
-                return false;
-
-            float distance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
-            
-            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            if (unit.UnitEquipment.IsDualWielding)
-            {
-                HeldMeleeWeapon secondaryMeleeWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                if ((distance > primaryMeleeWeapon.itemData.Item.Weapon.MaxRange || distance < primaryMeleeWeapon.itemData.Item.Weapon.MinRange) && (distance > secondaryMeleeWeapon.itemData.Item.Weapon.MaxRange || distance < secondaryMeleeWeapon.itemData.Item.Weapon.MinRange))
-                    return false;
-            }
-            else if (primaryMeleeWeapon != null)
-            {
-                if (distance > primaryMeleeWeapon.itemData.Item.Weapon.MaxRange || distance < primaryMeleeWeapon.itemData.Item.Weapon.MinRange)
-                    return false;
-            }
-            else // If unarmed
-            {
-                if (distance > unit.stats.UnarmedAttackRange || distance < 1f)
-                    return false;
-            }
-
-            return true;
-        }
-
-        protected override void StartAction()
-        {
-            base.StartAction();
-            unit.unitActionHandler.SetIsAttacking(true);
-        }
-
         public override void CompleteAction()
         {
             base.CompleteAction();
@@ -415,155 +374,7 @@ namespace UnitSystem.ActionSystem
             };
         }
 
-        public override List<GridPosition> GetActionGridPositionsInRange(GridPosition startGridPosition)
-        {
-            float minRange;
-            float maxRange;
-
-            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
-            {
-                minRange = 1f;
-                maxRange = unit.stats.UnarmedAttackRange;
-            }
-            else
-            {
-                HeldMeleeWeapon primaryHeldWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                if (unit.UnitEquipment.IsDualWielding)
-                {
-                    HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                    minRange = Mathf.Min(primaryHeldWeapon.itemData.Item.Weapon.MinRange, secondaryHeldWeapon.itemData.Item.Weapon.MinRange);
-                    maxRange = Mathf.Max(primaryHeldWeapon.itemData.Item.Weapon.MaxRange, secondaryHeldWeapon.itemData.Item.Weapon.MaxRange);
-                }
-                else if (primaryHeldWeapon != null)
-                {
-                    minRange = primaryHeldWeapon.itemData.Item.Weapon.MinRange;
-                    maxRange = primaryHeldWeapon.itemData.Item.Weapon.MaxRange;
-                }
-                else
-                {
-                    minRange = 1f;
-                    maxRange = unit.stats.UnarmedAttackRange;
-                }
-            }
-
-            float boundsDimension = (maxRange * 2) + 0.1f;
-
-            validGridPositionsList.Clear();
-            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                    continue;
-
-                //float maxRangeToNodePosition = maxRange - Mathf.Abs(nodeGridPosition.y - startGridPosition.y);
-                //if (maxRangeToNodePosition < 0f) maxRangeToNodePosition = 0f;
-
-                float distance = Vector3.Distance(startGridPosition.WorldPosition, nodeGridPosition.WorldPosition);
-                if (distance > maxRange || distance < minRange)
-                    continue;
-
-                // Check for obstacles
-                float sphereCastRadius = 0.1f;
-                float raycastDistance = Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition);
-                Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-                Vector3 attackDir = (nodeGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
-                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
-                    continue;
-
-                // Check if there's a Unit in the way of the attack
-                if (OtherUnitInTheWay(unit, startGridPosition, nodeGridPosition))
-                    continue;
-
-                validGridPositionsList.Add(nodeGridPosition);
-            }
-
-            ListPool<GraphNode>.Release(nodes);
-            return validGridPositionsList;
-        }
-
-        public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
-        {
-            validGridPositionsList.Clear();
-            if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
-                return validGridPositionsList;
-
-            if (IsInAttackRange(null, unit.GridPosition, targetGridPosition) == false)
-                return validGridPositionsList;
-
-            float sphereCastRadius = 0.1f;
-            float raycastDistance = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
-            Vector3 offset = Vector3.up * unit.ShoulderHeight * 2f;
-            Vector3 attackDir = (unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
-            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
-                return validGridPositionsList; // Blocked by an obstacle
-
-            // Check if there's a Unit in the way of the attack
-            if (OtherUnitInTheWay(unit, unit.GridPosition, targetGridPosition))
-                return validGridPositionsList;
-
-            validGridPositionsList.Add(targetGridPosition);
-            return validGridPositionsList;
-        }
-
-        public List<GridPosition> GetValidGridPositions_InRangeOfTarget(Unit targetUnit)
-        {
-            validGridPositionsList.Clear();
-            if (targetUnit == null)
-                return validGridPositionsList;
-
-            float maxAttackRange;
-            if (unit.UnitEquipment.IsDualWielding)
-                maxAttackRange = Mathf.Max(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange, unit.unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon.MaxRange);
-            else if (unit.UnitEquipment.MeleeWeaponEquipped)
-                maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
-            else
-                maxAttackRange = unit.stats.UnarmedAttackRange;
-
-            float boundsDimension = (maxAttackRange * 2) + 0.1f;
-            List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.GridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
-
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
-
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
-                    continue;
-
-                // If Grid Position has a Unit there already
-                if (LevelGrid.HasUnitAtGridPosition(nodeGridPosition, out Unit _))
-                    continue;
-
-                // If target is out of attack range from this Grid Position
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
-                    continue;
-
-                float sphereCastRadius = 0.1f;
-                float raycastDistance = Vector3.Distance(nodeGridPosition.WorldPosition, targetUnit.WorldPosition);
-                Vector3 offset = Vector3.up * targetUnit.ShoulderHeight * 2f;
-                Vector3 attackDir = (nodeGridPosition.WorldPosition - targetUnit.WorldPosition).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + offset, sphereCastRadius, attackDir, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
-                    continue; // Blocked by an obstacle
-
-                // Check if there's a Unit in the way of the attack
-                if (Physics.Raycast(targetUnit.WorldPosition, attackDir, out hit, raycastDistance, unit.vision.UnitsMask))
-                {
-                    if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject)
-                        return validGridPositionsList;
-                }
-
-                validGridPositionsList.Add(nodeGridPosition);
-            }
-
-            ListPool<GraphNode>.Release(nodes);
-            return validGridPositionsList;
-        }
-
-        public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
+        /*public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
         {
             nearestGridPositionsList.Clear();
             List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
@@ -599,12 +410,12 @@ namespace UnitSystem.ActionSystem
 
             ListPool<GridPosition>.Release(gridPositions);
             return nearestGridPosition;
-        }
+        }*/
 
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && unit.alliance.IsAlly(unitAtGridPosition) == false && unit.vision.IsDirectlyVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && !unitAtGridPosition.health.IsDead && !unit.alliance.IsAlly(unitAtGridPosition) && unit.vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }
@@ -638,10 +449,50 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
+        public override bool CanAttackThroughUnits() => false;
+
         public override bool IsMeleeAttackAction() => true;
 
         public override bool IsRangedAttackAction() => false;
 
         public override bool ActionIsUsedInstantly() => false;
+
+        public override float MinAttackRange()
+        {
+            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
+                return 1f;
+            else
+            {
+                HeldMeleeWeapon primaryHeldWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+                if (unit.UnitEquipment.IsDualWielding)
+                {
+                    HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+                    return Mathf.Min(primaryHeldWeapon.itemData.Item.Weapon.MinRange, secondaryHeldWeapon.itemData.Item.Weapon.MinRange);
+                }
+                else if (primaryHeldWeapon != null)
+                    return primaryHeldWeapon.itemData.Item.Weapon.MinRange;
+                else
+                    return 1f;
+            }
+        }
+
+        public override float MaxAttackRange()
+        {
+            if (unit.UnitEquipment == null || unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
+                return unit.stats.UnarmedAttackRange;
+            else
+            {
+                HeldMeleeWeapon primaryHeldWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+                if (unit.UnitEquipment.IsDualWielding)
+                {
+                    HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+                    return Mathf.Max(primaryHeldWeapon.itemData.Item.Weapon.MaxRange, secondaryHeldWeapon.itemData.Item.Weapon.MaxRange);
+                }
+                else if (primaryHeldWeapon != null)
+                    return primaryHeldWeapon.itemData.Item.Weapon.MaxRange;
+                else
+                    return unit.stats.UnarmedAttackRange;
+            }
+        }
     }
 }

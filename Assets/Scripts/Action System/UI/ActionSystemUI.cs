@@ -242,23 +242,7 @@ namespace UnitSystem.ActionSystem.UI
             }
         }
 
-        static void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)
-        {
-            BaseAction selectedAction = playerActionHandler.selectedActionType.GetAction(playerActionHandler.unit);
-            if (selectedAction.ActionIsUsedInstantly())
-            {
-                // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
-                if (selectedAction is ReloadAction && selectedAction.unit.UnitEquipment.QuiverEquipped() && selectedAction.unit.UnitEquipment.RangedWeaponEquipped
-                    && selectedAction.unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && selectedAction.unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
-                {
-                    ContextMenu.BuildReloadContextMenu();
-                }
-                else
-                    selectedAction.QueueAction(); // Instant actions don't have a target grid position, so just do a simple queue
-            }
-            else
-                GridSystemVisual.UpdateAttackRangeGridVisual();
-        }
+        static void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e) => playerActionHandler.SelectedAction.OnActionSelected();
 
         public void IncreaseRowCount()
         {

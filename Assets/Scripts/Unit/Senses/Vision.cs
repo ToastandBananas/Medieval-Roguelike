@@ -133,10 +133,21 @@ namespace UnitSystem
         public bool IsInLineOfSight_SphereCast(Unit unitToCheck)
         {
             float sphereCastRadius = 0.1f;
-            Vector3 offset = Vector3.up * unitToCheck.ShoulderHeight * 2f;
+            Vector3 offset = 2f * unitToCheck.ShoulderHeight * Vector3.up;
             Vector3 shootDir = (unitToCheck.WorldPosition + offset - transform.position).normalized;
             float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition + offset);
-            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out RaycastHit hit, distToTarget, unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.unitActionHandler.AttackObstacleMask))
+                return false; // Blocked by an obstacle
+            return true;
+        }
+
+        public bool IsInLineOfSight_SphereCast(GridPosition targetGridPosition)
+        {
+            float sphereCastRadius = 0.1f;
+            Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+            Vector3 shootDir = (targetGridPosition.WorldPosition + offset - transform.position).normalized;
+            float distToTarget = Vector3.Distance(transform.position, targetGridPosition.WorldPosition + offset);
+            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.unitActionHandler.AttackObstacleMask))
                 return false; // Blocked by an obstacle
             return true;
         }

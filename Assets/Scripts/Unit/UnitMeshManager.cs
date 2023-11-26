@@ -115,11 +115,26 @@ namespace UnitSystem
             return null;
         }
 
-        public HeldRangedWeapon GetHeldRangedWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldRangedWeapon;
+        public HeldRangedWeapon GetHeldRangedWeapon()
+        {
+            if (rightHeldItem != null && rightHeldItem.itemData.Item is RangedWeapon)
+                return rightHeldItem as HeldRangedWeapon;
+            return null;
+        }
 
-        public HeldMeleeWeapon GetLeftHeldMeleeWeapon() => leftHeldItem == null ? null : leftHeldItem as HeldMeleeWeapon;
+        public HeldMeleeWeapon GetLeftHeldMeleeWeapon()
+        {
+            if (leftHeldItem != null && leftHeldItem.itemData.Item is MeleeWeapon)
+                return leftHeldItem as HeldMeleeWeapon;
+            return null;
+        }
 
-        public HeldMeleeWeapon GetRightHeldMeleeWeapon() => rightHeldItem == null ? null : rightHeldItem as HeldMeleeWeapon;
+        public HeldMeleeWeapon GetRightHeldMeleeWeapon()
+        {
+            if (rightHeldItem != null && rightHeldItem.itemData.Item is MeleeWeapon)
+                return rightHeldItem as HeldMeleeWeapon;
+            return null;
+        }
 
         public HeldShield GetHeldShield()
         {

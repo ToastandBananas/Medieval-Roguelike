@@ -38,7 +38,7 @@ namespace InventorySystem
             Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
             if (projectileItemData == null)
                 projectileItemData = unit.UnitEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
-
+            
             projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
             // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0

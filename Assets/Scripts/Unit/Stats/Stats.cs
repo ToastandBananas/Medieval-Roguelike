@@ -459,7 +459,7 @@ namespace UnitSystem
             return modifier;
         }
 
-        /// <summary>Does not take into account block chance, but does take into account dodge chance (and ranged accuracy, for ranged attacks).</summary>
+        /// <summary>Does not take into account block chance, but does take into account dodge chance (and ranged accuracy, for ranged attacks). Only used for the Hit Chance Tooltip.</summary>
         public float HitChance(Unit targetUnit, BaseAttackAction actionToUse)
         {
             float hitChance = 0f;
@@ -650,6 +650,29 @@ namespace UnitSystem
                 accuracy = maxRangedAccuracy;
 
             // Debug.Log($"{unit.name}'s ranged accuracy: {accuracy}");
+            return accuracy;
+        }
+
+        public float ThrowingAccuracy(ItemData itemDataToThrow, GridPosition targetGridPosition, BaseAttackAction attackAction)
+        {
+            if (itemDataToThrow == null)
+                return 0f;
+
+            float accuracy = throwingSkill.GetValue() / 100f * 0.5f;
+            float baseAccuracy = accuracy;
+
+            // Accuracy affected by height differences between this Unit and the attackingUnit
+            accuracy += baseAccuracy * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, targetGridPosition);
+
+            // Accuracy affected by the action's accuracy modifier
+            accuracy += baseAccuracy * attackAction.AccuracyModifier();
+
+            if (accuracy < 0f)
+                accuracy = 0f;
+            else if (accuracy > maxRangedAccuracy)
+                accuracy = maxRangedAccuracy;
+
+            // Debug.Log($"{unit.name}'s throwing accuracy: {accuracy}");
             return accuracy;
         }
 

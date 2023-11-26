@@ -2,6 +2,7 @@ using InventorySystem;
 using UnityEngine;
 using UnitSystem.ActionSystem.UI;
 using Utilities;
+using ContextMenu = GeneralUI.ContextMenu;
 
 namespace UnitSystem.ActionSystem
 {
@@ -25,6 +26,18 @@ namespace UnitSystem.ActionSystem
                 Unload(heldRangedWeapon);
             else
                 Reload(heldRangedWeapon);
+        }
+
+        public override void OnActionSelected()
+        {
+            // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
+            if (unit.UnitEquipment.QuiverEquipped() && unit.UnitEquipment.RangedWeaponEquipped
+                && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+            {
+                ContextMenu.BuildReloadContextMenu();
+            }
+            else // Just reload with the only type of ammo equipped (or unload if already loaded)
+                QueueAction();
         }
 
         void Reload(HeldRangedWeapon heldRangedWeapon)
