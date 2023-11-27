@@ -17,6 +17,7 @@ MonoBehaviour:
   description: Sturdy footwear reinforced with warm fur lining, providing insulation
     and durability for traversing rugged terrains and harsh climates.
   itemType: 110
+  thrownProjectileType: 20
   mainMaterial: 23
   itemSize: 3
   width: 2

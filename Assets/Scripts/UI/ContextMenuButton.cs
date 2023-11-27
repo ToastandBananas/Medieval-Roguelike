@@ -38,7 +38,7 @@ namespace GeneralUI
             if (throwAction != null && itemDataToThrow != null)
             {
                 throwAction.SetItemToThrow(itemDataToThrow);
-                UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.actionType);
+                GridSystemVisual.UpdateAttackRangeGridVisual();
             }
 
             ContextMenu.DisableContextMenu();

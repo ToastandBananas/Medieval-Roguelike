@@ -11,14 +11,14 @@ namespace UnitSystem.ActionSystem
 {
     public abstract class BaseAttackAction : BaseAction
     {
-        protected Unit targetEnemyUnit;
+        public Unit TargetEnemyUnit { get; protected set; }
 
         protected List<GridPosition> validGridPositionsList = new List<GridPosition>();
         protected List<GridPosition> nearestGridPositionsList = new List<GridPosition>();
 
         public virtual void QueueAction(Unit targetEnemyUnit)
         {
-            this.targetEnemyUnit = targetEnemyUnit;
+            this.TargetEnemyUnit = targetEnemyUnit;
             targetGridPosition = targetEnemyUnit.GridPosition;
             QueueAction();
         }
@@ -27,7 +27,7 @@ namespace UnitSystem.ActionSystem
         {
             this.targetGridPosition = targetGridPosition;
             if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
-                targetEnemyUnit = targetUnit;
+                TargetEnemyUnit = targetUnit;
             QueueAction();
         }
 
@@ -35,7 +35,7 @@ namespace UnitSystem.ActionSystem
         {
             CompleteAction();
             unit.unitActionHandler.SetIsAttacking(false);
-            unit.unitActionHandler.moveAction.QueueAction(GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+            unit.unitActionHandler.moveAction.QueueAction(GetNearestAttackPosition(unit.GridPosition, TargetEnemyUnit));
             TurnManager.Instance.StartNextUnitsTurn(unit);
         }
 
@@ -44,8 +44,8 @@ namespace UnitSystem.ActionSystem
             base.StartAction();
             unit.unitActionHandler.SetIsAttacking(true);
             unit.stats.UseEnergy(InitialEnergyCost());
-            if (unit.IsPlayer && targetEnemyUnit != null)
-                targetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(targetEnemyUnit.GridPosition);
+            if (unit.IsPlayer && TargetEnemyUnit != null)
+                TargetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
         }
 
         protected void SetTargetEnemyUnit()
@@ -53,13 +53,13 @@ namespace UnitSystem.ActionSystem
             if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit unitAtGridPosition))
             {
                 unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
-                targetEnemyUnit = unitAtGridPosition;
+                TargetEnemyUnit = unitAtGridPosition;
             }
             else if (unit.unitActionHandler.targetEnemyUnit != null)
-                targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+                TargetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
         }
 
-        public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, HeldItem heldItemBlockedWith, bool headShot)
+        public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
             if (targetUnit != null && targetUnit.health.IsDead == false)
             {
@@ -69,7 +69,7 @@ namespace UnitSystem.ActionSystem
                 float damageAmount;
                 if (heldWeaponAttackingWith != null)
                 {
-                    damageAmount = heldWeaponAttackingWith.itemData.Damage;
+                    damageAmount = heldWeaponAttackingWith.ItemData.Damage;
                     if (unit.UnitEquipment.IsDualWielding)
                     {
                         if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
@@ -80,6 +80,8 @@ namespace UnitSystem.ActionSystem
                     else if (unit.UnitEquipment.InVersatileStance)
                         damageAmount *= VersatileStanceAction.damageModifier;
                 }
+                else if (itemDataHittingWith != null)
+                    damageAmount = itemDataHittingWith.Damage;
                 else
                     damageAmount = UnarmedAttackDamage();
 
@@ -135,12 +137,12 @@ namespace UnitSystem.ActionSystem
                 bool knockedBack = false;
                 if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
                 {
-                    knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, attackBlocked);
+                    knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, attackBlocked);
                     if (IsMeleeAttackAction())
                         targetUnit.health.OnHitByMeleeAttack();
                 }
 
-                if (heldWeaponAttackingWith != null && heldWeaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall)
+                if (heldWeaponAttackingWith != null && heldWeaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall)
                 {
                     SpearWallAction spearWallAction = unit.unitActionHandler.GetAction<SpearWallAction>();
                     if (spearWallAction != null)
@@ -159,30 +161,30 @@ namespace UnitSystem.ActionSystem
             }
         }
 
-        public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, bool headShot)
+        public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, bool headShot)
         {
             foreach (KeyValuePair<Unit, HeldItem> target in unit.unitActionHandler.targetUnits)
             {
                 Unit targetUnit = target.Key;
                 HeldItem itemBlockedWith = target.Value;
-                DamageTarget(targetUnit, heldWeaponAttackingWith, itemBlockedWith, headShot);
+                DamageTarget(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, itemBlockedWith, headShot);
             }
 
             if (heldWeaponAttackingWith != null)
                 heldWeaponAttackingWith.TryFumbleHeldItem();
         }
 
-        public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
+        public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith)
         {
             // TODO: Come up with a headshot method
             bool headShot = false;
 
             if (heldWeaponAttackingWith != null)
-                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.itemData.Item as Weapon));
+                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.ItemData.Item as Weapon));
             else
                 yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime() * 0.5f);
 
-            DamageTargets(heldWeaponAttackingWith, headShot);
+            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith, headShot);
         }
 
         public virtual int UnarmedAttackDamage()
@@ -211,15 +213,15 @@ namespace UnitSystem.ActionSystem
             HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || (targetEnemyUnit != null && targetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (targetEnemyUnit != null && targetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
+            if (unit.IsPlayer || (TargetEnemyUnit != null && TargetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (TargetEnemyUnit != null && TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
             {
-                if (targetEnemyUnit != null)
+                if (TargetEnemyUnit != null)
                 {
-                    while (targetEnemyUnit.unitActionHandler.moveAction.isMoving || targetEnemyUnit.unitAnimator.beingKnockedBack)
+                    while (TargetEnemyUnit.unitActionHandler.moveAction.isMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
+                    if (IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition) == false)
                     {
                         MoveToTargetInstead();
                         yield break;
@@ -259,7 +261,7 @@ namespace UnitSystem.ActionSystem
                     }
                 }
 
-                unit.StartCoroutine(WaitToDamageTargets(primaryMeleeWeapon));
+                unit.StartCoroutine(WaitToDamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData));
 
                 // Play the attack animations and handle blocking for each target
                 PlayAttackAnimation();
@@ -282,7 +284,7 @@ namespace UnitSystem.ActionSystem
                             targetUnits[i].unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                         // Damage this unit
-                        DamageTargets(primaryMeleeWeapon, headShot);
+                        DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot);
                     }
                 }
 

@@ -16,6 +16,7 @@ MonoBehaviour:
   pluralName: 
   description: Durable hand protection crafted from robust leather.
   itemType: 120
+  thrownProjectileType: 20
   mainMaterial: 23
   itemSize: 3
   width: 2

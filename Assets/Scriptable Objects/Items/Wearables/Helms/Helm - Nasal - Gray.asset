@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A sturdy piece of headgear with a distinctive, pointed nose guard,
     offering reliable protection without compromising visibility.
   itemType: 100
+  thrownProjectileType: 20
   mainMaterial: 35
   itemSize: 3
   width: 2

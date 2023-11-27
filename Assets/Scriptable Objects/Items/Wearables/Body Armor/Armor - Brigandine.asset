@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A rugged, protective ensemble crafted from layered leather plates,
     providing solid defense without sacrificing mobility during combat.
   itemType: 90
+  thrownProjectileType: 20
   mainMaterial: 24
   itemSize: 5
   width: 2
@@ -34,6 +35,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 26d1f6d4cad3cd8409504436a4300690, type: 2}
   equipSlot: 5
   actionTypes: []
+  defenseRange: {x: 15, y: 20}
   meshes:
   - {fileID: -2432090755550338912, guid: ee209fd73442c174483196e615b8c415, type: 3}
   meshRendererMaterials:
@@ -42,4 +44,3 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: a87e6f6d946cbf74084fe6a4da5704ce, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 4c5e807acab1f864f9d4640eca6b332a, type: 2}
-  defenseRange: {x: 15, y: 20}

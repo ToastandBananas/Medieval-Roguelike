@@ -17,34 +17,25 @@ namespace UnitSystem.ActionSystem
         public override void QueueAction()
         {
             if (!RangedWeaponIsLoaded())
-            {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
-                return;
-            }
-
-            base.QueueAction();
+            else
+                base.QueueAction();
         }
 
         public override void QueueAction(GridPosition targetGridPosition)
         {
             if (!RangedWeaponIsLoaded())
-            {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
-                return;
-            }
-
-            base.QueueAction(targetGridPosition);
+            else
+                base.QueueAction(targetGridPosition);
         }
 
         public override void QueueAction(Unit targetEnemyUnit)
         {
             if (!RangedWeaponIsLoaded())
-            {
                 unit.unitActionHandler.GetAction<ReloadAction>().QueueAction();
-                return;
-            }
-
-            base.QueueAction(targetEnemyUnit);
+            else
+                base.QueueAction(targetEnemyUnit);
         }
 
         public override void SetTargetGridPosition(GridPosition gridPosition)
@@ -57,17 +48,17 @@ namespace UnitSystem.ActionSystem
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (targetEnemyUnit == null)
+            if (TargetEnemyUnit == null)
             {
                 if (unit.unitActionHandler.targetEnemyUnit != null)
-                    targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+                    TargetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
                 else if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
-                    targetEnemyUnit = targetUnit;
+                    TargetEnemyUnit = targetUnit;
             }
 
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.health.IsDead)
             {
-                targetEnemyUnit = null;
+                TargetEnemyUnit = null;
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
                 CompleteAction();
                 TurnManager.Instance.StartNextUnitsTurn(unit);
@@ -77,7 +68,7 @@ namespace UnitSystem.ActionSystem
             if (!RangedWeaponIsLoaded())
             {
                 CompleteAction();
-                unit.unitActionHandler.SetTargetEnemyUnit(targetEnemyUnit);
+                unit.unitActionHandler.SetTargetEnemyUnit(TargetEnemyUnit);
 
                 // ReloadAction can become null if the Unit drops their weapon or switches their loadout
                 ReloadAction reloadAction = unit.unitActionHandler.GetAction<ReloadAction>();
@@ -87,7 +78,7 @@ namespace UnitSystem.ActionSystem
                     TurnManager.Instance.StartNextUnitsTurn(unit);
                 return;
             }
-            else if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+            else if (IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition))
             {
                 StartAction();
                 unit.StartCoroutine(DoAttack());
@@ -102,47 +93,47 @@ namespace UnitSystem.ActionSystem
 
         protected override IEnumerator DoAttack()
         {
-            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving || targetEnemyUnit.unitAnimator.beingKnockedBack)
+            while (TargetEnemyUnit.unitActionHandler.moveAction.isMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             // If the target Unit moved out of range, queue a movement instead
-            if (!IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+            if (!IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition))
             {
                 MoveToTargetInstead();
                 yield break;
             }
 
             // The unit being attacked becomes aware of this unit
-            unit.vision.BecomeVisibleUnitOfTarget(targetEnemyUnit, true);
+            unit.vision.BecomeVisibleUnitOfTarget(TargetEnemyUnit, true);
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null;
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
             HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
+            if (unit.IsPlayer || TargetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
-                if (!unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition))
-                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+                if (!unit.unitActionHandler.turnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(TargetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.turnAction.isRotating)
                     yield return null;
                 
                 // If the target Unit moved out of range, queue a movement instead
-                if (!IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetGridPosition))
+                if (!IsInAttackRange(TargetEnemyUnit, unit.GridPosition, targetGridPosition))
                 {
                     MoveToTargetInstead();
                     yield break;
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false))
+                if (TargetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
-                    targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
-                    unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
+                    TargetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, false);
+                    unit.unitActionHandler.targetUnits.TryGetValue(TargetEnemyUnit, out HeldItem itemBlockedWith);
                     if (itemBlockedWith != null)
                         itemBlockedWith.BlockAttack(unit);
                 }
@@ -152,19 +143,19 @@ namespace UnitSystem.ActionSystem
             }
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
-                bool missedTarget = TryHitTarget(targetEnemyUnit.GridPosition);
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false);
+                bool missedTarget = TryHitTarget(TargetEnemyUnit.GridPosition);
+                bool attackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockRangedAttack(unit, heldRangedWeapon, false);
                 bool headShot = false;
                 if (!missedTarget)
-                    DamageTargets(heldRangedWeapon, headShot);
+                    DamageTargets(heldRangedWeapon, heldRangedWeapon.LoadedProjectile.ItemData, headShot);
 
                 // Rotate towards the target
-                if (!unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition))
-                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, true);
+                if (!unit.unitActionHandler.turnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(TargetEnemyUnit, true);
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
-                    targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+                    TargetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                 heldRangedWeapon.RemoveProjectile();
                 unit.unitActionHandler.SetIsAttacking(false);
@@ -179,7 +170,7 @@ namespace UnitSystem.ActionSystem
 
         public override void PlayAttackAnimation()
         {
-            unit.unitActionHandler.turnAction.RotateTowardsAttackPosition(targetEnemyUnit.WorldPosition);
+            unit.unitActionHandler.turnAction.RotateTowardsAttackPosition(TargetEnemyUnit.WorldPosition);
             unit.unitMeshManager.GetHeldRangedWeapon().DoDefaultAttack(targetGridPosition);
         }
 
@@ -199,9 +190,9 @@ namespace UnitSystem.ActionSystem
             if (unit.IsPlayer)
             {
                 unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
-                if (!PlayerInput.Instance.autoAttack)
+                if (!PlayerInput.Instance.AutoAttack)
                 {
-                    targetEnemyUnit = null;
+                    TargetEnemyUnit = null;
                     unit.unitActionHandler.SetTargetEnemyUnit(null);
                 }
                 
@@ -216,7 +207,7 @@ namespace UnitSystem.ActionSystem
 
         public override int ActionPointsCost()
         {
-            float cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon);
+            float cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon);
 
             // If not facing the target position, add the cost of turning towards that position
             unit.unitActionHandler.turnAction.DetermineTargetTurnDirection(targetGridPosition);
@@ -232,7 +223,7 @@ namespace UnitSystem.ActionSystem
                 // Target the Unit with the lowest health and/or the nearest target
                 finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(unit.WorldPosition, targetUnit.WorldPosition);
-                if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                     finalActionValue = 0f;
                 else
                     finalActionValue -= distance * 10f;
@@ -274,7 +265,7 @@ namespace UnitSystem.ActionSystem
                         finalActionValue += 15f;
 
                     float distance = Vector3.Distance(unit.WorldPosition, actionGridPosition.WorldPosition);
-                    if (distance < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                    if (distance < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                         finalActionValue = -1f;
                     else
                         finalActionValue -= distance * 1.5f;
@@ -315,7 +306,7 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            RangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon;
+            RangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon;
             if (rangedWeapon.WeaponType == WeaponType.Bow)
                 return $"Draw your <b>{rangedWeapon.Name}'s</b> bowstring taut and release a deadly arrow towards your target.";
             else if (rangedWeapon.WeaponType == WeaponType.Crossbow)
@@ -323,7 +314,7 @@ namespace UnitSystem.ActionSystem
             return "";
         }
 
-        public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
+        public bool RangedWeaponIsLoaded() => unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded;
 
         public override float AccuracyModifier() => 1f;
 
@@ -347,7 +338,7 @@ namespace UnitSystem.ActionSystem
         {
             HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
             if (heldRangedWeapon != null)
-                return heldRangedWeapon.itemData.Item.Weapon.MinRange;
+                return heldRangedWeapon.ItemData.Item.Weapon.MinRange;
             else
                 return 100f;
         }
@@ -356,7 +347,7 @@ namespace UnitSystem.ActionSystem
         {
             HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
             if (heldRangedWeapon != null)
-                return heldRangedWeapon.itemData.Item.Weapon.MaxRange;
+                return heldRangedWeapon.ItemData.Item.Weapon.MaxRange;
             else
                 return 0f;
         }
@@ -366,7 +357,7 @@ namespace UnitSystem.ActionSystem
             HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
             if (heldRangedWeapon != null)
             {
-                if (heldRangedWeapon.itemData.Item.Weapon.WeaponType == WeaponType.Bow)
+                if (heldRangedWeapon.ItemData.Item.Weapon.WeaponType == WeaponType.Bow)
                     return true;
                 else
                     return false;

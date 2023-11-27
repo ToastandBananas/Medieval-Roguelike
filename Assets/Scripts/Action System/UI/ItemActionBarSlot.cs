@@ -33,7 +33,7 @@ namespace UnitSystem.ActionSystem.UI
                         {
                             // Only do something if the Player has a valid ranged weapon equipped that's not already loaded and valid ammunition
                             HeldRangedWeapon heldRangedWeapon = playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon();
-                            if (heldRangedWeapon != null && heldRangedWeapon.isLoaded == false && heldRangedWeapon.itemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
+                            if (heldRangedWeapon != null && heldRangedWeapon.IsLoaded == false && heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
                                 playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
                                 if (itemData.CurrentStackSize == 1)

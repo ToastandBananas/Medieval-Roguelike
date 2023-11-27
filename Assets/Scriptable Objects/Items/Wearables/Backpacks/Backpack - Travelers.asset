@@ -18,6 +18,7 @@ MonoBehaviour:
     ample storage space and adjustable straps to keep your essentials organized on
     the journey.
   itemType: 140
+  thrownProjectileType: 20
   mainMaterial: 23
   itemSize: 4
   width: 2

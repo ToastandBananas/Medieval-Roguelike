@@ -55,18 +55,18 @@ namespace UnitSystem.ActionSystem
         {
             if (unit.unitActionHandler.isAttacking) return;
 
-            if (targetEnemyUnit == null)
+            if (TargetEnemyUnit == null)
                 SetTargetEnemyUnit();
 
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.health.IsDead)
             {
-                targetEnemyUnit = null;
+                TargetEnemyUnit = null;
                 unit.unitActionHandler.SetTargetEnemyUnit(null);
                 unit.unitActionHandler.FinishAction();
                 return;
             }
 
-            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+            if (IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition))
             {
                 StartAction();
                 unit.StartCoroutine(DoAttack());
@@ -81,36 +81,36 @@ namespace UnitSystem.ActionSystem
             if (unit.unitActionHandler.moveAction.isMoving)
                 return;
 
-            this.targetEnemyUnit = targetEnemyUnit;
+            TargetEnemyUnit = targetEnemyUnit;
             unit.unitActionHandler.SetIsAttacking(true);
             unit.StartCoroutine(Attack());
         }
         
-        void AttackTarget(HeldItem heldWeaponAttackingWith, bool isUsingOffhandWeapon)
+        void AttackTarget(HeldItem heldWeaponAttackingWith, ItemData weaponItemData, bool isUsingOffhandWeapon)
         {
-            bool attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, heldWeaponAttackingWith, this, isUsingOffhandWeapon);
+            bool attackDodged = TargetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, heldWeaponAttackingWith, this, isUsingOffhandWeapon);
             if (attackDodged)
-                targetEnemyUnit.unitAnimator.DoDodge(unit, heldWeaponAttackingWith, null);
+                TargetEnemyUnit.unitAnimator.DoDodge(unit, heldWeaponAttackingWith, null);
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, heldWeaponAttackingWith, isUsingOffhandWeapon);
-                unit.unitActionHandler.targetUnits.TryGetValue(targetEnemyUnit, out HeldItem itemBlockedWith);
+                bool attackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, heldWeaponAttackingWith, isUsingOffhandWeapon);
+                unit.unitActionHandler.targetUnits.TryGetValue(TargetEnemyUnit, out HeldItem itemBlockedWith);
 
                 if (attackBlocked && itemBlockedWith != null)
                     itemBlockedWith.BlockAttack(unit);
             }
 
-            unit.StartCoroutine(WaitToDamageTargets(heldWeaponAttackingWith));
+            unit.StartCoroutine(WaitToDamageTargets(heldWeaponAttackingWith, weaponItemData));
         }
 
         protected override IEnumerator DoAttack()
         {
-            while (targetEnemyUnit.unitActionHandler.moveAction.isMoving || targetEnemyUnit.unitAnimator.beingKnockedBack)
+            while (TargetEnemyUnit.unitActionHandler.moveAction.isMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             // If the target Unit moved out of range, queue a movement instead
-            if (IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false)
+            if (IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition) == false)
             {
                 MoveToTargetInstead();
                 yield break;
@@ -129,17 +129,17 @@ namespace UnitSystem.ActionSystem
         IEnumerator Attack()
         {
             // The unit being attacked becomes aware of this unit
-            unit.vision.BecomeVisibleUnitOfTarget(targetEnemyUnit, true);
+            unit.vision.BecomeVisibleUnitOfTarget(TargetEnemyUnit, true);
 
             // We need to skip a frame in case the target Unit's meshes are being enabled
             yield return null;
             
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || targetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || targetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
+            if (unit.IsPlayer || TargetEnemyUnit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen || TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+                if (unit.unitActionHandler.turnAction.IsFacingTarget(TargetEnemyUnit.GridPosition) == false)
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(TargetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
                 while (unit.unitActionHandler.turnAction.isRotating)
@@ -149,26 +149,26 @@ namespace UnitSystem.ActionSystem
                 if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
                 {
                     unit.unitAnimator.DoDefaultUnarmedAttack();
-                    AttackTarget(null, false);
+                    AttackTarget(null, null, false);
                 }
                 else if (unit.UnitEquipment.IsDualWielding)
                 {
-                    float distanceToTarget = Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition);
+                    float distanceToTarget = Vector3.Distance(unit.WorldPosition, TargetEnemyUnit.WorldPosition);
                     HeldMeleeWeapon primaryHeldWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
                     HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                    bool primaryWeaponInRange = primaryHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToTarget && primaryHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToTarget;
-                    bool secondaryWeaponInRange = secondaryHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToTarget && secondaryHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToTarget;
+                    bool primaryWeaponInRange = primaryHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToTarget && primaryHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToTarget;
+                    bool secondaryWeaponInRange = secondaryHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToTarget && secondaryHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToTarget;
 
                     if (primaryWeaponInRange && secondaryWeaponInRange) // Dual wield attack
                     {
                         unit.unitAnimator.StartDualMeleeAttack();
                         primaryHeldWeapon.DoDefaultAttack(targetGridPosition);
-                        AttackTarget(primaryHeldWeapon, false);
+                        AttackTarget(primaryHeldWeapon, primaryHeldWeapon.ItemData, false);
 
-                        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(primaryHeldWeapon.itemData.Item as Weapon) / 2f) + 0.05f);
+                        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(primaryHeldWeapon.ItemData.Item as Weapon) / 2f) + 0.05f);
 
                         secondaryHeldWeapon.DoDefaultAttack(targetGridPosition);
-                        AttackTarget(secondaryHeldWeapon, true);
+                        AttackTarget(secondaryHeldWeapon, secondaryHeldWeapon.ItemData, true);
                     }
                     else
                     {
@@ -177,12 +177,12 @@ namespace UnitSystem.ActionSystem
                         if (primaryWeaponInRange) // Primary weapon only attack
                         {
                             primaryHeldWeapon.DoDefaultAttack(targetGridPosition);
-                            AttackTarget(primaryHeldWeapon, false);
+                            AttackTarget(primaryHeldWeapon, primaryHeldWeapon.ItemData, false);
                         }
                         else // Secondary weapon only attack
                         {
                             secondaryHeldWeapon.DoDefaultAttack(targetGridPosition);
-                            AttackTarget(secondaryHeldWeapon, false);
+                            AttackTarget(secondaryHeldWeapon, secondaryHeldWeapon.ItemData, false);
                         }
                     }
                 }
@@ -192,13 +192,14 @@ namespace UnitSystem.ActionSystem
                     unit.unitAnimator.StartMeleeAttack();
                     if (unit.UnitEquipment.MeleeWeaponEquipped)
                     {
-                        unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoDefaultAttack(targetGridPosition);
-                        AttackTarget(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), false);
+                        HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+                        primaryMeleeWeapon.DoDefaultAttack(targetGridPosition);
+                        AttackTarget(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, false);
                     }
                     else // Fallback to unarmed attack
                     {
                         unit.unitAnimator.DoDefaultUnarmedAttack();
-                        AttackTarget(null, false);
+                        AttackTarget(null, null, false);
                     }
                 }
             }
@@ -210,30 +211,30 @@ namespace UnitSystem.ActionSystem
                 bool headShot = false;
                 if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped) // Unarmed or has a ranged weapon equipped, but no ammo
                 {
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, this, false);
+                    attackDodged = TargetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, null, this, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, null, false);
-                        DamageTargets(null, headShot);
+                        attackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, null, false);
+                        DamageTargets(null, null, headShot);
                     }
                 }
                 else if (unit.UnitEquipment.IsDualWielding) // Dual wield attack
                 {
-                    float distanceToTarget = Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition);
+                    float distanceToTarget = Vector3.Distance(unit.WorldPosition, TargetEnemyUnit.WorldPosition);
                     HeldMeleeWeapon primaryHeldWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
                     HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                    bool primaryWeaponInRange = primaryHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToTarget && primaryHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToTarget;
-                    bool secondaryWeaponInRange = secondaryHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToTarget && secondaryHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToTarget;
+                    bool primaryWeaponInRange = primaryHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToTarget && primaryHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToTarget;
+                    bool secondaryWeaponInRange = secondaryHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToTarget && secondaryHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToTarget;
                     
                     bool mainAttackDodged = false;
                     bool mainAttackBlocked = false;
                     if (primaryWeaponInRange)
                     {
-                        mainAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem, this, false);
+                        mainAttackDodged = TargetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.rightHeldItem, this, false);
                         if (mainAttackDodged == false)
                         {
-                            mainAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem, false);
-                            DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, headShot);
+                            mainAttackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.rightHeldItem, false);
+                            DamageTargets(unit.unitMeshManager.rightHeldItem as HeldMeleeWeapon, unit.unitMeshManager.rightHeldItem.ItemData, headShot);
                         }
                     }
 
@@ -241,11 +242,11 @@ namespace UnitSystem.ActionSystem
                     bool offhandAttackBlocked = false;
                     if (secondaryWeaponInRange)
                     {
-                        offhandAttackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem, this, true);
+                        offhandAttackDodged = TargetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, unit.unitMeshManager.leftHeldItem, this, true);
                         if (offhandAttackDodged == false)
                         {
-                            offhandAttackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem, true);
-                            DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, headShot);
+                            offhandAttackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, unit.unitMeshManager.leftHeldItem, true);
+                            DamageTargets(unit.unitMeshManager.leftHeldItem as HeldMeleeWeapon, unit.unitMeshManager.leftHeldItem.ItemData, headShot);
                         }
                     }
 
@@ -258,24 +259,24 @@ namespace UnitSystem.ActionSystem
                 else
                 {
                     HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                    attackDodged = targetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false);
+                    attackDodged = TargetEnemyUnit.unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = targetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false);
+                        attackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false);
                         if (primaryMeleeWeapon != null)
-                            DamageTargets(primaryMeleeWeapon, headShot); // Right hand weapon attack
+                            DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot); // Right hand weapon attack
                         else
-                            DamageTargets(null, headShot); // Fallback to unarmed damage
+                            DamageTargets(null, null, headShot); // Fallback to unarmed damage
                     }
                 }
 
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetEnemyUnit.GridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowards_Unit(targetEnemyUnit, false);
+                if (unit.unitActionHandler.turnAction.IsFacingTarget(TargetEnemyUnit.GridPosition) == false)
+                    unit.unitActionHandler.turnAction.RotateTowards_Unit(TargetEnemyUnit, false);
 
                 // If the attack was dodged or blocked and the defending unit isn't facing their attacker, turn to face the attacker
                 if (attackDodged || attackBlocked)
-                    targetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+                    TargetEnemyUnit.unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
 
                 unit.unitActionHandler.SetIsAttacking(false);
             }
@@ -290,9 +291,9 @@ namespace UnitSystem.ActionSystem
             if (unit.IsPlayer)
             {
                 unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
-                if (PlayerInput.Instance.autoAttack == false)
+                if (PlayerInput.Instance.AutoAttack == false)
                 {
-                    targetEnemyUnit = null;
+                    TargetEnemyUnit = null;
                     unit.unitActionHandler.SetTargetEnemyUnit(null);
                 }
             }
@@ -310,9 +311,9 @@ namespace UnitSystem.ActionSystem
                 float distance = Vector3.Distance(unit.WorldPosition, targetUnit.WorldPosition);
                 float minAttackRange = 1f;
                 if (unit.UnitEquipment.IsDualWielding)
-                    minAttackRange = Mathf.Min(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange, unit.unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon.MinRange);
+                    minAttackRange = Mathf.Min(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MinRange, unit.unitMeshManager.GetLeftHeldMeleeWeapon().ItemData.Item.Weapon.MinRange);
                 else if (unit.UnitEquipment.MeleeWeaponEquipped)
-                    minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
+                    minAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
                 if (distance < minAttackRange)
                     finalActionValue = 0f;
@@ -374,44 +375,6 @@ namespace UnitSystem.ActionSystem
             };
         }
 
-        /*public override GridPosition GetNearestAttackPosition(GridPosition startGridPosition, Unit targetUnit)
-        {
-            nearestGridPositionsList.Clear();
-            List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-            gridPositions = GetValidGridPositions_InRangeOfTarget(targetUnit);
-            float nearestDistance = 10000f;
-
-            // First, find the nearest valid Grid Positions to the Player
-            for (int i = 0; i < gridPositions.Count; i++)
-            {
-                float distance = Vector3.Distance(gridPositions[i].WorldPosition, startGridPosition.WorldPosition);
-                if (distance < nearestDistance)
-                {
-                    nearestGridPositionsList.Clear();
-                    nearestGridPositionsList.Add(gridPositions[i]);
-                    nearestDistance = distance;
-                }
-                else if (Mathf.Approximately(distance, nearestDistance))
-                    nearestGridPositionsList.Add(gridPositions[i]);
-            }
-
-            GridPosition nearestGridPosition = startGridPosition;
-            float nearestDistanceToTarget = 10000f;
-            for (int i = 0; i < nearestGridPositionsList.Count; i++)
-            {
-                // Get the Grid Position that is closest to the target Grid Position
-                float distance = Vector3.Distance(nearestGridPositionsList[i].WorldPosition, targetUnit.transform.position);
-                if (distance < nearestDistanceToTarget)
-                {
-                    nearestDistanceToTarget = distance;
-                    nearestGridPosition = nearestGridPositionsList[i];
-                }
-            }
-
-            ListPool<GridPosition>.Release(gridPositions);
-            return nearestGridPosition;
-        }*/
-
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
@@ -432,9 +395,9 @@ namespace UnitSystem.ActionSystem
             if (unit.UnitEquipment.IsUnarmed || unit.UnitEquipment.RangedWeaponEquipped)
                 return "Engage in <b>hand-to-hand</b> combat, delivering a swift and powerful strike to your target.";
             else if (unit.UnitEquipment.IsDualWielding)
-                return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.itemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.itemData.Item.Name}</b>.";
+                return $"Deliver coordinated strikes with your <b>{unit.unitMeshManager.rightHeldItem.ItemData.Item.Name}</b> and <b>{unit.unitMeshManager.leftHeldItem.ItemData.Item.Name}</b>.";
             else
-                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b>.";
+                return $"Deliver a decisive strike to your target using your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}</b>.";
         }
 
         public override float AccuracyModifier() => 1f;
@@ -467,10 +430,10 @@ namespace UnitSystem.ActionSystem
                 if (unit.UnitEquipment.IsDualWielding)
                 {
                     HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                    return Mathf.Min(primaryHeldWeapon.itemData.Item.Weapon.MinRange, secondaryHeldWeapon.itemData.Item.Weapon.MinRange);
+                    return Mathf.Min(primaryHeldWeapon.ItemData.Item.Weapon.MinRange, secondaryHeldWeapon.ItemData.Item.Weapon.MinRange);
                 }
                 else if (primaryHeldWeapon != null)
-                    return primaryHeldWeapon.itemData.Item.Weapon.MinRange;
+                    return primaryHeldWeapon.ItemData.Item.Weapon.MinRange;
                 else
                     return 1f;
             }
@@ -486,10 +449,10 @@ namespace UnitSystem.ActionSystem
                 if (unit.UnitEquipment.IsDualWielding)
                 {
                     HeldMeleeWeapon secondaryHeldWeapon = unit.unitMeshManager.GetLeftHeldMeleeWeapon();
-                    return Mathf.Max(primaryHeldWeapon.itemData.Item.Weapon.MaxRange, secondaryHeldWeapon.itemData.Item.Weapon.MaxRange);
+                    return Mathf.Max(primaryHeldWeapon.ItemData.Item.Weapon.MaxRange, secondaryHeldWeapon.ItemData.Item.Weapon.MaxRange);
                 }
                 else if (primaryHeldWeapon != null)
-                    return primaryHeldWeapon.itemData.Item.Weapon.MaxRange;
+                    return primaryHeldWeapon.ItemData.Item.Weapon.MaxRange;
                 else
                     return unit.stats.UnarmedAttackRange;
             }

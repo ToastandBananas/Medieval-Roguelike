@@ -1,10 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using UnitSystem;
-using Utilities;
 using GridSystem;
 using InteractableObjects;
-using UnitSystem.ActionSystem.UI;
 using UnitSystem.ActionSystem;
 
 namespace InventorySystem
@@ -17,20 +15,20 @@ namespace InventorySystem
         [SerializeField] protected MeshRenderer[] meshRenderers;
         [SerializeField] protected MeshFilter[] meshFilters;
 
-        public HeldItemStance currentHeldItemStance { get; protected set; }
+        public HeldItemStance CurrentHeldItemStance { get; protected set; }
 
-        public Animator anim { get; private set; }
-        public ItemData itemData { get; private set; }
+        public Animator Anim { get; private set; }
+        public ItemData ItemData { get; private set; }
 
-        public bool isBlocking { get; protected set; }
+        public bool IsBlocking { get; protected set; }
 
         protected Unit unit;
 
-        readonly Vector3 femaleHeldItemOffset = new Vector3(0f, 0.02f, 0f);
+        readonly Vector3 femaleHeldItemOffset = new(0f, 0.02f, 0f);
 
         void Awake()
         {
-            anim = GetComponent<Animator>();
+            Anim = GetComponent<Animator>();
         }
 
         // Used in animation keyframe
@@ -38,9 +36,9 @@ namespace InventorySystem
         {
             Quaternion defaultRotation;
             if (this == unit.unitMeshManager.leftHeldItem)
-                defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand);
+                defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_LeftHand);
             else
-                defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
+                defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_RightHand);
 
             Quaternion startRotation = transform.parent.localRotation;
             float time = 0f;
@@ -57,11 +55,53 @@ namespace InventorySystem
 
         public abstract void DoDefaultAttack(GridPosition targetGridPosition);
 
+        public void StartThrow()
+        {
+            if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
+                Anim.CrossFadeInFixedTime("Throw_Spear_2H", 0.1f);
+            else
+                Anim.CrossFadeInFixedTime("Throw_Spear", 0.1f);
+        }
+
+        ///<summary>Only used in keyframe animations.</summary>
+        protected void Throw()
+        {
+            ThrowAction throwAction = unit.unitActionHandler.GetAction<ThrowAction>();
+            if (throwAction == null)
+            {
+                if (unit.IsPlayer)
+                    unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                unit.unitActionHandler.FinishAction();
+                TurnManager.Instance.StartNextUnitsTurn(unit);
+                Anim.CrossFadeInFixedTime("Idle", 0.1f);
+                return;
+            }
+
+            Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
+            projectile.SetupThrownItem(throwAction.ItemDataToThrow, unit, transform);
+            projectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(throwAction.TargetEnemyUnit); });
+
+            bool hitTarget = throwAction.TryHitTarget(projectile.ItemData, throwAction.targetGridPosition);
+            unit.StartCoroutine(projectile.ShootProjectile_AtTargetUnit(throwAction.TargetEnemyUnit, throwAction, hitTarget));
+
+            if (unit.UnitEquipment.ItemDataEquipped(throwAction.ItemDataToThrow))
+            {
+                //unit.UnitEquipment.GetEquipmentSlot(unit.UnitEquipment.GetEquipSlotFromItemData(throwAction.ItemDataToThrow)).ClearItem
+                unit.UnitEquipment.RemoveEquipment(throwAction.ItemDataToThrow);
+            }
+        }
+
+        protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
+        {
+            if (targetUnit != null && !targetUnit.health.IsDead)
+                targetUnit.unitAnimator.StopBlocking();
+        }
+
         public void TryFumbleHeldItem()
         {
             if (Random.Range(0f, 1f) <= GetFumbleChance())
             {
-                if (unit.UnitEquipment.ItemDataEquipped(itemData) == false)
+                if (unit.UnitEquipment.ItemDataEquipped(ItemData) == false)
                     return;
 
                 unit.unitActionHandler.SetIsAttacking(false);
@@ -69,12 +109,12 @@ namespace InventorySystem
                 if (unit.IsNPC && unit.health.IsDead == false) // NPCs will try to pick the item back up immediately
                 {
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
-                    LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(itemData));
+                    LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
                     myUnit.unitActionHandler.ClearActionQueue(true);
                     myUnit.unitActionHandler.interactAction.QueueAction(looseItem);
                 }
                 else
-                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(itemData));
+                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
             }
         }
 
@@ -82,7 +122,7 @@ namespace InventorySystem
 
         public virtual void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
-            this.itemData = itemData;
+            ItemData = itemData;
             this.unit = unit;
             name = itemData.Item.name;
 
@@ -116,20 +156,20 @@ namespace InventorySystem
 
             SetUpMeshes();
 
-            transform.localPosition = Vector3.zero;
-            transform.localRotation = Quaternion.Euler(Vector3.zero);
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(Vector3.zero));
             transform.localScale = Vector3.one;
 
             gameObject.SetActive(true);
+            Anim.Play("Idle");
         }
 
         protected void UpdateActionIcons()
         {
             if (unit.IsPlayer)
             {
-                for (int i = 0; i < itemData.Item.Equipment.ActionTypes.Length; i++)
+                for (int i = 0; i < ItemData.Item.Equipment.ActionTypes.Length; i++)
                 {
-                    BaseAction baseAction = unit.unitActionHandler.GetActionFromType(itemData.Item.Equipment.ActionTypes[i]);
+                    BaseAction baseAction = unit.unitActionHandler.GetActionFromType(ItemData.Item.Equipment.ActionTypes[i]);
                     if (baseAction != null && baseAction.actionBarSlot != null)
                         baseAction.actionBarSlot.UpdateIcon();
                 }
@@ -145,18 +185,18 @@ namespace InventorySystem
                     Material[] materials = meshRenderers[i].materials;
                     for (int j = 0; j < materials.Length; j++)
                     {
-                        if (j > itemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
-                            materials[j] = itemData.Item.HeldEquipment.MeshRendererMaterials[itemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
+                        if (j > ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
+                            materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
                         else
-                            materials[j] = itemData.Item.HeldEquipment.MeshRendererMaterials[j];
+                            materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[j];
                     }
 
                     meshRenderers[i].materials = materials;
                 }
                 else // For items like the bow that consist of multiple meshes
-                    meshRenderers[i].material = itemData.Item.HeldEquipment.MeshRendererMaterials[i];
+                    meshRenderers[i].material = ItemData.Item.HeldEquipment.MeshRendererMaterials[i];
 
-                meshFilters[i].mesh = itemData.Item.HeldEquipment.Meshes[i];
+                meshFilters[i].mesh = ItemData.Item.HeldEquipment.Meshes[i];
                 if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
                     meshRenderers[i].enabled = true;
                 else
@@ -177,19 +217,19 @@ namespace InventorySystem
 
         public void SetDefaultWeaponStance()
         {
-            if (currentHeldItemStance == HeldItemStance.Versatile)
-                currentHeldItemStance = HeldItemStance.Default;
-            anim.SetBool("versatileStance", false);
+            if (CurrentHeldItemStance == HeldItemStance.Versatile)
+                CurrentHeldItemStance = HeldItemStance.Default;
+            Anim.SetBool("versatileStance", false);
         }
 
         public void SetVersatileWeaponStance()
         {
-            if (currentHeldItemStance == HeldItemStance.Default)
-                currentHeldItemStance = HeldItemStance.Versatile;
-            anim.SetBool("versatileStance", true);
+            if (CurrentHeldItemStance == HeldItemStance.Default)
+                CurrentHeldItemStance = HeldItemStance.Versatile;
+            Anim.SetBool("versatileStance", true);
         }
 
-        public void SetHeldItemStance(HeldItemStance heldItemStance) => currentHeldItemStance = heldItemStance;
+        public void SetHeldItemStance(HeldItemStance heldItemStance) => CurrentHeldItemStance = heldItemStance;
 
         public virtual void HideMeshes()
         {
@@ -210,7 +250,7 @@ namespace InventorySystem
         public virtual void ResetHeldItem()
         {
             unit = null;
-            itemData = null;
+            ItemData = null;
             HeldItemBasePool.ReturnToPool(this);
         }
 

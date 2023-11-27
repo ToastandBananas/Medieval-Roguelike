@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A formidable suit of full plate armor known for its exceptional protection
     and flexibility.
   itemType: 90
+  thrownProjectileType: 20
   mainMaterial: 37
   itemSize: 5
   width: 2

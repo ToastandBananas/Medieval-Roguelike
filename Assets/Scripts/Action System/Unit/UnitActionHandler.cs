@@ -274,7 +274,7 @@ namespace UnitSystem.ActionSystem
             {
                 float random = Random.Range(0f, 1f);
                 bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
-                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.currentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
+                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
                 {
                     SpearWallAction spearWallAction = attackingUnit.unitActionHandler.GetAction<SpearWallAction>();
                     if (spearWallAction != null)

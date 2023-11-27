@@ -16,6 +16,7 @@ MonoBehaviour:
   pluralName: 
   description: A staple food source for weary wanderers.
   itemType: 190
+  thrownProjectileType: 20
   mainMaterial: 4
   itemSize: 2
   width: 1

@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A balanced, one-handed blade favored by knights, offering both precision
     and power, making it the ideal choice for honorable combat on the battlefield.
   itemType: 1
+  thrownProjectileType: 20
   mainMaterial: 35
   itemSize: 4
   width: 1
@@ -34,7 +35,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 353b5cddf68f48b4f80dad78adc081c2, type: 2}
   equipSlot: 1
   actionTypes:
-  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   - {fileID: 11400000, guid: da478114a011c4c4ab7f2f9cb4a01145, type: 2}
   stanceStatModifiers: []
   meshes:

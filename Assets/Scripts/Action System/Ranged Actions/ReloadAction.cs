@@ -22,7 +22,7 @@ namespace UnitSystem.ActionSystem
         {
             StartAction();
             HeldRangedWeapon heldRangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            if (heldRangedWeapon.isLoaded)
+            if (heldRangedWeapon.IsLoaded)
                 Unload(heldRangedWeapon);
             else
                 Reload(heldRangedWeapon);
@@ -32,7 +32,7 @@ namespace UnitSystem.ActionSystem
         {
             // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
             if (unit.UnitEquipment.QuiverEquipped() && unit.UnitEquipment.RangedWeaponEquipped
-                && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded == false && unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+                && unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded == false && unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
             {
                 ContextMenu.BuildReloadContextMenu();
             }
@@ -69,10 +69,10 @@ namespace UnitSystem.ActionSystem
 
         public override int ActionPointsCost()
         {
-            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
+            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded || unit.UnitEquipment.HasValidAmmunitionEquipped());
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded || unit.UnitEquipment.HasValidAmmunitionEquipped());
 
         public override bool IsInterruptable() => false;
 
@@ -91,7 +91,7 @@ namespace UnitSystem.ActionSystem
             if (unit.UnitEquipment.RangedWeaponEquipped == false)
                 return actionType.ActionIcon;
 
-            if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+            if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 return actionType.CancelActionIcon;
             return actionType.ActionIcon;
         }
@@ -102,10 +102,10 @@ namespace UnitSystem.ActionSystem
                 return "";
 
             HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            if (rangedWeapon.isLoaded)
-                return $"Unload {StringUtilities.EnumToSpacedString(rangedWeapon.itemData.Item.Weapon.WeaponType)}";
+            if (rangedWeapon.IsLoaded)
+                return $"Unload {StringUtilities.EnumToSpacedString(rangedWeapon.ItemData.Item.Weapon.WeaponType)}";
             else
-                return $"Reload {StringUtilities.EnumToSpacedString(rangedWeapon.itemData.Item.Weapon.WeaponType)}";
+                return $"Reload {StringUtilities.EnumToSpacedString(rangedWeapon.ItemData.Item.Weapon.WeaponType)}";
         }
 
         public override string TooltipDescription()
@@ -114,15 +114,15 @@ namespace UnitSystem.ActionSystem
                 return "";
 
             HeldRangedWeapon rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-            if (rangedWeapon.isLoaded)
+            if (rangedWeapon.IsLoaded)
             {
-                if (rangedWeapon.loadedProjectile != null)
-                    return $"Unload the <b>{rangedWeapon.loadedProjectile.ItemData.Item.Name}</b> from your <b>{rangedWeapon.itemData.Item.Name}</b>.";
+                if (rangedWeapon.LoadedProjectile != null)
+                    return $"Unload the <b>{rangedWeapon.LoadedProjectile.ItemData.Item.Name}</b> from your <b>{rangedWeapon.ItemData.Item.Name}</b>.";
                 else
-                    return $"Unload your <b>{rangedWeapon.itemData.Item.Name}</b>.";
+                    return $"Unload your <b>{rangedWeapon.ItemData.Item.Name}</b>.";
             }
             else
-                return $"Reload your <b>{rangedWeapon.itemData.Item.Name}</b>.";
+                return $"Reload your <b>{rangedWeapon.ItemData.Item.Name}</b>.";
         }
     }
 }

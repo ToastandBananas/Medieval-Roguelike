@@ -238,9 +238,9 @@ namespace InventorySystem
             if (heldItem is HeldRangedWeapon)
             {
                 HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
-                if (heldRangedWeapon.isLoaded)
+                if (heldRangedWeapon.IsLoaded)
                 {
-                    heldRangedWeapon.loadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
+                    heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
                     looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
                     if (unit != UnitManager.player)
@@ -270,14 +270,14 @@ namespace InventorySystem
             {
                 if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
                 {
-                    if (heldItem.itemData.Item is Weapon && heldItem.itemData.Item.Weapon.IsTwoHanded)
+                    if (heldItem.ItemData.Item is Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem1;
                     else
                         equipSlot = EquipSlot.RightHeldItem1;
                 }
                 else
                 {
-                    if (heldItem.itemData.Item is Weapon && heldItem.itemData.Item.Weapon.IsTwoHanded)
+                    if (heldItem.ItemData.Item is Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem2;
                     else
                         equipSlot = EquipSlot.RightHeldItem2;
@@ -341,9 +341,9 @@ namespace InventorySystem
 
         static void SetupHeldItemDrop(HeldItem heldItem, LooseItem looseItem)
         {
-            SetupLooseItem(looseItem, heldItem.itemData);
+            SetupLooseItem(looseItem, heldItem.ItemData);
 
-            if (heldItem.itemData.Item is Shield && heldItem.transform.childCount > 1)
+            if (heldItem.ItemData.Item is Shield && heldItem.transform.childCount > 1)
             {
                 HeldShield heldShield = heldItem as HeldShield;
                 Vector3 yOffset = new Vector3(0f, FindMeshHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);

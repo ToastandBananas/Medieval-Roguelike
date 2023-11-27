@@ -68,11 +68,12 @@ namespace UnitSystem.ActionSystem
                 yield break;
             }
 
-            // Perform the interaction
-            if (targetInteractable.CanInteractAtMyGridPosition() || LevelGrid.HasUnitAtGridPosition(targetInteractable.GridPosition(), out _) == false)
-                targetInteractable.Interact(unit);
-
+            Interactable interactable = targetInteractable;
             CompleteAction();
+
+            // Perform the interaction
+            if (interactable.CanInteractAtMyGridPosition() || LevelGrid.HasUnitAtGridPosition(interactable.GridPosition(), out _) == false)
+                interactable.Interact(unit);
         }
 
         public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;

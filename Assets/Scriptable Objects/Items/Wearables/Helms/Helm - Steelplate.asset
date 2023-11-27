@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A formidable piece of head armor, forged from solid steel to shield
     the wearer from the harshest of blows in combat.
   itemType: 100
+  thrownProjectileType: 20
   mainMaterial: 37
   itemSize: 3
   width: 2

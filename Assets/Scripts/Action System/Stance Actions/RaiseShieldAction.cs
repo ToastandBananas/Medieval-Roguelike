@@ -12,7 +12,7 @@ namespace UnitSystem.ActionSystem
 
         bool shieldRaised;
 
-        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * unit.unitMeshManager.GetHeldShield().itemData.Item.Weight * 0.5f);
+        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * unit.unitMeshManager.GetHeldShield().ItemData.Item.Weight * 0.5f);
 
         public override void TakeAction()
         {
@@ -41,11 +41,11 @@ namespace UnitSystem.ActionSystem
 
             heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.RaiseShield);
             heldShield.RaiseShield();
-            heldShield.anim.SetBool("keepShieldRaised", true);
+            heldShield.Anim.SetBool("keepShieldRaised", true);
 
             unit.stats.energyUseActions.Add(this);
 
-            ApplyStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
+            ApplyStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
         }
 
         void LowerShield()
@@ -59,9 +59,9 @@ namespace UnitSystem.ActionSystem
 
                 heldShield.SetHeldItemStance(InventorySystem.HeldItemStance.Default);
                 heldShield.LowerShield();
-                heldShield.anim.SetBool("keepShieldRaised", false);
+                heldShield.Anim.SetBool("keepShieldRaised", false);
 
-                RemoveStanceStatModifiers(heldShield.itemData.Item.HeldEquipment);
+                RemoveStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
             }
 
             unit.stats.energyUseActions.Remove(this);
@@ -91,7 +91,7 @@ namespace UnitSystem.ActionSystem
             if (heldShield == null)
                 return actionType.ActionIcon;
 
-            if (heldShield.currentHeldItemStance != HeldItemStance())
+            if (heldShield.CurrentHeldItemStance != HeldItemStance())
                 return actionType.ActionIcon;
             return actionType.CancelActionIcon;
         }
@@ -106,14 +106,14 @@ namespace UnitSystem.ActionSystem
             }
 
             float speedModifier = 0f;
-            StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.itemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
+            StanceStatModifier_ScriptableObject stanceStatModifier = heldShield.ItemData.Item.Shield.GetStanceStatModifier(InventorySystem.HeldItemStance.RaiseShield);
             if (stanceStatModifier != null)
                 speedModifier = Mathf.RoundToInt(stanceStatModifier.StatModifier.PercentSpeed * 100f);
             
-            if (heldShield.currentHeldItemStance != HeldItemStance())
-                return $"Raise your <b>{heldShield.itemData.Item.Name}</b>, greatly <b>increasing</b> your shield's <b>Block Chance (+{blockChanceModifier * 100f}%)</b> at the detriment of <b>Speed ({speedModifier}%)</b>. Costs <b>{EnergyCostPerTurn()} Energy/Turn</b>.";
+            if (heldShield.CurrentHeldItemStance != HeldItemStance())
+                return $"Raise your <b>{heldShield.ItemData.Item.Name}</b>, greatly <b>increasing</b> your shield's <b>Block Chance (+{blockChanceModifier * 100f}%)</b> at the detriment of <b>Speed ({speedModifier}%)</b>. Costs <b>{EnergyCostPerTurn()} Energy/Turn</b>.";
             else
-                return $"Lower your <b>{heldShield.itemData.Item.Name}</b>.";
+                return $"Lower your <b>{heldShield.ItemData.Item.Name}</b>.";
         }
 
         public override string ActionName()
@@ -122,7 +122,7 @@ namespace UnitSystem.ActionSystem
             if (heldShield == null)
                 return "Raise Shield";
 
-            if (heldShield.currentHeldItemStance != HeldItemStance())
+            if (heldShield.CurrentHeldItemStance != HeldItemStance())
                 return "Raise Shield";
             else
                 return "Lower Shield";

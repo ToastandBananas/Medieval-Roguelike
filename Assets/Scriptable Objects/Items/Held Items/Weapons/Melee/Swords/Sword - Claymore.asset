@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A massive two-handed sword with a razor-sharp edge and impressive
     heft, perfect for unleashing devastating cleaving attacks on your foes.
   itemType: 1
+  thrownProjectileType: 20
   mainMaterial: 35
   itemSize: 5
   width: 2
@@ -34,7 +35,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 052202d4c6a72dc49ab708e561128dd7, type: 2}
   equipSlot: 0
   actionTypes:
-  - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   - {fileID: 11400000, guid: 4a8c6127ccbd3d74f940e7fc6b52c543, type: 2}
   stanceStatModifiers: []
   meshes:

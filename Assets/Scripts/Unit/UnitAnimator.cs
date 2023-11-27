@@ -238,12 +238,12 @@ namespace UnitSystem
         {
             if (unit.unitMeshManager.leftHeldItem != null)
             {
-                if (unit.unitMeshManager.leftHeldItem.isBlocking && unit.unitMeshManager.leftHeldItem.currentHeldItemStance != HeldItemStance.RaiseShield)
+                if (unit.unitMeshManager.leftHeldItem.IsBlocking && unit.unitMeshManager.leftHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
                     unit.unitMeshManager.leftHeldItem.StopBlocking();
             }
             else if (unit.unitMeshManager.rightHeldItem != null)
             {
-                if (unit.unitMeshManager.rightHeldItem.isBlocking && unit.unitMeshManager.rightHeldItem.currentHeldItemStance != HeldItemStance.RaiseShield)
+                if (unit.unitMeshManager.rightHeldItem.IsBlocking && unit.unitMeshManager.rightHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
                   unit.unitMeshManager.rightHeldItem.StopBlocking();
             }
         }

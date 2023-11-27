@@ -49,36 +49,36 @@ namespace GridSystem
             mainLineRenderer.enabled = true;
             GridPosition targetGridPosition = player.GridPosition;
 
-            if ((PlayerInput.Instance.highlightedInteractable != null && PlayerInput.Instance.highlightedInteractable.GridPosition() != currentInteractableGridPosition)
-                || (PlayerInput.Instance.highlightedUnit != null && PlayerInput.Instance.highlightedUnit.GridPosition != currentUnitGridPosition)
+            if ((PlayerInput.Instance.HighlightedInteractable != null && PlayerInput.Instance.HighlightedInteractable.GridPosition() != currentInteractableGridPosition)
+                || (PlayerInput.Instance.HighlightedUnit != null && PlayerInput.Instance.HighlightedUnit.GridPosition != currentUnitGridPosition)
                 || WorldMouse.CurrentGridPosition() != currentMouseGridPosition || player.GridPosition != currentPlayerPosition)
             {
                 currentMouseGridPosition = WorldMouse.CurrentGridPosition();
                 currentPlayerPosition = player.GridPosition;
 
-                if (PlayerInput.Instance.highlightedUnit == player || currentMouseGridPosition == currentPlayerPosition)
+                if (PlayerInput.Instance.HighlightedUnit == player || currentMouseGridPosition == currentPlayerPosition)
                 {
                     HideLineRenderers();
                     yield break;
                 }
 
                 // First, setup the targetGridPosition
-                if (PlayerInput.Instance.highlightedInteractable != null)
+                if (PlayerInput.Instance.HighlightedInteractable != null)
                 {
                     targetUnit = null;
-                    currentInteractableGridPosition = PlayerInput.Instance.highlightedInteractable.GridPosition();
-                    if (Vector3.Distance(player.WorldPosition, PlayerInput.Instance.highlightedInteractable.GridPosition().WorldPosition) > LevelGrid.diaganolDistance)
-                        targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(PlayerInput.Instance.highlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.highlightedInteractable.CanInteractAtMyGridPosition());
+                    currentInteractableGridPosition = PlayerInput.Instance.HighlightedInteractable.GridPosition();
+                    if (Vector3.Distance(player.WorldPosition, PlayerInput.Instance.HighlightedInteractable.GridPosition().WorldPosition) > LevelGrid.diaganolDistance)
+                        targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(PlayerInput.Instance.HighlightedInteractable.GridPosition(), player.GridPosition, LevelGrid.diaganolDistance, PlayerInput.Instance.HighlightedInteractable.CanInteractAtMyGridPosition());
                     else
                     {
                         HideLineRenderers();
                         yield break;
                     }
                 }
-                else if (PlayerInput.Instance.highlightedUnit != null)
+                else if (PlayerInput.Instance.HighlightedUnit != null)
                 {
                     BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
-                    targetUnit = PlayerInput.Instance.highlightedUnit;
+                    targetUnit = PlayerInput.Instance.HighlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
                     if (targetUnit.health.IsDead == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))

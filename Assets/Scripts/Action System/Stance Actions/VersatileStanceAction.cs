@@ -13,7 +13,7 @@ namespace UnitSystem.ActionSystem
 
         public override HeldItemStance HeldItemStance() => InventorySystem.HeldItemStance.Versatile;
 
-        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weight * 0.5f);
+        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weight * 0.5f);
 
         public override void TakeAction()
         {
@@ -35,9 +35,9 @@ namespace UnitSystem.ActionSystem
             HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon != null)
             {
-                if (primaryHeldMeleeWeapon.itemData.Item.Weapon.IsTwoHanded)
+                if (primaryHeldMeleeWeapon.ItemData.Item.Weapon.IsTwoHanded)
                 {
-                    Debug.LogWarning($"{primaryHeldMeleeWeapon.itemData.Item.Name} is Two-Handed, yet it has a Versatile Stance Action available to it...");
+                    Debug.LogWarning($"{primaryHeldMeleeWeapon.ItemData.Item.Name} is Two-Handed, yet it has a Versatile Stance Action available to it...");
                     return;
                 }
 
@@ -78,7 +78,7 @@ namespace UnitSystem.ActionSystem
             if (unit != null && unit.UnitEquipment.IsDualWielding == false && unit.UnitEquipment.MeleeWeaponEquipped && unit.UnitEquipment.ShieldEquipped == false)
             {
                 HeldMeleeWeapon primaryHeldMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-                if (primaryHeldMeleeWeapon.currentHeldItemStance != InventorySystem.HeldItemStance.Default && primaryHeldMeleeWeapon.currentHeldItemStance != InventorySystem.HeldItemStance.Versatile)
+                if (primaryHeldMeleeWeapon.CurrentHeldItemStance != InventorySystem.HeldItemStance.Default && primaryHeldMeleeWeapon.CurrentHeldItemStance != InventorySystem.HeldItemStance.Versatile)
                     return false;
                 else
                     return true;
@@ -107,9 +107,9 @@ namespace UnitSystem.ActionSystem
             }
 
             if (!inVersatileStance)
-                return $"Grip your <b>{heldMeleeWeapon.itemData.Item.Name}</b> with both hands, <b>increasing</b> both <b>Damage (+{(damageModifier - 1f) * 100f}%)</b> and the <b>AP Cost (+{(APCostModifier - 1f) * 100f})</b> of attacks with this weapon.";
+                return $"Grip your <b>{heldMeleeWeapon.ItemData.Item.Name}</b> with both hands, <b>increasing</b> both <b>Damage (+{(damageModifier - 1f) * 100f}%)</b> and the <b>AP Cost (+{(APCostModifier - 1f) * 100f})</b> of attacks with this weapon.";
             else
-                return $"Grip your <b>{heldMeleeWeapon.itemData.Item.Name}</b> with one hand, <b>decreasing</b> both <b>Damage (-{(damageModifier - 1f) * 100f}%)</b> and the <b>AP Cost ({(APCostModifier - 1f) * 100f})</b> of attacks with this weapon.";
+                return $"Grip your <b>{heldMeleeWeapon.ItemData.Item.Name}</b> with one hand, <b>decreasing</b> both <b>Damage (-{(damageModifier - 1f) * 100f}%)</b> and the <b>AP Cost ({(APCostModifier - 1f) * 100f})</b> of attacks with this weapon.";
         }
 
         public override string ActionName()

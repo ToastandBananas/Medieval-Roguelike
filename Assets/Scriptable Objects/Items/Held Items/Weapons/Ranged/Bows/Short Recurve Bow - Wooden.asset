@@ -18,6 +18,7 @@ MonoBehaviour:
     precision and speed, making it a versatile choice for archers in need of close-quarters
     accuracy.
   itemType: 30
+  thrownProjectileType: 20
   mainMaterial: 9
   itemSize: 4
   width: 2
@@ -60,9 +61,11 @@ MonoBehaviour:
   canDualWield: 0
   attackRange: {x: 2, y: 10}
   damageRange: {x: 4, y: 8}
-  minBlockChanceAddOn: 0
-  maxBlockChanceAddOn: 0
   minAccuracyModifier: 0.05
   maxAccuracyModifier: 0.1
+  minBlockChanceModifier: 0
+  maxBlockChanceModifier: 0
+  minKnockbackModifier: 0
+  maxKnockbackModifier: 0
   reloadActionPointCostMultiplier: 0.8
   projectileType: 0

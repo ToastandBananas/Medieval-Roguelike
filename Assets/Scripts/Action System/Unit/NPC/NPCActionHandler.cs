@@ -61,7 +61,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && unit.health.IsDead == false)
+            if (unit.IsMyTurn && !isPerformingAction && !unit.health.IsDead)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 
@@ -83,7 +83,7 @@ namespace UnitSystem.ActionSystem
 
                         foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
                         {
-                            if (LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) == false)
+                            if (!LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition))
                                 continue;
 
                             if (unit.alliance.IsEnemy(unitAtGridPosition))
@@ -116,7 +116,7 @@ namespace UnitSystem.ActionSystem
                     if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
                         Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                        float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
+                        float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
                         if (Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
@@ -142,12 +142,12 @@ namespace UnitSystem.ActionSystem
                             }
 
                             // Else flee somewhere
-                            StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange - 2)));
+                            StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                         }
                         else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
                         {
                             // Shoot the target enemy
-                            if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                            if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                                 GetAction<ShootAction>().QueueAction(targetEnemyUnit);
                             else
                                 GetAction<ReloadAction>().QueueAction();
@@ -191,10 +191,10 @@ namespace UnitSystem.ActionSystem
             while (isAttacking || unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
-            if (unit.IsMyTurn == false)
+            if (!unit.IsMyTurn)
                 yield break;
 
-            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && isPerformingAction == false)
+            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && !isPerformingAction)
             {
                 int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
                 lastQueuedAction = queuedActions[0];
@@ -329,7 +329,7 @@ namespace UnitSystem.ActionSystem
             else if (unit.UnitEquipment.RangedWeaponEquipped)
             {
                 Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange;
+                float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
                 if (closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
@@ -348,7 +348,7 @@ namespace UnitSystem.ActionSystem
                     }
                     else
                         // Else flee somewhere
-                        StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange - 2)));
+                        StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                 }
             }
 

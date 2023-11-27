@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A slender, pointed projectile designed for piercing armor with its
     narrow, needle-like tip.
   itemType: 50
+  thrownProjectileType: 20
   mainMaterial: 9
   itemSize: 3
   width: 1

@@ -15,15 +15,15 @@ namespace InventorySystem
             base.SetupHeldItem(itemData, unit, equipSlot);
 
             if (this == unit.unitMeshManager.leftHeldItem)
-                anim.SetBool("leftHandItem", true);
+                Anim.SetBool("leftHandItem", true);
             else
             {
-                anim.SetBool("leftHandItem", false);
+                Anim.SetBool("leftHandItem", false);
 
                 if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.SetBool("twoHanded", true);
+                    Anim.SetBool("twoHanded", true);
                 else
-                    anim.SetBool("twoHanded", false);
+                    Anim.SetBool("twoHanded", false);
             }
 
             SetDefaultWeaponStance();
@@ -35,35 +35,35 @@ namespace InventorySystem
             // Determine attack animation based on melee weapon type
             if (this == unit.unitMeshManager.rightHeldItem)
             {
-                if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
+                if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
                 {
-                    if (itemData.Item.Weapon.IsTwoHanded)
-                        anim.CrossFadeInFixedTime("DefaultAttack_2H", defaultAttackTransitionTime);
+                    if (ItemData.Item.Weapon.IsTwoHanded)
+                        Anim.CrossFadeInFixedTime("DefaultAttack_2H", defaultAttackTransitionTime);
                     else
-                        anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
+                        Anim.CrossFadeInFixedTime("DefaultAttack_1H_R", defaultAttackTransitionTime);
                 }
-                else if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
+                else if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
                 {
-                    if (itemData.Item.Weapon.IsTwoHanded)
-                        anim.CrossFadeInFixedTime("DefaultThrustAttack_2H", defaultAttackTransitionTime);
+                    if (ItemData.Item.Weapon.IsTwoHanded)
+                        Anim.CrossFadeInFixedTime("DefaultThrustAttack_2H", defaultAttackTransitionTime);
                     else
-                        anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_R", defaultAttackTransitionTime);
+                        Anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_R", defaultAttackTransitionTime);
                 }
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
-                if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
-                    oppositeHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
+                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Shield)
+                    oppositeHeldItem.Anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
             }
             else if (this == unit.unitMeshManager.leftHeldItem)
             {
-                if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
-                    anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
-                else if (itemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
-                    anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_L", defaultAttackTransitionTime);
+                if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
+                    Anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
+                else if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Thrust)
+                    Anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_L", defaultAttackTransitionTime);
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
-                if (oppositeHeldItem != null && oppositeHeldItem.itemData.Item is Shield)
-                    oppositeHeldItem.anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
+                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Shield)
+                    oppositeHeldItem.Anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
             }
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
@@ -73,7 +73,7 @@ namespace InventorySystem
         public void DoSwipeAttack(GridPosition targetGridPosition)
         {
             // Play the Swipe animation
-            anim.CrossFadeInFixedTime("SwipeAttack_2H", defaultAttackTransitionTime);
+            Anim.CrossFadeInFixedTime("SwipeAttack_2H", defaultAttackTransitionTime);
 
             // Rotate the weapon towards the target, just in case they are above or below this Unit's position
             StartCoroutine(RotateWeaponTowardsTarget(targetGridPosition));
@@ -89,78 +89,78 @@ namespace InventorySystem
         {
             unit.unitAnimator.StopMovingForward();
 
-            anim.SetBool("spearWall", true);
+            Anim.SetBool("spearWall", true);
             if (this == unit.unitMeshManager.leftHeldItem)
-                anim.CrossFadeInFixedTime("SpearWall_1H_L", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("SpearWall_1H_L", defaultBlockTransitionTime);
             else
             {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.CrossFadeInFixedTime("SpearWall_2H", defaultBlockTransitionTime);
+                if (ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.CrossFadeInFixedTime("SpearWall_2H", defaultBlockTransitionTime);
                 else
-                    anim.CrossFadeInFixedTime("SpearWall_1H_R", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("SpearWall_1H_R", defaultBlockTransitionTime);
             }
 
-            currentHeldItemStance = HeldItemStance.SpearWall;
+            CurrentHeldItemStance = HeldItemStance.SpearWall;
         }
 
         public void LowerSpearWall()
         {
-            anim.SetBool("spearWall", false);
-            anim.CrossFadeInFixedTime("Idle", defaultBlockTransitionTime);
+            Anim.SetBool("spearWall", false);
+            Anim.CrossFadeInFixedTime("Idle", defaultBlockTransitionTime);
 
-            if (anim.GetBool("versatileStance") == false)
-                currentHeldItemStance = HeldItemStance.Default;
+            if (Anim.GetBool("versatileStance") == false)
+                CurrentHeldItemStance = HeldItemStance.Default;
             else
-                currentHeldItemStance = HeldItemStance.Versatile;
+                CurrentHeldItemStance = HeldItemStance.Versatile;
         }
 
         public override void StopBlocking() => LowerWeapon();
 
         public void RaiseWeapon()
         {
-            if (isBlocking)
+            if (IsBlocking)
                 return;
 
-            isBlocking = true;
+            IsBlocking = true;
             if (unit.unitMeshManager.rightHeldItem == this)
             {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.CrossFadeInFixedTime("RaiseWeapon_2H", defaultBlockTransitionTime);
+                if (ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.CrossFadeInFixedTime("RaiseWeapon_2H", defaultBlockTransitionTime);
                 else
-                    anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", defaultBlockTransitionTime);
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-                anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", defaultBlockTransitionTime);
         }
 
         public void LowerWeapon()
         {
-            if (isBlocking == false)
+            if (IsBlocking == false)
                 return;
 
-            isBlocking = false;
+            IsBlocking = false;
             if (unit.unitMeshManager.rightHeldItem == this)
             {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.Play("LowerWeapon_2H");
+                if (ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.Play("LowerWeapon_2H");
                 else
-                    anim.Play("LowerWeapon_1H_R");
+                    Anim.Play("LowerWeapon_1H_R");
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-                anim.Play("LowerWeapon_1H_L");
+                Anim.Play("LowerWeapon_1H_L");
         }
 
         public void Recoil()
         {
             if (unit.unitMeshManager.rightHeldItem == this)
             {
-                if (itemData.Item.Weapon.IsTwoHanded)
-                    anim.Play("BlockRecoil_2H");
+                if (ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.Play("BlockRecoil_2H");
                 else
-                    anim.Play("BlockRecoil_1H_R");
+                    Anim.Play("BlockRecoil_1H_R");
             }
             else if (unit.unitMeshManager.leftHeldItem == this)
-                anim.Play("BlockRecoil_1H_L");
+                Anim.Play("BlockRecoil_1H_L");
         }
 
         IEnumerator RotateWeaponTowardsTarget(GridPosition targetGridPosition)
@@ -185,7 +185,7 @@ namespace InventorySystem
 
         protected override float GetFumbleChance()
         {
-            MeleeWeapon weapon = itemData.Item as MeleeWeapon;
+            MeleeWeapon weapon = ItemData.Item as MeleeWeapon;
 
             float fumbleChance = (0.5f - (unit.stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
             fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
@@ -195,7 +195,7 @@ namespace InventorySystem
             else
             {
                 // Less likely to fumble when two-handing a melee weapon
-                if (weapon.IsTwoHanded || currentHeldItemStance == HeldItemStance.Versatile)
+                if (weapon.IsTwoHanded || CurrentHeldItemStance == HeldItemStance.Versatile)
                     fumbleChance *= 0.8f;
             }
             // Debug.Log(unit.name + " fumble chance: " + fumbleChance);

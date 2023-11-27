@@ -38,10 +38,10 @@ namespace UnitSystem.ActionSystem
 
         public override int ActionPointsCost()
         {
-            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
+            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().isLoaded;
+        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded;
 
         public override bool IsInterruptable() => false;
 
@@ -57,10 +57,10 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            if (unit.unitMeshManager.GetHeldRangedWeapon().loadedProjectile != null)
-                return $"Unload the <b>{unit.unitMeshManager.GetHeldRangedWeapon().loadedProjectile.ItemData.Item.Name}</b> from your <b>{unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Name}</b>.";
+            if (unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile != null)
+                return $"Unload the <b>{unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile.ItemData.Item.Name}</b> from your <b>{unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
             else
-                return $"Unload your <b>{unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Name}</b>.";
+                return $"Unload your <b>{unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
         }
     }
 }

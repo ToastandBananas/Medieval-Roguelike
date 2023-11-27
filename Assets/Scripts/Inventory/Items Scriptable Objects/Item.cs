@@ -25,6 +25,7 @@ namespace InventorySystem
         [SerializeField] string pluralName;
         [SerializeField, TextArea(1, 5)] string description;
         [SerializeField] protected ItemType itemType;
+        [SerializeField] ProjectileType thrownProjectileType = ProjectileType.BluntObject;
         [SerializeField] ItemMaterial mainMaterial;
         [SerializeField] ItemSize itemSize;
 
@@ -51,6 +52,7 @@ namespace InventorySystem
         public string PluralName => pluralName;
         public string Description => description;
         public ItemType ItemType => itemType;
+        public ProjectileType ThrownProjectileType => thrownProjectileType;
         public ItemMaterial MainMaterial => mainMaterial;
         public ItemSize ItemSize => itemSize;
 

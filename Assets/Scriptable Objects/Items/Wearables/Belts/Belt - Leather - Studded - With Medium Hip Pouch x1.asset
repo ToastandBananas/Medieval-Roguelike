@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A simple, yet sturdy belt made from durable cowhide and reinforced
     with metal studs.
   itemType: 130
+  thrownProjectileType: 20
   mainMaterial: 23
   itemSize: 2
   width: 2

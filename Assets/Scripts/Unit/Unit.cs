@@ -125,15 +125,15 @@ namespace UnitSystem
         public float GetAttackRange()
         {
             if (myUnitEquipment.RangedWeaponEquipped && myUnitEquipment.HasValidAmmunitionEquipped())
-                return unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MaxRange;
+                return unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
             else if (myUnitEquipment.IsDualWielding)
             {
-                float primaryWeaponAttackRange = unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
-                float secondaryWeaponAttackRange = unitMeshManager.GetLeftHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+                float primaryWeaponAttackRange = unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+                float secondaryWeaponAttackRange = unitMeshManager.GetLeftHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
                 return Mathf.Max(primaryWeaponAttackRange, secondaryWeaponAttackRange);
             }
             else if (myUnitEquipment.MeleeWeaponEquipped)
-                return unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+                return unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
             else
                 return stats.UnarmedAttackRange;
         }

@@ -14,32 +14,31 @@ namespace InventorySystem
         [SerializeField] BowLineRenderer bowLineRenderer;
         [SerializeField] LineRenderer lineRenderer;
 
-        public Projectile loadedProjectile { get; private set; }
-        public bool isLoaded { get; private set; }
+        public Projectile LoadedProjectile { get; private set; }
+        public bool IsLoaded { get; private set; }
 
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
             Unit targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
-            loadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
+            LoadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 
-            isLoaded = false;
+            IsLoaded = false;
             bowLineRenderer.StringStartFollowingTargetPositions();
-            anim.Play("Shoot");
+            Anim.Play("Shoot");
 
-            StartCoroutine(RotateRangedWeapon(unit.unitActionHandler.targetEnemyUnit.GridPosition));
+            StartCoroutine(RotateRangedWeapon(targetEnemyUnit.GridPosition));
         }
 
         public void LoadProjectile(ItemData projectileItemData)
         {
-            if (isLoaded || unit.UnitEquipment.HasValidAmmunitionEquipped() == false)
+            if (IsLoaded || !unit.UnitEquipment.HasValidAmmunitionEquipped())
                 return;
 
             Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
-            if (projectileItemData == null)
-                projectileItemData = unit.UnitEquipment.GetEquippedProjectile(itemData.Item.RangedWeapon.ProjectileType);
+            projectileItemData ??= unit.UnitEquipment.GetEquippedProjectile(ItemData.Item.RangedWeapon.ProjectileType);
             
-            projectile.Setup(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
+            projectile.SetupAmmunition(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
             // Subtract 1 from the item data's stack size and remove the item from its inventory/equipment if its stack size becomes 0
             if (projectileItemData.MyInventory != null)
@@ -47,16 +46,16 @@ namespace InventorySystem
             else
                 unit.UnitEquipment.OnReloadProjectile(projectileItemData);
 
-            loadedProjectile = projectile;
-            isLoaded = true;
+            LoadedProjectile = projectile;
+            IsLoaded = true;
         }
 
         public void UnloadProjectile()
         {
-            if (unit.UnitEquipment.TryAddToEquippedAmmunition(loadedProjectile.ItemData) == false)
+            if (!unit.UnitEquipment.TryAddToEquippedAmmunition(LoadedProjectile.ItemData))
             {
-                if (unit.UnitInventoryManager.TryAddItemToInventories(loadedProjectile.ItemData) == false)
-                    DropItemManager.DropItem(null, unit, loadedProjectile.ItemData);
+                if (!unit.UnitInventoryManager.TryAddItemToInventories(LoadedProjectile.ItemData))
+                    DropItemManager.DropItem(null, unit, LoadedProjectile.ItemData);
             }
 
             RemoveProjectile();
@@ -66,27 +65,21 @@ namespace InventorySystem
 
         public void RemoveProjectile()
         {
-            if (loadedProjectile != null)
+            if (LoadedProjectile != null)
             {
-                loadedProjectile.Disable();
-                loadedProjectile = null;
+                LoadedProjectile.Disable();
+                LoadedProjectile = null;
             }
 
-            isLoaded = false;
+            IsLoaded = false;
         }
 
-        void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
-        {
-            if (targetUnit != null && targetUnit.health.IsDead == false)
-                targetUnit.unitAnimator.StopBlocking();
-        }
-
-        // Used in keyframe animation
+        /// <summary> Used in keyframe animation.</summary>
         void ShootProjectile()
         {
             ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-            unit.StartCoroutine(loadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
-            loadedProjectile = null;
+            unit.StartCoroutine(LoadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
+            LoadedProjectile = null;
 
             TryFumbleHeldItem();
         }
@@ -94,7 +87,7 @@ namespace InventorySystem
         // Used in animation keyframe
         public override IEnumerator ResetToIdleRotation()
         {
-            Quaternion defaultRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
+            Quaternion defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_RightHand);
             Quaternion startRotation = transform.parent.localRotation;
             float time = 0f;
             float duration = 0.25f;
@@ -140,7 +133,7 @@ namespace InventorySystem
 
         protected override float GetFumbleChance()
         {
-            RangedWeapon weapon = itemData.Item as RangedWeapon;
+            RangedWeapon weapon = ItemData.Item as RangedWeapon;
 
             float fumbleChance = (0.5f - (unit.stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
             fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
@@ -154,10 +147,10 @@ namespace InventorySystem
 
         public float MaxRange(GridPosition shooterGridPosition, GridPosition targetGridPosition, bool accountForHeight)
         {
-            if (accountForHeight == false)
-                return itemData.Item.Weapon.MaxRange;
+            if (!accountForHeight)
+                return ItemData.Item.Weapon.MaxRange;
 
-            float maxRange = itemData.Item.Weapon.MaxRange + (shooterGridPosition.y - targetGridPosition.y);
+            float maxRange = ItemData.Item.Weapon.MaxRange + (shooterGridPosition.y - targetGridPosition.y);
             if (maxRange < 0f) maxRange = 0f;
             return maxRange;
         }
@@ -167,8 +160,8 @@ namespace InventorySystem
             base.HideMeshes();
 
             lineRenderer.enabled = false;
-            if (loadedProjectile != null)
-                loadedProjectile.MeshRenderer.enabled = false;
+            if (LoadedProjectile != null)
+                LoadedProjectile.MeshRenderer.enabled = false;
         }
 
         public override void ShowMeshes()
@@ -176,13 +169,13 @@ namespace InventorySystem
             base.ShowMeshes();
 
             lineRenderer.enabled = true;
-            if (loadedProjectile != null)
-                loadedProjectile.MeshRenderer.enabled = true;
+            if (LoadedProjectile != null)
+                LoadedProjectile.MeshRenderer.enabled = true;
         }
 
         public override void ResetHeldItem()
         {
-            if (loadedProjectile != null)
+            if (LoadedProjectile != null)
                 UnloadProjectile();
 
             base.ResetHeldItem();

@@ -17,6 +17,7 @@ MonoBehaviour:
   description: A sturdy and practical container crafted from leather to hold and
     protect your arrows.
   itemType: 70
+  thrownProjectileType: 20
   mainMaterial: 23
   itemSize: 4
   width: 2

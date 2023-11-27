@@ -416,9 +416,9 @@ namespace InventorySystem
 
             // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them
             HeldShield heldShield = null;
-            if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem.itemData == newItemData)
+            if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem.ItemData == newItemData)
                 heldShield = myUnit.unitMeshManager.leftHeldItem as HeldShield;
-            else if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem.itemData == newItemData)
+            else if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem.ItemData == newItemData)
                 heldShield = myUnit.unitMeshManager.rightHeldItem as HeldShield;
 
             if (heldShield != null && heldShield.transform.childCount > 1)

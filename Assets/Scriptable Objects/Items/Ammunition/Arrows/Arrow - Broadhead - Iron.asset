@@ -17,6 +17,7 @@ MonoBehaviour:
   description: Designed for combat and hunting, this arrow inflicts devastating wounds
     with its twin razor-sharp blades.
   itemType: 50
+  thrownProjectileType: 20
   mainMaterial: 9
   itemSize: 3
   width: 1

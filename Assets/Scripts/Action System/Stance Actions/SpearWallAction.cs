@@ -25,11 +25,11 @@ namespace UnitSystem.ActionSystem
             bool secondaryWeaponValid = IsValidWeapon(secondaryHeldWeapon);
             float cost = 0f;
             if (primaryWeaponValid && secondaryHeldWeapon)
-                cost += ((baseAPCost * primaryHeldWeapon.itemData.Item.Weight * 0.5f) + (cost += baseAPCost * secondaryHeldWeapon.itemData.Item.Weight * 0.5f)) / 2f;
+                cost += ((baseAPCost * primaryHeldWeapon.ItemData.Item.Weight * 0.5f) + (cost += baseAPCost * secondaryHeldWeapon.ItemData.Item.Weight * 0.5f)) / 2f;
             else if (primaryWeaponValid)
-                cost += baseAPCost * primaryHeldWeapon.itemData.Item.Weight * 0.5f;
+                cost += baseAPCost * primaryHeldWeapon.ItemData.Item.Weight * 0.5f;
             else if (secondaryWeaponValid)
-                cost += cost += baseAPCost * secondaryHeldWeapon.itemData.Item.Weight * 0.5f;
+                cost += cost += baseAPCost * secondaryHeldWeapon.ItemData.Item.Weight * 0.5f;
             return Mathf.RoundToInt(cost);
         }
 
@@ -70,9 +70,9 @@ namespace UnitSystem.ActionSystem
             unit.stats.energyUseActions.Add(this);
 
             if (rightWeaponValid)
-                ApplyStanceStatModifiers(rightHeldWeapon.itemData.Item.HeldEquipment);
+                ApplyStanceStatModifiers(rightHeldWeapon.ItemData.Item.HeldEquipment);
             else
-                ApplyStanceStatModifiers(leftHeldWeapon.itemData.Item.HeldEquipment);
+                ApplyStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
             unit.unitActionHandler.moveAction.OnMove += CancelAction;
             unit.health.OnTakeDamageFromMeleeAttack += CancelAction;
@@ -95,9 +95,9 @@ namespace UnitSystem.ActionSystem
 
             spearRaised = false;
             if (rightWeaponValid)
-                RemoveStanceStatModifiers(rightHeldWeapon.itemData.Item.HeldEquipment);
+                RemoveStanceStatModifiers(rightHeldWeapon.ItemData.Item.HeldEquipment);
             else if (leftWeaponValid)
-                RemoveStanceStatModifiers(leftHeldWeapon.itemData.Item.HeldEquipment);
+                RemoveStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
             unit.stats.energyUseActions.Remove(this);
 
@@ -107,7 +107,7 @@ namespace UnitSystem.ActionSystem
             unit.opportunityAttackTrigger.OnEnemyMoved -= OnUnitInRangeMoved;
         }
 
-        bool IsValidWeapon(HeldMeleeWeapon heldMeleeWeapon) => heldMeleeWeapon != null && heldMeleeWeapon.itemData.Item.Weapon.HasAccessToAction(actionType);
+        bool IsValidWeapon(HeldMeleeWeapon heldMeleeWeapon) => heldMeleeWeapon != null && heldMeleeWeapon.ItemData.Item.Weapon.HasAccessToAction(actionType);
 
         public void OnKnockback()
         {
@@ -150,11 +150,11 @@ namespace UnitSystem.ActionSystem
             
             bool inAttackRangeOfRightWeapon = false;
             if (rightWeaponValid)
-                inAttackRangeOfRightWeapon = rightHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToEnemy && rightHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToEnemy;
+                inAttackRangeOfRightWeapon = rightHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToEnemy && rightHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToEnemy;
 
             bool inAttackRangeOfLeftWeapon = false;
             if (leftWeaponValid)
-                inAttackRangeOfLeftWeapon = leftHeldWeapon.itemData.Item.Weapon.MaxRange >= distanceToEnemy && leftHeldWeapon.itemData.Item.Weapon.MinRange <= distanceToEnemy;
+                inAttackRangeOfLeftWeapon = leftHeldWeapon.ItemData.Item.Weapon.MaxRange >= distanceToEnemy && leftHeldWeapon.ItemData.Item.Weapon.MinRange <= distanceToEnemy;
             
             if (!inAttackRangeOfLeftWeapon && !inAttackRangeOfRightWeapon)
                 return;
@@ -216,9 +216,9 @@ namespace UnitSystem.ActionSystem
             if (rightWeaponValid && leftWeaponValid)
                 weaponName = "<b>both of your spears</b>";
             else if (rightWeaponValid)
-                weaponName = $"your <b>{rightHeldWeapon.itemData.Item.Name}</b>";
+                weaponName = $"your <b>{rightHeldWeapon.ItemData.Item.Name}</b>";
             else
-                weaponName = $"your <b>{leftHeldWeapon.itemData.Item.Name}</b>";
+                weaponName = $"your <b>{leftHeldWeapon.ItemData.Item.Name}</b>";
 
             if (!spearRaised)
                 return $"Dig in your feet and raise {weaponName}. <b>Automatically attack</b> any enemies that come within attack range for <b>0 AP</b>, with a much larger <b>knockback</b> chance <b>({knockbackChanceModifier}x more likely)</b>. " +

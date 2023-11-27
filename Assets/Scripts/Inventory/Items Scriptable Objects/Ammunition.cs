@@ -5,6 +5,9 @@ namespace InventorySystem
     public enum ProjectileType
     {
         Arrow = 0,
+        Spear = 1,
+        ThrowingKnife = 2,
+        Axe = 3,
         Bolt = 10,
         BluntObject = 20,
         Explosive = 30,

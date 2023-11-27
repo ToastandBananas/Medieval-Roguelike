@@ -19,7 +19,7 @@ namespace UnitSystem.ActionSystem
             float cost;
             if (unit.UnitEquipment != null)
             {
-                cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon);
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon);
 
                 if (unit.UnitEquipment.InVersatileStance)
                     cost *= 1.35f;
@@ -92,7 +92,7 @@ namespace UnitSystem.ActionSystem
                 return validGridPositionsList;
             }
 
-            float maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+            float maxAttackRange = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
             nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
@@ -261,14 +261,14 @@ namespace UnitSystem.ActionSystem
             };
         }
 
-        public override IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith)
+        public override IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith)
         {
             // TODO: Come up with a headshot method
             bool headShot = false;
 
             yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
 
-            DamageTargets(heldWeaponAttackingWith, headShot);
+            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith, headShot);
         }
 
         public override void CompleteAction()
@@ -283,7 +283,7 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
+            return $"Harness the might of your <b>{unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
         }
 
         public override float AccuracyModifier() => 0.75f;
@@ -308,8 +308,8 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanAttackThroughUnits() => true;
 
-        public override float MinAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MinRange;
+        public override float MinAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
-        public override float MaxAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().itemData.Item.Weapon.MaxRange;
+        public override float MaxAttackRange() => unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
     }
 }

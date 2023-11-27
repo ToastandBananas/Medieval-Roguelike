@@ -44,7 +44,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && unit.health.IsDead == false)
+            if (unit.IsMyTurn && !isPerformingAction && !unit.health.IsDead)
             {
                 unit.vision.FindVisibleUnitsAndObjects();
 
@@ -68,10 +68,8 @@ namespace UnitSystem.ActionSystem
                         {
                             if (queuedAttack.IsRangedAttackAction())
                             {
-                                Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-
-                                // If the closest enemy or target attack positions are too close, cancel the Player's current action
-                                if (Vector3.Distance(unit.WorldPosition, queuedAttack.targetGridPosition.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                                // If the target attack position is too close, cancel the Player's current action
+                                if (Vector3.Distance(unit.WorldPosition, queuedAttack.targetGridPosition.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                                 {
                                     CancelActions();
                                     return;
@@ -101,7 +99,7 @@ namespace UnitSystem.ActionSystem
                         if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
-                            if (Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.Weapon.MinRange)
+                            if (Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                             {
                                 CancelActions();
                                 return;
@@ -110,7 +108,7 @@ namespace UnitSystem.ActionSystem
                             {
                                 // Shoot the target enemy
                                 ClearActionQueue(true);
-                                if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                                if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                                     GetAction<ShootAction>().QueueAction(targetEnemyUnit);
                                 else
                                     GetAction<ReloadAction>().QueueAction();
@@ -161,7 +159,7 @@ namespace UnitSystem.ActionSystem
                 yield break;
             }
 
-            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && isPerformingAction == false)
+            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && !isPerformingAction)
             {
                 ContextMenu.DisableContextMenu(true);
 
@@ -213,7 +211,7 @@ namespace UnitSystem.ActionSystem
             }
             else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
             {
-                if (unit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+                if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 {
                     if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
                     {

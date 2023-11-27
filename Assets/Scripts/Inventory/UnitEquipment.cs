@@ -398,6 +398,10 @@ namespace InventorySystem
                 if (myUnit != null)
                     myUnit.stats.UpdateCarryWeight();
 
+                // Set the size of the opportunity attack trigger
+                if (IsHeldItemEquipSlot((EquipSlot)targetEquipSlotIndex))
+                    myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+
                 ActionSystemUI.UpdateActionVisuals();
             }
         }
@@ -1065,7 +1069,7 @@ namespace InventorySystem
             ActionSystemUI.UpdateActionVisuals();
         }
 
-        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().currentHeldItemStance == HeldItemStance.Versatile;
+        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().CurrentHeldItemStance == HeldItemStance.Versatile;
 
         public ItemData GetRangedWeaponFromOtherWeaponSet()
         {
@@ -1151,13 +1155,13 @@ namespace InventorySystem
             HeldMeleeWeapon secondaryHeldMeleeWeapon = myUnit.unitMeshManager.GetLeftHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon != null && secondaryHeldMeleeWeapon != null)
             {
-                primaryWeapon = primaryHeldMeleeWeapon.itemData.Item.Weapon;
-                secondaryWeapon = secondaryHeldMeleeWeapon.itemData.Item.Weapon;
+                primaryWeapon = primaryHeldMeleeWeapon.ItemData.Item.Weapon;
+                secondaryWeapon = secondaryHeldMeleeWeapon.ItemData.Item.Weapon;
                 return;
             }
             else if (primaryHeldMeleeWeapon != null)
             {
-                primaryWeapon = primaryHeldMeleeWeapon.itemData.Item.Weapon;
+                primaryWeapon = primaryHeldMeleeWeapon.ItemData.Item.Weapon;
                 secondaryWeapon = null;
                 return;
             }
@@ -1165,7 +1169,7 @@ namespace InventorySystem
             {
                 HeldRangedWeapon heldRangedWeapon = myUnit.unitMeshManager.GetHeldRangedWeapon();
                 if (heldRangedWeapon != null)
-                    primaryWeapon = heldRangedWeapon.itemData.Item.Weapon;
+                    primaryWeapon = heldRangedWeapon.ItemData.Item.Weapon;
                 else
                     primaryWeapon = null;
 
@@ -1209,14 +1213,14 @@ namespace InventorySystem
 
         public bool QuiverEquipped() => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver;
 
-        public bool HasValidAmmunitionEquipped() => HasValidAmmunitionEquipped(RangedWeaponEquipped ? myUnit.unitMeshManager.GetHeldRangedWeapon().itemData.Item.RangedWeapon : null);
+        public bool HasValidAmmunitionEquipped() => HasValidAmmunitionEquipped(RangedWeaponEquipped ? myUnit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon : null);
 
         public bool HasValidAmmunitionEquipped(RangedWeapon rangedWeapon)
         {
             if (rangedWeapon == null)
                 return false;
 
-            if (RangedWeaponEquipped && myUnit.unitMeshManager.GetHeldRangedWeapon().isLoaded)
+            if (RangedWeaponEquipped && myUnit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 return true;
 
             if (QuiverEquipped())

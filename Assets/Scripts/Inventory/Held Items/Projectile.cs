@@ -35,6 +35,9 @@ namespace InventorySystem
         int speed;
         float currentVelocity;
 
+        readonly int defaultThrowSpeed = 15;
+        readonly float defaultThrowArcMultiplier = 1f;
+
         Action onProjectileBehaviourComplete;
 
         void Awake()
@@ -46,7 +49,7 @@ namespace InventorySystem
             itemData.SetCurrentStackSize(1);
         }
 
-        public void Setup(ItemData itemData, Unit shooter, Transform parentTransform)
+        public void SetupAmmunition(ItemData itemData, Unit shooter, Transform parentTransform)
         {
             if (this.itemData == null)
                 this.itemData = new ItemData(itemData);
@@ -57,10 +60,7 @@ namespace InventorySystem
             this.shooter = shooter;
 
             Ammunition ammunitionItem = this.itemData.Item.Ammunition;
-
             speed = ammunitionItem.Speed;
-
-            meshFilter.mesh = ammunitionItem.PickupMesh;
 
             Material[] materials = meshRenderer.materials;
             for (int i = 0; i < materials.Length; i++)
@@ -71,6 +71,7 @@ namespace InventorySystem
                     materials[i] = ammunitionItem.PickupMeshRendererMaterials[i];
             }
 
+            meshFilter.mesh = ammunitionItem.PickupMesh;
             meshRenderer.materials = materials;
 
             projectileCollider.center = ammunitionItem.CapsuleColliderCenter;
@@ -82,7 +83,46 @@ namespace InventorySystem
             transform.localPosition = Vector3.zero;
             transform.localEulerAngles = Vector3.zero;
 
-            if (shooter.IsPlayer == false && shooter.unitMeshManager.IsVisibleOnScreen == false)
+            if (!shooter.IsPlayer && !shooter.unitMeshManager.IsVisibleOnScreen)
+                meshRenderer.enabled = false;
+
+            gameObject.SetActive(true);
+        }
+
+        public void SetupThrownItem(ItemData itemData, Unit thrower, Transform heldItemTransform)
+        {
+            if (this.itemData == null)
+                this.itemData = new ItemData(itemData);
+            else
+                this.itemData.TransferData(itemData);
+
+            this.itemData.SetCurrentStackSize(1);
+            shooter = thrower;
+            speed = defaultThrowSpeed;
+
+            Item item = itemData.Item;
+
+            Material[] materials = meshRenderer.materials;
+            for (int i = 0; i < materials.Length; i++)
+            {
+                if (i > item.PickupMeshRendererMaterials.Length - 1)
+                    materials[i] = null;
+                else
+                    materials[i] = item.PickupMeshRendererMaterials[i];
+            }
+
+            meshFilter.mesh = item.PickupMesh;
+            meshRenderer.materials = materials;
+
+            Vector3 meshSize = meshFilter.sharedMesh.bounds.size;
+            projectileCollider.height = meshSize.y;
+            projectileCollider.radius = Mathf.Min(meshSize.x, meshSize.z) / 2f;
+            projectileCollider.center = new(0f, 0f, 0.5f);
+
+            transform.position = heldItemTransform.position;
+            transform.eulerAngles = heldItemTransform.eulerAngles;
+
+            if (!shooter.IsPlayer && !shooter.unitMeshManager.IsVisibleOnScreen)
                 meshRenderer.enabled = false;
 
             gameObject.SetActive(true);
@@ -96,28 +136,40 @@ namespace InventorySystem
             this.attackActionUsed = attackActionUsed;
             ReadyProjectile();
 
-            bool attackDodged = false;
-            if (hitTarget)
-                attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon(), attackActionUsed, false);
+            if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.targetGridPosition, out Unit unitAtGridPosition))
+                targetUnit = unitAtGridPosition;
 
-            if (attackDodged)
+            if (targetUnit != null)
             {
-                targetPosition = targetUnit.transform.position - (targetUnit.transform.forward * 0.5f);
-                targetUnit.unitAnimator.DoDodge(shooter, null, this);
+                bool attackDodged = false;
+                if (hitTarget)
+                    attackDodged = targetUnit.unitActionHandler.TryDodgeAttack(shooter, shooter.unitMeshManager.GetHeldRangedWeapon(), attackActionUsed, false);
+
+                if (attackDodged)
+                {
+                    targetPosition = targetUnit.transform.position - (targetUnit.transform.forward * 0.5f);
+                    targetUnit.unitAnimator.DoDodge(shooter, null, this);
+                }
+                else if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.IsBlocking)
+                    targetPosition = targetUnit.unitMeshManager.leftHeldItem.transform.position;
+                else if (targetUnit.unitMeshManager.rightHeldItem != null && targetUnit.unitMeshManager.rightHeldItem.IsBlocking)
+                    targetPosition = targetUnit.unitMeshManager.rightHeldItem.transform.position;
+                else
+                    targetPosition = targetUnit.WorldPosition;
             }
-            else if (targetUnit.unitMeshManager.leftHeldItem != null && targetUnit.unitMeshManager.leftHeldItem.isBlocking)
-                targetPosition = targetUnit.unitMeshManager.leftHeldItem.transform.position;
-            else if (targetUnit.unitMeshManager.rightHeldItem != null && targetUnit.unitMeshManager.rightHeldItem.isBlocking)
-                targetPosition = targetUnit.unitMeshManager.rightHeldItem.transform.position;
             else
-                targetPosition = targetUnit.WorldPosition;
+                targetPosition = attackActionUsed.targetGridPosition.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(targetUnit, attackActionUsed, hitTarget);
+            Vector3 offset = GetOffset(attackActionUsed.targetGridPosition, attackActionUsed, hitTarget);
 
-            float arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+            float arcHeight;
+            if (itemData.Item is Ammunition)
+                arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+            else
+                arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * defaultThrowArcMultiplier;
+
             float animationTime = 0f;
-
             while (shouldMoveProjectile)
             {
                 animationTime += speed * Time.deltaTime;
@@ -153,13 +205,13 @@ namespace InventorySystem
             SetupTrail();
         }
 
-        Vector3 GetOffset(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget)
+        Vector3 GetOffset(GridPosition targetGridPosition, BaseAttackAction attackActionUsed, bool hitTarget)
         {
             Vector3 shootOffset = Vector3.zero;
             if (hitTarget == false) // If the shooter is missing
             {
                 float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
-                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon(), targetUnit.GridPosition, attackActionUsed);
+                float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon(), targetGridPosition, attackActionUsed);
 
                 float minOffset = 0.35f;
                 float maxOffset = 1.35f;
@@ -206,8 +258,19 @@ namespace InventorySystem
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
 
-            ProjectileType projectileType = itemData.Item.Ammunition.ProjectileType;
-            if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt)
+            ProjectileType projectileType;
+            if (itemData.Item is Ammunition)
+                projectileType = itemData.Item.Ammunition.ProjectileType;
+            else
+                projectileType = itemData.Item.ThrownProjectileType;
+
+            if (projectileType == ProjectileType.BluntObject)
+            {
+                SetupNewLooseItem(false, out LooseItem looseProjectile);
+                float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
+                looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
+            }
+            else if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt || projectileType == ProjectileType.Spear || projectileType == ProjectileType.ThrowingKnife || projectileType == ProjectileType.Axe)
             {
                 // Debug.Log(collisionTransform.name + " hit by projectile");
                 SetupNewLooseItem(true, out LooseItem looseProjectile);
@@ -216,12 +279,6 @@ namespace InventorySystem
                     looseProjectile.MeshCollider.isTrigger = true;
                     looseProjectile.transform.SetParent(collisionTransform, true);
                 }
-            }
-            else if (projectileType == ProjectileType.BluntObject)
-            {
-                SetupNewLooseItem(false, out LooseItem looseProjectile);
-                float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
-                looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
             }
             else if (projectileType == ProjectileType.Explosive)
             {
@@ -256,8 +313,6 @@ namespace InventorySystem
 
                 // Screen shake
                 OnExplosion?.Invoke(this, EventArgs.Empty);
-
-                // Throw Action: CompleteAction()
             }
 
             Disable();
@@ -273,8 +328,7 @@ namespace InventorySystem
 
             looseProjectile.SetupMesh();
             looseProjectile.name = newItemData.Item.name;
-            looseProjectile.transform.position = transform.position;
-            looseProjectile.transform.rotation = Quaternion.Euler(transform.eulerAngles + meshFilter.transform.localEulerAngles);
+            looseProjectile.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(transform.eulerAngles + meshFilter.transform.localEulerAngles));
 
             if (preventMovement)
             {
@@ -291,6 +345,13 @@ namespace InventorySystem
 
         void SetupTrail()
         {
+            if (itemData.Item is Ammunition == false)
+            {
+                trailRenderer.time = 0.065f;
+                trailRenderer.startWidth = 0.015f;
+                return;
+            }
+
             switch (itemData.Item.Ammunition.ProjectileType)
             {
                 case ProjectileType.Arrow:
@@ -339,33 +400,32 @@ namespace InventorySystem
                 if (collider.CompareTag("Unit Body"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
+                    HeldRangedWeapon heldRangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
+
                     if (targetUnit != shooter)
                     {
-                        attackActionUsed.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, false);
-                        shooter.unitActionHandler.targetUnits.Clear();
-
+                        attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, false);
                         Arrived(collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Unit Head"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
+                    HeldRangedWeapon heldRangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
+
                     if (targetUnit != shooter)
                     {
-                        attackActionUsed.DamageTarget(targetUnit, shooter.unitMeshManager.GetHeldRangedWeapon(), null, true);
-                        shooter.unitActionHandler.targetUnits.Clear();
-
+                        attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, true);
                         Arrived(collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Shield"))
                 {
                     HeldShield heldShield = collider.GetComponent<HeldShield>();
+                    HeldRangedWeapon heldRangedWeapon = shooter.unitMeshManager.GetHeldRangedWeapon();
 
                     // DamageTarget will take into account whether the Unit blocked or not
-                    attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), shooter.unitMeshManager.GetHeldRangedWeapon(), heldShield, false);
-                    shooter.unitActionHandler.targetUnits.Clear();
-
+                    attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), heldRangedWeapon, itemData, heldShield, false);
                     Arrived(collider.transform);
                 }
                 else if (collider.CompareTag("Loose Item") == false)

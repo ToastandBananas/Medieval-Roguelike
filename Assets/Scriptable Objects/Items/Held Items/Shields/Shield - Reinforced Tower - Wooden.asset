@@ -18,6 +18,7 @@ MonoBehaviour:
     with iron bindings, providing reliable protection while allowing agile maneuvers
     in the heat of battle.
   itemType: 20
+  thrownProjectileType: 20
   mainMaterial: 9
   itemSize: 4
   width: 2

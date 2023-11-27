@@ -45,6 +45,8 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
         {
+            if (unit.IsPlayer)
+            Debug.Log("queing move");
             targetGridPosition = finalTargetGridPosition;
             unit.unitActionHandler.QueueAction(this);
         }

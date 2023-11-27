@@ -50,7 +50,7 @@ namespace GeneralUI
 
         void Update()
         {
-            if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.highlightedInteractable == null || PlayerInput.Instance.highlightedInteractable != targetInteractable) && (InventoryUI.activeSlot == null || (InventoryUI.activeSlot.ParentSlot() != null && InventoryUI.activeSlot.ParentSlot().IsFull() == false))
+            if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.HighlightedInteractable == null || PlayerInput.Instance.HighlightedInteractable != targetInteractable) && (InventoryUI.activeSlot == null || (InventoryUI.activeSlot.ParentSlot() != null && InventoryUI.activeSlot.ParentSlot().IsFull() == false))
                 && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed)))
             {
                 StartCoroutine(DelayDisableContextMenu());
@@ -89,8 +89,8 @@ namespace GeneralUI
             DisableContextMenu(true);
 
             targetSlot = null;
-            targetInteractable = PlayerInput.Instance.highlightedInteractable;
-            targetUnit = PlayerInput.Instance.highlightedUnit;
+            targetInteractable = PlayerInput.Instance.HighlightedInteractable;
+            targetUnit = PlayerInput.Instance.HighlightedUnit;
             if (targetUnit != null && targetUnit.health.IsDead)
                 targetUnit.unitInteractable.UpdateGridPosition();
 
@@ -246,14 +246,14 @@ namespace GeneralUI
             HeldMeleeWeapon leftMeleeWeapon = UnitManager.player.unitMeshManager.GetLeftHeldMeleeWeapon();
             if (leftMeleeWeapon != null)
             {
-                GetContextMenuButton().SetupThrowWeaponButton(leftMeleeWeapon.itemData);
+                GetContextMenuButton().SetupThrowWeaponButton(leftMeleeWeapon.ItemData);
                 buttonCount++;
             }
 
             HeldMeleeWeapon rightMeleeWeapon = UnitManager.player.unitMeshManager.GetRightHeldMeleeWeapon();
             if (rightMeleeWeapon != null)
             {
-                GetContextMenuButton().SetupThrowWeaponButton(rightMeleeWeapon.itemData);
+                GetContextMenuButton().SetupThrowWeaponButton(rightMeleeWeapon.ItemData);
                 buttonCount++;
             }
         }
