@@ -138,7 +138,7 @@ namespace InteractableObjects
             if (looseItem is LooseQuiverItem)
             {
                 LooseQuiverItem looseQuiver = (LooseQuiverItem)looseItem;
-                if (looseQuiver.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
+                if (looseQuiver.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
 
                 looseQuiver.transform.SetParent(Instance.looseQuiverItemParent);
@@ -147,7 +147,7 @@ namespace InteractableObjects
             else if (looseItem is LooseContainerItem)
             {
                 LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
-                if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
                 looseContainerItem.transform.SetParent(Instance.looseContainerItemParent);

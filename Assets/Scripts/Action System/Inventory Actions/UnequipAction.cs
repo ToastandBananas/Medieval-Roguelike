@@ -16,13 +16,13 @@ namespace UnitSystem.ActionSystem
             this.itemsContainerInventoryManager = itemsContainerInventoryManager;
 
             targetEquipSlots.Add(targetEquipSlot);
-            unit.unitActionHandler.QueueAction(this);
+            Unit.unitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()
         {
             if (targetEquipSlots.Count > 0)
-                unit.UnitEquipment.UnequipItem(targetEquipSlots[0]);
+                Unit.UnitEquipment.UnequipItem(targetEquipSlots[0]);
 
             CompleteAction();
         }
@@ -43,16 +43,16 @@ namespace UnitSystem.ActionSystem
         public override int ActionPointsCost()
         {
             int cost = 0;
-            if (unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))
-                cost += GetItemsUnequipActionPointCost(unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize, itemsContainerInventoryManager);
+            if (Unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))
+                cost += GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], Unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize, itemsContainerInventoryManager);
             else
-                Debug.LogWarning($"{targetEquipSlots[targetEquipSlots.Count - 1]} is not full, yet {unit.name} is trying to unequip from it...");
+                Debug.LogWarning($"{targetEquipSlots[targetEquipSlots.Count - 1]} is not full, yet {Unit.name} is trying to unequip from it...");
 
             itemsContainerInventoryManager = null;
             return cost;
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment != null;
+        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment != null;
 
         public override bool IsInterruptable() => false;
 

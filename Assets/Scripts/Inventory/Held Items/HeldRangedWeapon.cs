@@ -20,7 +20,7 @@ namespace InventorySystem
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
-            Unit targetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+            Unit targetEnemyUnit = unit.unitActionHandler.TargetEnemyUnit;
             LoadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 
             IsLoaded = false;
@@ -78,7 +78,7 @@ namespace InventorySystem
         void ShootProjectile()
         {
             ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-            unit.StartCoroutine(LoadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.targetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.targetEnemyUnit.GridPosition)));
+            unit.StartCoroutine(LoadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.TargetEnemyUnit.GridPosition)));
             LoadedProjectile = null;
 
             TryFumbleHeldItem();
@@ -106,7 +106,7 @@ namespace InventorySystem
             Quaternion targetRotation = Quaternion.Euler(0f, -90f, CalculateZRotation(targetGridPosition));
             float rotateSpeed = 5f;
 
-            while (unit.unitActionHandler.isAttacking)
+            while (unit.unitActionHandler.IsAttacking)
             {
                 transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
                 yield return null;

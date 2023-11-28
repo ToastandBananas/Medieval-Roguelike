@@ -18,12 +18,15 @@ namespace InventorySystem
         public HeldItemStance CurrentHeldItemStance { get; protected set; }
 
         public Animator Anim { get; private set; }
-        public ItemData ItemData { get; private set; }
+        public ItemData ItemData { get; protected set; }
 
         public bool IsBlocking { get; protected set; }
 
         protected Unit unit;
 
+        readonly Vector3 defaultLeftHeldItemPosition = new(0.23f, 0f, -0.23f);
+        readonly Vector3 defaultRightHeldItemPosition = new(-0.23f, 0f, -0.23f);
+        readonly Vector3 defaultHeldItemRotation = new(0f, 90f, 0f);
         readonly Vector3 femaleHeldItemOffset = new(0f, 0.02f, 0f);
 
         void Awake()
@@ -81,14 +84,10 @@ namespace InventorySystem
             projectile.SetupThrownItem(throwAction.ItemDataToThrow, unit, transform);
             projectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(throwAction.TargetEnemyUnit); });
 
-            bool hitTarget = throwAction.TryHitTarget(projectile.ItemData, throwAction.targetGridPosition);
+            bool hitTarget = throwAction.TryHitTarget(projectile.ItemData, throwAction.TargetGridPosition);
             unit.StartCoroutine(projectile.ShootProjectile_AtTargetUnit(throwAction.TargetEnemyUnit, throwAction, hitTarget));
 
-            if (unit.UnitEquipment.ItemDataEquipped(throwAction.ItemDataToThrow))
-            {
-                //unit.UnitEquipment.GetEquipmentSlot(unit.UnitEquipment.GetEquipSlotFromItemData(throwAction.ItemDataToThrow)).ClearItem
-                unit.UnitEquipment.RemoveEquipment(throwAction.ItemDataToThrow);
-            }
+            throwAction.OnThrowHeldItem();
         }
 
         protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
@@ -111,7 +110,7 @@ namespace InventorySystem
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
                     LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
                     myUnit.unitActionHandler.ClearActionQueue(true);
-                    myUnit.unitActionHandler.interactAction.QueueAction(looseItem);
+                    myUnit.unitActionHandler.InteractAction.QueueAction(looseItem);
                 }
                 else
                     DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
@@ -124,26 +123,16 @@ namespace InventorySystem
         {
             ItemData = itemData;
             this.unit = unit;
-            name = itemData.Item.name;
+            name = itemData.Item.Name;
 
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item is Weapon && itemData.Item.Weapon.IsTwoHanded))
             {
-                transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
-                transform.parent.localPosition = itemData.Item.HeldEquipment.IdlePosition_RightHand;
-                if (unit.Gender == Gender.Female)
-                    transform.parent.localPosition += femaleHeldItemOffset;
-
-                transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand);
+                SetupTransform(itemData, unit.unitMeshManager.RightHeldItemParent);
                 unit.unitMeshManager.SetRightHeldItem(this);
             }
             else
             {
-                transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
-                transform.parent.localPosition = itemData.Item.HeldEquipment.IdlePosition_LeftHand;
-                if (unit.Gender == Gender.Female)
-                    transform.parent.localPosition += femaleHeldItemOffset;
-
-                transform.parent.localRotation = Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand);
+                SetupTransform(itemData, unit.unitMeshManager.LeftHeldItemParent);
                 unit.unitMeshManager.SetLeftHeldItem(this);
             }
 
@@ -156,11 +145,53 @@ namespace InventorySystem
 
             SetUpMeshes();
 
-            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(Vector3.zero));
-            transform.localScale = Vector3.one;
+            gameObject.SetActive(true);
+            Anim.Play("Idle");
+        }
+
+        public virtual void SetupItemToThrow(ItemData itemData, Unit unit, Transform heldItemParent)
+        {
+            ItemData = itemData;
+            this.unit = unit;
+            name = itemData.Item.Name;
+
+            SetupTransform(itemData, heldItemParent);
+            SetUpMeshes();
 
             gameObject.SetActive(true);
             Anim.Play("Idle");
+        }
+
+        void SetupTransform(ItemData itemData, Transform heldItemParent)
+        {
+            if (heldItemParent == unit.unitMeshManager.RightHeldItemParent)
+            {
+                transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
+                if (itemData.Item is HeldEquipment)
+                    transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_RightHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand));
+                else
+                    transform.parent.SetLocalPositionAndRotation(defaultRightHeldItemPosition, Quaternion.Euler(defaultHeldItemRotation));
+
+                if (unit.Gender == Gender.Female)
+                    transform.parent.localPosition += femaleHeldItemOffset;
+
+            }
+            else if (heldItemParent == unit.unitMeshManager.LeftHeldItemParent)
+            {
+                transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
+                if (itemData.Item is HeldEquipment)
+                    transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_LeftHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand));
+                else
+                    transform.parent.SetLocalPositionAndRotation(defaultLeftHeldItemPosition, Quaternion.Euler(defaultHeldItemRotation));
+
+                if (unit.Gender == Gender.Female)
+                    transform.parent.localPosition += femaleHeldItemOffset;
+            }
+            else
+                Debug.LogWarning("HeldItemParent is not set to left or right...fix me!");
+
+            transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(Vector3.zero));
+            transform.localScale = Vector3.one;
         }
 
         protected void UpdateActionIcons()
@@ -170,8 +201,8 @@ namespace InventorySystem
                 for (int i = 0; i < ItemData.Item.Equipment.ActionTypes.Length; i++)
                 {
                     BaseAction baseAction = unit.unitActionHandler.GetActionFromType(ItemData.Item.Equipment.ActionTypes[i]);
-                    if (baseAction != null && baseAction.actionBarSlot != null)
-                        baseAction.actionBarSlot.UpdateIcon();
+                    if (baseAction != null && baseAction.ActionBarSlot != null)
+                        baseAction.ActionBarSlot.UpdateIcon();
                 }
             }
         }
@@ -180,29 +211,59 @@ namespace InventorySystem
         {
             for (int i = 0; i < meshRenderers.Length; i++)
             {
-                if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
+                if (ItemData.Item is HeldEquipment)
                 {
-                    Material[] materials = meshRenderers[i].materials;
-                    for (int j = 0; j < materials.Length; j++)
+                    if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
                     {
-                        if (j > ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
-                            materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
-                        else
-                            materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[j];
+                        Material[] materials = meshRenderers[i].materials;
+                        for (int j = 0; j < materials.Length; j++)
+                        {
+                            if (j > ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
+                                materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
+                            else
+                                materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[j];
+                        }
+
+                        meshRenderers[i].materials = materials;
                     }
+                    else // For items like the bow that consist of multiple meshes
+                        meshRenderers[i].material = ItemData.Item.HeldEquipment.MeshRendererMaterials[i];
 
-                    meshRenderers[i].materials = materials;
+                    meshFilters[i].mesh = ItemData.Item.HeldEquipment.Meshes[i];
+                    if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+                        meshRenderers[i].enabled = true;
+                    else
+                    {
+                        HideMeshes();
+                        break;
+                    }
                 }
-                else // For items like the bow that consist of multiple meshes
-                    meshRenderers[i].material = ItemData.Item.HeldEquipment.MeshRendererMaterials[i];
-
-                meshFilters[i].mesh = ItemData.Item.HeldEquipment.Meshes[i];
-                if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
-                    meshRenderers[i].enabled = true;
                 else
                 {
-                    HideMeshes();
-                    break;
+                    if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
+                    {
+                        Material[] materials = meshRenderers[i].materials;
+                        for (int j = 0; j < materials.Length; j++)
+                        {
+                            if (j > ItemData.Item.PickupMeshRendererMaterials.Length - 1)
+                                materials[j] = ItemData.Item.PickupMeshRendererMaterials[ItemData.Item.PickupMeshRendererMaterials.Length - 1];
+                            else
+                                materials[j] = ItemData.Item.PickupMeshRendererMaterials[j];
+                        }
+
+                        meshRenderers[i].materials = materials;
+                    }
+                    else // For items like the bow that consist of multiple meshes
+                        meshRenderers[i].material = ItemData.Item.PickupMeshRendererMaterials[i];
+
+                    meshFilters[i].mesh = ItemData.Item.PickupMesh;
+                    if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+                        meshRenderers[i].enabled = true;
+                    else
+                    {
+                        HideMeshes();
+                        break;
+                    }
                 }
             }
         }
@@ -210,7 +271,7 @@ namespace InventorySystem
         public virtual void BlockAttack(Unit attackingUnit)
         { 
             // Target Unit rotates towards this Unit & does block animation with shield or weapon
-            unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false);
+            unit.unitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false);
         }
 
         public virtual void StopBlocking() { }

@@ -132,7 +132,7 @@ namespace UnitSystem
         IEnumerator DoNextUnitsTurn(bool increaseTurnIndex = true)
         {
             // If the final Unit is still performing an action or if someone is attacking
-            while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.isPerformingAction)
+            while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.IsPerformingAction)
                 yield return null;
 
             // Increase the turn index or go back to 0 if it's time for a new round of turns

@@ -94,7 +94,7 @@ namespace InventorySystem
             if (isDraggingItem == false)
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.IsMyTurn == false || UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                if (UnitManager.player.IsMyTurn == false || UnitManager.player.unitActionHandler.QueuedActions.Count > 0)
                     return;
 
                 // If we select an item
@@ -145,7 +145,7 @@ namespace InventorySystem
             else // If we are dragging an item
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.unitActionHandler.queuedActions.Count > 0)
+                if (UnitManager.player.unitActionHandler.QueuedActions.Count > 0)
                 {
                     ReplaceDraggedItem();
                     return;
@@ -384,7 +384,7 @@ namespace InventorySystem
             if (theParentSlotDraggedFrom is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerEquipmentSlot = theParentSlotDraggedFrom as ContainerEquipmentSlot;
-                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                     GetContainerUI(containerEquipmentSlot.containerInventoryManager).CloseContainerInventory();
 
                 if (containerEquipmentSlot.EquipSlot == EquipSlot.Quiver)

@@ -6,6 +6,10 @@ namespace InventorySystem
     {
         public UnitInventoryManager UnitInventoryManager => this as UnitInventoryManager;
 
+        public abstract bool ContainsItemData(ItemData itemData);
+
+        public abstract bool AllowedItemTypeContains(ItemType[] itemTypes);
+
         public ContainerInventoryManager ContainerInventoryManager => this as ContainerInventoryManager;
     }
 }

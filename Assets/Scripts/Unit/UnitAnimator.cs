@@ -48,10 +48,10 @@ namespace UnitSystem
             isDodging = true;
 
             // Face the attacker
-            if (unit.unitActionHandler.turnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
-                unit.unitActionHandler.turnAction.RotateTowards_Unit(attackingUnit, false, 30f);
+            if (unit.unitActionHandler.TurnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
+                unit.unitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false, 30f);
 
-            while (unit.unitActionHandler.turnAction.isRotating)
+            while (unit.unitActionHandler.TurnAction.isRotating)
                 yield return null;
 
             float dodgeDistance;
@@ -144,8 +144,8 @@ namespace UnitSystem
             unit.unitActionHandler.CancelActions();
 
             Vector3 knockbackTargetPosition;
-            if (unit.unitActionHandler.moveAction.isMoving)
-                knockbackTargetPosition = unit.unitActionHandler.moveAction.lastGridPosition.WorldPosition;
+            if (unit.unitActionHandler.MoveAction.IsMoving)
+                knockbackTargetPosition = unit.unitActionHandler.MoveAction.LastGridPosition.WorldPosition;
             else
             {
                 Vector3 direction = (unit.WorldPosition - attackingUnit.WorldPosition).normalized;
@@ -210,8 +210,8 @@ namespace UnitSystem
             unit.transform.position = knockbackTargetPosition;
             unit.UpdateGridPosition();
 
-            unit.unitActionHandler.moveAction.SetFinalTargetGridPosition(unit.GridPosition);
-            unit.unitActionHandler.moveAction.SetTargetGridPosition(unit.GridPosition);
+            unit.unitActionHandler.MoveAction.SetFinalTargetGridPosition(unit.GridPosition);
+            unit.unitActionHandler.MoveAction.SetTargetGridPosition(unit.GridPosition);
 
             beingKnockedBack = false;
 
@@ -223,7 +223,7 @@ namespace UnitSystem
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.health.IsDead == false && unit.unitActionHandler.moveAction.isMoving == false)
+            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.health.IsDead == false && unit.unitActionHandler.MoveAction.IsMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);

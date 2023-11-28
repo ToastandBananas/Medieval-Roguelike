@@ -13,48 +13,48 @@ namespace UnitSystem.ActionSystem
         /// <summary>The Units targeted by the last attack and the item they blocked with (if they successfully blocked).</summary>
         public Dictionary<Unit, HeldItem> targetUnits { get; private set; }
 
-        public List<BaseAction> queuedActions { get; private set; }
-        public BaseAttackAction queuedAttack { get; private set; }
-        public BaseAction lastQueuedAction { get; protected set; }
-        public List<int> queuedAPs { get; protected set; }
+        public List<BaseAction> QueuedActions { get; private set; }
+        public BaseAttackAction QueuedAttack { get; private set; }
+        public BaseAction LastQueuedAction { get; protected set; }
+        public List<int> QueuedAPs { get; protected set; }
 
         [Header("Actions")]
-        [SerializeField] List<ActionType> availableActionTypes = new List<ActionType>();
-        protected List<BaseAction> availableActions = new List<BaseAction>();
-        protected List<BaseAttackAction> availableCombatActions = new List<BaseAttackAction>();
+        [SerializeField] List<ActionType> availableActionTypes = new();
+        protected List<BaseAction> availableActions = new();
+        protected List<BaseAttackAction> availableCombatActions = new();
 
         // Cached Actions (actions that every Unit will have)
-        public InteractAction interactAction { get; private set; }
-        public MoveAction moveAction { get; private set; }
-        public TurnAction turnAction { get; private set; }
+        public InteractAction InteractAction { get; private set; }
+        public MoveAction MoveAction { get; private set; }
+        public TurnAction TurnAction { get; private set; }
 
-        public Unit unit { get; private set; }
-        public Unit targetEnemyUnit { get; protected set; }
-        public GridPosition previousTargetEnemyGridPosition { get; private set; }
+        public Unit Unit { get; private set; }
+        public Unit TargetEnemyUnit { get; protected set; }
+        public GridPosition PreviousTargetEnemyGridPosition { get; private set; }
 
         [Header("Layer Masks")]
         [SerializeField] LayerMask attackObstacleMask;
         [SerializeField] LayerMask moveObstacleMask;
 
-        public bool isAttacking { get; private set; }
-        public bool isPerformingAction { get; protected set; }
-        public bool canPerformActions { get; protected set; }
+        public bool IsAttacking { get; private set; }
+        public bool IsPerformingAction { get; protected set; }
+        public bool CanPerformActions { get; protected set; }
 
         public virtual void Awake()
         {
-            unit = GetComponent<Unit>();
-            queuedActions = new List<BaseAction>();
-            queuedAPs = new List<int>();
+            Unit = GetComponent<Unit>();
+            QueuedActions = new List<BaseAction>();
+            QueuedAPs = new List<int>();
 
             // Determine which BaseActions are combat actions and add them to the combatActions list
             for (int i = 0; i < availableActionTypes.Count; i++)
             {
-                availableActionTypes[i].GetAction(unit);
+                availableActionTypes[i].GetAction(Unit);
             }
 
-            interactAction = GetAction<InteractAction>();
-            moveAction = GetAction<MoveAction>();
-            turnAction = GetAction<TurnAction>();
+            InteractAction = GetAction<InteractAction>();
+            MoveAction = GetAction<MoveAction>();
+            TurnAction = GetAction<TurnAction>();
 
             targetUnits = new Dictionary<Unit, HeldItem>();
         }
@@ -62,85 +62,85 @@ namespace UnitSystem.ActionSystem
         #region Action Queue
         public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
         {
-            //if (unit.IsPlayer)
-                //Debug.Log(unit.name + " queues: " + action.name + " for " + action.ActionPointsCost() + " AP");
+            //if (Unit.IsPlayer)
+                //Debug.Log(Unit.name + " queues: " + action.name + " for " + action.ActionPointsCost() + " AP");
 
             GridSystemVisual.HideGridVisual();
 
-            if (unit.health.IsDead)
+            if (Unit.health.IsDead)
             {
                 ClearActionQueue(true, true);
                 return;
             }
 
-            queuedAttack = null;
+            QueuedAttack = null;
 
-            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
-                if ((action is MoveAction && queuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && queuedActions[i] is MoveAction))
+                if ((action is MoveAction && QueuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && QueuedActions[i] is MoveAction))
                 {
-                    int actionIndex = queuedActions.IndexOf(queuedActions[i]);
-                    queuedActions.RemoveAt(actionIndex);
-                    queuedAPs.RemoveAt(actionIndex);
+                    int actionIndex = QueuedActions.IndexOf(QueuedActions[i]);
+                    QueuedActions.RemoveAt(actionIndex);
+                    QueuedAPs.RemoveAt(actionIndex);
                 }
             }
 
             // Make sure not to queue multiple of certain types of actions:
-            lastQueuedAction = action;
-            if (queuedActions.Contains(action) == false || action.CanQueueMultiple())
+            LastQueuedAction = action;
+            if (QueuedActions.Contains(action) == false || action.CanQueueMultiple())
             {
                 if (addToFrontOfQueue)
                 {
-                    queuedActions.Insert(0, action);
-                    queuedAPs.Insert(0, action.ActionPointsCost());
+                    QueuedActions.Insert(0, action);
+                    QueuedAPs.Insert(0, action.ActionPointsCost());
                 }
                 else // Add to end of queue
                 {
-                    queuedActions.Add(action);
-                    queuedAPs.Add(action.ActionPointsCost());
+                    QueuedActions.Add(action);
+                    QueuedAPs.Add(action.ActionPointsCost());
                 }
             }
 
             if (action is BaseAttackAction)
-                unit.unitAnimator.StopMovingForward();
+                Unit.unitAnimator.StopMovingForward();
 
             StartCoroutine(TryTakeTurn());
         }
 
         public void RemoveActionFromQueue(BaseAction action)
         {
-            if (queuedActions.Contains(action))
+            if (QueuedActions.Contains(action))
             {
-                for (int i = queuedActions.Count - 1; i >= 0; i--)
+                for (int i = QueuedActions.Count - 1; i >= 0; i--)
                 {
-                    if (queuedActions[i] != action)
+                    if (QueuedActions[i] != action)
                         continue;
 
-                    queuedActions.Remove(action);
-                    if (queuedAPs.Count >= i + 1)
-                        queuedAPs.RemoveAt(i);
+                    QueuedActions.Remove(action);
+                    if (QueuedAPs.Count >= i + 1)
+                        QueuedAPs.RemoveAt(i);
                 }
             }
         }
 
         IEnumerator TryTakeTurn()
         {
-            if (unit.IsMyTurn)
+            if (Unit.IsMyTurn)
             {
-                while (isAttacking || unit.unitAnimator.beingKnockedBack) // Wait in case the Unit is performing an opportunity attack or is being knocked back
+                while (IsAttacking || Unit.unitAnimator.beingKnockedBack) // Wait in case the Unit is performing an opportunity attack or is being knocked back
                     yield return null;
 
-                if (canPerformActions == false)
-                    TurnManager.Instance.FinishTurn(unit);
-                else if (moveAction.isMoving == false)
+                if (CanPerformActions == false)
+                    TurnManager.Instance.FinishTurn(Unit);
+                else if (MoveAction.IsMoving == false)
                     StartCoroutine(GetNextQueuedAction());
             }
         }
 
         public void ForceQueueAP(int amountAP)
         {
-            queuedActions.Add(GetAction<InventoryAction>()); // Use InventoryAction because it doesn't actually do anything in its TakeAction method
-            queuedAPs.Add(amountAP);
+            QueuedActions.Add(GetAction<InventoryAction>()); // Use InventoryAction because it doesn't actually do anything in its TakeAction method
+            QueuedAPs.Add(amountAP);
             StartCoroutine(TryTakeTurn());
         }
 
@@ -150,20 +150,20 @@ namespace UnitSystem.ActionSystem
 
         public virtual void SkipTurn()
         {
-            if (moveAction.isMoving == false)
-                unit.unitAnimator.StopMovingForward();
+            if (MoveAction.IsMoving == false)
+                Unit.unitAnimator.StopMovingForward();
         }
 
         public virtual void FinishAction()
         {
-            if (queuedActions.Count == 0)
+            if (QueuedActions.Count == 0)
                 return;
             
-            queuedActions.RemoveAt(0);
-            if (queuedAPs.Count > 0)
-                queuedAPs.RemoveAt(0);
+            QueuedActions.RemoveAt(0);
+            if (QueuedAPs.Count > 0)
+                QueuedAPs.RemoveAt(0);
 
-            isPerformingAction = false;
+            IsPerformingAction = false;
 
             GridSystemVisual.UpdateAttackGridVisual();
         }
@@ -172,76 +172,76 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator CancelActions_Coroutine()
         {
-            if (queuedActions.Count > 0 && queuedActions[0] is MoveAction == false)
+            if (QueuedActions.Count > 0 && QueuedActions[0] is MoveAction == false)
             {
-                while (isPerformingAction)
+                while (IsPerformingAction)
                     yield return null;
             }
             else
             {
-                if (moveAction.finalTargetGridPosition != unit.GridPosition)
-                    moveAction.SetFinalTargetGridPosition(moveAction.nextTargetGridPosition);
+                if (MoveAction.FinalTargetGridPosition != Unit.GridPosition)
+                    MoveAction.SetFinalTargetGridPosition(MoveAction.NextTargetGridPosition);
             }
 
             ClearActionQueue(true);
             SetTargetEnemyUnit(null);
-            queuedAttack = null;
+            QueuedAttack = null;
 
-            if (unit.IsPlayer)
-                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+            if (Unit.IsPlayer)
+                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
         }
 
         public void InterruptActions()
         {
-            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
-                if (queuedActions[i].IsInterruptable())
+                if (QueuedActions[i].IsInterruptable())
                 {
-                    queuedActions.RemoveAt(i);
-                    if (queuedAPs.Count >= i + 1)
-                        queuedAPs.RemoveAt(i);
+                    QueuedActions.RemoveAt(i);
+                    if (QueuedAPs.Count >= i + 1)
+                        QueuedAPs.RemoveAt(i);
                 }
             }
         }
 
         public void ClearActionQueue(bool stopMoveAnimation, bool forceClearAll = false)
         {
-            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
                 // Certain actions, such as InventoryActions, are not meant to be cleared from the queue (unless forceClearAll is true, which happens when the Unit dies)
-                if (forceClearAll || queuedActions[i].CanBeClearedFromActionQueue())
+                if (forceClearAll || QueuedActions[i].CanBeClearedFromActionQueue())
                 {
-                    if (queuedAttack == queuedActions[i])
-                        queuedAttack = null;
+                    if (QueuedAttack == QueuedActions[i])
+                        QueuedAttack = null;
 
-                    queuedActions.RemoveAt(i);
-                    if (queuedAPs.Count >= i + 1)
-                        queuedAPs.RemoveAt(i);
+                    QueuedActions.RemoveAt(i);
+                    if (QueuedAPs.Count >= i + 1)
+                        QueuedAPs.RemoveAt(i);
                 }
             }
 
-            isPerformingAction = false;
+            IsPerformingAction = false;
 
             // If the Unit isn't moving, they might still be in a move animation, so cancel that
-            if (stopMoveAnimation && moveAction.isMoving == false)
-                unit.unitAnimator.StopMovingForward();
+            if (stopMoveAnimation && MoveAction.IsMoving == false)
+                Unit.unitAnimator.StopMovingForward();
         }
 
         public void ClearAttackActions()
         {
-            queuedAttack = null;
-            for (int i = queuedActions.Count - 1; i >= 0; i--)
+            QueuedAttack = null;
+            for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
-                if (queuedActions[i] is BaseAttackAction)
+                if (QueuedActions[i] is BaseAttackAction)
                 {
-                    queuedActions.RemoveAt(i);
-                    if (queuedAPs.Count >= i + 1)
-                        queuedAPs.RemoveAt(i);
+                    QueuedActions.RemoveAt(i);
+                    if (QueuedAPs.Count >= i + 1)
+                        QueuedAPs.RemoveAt(i);
                 }
             }
         }
 
-        public bool AttackQueuedNext() => queuedActions.Count > 0 && queuedActions[0] is BaseAttackAction;
+        public bool AttackQueuedNext() => QueuedActions.Count > 0 && QueuedActions[0] is BaseAttackAction;
         #endregion
 
         #region Combat
@@ -249,10 +249,10 @@ namespace UnitSystem.ActionSystem
         {
             if (defaultCombatActionsOnly)
             {
-                if (unit.UnitEquipment.RangedWeaponEquipped && GetAction<ShootAction>().IsValidAction() && unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                if (Unit.UnitEquipment.RangedWeaponEquipped && GetAction<ShootAction>().IsValidAction() && Unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((unit.SelectedAction is MeleeAction || unit.UnitEquipment.MeleeWeaponEquipped || (unit.stats.CanFightUnarmed && (unit.UnitEquipment.RangedWeaponEquipped == false || unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                if ((Unit.SelectedAction is MeleeAction || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.stats.CanFightUnarmed && (Unit.UnitEquipment.RangedWeaponEquipped == false || Unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else
@@ -260,7 +260,7 @@ namespace UnitSystem.ActionSystem
                 for (int i = 0; i < availableCombatActions.Count; i++)
                 {
                     BaseAttackAction action = availableCombatActions[i];
-                    if (action.IsValidAction() && unit.stats.HasEnoughEnergy(action.InitialEnergyCost()) && action.IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition))
+                    if (action.IsValidAction() && Unit.stats.HasEnoughEnergy(action.InitialEnergyCost()) && action.IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                         return true;
                 }
             }
@@ -270,11 +270,11 @@ namespace UnitSystem.ActionSystem
         public bool TryDodgeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, BaseAttackAction attackAction, bool attackerUsingOffhand)
         {
             // If the attacker is in front of this Unit (greater chance to block)
-            if (turnAction.AttackerInFrontOfUnit(attackingUnit))
+            if (TurnAction.AttackerInFrontOfUnit(attackingUnit))
             {
                 float random = Random.Range(0f, 1f);
-                bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
-                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
+                bool attackDodged = random <= Unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
+                if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(Unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
                 {
                     SpearWallAction spearWallAction = attackingUnit.unitActionHandler.GetAction<SpearWallAction>();
                     if (spearWallAction != null)
@@ -283,10 +283,10 @@ namespace UnitSystem.ActionSystem
                 return attackDodged;
             }
             // If the attacker is beside this Unit (less of a chance to block)
-            else if (turnAction.AttackerBesideUnit(attackingUnit))
+            else if (TurnAction.AttackerBesideUnit(attackingUnit))
             {
                 float random = Random.Range(0f, 1f);
-                bool attackDodged = random <= unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, true);
+                bool attackDodged = random <= Unit.stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, true);
                 return attackDodged;
             }
             return false;
@@ -294,84 +294,84 @@ namespace UnitSystem.ActionSystem
 
         public bool TryBlockRangedAttack(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
-            if (unit.UnitEquipment.ShieldEquipped)
+            if (Unit.UnitEquipment.ShieldEquipped)
             {
                 // If the attacker is in front of this Unit (greater chance to block)
-                if (turnAction.AttackerInFrontOfUnit(attackingUnit))
+                if (TurnAction.AttackerInFrontOfUnit(attackingUnit))
                 {
                     float random = Random.Range(0f, 1f);
-                    if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
+                    if (random <= Unit.stats.ShieldBlockChance(Unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
-                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetHeldShield());
                         return true;
                     }
                 }
                 // If the attacker is beside this Unit (less of a chance to block)
-                else if (turnAction.AttackerBesideUnit(attackingUnit))
+                else if (TurnAction.AttackerBesideUnit(attackingUnit))
                 {
                     float random = Random.Range(0f, 1f);
-                    if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
+                    if (random <= Unit.stats.ShieldBlockChance(Unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
-                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetHeldShield());
                         return true;
                     }
                 }
             }
 
-            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                attackingUnit.unitActionHandler.targetUnits.Add(unit, null);
+            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                attackingUnit.unitActionHandler.targetUnits.Add(Unit, null);
             return false;
         }
 
         public bool TryBlockMeleeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
             float random;
-            if (turnAction.AttackerInFrontOfUnit(attackingUnit))
+            if (TurnAction.AttackerInFrontOfUnit(attackingUnit))
             {
-                if (unit.UnitEquipment.ShieldEquipped)
+                if (Unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
                     random = Random.Range(0f, 1f);
-                    if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
+                    if (random <= Unit.stats.ShieldBlockChance(Unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false))
                     {
-                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetHeldShield());
                         return true;
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.UnitEquipment.MeleeWeaponEquipped)
+                    if (Unit.UnitEquipment.MeleeWeaponEquipped)
                     {
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, true))
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, true))
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
-                else if (unit.UnitEquipment.MeleeWeaponEquipped)
+                else if (Unit.UnitEquipment.MeleeWeaponEquipped)
                 {
-                    if (unit.UnitEquipment.IsDualWielding)
+                    if (Unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldPrimaryEfficiency)
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldPrimaryEfficiency)
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
 
                         // Try blocking with left weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldSecondaryEfficiency)
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldSecondaryEfficiency)
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetLeftHeldMeleeWeapon());
                             return true;
                         }
                     }
@@ -379,59 +379,59 @@ namespace UnitSystem.ActionSystem
                     {
                         // Try blocking with only weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false))
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false))
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
             }
-            else if (turnAction.AttackerBesideUnit(attackingUnit))
+            else if (TurnAction.AttackerBesideUnit(attackingUnit))
             {
-                if (unit.UnitEquipment.ShieldEquipped)
+                if (Unit.UnitEquipment.ShieldEquipped)
                 {
                     // Try blocking with shield
                     random = Random.Range(0f, 1f);
-                    if (random <= unit.stats.ShieldBlockChance(unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
+                    if (random <= Unit.stats.ShieldBlockChance(Unit.unitMeshManager.GetHeldShield(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true))
                     {
-                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                            attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetHeldShield());
+                        if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                            attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetHeldShield());
                         return true;
                     }
 
                     // Still have a chance to block with weapon
-                    if (unit.UnitEquipment.MeleeWeaponEquipped)
+                    if (Unit.UnitEquipment.MeleeWeaponEquipped)
                     {
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, true))
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, true))
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
-                else if (unit.UnitEquipment.MeleeWeaponEquipped)
+                else if (Unit.UnitEquipment.MeleeWeaponEquipped)
                 {
-                    if (unit.UnitEquipment.IsDualWielding)
+                    if (Unit.UnitEquipment.IsDualWielding)
                     {
                         // Try blocking with right weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldPrimaryEfficiency)
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldPrimaryEfficiency)
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
 
                         // Try blocking with left weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldSecondaryEfficiency)
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldSecondaryEfficiency)
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetLeftHeldMeleeWeapon());
                             return true;
                         }
                     }
@@ -439,18 +439,18 @@ namespace UnitSystem.ActionSystem
                     {
                         // Try blocking with only weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= unit.stats.WeaponBlockChance(unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false))
+                        if (random <= Unit.stats.WeaponBlockChance(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false))
                         {
-                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                                attackingUnit.unitActionHandler.targetUnits.Add(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
+                            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                                attackingUnit.unitActionHandler.targetUnits.Add(Unit, Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon());
                             return true;
                         }
                     }
                 }
             }
 
-            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(unit) == false)
-                attackingUnit.unitActionHandler.targetUnits.Add(unit, null);
+            if (attackingUnit.unitActionHandler.targetUnits.ContainsKey(Unit) == false)
+                attackingUnit.unitActionHandler.targetUnits.Add(Unit, null);
             return false;
         }
         #endregion
@@ -461,7 +461,7 @@ namespace UnitSystem.ActionSystem
             {
                 Type targetType = actionType.GetActionType();
                 if (typeof(T) == targetType)
-                    return ActionsPool.GetAction(targetType, actionType, unit) as T;
+                    return ActionsPool.GetAction(targetType, actionType, Unit) as T;
             }
             return null;
         }
@@ -498,41 +498,41 @@ namespace UnitSystem.ActionSystem
             return false;
         }
 
-        public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => previousTargetEnemyGridPosition = newGridPosition;
+        public void SetPreviousTargetEnemyGridPosition(GridPosition newGridPosition) => PreviousTargetEnemyGridPosition = newGridPosition;
 
         public virtual void SetTargetEnemyUnit(Unit target)
         {
             if (target != null && target.health.IsDead)
             {
-                targetEnemyUnit = null;
+                TargetEnemyUnit = null;
                 return;
             }
 
-            targetEnemyUnit = target;
+            TargetEnemyUnit = target;
             if (target != null)
-                previousTargetEnemyGridPosition = target.GridPosition;
+                PreviousTargetEnemyGridPosition = target.GridPosition;
         }
 
         public void SetQueuedAttack(BaseAttackAction attackAction, GridPosition targetAttackGridPosition)
         {
             if (attackAction != null)
             {
-                queuedAttack = attackAction;
-                queuedAttack.SetTargetGridPosition(targetAttackGridPosition);
+                QueuedAttack = attackAction;
+                QueuedAttack.SetTargetGridPosition(targetAttackGridPosition);
             }
             else
-                queuedAttack = null;
+                QueuedAttack = null;
         }
 
-        public void ClearQueuedAttack() => queuedAttack = null;
+        public void ClearQueuedAttack() => QueuedAttack = null;
 
         public void SetIsAttacking(bool isAttacking)
         {
             // Debug.Log(unit.name + " start attacking");
-            this.isAttacking = isAttacking;
+            this.IsAttacking = isAttacking;
         }
 
-        public void SetCanPerformActions(bool canPerformActions) => this.canPerformActions = canPerformActions;
+        public void SetCanPerformActions(bool canPerformActions) => this.CanPerformActions = canPerformActions;
 
         public NPCActionHandler NPCActionHandler => this as NPCActionHandler;
         public PlayerActionHandler PlayerActionHandler => this as PlayerActionHandler;

@@ -45,8 +45,8 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+            Unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public override int InitialEnergyCost() => 0;

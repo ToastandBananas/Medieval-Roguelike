@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using GridSystem;
 using InventorySystem;
-using Utilities;
 using UnitSystem.ActionSystem.UI;
 using ContextMenu = GeneralUI.ContextMenu;
 using UnityEngine;
@@ -13,16 +12,16 @@ namespace UnitSystem.ActionSystem
     {
         public event EventHandler OnSelectedActionChanged;
 
-        public ActionType selectedActionType { get; private set; }
+        public ActionType SelectedActionType { get; private set; }
 
         float onClickActionBarCooldown;
-        float onClickActionBarCooldownTime = 0.25f;
+        readonly float onClickActionBarCooldownTime = 0.25f;
 
         public override void Awake()
         {
             base.Awake();
 
-            canPerformActions = true;
+            CanPerformActions = true;
 
             // Default to the MoveAction
             SetDefaultSelectedAction();
@@ -38,38 +37,38 @@ namespace UnitSystem.ActionSystem
         {
             base.QueueAction(action, addToFrontOfQueue);
 
-            if (selectedActionType.GetAction(unit).IsDefaultAttackAction == false)
+            if (SelectedActionType.GetAction(Unit).IsDefaultAttackAction == false)
                 SetDefaultSelectedAction();
         }
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && !isPerformingAction && !unit.health.IsDead)
+            if (Unit.IsMyTurn && !Unit.health.IsDead)
             {
-                unit.vision.FindVisibleUnitsAndObjects();
+                Unit.vision.FindVisibleUnitsAndObjects();
 
-                if (canPerformActions == false)
+                if (CanPerformActions == false)
                 {
-                    TurnManager.Instance.FinishTurn(unit);
+                    TurnManager.Instance.FinishTurn(Unit);
                     return;
                 }
-                else if (interactAction.targetInteractable != null)
+                else if (InteractAction.targetInteractable != null)
                 {
-                    if (Vector3.Distance(unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
-                        interactAction.QueueAction(interactAction.targetInteractable);
+                    if (Vector3.Distance(Unit.WorldPosition, InteractAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
+                        InteractAction.QueueAction(InteractAction.targetInteractable);
                 }
-                else if (queuedActions.Count == 0)
+                else if (QueuedActions.Count == 0)
                 {
                     // If the queued attack is not a default attack
-                    if (queuedAttack != null && queuedAttack.IsDefaultAttackAction == false)
+                    if (QueuedAttack != null && QueuedAttack.IsDefaultAttackAction == false)
                     {
                         // If the target attack position is in range and there are valid units within the attack area
-                        if (queuedAttack.IsInAttackRange(null, unit.GridPosition, queuedAttack.targetGridPosition) && queuedAttack.IsValidUnitInActionArea(queuedAttack.targetGridPosition))
+                        if (QueuedAttack.IsInAttackRange(null, Unit.GridPosition, QueuedAttack.TargetGridPosition) && QueuedAttack.IsValidUnitInActionArea(QueuedAttack.TargetGridPosition))
                         {
-                            if (queuedAttack.IsRangedAttackAction())
+                            if (QueuedAttack.IsRangedAttackAction())
                             {
                                 // If the target attack position is too close, cancel the Player's current action
-                                if (Vector3.Distance(unit.WorldPosition, queuedAttack.targetGridPosition.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                                if (Vector3.Distance(Unit.WorldPosition, QueuedAttack.TargetGridPosition.WorldPosition) < Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                                 {
                                     CancelActions();
                                     return;
@@ -77,7 +76,7 @@ namespace UnitSystem.ActionSystem
                             }
 
                             // Queue the attack action (target grid position has already been set in this case)
-                            queuedAttack.QueueAction();
+                            QueuedAttack.QueueAction();
                         }
                         else // If there's no unit in the attack area or the target attack position is out of range, cancel the action
                         {
@@ -86,56 +85,56 @@ namespace UnitSystem.ActionSystem
                         }
                     }
                     // If there's a target enemy and either an attack wasn't queued, or the queued attack is a default attack
-                    else if (targetEnemyUnit != null)
+                    else if (TargetEnemyUnit != null)
                     {
                         // If the target enemy is dead, cancel the action
-                        if (targetEnemyUnit.health.IsDead)
+                        if (TargetEnemyUnit.health.IsDead)
                         {
                             CancelActions();
                             return;
                         }
 
                         // Handle default ranged attack
-                        if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                        if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
-                            if (Vector3.Distance(unit.WorldPosition, targetEnemyUnit.WorldPosition) < unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
+                            if (Vector3.Distance(Unit.WorldPosition, TargetEnemyUnit.WorldPosition) < Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                             {
                                 CancelActions();
                                 return;
                             }
-                            else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+                            else if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                             {
                                 // Shoot the target enemy
                                 ClearActionQueue(true);
-                                if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
-                                    GetAction<ShootAction>().QueueAction(targetEnemyUnit);
+                                if (Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
+                                    GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
                                 else
                                     GetAction<ReloadAction>().QueueAction();
                             }
                             else // If they're out of the shoot range, move towards the enemy
-                                moveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                                MoveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         }
                         // Handle default melee attack
-                        else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
+                        else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
                         {
-                            if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+                            if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                             {
                                 // Melee attack the target enemy
                                 ClearActionQueue(false);
-                                GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
+                                GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
                             }
                             else // If they're out of melee range, move towards the enemy
-                                moveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                                MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         }
                     }
                 }
 
-                if (queuedActions.Count > 0)
+                if (QueuedActions.Count > 0)
                     StartCoroutine(GetNextQueuedAction());
                 else
                 {
-                    unit.UnblockCurrentPosition();
+                    Unit.UnblockCurrentPosition();
                     GridSystemVisual.UpdateAttackGridVisual();
                 }
             }
@@ -145,34 +144,34 @@ namespace UnitSystem.ActionSystem
         {
             base.SkipTurn();
 
-            lastQueuedAction = null;
-            unit.stats.UseAP(unit.stats.APUntilTimeTick);
-            TurnManager.Instance.FinishTurn(unit);
+            LastQueuedAction = null;
+            Unit.stats.UseAP(Unit.stats.APUntilTimeTick);
+            TurnManager.Instance.FinishTurn(Unit);
         }
 
         public override IEnumerator GetNextQueuedAction()
         {
-            if (unit.health.IsDead)
+            if (Unit.health.IsDead)
             {
                 ClearActionQueue(true, true);
                 GridSystemVisual.HideGridVisual();
                 yield break;
             }
 
-            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && !isPerformingAction)
+            if (QueuedActions.Count > 0 && QueuedAPs.Count > 0 && !IsPerformingAction)
             {
                 ContextMenu.DisableContextMenu(true);
 
-                while (isAttacking || unit.unitAnimator.beingKnockedBack)
+                while (IsAttacking || Unit.unitAnimator.beingKnockedBack)
                     yield return null;
 
-                unit.stats.UseAP(queuedAPs[0]);
+                Unit.stats.UseAP(QueuedAPs[0]);
 
-                if (queuedActions.Count > 0 && queuedAPs.Count > 0) // This can become cleared out after a time tick update
+                if (QueuedActions.Count > 0 && QueuedAPs.Count > 0) // This can become cleared out after a time tick update
                 {
-                    isPerformingAction = true;
-                    lastQueuedAction = queuedActions[0];
-                    queuedActions[0].TakeAction();
+                    IsPerformingAction = true;
+                    LastQueuedAction = QueuedActions[0];
+                    QueuedActions[0].TakeAction();
                 }
                 else
                     CancelActions();
@@ -183,95 +182,97 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator AttackTarget_Coroutine()
         {
-            if (targetEnemyUnit == null)
+            if (TargetEnemyUnit == null)
                 yield break;
 
-            BaseAction selectedAction = selectedActionType.GetAction(unit);
+            BaseAction selectedAction = SelectedActionType.GetAction(Unit);
             if (selectedAction is BaseAttackAction)
             {
-                if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
+                if (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                    while (TargetEnemyUnit != null && TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving)
                         yield return null;
 
-                    if (targetEnemyUnit == null)
+                    if (TargetEnemyUnit == null)
                     {
                         Debug.LogWarning("Target Unit became null during AttackTarget");
                         yield break;
                     }
 
-                    if (selectedAction.BaseAttackAction.IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
+                    if (selectedAction.BaseAttackAction.IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
-                        moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                        MoveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit)); // Move to the nearest valid attack position
                         yield break;
                     }
                 }
 
-                selectedAction.BaseAttackAction.QueueAction(targetEnemyUnit);
+                selectedAction.BaseAttackAction.QueueAction(TargetEnemyUnit);
             }
-            else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
             {
-                if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
+                if (Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 {
-                    if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
+                    if (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving) // Wait for the targetEnemyUnit to stop moving
                     {
-                        while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                        while (TargetEnemyUnit != null && TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving)
                             yield return null;
 
-                        if (targetEnemyUnit == null)
+                        if (TargetEnemyUnit == null)
                         {
                             Debug.LogWarning("Target Unit became null during AttackTarget");
                             yield break;
                         }
 
-                        if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
+                        if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                         {
-                            moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                            MoveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit)); // Move to the nearest valid attack position
                             yield break;
                         }
                     }
 
-                    GetAction<ShootAction>().QueueAction(targetEnemyUnit);
+                    GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
                 }
                 else
                     GetAction<ReloadAction>().QueueAction();
             }
-            else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
+            else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
             {
-                if (targetEnemyUnit.unitActionHandler.moveAction.isMoving) // Wait for the targetEnemyUnit to stop moving
+                if (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving) // Wait for the targetEnemyUnit to stop moving
                 {
-                    while (targetEnemyUnit != null && targetEnemyUnit.unitActionHandler.moveAction.isMoving)
+                    while (TargetEnemyUnit != null && TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving)
                         yield return null;
 
-                    if (targetEnemyUnit == null)
+                    if (TargetEnemyUnit == null)
                     {
                         Debug.LogWarning("Target Unit became null during AttackTarget");
                         yield break;
                     }
 
-                    if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
+                    if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
-                        moveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit)); // Move to the nearest valid attack position
+                        MoveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit)); // Move to the nearest valid attack position
                         yield break;
                     }
                 }
 
-                GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
+                GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
             }
         }
 
-        public BaseAction SelectedAction => selectedActionType.GetAction(unit);
+        public BaseAction SelectedAction => SelectedActionType != null ? SelectedActionType.GetAction(Unit) : null;
 
-        public void SetSelectedActionType(ActionType actionType)
+        public void SetSelectedActionType(ActionType actionType, bool invokeActionChangedDelegate)
         {
-            selectedActionType = actionType;
-            OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+            SelectedActionType = actionType;
+            if (invokeActionChangedDelegate)
+                OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void SetDefaultSelectedAction()
         {
-            SetSelectedActionType(FindActionTypeByName("MoveAction"));
+            SetSelectedActionType(FindActionTypeByName("MoveAction"), true);
             ActionSystemUI.SetSelectedActionSlot(null);
+            ContextMenu.DisableContextMenu(true);
         }
 
         public bool DefaultActionIsSelected => SelectedAction is MoveAction;
@@ -282,8 +283,8 @@ namespace UnitSystem.ActionSystem
                 return;
 
             onClickActionBarCooldown = 0f;
-            SetSelectedActionType(actionType);
-            ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.highlightedActionSlot);
+            ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.HighlightedActionSlot);
+            SetSelectedActionType(actionType, true);
         }
     }
 }

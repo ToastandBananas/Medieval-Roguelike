@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public enum WeaponType { Bow, Crossbow, Throwing, Dagger, Sword, Axe, Mace, WarHammer, Spear, Polearm }
+    public enum WeaponType { Bow, Crossbow, ThrowingWeapon, Dagger, Sword, Axe, Mace, WarHammer, Spear, Polearm }
 
     public abstract class Weapon : HeldEquipment
     {

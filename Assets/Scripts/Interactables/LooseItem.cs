@@ -31,8 +31,8 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitPickingUpItem)
         {
-            if (unitPickingUpItem.unitActionHandler.turnAction.IsFacingTarget(gridPosition) == false)
-                unitPickingUpItem.unitActionHandler.turnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
+            if (unitPickingUpItem.unitActionHandler.TurnAction.IsFacingTarget(gridPosition) == false)
+                unitPickingUpItem.unitActionHandler.TurnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.TurnAction.DefaultRotateSpeed * 2f);
 
             List<LooseItem> looseProjectiles = ListPool<LooseItem>.Claim();
             if (itemData.Item is Shield && transform.childCount > 1)

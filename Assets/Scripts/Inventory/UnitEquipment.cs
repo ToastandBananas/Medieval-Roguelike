@@ -214,43 +214,43 @@ namespace InventorySystem
                     myUnit.BeltInventoryManager.SwapInventories(beltSlot.containerInventoryManager);
                 }
             }
-            else if (ContextMenu.targetSlot != null && ContextMenu.targetSlot is ContainerEquipmentSlot && ContextMenu.targetSlot.InventoryItem.myUnitEquipment != this)
+            else if (ContextMenu.TargetSlot != null && ContextMenu.TargetSlot is ContainerEquipmentSlot && ContextMenu.TargetSlot.InventoryItem.myUnitEquipment != this)
             {
-                if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
+                if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
                 {
-                    ContainerEquipmentSlot quiverSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot quiverSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
                     if (quiverSlot.GetItemData().Item is Quiver)
                     {
-                        if (quiverSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                        if (quiverSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                             InventoryUI.GetContainerUI(quiverSlot.containerInventoryManager).CloseContainerInventory();
 
                         UnitManager.player.QuiverInventoryManager.SwapInventories(quiverSlot.containerInventoryManager);
                     }
                 }
-                else if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Back)
+                else if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Back)
                 {
-                    ContainerEquipmentSlot backpackSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot backpackSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
                     if (backpackSlot.GetItemData().Item is Backpack)
                     {
-                        if (backpackSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                        if (backpackSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                             InventoryUI.GetContainerUI(backpackSlot.containerInventoryManager).CloseContainerInventory();
 
                         UnitManager.player.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
                     }
                 }
-                else if (ContextMenu.targetSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt)
+                else if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt)
                 {
-                    ContainerEquipmentSlot beltSlot = ContextMenu.targetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
-                    if (beltSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                    ContainerEquipmentSlot beltSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
+                    if (beltSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                         InventoryUI.GetContainerUI(beltSlot.containerInventoryManager).CloseContainerInventory();
 
                     UnitManager.player.BeltInventoryManager.SwapInventories(beltSlot.containerInventoryManager);
                 }
             }
-            else if (ContextMenu.targetInteractable != null && ContextMenu.targetInteractable is LooseContainerItem)
+            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseContainerItem)
             {
-                LooseContainerItem looseContainerItem = ContextMenu.targetInteractable as LooseContainerItem;
-                if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
+                LooseContainerItem looseContainerItem = ContextMenu.TargetInteractable as LooseContainerItem;
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 
                 if (targetEquipSlot == EquipSlot.Quiver)
@@ -329,7 +329,7 @@ namespace InventorySystem
                 else
                 {
                     // Update the stack size text for the ammo since it wasn't all equipped
-                    if (ammoItemData.MyInventory != null && ammoItemData.MyInventory.slotVisualsCreated)
+                    if (ammoItemData.MyInventory != null && ammoItemData.MyInventory.SlotVisualsCreated)
                         ammoItemData.MyInventory.GetSlotFromItemData(ammoItemData).InventoryItem.UpdateStackSizeVisuals();
                     else if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.slotVisualsCreated && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(ammoItemData))
                         InventoryUI.npcEquipmentSlots[0].UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
@@ -453,9 +453,9 @@ namespace InventorySystem
                     InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove, true);
                 }
             }
-            else if (ContextMenu.targetSlot != null)
+            else if (ContextMenu.TargetSlot != null)
             {
-                InventoryItem targetInventoryItem = ContextMenu.targetSlot.InventoryItem;
+                InventoryItem targetInventoryItem = ContextMenu.TargetSlot.InventoryItem;
 
                 if (targetInventoryItem.myUnitEquipment != null && targetInventoryItem.myUnitEquipment.ItemDataEquipped(itemDataToRemove))
                 {
@@ -473,7 +473,7 @@ namespace InventorySystem
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
                         targetInventoryItem.myUnitEquipment.myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                    targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.targetSlot.InventoryItem.itemData);
+                    targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.itemData);
                 }
                 else if (targetInventoryItem.myInventory != null && targetInventoryItem.myInventory.ItemDatas.Contains(itemDataToRemove))
                 {
@@ -517,7 +517,7 @@ namespace InventorySystem
                 // If this is the Unit's equipped backpack
                 if (equipSlot == EquipSlot.Back && equipment is Backpack)
                 {
-                    if (myUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
+                    if (myUnit.BackpackInventoryManager.ParentInventory.SlotVisualsCreated)
                         InventoryUI.GetContainerUI(myUnit.BackpackInventoryManager).CloseContainerInventory();
 
                     if (myUnit.BackpackInventoryManager.ContainsAnyItems())
@@ -525,7 +525,7 @@ namespace InventorySystem
                 }
                 else if (equipSlot == EquipSlot.Belt)
                 {
-                    if (myUnit.BeltInventoryManager.ParentInventory.slotVisualsCreated)
+                    if (myUnit.BeltInventoryManager.ParentInventory.SlotVisualsCreated)
                         InventoryUI.GetContainerUI(myUnit.BeltInventoryManager).CloseContainerInventory();
 
                     if (myUnit.BeltInventoryManager.ContainsAnyItems())
@@ -533,7 +533,7 @@ namespace InventorySystem
                 }
                 else if (equipSlot == EquipSlot.Quiver && equipment is Quiver)
                 {
-                    if (myUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
+                    if (myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
                         InventoryUI.GetContainerUI(myUnit.QuiverInventoryManager).CloseContainerInventory();
 
                     if (myUnit.QuiverInventoryManager.ContainsAnyItems())
@@ -1266,7 +1266,7 @@ namespace InventorySystem
             if (itemData.CurrentStackSize > 0)
             {
                 // Update stack size visuals
-                if (QuiverEquipped() && myUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
+                if (QuiverEquipped() && myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
                     myUnit.QuiverInventoryManager.ParentInventory.GetSlotFromItemData(itemData).InventoryItem.UpdateStackSizeVisuals();
                 else if (EquipSlotHasItem(EquipSlot.Quiver) && slotVisualsCreated)
                     GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();

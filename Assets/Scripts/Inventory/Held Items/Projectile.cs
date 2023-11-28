@@ -115,9 +115,9 @@ namespace InventorySystem
             meshRenderer.materials = materials;
 
             Vector3 meshSize = meshFilter.sharedMesh.bounds.size;
-            projectileCollider.height = meshSize.y;
+            projectileCollider.height = meshSize.y * 0.8f;
             projectileCollider.radius = Mathf.Min(meshSize.x, meshSize.z) / 2f;
-            projectileCollider.center = new(0f, 0f, 0.5f);
+            projectileCollider.center = new(0f, 0f, projectileCollider.height / 2f);
 
             transform.position = heldItemTransform.position;
             transform.eulerAngles = heldItemTransform.eulerAngles;
@@ -136,7 +136,7 @@ namespace InventorySystem
             this.attackActionUsed = attackActionUsed;
             ReadyProjectile();
 
-            if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.targetGridPosition, out Unit unitAtGridPosition))
+            if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.TargetGridPosition, out Unit unitAtGridPosition))
                 targetUnit = unitAtGridPosition;
 
             if (targetUnit != null)
@@ -158,10 +158,10 @@ namespace InventorySystem
                     targetPosition = targetUnit.WorldPosition;
             }
             else
-                targetPosition = attackActionUsed.targetGridPosition.WorldPosition;
+                targetPosition = attackActionUsed.TargetGridPosition.WorldPosition;
 
             Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(attackActionUsed.targetGridPosition, attackActionUsed, hitTarget);
+            Vector3 offset = GetOffset(attackActionUsed.TargetGridPosition, attackActionUsed, hitTarget);
 
             float arcHeight;
             if (itemData.Item is Ammunition)
@@ -210,7 +210,7 @@ namespace InventorySystem
             Vector3 shootOffset = Vector3.zero;
             if (hitTarget == false) // If the shooter is missing
             {
-                float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.targetEnemyUnit.WorldPosition);
+                float distToEnemy = Vector3.Distance(shooter.WorldPosition, shooter.unitActionHandler.TargetEnemyUnit.WorldPosition);
                 float rangedAccuracy = shooter.stats.RangedAccuracy(shooter.unitMeshManager.GetHeldRangedWeapon(), targetGridPosition, attackActionUsed);
 
                 float minOffset = 0.35f;

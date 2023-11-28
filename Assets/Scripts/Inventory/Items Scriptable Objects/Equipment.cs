@@ -28,7 +28,7 @@ namespace InventorySystem
             return canEquipItem;
         }
 
-        public bool HasAccessToAction(BaseAction baseAction) => HasAccessToAction(baseAction.actionType);
+        public bool HasAccessToAction(BaseAction baseAction) => HasAccessToAction(baseAction.ActionType);
 
         public bool HasAccessToAction(ActionType actionType)
         {

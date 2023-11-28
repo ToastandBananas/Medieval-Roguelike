@@ -30,7 +30,7 @@ namespace UnitSystem.ActionSystem
             if (targetDirection == currentDirection)
                 return;
 
-            unit.unitActionHandler.QueueAction(this);
+            Unit.unitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()
@@ -41,7 +41,7 @@ namespace UnitSystem.ActionSystem
             SetTargetPosition(targetDirection);
             StartAction();
 
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
                 Turn(false);
             else
                 Turn(true);
@@ -55,17 +55,17 @@ namespace UnitSystem.ActionSystem
             CompleteAction();
 
             // Don't start the next Unit's turn after doing a TurnAction, it costs so few AP it's not worth it. If they don't have enough AP for another action, their turn will end in the TakeTurn method anyways
-            if (unit.IsNPC)
-                unit.unitActionHandler.TakeTurn(); 
+            if (Unit.IsNPC)
+                Unit.unitActionHandler.TakeTurn(); 
             // But we DO want to start the next Unit's turn after the Player does a TurnAction because we'll be adding to each NPC's pooled AP
             // (We don't want to allow infinite Player TurnActions in a row, building the pooled AP up to a massive amount, plus this will add to the realism of rotating taking in game time)
             else
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public void RotateTowards_CurrentTargetPosition(bool rotateInstantly)
         {
-            unit.StartCoroutine(Rotate(targetPosition, rotateInstantly));
+            Unit.StartCoroutine(Rotate(targetPosition, rotateInstantly));
         }
 
         public void RotateTowards_Direction(Direction direction, bool rotateInstantly)
@@ -76,12 +76,12 @@ namespace UnitSystem.ActionSystem
 
         public void RotateTowardsPosition(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 0f)
         {
-            unit.StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
+            Unit.StartCoroutine(Rotate(targetPos, rotateInstantly, rotateSpeed));
         }
 
         public IEnumerator Rotate(Vector3 targetPos, bool rotateInstantly, float rotateSpeed = 0f)
         {
-            Vector3 lookPos = (new Vector3(targetPos.x, unit.transform.position.y, targetPos.z) - unit.transform.position).normalized;
+            Vector3 lookPos = (new Vector3(targetPos.x, Unit.transform.position.y, targetPos.z) - Unit.transform.position).normalized;
             if (lookPos == Vector3.zero)
                 yield break;
 
@@ -109,24 +109,24 @@ namespace UnitSystem.ActionSystem
                     if (rotateTargetPosition != targetPosition)
                         break;
 
-                    unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+                    Unit.transform.rotation = Quaternion.Slerp(Unit.transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 
-                    if (Quaternion.Angle(unit.transform.rotation, targetRotation) < 1f)
+                    if (Quaternion.Angle(Unit.transform.rotation, targetRotation) < 1f)
                         isRotating = false;
 
                     yield return null;
                 }
             }
 
-            unit.transform.rotation = targetRotation;
+            Unit.transform.rotation = targetRotation;
             SetCurrentDirection();
 
-            unit.vision.FindVisibleUnitsAndObjects();
+            Unit.vision.FindVisibleUnitsAndObjects();
         }
 
         public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly, float rotateSpeed = 20f) => RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, rotateSpeed);
 
-        public void RotateTowardsAttackPosition(Vector3 targetPosition) => unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
+        public void RotateTowardsAttackPosition(Vector3 targetPosition) => Unit.StartCoroutine(RotateTowardsAttackPosition_Coroutine(targetPosition));
 
         IEnumerator RotateTowardsAttackPosition_Coroutine(Vector3 targetPosition)
         {
@@ -138,11 +138,11 @@ namespace UnitSystem.ActionSystem
                 yield return null;
             }
 
-            while (unit.unitActionHandler.isAttacking)
+            while (Unit.unitActionHandler.IsAttacking)
             {
-                Vector3 lookPos = (new Vector3(targetPosition.x, unit.transform.position.y, targetPosition.z) - unit.transform.position).normalized;
+                Vector3 lookPos = (new Vector3(targetPosition.x, Unit.transform.position.y, targetPosition.z) - Unit.transform.position).normalized;
                 Quaternion rotation = Quaternion.LookRotation(lookPos);
-                unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, rotation, defaultRotateSpeed * Time.deltaTime);
+                Unit.transform.rotation = Quaternion.Slerp(Unit.transform.rotation, rotation, defaultRotateSpeed * Time.deltaTime);
                 yield return null;
             }
 
@@ -155,7 +155,7 @@ namespace UnitSystem.ActionSystem
 
         public Direction GetTargetTurnDirection(GridPosition targetGridPosition)
         {
-            GridPosition unitGridPosition = unit.GridPosition;
+            GridPosition unitGridPosition = Unit.GridPosition;
             if (targetGridPosition.x == unitGridPosition.x && targetGridPosition.z > unitGridPosition.z)
                 return Direction.North;
             else if (targetGridPosition.x > unitGridPosition.x && targetGridPosition.z == unitGridPosition.z)
@@ -184,9 +184,9 @@ namespace UnitSystem.ActionSystem
 
         public Direction SetCurrentDirection()
         {
-            Vector3 forward = unit.transform.forward;
+            Vector3 forward = Unit.transform.forward;
             forward.y = 0;
-            float headingAngle = Quaternion.LookRotation(unit.transform.forward).eulerAngles.y;
+            float headingAngle = Quaternion.LookRotation(Unit.transform.forward).eulerAngles.y;
 
             if ((headingAngle >= 337.5f && headingAngle <= 360f) || (headingAngle >= 0f && headingAngle <= 22.5f))
                 currentDirection = Direction.North;
@@ -213,28 +213,28 @@ namespace UnitSystem.ActionSystem
             switch (targetDirection)
             {
                 case Direction.North:
-                    targetPosition = unit.transform.position + new Vector3(0, 0, 1);
+                    targetPosition = Unit.transform.position + new Vector3(0, 0, 1);
                     break;
                 case Direction.East:
-                    targetPosition = unit.transform.position + new Vector3(1, 0, 0);
+                    targetPosition = Unit.transform.position + new Vector3(1, 0, 0);
                     break;
                 case Direction.South:
-                    targetPosition = unit.transform.position + new Vector3(0, 0, -1);
+                    targetPosition = Unit.transform.position + new Vector3(0, 0, -1);
                     break;
                 case Direction.West:
-                    targetPosition = unit.transform.position + new Vector3(-1, 0, 0);
+                    targetPosition = Unit.transform.position + new Vector3(-1, 0, 0);
                     break;
                 case Direction.NorthWest:
-                    targetPosition = unit.transform.position + new Vector3(-1, 0, 1);
+                    targetPosition = Unit.transform.position + new Vector3(-1, 0, 1);
                     break;
                 case Direction.NorthEast:
-                    targetPosition = unit.transform.position + new Vector3(1, 0, 1);
+                    targetPosition = Unit.transform.position + new Vector3(1, 0, 1);
                     break;
                 case Direction.SouthWest:
-                    targetPosition = unit.transform.position + new Vector3(-1, 0, -1);
+                    targetPosition = Unit.transform.position + new Vector3(-1, 0, -1);
                     break;
                 case Direction.SouthEast:
-                    targetPosition = unit.transform.position + new Vector3(1, 0, -1);
+                    targetPosition = Unit.transform.position + new Vector3(1, 0, -1);
                     break;
                 case Direction.Center:
                     targetPosition = Vector3.zero;
@@ -417,31 +417,31 @@ namespace UnitSystem.ActionSystem
             switch (currentDirection)
             {
                 case Direction.North:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(0, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(0, 0, -1));
                     break;
                 case Direction.East:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, 0));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(-1, 0, 0));
                     break;
                 case Direction.South:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(0, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(0, 0, 1));
                     break;
                 case Direction.West:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, 0));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(1, 0, 0));
                     break;
                 case Direction.NorthWest:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(1, 0, -1));
                     break;
                 case Direction.NorthEast:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, -1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(-1, 0, -1));
                     break;
                 case Direction.SouthWest:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(1, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(1, 0, 1));
                     break;
                 case Direction.SouthEast:
-                    gridPositionBehindUnit = LevelGrid.GetGridPosition(unit.GridPosition.WorldPosition + new Vector3(-1, 0, 1));
+                    gridPositionBehindUnit = LevelGrid.GetGridPosition(Unit.GridPosition.WorldPosition + new Vector3(-1, 0, 1));
                     break;
                 default:
-                    return unit.GridPosition;
+                    return Unit.GridPosition;
             }
 
             // Get the Y position for the Grid Position using a raycast
@@ -450,7 +450,7 @@ namespace UnitSystem.ActionSystem
                 gridPositionBehindUnit.Set(gridPositionBehindUnit.x, hit.point.y, gridPositionBehindUnit.z);
 
             if (LevelGrid.GridPositionObstructed(gridPositionBehindUnit))
-                gridPositionBehindUnit = LevelGrid.FindNearestValidGridPosition(unit.GridPosition, unit, LevelGrid.diaganolDistance);
+                gridPositionBehindUnit = LevelGrid.FindNearestValidGridPosition(Unit.GridPosition, Unit, LevelGrid.diaganolDistance);
             return gridPositionBehindUnit;
         }
 
@@ -458,10 +458,10 @@ namespace UnitSystem.ActionSystem
         {
             if (attackingUnit == null) return false;
 
-            Vector3 unitPos = unit.transform.position;
+            Vector3 unitPos = Unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.turnAction.currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.unitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && unitPos.z > attackerPos.z)
@@ -503,10 +503,10 @@ namespace UnitSystem.ActionSystem
         {
             if (attackingUnit == null) return false;
 
-            Vector3 unitPos = unit.transform.position;
+            Vector3 unitPos = Unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.turnAction.currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.unitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.West || currentDirection == Direction.East) && unitPos.x == attackerPos.x && unitPos.z > attackerPos.z)
@@ -547,10 +547,10 @@ namespace UnitSystem.ActionSystem
         public override void CompleteAction()
         {
             base.CompleteAction();
-            unit.unitActionHandler.FinishAction();
+            Unit.unitActionHandler.FinishAction();
         }
 
-        public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == unit.GridPosition ? true : GetTargetTurnDirection(targetGridPosition) == currentDirection;
+        public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == Unit.GridPosition ? true : GetTargetTurnDirection(targetGridPosition) == currentDirection;
 
         public override bool IsInterruptable() => false;
 

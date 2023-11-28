@@ -16,10 +16,10 @@ namespace InventorySystem
         int maxSlotsPerColumn;
 
         [Header("Items in Inventory")]
-        [SerializeField] protected List<ItemData> itemDatas = new List<ItemData>();
+        [SerializeField] protected List<ItemData> itemDatas = new();
 
-        public bool slotVisualsCreated { get; protected set; }
-        public bool hasBeenInitialized { get; protected set; }
+        public bool SlotVisualsCreated { get; protected set; }
+        public bool HasBeenInitialized { get; protected set; }
 
         protected List<InventorySlot> slots;
         protected List<SlotCoordinate> slotCoordinates;
@@ -39,7 +39,7 @@ namespace InventorySystem
             else
                 SetupItems();
 
-            hasBeenInitialized = true;
+            HasBeenInitialized = true;
         }
 
         public virtual bool TryAddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
@@ -77,7 +77,7 @@ namespace InventorySystem
 
                     CombineStacks(newItemData, itemDatas[i]);
 
-                    if (slotVisualsCreated)
+                    if (SlotVisualsCreated)
                         GetSlotFromItemData(itemDatas[i]).InventoryItem.UpdateStackSizeVisuals();
                 }
 
@@ -95,7 +95,7 @@ namespace InventorySystem
                 // If there's some left in the stack
                 else
                 {
-                    if (newItemData.MyInventory != null && newItemData.MyInventory.slotVisualsCreated)
+                    if (newItemData.MyInventory != null && newItemData.MyInventory.SlotVisualsCreated)
                         newItemData.MyInventory.GetSlotFromItemData(newItemData).InventoryItem.UpdateStackSizeVisuals();
 
                     // If some was added to other stacks, queue an InventoryAction for the amount added
@@ -128,7 +128,7 @@ namespace InventorySystem
                     itemDatas.Add(newItemData);
 
                 // Show the item's icon in the inventory UI
-                if (slotVisualsCreated)
+                if (SlotVisualsCreated)
                 {
                     InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
                     if (targetSlot != null)
@@ -177,7 +177,7 @@ namespace InventorySystem
                 ItemData overlappedItemsData = overlappedItemsParentSlotCoordinate.itemData;
 
                 // Remove the highlighting
-                if (slotVisualsCreated)
+                if (SlotVisualsCreated)
                     GetSlotFromCoordinate(targetSlotCoordinate).RemoveSlotHighlights();
 
                 // If we're placing an item directly on top of the same type of item that is stackable and has more room in its stack
@@ -187,7 +187,7 @@ namespace InventorySystem
                     CombineStacks(newItemData, overlappedItemsData);
 
                     // Update the overlapped item's stack size text
-                    if (slotVisualsCreated)
+                    if (SlotVisualsCreated)
                     {
                         GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate).InventoryItem.UpdateStackSizeVisuals();
 
@@ -266,7 +266,7 @@ namespace InventorySystem
                 RemoveFromOrigin(targetSlotCoordinate, newItemData, unitAdding);
 
                 // Setup the target slot's item data and sprites
-                if (slotVisualsCreated)
+                if (SlotVisualsCreated)
                     SetupNewItem(GetSlotFromCoordinate(targetSlotCoordinate), newItemData);
 
                 targetSlotCoordinate.SetupNewItem(newItemData);
@@ -297,7 +297,7 @@ namespace InventorySystem
             // If there's still some in the stack
             if (projectileItemData.CurrentStackSize > 0)
             {
-                if (slotVisualsCreated)
+                if (SlotVisualsCreated)
                     GetSlotFromItemData(projectileItemData).InventoryItem.UpdateStackSizeVisuals();
                 return;
             }
@@ -444,15 +444,16 @@ namespace InventorySystem
             }
         }
 
-        public void RemoveItem(ItemData itemDataToRemove, bool clearSlotCoordinate)
+        public void RemoveItem(ItemData itemDataToRemove, bool clearSlotCoordinate = true)
         {
             if (itemDatas.Contains(itemDataToRemove) == false)
                 return;
 
-            if (slotVisualsCreated && GetSlotFromItemData(itemDataToRemove) != null)
-                GetSlotFromItemData(itemDataToRemove).ClearItem();
-            else if (GetSlotCoordinateFromItemData(itemDataToRemove) != null)
-                GetSlotCoordinateFromItemData(itemDataToRemove).ClearItem();
+            InventorySlot inventorySlot = GetSlotFromItemData(itemDataToRemove);
+            if (SlotVisualsCreated && inventorySlot != null)
+                inventorySlot.ClearItem();
+            else
+                GetSlotCoordinateFromItemData(itemDataToRemove)?.ClearItem();
 
             if (clearSlotCoordinate)
                 itemDataToRemove.SetInventorySlotCoordinate(null);
@@ -613,13 +614,13 @@ namespace InventorySystem
 
             CreateSlotCoordinates();
 
-            if (slots.Count > 0 && slotVisualsCreated == false)
+            if (slots.Count > 0 && SlotVisualsCreated == false)
                 CreateSlotVisuals();
         }
 
         public void CreateSlotVisuals()
         {
-            if (slotVisualsCreated)
+            if (SlotVisualsCreated)
             {
                 Debug.LogWarning($"Slot visuals for inventory, owned by {MyUnit.name}, has already been created...");
                 return;
@@ -645,7 +646,7 @@ namespace InventorySystem
                 newSlot.gameObject.SetActive(true);
             }
 
-            slotVisualsCreated = true;
+            SlotVisualsCreated = true;
             SetupItems();
         }
 
@@ -675,7 +676,7 @@ namespace InventorySystem
                 slots.Clear();
             }
 
-            slotVisualsCreated = false;
+            SlotVisualsCreated = false;
         }
 
         public void SetupItems()
@@ -697,6 +698,9 @@ namespace InventorySystem
 
         public InventorySlot GetSlotFromItemData(ItemData itemData)
         {
+            if (!SlotVisualsCreated || slots == null)
+                return null;
+
             for (int i = 0; i < slots.Count; i++)
             {
                 if (slots[i].GetItemData() == itemData)
@@ -718,9 +722,40 @@ namespace InventorySystem
             return false;
         }
 
+        ///<summary>Will return true if any Item Type from the array is allowed.</summary>
+        public bool ItemTypeAllowed(ItemType[] itemTypes)
+        {
+            if (inventoryLayout.AllowedItemTypes.Length == 0)
+                return true;
+
+            for (int i = 0; i < inventoryLayout.AllowedItemTypes.Length; i++)
+            {
+                for (int j = 0; j < itemTypes.Length; j++)
+                {
+                    if (itemTypes[j] == inventoryLayout.AllowedItemTypes[i])
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        ///<summary>Will return true if any Item Type from the array is contained in the inventories AllowedItemTypes array.</summary>
+        public bool AllowedItemTypeContains(ItemType[] itemTypes)
+        {
+            for (int i = 0; i < inventoryLayout.AllowedItemTypes.Length; i++)
+            {
+                for (int j = 0; j < itemTypes.Length; j++)
+                {
+                    if (itemTypes[j] == inventoryLayout.AllowedItemTypes[i])
+                        return true;
+                }
+            }
+            return false;
+        }
+
         public void OnCloseNPCInventory()
         {
-            slotVisualsCreated = false;
+            SlotVisualsCreated = false;
 
             // Clear out any slots already in the list, so we can start from scratch when we open another inventory
             RemoveSlots();

@@ -43,7 +43,7 @@ namespace UnitSystem.ActionSystem
                         SlotCoordinate itemsSlotCoordinate = itemToConsume.MyInventory.GetSlotCoordinateFromItemData(itemToConsume);
                         if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
                         {
-                            if (itemsSlotCoordinate.myInventory.slotVisualsCreated)
+                            if (itemsSlotCoordinate.myInventory.SlotVisualsCreated)
                                 itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
                         }
                         else
@@ -51,7 +51,7 @@ namespace UnitSystem.ActionSystem
                             Item oldItem = itemToConsume.Item;
                             itemToConsume.MyInventory.RemoveItem(itemToConsume, false);
                             itemToConsume.SetItem(newThreshold.NewItem);
-                            itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, unit);
+                            itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, Unit);
                         }
 
                         if (ActionSystemUI.ItemActionBarAlreadyHasItem(itemToConsume))

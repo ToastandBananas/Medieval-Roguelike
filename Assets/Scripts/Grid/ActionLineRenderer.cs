@@ -77,7 +77,7 @@ namespace GridSystem
                 }
                 else if (PlayerInput.Instance.HighlightedUnit != null)
                 {
-                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
                     targetUnit = PlayerInput.Instance.HighlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
@@ -124,7 +124,7 @@ namespace GridSystem
                 else
                 {
                     targetUnit = LevelGrid.GetUnitAtGridPosition(currentMouseGridPosition);
-                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
                     if (targetUnit != null && player.vision.IsVisible(targetUnit))
                     {
@@ -267,7 +267,7 @@ namespace GridSystem
             mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
             float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-            Direction turnDirection = player.unitActionHandler.turnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
+            Direction turnDirection = player.unitActionHandler.TurnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
             arrowHeadLineRenderer.enabled = true;
             arrowHeadLineRenderer.positionCount = 3;
 

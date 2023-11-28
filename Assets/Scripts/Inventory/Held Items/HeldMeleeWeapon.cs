@@ -30,6 +30,12 @@ namespace InventorySystem
             UpdateActionIcons();
         }
 
+        public override void SetupItemToThrow(ItemData itemData, Unit unit, Transform heldItemParent)
+        {
+            base.SetupItemToThrow(itemData, unit, heldItemParent);
+            SetDefaultWeaponStance();
+        }
+
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Determine attack animation based on melee weapon type
@@ -174,7 +180,7 @@ namespace InventorySystem
             targetRotation = Quaternion.Euler(new Vector3(startRotation.x, startRotation.y, -targetRotation.eulerAngles.x));
             float rotateSpeed = 10f;
 
-            while (unit.unitActionHandler.isAttacking)
+            while (unit.unitActionHandler.IsAttacking)
             {
                 transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
                 yield return null;

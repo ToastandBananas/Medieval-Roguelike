@@ -7,27 +7,27 @@ namespace UnitSystem.ActionSystem
 {
     public abstract class BaseAction : MonoBehaviour
     {
-        public ActionType actionType { get; private set; }
-        public ActionBarSlot actionBarSlot { get; private set; }
-        public Unit unit { get; private set; }
-        public GridPosition targetGridPosition { get; protected set; }
+        public ActionType ActionType { get; private set; }
+        public ActionBarSlot ActionBarSlot { get; private set; }
+        public Unit Unit { get; private set; }
+        public GridPosition TargetGridPosition { get; protected set; }
 
         public abstract void TakeAction();
 
         protected virtual void StartAction() { }
 
-        public virtual void SetTargetGridPosition(GridPosition gridPosition) => targetGridPosition = gridPosition;
+        public virtual void SetTargetGridPosition(GridPosition gridPosition) => TargetGridPosition = gridPosition;
 
         /// <summary>Only use this version of QueueAction if the target grid position is irrelevant or if it/other necessary variables have already been set.</summary>
         public virtual void QueueAction()
         {
             // Debug.Log(name);
-            unit.unitActionHandler.QueueAction(this);
+            Unit.unitActionHandler.QueueAction(this);
         }
 
         public virtual void QueueAction(GridPosition targetGridPosition)
         {
-            this.targetGridPosition = targetGridPosition;
+            this.TargetGridPosition = targetGridPosition;
             QueueAction();
         }
 
@@ -35,11 +35,11 @@ namespace UnitSystem.ActionSystem
 
         public virtual void CompleteAction()
         {
-            if (unit.IsPlayer)
+            if (Unit.IsPlayer)
             {
                 ActionSystemUI.UpdateActionVisuals();
-                if (actionBarSlot != null)
-                    actionBarSlot.UpdateIcon();
+                if (ActionBarSlot != null)
+                    ActionBarSlot.UpdateIcon();
             }
         }
 
@@ -93,7 +93,7 @@ namespace UnitSystem.ActionSystem
                 GridSystemVisual.UpdateAttackRangeGridVisual();
         }
 
-        public void SetActionBarSlot(ActionBarSlot slot) => actionBarSlot = slot;
+        public void SetActionBarSlot(ActionBarSlot slot) => ActionBarSlot = slot;
 
         protected virtual void Initialize() { }
 
@@ -107,14 +107,14 @@ namespace UnitSystem.ActionSystem
 
         public void Setup(Unit unit, ActionType actionType)
         {
-            this.unit = unit;
-            this.actionType = actionType;
+            this.Unit = unit;
+            this.ActionType = actionType;
             Initialize();
         }
 
-        public virtual Sprite ActionIcon() => actionType.ActionIcon;
+        public virtual Sprite ActionIcon() => ActionType.ActionIcon;
 
-        public virtual string ActionName() => actionType.ActionName;
+        public virtual string ActionName() => ActionType.ActionName;
 
         public abstract string TooltipDescription();
 

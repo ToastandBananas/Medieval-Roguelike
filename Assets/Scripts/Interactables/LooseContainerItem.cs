@@ -18,8 +18,8 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitPickingUpItem)
         {
-            if (unitPickingUpItem.unitActionHandler.turnAction.IsFacingTarget(gridPosition) == false)
-                unitPickingUpItem.unitActionHandler.turnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.turnAction.DefaultRotateSpeed * 2f);
+            if (unitPickingUpItem.unitActionHandler.TurnAction.IsFacingTarget(gridPosition) == false)
+                unitPickingUpItem.unitActionHandler.TurnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.TurnAction.DefaultRotateSpeed * 2f);
 
             if (containerInventoryManager.ContainsAnyItems())
                 InventoryUI.ShowContainerUI(containerInventoryManager, itemData.Item);

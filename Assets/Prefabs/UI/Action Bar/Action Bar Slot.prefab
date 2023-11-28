@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 6229338627508251530}
   iconImage: {fileID: 995891887561221870}
+  rectTransform: {fileID: 8666604971230979749}
   selectedImageGameObject: {fileID: 7250569779179453064}
   actionBarSection: 0
 --- !u!1 &8666604971532835094

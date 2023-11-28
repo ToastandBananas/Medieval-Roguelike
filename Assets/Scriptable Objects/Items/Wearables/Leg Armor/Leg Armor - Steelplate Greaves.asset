@@ -16,7 +16,7 @@ MonoBehaviour:
   pluralName: 
   description: Heavy-duty leg armor made from steel plates, offering superior protection
     to the lower limbs.
-  itemType: 90
+  itemType: 95
   thrownProjectileType: 20
   mainMaterial: 37
   itemSize: 4

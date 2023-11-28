@@ -19,13 +19,13 @@ namespace UnitSystem.ActionSystem
         public virtual void QueueAction(Unit targetEnemyUnit)
         {
             this.TargetEnemyUnit = targetEnemyUnit;
-            targetGridPosition = targetEnemyUnit.GridPosition;
+            TargetGridPosition = targetEnemyUnit.GridPosition;
             QueueAction();
         }
 
         public override void QueueAction(GridPosition targetGridPosition)
         {
-            this.targetGridPosition = targetGridPosition;
+            this.TargetGridPosition = targetGridPosition;
             if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
                 TargetEnemyUnit = targetUnit;
             QueueAction();
@@ -34,29 +34,29 @@ namespace UnitSystem.ActionSystem
         protected void MoveToTargetInstead()
         {
             CompleteAction();
-            unit.unitActionHandler.SetIsAttacking(false);
-            unit.unitActionHandler.moveAction.QueueAction(GetNearestAttackPosition(unit.GridPosition, TargetEnemyUnit));
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+            Unit.unitActionHandler.SetIsAttacking(false);
+            Unit.unitActionHandler.MoveAction.QueueAction(GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+            TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         protected override void StartAction()
         {
             base.StartAction();
-            unit.unitActionHandler.SetIsAttacking(true);
-            unit.stats.UseEnergy(InitialEnergyCost());
-            if (unit.IsPlayer && TargetEnemyUnit != null)
+            Unit.unitActionHandler.SetIsAttacking(true);
+            Unit.stats.UseEnergy(InitialEnergyCost());
+            if (Unit.IsPlayer && TargetEnemyUnit != null)
                 TargetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
         }
 
         protected void SetTargetEnemyUnit()
         {
-            if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit unitAtGridPosition))
+            if (LevelGrid.HasUnitAtGridPosition(TargetGridPosition, out Unit unitAtGridPosition))
             {
-                unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                Unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                 TargetEnemyUnit = unitAtGridPosition;
             }
-            else if (unit.unitActionHandler.targetEnemyUnit != null)
-                TargetEnemyUnit = unit.unitActionHandler.targetEnemyUnit;
+            else if (Unit.unitActionHandler.TargetEnemyUnit != null)
+                TargetEnemyUnit = Unit.unitActionHandler.TargetEnemyUnit;
         }
 
         public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
@@ -70,14 +70,14 @@ namespace UnitSystem.ActionSystem
                 if (heldWeaponAttackingWith != null)
                 {
                     damageAmount = heldWeaponAttackingWith.ItemData.Damage;
-                    if (unit.UnitEquipment.IsDualWielding)
+                    if (Unit.UnitEquipment.IsDualWielding)
                     {
-                        if (heldWeaponAttackingWith == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                        if (heldWeaponAttackingWith == Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
                             damageAmount *= Weapon.dualWieldPrimaryEfficiency;
                         else
                             damageAmount *= Weapon.dualWieldSecondaryEfficiency;
                     }
-                    else if (unit.UnitEquipment.InVersatileStance)
+                    else if (Unit.UnitEquipment.InVersatileStance)
                         damageAmount *= VersatileStanceAction.damageModifier;
                 }
                 else if (itemDataHittingWith != null)
@@ -109,9 +109,9 @@ namespace UnitSystem.ActionSystem
                         HeldMeleeWeapon meleeWeaponBlockedWith = heldItemBlockedWith as HeldMeleeWeapon;
                         blockAmount = targetUnit.stats.BlockPower(meleeWeaponBlockedWith);
 
-                        if (unit.UnitEquipment.IsDualWielding)
+                        if (Unit.UnitEquipment.IsDualWielding)
                         {
-                            if (meleeWeaponBlockedWith == unit.unitMeshManager.GetRightHeldMeleeWeapon())
+                            if (meleeWeaponBlockedWith == Unit.unitMeshManager.GetRightHeldMeleeWeapon())
                                 blockAmount *= Weapon.dualWieldPrimaryEfficiency;
                             else
                                 blockAmount *= Weapon.dualWieldSecondaryEfficiency;
@@ -125,34 +125,34 @@ namespace UnitSystem.ActionSystem
                     }
 
                     damageAmount = damageAmount - armorAbsorbAmount - blockAmount;
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), unit);
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), Unit);
                 }
                 else
                 {
                     damageAmount -= armorAbsorbAmount;
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), unit);
+                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), Unit);
                 }
 
                 // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
                 bool knockedBack = false;
                 if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
                 {
-                    knockedBack = unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, attackBlocked);
+                    knockedBack = Unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, attackBlocked);
                     if (IsMeleeAttackAction())
                         targetUnit.health.OnHitByMeleeAttack();
                 }
 
                 if (heldWeaponAttackingWith != null && heldWeaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall)
                 {
-                    SpearWallAction spearWallAction = unit.unitActionHandler.GetAction<SpearWallAction>();
+                    SpearWallAction spearWallAction = Unit.unitActionHandler.GetAction<SpearWallAction>();
                     if (spearWallAction != null)
                     {
                         if (knockedBack)
                             spearWallAction.OnKnockback();
                         else
                         {
-                            if (targetUnit.unitActionHandler.moveAction.aboutToMove)
-                                spearWallAction.OnFailedKnockback(targetUnit.unitActionHandler.moveAction.nextTargetGridPosition);
+                            if (targetUnit.unitActionHandler.MoveAction.AboutToMove)
+                                spearWallAction.OnFailedKnockback(targetUnit.unitActionHandler.MoveAction.NextTargetGridPosition);
                             else
                                 spearWallAction.OnFailedKnockback(targetUnit.GridPosition);
                         }
@@ -163,7 +163,7 @@ namespace UnitSystem.ActionSystem
 
         public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, bool headShot)
         {
-            foreach (KeyValuePair<Unit, HeldItem> target in unit.unitActionHandler.targetUnits)
+            foreach (KeyValuePair<Unit, HeldItem> target in Unit.unitActionHandler.targetUnits)
             {
                 Unit targetUnit = target.Key;
                 HeldItem itemBlockedWith = target.Value;
@@ -189,14 +189,14 @@ namespace UnitSystem.ActionSystem
 
         public virtual int UnarmedAttackDamage()
         {
-            return unit.stats.BaseUnarmedDamage;
+            return Unit.stats.BaseUnarmedDamage;
         }
 
         protected virtual IEnumerator DoAttack()
         {
             // Get the Units within the attack position
             List<Unit> targetUnits = ListPool<Unit>.Claim(); 
-            foreach (GridPosition gridPosition in GetActionAreaGridPositions(targetGridPosition))
+            foreach (GridPosition gridPosition in GetActionAreaGridPositions(TargetGridPosition))
             {
                 if (LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit targetUnit) == false)
                     continue;
@@ -204,24 +204,24 @@ namespace UnitSystem.ActionSystem
                 targetUnits.Add(targetUnit);
 
                 // The unit being attacked becomes aware of this unit
-                unit.vision.BecomeVisibleUnitOfTarget(targetUnit, targetUnit.unitActionHandler.targetUnits.Count == 1);
+                Unit.vision.BecomeVisibleUnitOfTarget(targetUnit, targetUnit.unitActionHandler.targetUnits.Count == 1);
             }
 
             // We need to skip a frame in case the target Unit's meshes are being enabled due to becoming visible
             yield return null; 
             
-            HeldMeleeWeapon primaryMeleeWeapon = unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon primaryMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (unit.IsPlayer || (TargetEnemyUnit != null && TargetEnemyUnit.IsPlayer) || unit.unitMeshManager.IsVisibleOnScreen || (TargetEnemyUnit != null && TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
+            if (Unit.IsPlayer || (TargetEnemyUnit != null && TargetEnemyUnit.IsPlayer) || Unit.unitMeshManager.IsVisibleOnScreen || (TargetEnemyUnit != null && TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
             {
                 if (TargetEnemyUnit != null)
                 {
-                    while (TargetEnemyUnit.unitActionHandler.moveAction.isMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
+                    while (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
-                    if (IsInAttackRange(TargetEnemyUnit, unit.GridPosition, TargetEnemyUnit.GridPosition) == false)
+                    if (IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false)
                     {
                         MoveToTargetInstead();
                         yield break;
@@ -231,37 +231,37 @@ namespace UnitSystem.ActionSystem
                 // Rotate towards the target
                 if (targetUnits.Count == 1) // If there's only 1 target Unit in the attack area, they mind as well just face that target
                 {
-                    if (unit.unitActionHandler.turnAction.IsFacingTarget(targetUnits[0].GridPosition) == false)
-                        unit.unitActionHandler.turnAction.RotateTowardsPosition(targetUnits[0].transform.position, false);
+                    if (Unit.unitActionHandler.TurnAction.IsFacingTarget(targetUnits[0].GridPosition) == false)
+                        Unit.unitActionHandler.TurnAction.RotateTowardsPosition(targetUnits[0].transform.position, false);
                 }
                 else
                 {
-                    if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
-                        unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, false);
+                    if (Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
+                        Unit.unitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, false);
                 }
 
                 // Wait to finish any rotations already in progress
-                while (unit.unitActionHandler.turnAction.isRotating)
+                while (Unit.unitActionHandler.TurnAction.isRotating)
                     yield return null;
 
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false))
-                        targetUnits[i].unitAnimator.DoDodge(unit, primaryMeleeWeapon, null);
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false))
+                        targetUnits[i].unitAnimator.DoDodge(Unit, primaryMeleeWeapon, null);
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false);
-                        unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
+                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
+                        Unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
                         if (attackBlocked && itemBlockedWith != null)
-                            itemBlockedWith.BlockAttack(unit);
+                            itemBlockedWith.BlockAttack(Unit);
                     }
                 }
 
-                unit.StartCoroutine(WaitToDamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData));
+                Unit.StartCoroutine(WaitToDamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData));
 
                 // Play the attack animations and handle blocking for each target
                 PlayAttackAnimation();
@@ -269,43 +269,43 @@ namespace UnitSystem.ActionSystem
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 // Rotate towards the target
-                if (unit.unitActionHandler.turnAction.IsFacingTarget(targetGridPosition) == false)
-                    unit.unitActionHandler.turnAction.RotateTowardsPosition(targetGridPosition.WorldPosition, true);
+                if (Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
+                    Unit.unitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, true);
 
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(unit, primaryMeleeWeapon, this, false) == false)
+                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false) == false)
                     {
                         bool headShot = false;
 
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(unit, primaryMeleeWeapon, false))
-                            targetUnits[i].unitActionHandler.turnAction.RotateTowards_Unit(unit, true);
+                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false))
+                            targetUnits[i].unitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
 
                         // Damage this unit
                         DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot);
                     }
                 }
 
-                unit.unitActionHandler.SetIsAttacking(false);
+                Unit.unitActionHandler.SetIsAttacking(false);
             }
 
             ListPool<Unit>.Release(targetUnits);
 
             // Wait until the attack lands before completing the action
-            while (unit.unitActionHandler.isAttacking)
+            while (Unit.unitActionHandler.IsAttacking)
                 yield return null;
 
             CompleteAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
+            TurnManager.Instance.StartNextUnitsTurn(Unit); // This must remain outside of CompleteAction in case we need to call CompletAction early within MoveToTargetInstead
         }
 
         public override void CompleteAction()
         {
             base.CompleteAction();
 
-            unit.unitActionHandler.targetUnits.Clear();
+            Unit.unitActionHandler.targetUnits.Clear();
         }
 
         public bool OtherUnitInTheWay(Unit unit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -332,18 +332,18 @@ namespace UnitSystem.ActionSystem
             if (!LevelGrid.IsValidGridPosition(targetGridPosition))
                 return validGridPositionsList;
 
-            if (!IsInAttackRange(null, unit.GridPosition, targetGridPosition))
+            if (!IsInAttackRange(null, Unit.GridPosition, targetGridPosition))
                 return validGridPositionsList;
 
             float sphereCastRadius = 0.1f;
-            float raycastDistance = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
-            Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
-            Vector3 attackDir = (unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
-            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+            float raycastDistance = Vector3.Distance(Unit.WorldPosition, targetGridPosition.WorldPosition);
+            Vector3 offset = 2f * Unit.ShoulderHeight * Vector3.up;
+            Vector3 attackDir = (Unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
+            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
                 return validGridPositionsList; // Blocked by an obstacle
 
             // Check if there's a Unit in the way of the attack
-            if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, unit.GridPosition, targetGridPosition))
+            if (!CanAttackThroughUnits() && OtherUnitInTheWay(Unit, Unit.GridPosition, targetGridPosition))
                 return validGridPositionsList;
 
             validGridPositionsList.Add(targetGridPosition);
@@ -356,7 +356,7 @@ namespace UnitSystem.ActionSystem
 
             validGridPositionsList.Clear();
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -370,14 +370,14 @@ namespace UnitSystem.ActionSystem
 
                 // Check for obstacles
                 float sphereCastRadius = 0.1f;
-                float raycastDistance = Vector3.Distance(unit.WorldPosition, nodeGridPosition.WorldPosition);
-                Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
+                float raycastDistance = Vector3.Distance(Unit.WorldPosition, nodeGridPosition.WorldPosition);
+                Vector3 offset = 2f * Unit.ShoulderHeight * Vector3.up;
                 Vector3 attackDir = (nodeGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
-                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
                     continue;
 
                 // Check if there's a Unit in the way of the attack (but only if the attack can't be performed through or over other Units)
-                if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, startGridPosition, nodeGridPosition))
+                if (!CanAttackThroughUnits() && OtherUnitInTheWay(Unit, startGridPosition, nodeGridPosition))
                     continue;
 
                 validGridPositionsList.Add(nodeGridPosition);
@@ -391,7 +391,7 @@ namespace UnitSystem.ActionSystem
         {
             nearestGridPositionsList.Clear();
             List<GridPosition> gridPositions = ListPool<GridPosition>.Claim();
-            gridPositions = GetValidGridPositionsInRange(targetUnit);
+            gridPositions.AddRange(GetValidGridPositionsInRange(targetUnit));
             float nearestDistance = 100000f;
 
             // First find the nearest valid Grid Positions to the Player
@@ -433,7 +433,7 @@ namespace UnitSystem.ActionSystem
 
             float boundsDimension = (MaxAttackRange() * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetUnit.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -452,14 +452,14 @@ namespace UnitSystem.ActionSystem
 
                 // Check for obstacles
                 float sphereCastRadius = 0.1f;
-                Vector3 unitOffset = 2f * unit.ShoulderHeight * Vector3.up;
+                Vector3 unitOffset = 2f * Unit.ShoulderHeight * Vector3.up;
                 Vector3 targetUnitOffset = 2f * targetUnit.ShoulderHeight * Vector3.up;
                 float raycastDistance = Vector3.Distance(nodeGridPosition.WorldPosition + unitOffset, targetUnit.WorldPosition + targetUnitOffset);
                 Vector3 attackDir = (nodeGridPosition.WorldPosition + unitOffset - (targetUnit.WorldPosition + targetUnitOffset)).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, attackDir, out _, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
                     continue;
 
-                if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, nodeGridPosition, targetUnit.GridPosition))
+                if (!CanAttackThroughUnits() && OtherUnitInTheWay(Unit, nodeGridPosition, targetUnit.GridPosition))
                     continue;
 
                 validGridPositionsList.Add(nodeGridPosition);
@@ -472,7 +472,7 @@ namespace UnitSystem.ActionSystem
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             List<GridPosition> attackGridPositions = ListPool<GridPosition>.Claim();
-            attackGridPositions = GetActionAreaGridPositions(targetGridPosition);
+            attackGridPositions.AddRange(GetActionAreaGridPositions(targetGridPosition));
             for (int i = 0; i < attackGridPositions.Count; i++)
             {
                 if (LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
@@ -481,10 +481,10 @@ namespace UnitSystem.ActionSystem
                 if (unitAtGridPosition.health.IsDead)
                     continue;
 
-                if (unit.alliance.IsAlly(unitAtGridPosition))
+                if (Unit.alliance.IsAlly(unitAtGridPosition))
                     continue;
 
-                if (unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
+                if (Unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
                     continue;
 
                 // If the loop makes it to this point, then it found a valid unit
@@ -507,7 +507,7 @@ namespace UnitSystem.ActionSystem
                     return 1f;
                 case WeaponType.Crossbow:
                     return 0.2f;
-                case WeaponType.Throwing:
+                case WeaponType.ThrowingWeapon:
                     return 0.6f;
                 case WeaponType.Dagger:
                     return 0.55f;
@@ -534,14 +534,14 @@ namespace UnitSystem.ActionSystem
             // Check for obstacles
             if (targetUnit != null)
             {
-                if (!unit.vision.IsInLineOfSight_SphereCast(targetUnit))
+                if (!Unit.vision.IsInLineOfSight_SphereCast(targetUnit))
                     return false;
             }
-            else if (!unit.vision.IsInLineOfSight_SphereCast(targetGridPosition))
+            else if (!Unit.vision.IsInLineOfSight_SphereCast(targetGridPosition))
                 return false;
 
             // Check if there's a Unit in the way of the attack (but only for actions that can't attack through or over other Units)
-            if (!CanAttackThroughUnits() && OtherUnitInTheWay(unit, startGridPosition, targetGridPosition))
+            if (!CanAttackThroughUnits() && OtherUnitInTheWay(Unit, startGridPosition, targetGridPosition))
                 return false;
 
             float distance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
@@ -553,9 +553,9 @@ namespace UnitSystem.ActionSystem
         public virtual bool IsInAttackRange(Unit targetUnit)
         {
             if (targetUnit == null)
-                return IsInAttackRange(null, unit.GridPosition, targetGridPosition);
+                return IsInAttackRange(null, Unit.GridPosition, TargetGridPosition);
             else
-                return IsInAttackRange(targetUnit, unit.GridPosition, targetUnit.GridPosition);
+                return IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition);
         }
 
         public abstract float MinAttackRange();

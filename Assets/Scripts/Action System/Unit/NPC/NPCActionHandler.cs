@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using GridSystem;
-using Utilities;
 using System.Collections;
 using InventorySystem;
 using InteractableObjects;
@@ -56,37 +55,37 @@ namespace UnitSystem.ActionSystem
 
         void Start()
         {
-            if (defaultPosition == Vector3.zero) defaultPosition = unit.WorldPosition;
+            if (defaultPosition == Vector3.zero) defaultPosition = Unit.WorldPosition;
         }
 
         public override void TakeTurn()
         {
-            if (unit.IsMyTurn && !isPerformingAction && !unit.health.IsDead)
+            if (Unit.IsMyTurn && !Unit.health.IsDead)
             {
-                unit.vision.FindVisibleUnitsAndObjects();
+                Unit.vision.FindVisibleUnitsAndObjects();
 
-                if (canPerformActions == false || unit.stats.currentAP <= 0)
+                if (CanPerformActions == false || Unit.stats.currentAP <= 0)
                 {
                     SkipTurn(); // Unit can't do anything, so skip their turn
                     return;
                 }
-                else if (queuedActions.Count == 0 && queuedAttack != null)
+                else if (QueuedActions.Count == 0 && QueuedAttack != null)
                 {
                     bool canAttack = false;
                     List<GridPosition> actionGridPositionsInRange = ListPool<GridPosition>.Claim();
-                    actionGridPositionsInRange = queuedAttack.GetActionGridPositionsInRange(unit.GridPosition);
+                    actionGridPositionsInRange.AddRange(QueuedAttack.GetActionGridPositionsInRange(Unit.GridPosition));
 
                     // Check if there's any enemies in the valid attack positions
                     for (int i = 0; i < actionGridPositionsInRange.Count; i++)
                     {
                         if (canAttack) break;
 
-                        foreach (GridPosition gridPosition in queuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
+                        foreach (GridPosition gridPosition in QueuedAttack.GetActionAreaGridPositions(actionGridPositionsInRange[i]))
                         {
                             if (!LevelGrid.HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition))
                                 continue;
 
-                            if (unit.alliance.IsEnemy(unitAtGridPosition))
+                            if (Unit.alliance.IsEnemy(unitAtGridPosition))
                             {
                                 canAttack = true;
                                 break;
@@ -99,79 +98,79 @@ namespace UnitSystem.ActionSystem
                     // If so, queue the attack and return out of this method
                     if (canAttack)
                     {
-                        queuedAttack.QueueAction(targetEnemyUnit);
+                        QueuedAttack.QueueAction(TargetEnemyUnit);
                         return;
                     }
                 }
-                else if (unit.stateController.currentState == State.Fight && queuedActions.Count > 0 && queuedActions[0] == moveAction && targetEnemyUnit != null)
+                else if (Unit.stateController.currentState == State.Fight && QueuedActions.Count > 0 && QueuedActions[0] == MoveAction && TargetEnemyUnit != null)
                 {
-                    if (targetEnemyUnit.health.IsDead)
+                    if (TargetEnemyUnit.health.IsDead)
                     {
-                        unit.stateController.SetToDefaultState();
+                        Unit.stateController.SetToDefaultState();
                         CancelActions();
-                        TurnManager.Instance.FinishTurn(unit);
+                        TurnManager.Instance.FinishTurn(Unit);
                         return;
                     }
 
-                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
-                        Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                        float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
+                        Unit closestEnemy = Unit.vision.GetClosestEnemy(true);
+                        float minShootRange = Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
-                        if (Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
+                        if (Vector3.Distance(Unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
                         {
-                            if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                            if (Unit.UnitEquipment.OtherWeaponSet_IsMelee())
                             {
                                 GetAction<SwapWeaponSetAction>().QueueAction();
                                 return;
                             }
-                            else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                            else if (Unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                             {
                                 GetAction<SwapWeaponSetAction>().QueueAction();
                                 GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                                 return;
                             }
-                            else if (unit.stats.CanFightUnarmed)
+                            else if (Unit.stats.CanFightUnarmed)
                             {
-                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy, unit.GridPosition, closestEnemy.GridPosition))
+                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy, Unit.GridPosition, closestEnemy.GridPosition))
                                     GetAction<MeleeAction>().QueueAction(closestEnemy);
                                 else
-                                    moveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, closestEnemy));
+                                    MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, closestEnemy));
                                 return;
                             }
 
                             // Else flee somewhere
-                            StartFlee(unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                            StartFlee(Unit.vision.GetClosestEnemy(true), Mathf.RoundToInt(minShootRange + Random.Range(2, Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                         }
-                        else if (GetAction<ShootAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
+                        else if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                         {
                             // Shoot the target enemy
-                            if (unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
-                                GetAction<ShootAction>().QueueAction(targetEnemyUnit);
+                            if (Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
+                                GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
                             else
                                 GetAction<ReloadAction>().QueueAction();
                             return;
                         }
                         else
                         {
-                            moveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                            MoveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                             return;
                         }
                     }
-                    else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
+                    else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
                     {
                         // Melee attack the target enemy
-                        if (GetAction<MeleeAction>().IsInAttackRange(targetEnemyUnit, unit.GridPosition, targetEnemyUnit.GridPosition))
-                            GetAction<MeleeAction>().QueueAction(targetEnemyUnit);
+                        if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
+                            GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
                         else
-                            moveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, targetEnemyUnit));
+                            MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         return;
                     }
                 }
 
                 // If not attacking, get/determine the next action
-                if (queuedActions.Count > 0)
+                if (QueuedActions.Count > 0)
                     StartCoroutine(GetNextQueuedAction());
                 else
                     DetermineAction();
@@ -183,22 +182,22 @@ namespace UnitSystem.ActionSystem
             base.SkipTurn();
 
             // unit.stats.UseAP(unit.stats.currentAP);
-            TurnManager.Instance.FinishTurn(unit);
+            TurnManager.Instance.FinishTurn(Unit);
         }
 
         public override IEnumerator GetNextQueuedAction()
         {
-            while (isAttacking || unit.unitAnimator.beingKnockedBack)
+            while (IsAttacking || Unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
-            if (!unit.IsMyTurn)
+            if (!Unit.IsMyTurn)
                 yield break;
 
-            if (queuedActions.Count > 0 && queuedAPs.Count > 0 && !isPerformingAction)
+            if (QueuedActions.Count > 0 && QueuedAPs.Count > 0 && !IsPerformingAction)
             {
-                int APRemainder = unit.stats.UseAPAndGetRemainder(queuedAPs[0]);
-                lastQueuedAction = queuedActions[0];
-                if (unit.health.IsDead)
+                int APRemainder = Unit.stats.UseAPAndGetRemainder(QueuedAPs[0]);
+                LastQueuedAction = QueuedActions[0];
+                if (Unit.health.IsDead)
                 {
                     ClearActionQueue(true, true);
                     yield break;
@@ -206,28 +205,28 @@ namespace UnitSystem.ActionSystem
 
                 if (APRemainder <= 0)
                 {
-                    if (queuedActions.Count > 0) // This can become null after a time tick update
+                    if (QueuedActions.Count > 0) // This can become null after a time tick update
                     {
-                        isPerformingAction = true;
-                        queuedActions[0].TakeAction();
+                        IsPerformingAction = true;
+                        QueuedActions[0].TakeAction();
                     }
                     else
                     {
                         CancelActions();
-                        TurnManager.Instance.FinishTurn(unit);
+                        TurnManager.Instance.FinishTurn(Unit);
                     }
                 }
                 else
                 {
-                    isPerformingAction = false;
-                    queuedAPs[0] = APRemainder;
-                    TurnManager.Instance.FinishTurn(unit);
+                    IsPerformingAction = false;
+                    QueuedAPs[0] = APRemainder;
+                    TurnManager.Instance.FinishTurn(Unit);
                 }
             }
-            else if (queuedActions.Count == 0)
+            else if (QueuedActions.Count == 0)
             {
-                Debug.LogWarning("Queued action is null for " + unit.name);
-                TurnManager.Instance.FinishTurn(unit);
+                Debug.LogWarning("Queued action is null for " + Unit.name);
+                TurnManager.Instance.FinishTurn(Unit);
             }
         }
 
@@ -236,19 +235,19 @@ namespace UnitSystem.ActionSystem
             base.FinishAction();
 
             // If the character has no AP remaining, end their turn
-            if (unit.stats.currentAP <= 0)
-                TurnManager.Instance.FinishTurn(unit);
-            else if (unit.IsMyTurn)
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+            if (Unit.stats.currentAP <= 0)
+                TurnManager.Instance.FinishTurn(Unit);
+            else if (Unit.IsMyTurn)
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public void DetermineAction()
         {
             // Debug.Log("Determine action");
-            if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead)
-                unit.unitActionHandler.SetTargetEnemyUnit(null);
+            if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.TargetEnemyUnit.health.IsDead)
+                Unit.unitActionHandler.SetTargetEnemyUnit(null);
 
-            switch (unit.stateController.currentState)
+            switch (Unit.stateController.currentState)
             {
                 case State.Idle:
                     SkipTurn();
@@ -283,22 +282,22 @@ namespace UnitSystem.ActionSystem
         #region Fight
         void Fight()
         {
-            if (unit.UnitEquipment.IsUnarmed)
+            if (Unit.UnitEquipment.IsUnarmed)
             {
                 bool weaponNearby = TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon);
 
                 // If a weapon was found and it's next to this Unit, pick it up (the weapon is likely there from fumbling it)
                 if (weaponNearby && distanceToWeapon <= LevelGrid.diaganolDistance)
                 {
-                    interactAction.QueueAction(foundLooseWeapon);
+                    InteractAction.QueueAction(foundLooseWeapon);
                     return;
                 }
 
                 // If no weapons whatsoever are equipped
-                if (unit.UnitEquipment.OtherWeaponSet_IsEmpty())
+                if (Unit.UnitEquipment.OtherWeaponSet_IsEmpty())
                 {
                     // Equip any weapon from their inventory if they have one
-                    if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    if (Unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
                         GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
@@ -306,41 +305,41 @@ namespace UnitSystem.ActionSystem
                     // Else, try pickup the nearby weapon
                     else if (weaponNearby)
                     {
-                        interactAction.QueueAction(foundLooseWeapon);
+                        InteractAction.QueueAction(foundLooseWeapon);
                         return;
                     }
                 }
                 else // If there are weapons in the other weapon set
                 {
                     // Swap to their melee weapon set if they have one
-                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    if (Unit.UnitEquipment.OtherWeaponSet_IsMelee())
                     {
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         return;
                     }
                     // Else, swap to their ranged weapon set if they have ammo
-                    else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
+                    else if (Unit.UnitEquipment.OtherWeaponSet_IsRanged() && Unit.UnitEquipment.HasValidAmmunitionEquipped(Unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
                     {
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         return;
                     }
                 }
             }
-            else if (unit.UnitEquipment.RangedWeaponEquipped)
+            else if (Unit.UnitEquipment.RangedWeaponEquipped)
             {
-                Unit closestEnemy = unit.vision.GetClosestEnemy(true);
-                float minShootRange = unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
+                Unit closestEnemy = Unit.vision.GetClosestEnemy(true);
+                float minShootRange = Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if (closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
+                if (closestEnemy != null && Vector3.Distance(Unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
                 {
                     // If the Unit has a melee weapon, switch to it
-                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    if (Unit.UnitEquipment.OtherWeaponSet_IsMelee())
                     {
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         return;
                     }
-                    else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    else if (Unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
                         GetAction<SwapWeaponSetAction>().QueueAction();
                         GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
@@ -348,28 +347,28 @@ namespace UnitSystem.ActionSystem
                     }
                     else
                         // Else flee somewhere
-                        StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                        StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                 }
             }
 
             if (shouldStopChasing)
             {
-                if (unit.GridPosition == LevelGrid.GetGridPosition(defaultPosition))
+                if (Unit.GridPosition == LevelGrid.GetGridPosition(defaultPosition))
                 {
                     SetTargetEnemyUnit(null);
-                    unit.stateController.SetToDefaultState();
+                    Unit.stateController.SetToDefaultState();
                     DetermineAction();
                 }
                 else
-                    moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
+                    MoveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
                 return;
             }
             else
             {
-                if (Vector3.Distance(startChaseGridPosition.WorldPosition, unit.WorldPosition) >= maxChaseDistance)
+                if (Vector3.Distance(startChaseGridPosition.WorldPosition, Unit.WorldPosition) >= maxChaseDistance)
                 {
                     shouldStopChasing = true;
-                    moveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
+                    MoveAction.QueueAction(LevelGrid.GetGridPosition(defaultPosition));
                     return;
                 }
             }
@@ -377,15 +376,15 @@ namespace UnitSystem.ActionSystem
             FindBestTargetEnemy();
 
             // If there's no target enemy Unit, try to find one, else switch States
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.health.IsDead)
             {
                 SetTargetEnemyUnit(null);
-                unit.stateController.SetToDefaultState();
+                Unit.stateController.SetToDefaultState();
                 DetermineAction();
                 return;
             }
 
-            if (IsInAttackRange(targetEnemyUnit, false))
+            if (IsInAttackRange(TargetEnemyUnit, false))
                 ChooseCombatAction();
             else
                 PursueTargetEnemy();
@@ -410,11 +409,11 @@ namespace UnitSystem.ActionSystem
                 if (availableCombatActions[i].IsValidAction() == false)
                     continue;
 
-                if (unit.stats.HasEnoughEnergy(availableCombatActions[i].InitialEnergyCost()) == false)
+                if (Unit.stats.HasEnoughEnergy(availableCombatActions[i].InitialEnergyCost()) == false)
                     continue;
 
                 // Loop through every grid position in range of the combat action
-                foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition))
+                foreach (GridPosition gridPositionInRange in availableCombatActions[i].GetActionGridPositionsInRange(Unit.GridPosition))
                 {
                     // For each of these grid positions, get the best one for this combat action
                     npcAIActions.Add(availableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
@@ -456,14 +455,14 @@ namespace UnitSystem.ActionSystem
                 if (chosenCombatAction != null)
                 {
                     Unit unitAtActionGridPosition = LevelGrid.GetUnitAtGridPosition(filteredNPCAIActions[selectedIndex].actionGridPosition);
-                    if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.moveAction.isMoving)
+                    if (unitAtActionGridPosition != null && unitAtActionGridPosition.unitActionHandler.MoveAction.IsMoving)
                     {
-                        while (unitAtActionGridPosition.unitActionHandler.moveAction.isMoving)
+                        while (unitAtActionGridPosition.unitActionHandler.MoveAction.IsMoving)
                             yield return null;
 
-                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, unit.GridPosition, unitAtActionGridPosition.GridPosition) == false) // If the target Unit moved out of range
+                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, Unit.GridPosition, unitAtActionGridPosition.GridPosition) == false) // If the target Unit moved out of range
                         {
-                            targetEnemyUnit = unitAtActionGridPosition;
+                            TargetEnemyUnit = unitAtActionGridPosition;
                             PursueTargetEnemy();
 
                             ListPool<NPCAIAction>.Release(filteredNPCAIActions);
@@ -486,14 +485,14 @@ namespace UnitSystem.ActionSystem
 
         public void StartFight()
         {
-            unit.stateController.SetCurrentState(State.Fight);
+            Unit.stateController.SetCurrentState(State.Fight);
             FindBestTargetEnemy();
             ClearActionQueue(false);
 
-            if (targetEnemyUnit == null || targetEnemyUnit.health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.health.IsDead)
             {
                 SetTargetEnemyUnit(null);
-                unit.stateController.SetToDefaultState();
+                Unit.stateController.SetToDefaultState();
                 DetermineAction();
                 return;
             }
@@ -501,60 +500,60 @@ namespace UnitSystem.ActionSystem
 
         void PursueTargetEnemy()
         {
-            if (targetEnemyUnit == null)
+            if (TargetEnemyUnit == null)
             {
                 DetermineAction();
                 return;
             }
             
             // If there's no space around the enemy unit, try to find another enemy to attack
-            if (targetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange()))
+            if (TargetEnemyUnit.IsCompletelySurrounded(Unit.GetAttackRange()))
                 SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
 
-            moveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(targetEnemyUnit.GridPosition, unit, 10));
+            MoveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(TargetEnemyUnit.GridPosition, Unit, 10));
         }
 
         void FindBestTargetEnemy()
         {
-            if (unit.health.IsDead)
+            if (Unit.health.IsDead)
                 return;
 
-            if (unit.vision.knownEnemies.Count > 0)
+            if (Unit.vision.knownEnemies.Count > 0)
             {
                 // If there's only one visible enemy, then there's no need to figure out the best enemy AI action
-                if (unit.vision.knownEnemies.Count == 1)
-                    SetTargetEnemyUnit(unit.vision.knownEnemies[0]);
+                if (Unit.vision.knownEnemies.Count == 1)
+                    SetTargetEnemyUnit(Unit.vision.knownEnemies[0]);
                 else
                 {
                     npcAIActions.Clear();
-                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
                         ShootAction shootAction = GetAction<ShootAction>();
-                        for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
+                        for (int i = 0; i < Unit.vision.knownEnemies.Count; i++)
                         {
-                            npcAIActions.Add(shootAction.GetNPCAIAction_Unit(unit.vision.knownEnemies[i]));
+                            npcAIActions.Add(shootAction.GetNPCAIAction_Unit(Unit.vision.knownEnemies[i]));
                         }
 
                         if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
                         {
-                            TurnManager.Instance.FinishTurn(unit);
+                            TurnManager.Instance.FinishTurn(Unit);
                             return;
                         }
 
                         SetTargetEnemyUnit(LevelGrid.GetUnitAtGridPosition(shootAction.GetBestNPCAIActionFromList(npcAIActions).actionGridPosition));
 
                     }
-                    else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
+                    else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
                     {
                         MeleeAction meleeAction = GetAction<MeleeAction>();
-                        for (int i = 0; i < unit.vision.knownEnemies.Count; i++)
+                        for (int i = 0; i < Unit.vision.knownEnemies.Count; i++)
                         {
-                            npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(unit.vision.knownEnemies[i]));
+                            npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(Unit.vision.knownEnemies[i]));
                         }
 
                         if (npcAIActions.Count == 1 && npcAIActions[0].actionValue <= -1)
                         {
-                            TurnManager.Instance.FinishTurn(unit);
+                            TurnManager.Instance.FinishTurn(Unit);
                             return;
                         }
 
@@ -562,7 +561,7 @@ namespace UnitSystem.ActionSystem
                     }
                     else
                     {
-                        StartFlee(unit.vision.GetClosestEnemy(true), defaultFleeDistance);
+                        StartFlee(Unit.vision.GetClosestEnemy(true), defaultFleeDistance);
                         DetermineAction();
                     }
                 }
@@ -571,16 +570,16 @@ namespace UnitSystem.ActionSystem
 
         void GetRandomTargetEnemy()
         {
-            if (unit.vision.knownEnemies.Count > 0)
-                targetEnemyUnit = unit.vision.knownEnemies[Random.Range(0, unit.vision.knownEnemies.Count)];
+            if (Unit.vision.knownEnemies.Count > 0)
+                TargetEnemyUnit = Unit.vision.knownEnemies[Random.Range(0, Unit.vision.knownEnemies.Count)];
             else
-                targetEnemyUnit = null;
+                TargetEnemyUnit = null;
         }
 
         void SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy)
         {
-            oldEnemy = targetEnemyUnit;
-            Unit closestEnemy = unit.vision.GetClosestEnemy(false);
+            oldEnemy = TargetEnemyUnit;
+            Unit closestEnemy = Unit.vision.GetClosestEnemy(false);
 
             // Debug.Log(unit + " new enemy: " + closestEnemy + " old enemy: " + oldEnemy);
             newEnemy = closestEnemy;
@@ -589,9 +588,9 @@ namespace UnitSystem.ActionSystem
 
         public override void SetTargetEnemyUnit(Unit target)
         {
-            if (target != null && target != targetEnemyUnit)
+            if (target != null && target != TargetEnemyUnit)
             {
-                startChaseGridPosition = unit.GridPosition;
+                startChaseGridPosition = Unit.GridPosition;
                 shouldStopChasing = false;
             }
 
@@ -600,7 +599,7 @@ namespace UnitSystem.ActionSystem
 
         public bool TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon)
         {
-            LooseItem closestLooseWeapon = unit.vision.GetClosestWeapon(out float distanceToClosestWeapon);
+            LooseItem closestLooseWeapon = Unit.vision.GetClosestWeapon(out float distanceToClosestWeapon);
             if (closestLooseWeapon == null)
             {
                 foundLooseWeapon = null;
@@ -610,7 +609,7 @@ namespace UnitSystem.ActionSystem
 
             if (closestLooseWeapon.ItemData.Item is RangedWeapon)
             {
-                if (unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon)) 
+                if (Unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon)) 
                 {
                     foundLooseWeapon = closestLooseWeapon;
                     distanceToWeapon = distanceToClosestWeapon;
@@ -618,7 +617,7 @@ namespace UnitSystem.ActionSystem
                 }
                 else
                 {
-                    LooseItem closestLooseMeleeWeapon = unit.vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
+                    LooseItem closestLooseMeleeWeapon = Unit.vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
                     if (closestLooseMeleeWeapon != null)
                     {
                         foundLooseWeapon = closestLooseMeleeWeapon;
@@ -641,49 +640,49 @@ namespace UnitSystem.ActionSystem
             // If there's no Unit to flee from or if the Unit to flee from died
             if (unitToFleeFrom == null || unitToFleeFrom.health.IsDead)
             {
-                unit.stateController.SetToDefaultState(); // Variables are reset in this method
+                Unit.stateController.SetToDefaultState(); // Variables are reset in this method
                 DetermineAction();
                 return;
             }
 
-            float distanceFromUnitToFleeFrom = Vector3.Distance(unitToFleeFrom.WorldPosition, unit.WorldPosition);
+            float distanceFromUnitToFleeFrom = Vector3.Distance(unitToFleeFrom.WorldPosition, Unit.WorldPosition);
 
             // If the Unit has fled far enough
             if (distanceFromUnitToFleeFrom >= fleeDistance)
             {
-                unit.stateController.SetToDefaultState(); // Variables are also reset in this method
+                Unit.stateController.SetToDefaultState(); // Variables are also reset in this method
                 DetermineAction();
                 return;
             }
 
             // The enemy this Unit is fleeing from has moved closer or they have arrived at their flee destination, but are still too close to the enemy, so get a new flee destination
-            if (unit.GridPosition == moveAction.targetGridPosition || (unitToFleeFrom.GridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom + 2f <= unitToFleeFrom_PreviousDistance)))
+            if (Unit.GridPosition == MoveAction.TargetGridPosition || (unitToFleeFrom.GridPosition != unitToFleeFrom_PreviousGridPosition && (unitToFleeFrom_PreviousDistance == 0f || distanceFromUnitToFleeFrom + 2f <= unitToFleeFrom_PreviousDistance)))
                 needsNewFleeDestination = true;
 
-            GridPosition targetGridPosition = moveAction.targetGridPosition;
+            GridPosition targetGridPosition = MoveAction.TargetGridPosition;
             if (needsNewFleeDestination)
             {
                 needsNewFleeDestination = false;
-                unitToFleeFrom_PreviousDistance = Vector3.Distance(unitToFleeFrom.WorldPosition, unit.WorldPosition);
+                unitToFleeFrom_PreviousDistance = Vector3.Distance(unitToFleeFrom.WorldPosition, Unit.WorldPosition);
                 targetGridPosition = GetFleeDestination();
             }
 
             // If there was no valid flee position, just grab a random position within range
-            if (moveAction.targetGridPosition == unit.GridPosition)
-                targetGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.GridPosition, unit, fleeDistance, fleeDistance + 15);
+            if (MoveAction.TargetGridPosition == Unit.GridPosition)
+                targetGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(unitToFleeFrom.GridPosition, Unit, fleeDistance, fleeDistance + 15);
 
-            moveAction.QueueAction(targetGridPosition);
+            MoveAction.QueueAction(targetGridPosition);
         }
 
         public void StartFlee(Unit unitToFleeFrom, int fleeDistance)
         {
-            unit.stateController.SetCurrentState(State.Flee);
+            Unit.stateController.SetCurrentState(State.Flee);
             this.unitToFleeFrom = unitToFleeFrom;
             this.fleeDistance = fleeDistance;
             ClearActionQueue(false);
         }
 
-        GridPosition GetFleeDestination() => LevelGrid.Instance.GetRandomFleeGridPosition(unit, unitToFleeFrom, fleeDistance, fleeDistance + 15);
+        GridPosition GetFleeDestination() => LevelGrid.Instance.GetRandomFleeGridPosition(Unit, unitToFleeFrom, fleeDistance, fleeDistance + 15);
 
         public int DefaultFleeDistance() => defaultFleeDistance;
 
@@ -697,17 +696,17 @@ namespace UnitSystem.ActionSystem
         {
             if (leader == null || leader.health.IsDead)
             {
-                Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
+                Debug.LogWarning("Leader for " + Unit.name + " is null or dead, but they are in the Follow state.");
                 shouldFollowLeader = false;
-                unit.stateController.SetToDefaultState();
+                Unit.stateController.SetToDefaultState();
                 DetermineAction();
                 return;
             }
 
-            if (Vector3.Distance(unit.WorldPosition, leader.WorldPosition) <= stopFollowDistance)
-                TurnManager.Instance.FinishTurn(unit);
-            else if (moveAction.isMoving == false)
-                moveAction.QueueAction(leader.unitActionHandler.turnAction.GetGridPositionBehindUnit());
+            if (Vector3.Distance(Unit.WorldPosition, leader.WorldPosition) <= stopFollowDistance)
+                TurnManager.Instance.FinishTurn(Unit);
+            else if (MoveAction.IsMoving == false)
+                MoveAction.QueueAction(leader.unitActionHandler.TurnAction.GetGridPositionBehindUnit());
         }
 
         public Unit Leader() => leader;
@@ -724,15 +723,15 @@ namespace UnitSystem.ActionSystem
             {
                 if (inspectSoundIterations == maxInspectSoundIterations)
                 {
-                    unit.stateController.SetToDefaultState();
+                    Unit.stateController.SetToDefaultState();
                     DetermineAction();
                     return;
                 }
 
                 needsNewSoundInspectPosition = false;
 
-                inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, unit, 0 + inspectSoundIterations, 2 + inspectSoundIterations, true);
-                moveAction.QueueAction(inspectSoundGridPosition);
+                inspectSoundGridPosition = LevelGrid.Instance.GetRandomGridPositionInRange(soundGridPosition, Unit, 0 + inspectSoundIterations, 2 + inspectSoundIterations, true);
+                MoveAction.QueueAction(inspectSoundGridPosition);
             }
             else if (Vector3.Distance(inspectSoundGridPosition.WorldPosition, transform.position) <= 0.1f)
             {
@@ -741,13 +740,13 @@ namespace UnitSystem.ActionSystem
                 needsNewSoundInspectPosition = true;
                 InspectSound();
             }
-            else if (moveAction.isMoving == false)
+            else if (MoveAction.IsMoving == false)
             {
                 // Get a new Inspect Sound Position if there's now another Unit or obstruction there
                 if (LevelGrid.GridPositionObstructed(inspectSoundGridPosition))
-                    inspectSoundGridPosition = LevelGrid.GetNearestSurroundingGridPosition(inspectSoundGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true);
+                    inspectSoundGridPosition = LevelGrid.GetNearestSurroundingGridPosition(inspectSoundGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true);
 
-                moveAction.QueueAction(inspectSoundGridPosition);
+                MoveAction.QueueAction(inspectSoundGridPosition);
             }
         }
 
@@ -765,7 +764,7 @@ namespace UnitSystem.ActionSystem
             {
                 // Debug.Log("Max patrol iterations reached...");
                 patrolIterationCount = 0;
-                TurnManager.Instance.FinishTurn(unit);
+                TurnManager.Instance.FinishTurn(Unit);
                 return;
             }
             else if (patrolPoints.Length > 0)
@@ -787,26 +786,26 @@ namespace UnitSystem.ActionSystem
                     return;
                 }
                 // If there's another Unit currently on the Patrol Point or Alternative Patrol Point
-                else if ((hasAlternativePatrolPoint == false && LevelGrid.GridPositionObstructed(patrolPointGridPosition) && LevelGrid.GetUnitAtGridPosition(patrolPointGridPosition) != unit)
-                    || (hasAlternativePatrolPoint && LevelGrid.GridPositionObstructed(moveAction.targetGridPosition) && LevelGrid.GetUnitAtGridPosition(moveAction.targetGridPosition) != unit))
+                else if ((hasAlternativePatrolPoint == false && LevelGrid.GridPositionObstructed(patrolPointGridPosition) && LevelGrid.GetUnitAtGridPosition(patrolPointGridPosition) != Unit)
+                    || (hasAlternativePatrolPoint && LevelGrid.GridPositionObstructed(MoveAction.TargetGridPosition) && LevelGrid.GetUnitAtGridPosition(MoveAction.TargetGridPosition) != Unit))
                 {
                     // Increase the iteration count just in case we had to look for an Alternative Patrol Point due to something obstructing the current Target Grid Position
                     patrolIterationCount++;
 
                     // Find the nearest Grid Position to the Patrol Point
-                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.FindNearestValidGridPosition(patrolPointGridPosition, unit, 5);
+                    GridPosition nearestGridPositionToPatrolPoint = LevelGrid.FindNearestValidGridPosition(patrolPointGridPosition, Unit, 5);
                     if (patrolPointGridPosition == nearestGridPositionToPatrolPoint)
                         IncreasePatrolPointIndex();
 
                     hasAlternativePatrolPoint = true;
-                    moveAction.SetTargetGridPosition(nearestGridPositionToPatrolPoint);
+                    MoveAction.SetTargetGridPosition(nearestGridPositionToPatrolPoint);
 
                     if (nearestGridPositionToPatrolPoint != patrolPointGridPosition && LevelGrid.GridPositionObstructed(nearestGridPositionToPatrolPoint) == false)
                         patrolIterationCount = 0;
                 }
 
                 // If the Unit has arrived at their current Patrol Point or Alternative Patrol Point position
-                if (Vector3.Distance(moveAction.targetGridPosition.WorldPosition, transform.position) <= 0.1f)
+                if (Vector3.Distance(MoveAction.TargetGridPosition.WorldPosition, transform.position) <= 0.1f)
                 {
                     if (hasAlternativePatrolPoint)
                         hasAlternativePatrolPoint = false;
@@ -814,31 +813,31 @@ namespace UnitSystem.ActionSystem
                     // Set the Unit's Target Grid Position as the next Patrol Point
                     IncreasePatrolPointIndex();
                     patrolPointGridPosition = LevelGrid.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
-                    moveAction.SetTargetGridPosition(patrolPointGridPosition);
+                    MoveAction.SetTargetGridPosition(patrolPointGridPosition);
                 }
                 // Otherwise, assign their target position to the Patrol Point if it's not already set
-                else if (hasAlternativePatrolPoint == false && moveAction.targetGridPosition.WorldPosition != patrolPoints[currentPatrolPointIndex])
+                else if (hasAlternativePatrolPoint == false && MoveAction.TargetGridPosition.WorldPosition != patrolPoints[currentPatrolPointIndex])
                 {
-                    moveAction.SetTargetGridPosition(patrolPointGridPosition);
+                    MoveAction.SetTargetGridPosition(patrolPointGridPosition);
 
                     // Don't reset the patrol iteration count if the next target position is the Unit's current position, because we'll need to iterate through Patrol again
-                    if (moveAction.targetGridPosition != unit.GridPosition)
+                    if (MoveAction.TargetGridPosition != Unit.GridPosition)
                         patrolIterationCount = 0;
                 }
 
                 // Queue the Move Action if the Unit isn't already moving
-                if (moveAction.isMoving == false)
-                    moveAction.QueueAction(moveAction.targetGridPosition);
+                if (MoveAction.IsMoving == false)
+                    MoveAction.QueueAction(MoveAction.TargetGridPosition);
             }
             else // If no Patrol Points set
             {
                 Debug.LogWarning("No patrol points set for " + name);
                 patrolIterationCount = 0;
 
-                if (unit.stateController.DefaultState() == State.Patrol)
-                    unit.stateController.ChangeDefaultState(State.Idle);
+                if (Unit.stateController.DefaultState() == State.Patrol)
+                    Unit.stateController.ChangeDefaultState(State.Idle);
 
-                unit.stateController.SetCurrentState(State.Idle);
+                Unit.stateController.SetCurrentState(State.Idle);
                 DetermineAction();
             }
         }
@@ -855,7 +854,7 @@ namespace UnitSystem.ActionSystem
         {
             IncreasePatrolPointIndex();
             GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(patrolPoints[currentPatrolPointIndex]);
-            moveAction.SetTargetGridPosition(patrolPointGridPosition);
+            MoveAction.SetTargetGridPosition(patrolPointGridPosition);
         }
 
         int GetNearestPatrolPointIndex()
@@ -892,17 +891,17 @@ namespace UnitSystem.ActionSystem
             if (wanderPositionSet == false)
             {
                 wanderGridPosition = GetNewWanderPosition();
-                if (wanderGridPosition == unit.GridPosition)
-                    TurnManager.Instance.FinishTurn(unit);
+                if (wanderGridPosition == Unit.GridPosition)
+                    TurnManager.Instance.FinishTurn(Unit);
                 else
                 {
                     wanderPositionSet = true;
-                    moveAction.SetTargetGridPosition(wanderGridPosition);
+                    MoveAction.SetTargetGridPosition(wanderGridPosition);
                 }
 
                 // Queue the Move Action if the Unit isn't already moving
-                if (moveAction.isMoving == false)
-                    moveAction.QueueAction(wanderGridPosition);
+                if (MoveAction.IsMoving == false)
+                    MoveAction.QueueAction(wanderGridPosition);
             }
             // If the NPC has arrived at their destination
             else if (Vector3.Distance(wanderGridPosition.WorldPosition, transform.position) <= 0.1f)
@@ -911,13 +910,13 @@ namespace UnitSystem.ActionSystem
                 wanderPositionSet = false;
                 Wander();
             }
-            else if (moveAction.isMoving == false)
+            else if (MoveAction.IsMoving == false)
             {
                 // Get a new Wander Position if there's now another Unit or obstruction there
                 if (LevelGrid.GridPositionObstructed(wanderGridPosition))
                     wanderGridPosition = GetNewWanderPosition();
 
-                moveAction.QueueAction(wanderGridPosition);
+                MoveAction.QueueAction(wanderGridPosition);
             }
         }
 

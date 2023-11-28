@@ -9,7 +9,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeAction()
         {
-            if (unit == null || unit.unitActionHandler.AvailableActions.Contains(this) == false)
+            if (Unit == null || Unit.unitActionHandler.AvailableActions.Contains(this) == false)
             {
                 CompleteAction();
                 return;
@@ -21,7 +21,7 @@ namespace UnitSystem.ActionSystem
 
         void Unload()
         {
-            unit.unitMeshManager.GetHeldRangedWeapon().UnloadProjectile();
+            Unit.unitMeshManager.GetHeldRangedWeapon().UnloadProjectile();
             CompleteAction();
         }
 
@@ -29,19 +29,19 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            if (unit.IsPlayer)
-                unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+            if (Unit.IsPlayer)
+                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
-            unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+            Unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public override int ActionPointsCost()
         {
-            return Mathf.RoundToInt(defaultActionPointCost * (float)unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
+            return Mathf.RoundToInt(defaultActionPointCost * (float)Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment.RangedWeaponEquipped && unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded;
+        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded;
 
         public override bool IsInterruptable() => false;
 
@@ -57,10 +57,10 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            if (unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile != null)
-                return $"Unload the <b>{unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile.ItemData.Item.Name}</b> from your <b>{unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
+            if (Unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile != null)
+                return $"Unload the <b>{Unit.unitMeshManager.GetHeldRangedWeapon().LoadedProjectile.ItemData.Item.Name}</b> from your <b>{Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
             else
-                return $"Unload your <b>{unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
+                return $"Unload your <b>{Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Name}</b>.";
         }
     }
 }

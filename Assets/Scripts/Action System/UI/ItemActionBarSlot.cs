@@ -23,16 +23,16 @@ namespace UnitSystem.ActionSystem.UI
                 if (itemData.Item is Ammunition)
                 {
                     // We just need to assign any basic action, since the Player might not have a Reload Action at the time of assigning the item to a hotbar slot
-                    actionType = playerActionHandler.GetAction<InventoryAction>().actionType;
-                    action = actionType.GetAction(playerActionHandler.unit);
+                    ActionType = playerActionHandler.GetAction<InventoryAction>().ActionType;
+                    Action = ActionType.GetAction(playerActionHandler.Unit);
 
                     button.onClick.RemoveAllListeners();
                     button.onClick.AddListener(() =>
                     {
-                        if (playerActionHandler.queuedActions.Count == 0)
+                        if (playerActionHandler.QueuedActions.Count == 0)
                         {
                             // Only do something if the Player has a valid ranged weapon equipped that's not already loaded and valid ammunition
-                            HeldRangedWeapon heldRangedWeapon = playerActionHandler.unit.unitMeshManager.GetHeldRangedWeapon();
+                            HeldRangedWeapon heldRangedWeapon = playerActionHandler.Unit.unitMeshManager.GetHeldRangedWeapon();
                             if (heldRangedWeapon != null && heldRangedWeapon.IsLoaded == false && heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
                                 playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
@@ -44,18 +44,18 @@ namespace UnitSystem.ActionSystem.UI
                 }
                 else
                 {
-                    actionType = playerActionHandler.GetAction<EquipAction>().actionType;
-                    action = actionType.GetAction(playerActionHandler.unit);
+                    ActionType = playerActionHandler.GetAction<EquipAction>().ActionType;
+                    Action = ActionType.GetAction(playerActionHandler.Unit);
 
                     button.onClick.RemoveAllListeners();
                     button.onClick.AddListener(() =>
                     {
-                        if (playerActionHandler.queuedActions.Count == 0)
+                        if (playerActionHandler.QueuedActions.Count == 0)
                         {
-                            if (playerActionHandler.unit.UnitEquipment.CanEquipItem(itemData) == false)
+                            if (playerActionHandler.Unit.UnitEquipment.CanEquipItem(itemData) == false)
                                 return;
 
-                            EquipAction equipAction = action as EquipAction;
+                            EquipAction equipAction = Action as EquipAction;
                             equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
                             ResetButton();
                         }
@@ -64,23 +64,23 @@ namespace UnitSystem.ActionSystem.UI
             }
             else if (itemData.Item is Consumable)
             {
-                actionType = playerActionHandler.GetAction<ConsumeAction>().actionType;
-                action = actionType.GetAction(playerActionHandler.unit);
+                ActionType = playerActionHandler.GetAction<ConsumeAction>().ActionType;
+                Action = ActionType.GetAction(playerActionHandler.Unit);
 
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() =>
                 {
-                    if (playerActionHandler.queuedActions.Count == 0)
+                    if (playerActionHandler.QueuedActions.Count == 0)
                     {
                         if ((itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize == 1) || (itemData.Item.MaxUses > 1 && itemData.RemainingUses == 1))
                         {
-                            ConsumeAction consumeAction = action as ConsumeAction;
+                            ConsumeAction consumeAction = Action as ConsumeAction;
                             consumeAction.QueueAction(itemData);
                             ResetButton();
                         }
                         else
                         {
-                            ConsumeAction consumeAction = action as ConsumeAction;
+                            ConsumeAction consumeAction = Action as ConsumeAction;
                             consumeAction.QueueAction(itemData);
                         }
                     }

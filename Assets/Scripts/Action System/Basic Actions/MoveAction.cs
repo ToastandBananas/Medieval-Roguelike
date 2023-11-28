@@ -15,16 +15,16 @@ namespace UnitSystem.ActionSystem
         public delegate void OnMoveHandler();
         public event OnMoveHandler OnMove;
 
-        public GridPosition finalTargetGridPosition { get; private set; }
-        public GridPosition nextTargetGridPosition { get; private set; }
-        public GridPosition lastGridPosition { get; private set; }
+        public GridPosition FinalTargetGridPosition { get; private set; }
+        public GridPosition NextTargetGridPosition { get; private set; }
+        public GridPosition LastGridPosition { get; private set; }
         Vector3 nextTargetPosition;
 
-        public bool aboutToMove { get; private set; }
-        public bool isMoving { get; private set; }
-        public bool canMove { get; private set; }
+        public bool AboutToMove { get; private set; }
+        public bool IsMoving { get; private set; }
+        public bool CanMove { get; private set; }
 
-        List<Vector3> positionList = new List<Vector3>();
+        List<Vector3> positionList = new();
         int positionIndex;
 
         readonly float defaultMoveSpeed = 3.5f;
@@ -37,23 +37,21 @@ namespace UnitSystem.ActionSystem
 
         void Start()
         {
-            canMove = true;
+            CanMove = true;
             moveSpeed = defaultMoveSpeed;
-            targetGridPosition = unit.GridPosition;
-            lastGridPosition = unit.GridPosition;
+            TargetGridPosition = Unit.GridPosition;
+            LastGridPosition = Unit.GridPosition;
         }
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
         {
-            if (unit.IsPlayer)
-            Debug.Log("queing move");
-            targetGridPosition = finalTargetGridPosition;
-            unit.unitActionHandler.QueueAction(this);
+            TargetGridPosition = finalTargetGridPosition;
+            Unit.unitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()
         {
-            if (isMoving) return;
+            if (IsMoving) return;
 
             StartAction();
             StartCoroutine(Move());
@@ -63,7 +61,7 @@ namespace UnitSystem.ActionSystem
         {
             base.StartAction();
 
-            if (unit.IsPlayer)
+            if (Unit.IsPlayer)
             {
                 InventoryUI.CloseAllContainerUI();
                 if (InventoryUI.npcInventoryActive)
@@ -74,65 +72,65 @@ namespace UnitSystem.ActionSystem
         IEnumerator Move()
         {
             // If there's no path
-            if (positionList.Count == 0 || finalTargetGridPosition == unit.GridPosition)
+            if (positionList.Count == 0 || FinalTargetGridPosition == Unit.GridPosition)
             {
                 CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
                 yield break;
             }
 
-            if (canMove == false)
+            if (CanMove == false)
             {
-                Debug.Log($"{unit.name} tries to move, but they can't.");
+                Debug.Log($"{Unit.name} tries to move, but they can't.");
                 CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
                 yield break;
             }
 
             // If the next position is obstructed
-            if (LevelGrid.GridPositionObstructed(nextTargetGridPosition))
+            if (LevelGrid.GridPositionObstructed(NextTargetGridPosition))
             {
                 // Get a new path to the target position
-                GetPathToTargetPosition(finalTargetGridPosition);
+                GetPathToTargetPosition(FinalTargetGridPosition);
 
                 // If we still can't find a path, just finish the action
                 if (positionList.Count == 0)
                 {
                     CompleteAction();
-                    TurnManager.Instance.StartNextUnitsTurn(unit);
+                    TurnManager.Instance.StartNextUnitsTurn(Unit);
                     yield break;
                 }
 
                 nextTargetPosition = GetNextTargetPosition();
-                nextTargetGridPosition.Set(nextTargetPosition);
+                NextTargetGridPosition.Set(nextTargetPosition);
             }
 
-            if (nextTargetPosition == unit.WorldPosition || LevelGrid.GridPositionObstructed(nextTargetGridPosition))
+            if (nextTargetPosition == Unit.WorldPosition || LevelGrid.GridPositionObstructed(NextTargetGridPosition))
             {
                 CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
                 yield break;
             }
 
-            lastGridPosition = unit.GridPosition;
+            LastGridPosition = Unit.GridPosition;
             OnMove?.Invoke();
 
-            aboutToMove = true;
+            AboutToMove = true;
 
-            while (unit.unitAnimator.beingKnockedBack)
+            while (Unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
             // Check for Opportunity Attacks & Spear Wall attacks
-            for (int i = unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
+            for (int i = Unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
-                Unit opportunityAttackingUnit = unit.unitsWhoCouldOpportunityAttackMe[i];
+                Unit opportunityAttackingUnit = Unit.unitsWhoCouldOpportunityAttackMe[i];
                 if (opportunityAttackingUnit.health.IsDead)
                 {
-                    unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
+                    Unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
                     continue;
                 }
 
-                if (unit.alliance.IsEnemy(opportunityAttackingUnit) == false)
+                if (Unit.alliance.IsEnemy(opportunityAttackingUnit) == false)
                     continue;
 
                 // Only melee Unit's can do an opportunity attack
@@ -140,71 +138,71 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
-                if (opportunityAttackingUnit.vision.IsDirectlyVisible(unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(unit.transform) == false)
+                if (opportunityAttackingUnit.vision.IsDirectlyVisible(Unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(Unit.transform) == false)
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
                 MeleeAction opponentsMeleeAction = opportunityAttackingUnit.unitActionHandler.GetAction<MeleeAction>();
-                if (opponentsMeleeAction.IsInAttackRange(unit) == false)
+                if (opponentsMeleeAction.IsInAttackRange(Unit) == false)
                     continue;
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
-                if (opponentsMeleeAction.IsInAttackRange(unit, opportunityAttackingUnit.GridPosition, nextTargetGridPosition))
+                if (opponentsMeleeAction.IsInAttackRange(Unit, opportunityAttackingUnit.GridPosition, NextTargetGridPosition))
                 {
-                    opportunityAttackingUnit.opportunityAttackTrigger.OnEnemyUnitMoved(unit, nextTargetGridPosition);
+                    opportunityAttackingUnit.opportunityAttackTrigger.OnEnemyUnitMoved(Unit, NextTargetGridPosition);
                     continue;
                 }
 
-                opponentsMeleeAction.DoOpportunityAttack(unit);
+                opponentsMeleeAction.DoOpportunityAttack(Unit);
 
-                while (opportunityAttackingUnit.unitActionHandler.isAttacking)
+                while (opportunityAttackingUnit.unitActionHandler.IsAttacking)
                     yield return null;
             }
 
             // This Unit can die during an opportunity attack
-            if (unit.health.IsDead)
+            if (Unit.health.IsDead)
             {
                 CompleteAction();
                 yield break;
             }
 
             // Unblock the Unit's current position since they're about to move
-            isMoving = true;
-            unit.UnblockCurrentPosition();
+            IsMoving = true;
+            Unit.UnblockCurrentPosition();
 
             // Block the Next Position so that NPCs who are also currently looking for a path don't try to use the Next Position's tile
-            unit.BlockAtPosition(nextTargetPosition);
+            Unit.BlockAtPosition(nextTargetPosition);
             
             // Remove the Unit reference from it's current Grid Position and add the Unit to its next Grid Position
-            LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
-            LevelGrid.AddUnitAtGridPosition(nextTargetGridPosition, unit);
+            LevelGrid.RemoveUnitAtGridPosition(Unit.GridPosition);
+            LevelGrid.AddUnitAtGridPosition(NextTargetGridPosition, Unit);
 
             // Set the Unit's new grid position before they move so that other Unit's use that grid position when checking attack ranges and such
-            unit.SetGridPosition(nextTargetGridPosition);
+            Unit.SetGridPosition(NextTargetGridPosition);
 
             // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+            TurnManager.Instance.StartNextUnitsTurn(Unit);
 
             ActionLineRenderer.Instance.HideLineRenderers();
 
             Vector3 nextPointOnPath = positionList[positionIndex];
             Direction directionToNextPosition;
 
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
             {
-                Vector3 unitStartPosition = unit.transform.position;
+                Vector3 unitStartPosition = Unit.transform.position;
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
                 // Start rotating towards the target position
-                unit.unitActionHandler.turnAction.SetTargetPosition(directionToNextPosition);
-                unit.unitActionHandler.turnAction.RotateTowards_CurrentTargetPosition(false);
+                Unit.unitActionHandler.TurnAction.SetTargetPosition(directionToNextPosition);
+                Unit.unitActionHandler.TurnAction.RotateTowards_CurrentTargetPosition(false);
 
                 float heightDifference = nextTargetPosition.y - unitStartPosition.y;
                 if (heightDifference == 0f) moveSpeed = defaultMoveSpeed;
                 else moveSpeed = defaultParabolaMoveSpeed;
 
                 float finalMoveSpeed = moveSpeed * travelDistanceMultiplier;
-                if (unit.IsNPC)
+                if (Unit.IsNPC)
                 {
                     moveSpeedMultiplier = 1.1f;
                     finalMoveSpeed *= moveSpeedMultiplier;
@@ -215,7 +213,7 @@ namespace UnitSystem.ActionSystem
                         finalMoveSpeed += finalMoveSpeed * Mathf.Abs(heightDifference);
                 }
 
-                unit.unitAnimator.StartMovingForward(); // Move animation
+                Unit.unitAnimator.StartMovingForward(); // Move animation
 
                 float stoppingDistance = 0.00625f;
                 float distanceToTriggerStopAnimation = 0.75f;
@@ -229,31 +227,31 @@ namespace UnitSystem.ActionSystem
                 float arcHeight = MathParabola.CalculateParabolaArcHeight(unitStartPosition, nextTargetPosition) * arcMultiplier;
                 float animationTime = 0f;
                 
-                while (!unit.unitAnimator.beingKnockedBack && Vector3.Distance(unit.transform.position, nextTargetPosition) > stoppingDistance)
+                while (!Unit.unitAnimator.beingKnockedBack && Vector3.Distance(Unit.transform.position, nextTargetPosition) > stoppingDistance)
                 {
-                    while (unit.unitAnimator.isDodging)
+                    while (Unit.unitAnimator.isDodging)
                         yield return null;
 
                     // If the target position is on the same Y coordinate, just move directly towards it
                     if (heightDifference == 0f)
-                        unit.transform.position = Vector3.MoveTowards(unit.transform.position, nextTargetPosition, finalMoveSpeed * Time.deltaTime);
+                        Unit.transform.position = Vector3.MoveTowards(Unit.transform.position, nextTargetPosition, finalMoveSpeed * Time.deltaTime);
                     else // If the target position is higher or lower than the Unit, use a parabola movement animation
                     {
                         animationTime += finalMoveSpeed * Time.deltaTime;
-                        unit.transform.position = MathParabola.Parabola(unitStartPosition, nextTargetPosition, arcHeight, animationTime / 5f);
+                        Unit.transform.position = MathParabola.Parabola(unitStartPosition, nextTargetPosition, arcHeight, animationTime / 5f);
 
-                        // Determine if the Unit should stop their move animation
-                        if (unit.unitActionHandler.targetEnemyUnit == null)
-                        {
-                            float distanceToFinalPosition = Vector3.Distance(unitStartPosition, LevelGrid.GetWorldPosition(finalTargetGridPosition));
-                            if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
-                                unit.unitAnimator.StopMovingForward();
-                        }
+                        if (heightDifference < 0f && Unit.transform.position.y < nextTargetPosition.y)
+                            break;
+                        else if (heightDifference > 0f && Mathf.Approximately(Unit.transform.position.x, nextTargetPosition.x) && Mathf.Approximately(Unit.transform.position.z, nextTargetPosition.z) && Unit.transform.position.y < nextTargetPosition.y)
+                            break;
+                    }
 
-                        if (heightDifference < 0f && unit.transform.position.y < nextTargetPosition.y)
-                            break;
-                        else if (heightDifference > 0f && Mathf.Approximately(unit.transform.position.x, nextTargetPosition.x) && Mathf.Approximately(unit.transform.position.z, nextTargetPosition.z) && unit.transform.position.y < nextTargetPosition.y)
-                            break;
+                    // Determine if the Unit should stop their move animation
+                    if (Unit.unitActionHandler.TargetEnemyUnit == null)
+                    {
+                        float distanceToFinalPosition = Vector3.Distance(Unit.transform.position, LevelGrid.GetWorldPosition(FinalTargetGridPosition));
+                        if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
+                            Unit.unitAnimator.StopMovingForward();
                     }
 
                     yield return null;
@@ -262,66 +260,66 @@ namespace UnitSystem.ActionSystem
             else // Move and rotate instantly while NPC is offscreen
             {
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
-                unit.unitActionHandler.turnAction.RotateTowards_Direction(directionToNextPosition, true);
+                Unit.unitActionHandler.TurnAction.RotateTowards_Direction(directionToNextPosition, true);
 
-                TurnManager.Instance.StartNextUnitsTurn(unit);
+                TurnManager.Instance.StartNextUnitsTurn(Unit);
             }
 
-            while (unit.unitAnimator.beingKnockedBack)
+            while (Unit.unitAnimator.beingKnockedBack)
                 yield return null;
 
-            unit.transform.position = nextTargetPosition;
-            unit.UpdateGridPosition();
+            Unit.transform.position = nextTargetPosition;
+            Unit.UpdateGridPosition();
 
             // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
-            if (positionIndex < positionList.Count && unit.transform.position == positionList[positionIndex] && unit.transform.position != finalTargetGridPosition.WorldPosition)
+            if (positionIndex < positionList.Count && Unit.transform.position == positionList[positionIndex] && Unit.transform.position != FinalTargetGridPosition.WorldPosition)
                 positionIndex++;
 
             CompleteAction();
             TryQueueNextAction();
 
             // Check for newly visible Units
-            unit.vision.FindVisibleUnitsAndObjects();
+            Unit.vision.FindVisibleUnitsAndObjects();
         }
 
         void TryQueueNextAction()
         {
-            if (unit.IsPlayer)
+            if (Unit.IsPlayer)
             {
                 // If the Player has a target Interactable
-                InteractAction interactAction = unit.unitActionHandler.interactAction;
-                if (interactAction.targetInteractable != null && Vector3.Distance(unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
+                InteractAction interactAction = Unit.unitActionHandler.InteractAction;
+                if (interactAction.targetInteractable != null && Vector3.Distance(Unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
-                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead)
-                    unit.unitActionHandler.CancelActions();
+                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.TargetEnemyUnit.health.IsDead)
+                    Unit.unitActionHandler.CancelActions();
                 // If the Player is trying to attack an enemy and they are in range, stop moving and attack
-                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.IsInAttackRange(unit.unitActionHandler.targetEnemyUnit, true))
+                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.IsInAttackRange(Unit.unitActionHandler.TargetEnemyUnit, true))
                 {
-                    unit.unitAnimator.StopMovingForward();
-                    unit.unitActionHandler.PlayerActionHandler.AttackTarget();
+                    Unit.unitAnimator.StopMovingForward();
+                    Unit.unitActionHandler.PlayerActionHandler.AttackTarget();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
-                else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition)
+                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.PreviousTargetEnemyGridPosition != Unit.unitActionHandler.TargetEnemyUnit.GridPosition)
                     QueueMoveToTargetEnemy();
                 // If the Player hasn't reached their destination, add the next move to the queue
-                else if (unit.GridPosition != finalTargetGridPosition)
-                    unit.unitActionHandler.QueueAction(this);
+                else if (Unit.GridPosition != FinalTargetGridPosition)
+                    Unit.unitActionHandler.QueueAction(this);
             }
             else // If NPC
             {
                 // If they're trying to attack
-                if (unit.stateController.currentState == State.Fight && unit.unitActionHandler.targetEnemyUnit != null)
+                if (Unit.stateController.currentState == State.Fight && Unit.unitActionHandler.TargetEnemyUnit != null)
                 {
                     // If they're in range, stop moving and attack
-                    if (unit.unitActionHandler.IsInAttackRange(unit.unitActionHandler.targetEnemyUnit, false))
+                    if (Unit.unitActionHandler.IsInAttackRange(Unit.unitActionHandler.TargetEnemyUnit, false))
                     {
-                        unit.unitAnimator.StopMovingForward();
-                        NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                        Unit.unitAnimator.StopMovingForward();
+                        NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
                         npcActionHandler.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
-                    else if (unit.unitActionHandler.targetEnemyUnit != null && unit.unitActionHandler.targetEnemyUnit.health.IsDead == false && unit.unitActionHandler.previousTargetEnemyGridPosition != unit.unitActionHandler.targetEnemyUnit.GridPosition)
+                    else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.TargetEnemyUnit.health.IsDead == false && Unit.unitActionHandler.PreviousTargetEnemyGridPosition != Unit.unitActionHandler.TargetEnemyUnit.GridPosition)
                         QueueMoveToTargetEnemy();
                 }
             }
@@ -329,18 +327,18 @@ namespace UnitSystem.ActionSystem
 
         void QueueMoveToTargetEnemy()
         {
-            unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(unit.unitActionHandler.targetEnemyUnit.GridPosition);
+            Unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(Unit.unitActionHandler.TargetEnemyUnit.GridPosition);
 
-            if (unit.IsPlayer && unit.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction)
-                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
-            else if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
-                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
-            else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.stats.CanFightUnarmed)
-                unit.unitActionHandler.moveAction.QueueAction(unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(unit.GridPosition, unit.unitActionHandler.targetEnemyUnit));
+            if (Unit.IsPlayer && Unit.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction)
+                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
+            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
+            else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
+                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
             else
             {
-                unit.unitActionHandler.SetTargetEnemyUnit(null);
-                unit.unitActionHandler.SkipTurn();
+                Unit.unitActionHandler.SetTargetEnemyUnit(null);
+                Unit.unitActionHandler.SkipTurn();
                 return;
             }
         }
@@ -351,33 +349,33 @@ namespace UnitSystem.ActionSystem
             if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
-                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, false);
+                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, false);
             }
 
-            finalTargetGridPosition = targetGridPosition;
+            FinalTargetGridPosition = targetGridPosition;
 
-            unit.UnblockCurrentPosition();
+            Unit.UnblockCurrentPosition();
 
-            ABPath path = ABPath.Construct(unit.transform.position, LevelGrid.GetWorldPosition(targetGridPosition));
+            ABPath path = ABPath.Construct(Unit.transform.position, LevelGrid.GetWorldPosition(targetGridPosition));
             path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
             // Schedule the path for calculation
-            unit.seeker.StartPath(path);
+            Unit.seeker.StartPath(path);
 
             // Force the path request to complete immediately. This assumes the graph is small enough that this will not cause any lag
             path.BlockUntilCalculated();
 
-            if (unit.IsNPC && path.vectorPath.Count == 0)
+            if (Unit.IsNPC && path.vectorPath.Count == 0)
             {
-                NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-                if (unit.stateController.currentState == State.Patrol)
+                NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
+                if (Unit.stateController.currentState == State.Patrol)
                 {
                     GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
                     npcActionHandler.IncreasePatrolPointIndex();
-                    finalTargetGridPosition = patrolPointGridPosition;
+                    FinalTargetGridPosition = patrolPointGridPosition;
                 }
 
-                TurnManager.Instance.FinishTurn(unit);
+                TurnManager.Instance.FinishTurn(Unit);
                 npcActionHandler.FinishAction();
                 return;
             }
@@ -390,7 +388,7 @@ namespace UnitSystem.ActionSystem
                 positionList.Add(path.vectorPath[i]);
             }
 
-            unit.BlockCurrentPosition();
+            Unit.BlockCurrentPosition();
             if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
@@ -404,15 +402,15 @@ namespace UnitSystem.ActionSystem
                 positionIndex = positionList.Count - 1;
 
             // Only calculate a new path if the Unit's target position changed or if their path becomes obstructed
-            if (targetGridPosition != finalTargetGridPosition || (positionList.Count > 0 && LevelGrid.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
-                GetPathToTargetPosition(targetGridPosition);
+            if (TargetGridPosition != FinalTargetGridPosition || (positionList.Count > 0 && LevelGrid.GridPositionObstructed(LevelGrid.GetGridPosition(positionList[positionIndex]))))
+                GetPathToTargetPosition(TargetGridPosition);
 
             if (positionList.Count == 0)
                 return cost;
 
             // Check for an Interactable on the next move position
             Vector3 nextPointOnPath = positionList[positionIndex];
-            Vector3 unitPosition = unit.transform.position;
+            Vector3 unitPosition = Unit.transform.position;
             Vector3 nextPathPosition = GetNextPathPosition_XZ(nextPointOnPath);
 
             // If the next path position is above the unit's current position
@@ -432,7 +430,7 @@ namespace UnitSystem.ActionSystem
                     Door door = interactable as Door;
                     if (door.isOpen == false)
                     {
-                        unit.unitActionHandler.interactAction.QueueActionImmediately(door);
+                        Unit.unitActionHandler.InteractAction.QueueActionImmediately(door);
                         return 0;
                     }
                 }
@@ -440,104 +438,104 @@ namespace UnitSystem.ActionSystem
 
             // Get the next Move position
             nextTargetPosition = GetNextTargetPosition();
-            nextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
+            NextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
 
             float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
 
             floatCost += floatCost * tileCostMultiplier;
-            if (LevelGrid.IsDiagonal(unit.WorldPosition, nextTargetPosition))
+            if (LevelGrid.IsDiagonal(Unit.WorldPosition, nextTargetPosition))
                 floatCost *= 1.4f;
 
             cost = Mathf.RoundToInt(floatCost);
 
-            if (nextTargetPosition == unit.transform.position)
+            if (nextTargetPosition == Unit.transform.position)
             {
-                targetGridPosition = unit.GridPosition;
+                TargetGridPosition = Unit.GridPosition;
 
-                if (unit.IsNPC)
+                if (Unit.IsNPC)
                 {
-                    if (unit.stateController.currentState == State.Patrol)
+                    if (Unit.stateController.currentState == State.Patrol)
                     {
-                        NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                        NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
                         npcActionHandler.AssignNextPatrolTargetPosition();
                     }
                 }
             }
 
-            unit.BlockCurrentPosition();
+            Unit.BlockCurrentPosition();
 
             // if (unit.IsPlayer) Debug.Log("Move Cost (" + nextTargetPosition + "): " + Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier()));
-            return Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier());
+            return Mathf.RoundToInt(cost * Unit.stats.EncumbranceMoveCostModifier());
         }
 
         Vector3 GetNextPathPosition_XZ(Vector3 nextPointOnPath)
         {
             // Get the next path position, not including the Y coordinate
-            if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z + 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z))
-                return new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1);
+            if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x, Unit.transform.position.y, Unit.transform.position.z + 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z + 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z))
+                return new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z + 1);
             else
-                return unit.transform.position;
+                return Unit.transform.position;
         }
 
         Vector3 GetNextTargetPosition()
         {
             Vector3 nextPointOnPath = positionList[positionIndex];
             Vector3 nextTargetPosition;
-            if (Mathf.Approximately(nextPointOnPath.y, unit.transform.position.y) == false)
+            if (Mathf.Approximately(nextPointOnPath.y, Unit.transform.position.y) == false)
                 nextTargetPosition = nextPointOnPath;
-            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // North
-                nextTargetPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z + 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // South
-                nextTargetPosition = new Vector3(unit.transform.position.x, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z)) // East
-                nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(unit.transform.position.z)) // West
-                nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // NorthEast
-                nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z + 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // SouthWest
-                nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(unit.transform.position.z)) // SouthEast
-                nextTargetPosition = new Vector3(unit.transform.position.x + 1, unit.transform.position.y, unit.transform.position.z - 1);
-            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(unit.transform.position.z)) // NorthWest
-                nextTargetPosition = new Vector3(unit.transform.position.x - 1, unit.transform.position.y, unit.transform.position.z + 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z)) // North
+                nextTargetPosition = new Vector3(Unit.transform.position.x, Unit.transform.position.y, Unit.transform.position.z + 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z)) // South
+                nextTargetPosition = new Vector3(Unit.transform.position.x, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(Unit.transform.position.z)) // East
+                nextTargetPosition = new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) == Mathf.RoundToInt(Unit.transform.position.z)) // West
+                nextTargetPosition = new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z)) // NorthEast
+                nextTargetPosition = new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z + 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z)) // SouthWest
+                nextTargetPosition = new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) < Mathf.RoundToInt(Unit.transform.position.z)) // SouthEast
+                nextTargetPosition = new Vector3(Unit.transform.position.x + 1, Unit.transform.position.y, Unit.transform.position.z - 1);
+            else if (Mathf.RoundToInt(nextPointOnPath.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z)) // NorthWest
+                nextTargetPosition = new Vector3(Unit.transform.position.x - 1, Unit.transform.position.y, Unit.transform.position.z + 1);
             else // Debug.LogWarning("Next Position is " + unit.name + "'s current position...");
-                nextTargetPosition = unit.transform.position;
+                nextTargetPosition = Unit.transform.position;
             nextTargetPosition.Set(Mathf.RoundToInt(nextTargetPosition.x), nextTargetPosition.y, Mathf.RoundToInt(nextTargetPosition.z));
             return nextTargetPosition;
         }
 
         Direction GetDirectionToNextTargetPosition(Vector3 targetPosition)
         {
-            if (Mathf.RoundToInt(targetPosition.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(unit.transform.position.z))
+            if (Mathf.RoundToInt(targetPosition.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.North;
-            else if (Mathf.RoundToInt(targetPosition.x) == Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.South;
-            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) == Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) == Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.East;
-            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) == Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) == Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.West;
-            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.NorthEast;
-            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.SouthWest;
-            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) > Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) < Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.SouthEast;
-            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(unit.transform.position.z))
+            else if (Mathf.RoundToInt(targetPosition.x) < Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(targetPosition.z) > Mathf.RoundToInt(Unit.transform.position.z))
                 return Direction.NorthWest;
             else
                 return Direction.Center;
@@ -548,14 +546,14 @@ namespace UnitSystem.ActionSystem
             GraphNode node = AstarPath.active.GetNearest(tilePosition).node;
             // if (unit.IsPlayer) Debug.Log("Tag #" + node.Tag + " penalty is: ");
 
-            for (int i = 0; i < unit.seeker.tagPenalties.Length; i++)
+            for (int i = 0; i < Unit.seeker.tagPenalties.Length; i++)
             {
                 if (node.Tag == i)
                 {
-                    if (unit.seeker.tagPenalties[i] == 0)
+                    if (Unit.seeker.tagPenalties[i] == 0)
                         return 0f;
                     else
-                        return unit.seeker.tagPenalties[i] / 1000f;
+                        return Unit.seeker.tagPenalties[i] / 1000f;
                 }
             }
 
@@ -567,25 +565,25 @@ namespace UnitSystem.ActionSystem
             base.CompleteAction();
 
             // Unblock the Unit's position, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
-            if (unit.IsPlayer)
-                unit.UnblockCurrentPosition();
-            else if (unit.health.IsDead == false)
-                unit.BlockCurrentPosition();
+            if (Unit.IsPlayer)
+                Unit.UnblockCurrentPosition();
+            else if (Unit.health.IsDead == false)
+                Unit.BlockCurrentPosition();
 
-            isMoving = false;
-            aboutToMove = false;
-            unit.unitActionHandler.FinishAction();
+            IsMoving = false;
+            AboutToMove = false;
+            Unit.unitActionHandler.FinishAction();
         }
 
         public void SetTravelDistanceSpeedMultiplier()
         {
-            if (unit.IsPlayer)
+            if (Unit.IsPlayer)
                 return;
 
-            if ((float)unit.stats.lastPooledAP / defaultTileMoveCost <= 1f)
+            if ((float)Unit.stats.lastPooledAP / defaultTileMoveCost <= 1f)
                 travelDistanceMultiplier = 1f;
             else
-                travelDistanceMultiplier = Mathf.FloorToInt((float)unit.stats.lastPooledAP / defaultTileMoveCost);
+                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.stats.lastPooledAP / defaultTileMoveCost);
         }
 
         public override bool IsValidAction()
@@ -594,9 +592,9 @@ namespace UnitSystem.ActionSystem
             return true;
         }
 
-        public void SetCanMove(bool canMove) => this.canMove = canMove;
+        public void SetCanMove(bool canMove) => this.CanMove = canMove;
 
-        public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => finalTargetGridPosition = finalGridPosition;
+        public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => FinalTargetGridPosition = finalGridPosition;
 
         public override bool IsInterruptable() => false;
 

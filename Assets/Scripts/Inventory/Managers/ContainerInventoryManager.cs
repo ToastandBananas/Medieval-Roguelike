@@ -120,7 +120,7 @@ namespace InventorySystem
             containerInventoryManagerToCopy.SetSubInventories(currentSubInventories);
 
             // Initialize if needed
-            if (parentInventory.hasBeenInitialized == false)
+            if (parentInventory.HasBeenInitialized == false)
                 Initialize();
             else
             {
@@ -140,7 +140,7 @@ namespace InventorySystem
             }
 
             // Initialize if needed
-            if (containerInventoryManagerToCopy.ParentInventory.hasBeenInitialized == false)
+            if (containerInventoryManagerToCopy.ParentInventory.HasBeenInitialized == false)
                 containerInventoryManagerToCopy.Initialize();
             else
             {
@@ -158,6 +158,32 @@ namespace InventorySystem
                     containerInventoryManagerToCopy.SubInventories[i].SetupItems();
                 }
             }
+        }
+
+        public override bool AllowedItemTypeContains(ItemType[] itemTypes)
+        {
+            if (parentInventory != null && parentInventory.AllowedItemTypeContains(itemTypes))
+                return true;
+
+            for (int i = 0; i < subInventories.Length; i++)
+            {
+                if (subInventories[i].AllowedItemTypeContains(itemTypes))
+                    return true;
+            }
+            return false;
+        }
+
+        public override bool ContainsItemData(ItemData itemData)
+        {
+            if (parentInventory != null && parentInventory.ContainsItemData(itemData))
+                return true;
+
+            for (int i = 0; i < subInventories.Length; i++)
+            {
+                if (subInventories[i].ContainsItemData(itemData))
+                    return true;
+            }
+            return false;
         }
 
         public void SetLooseItem(LooseItem looseItem)

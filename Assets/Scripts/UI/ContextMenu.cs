@@ -19,16 +19,16 @@ namespace GeneralUI
 
         [SerializeField] GameObject contextMenuButtonPrefab;
 
-        static List<ContextMenuButton> contextButtons = new List<ContextMenuButton>();
+        static List<ContextMenuButton> contextButtons = new();
         static RectTransform rectTransform;
 
-        public static Unit targetUnit { get; private set; }
-        public static Slot targetSlot { get; private set; }
-        public static Interactable targetInteractable { get; private set; }
+        public static Unit TargetUnit { get; private set; }
+        public static Slot TargetSlot { get; private set; }
+        public static Interactable TargetInteractable { get; private set; }
 
-        static WaitForSeconds buildContextMenuCooldown = new WaitForSeconds(0.2f);
-        static WaitForSeconds disableContextMenuDelay = new WaitForSeconds(0.1f);
-        public static bool isActive { get; private set; }
+        static readonly WaitForSeconds buildContextMenuCooldown = new(0.2f);
+        static readonly WaitForSeconds disableContextMenuDelay = new(0.1f);
+        public static bool IsActive { get; private set; }
         static bool onCooldown;
 
         static float contextMenuHoldTimer;
@@ -50,7 +50,7 @@ namespace GeneralUI
 
         void Update()
         {
-            if (isActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.HighlightedInteractable == null || PlayerInput.Instance.HighlightedInteractable != targetInteractable) && (InventoryUI.activeSlot == null || (InventoryUI.activeSlot.ParentSlot() != null && InventoryUI.activeSlot.ParentSlot().IsFull() == false))
+            if (IsActive && GameControls.gamePlayActions.menuQuickUse.WasPressed || ((PlayerInput.Instance.HighlightedInteractable == null || PlayerInput.Instance.HighlightedInteractable != TargetInteractable) && (InventoryUI.activeSlot == null || (InventoryUI.activeSlot.ParentSlot() != null && !InventoryUI.activeSlot.ParentSlot().IsFull()))
                 && (GameControls.gamePlayActions.menuSelect.WasPressed || GameControls.gamePlayActions.menuContext.WasPressed)))
             {
                 StartCoroutine(DelayDisableContextMenu());
@@ -60,7 +60,7 @@ namespace GeneralUI
                 contextMenuHoldTimer += Time.deltaTime;
 
             // Don't allow context menu actions while an action is already queued or when dragging items
-            if (UnitManager.player.unitActionHandler.queuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.isDraggingAction)
+            if (UnitManager.player.unitActionHandler.QueuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
                 return;
 
             if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.PlayerActionHandler.DefaultActionIsSelected)
@@ -88,29 +88,31 @@ namespace GeneralUI
 
             DisableContextMenu(true);
 
-            targetSlot = null;
-            targetInteractable = PlayerInput.Instance.HighlightedInteractable;
-            targetUnit = PlayerInput.Instance.HighlightedUnit;
-            if (targetUnit != null && targetUnit.health.IsDead)
-                targetUnit.unitInteractable.UpdateGridPosition();
+            TargetSlot = null;
+            TargetInteractable = PlayerInput.Instance.HighlightedInteractable;
+            TargetUnit = PlayerInput.Instance.HighlightedUnit;
+            if (TargetUnit != null && TargetUnit.health.IsDead)
+                TargetUnit.unitInteractable.UpdateGridPosition();
 
             if (InventoryUI.activeSlot != null)
             {
-                targetSlot = InventoryUI.activeSlot.ParentSlot();
-                targetUnit = null;
-                targetInteractable = null;
+                TargetSlot = InventoryUI.activeSlot.ParentSlot();
+                if (!TargetSlot.IsFull())
+                    TargetSlot = null;
+                TargetUnit = null;
+                TargetInteractable = null;
 
-                if (targetSlot is EquipmentSlot)
+                if (TargetSlot is EquipmentSlot)
                 {
-                    EquipmentSlot equipmentSlot = targetSlot as EquipmentSlot;
+                    EquipmentSlot equipmentSlot = TargetSlot as EquipmentSlot;
                     if (UnitEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
-                        targetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
+                        TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
                 }
             }
 
-            if (targetInteractable != null && Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
+            if (TargetInteractable != null && Vector3.Distance(TargetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
             {
-                targetUnit = null;
+                TargetUnit = null;
                 CreateMoveToButton();
             }
             else
@@ -121,14 +123,15 @@ namespace GeneralUI
                 CreateAddToBagButtons();
                 CreateOpenContainerButton();
                 CreateUseItemButtons();
+                CreateThrowItemButton();
                 CreateSplitStackButton();
                 CreateAddItemToHotbarButton();
                 CreateRemoveFromHotbarButton();
                 CreateDropItemButton();
 
-                if (EventSystem.current.IsPointerOverGameObject() == false && ((targetInteractable == null && targetUnit == null && targetSlot == null && activeCount != 1) 
-                    || (targetInteractable != null && Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
-                    || (targetUnit != null && Vector3.Distance(targetUnit.WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)))
+                if (EventSystem.current.IsPointerOverGameObject() == false && ((TargetInteractable == null && TargetUnit == null && TargetSlot == null && activeCount != 1) 
+                    || (TargetInteractable != null && Vector3.Distance(TargetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
+                    || (TargetUnit != null && Vector3.Distance(TargetUnit.WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)))
                 {
                     CreateMoveToButton();
                 }
@@ -146,7 +149,7 @@ namespace GeneralUI
 
             if (buttonCount > 0)
             {
-                isActive = true;
+                IsActive = true;
                 StartContextMenuCooldown();
 
                 SetupMenuSize();
@@ -162,19 +165,19 @@ namespace GeneralUI
             SplitStack.Instance.Close();
             DisableContextMenu(true); 
             
-            targetSlot = null;
-            targetInteractable = null;
-            targetUnit = null;
+            TargetSlot = null;
+            TargetInteractable = null;
+            TargetUnit = null;
 
             CreateReloadButtons(out int buttonCount);
 
             if (buttonCount > 0)
             {
-                isActive = true;
+                IsActive = true;
                 StartContextMenuCooldown();
 
                 SetupMenuSize();
-                SetupMenuPosition();
+                SetupMenuPosition_ActionButton();
             }
         }
 
@@ -215,7 +218,7 @@ namespace GeneralUI
             ListPool<ItemData>.Release(uniqueProjectileTypes);
         }
 
-        public static void BuildThrowWeaponContextMenu()
+        public static void BuildThrowWeaponsContextMenu()
         {
             if (onCooldown)
                 return;
@@ -223,46 +226,80 @@ namespace GeneralUI
             SplitStack.Instance.Close();
             DisableContextMenu(true);
 
-            targetSlot = null;
-            targetInteractable = null;
-            targetUnit = null;
+            TargetSlot = null;
+            TargetInteractable = null;
+            TargetUnit = null;
 
             CreateThrowWeaponButtons(out int buttonCount);
 
             if (buttonCount > 0)
             {
-                isActive = true;
+                IsActive = true;
                 StartContextMenuCooldown();
 
                 SetupMenuSize();
-                SetupMenuPosition();
+                SetupMenuPosition_ActionButton();
             }
         }
 
         static void CreateThrowWeaponButtons(out int buttonCount)
         {
             buttonCount = 0;
+            ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
+            if (throwAction == null)
+                return;
 
-            HeldMeleeWeapon leftMeleeWeapon = UnitManager.player.unitMeshManager.GetLeftHeldMeleeWeapon();
-            if (leftMeleeWeapon != null)
+            List<ItemData> uniqueThrowables = ListPool<ItemData>.Claim();
+            HeldMeleeWeapon leftHeldMeleeWeapon = UnitManager.player.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldMeleeWeapon = UnitManager.player.unitMeshManager.GetRightHeldMeleeWeapon();
+
+            // First reduce the list to held weapons and unique belt throwables only
+            for (int i = 0; i < throwAction.Throwables.Count; i++)
             {
-                GetContextMenuButton().SetupThrowWeaponButton(leftMeleeWeapon.ItemData);
-                buttonCount++;
+                if (i == 0)
+                    uniqueThrowables.Add(throwAction.Throwables[i]);
+                else
+                {
+                    bool isUnique = false;
+                    for (int j = 0; j < uniqueThrowables.Count; j++)
+                    {
+                        // Held weapons
+                        if ((leftHeldMeleeWeapon != null && leftHeldMeleeWeapon.ItemData == throwAction.Throwables[i]) || (rightHeldMeleeWeapon != null && rightHeldMeleeWeapon.ItemData == throwAction.Throwables[i]))
+                            isUnique = true;
+                        else // Belt throwables
+                        {
+                            if (!throwAction.Throwables[i].IsEqual(uniqueThrowables[j]))
+                                isUnique = true;
+                        }
+                    }
+
+                    if (isUnique)
+                        uniqueThrowables.Add(throwAction.Throwables[i]);
+                }
             }
 
-            HeldMeleeWeapon rightMeleeWeapon = UnitManager.player.unitMeshManager.GetRightHeldMeleeWeapon();
-            if (rightMeleeWeapon != null)
+            for (int i = 0; i < uniqueThrowables.Count; i++)
             {
-                GetContextMenuButton().SetupThrowWeaponButton(rightMeleeWeapon.ItemData);
-                buttonCount++;
+                GetContextMenuButton().SetupThrowWeaponButton(throwAction.Throwables[i]);
             }
+
+            buttonCount = uniqueThrowables.Count;
+            ListPool<ItemData>.Release(uniqueThrowables);
+        }
+
+        static void CreateThrowItemButton()
+        {
+            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && !TargetSlot.EquipmentSlot.IsHeldItemSlot()))
+                return;
+
+            GetContextMenuButton().SetupThrowItemButton();
         }
 
         static void CreateMoveToButton()
         {
             GridPosition targetGridPosition;
-            if (targetInteractable != null)
-                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, targetInteractable is LooseItem);
+            if (TargetInteractable != null)
+                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(TargetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, TargetInteractable is LooseItem);
             else
                 targetGridPosition = WorldMouse.CurrentGridPosition();
 
@@ -274,12 +311,12 @@ namespace GeneralUI
 
         static void CreateAttackButton()
         {
-            if (targetUnit == null || targetUnit.health.IsDead || UnitManager.player.vision.IsVisible(targetUnit) == false
+            if (TargetUnit == null || TargetUnit.health.IsDead || UnitManager.player.vision.IsVisible(TargetUnit) == false
                 || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (targetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
+            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (TargetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();
@@ -287,20 +324,20 @@ namespace GeneralUI
 
         static void CreateAddToBagButtons()
         {
-            if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
                 return;
 
             ItemData itemData = null;
-            if (targetSlot != null)
+            if (TargetSlot != null)
             {
-                if (targetSlot is EquipmentSlot)
+                if (TargetSlot is EquipmentSlot)
                     return;
 
-                itemData = targetSlot.GetItemData();
+                itemData = TargetSlot.GetItemData();
             }
-            else if (targetInteractable != null && targetInteractable is LooseItem)
+            else if (TargetInteractable != null && TargetInteractable is LooseItem)
             {
-                LooseItem targetLooseItem = targetInteractable as LooseItem;
+                LooseItem targetLooseItem = TargetInteractable as LooseItem;
                 if (targetLooseItem is LooseContainerItem)
                 {
                     LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
@@ -336,30 +373,30 @@ namespace GeneralUI
 
         static void CreateTakeItemButton()
         {
-            if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
                 return;
 
             ItemData itemData = null;
-            if (targetSlot != null)
+            if (TargetSlot != null)
             {
-                if (targetSlot is EquipmentSlot)
+                if (TargetSlot is EquipmentSlot)
                 {
-                    EquipmentSlot targetEquipmentSlot = targetSlot as EquipmentSlot;
+                    EquipmentSlot targetEquipmentSlot = TargetSlot as EquipmentSlot;
                     if (targetEquipmentSlot.UnitEquipment == UnitManager.player.UnitEquipment)
                         return;
                 }
-                else if (targetSlot is InventorySlot)
+                else if (TargetSlot is InventorySlot)
                 {
-                    InventorySlot targetInventorySlot = targetSlot as InventorySlot;
+                    InventorySlot targetInventorySlot = TargetSlot as InventorySlot;
                     if (targetInventorySlot.myInventory == UnitManager.player.UnitInventoryManager.MainInventory)
                         return;
                 }
 
-                itemData = targetSlot.GetItemData();
+                itemData = TargetSlot.GetItemData();
             }
-            else if (targetInteractable != null && targetInteractable is LooseItem)
+            else if (TargetInteractable != null && TargetInteractable is LooseItem)
             {
-                LooseItem targetLooseItem = targetInteractable as LooseItem;
+                LooseItem targetLooseItem = TargetInteractable as LooseItem;
                 if (targetLooseItem is LooseContainerItem)
                 {
                     LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
@@ -378,9 +415,9 @@ namespace GeneralUI
 
         static void CreateOpenContainerButton()
         {
-            if (targetSlot != null && targetSlot is ContainerEquipmentSlot && targetSlot.IsFull() && targetSlot.GetItemData().Item is WearableContainer)
+            if (TargetSlot != null && TargetSlot is ContainerEquipmentSlot && TargetSlot.IsFull() && TargetSlot.GetItemData().Item is WearableContainer)
             {
-                ContainerEquipmentSlot containerEquipmentSlot = targetSlot as ContainerEquipmentSlot;
+                ContainerEquipmentSlot containerEquipmentSlot = TargetSlot as ContainerEquipmentSlot;
                 if (containerEquipmentSlot.containerInventoryManager == null)
                 {
                     Debug.LogWarning($"{containerEquipmentSlot.name} does not have an assigned ContainerInventoryManager...");
@@ -390,33 +427,33 @@ namespace GeneralUI
                 if (containerEquipmentSlot.GetItemData().Item.WearableContainer.HasAnInventory() == false)
                     return;
 
-                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.slotVisualsCreated)
+                if (containerEquipmentSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                 {
                     CreateCloseContainerButton();
                     return;
                 }
             }
-            else if (targetInteractable != null && targetInteractable is LooseContainerItem)
+            else if (TargetInteractable != null && TargetInteractable is LooseContainerItem)
             {
-                LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+                LooseContainerItem looseContainerItem = TargetInteractable as LooseContainerItem;
                 if (looseContainerItem.ItemData.Item is WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
                     return;
 
-                if (Vector3.Distance(targetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
+                if (Vector3.Distance(TargetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
 
-                if (looseContainerItem.ContainerInventoryManager.ParentInventory.slotVisualsCreated)
+                if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                 {
                     CreateCloseContainerButton();
                     return;
                 }
             }
-            else if (targetUnit != null && targetUnit.health.IsDead)
+            else if (TargetUnit != null && TargetUnit.health.IsDead)
             {
-                if (Vector3.Distance(LevelGrid.GetGridPosition(targetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
+                if (Vector3.Distance(LevelGrid.GetGridPosition(TargetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
 
-                if (targetUnit.UnitEquipment.slotVisualsCreated)
+                if (TargetUnit.UnitEquipment.slotVisualsCreated)
                 {
                     CreateCloseContainerButton();
                     return;
@@ -432,22 +469,22 @@ namespace GeneralUI
 
         static void CreateUseItemButtons()
         {
-            if ((targetSlot == null || targetSlot.IsFull() == false) && (targetInteractable == null || targetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
                 return;
 
             ItemData itemData = null;
-            if (targetSlot != null)
-                itemData = targetSlot.GetItemData();
-            else if (targetInteractable != null)
+            if (TargetSlot != null)
+                itemData = TargetSlot.GetItemData();
+            else if (TargetInteractable != null)
             {
-                LooseItem looseItem = targetInteractable as LooseItem;
+                LooseItem looseItem = TargetInteractable as LooseItem;
                 itemData = looseItem.ItemData;
 
                 if (itemData.Item is Equipment == false)
                     return;
             }
 
-            if (itemData == null || itemData.Item == null || itemData.Item.IsUsable == false)
+            if (itemData == null || itemData.Item == null || !itemData.Item.IsUsable)
                 return;
 
             if (itemData.Item is Ammunition && UnitManager.player.QuiverInventoryManager.Contains(itemData))
@@ -495,23 +532,23 @@ namespace GeneralUI
 
         static void CreateSplitStackButton()
         {
-            if (targetSlot == null || targetSlot.IsFull() == false)
+            if (TargetSlot == null || TargetSlot.IsFull() == false)
                 return;
 
-            if (targetSlot.GetItemData().Item.MaxStackSize <= 1 || targetSlot.GetItemData().CurrentStackSize <= 1)
+            if (TargetSlot.GetItemData().Item.MaxStackSize <= 1 || TargetSlot.GetItemData().CurrentStackSize <= 1)
                 return;
 
-            GetContextMenuButton().SetupSplitStackButton(targetSlot.GetItemData());
+            GetContextMenuButton().SetupSplitStackButton(TargetSlot.GetItemData());
         }
 
         static void CreateDropItemButton()
         {
-            if (targetSlot == null || targetSlot.IsFull() == false)
+            if (TargetSlot == null || !TargetSlot.IsFull())
                 return;
 
-            if (targetSlot is ContainerEquipmentSlot)
+            if (TargetSlot is ContainerEquipmentSlot)
             {
-                ContainerEquipmentSlot containerSlot = targetSlot as ContainerEquipmentSlot;
+                ContainerEquipmentSlot containerSlot = TargetSlot as ContainerEquipmentSlot;
                 if (containerSlot.InventoryItem.myUnitEquipment.MyUnit == UnitManager.player && containerSlot.containerInventoryManager.ContainsAnyItems())
                     return;
             }
@@ -521,11 +558,11 @@ namespace GeneralUI
 
         static void CreateAddItemToHotbarButton()
         {
-            if (targetSlot == null || targetSlot is EquipmentSlot || targetSlot.IsFull() == false || targetSlot.InventoryItem.GetMyUnit() != UnitManager.player)
+            if (TargetSlot == null || TargetSlot is EquipmentSlot || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player)
                 return;
             
             ItemActionBarSlot itemActionSlot = ActionSystemUI.GetNextAvailableItemActionBarSlot();
-            if (itemActionSlot == null || ActionSystemUI.ItemActionBarAlreadyHasItem(targetSlot.GetItemData()))
+            if (itemActionSlot == null || ActionSystemUI.ItemActionBarAlreadyHasItem(TargetSlot.GetItemData()))
                 return;
             
             GetContextMenuButton().SetupAddItemToHotbarButton(itemActionSlot);
@@ -534,10 +571,10 @@ namespace GeneralUI
         static void CreateRemoveFromHotbarButton()
         {
             // This only works for ItemActionBar slots with items in them
-            if (ActionSystemUI.highlightedActionSlot == null || ActionSystemUI.highlightedActionSlot is ItemActionBarSlot == false || ActionSystemUI.highlightedActionSlot.ItemActionBarSlot.itemData == null || ActionSystemUI.highlightedActionSlot.ItemActionBarSlot.itemData.Item == null)
+            if (ActionSystemUI.HighlightedActionSlot == null || ActionSystemUI.HighlightedActionSlot is ItemActionBarSlot == false || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.itemData == null || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.itemData.Item == null)
                 return;
 
-            GetContextMenuButton().SetupRemoveFromHotbarButton(ActionSystemUI.highlightedActionSlot as ItemActionBarSlot);
+            GetContextMenuButton().SetupRemoveFromHotbarButton(ActionSystemUI.HighlightedActionSlot as ItemActionBarSlot);
         }
 
         public static void StartContextMenuCooldown() => Instance.StartCoroutine(StartContextMenuCooldown_Coroutine());
@@ -554,13 +591,13 @@ namespace GeneralUI
 
         public static void DisableContextMenu(bool forceDisable = false)
         {
-            if (isActive == false)
+            if (!IsActive)
                 return;
 
-            if (forceDisable == false && onCooldown)
+            if (!forceDisable && onCooldown)
                 return;
 
-            isActive = false;
+            IsActive = false;
 
             for (int i = 0; i < contextButtons.Count; i++)
             {
@@ -568,7 +605,7 @@ namespace GeneralUI
             }
         }
 
-        static IEnumerator DelayDisableContextMenu(bool forceDisable = false)
+        static IEnumerator DelayDisableContextMenu()
         {
             yield return disableContextMenuDelay;
             DisableContextMenu();
@@ -578,7 +615,7 @@ namespace GeneralUI
         {
             for (int i = 0; i < contextButtons.Count; i++)
             {
-                if (contextButtons[i].gameObject.activeSelf == false)
+                if (!contextButtons[i].gameObject.activeSelf)
                     return contextButtons[i];
             }
 
@@ -600,7 +637,7 @@ namespace GeneralUI
 
             for (int i = 0; i < contextButtons.Count; i++)
             {
-                if (contextButtons[i].gameObject.activeSelf == false)
+                if (!contextButtons[i].gameObject.activeSelf)
                     continue;
 
                 // Get the width of the button with the largest amount of text
@@ -619,6 +656,35 @@ namespace GeneralUI
 
         static void SetupMenuPosition()
         {
+            SetupButtonTransform(out float xPosAddon, out float yPosAddon);
+            Instance.transform.position = Input.mousePosition + new Vector3(xPosAddon, yPosAddon);
+        }
+
+        static void SetupMenuPosition_ActionButton()
+        {
+            SetupButtonTransform(out float xPosAddon, out float yPosAddon);
+
+            float slotWidthAddOn = 0f;
+            float slotHeightAddOn = 0f;
+            Vector3 slotPosition = Input.mousePosition;
+            if (ActionSystemUI.SelectedActionSlot != null)
+            {
+                slotWidthAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+                slotPosition = ActionSystemUI.SelectedActionSlot.transform.position;
+            }
+            else if (ActionSystemUI.HighlightedActionSlot != null)
+            {
+                slotWidthAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+                slotPosition = ActionSystemUI.HighlightedActionSlot.transform.position;
+            }
+
+            Instance.transform.position = slotPosition + new Vector3((xPosAddon / 2f) - slotWidthAddOn, yPosAddon + slotHeightAddOn);
+        }
+
+        static void SetupButtonTransform(out float xPosAddon, out float yPosAddon)
+        {
             int activeButtonCount = 0;
             for (int i = 0; i < contextButtons.Count; i++)
             {
@@ -626,19 +692,17 @@ namespace GeneralUI
                     activeButtonCount++;
             }
 
-            float xPosAddon = rectTransform.sizeDelta.x / 2f;
-            float yPosAddon = (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
+            xPosAddon = rectTransform.rect.width * TooltipManager.canvas.scaleFactor / 2f;
+            yPosAddon = activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
 
             // Get the desired position:
             // If the mouse position is too close to the top of the screen
-            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y * 1.2f)))
-                yPosAddon = (-activeButtonCount * contextButtons[0].RectTransform.sizeDelta.y) / 2f;
+            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor * 1.2f)))
+                yPosAddon = -activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
 
             // If the mouse position is too far to the right of the screen
-            if (Input.mousePosition.x >= (Screen.width - (rectTransform.sizeDelta.x * 1.2f)))
-                xPosAddon = -rectTransform.sizeDelta.x / 2f;
-
-            Instance.transform.position = Input.mousePosition + new Vector3(xPosAddon, yPosAddon);
+            if (Input.mousePosition.x >= (Screen.width - (rectTransform.rect.width * TooltipManager.canvas.scaleFactor * 1.2f)))
+                xPosAddon = -rectTransform.rect.width * TooltipManager.canvas.scaleFactor / 2f;
         }
     }
 }

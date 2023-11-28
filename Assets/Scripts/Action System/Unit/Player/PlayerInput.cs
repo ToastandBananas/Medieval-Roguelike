@@ -54,7 +54,7 @@ namespace UnitSystem.ActionSystem
             if (skipTurnCooldownTimer < skipTurnCooldown)
                 skipTurnCooldownTimer += Time.deltaTime;
 
-            if (InventoryUI.isDraggingItem || ActionSystemUI.isDraggingAction)
+            if (InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
                 return;
 
             if (EventSystem.current.IsPointerOverGameObject())
@@ -65,10 +65,10 @@ namespace UnitSystem.ActionSystem
                 return;
             }
             
-            if (player.health.IsDead == false)
+            if (!player.health.IsDead)
             {
                 // If the Player was holding the button for turn mode (the Turn Action) and then they release it
-                if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player) is TurnAction)
+                if (GameControls.gamePlayActions.turnMode.WasReleased && player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player) is TurnAction)
                 {
                     // Reset the line renderer and go back to the Move Action
                     ActionLineRenderer.ResetCurrentPositions();
@@ -88,7 +88,7 @@ namespace UnitSystem.ActionSystem
                     ContextMenu.StartContextMenuCooldown();
                 }
                 // If it's time for the Player to choose an action
-                else if (!player.IsMyTurn && player.unitActionHandler.isPerformingAction && !player.unitActionHandler.moveAction.isMoving)
+                else if (player.IsMyTurn && !player.unitActionHandler.IsPerformingAction && !player.unitActionHandler.MoveAction.IsMoving)
                 {
                     // If the player wants to skip their turn
                     if (GameControls.gamePlayActions.skipTurn.IsPressed && skipTurnCooldownTimer >= skipTurnCooldown)
@@ -125,7 +125,7 @@ namespace UnitSystem.ActionSystem
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
                 }
-                else if (player.unitActionHandler.queuedActions.Count > 0 || player.unitActionHandler.moveAction.isMoving)
+                else if (player.unitActionHandler.QueuedActions.Count > 0 || player.unitActionHandler.MoveAction.IsMoving)
                 {
                     ActionLineRenderer.Instance.HideLineRenderers();
                     WorldMouse.ChangeCursor(CursorState.Default);
@@ -140,8 +140,8 @@ namespace UnitSystem.ActionSystem
 
         void HandleTurnMode()
         {
-            TurnAction turnAction = player.unitActionHandler.turnAction;
-            player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(player.unitActionHandler.FindActionTypeByName(turnAction.GetType().Name));
+            TurnAction turnAction = player.unitActionHandler.TurnAction;
+            player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(turnAction.ActionType, true);
             WorldMouse.ChangeCursor(CursorState.Default);
 
             mouseGridPosition = WorldMouse.CurrentGridPosition();
@@ -159,13 +159,13 @@ namespace UnitSystem.ActionSystem
                     return;
 
                 // Interact with or move to the interactable
-                player.unitActionHandler.interactAction.QueueAction(HighlightedInteractable);
+                player.unitActionHandler.InteractAction.QueueAction(HighlightedInteractable);
             }
             // If the mouse is hovering over a dead Unit
             else if (HighlightedUnit != null && HighlightedUnit.health.IsDead)
             {
                 // Interact with or move to the dead Unit
-                player.unitActionHandler.interactAction.QueueAction(HighlightedUnit.unitInteractable);
+                player.unitActionHandler.InteractAction.QueueAction(HighlightedUnit.unitInteractable);
             }
             // If the player is trying to perform an action on themselves
             else if (mouseGridPosition == player.GridPosition)
@@ -176,7 +176,7 @@ namespace UnitSystem.ActionSystem
             else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition).node.Walkable)
             {
                 Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
-                BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
+                BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
                 // If the mouse is hovering over a living unit that's in the player's Vision
                 if (unitAtGridPosition != null && unitAtGridPosition.health.IsDead == false && player.vision.IsVisible(unitAtGridPosition))
@@ -266,16 +266,16 @@ namespace UnitSystem.ActionSystem
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
                             {
-                                if (player.unitActionHandler.moveAction.canMove)
-                                    player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                if (player.unitActionHandler.MoveAction.CanMove)
+                                    player.unitActionHandler.MoveAction.QueueAction(player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                                 else
                                     Debug.Log("You cannot move...");
                             }
                             // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                             else if (player.UnitEquipment.MeleeWeaponEquipped || player.stats.CanFightUnarmed)
                             {
-                                if (player.unitActionHandler.moveAction.canMove)
-                                    player.unitActionHandler.moveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                if (player.unitActionHandler.MoveAction.CanMove)
+                                    player.unitActionHandler.MoveAction.QueueAction(player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                                 else
                                     Debug.Log("You cannot move...");
                             }
@@ -321,11 +321,11 @@ namespace UnitSystem.ActionSystem
                 {
                     // If there's a non-visible Unit at this position and they're one tile away and could directly be within the line of sight (basically just meaning there's no obstacles in the way), just turn to face that tile
                     if (unitAtGridPosition != null && Vector3.Distance(player.WorldPosition, unitAtGridPosition.WorldPosition) <= LevelGrid.diaganolDistance && player.vision.IsInLineOfSight_Raycast(unitAtGridPosition))
-                        player.unitActionHandler.turnAction.QueueAction(mouseGridPosition);
+                        player.unitActionHandler.TurnAction.QueueAction(mouseGridPosition);
                     else
                     {
-                        if (player.unitActionHandler.moveAction.canMove)
-                            player.unitActionHandler.moveAction.QueueAction(mouseGridPosition);
+                        if (player.unitActionHandler.MoveAction.CanMove)
+                            player.unitActionHandler.MoveAction.QueueAction(mouseGridPosition);
                         else
                             Debug.Log("You cannot move...");
                     }
@@ -348,7 +348,7 @@ namespace UnitSystem.ActionSystem
             if (mouseGridPosition != lastMouseGridPosition)
                 HighlightedUnit = null;
 
-            BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.selectedActionType.GetAction(player);
+            BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
             if (selectedAction != null)
             {
@@ -487,8 +487,8 @@ namespace UnitSystem.ActionSystem
                     HighlightedUnit = null;
                     ClearHighlightedInteractable();
 
-                    player.unitActionHandler.turnAction.SetTargetPosition(player.unitActionHandler.turnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition())));
-                    ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.turnAction.targetPosition);
+                    player.unitActionHandler.TurnAction.SetTargetPosition(player.unitActionHandler.TurnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition())));
+                    ActionLineRenderer.Instance.DrawTurnArrow(player.unitActionHandler.TurnAction.targetPosition);
                     WorldMouse.ChangeCursor(CursorState.Default);
                 }
             }

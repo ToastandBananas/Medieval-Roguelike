@@ -212,6 +212,10 @@ namespace InventorySystem
             }    
         }
 
+        public override bool ContainsItemData(ItemData itemData) => mainInventory.ContainsItemData(itemData);
+
+        public override bool AllowedItemTypeContains(ItemType[] itemTypes) => mainInventory.AllowedItemTypeContains(itemTypes);
+
         public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;
         public ContainerInventoryManager BeltInventoryManager => beltInventoryManager;
         public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;

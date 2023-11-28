@@ -43,7 +43,7 @@ namespace InventorySystem
 
             SetupItems();
 
-            hasBeenInitialized = true;
+            HasBeenInitialized = true;
         }
 
         public override bool TryAddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
@@ -84,7 +84,7 @@ namespace InventorySystem
 
             if (looseItem != null && looseItem is LooseQuiverItem)
                 looseItem.LooseQuiverItem.UpdateArrowMeshes();
-            else if (slotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
+            else if (SlotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
                 myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
             return added;

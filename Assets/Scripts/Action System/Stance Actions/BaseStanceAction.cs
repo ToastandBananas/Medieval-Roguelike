@@ -14,14 +14,14 @@ namespace UnitSystem.ActionSystem
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.ApplyModifiers(unit.stats);
+                stanceStatModifier.StatModifier.ApplyModifiers(Unit.stats);
         }
 
         protected void RemoveStanceStatModifiers(HeldEquipment heldEquipment)
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.RemoveModifiers(unit.stats);
+                stanceStatModifier.StatModifier.RemoveModifiers(Unit.stats);
         }
     }
 }

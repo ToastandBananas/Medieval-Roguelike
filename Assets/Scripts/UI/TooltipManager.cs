@@ -76,7 +76,7 @@ namespace GeneralUI
                 // If the Player moves or rotates, we need to update the tooltips since the visible Loose Items might change
                 if (cooldown >= cooldownTime)
                 {
-                    if (playersLastPosition != UnitManager.player.GridPosition || playersLastDirection != UnitManager.player.unitActionHandler.turnAction.currentDirection)
+                    if (playersLastPosition != UnitManager.player.GridPosition || playersLastDirection != UnitManager.player.unitActionHandler.TurnAction.currentDirection)
                         ShowAllLooseItemTooltips();
                 }
                 else
@@ -170,7 +170,7 @@ namespace GeneralUI
         {
             if (actionBarSlot == null)
                 return;
-
+            
             GetInventoryTooltip().ShowActionTooltip(actionBarSlot);
         }
 
@@ -200,7 +200,7 @@ namespace GeneralUI
             }
             
             playersLastPosition = UnitManager.player.transform.position;
-            playersLastDirection = UnitManager.player.unitActionHandler.turnAction.currentDirection;
+            playersLastDirection = UnitManager.player.unitActionHandler.TurnAction.currentDirection;
         }
 
         public static void ShowUnitHitChanceTooltips(GridPosition targetGridPosition, BaseAction selectedAction)
@@ -211,7 +211,7 @@ namespace GeneralUI
                 return;
 
             List<GridPosition> actionAreaGridPositions = ListPool<GridPosition>.Claim();
-            actionAreaGridPositions = selectedAction.GetActionAreaGridPositions(targetGridPosition);
+            actionAreaGridPositions.AddRange(selectedAction.GetActionAreaGridPositions(targetGridPosition));
             for (int i = 0; i < actionAreaGridPositions.Count; i++)
             {
                 if (LevelGrid.HasUnitAtGridPosition(actionAreaGridPositions[i], out Unit targetUnit))

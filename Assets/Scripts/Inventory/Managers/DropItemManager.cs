@@ -109,7 +109,7 @@ namespace InventorySystem
             // We queue each action twice to account for unequipping the item before dropping it
             if (unitEquipment.MyUnit.health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
-                if (ContextMenu.targetSlot == null || InventoryUI.isDraggingItem)
+                if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
                     UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                 UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
@@ -117,7 +117,7 @@ namespace InventorySystem
             else
             {
                 // The context menu already accounts for unequipping AP cost by calling an UnequipAction
-                if (ContextMenu.targetSlot == null || InventoryUI.isDraggingItem)
+                if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
                     unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                 unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
@@ -316,21 +316,21 @@ namespace InventorySystem
 
             if (equipSlot == EquipSlot.Back)
             {
-                if (unitEquipment.MyUnit.BackpackInventoryManager.ParentInventory.slotVisualsCreated)
+                if (unitEquipment.MyUnit.BackpackInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.BackpackInventoryManager).CloseContainerInventory();
 
                 looseItem.LooseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BackpackInventoryManager);
             }
             else if (equipSlot == EquipSlot.Belt)
             {
-                if (unitEquipment.MyUnit.BeltInventoryManager.ParentInventory.slotVisualsCreated)
+                if (unitEquipment.MyUnit.BeltInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.BeltInventoryManager).CloseContainerInventory();
 
                 looseItem.LooseContainerItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.BeltInventoryManager);
             }
             else if (equipSlot == EquipSlot.Quiver)
             {
-                if (unitEquipment.MyUnit.QuiverInventoryManager.ParentInventory.slotVisualsCreated)
+                if (unitEquipment.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
                 LooseQuiverItem looseQuiverItem = looseItem as LooseQuiverItem;

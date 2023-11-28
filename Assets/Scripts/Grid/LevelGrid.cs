@@ -148,7 +148,7 @@ namespace GridSystem
             float boundsDimension = (rangeToSearch * 2) + 0.1f;
 
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -194,7 +194,7 @@ namespace GridSystem
             validGridPositionsList.Clear();
             float boundsDimension = (maxRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startingGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -246,7 +246,7 @@ namespace GridSystem
 
             validGridPositionsList.Clear();
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -285,7 +285,7 @@ namespace GridSystem
             gridPositionsList.Clear();
             float boundsDimension = (range * 2f) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes = AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension)));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(startGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
             for (int i = 0; i < nodes.Count; i++)
             {
                 GridPosition nodeGridPosition = GetGridPosition((Vector3)nodes[i].position);

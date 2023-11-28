@@ -101,11 +101,11 @@ namespace UnitSystem.ActionSystem
         public static void ReturnToPool(BaseAction action)
         {
             // De-queue the action if necessary
-            action.unit.unitActionHandler.RemoveActionFromQueue(action);
+            action.Unit.unitActionHandler.RemoveActionFromQueue(action);
 
-            action.unit.unitActionHandler.AvailableActions.Remove(action);
+            action.Unit.unitActionHandler.AvailableActions.Remove(action);
             if (action is BaseAttackAction)
-                action.unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
+                action.Unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
 
             action.transform.SetParent(Instance.transform);
             actions.Add(action);

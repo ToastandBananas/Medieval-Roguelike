@@ -165,8 +165,8 @@ namespace GeneralUI
             }
             else
             {
-                stringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.action.ActionName()}</b></size></align>\n\n");
-                stringBuilder.Append(StringUtilities.SplitTextIntoParagraphs(actionBarSlot.actionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine));
+                stringBuilder.Append($"<align=center><size=22><b>{actionBarSlot.Action.ActionName()}</b></size></align>\n\n");
+                stringBuilder.Append(StringUtilities.SplitTextIntoParagraphs(actionBarSlot.ActionType.GetAction(UnitManager.player).TooltipDescription(), maxCharactersPerLine));
             }
 
             textMesh.text = stringBuilder.ToString();
@@ -244,7 +244,7 @@ namespace GeneralUI
             gameObject.SetActive(false);
         }
 
-        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.unitActionHandler.interactAction.QueueAction(looseItem);
+        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.unitActionHandler.InteractAction.QueueAction(looseItem);
 
         void CalculatePosition(Slot slot)
         {

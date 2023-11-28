@@ -3,6 +3,7 @@ using InventorySystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using ContextMenu = GeneralUI.ContextMenu;
 
 namespace UnitSystem.ActionSystem.UI
 {
@@ -10,11 +11,12 @@ namespace UnitSystem.ActionSystem.UI
     {
         [SerializeField] protected Button button;
         [SerializeField] protected Image iconImage;
+        [SerializeField] RectTransform rectTransform;
         [SerializeField] protected GameObject selectedImageGameObject;
         [SerializeField] protected ActionBarSection actionBarSection = ActionBarSection.None;
 
-        public ActionType actionType { get; protected set; }
-        public BaseAction action { get; protected set; }
+        public ActionType ActionType { get; protected set; }
+        public BaseAction Action { get; protected set; }
 
         protected PlayerActionHandler playerActionHandler;
 
@@ -26,10 +28,10 @@ namespace UnitSystem.ActionSystem.UI
 
         public void SetupAction(ActionType actionType)
         {
-            this.actionType = actionType;
-            action = actionType.GetAction(playerActionHandler.unit);
-            if (action != null)
-                action.SetActionBarSlot(this);
+            ActionType = actionType;
+            Action = actionType.GetAction(playerActionHandler.Unit);
+            if (Action != null)
+                Action.SetActionBarSlot(this);
 
             UpdateIcon();
             iconImage.enabled = true;
@@ -37,28 +39,29 @@ namespace UnitSystem.ActionSystem.UI
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                if (playerActionHandler.queuedActions.Count == 0)
+                if (playerActionHandler.QueuedActions.Count == 0)
                 {
                     playerActionHandler.OnClick_ActionBarSlot(actionType);
                     TooltipManager.ClearInventoryTooltips();
-                    TooltipManager.ShowActionBarTooltip(this);
+                    if (!ContextMenu.IsActive)
+                        TooltipManager.ShowActionBarTooltip(this);
                 }
             });
         }
 
         public void UpdateIcon() 
         {
-            if (action != null)
-                iconImage.sprite = action.ActionIcon();
+            if (Action != null)
+                iconImage.sprite = Action.ActionIcon();
         }
 
         public virtual void ResetButton()
         {
-            actionType = null;
-            if (action != null)
-                action.SetActionBarSlot(null);
+            ActionType = null;
+            if (Action != null)
+                Action.SetActionBarSlot(null);
 
-            action = null;
+            Action = null;
             iconImage.sprite = null;
             HideSlot();
         }
@@ -77,28 +80,28 @@ namespace UnitSystem.ActionSystem.UI
 
         public void UpdateSelectedVisual()
         {
-            if (actionType == null)
+            if (ActionType == null)
                 return;
 
             // Show the selected visual if the Action assigned to this button is the currently selected Action
-            selectedImageGameObject.SetActive(playerActionHandler.selectedActionType == actionType);
+            selectedImageGameObject.SetActive(playerActionHandler.SelectedActionType == ActionType);
         }
 
         public void UpdateActionVisual()
         {
-            if (actionType == null || playerActionHandler.AvailableActionTypes.Contains(actionType) == false)
+            if (ActionType == null || playerActionHandler.AvailableActionTypes.Contains(ActionType) == false)
             {
                 ResetButton();
                 return;
             }
 
-            if (action == null || action.ActionBarSection() == ActionBarSection.None)
+            if (Action == null || Action.ActionBarSection() == ActionBarSection.None)
             {
                 ResetButton();
                 return;
             }
 
-            if (action.IsValidAction() && playerActionHandler.unit.stats.HasEnoughEnergy(action.InitialEnergyCost()))
+            if (Action.IsValidAction() && playerActionHandler.Unit.stats.HasEnoughEnergy(Action.InitialEnergyCost()))
                 ActivateButton();
             else
                 DeactivateButton();
@@ -118,22 +121,25 @@ namespace UnitSystem.ActionSystem.UI
 
         public ItemActionBarSlot ItemActionBarSlot => this as ItemActionBarSlot;
 
+        public RectTransform RectTransform => rectTransform;
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             ActionSystemUI.SetHighlightedActionSlot(this);
+            ContextMenu.DisableContextMenu();
 
             if (TooltipManager.currentActionBarSlot == null || TooltipManager.currentActionBarSlot != this)
             {
                 TooltipManager.SetCurrentActionBarSlot(this);
 
-                if (InventoryUI.isDraggingItem == false && ActionSystemUI.isDraggingAction == false && actionType != null)
+                if (InventoryUI.isDraggingItem == false && ActionSystemUI.IsDraggingAction == false && ActionType != null)
                     TooltipManager.ShowActionBarTooltip(this);
             }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (ActionSystemUI.highlightedActionSlot == this)
+            if (ActionSystemUI.HighlightedActionSlot == this)
                 ActionSystemUI.SetHighlightedActionSlot(null);
 
             if (InventoryUI.isDraggingItem == false)

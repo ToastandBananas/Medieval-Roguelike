@@ -14,25 +14,25 @@ namespace UnitSystem.ActionSystem
         public void QueueAction(Interactable targetInteractable)
         {
             this.targetInteractable = targetInteractable;
-            targetGridPosition = targetInteractable.GridPosition();
+            TargetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
-            if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
-                unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
+            if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
+                Unit.unitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
-                unit.unitActionHandler.QueueAction(this);
+                Unit.unitActionHandler.QueueAction(this);
         }
 
         public void QueueActionImmediately(Interactable targetInteractable)
         {
             this.targetInteractable = targetInteractable;
-            targetGridPosition = targetInteractable.GridPosition();
+            TargetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
-            if (Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
-                unit.unitActionHandler.moveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, unit.GridPosition, LevelGrid.diaganolDistance, true));
+            if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
+                Unit.unitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
-                unit.unitActionHandler.QueueAction(this, true);
+                Unit.unitActionHandler.QueueAction(this, true);
         }
 
         public override void TakeAction()
@@ -50,13 +50,13 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator Interact()
         {
-            TurnAction turnAction = unit.unitActionHandler.turnAction;
-            if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+            TurnAction turnAction = Unit.unitActionHandler.TurnAction;
+            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
             {
                 if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
                     turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed * 2f);
 
-                while (unit.unitActionHandler.turnAction.isRotating)
+                while (Unit.unitActionHandler.TurnAction.isRotating)
                     yield return null;
             }
             else
@@ -73,7 +73,7 @@ namespace UnitSystem.ActionSystem
 
             // Perform the interaction
             if (interactable.CanInteractAtMyGridPosition() || LevelGrid.HasUnitAtGridPosition(interactable.GridPosition(), out _) == false)
-                interactable.Interact(unit);
+                interactable.Interact(Unit);
         }
 
         public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
@@ -101,8 +101,8 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
             targetInteractable = null;
-            unit.unitActionHandler.FinishAction();
-            TurnManager.Instance.StartNextUnitsTurn(unit);
+            Unit.unitActionHandler.FinishAction();
+            TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public override string TooltipDescription() => "";

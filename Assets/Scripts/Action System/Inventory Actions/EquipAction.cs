@@ -26,7 +26,7 @@ namespace UnitSystem.ActionSystem
 
             itemDatasToEquip.Add(itemDataToEquip, targetEquipSlot);
 
-            unit.unitActionHandler.QueueAction(this);
+            Unit.unitActionHandler.QueueAction(this);
         }
 
         /// <summary>For when it's too risky to queue an EquipAction, such as when equipping on pickup, there would be a chance that the action gets cancelled and the item disappears after picking it up, but before equipping it.
@@ -55,7 +55,7 @@ namespace UnitSystem.ActionSystem
             EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
             if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
-                if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                if (Unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
                 {
                     if (targetEquipSlot == EquipSlot.LeftHeldItem2)
                         targetEquipSlot = EquipSlot.LeftHeldItem1;
@@ -71,7 +71,7 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            unit.UnitEquipment.TryAddItemAt(targetEquipSlot, (ItemData)dictionaryEntry.Key);
+            Unit.UnitEquipment.TryAddItemAt(targetEquipSlot, (ItemData)dictionaryEntry.Key);
             CompleteAction();
         }
 
@@ -137,7 +137,7 @@ namespace UnitSystem.ActionSystem
             return cost;
         }
 
-        public override bool IsValidAction() => unit != null && unit.UnitEquipment != null;
+        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment != null;
 
         public override bool IsInterruptable() => false;
 
