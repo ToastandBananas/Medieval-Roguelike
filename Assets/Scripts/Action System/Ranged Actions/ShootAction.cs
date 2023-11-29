@@ -316,6 +316,8 @@ namespace UnitSystem.ActionSystem
 
         public bool RangedWeaponIsLoaded() => Unit.UnitEquipment.RangedWeaponEquipped && Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded;
 
+        public override bool CanShowAttackRange() => Unit.UnitEquipment.HasValidAmmunitionEquipped();
+
         public override float AccuracyModifier() => 1f;
 
         public override int InitialEnergyCost() => 0;

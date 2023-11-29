@@ -412,6 +412,8 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanBeClearedFromActionQueue() => true;
 
+        public override bool CanShowAttackRange() => true;
+
         public override bool CanAttackThroughUnits() => false;
 
         public override bool IsMeleeAttackAction() => true;

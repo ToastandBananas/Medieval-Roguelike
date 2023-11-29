@@ -20,14 +20,14 @@ namespace GeneralUI
         [SerializeField] int unitTooltipsToPool = 3;
         [SerializeField] Tooltip[] inventoryTooltips;
 
-        static List<Tooltip> looseItemTooltips = new List<Tooltip>();
-        static List<Tooltip> unitTooltips = new List<Tooltip>();
+        static List<Tooltip> looseItemTooltips = new();
+        static List<Tooltip> unitTooltips = new();
 
-        public static Slot currentSlot { get; private set; }
-        public static ActionBarSlot currentActionBarSlot { get; private set; }
-        public static int activeInventoryTooltips { get; private set; }
+        public static Slot CurrentSlot { get; private set; }
+        public static ActionBarSlot CurrentActionBarSlot { get; private set; }
+        public static int ActiveInventoryTooltips { get; private set; }
 
-        public static Canvas canvas { get; private set; }
+        public static Canvas Canvas { get; private set; }
 
         static Vector3 playersLastPosition;
         static Direction playersLastDirection;
@@ -61,7 +61,7 @@ namespace GeneralUI
                 inventoryTooltips[i].Image.raycastTarget = false;
             }
 
-            canvas = GetComponentInParent<Canvas>();
+            Canvas = GetComponentInParent<Canvas>();
         }
 
         void Update()
@@ -124,9 +124,9 @@ namespace GeneralUI
                 Instance.inventoryTooltips[i].ClearTooltip();
             }
 
-            currentSlot = null;
-            currentActionBarSlot = null;
-            activeInventoryTooltips = 0;
+            CurrentSlot = null;
+            CurrentActionBarSlot = null;
+            ActiveInventoryTooltips = 0;
         }
 
         public static void ShowInventoryTooltips(Slot slot)
@@ -269,12 +269,12 @@ namespace GeneralUI
             return tooltip;
         }
 
-        public static void SetCurrentSlot(Slot slot) => currentSlot = slot;
+        public static void SetCurrentSlot(Slot slot) => CurrentSlot = slot;
 
-        public static void SetCurrentActionBarSlot(ActionBarSlot actionBarSlot) => currentActionBarSlot = actionBarSlot;
+        public static void SetCurrentActionBarSlot(ActionBarSlot actionBarSlot) => CurrentActionBarSlot = actionBarSlot;
 
         public static List<Tooltip> WorldTooltips => looseItemTooltips;
 
-        public static void AddToActiveInventoryTooltips() => activeInventoryTooltips++;
+        public static void AddToActiveInventoryTooltips() => ActiveInventoryTooltips++;
     }
 }

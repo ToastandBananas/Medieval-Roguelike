@@ -62,6 +62,10 @@ namespace UnitSystem.ActionSystem
                 ActionLineRenderer.Instance.HideLineRenderers();
                 WorldMouse.ChangeCursor(CursorState.Default);
                 ClearHighlightedInteractable();
+
+                if (GameControls.gamePlayActions.menuContext.WasPressed && !player.unitActionHandler.PlayerActionHandler.DefaultActionIsSelected)
+                    player.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+
                 return;
             }
             
@@ -110,13 +114,8 @@ namespace UnitSystem.ActionSystem
                     // Display the appropriate mouse cursor and line renderer, depending on what/who is at mouse grid position and which action is currently selected by the player
                     SetupCursorAndLineRenderer();
 
-                    // If the Player has an attack action selected
-                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedAction;
-                    if (selectedAction is BaseAttackAction)
-                        GridSystemVisual.UpdateAttackGridVisual();
-
                     // If the Player is trying to perform the Turn Action
-                    if (GameControls.gamePlayActions.turnMode.IsPressed || selectedAction is TurnAction)
+                    if (GameControls.gamePlayActions.turnMode.IsPressed || player.unitActionHandler.PlayerActionHandler.SelectedAction is TurnAction)
                         HandleTurnMode();
                     // If the Player is trying to swap their weapon set
                     else if (GameControls.gamePlayActions.swapWeapons.WasPressed && !GameControls.gamePlayActions.turnMode.IsPressed)
@@ -463,6 +462,8 @@ namespace UnitSystem.ActionSystem
                         TooltipManager.ClearUnitTooltips();
                         if (selectedAction.BaseAttackAction.IsValidUnitInActionArea(mouseGridPosition))
                             TooltipManager.ShowUnitHitChanceTooltips(mouseGridPosition, selectedAction);
+
+                        GridSystemVisual.UpdateAttackGridVisual();
                     }
 
                     if (unitAtGridPosition != null && !unitAtGridPosition.health.IsDead && !player.alliance.IsAlly(unitAtGridPosition) && player.vision.IsVisible(unitAtGridPosition))

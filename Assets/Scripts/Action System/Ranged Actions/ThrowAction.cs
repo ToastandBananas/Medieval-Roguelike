@@ -14,10 +14,11 @@ namespace UnitSystem.ActionSystem
         public List<ItemData> Throwables { get; private set; }
         HeldItem hiddenHeldItem, thrownHeldItem;
 
-        readonly ItemType[] throwingWeaponItemTypes = new ItemType[] { ItemType.ThrowingDagger, ItemType.ThrowingAxe, ItemType.ThrowingClub, ItemType.ThrowingStar };
+        static readonly ItemType[] throwingWeaponItemTypes = new ItemType[] { ItemType.ThrowingDagger, ItemType.ThrowingAxe, ItemType.ThrowingClub, ItemType.ThrowingStar };
 
-        readonly int minThrowDistance = 2;
-        readonly int defaultMaxThrowDistance = 6;
+        static readonly float minThrowDistance = 2f;
+        public static readonly float maxThrowDistance = 6f;
+        public static readonly float minMaxThrowDistance = 2.85f;
 
         void Awake()
         {
@@ -51,12 +52,14 @@ namespace UnitSystem.ActionSystem
             }
 
             if (Throwables.Count > 1)
-                ContextMenu.BuildThrowWeaponsContextMenu();
+                ContextMenu.BuildThrowActionContextMenu();
             else if (Throwables.Count == 1)
             {
                 ItemDataToThrow = Throwables[0];
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }
+            else
+                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
         }
 
         public override int ActionPointsCost()
@@ -152,6 +155,26 @@ namespace UnitSystem.ActionSystem
             TurnManager.Instance.StartNextUnitsTurn(Unit); // This must remain outside of CompleteAction in case we need to call CompleteAction early within MoveToTargetInstead
         }
 
+        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
+        {
+            if (targetUnit == null || targetUnit.health.IsDead || itemDataHittingWith == null)
+                return;
+
+            targetUnit.unitActionHandler.InterruptActions();
+
+            float damage = GetBaseDamage(itemDataHittingWith);
+            damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
+            TryKnockbackTargetUnit(targetUnit, null, itemDataHittingWith, damage, attackBlocked);
+        }
+
+        protected override float GetBaseDamage(ItemData itemDataHittingWith)
+        {
+            if (itemDataHittingWith.Item is Weapon)
+                return itemDataHittingWith.Damage * ((Unit.stats.Strength.GetValue() * 0.015f) + (Unit.stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
+            else
+                return itemDataHittingWith.Item.Weight * ((Unit.stats.Strength.GetValue() * 0.025f) + (Unit.stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
+        }
+
         public bool TryHitTarget(ItemData itemDataToThrow, GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 1f);
@@ -238,7 +261,9 @@ namespace UnitSystem.ActionSystem
             Unit.unitActionHandler.FinishAction();
         }
 
-        public override bool IsValidAction() => ItemDataToThrow != null || Throwables.Count > 0 || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.UnitEquipment.BeltBagEquipped() && Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) && Unit.BeltInventoryManager.ContainsAnyItems());
+        public override bool IsValidAction() => true;
+
+        public override bool CanShowAttackRange() => ItemDataToThrow != null;
 
         public override int InitialEnergyCost()
         {
@@ -247,9 +272,7 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            if (ItemDataToThrow != null && ItemDataToThrow.Item != null)
-                return $"Throw {ItemDataToThrow.Item.Name}";
-            else if (Unit.UnitEquipment.MeleeWeaponEquipped && !Unit.UnitEquipment.IsDualWielding && (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) || !Unit.BeltInventoryManager.ContainsAnyItems()))
+            if (Unit.UnitEquipment.MeleeWeaponEquipped && !Unit.UnitEquipment.IsDualWielding && (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) || !Unit.BeltInventoryManager.ContainsAnyItems()))
                 return $"Throw {Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}";
             return "Throw Item";
         }
@@ -277,15 +300,9 @@ namespace UnitSystem.ActionSystem
 
         public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Basic;
 
-        public override float MinAttackRange()
-        {
-            return minThrowDistance;
-        }
+        public override float MinAttackRange() => minThrowDistance;
 
-        public override float MaxAttackRange()
-        {
-            return defaultMaxThrowDistance;
-        }
+        public override float MaxAttackRange() => ItemDataToThrow != null ? Unit.stats.MaxThrowRange(ItemDataToThrow.Item) : minThrowDistance;
 
         public override bool CanAttackThroughUnits()
         {

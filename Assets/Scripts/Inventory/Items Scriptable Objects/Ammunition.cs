@@ -6,7 +6,7 @@ namespace InventorySystem
     {
         Arrow = 0,
         Spear = 1,
-        ThrowingKnife = 2,
+        ThrowingDagger = 2,
         Axe = 3,
         Bolt = 10,
         BluntObject = 20,

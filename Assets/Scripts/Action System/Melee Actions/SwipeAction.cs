@@ -300,6 +300,8 @@ namespace UnitSystem.ActionSystem
 
         public override ActionBarSection ActionBarSection() => UI.ActionBarSection.Special;
 
+        public override bool CanShowAttackRange() => true;
+
         public override bool IsMeleeAttackAction() => true;
 
         public override bool IsRangedAttackAction() => false;

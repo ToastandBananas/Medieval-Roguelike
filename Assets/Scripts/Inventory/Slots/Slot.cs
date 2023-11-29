@@ -86,7 +86,7 @@ namespace InventorySystem
         {
             InventoryUI.SetActiveSlot(this);
 
-            if (TooltipManager.currentSlot == null || TooltipManager.currentSlot.ParentSlot() != ParentSlot())
+            if (TooltipManager.CurrentSlot == null || TooltipManager.CurrentSlot.ParentSlot() != ParentSlot())
             {
                 TooltipManager.SetCurrentSlot(ParentSlot());
 

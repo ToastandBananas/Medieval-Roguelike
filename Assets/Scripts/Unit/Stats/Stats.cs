@@ -11,6 +11,11 @@ namespace UnitSystem
 {
     public class Stats : MonoBehaviour
     {
+        public delegate void OnKnockbackHandler();
+        public event OnKnockbackHandler OnKnockbackTarget;
+        public delegate void OnFailedKnockbackHandler(GridPosition targetUnitGridPosition);
+        public event OnFailedKnockbackHandler OnFailedToKnockbackTarget;
+
         public int currentAP { get; private set; }
         public int pooledAP { get; private set; }
         public int lastPooledAP { get; private set; }
@@ -51,7 +56,7 @@ namespace UnitSystem
 
         [Header("Unarmed Combat")]
         [SerializeField] bool canFightUnarmed = true;
-        [SerializeField] float unarmedAttackRange = 1.4f;
+        [SerializeField] float unarmedAttackRange = 1.5f;
         [SerializeField] int baseUnarmedDamage = 5;
 
         readonly float maxKnockbackChance = 0.9f;
@@ -486,9 +491,17 @@ namespace UnitSystem
             {
                 if (unit.UnitEquipment != null)
                 {
-                    HeldItem rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
-                    if (unit.UnitEquipment.RangedWeaponEquipped)
-                        hitChance = RangedAccuracy(rangedWeapon, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, rangedWeapon, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit)));
+                    if (actionToUse is ThrowAction)
+                    {
+                        ThrowAction throwAction = actionToUse as ThrowAction;
+                        hitChance = ThrowingAccuracy(throwAction.ItemDataToThrow, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, null, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit)));
+                    }
+                    else
+                    {
+                        HeldItem rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+                        if (unit.UnitEquipment.RangedWeaponEquipped)
+                            hitChance = RangedAccuracy(rangedWeapon, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, rangedWeapon, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit)));
+                    }
                 }
             }
 
@@ -565,8 +578,15 @@ namespace UnitSystem
             if (random <= unit.stats.KnockbackChance(heldItemAttackingWith, weaponItemDataHittingWith, targetUnit, attackBlocked))
             {
                 targetUnit.unitAnimator.Knockback(unit);
+                OnKnockbackTarget?.Invoke();
                 return true;
             }
+
+            if (targetUnit.unitActionHandler.MoveAction.AboutToMove)
+                OnFailedToKnockbackTarget?.Invoke(targetUnit.unitActionHandler.MoveAction.NextTargetGridPosition);
+            else
+                OnFailedToKnockbackTarget?.Invoke(targetUnit.GridPosition);
+
             return false;
         }
 
@@ -634,12 +654,13 @@ namespace UnitSystem
         }
         #endregion
 
+        #region Ranged
         public float RangedAccuracy(HeldItem rangedWeapon, GridPosition targetGridPosition, BaseAttackAction attackAction)
         {
             if (rangedWeapon == null)
                 return 0f;
 
-            float accuracy = WeaponSkill(rangedWeapon.ItemData.Item.Weapon) / 100f * 0.5f;
+            float accuracy = WeaponSkill(rangedWeapon.ItemData.Item.Weapon) / 100f * 0.5f; // 0.5% (0.005) chance per weapon skill
             float baseAccuracy = accuracy;
 
             // Accuracy affected by height differences between this Unit and the attackingUnit
@@ -648,6 +669,12 @@ namespace UnitSystem
             // Accuracy affected by the weapon & action accuracy modifiers
             accuracy += baseAccuracy * rangedWeapon.ItemData.AccuracyModifier;
             accuracy += baseAccuracy * attackAction.AccuracyModifier();
+
+            // Accuracy affected by distance to target (but only over a certain value)
+            float minDistanceBeforeAccuracyLoss = 3.5f;
+            float distanceToTarget = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
+            if (distanceToTarget > minDistanceBeforeAccuracyLoss)
+                accuracy -= accuracy * (distanceToTarget - minDistanceBeforeAccuracyLoss) * 0.05f; // 5% loss per distance over the minDistanceBeforeAccuracyLoss
 
             if (accuracy < 0f)
                 accuracy = 0f;
@@ -663,7 +690,7 @@ namespace UnitSystem
             if (itemDataToThrow == null)
                 return 0f;
 
-            float accuracy = throwingSkill.GetValue() / 100f * 0.5f;
+            float accuracy = throwingSkill.GetValue() / 100f * 0.5f; // 0.5% (0.005) chance per throwing skill
             float baseAccuracy = accuracy;
 
             // Accuracy affected by height differences between this Unit and the attackingUnit
@@ -671,6 +698,12 @@ namespace UnitSystem
 
             // Accuracy affected by the action's accuracy modifier
             accuracy += baseAccuracy * attackAction.AccuracyModifier();
+
+            // Accuracy affected by distance to target (but only over a certain value)
+            float minDistanceBeforeAccuracyLoss = 2.5f;
+            float distanceToTarget = Vector3.Distance(unit.WorldPosition, targetGridPosition.WorldPosition);
+            if (distanceToTarget > minDistanceBeforeAccuracyLoss)
+                accuracy -= accuracy * (distanceToTarget - minDistanceBeforeAccuracyLoss) * 0.05f; // 5% loss per distance over the minDistanceBeforeAccuracyLoss
 
             if (accuracy < 0f)
                 accuracy = 0f;
@@ -680,6 +713,18 @@ namespace UnitSystem
             // Debug.Log($"{unit.name}'s throwing accuracy: {accuracy}");
             return accuracy;
         }
+
+        public float MaxThrowRange(Item thrownItem)
+        {
+            float throwRange = (strength.GetValue() / 12f) + (throwingSkill.GetValue() / 12f); // 8.33 distance at 100 skill for each
+            throwRange -= thrownItem.Weight / 2f; // Minus 0.5 per pound
+            if (throwRange < ThrowAction.minMaxThrowDistance)
+                throwRange = ThrowAction.minMaxThrowDistance;
+            else if (throwRange > ThrowAction.maxThrowDistance)
+                throwRange = ThrowAction.maxThrowDistance;
+            return throwRange;
+        }
+        #endregion
 
         public int WeaponSkill(Weapon weapon)
         {

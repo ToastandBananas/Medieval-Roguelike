@@ -87,6 +87,10 @@ namespace UnitSystem.ActionSystem.UI
             selectedImageGameObject.SetActive(playerActionHandler.SelectedActionType == ActionType);
         }
 
+        public void Deselect() => selectedImageGameObject.SetActive(false);
+
+        public void Select() => selectedImageGameObject.SetActive(true);
+
         public void UpdateActionVisual()
         {
             if (ActionType == null || playerActionHandler.AvailableActionTypes.Contains(ActionType) == false)
@@ -128,7 +132,7 @@ namespace UnitSystem.ActionSystem.UI
             ActionSystemUI.SetHighlightedActionSlot(this);
             ContextMenu.DisableContextMenu();
 
-            if (TooltipManager.currentActionBarSlot == null || TooltipManager.currentActionBarSlot != this)
+            if (TooltipManager.CurrentActionBarSlot == null || TooltipManager.CurrentActionBarSlot != this)
             {
                 TooltipManager.SetCurrentActionBarSlot(this);
 

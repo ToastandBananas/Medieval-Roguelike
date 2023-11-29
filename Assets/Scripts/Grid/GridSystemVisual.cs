@@ -130,10 +130,8 @@ namespace GridSystem
         {
             HideGridVisual();
             
-            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0)
-                return;
-
-            if (Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false)
+            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0 
+                || Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
             Instance.ShowAttackRange(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
@@ -144,10 +142,8 @@ namespace GridSystem
         {
             UpdateAttackRangeGridVisual();
 
-            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0)
-                return;
-
-            if (Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false)
+            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0
+                || Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
             Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));

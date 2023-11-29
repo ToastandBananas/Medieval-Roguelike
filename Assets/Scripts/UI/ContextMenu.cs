@@ -62,8 +62,8 @@ namespace GeneralUI
             // Don't allow context menu actions while an action is already queued or when dragging items
             if (UnitManager.player.unitActionHandler.QueuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
                 return;
-
-            if (GameControls.gamePlayActions.menuContext.WasReleased && UnitManager.player.unitActionHandler.PlayerActionHandler.DefaultActionIsSelected)
+            
+            if (GameControls.gamePlayActions.menuContext.WasReleased)
             {
                 if (contextMenuHoldTimer < maxContextMenuHoldTime)
                     BuildContextMenu();
@@ -157,7 +157,7 @@ namespace GeneralUI
             }
         }
 
-        public static void BuildReloadContextMenu()
+        public static void BuildReloadActionContextMenu()
         {
             if (onCooldown)
                 return;
@@ -218,7 +218,7 @@ namespace GeneralUI
             ListPool<ItemData>.Release(uniqueProjectileTypes);
         }
 
-        public static void BuildThrowWeaponsContextMenu()
+        public static void BuildThrowActionContextMenu()
         {
             if (onCooldown)
                 return;
@@ -571,7 +571,7 @@ namespace GeneralUI
         static void CreateRemoveFromHotbarButton()
         {
             // This only works for ItemActionBar slots with items in them
-            if (ActionSystemUI.HighlightedActionSlot == null || ActionSystemUI.HighlightedActionSlot is ItemActionBarSlot == false || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.itemData == null || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.itemData.Item == null)
+            if (ActionSystemUI.HighlightedActionSlot == null || ActionSystemUI.HighlightedActionSlot is ItemActionBarSlot == false || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.ItemData == null || ActionSystemUI.HighlightedActionSlot.ItemActionBarSlot.ItemData.Item == null)
                 return;
 
             GetContextMenuButton().SetupRemoveFromHotbarButton(ActionSystemUI.HighlightedActionSlot as ItemActionBarSlot);
@@ -600,9 +600,7 @@ namespace GeneralUI
             IsActive = false;
 
             for (int i = 0; i < contextButtons.Count; i++)
-            {
                 contextButtons[i].Disable();
-            }
         }
 
         static IEnumerator DelayDisableContextMenu()
@@ -669,14 +667,14 @@ namespace GeneralUI
             Vector3 slotPosition = Input.mousePosition;
             if (ActionSystemUI.SelectedActionSlot != null)
             {
-                slotWidthAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
-                slotHeightAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+                slotWidthAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
                 slotPosition = ActionSystemUI.SelectedActionSlot.transform.position;
             }
             else if (ActionSystemUI.HighlightedActionSlot != null)
             {
-                slotWidthAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
-                slotHeightAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+                slotWidthAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
                 slotPosition = ActionSystemUI.HighlightedActionSlot.transform.position;
             }
 
@@ -692,17 +690,17 @@ namespace GeneralUI
                     activeButtonCount++;
             }
 
-            xPosAddon = rectTransform.rect.width * TooltipManager.canvas.scaleFactor / 2f;
-            yPosAddon = activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+            xPosAddon = rectTransform.rect.width * TooltipManager.Canvas.scaleFactor / 2f;
+            yPosAddon = activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
 
             // Get the desired position:
             // If the mouse position is too close to the top of the screen
-            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor * 1.2f)))
-                yPosAddon = -activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.canvas.scaleFactor / 2f;
+            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor * 1.2f)))
+                yPosAddon = -activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
 
             // If the mouse position is too far to the right of the screen
-            if (Input.mousePosition.x >= (Screen.width - (rectTransform.rect.width * TooltipManager.canvas.scaleFactor * 1.2f)))
-                xPosAddon = -rectTransform.rect.width * TooltipManager.canvas.scaleFactor / 2f;
+            if (Input.mousePosition.x >= (Screen.width - (rectTransform.rect.width * TooltipManager.Canvas.scaleFactor * 1.2f)))
+                xPosAddon = -rectTransform.rect.width * TooltipManager.Canvas.scaleFactor / 2f;
         }
     }
 }

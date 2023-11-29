@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 62edd1d320b883747bb437673a1b6934
+guid: ba5f195180d9a7e449c1cc357e90264f
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,8 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: palette
-    second: {fileID: 2100000, guid: fb6e15c8b74ca834c82fe2c4022b0523, type: 2}
+      name: Dagger_-_Iron_Material
+    second: {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dagger_Iron_Material.001
+    second: {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dagger_Iron_Material.002
+    second: {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -40,7 +50,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 0.1
+    globalScale: 0.6
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -93,7 +103,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.1
+    globalScale: 0.6
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

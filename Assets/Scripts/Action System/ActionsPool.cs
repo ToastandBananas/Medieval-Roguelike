@@ -103,6 +103,8 @@ namespace UnitSystem.ActionSystem
             // De-queue the action if necessary
             action.Unit.unitActionHandler.RemoveActionFromQueue(action);
 
+            action.OnReturnToPool();
+
             action.Unit.unitActionHandler.AvailableActions.Remove(action);
             if (action is BaseAttackAction)
                 action.Unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
@@ -110,7 +112,6 @@ namespace UnitSystem.ActionSystem
             action.transform.SetParent(Instance.transform);
             actions.Add(action);
 
-            action.OnReturnToPool();
             action.gameObject.SetActive(false);
         }
     }

@@ -70,6 +70,18 @@ namespace InventorySystem
                 }
             }
 
+            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            {
+                if (beltInventoryManager.ParentInventory.ItemDatas.Contains(itemData))
+                    return true;
+
+                for (int i = 0; i < beltInventoryManager.SubInventories.Length; i++)
+                {
+                    if (beltInventoryManager.SubInventories[i].ItemDatas.Contains(itemData))
+                        return true;
+                }
+            }
+
             if (quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped())
             {
                 if (quiverInventoryManager.ParentInventory.ItemDatas.Contains(itemData))
@@ -116,6 +128,30 @@ namespace InventorySystem
                         {
                             if (bestWeaponItemData == null || backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].IsBetterThan(bestWeaponItemData))
                                 bestWeaponItemData = backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i];
+                        }
+                    }
+                }
+            }
+
+            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            {
+                for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
+                {
+                    if (beltInventoryManager.ParentInventory.ItemDatas[i].Item is MeleeWeapon)
+                    {
+                        if (bestWeaponItemData == null || beltInventoryManager.ParentInventory.ItemDatas[i].IsBetterThan(bestWeaponItemData))
+                            bestWeaponItemData = beltInventoryManager.ParentInventory.ItemDatas[i];
+                    }
+                }
+
+                for (int subInvIndex = 0; subInvIndex < beltInventoryManager.SubInventories.Length; subInvIndex++)
+                {
+                    for (int i = 0; i < beltInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
+                    {
+                        if (beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Item is MeleeWeapon)
+                        {
+                            if (bestWeaponItemData == null || beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].IsBetterThan(bestWeaponItemData))
+                                bestWeaponItemData = beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i];
                         }
                     }
                 }

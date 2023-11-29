@@ -31,6 +31,9 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitPickingUpItem)
         {
+            if (itemData == null || itemData.Item == null)
+                return;
+
             if (unitPickingUpItem.unitActionHandler.TurnAction.IsFacingTarget(gridPosition) == false)
                 unitPickingUpItem.unitActionHandler.TurnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.TurnAction.DefaultRotateSpeed * 2f);
 

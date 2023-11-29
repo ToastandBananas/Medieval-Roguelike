@@ -111,7 +111,7 @@ namespace UnitSystem.ActionSystem.UI
                     actionSlotDraggedFrom.HideSlot();
 
                     if (HighlightedActionSlot is ItemActionBarSlot)
-                        draggedActionImage.sprite = HighlightedActionSlot.ItemActionBarSlot.itemData.Item.HotbarSprite(HighlightedActionSlot.ItemActionBarSlot.itemData);
+                        draggedActionImage.sprite = HighlightedActionSlot.ItemActionBarSlot.ItemData.Item.HotbarSprite(HighlightedActionSlot.ItemActionBarSlot.ItemData);
                     else
                         draggedActionImage.sprite = HighlightedActionSlot.Action.ActionIcon();
 
@@ -148,12 +148,12 @@ namespace UnitSystem.ActionSystem.UI
             {
                 ItemActionBarSlot itemActionSlotDraggedFrom = actionSlotDraggedFrom as ItemActionBarSlot;
                 ItemActionBarSlot highlightedItemActionSlot = HighlightedActionSlot as ItemActionBarSlot;
-                ItemData draggedItemData = itemActionSlotDraggedFrom.itemData;
+                ItemData draggedItemData = itemActionSlotDraggedFrom.ItemData;
 
                 actionSlotDraggedFrom.ResetButton();
                 if (HighlightedActionSlot.ActionType != null)
                 {
-                    itemActionSlotDraggedFrom.SetupAction(highlightedItemActionSlot.itemData);
+                    itemActionSlotDraggedFrom.SetupAction(highlightedItemActionSlot.ItemData);
                     itemActionSlotDraggedFrom.ShowSlot();
                     highlightedItemActionSlot.ResetButton();
                 }
@@ -311,7 +311,7 @@ namespace UnitSystem.ActionSystem.UI
         {
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                if (itemActionButtons[i].itemData == null || itemActionButtons[i].itemData.Item == null)
+                if (itemActionButtons[i].ItemData == null || itemActionButtons[i].ItemData.Item == null)
                     return itemActionButtons[i];
             }
             return null;
@@ -321,7 +321,7 @@ namespace UnitSystem.ActionSystem.UI
         {
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData == itemData)
+                if (itemActionButtons[i].ItemData != null && itemActionButtons[i].ItemData == itemData)
                     return true;
             }
             return false;
@@ -334,7 +334,7 @@ namespace UnitSystem.ActionSystem.UI
 
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                if (itemActionButtons[i].itemData == itemData)
+                if (itemActionButtons[i].ItemData == itemData)
                     return itemActionButtons[i];
             }
             return null;
@@ -361,11 +361,11 @@ namespace UnitSystem.ActionSystem.UI
         public static void SetSelectedActionSlot(ActionBarSlot actionSlot)
         {
             if (SelectedActionSlot != null)
-                SelectedActionSlot.UpdateSelectedVisual();
+                SelectedActionSlot.Deselect();
 
             SelectedActionSlot = actionSlot;
             if (SelectedActionSlot != null)
-                SelectedActionSlot.UpdateSelectedVisual();
+                SelectedActionSlot.Select();
         }
 
         public static void SetHighlightedActionSlot(ActionBarSlot actionSlot)
@@ -387,7 +387,7 @@ namespace UnitSystem.ActionSystem.UI
 
             for (int i = 0; i < itemActionButtons.Count; i++)
             {
-                if (itemActionButtons[i].itemData != null && itemActionButtons[i].itemData.Item != null && playerActionHandler.Unit.UnitInventoryManager.ContainsItemDataInAnyInventory(itemActionButtons[i].itemData) == false)
+                if (itemActionButtons[i].ItemData != null && itemActionButtons[i].ItemData.Item != null && !playerActionHandler.Unit.UnitInventoryManager.ContainsItemDataInAnyInventory(itemActionButtons[i].ItemData))
                     itemActionButtons[i].ResetButton();
             }
         }

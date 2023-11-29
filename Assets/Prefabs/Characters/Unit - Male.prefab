@@ -410,7 +410,7 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   canFightUnarmed: 1
-  unarmedAttackRange: 1.4
+  unarmedAttackRange: 1.5
   baseUnarmedDamage: 5
 --- !u!114 &4471245059765168945
 MonoBehaviour:
@@ -896,10 +896,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -907,10 +908,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -918,10 +920,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -929,10 +932,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -940,10 +944,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -951,10 +956,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -962,10 +968,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -973,10 +980,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -984,10 +992,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -995,10 +1004,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -1006,10 +1016,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -1017,10 +1028,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -1028,10 +1040,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -1039,10 +1052,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0
@@ -1050,10 +1064,11 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0

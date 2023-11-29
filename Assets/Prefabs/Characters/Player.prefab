@@ -1484,7 +1484,7 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   canFightUnarmed: 1
-  unarmedAttackRange: 1.4
+  unarmedAttackRange: 1.5
   baseUnarmedDamage: 5
 --- !u!114 &6440773195933579921
 MonoBehaviour:

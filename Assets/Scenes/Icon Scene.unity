@@ -526,8 +526,8 @@ MonoBehaviour:
   iconFolderName: Held Items/Weapons/Melee
   frameRate: 30
   framesToCapture: 1
-  saveFileName: Spear-Short
-  overwriteFile: 1
+  saveFileName: Dagger-Iron
+  overwriteFile: 0
 --- !u!4 &339067533
 Transform:
   m_ObjectHideFlags: 0
@@ -940,7 +940,7 @@ Transform:
   - {fileID: 6305480358554748613}
   - {fileID: 543450653481774652}
   - {fileID: 543450651898591581}
-  - {fileID: 566416587}
+  - {fileID: 1403380214}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1027,12 +1027,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 499652220}
   m_Mesh: {fileID: -2432090755550338912, guid: 7de39bd280ad1be409d59138c6afb067, type: 3}
---- !u!4 &566416587 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
-    type: 3}
-  m_PrefabInstance: {fileID: 909223254}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &584356671
 GameObject:
   m_ObjectHideFlags: 0
@@ -1266,75 +1260,75 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 874851388}
   m_Mesh: {fileID: -2432090755550338912, guid: 03bdb01a04dcf474b86c0932ce06fc91, type: 3}
---- !u!1001 &909223254
+--- !u!1001 &923736944
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 492088666}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.025
+      value: -1.325
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.53
+      value: -0.3
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalRotation.y
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 62edd1d320b883747bb437673a1b6934,
+    - target: {fileID: 919132149155446097, guid: 5cf3357016c67844db3737704ac58940,
         type: 3}
       propertyPath: m_Name
-      value: ShortSpear
+      value: Dagger - Iron
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 62edd1d320b883747bb437673a1b6934, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 5cf3357016c67844db3737704ac58940, type: 3}
 --- !u!1 &950929741
 GameObject:
   m_ObjectHideFlags: 0
@@ -1993,6 +1987,12 @@ Transform:
   m_Father: {fileID: 584356672}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1403380214 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5cf3357016c67844db3737704ac58940,
+    type: 3}
+  m_PrefabInstance: {fileID: 923736944}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1416224293
 GameObject:
   m_ObjectHideFlags: 0

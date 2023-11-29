@@ -59,105 +59,135 @@ namespace UnitSystem.ActionSystem
                 TargetEnemyUnit = Unit.unitActionHandler.TargetEnemyUnit;
         }
 
-        public virtual void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
+        public virtual void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
-            if (targetUnit != null && targetUnit.health.IsDead == false)
+            if (targetUnit == null || targetUnit.health.IsDead)
+                return;
+            
+            targetUnit.unitActionHandler.InterruptActions();
+
+            float damage = GetBaseDamage(heldItemAttackingWith, itemDataHittingWith);
+            damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
+            TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemDataHittingWith, damage, attackBlocked);
+        }
+
+        protected virtual float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
+        {
+            float baseDamage;
+            if (heldItemAttackingWith != null)
             {
-                bool attackBlocked = false;
-                targetUnit.unitActionHandler.InterruptActions();
-
-                float damageAmount;
-                if (heldWeaponAttackingWith != null)
+                baseDamage = heldItemAttackingWith.ItemData.Damage;
+                if (Unit.UnitEquipment.IsDualWielding)
                 {
-                    damageAmount = heldWeaponAttackingWith.ItemData.Damage;
-                    if (Unit.UnitEquipment.IsDualWielding)
-                    {
-                        if (heldWeaponAttackingWith == Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
-                            damageAmount *= Weapon.dualWieldPrimaryEfficiency;
-                        else
-                            damageAmount *= Weapon.dualWieldSecondaryEfficiency;
-                    }
-                    else if (Unit.UnitEquipment.InVersatileStance)
-                        damageAmount *= VersatileStanceAction.damageModifier;
+                    if (heldItemAttackingWith == Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                        baseDamage *= Weapon.dualWieldPrimaryEfficiency;
+                    else
+                        baseDamage *= Weapon.dualWieldSecondaryEfficiency;
                 }
-                else if (itemDataHittingWith != null)
-                    damageAmount = itemDataHittingWith.Damage;
-                else
-                    damageAmount = UnarmedAttackDamage();
+                else if (Unit.UnitEquipment.InVersatileStance)
+                    baseDamage *= VersatileStanceAction.damageModifier;
+            }
+            else if (itemDataHittingWith != null)
+                baseDamage = itemDataHittingWith.Damage;
+            else
+                baseDamage = UnarmedAttackDamage();
 
-                // TODO: Calculate armor's damage absorbtion
-                float armorAbsorbAmount = 0f;
+            return baseDamage;
+        }
 
-                // If the attack was blocked
-                if (heldItemBlockedWith != null)
+        protected virtual float GetBaseDamage(ItemData itemDataHittingWith)
+        {
+            if (itemDataHittingWith != null)
+                return itemDataHittingWith.Damage;
+            else
+                return UnarmedAttackDamage();
+        }
+
+        protected int DealDamageToTarget(Unit targetUnit, ItemData itemHittingWith, HeldItem heldItemBlockedWith, float currentDamage, out bool attackBlocked)
+        {
+            float armorAbsorbAmount = GetTargetArmorAbsorbtionAmount(targetUnit, itemHittingWith, currentDamage);
+
+            // If the attack was blocked
+            if (heldItemBlockedWith != null)
+            {
+                float blockAmount = GetTargetUnitBlockAmount(targetUnit, heldItemBlockedWith);
+                attackBlocked = true;
+
+                currentDamage -= armorAbsorbAmount + blockAmount;
+                if (currentDamage < 0)
+                    currentDamage = 0f;
+
+                targetUnit.health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+            }
+            else
+            {
+                attackBlocked = false;
+                currentDamage -= armorAbsorbAmount;
+                if (currentDamage < 0)
+                    currentDamage = 0f;
+
+                targetUnit.health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+            }
+            
+            return Mathf.RoundToInt(currentDamage);
+        }
+
+        float GetTargetArmorAbsorbtionAmount(Unit targetUnit, ItemData itemHittingWith, float currentDamage)
+        {
+            // TODO: Calculate armor's damage absorbtion
+            float armorAbsorbAmount = 0f;
+            return armorAbsorbAmount;
+        }
+
+        protected float GetTargetUnitBlockAmount(Unit targetUnit, HeldItem heldItemBlockedWith)
+        {
+            float blockAmount = 0f;
+            if (heldItemBlockedWith == null)
+                return blockAmount;
+
+            if (heldItemBlockedWith is HeldShield)
+            {
+                HeldShield shieldBlockedWith = heldItemBlockedWith as HeldShield;
+                blockAmount = targetUnit.stats.BlockPower(shieldBlockedWith);
+
+                // Play the recoil animation & then lower the shield if not in Raise Shield Stance
+                shieldBlockedWith.Recoil();
+
+                // Potentially fumble & drop the shield
+                shieldBlockedWith.TryFumbleHeldItem();
+            }
+            else if (heldItemBlockedWith is HeldMeleeWeapon)
+            {
+                HeldMeleeWeapon meleeWeaponBlockedWith = heldItemBlockedWith as HeldMeleeWeapon;
+                blockAmount = targetUnit.stats.BlockPower(meleeWeaponBlockedWith);
+
+                if (targetUnit.UnitEquipment.IsDualWielding)
                 {
-                    float blockAmount = 0f;
-                    attackBlocked = true;
-                    if (heldItemBlockedWith is HeldShield)
-                    {
-                        HeldShield shieldBlockedWith = heldItemBlockedWith as HeldShield;
-                        blockAmount = targetUnit.stats.BlockPower(shieldBlockedWith);
-
-                        // Play the recoil animation & then lower the shield if not in Raise Shield Stance
-                        shieldBlockedWith.Recoil();
-
-                        // Potentially fumble & drop the shield
-                        shieldBlockedWith.TryFumbleHeldItem();
-                    }
-                    else if (heldItemBlockedWith is HeldMeleeWeapon)
-                    {
-                        HeldMeleeWeapon meleeWeaponBlockedWith = heldItemBlockedWith as HeldMeleeWeapon;
-                        blockAmount = targetUnit.stats.BlockPower(meleeWeaponBlockedWith);
-
-                        if (Unit.UnitEquipment.IsDualWielding)
-                        {
-                            if (meleeWeaponBlockedWith == Unit.unitMeshManager.GetRightHeldMeleeWeapon())
-                                blockAmount *= Weapon.dualWieldPrimaryEfficiency;
-                            else
-                                blockAmount *= Weapon.dualWieldSecondaryEfficiency;
-                        }
-
-                        // Play the recoil animation & then lower the weapon
-                        meleeWeaponBlockedWith.Recoil();
-
-                        // Potentially fumble & drop the weapon
-                        meleeWeaponBlockedWith.TryFumbleHeldItem();
-                    }
-
-                    damageAmount = damageAmount - armorAbsorbAmount - blockAmount;
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), Unit);
-                }
-                else
-                {
-                    damageAmount -= armorAbsorbAmount;
-                    targetUnit.health.TakeDamage(Mathf.RoundToInt(damageAmount), Unit);
+                    if (meleeWeaponBlockedWith == targetUnit.unitMeshManager.GetRightHeldMeleeWeapon())
+                        blockAmount *= Weapon.dualWieldPrimaryEfficiency;
+                    else
+                        blockAmount *= Weapon.dualWieldSecondaryEfficiency;
                 }
 
-                // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
-                bool knockedBack = false;
-                if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
-                {
-                    knockedBack = Unit.stats.TryKnockback(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, attackBlocked);
-                    if (IsMeleeAttackAction())
-                        targetUnit.health.OnHitByMeleeAttack();
-                }
+                // Play the recoil animation & then lower the weapon
+                meleeWeaponBlockedWith.Recoil();
 
-                if (heldWeaponAttackingWith != null && heldWeaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall)
-                {
-                    SpearWallAction spearWallAction = Unit.unitActionHandler.GetAction<SpearWallAction>();
-                    if (spearWallAction != null)
-                    {
-                        if (knockedBack)
-                            spearWallAction.OnKnockback();
-                        else
-                        {
-                            if (targetUnit.unitActionHandler.MoveAction.AboutToMove)
-                                spearWallAction.OnFailedKnockback(targetUnit.unitActionHandler.MoveAction.NextTargetGridPosition);
-                            else
-                                spearWallAction.OnFailedKnockback(targetUnit.GridPosition);
-                        }
-                    }
-                }
+                // Potentially fumble & drop the weapon
+                meleeWeaponBlockedWith.TryFumbleHeldItem();
+            }
+
+            return blockAmount;
+        }
+
+        protected void TryKnockbackTargetUnit(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, float damageAmount, bool attackBlocked)
+        {
+            // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
+            bool knockedBack = false;
+            if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
+            {
+                knockedBack = Unit.stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
+                if (IsMeleeAttackAction())
+                    targetUnit.health.OnHitByMeleeAttack();
             }
         }
 
@@ -362,7 +392,7 @@ namespace UnitSystem.ActionSystem
             {
                 GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
+                if (!LevelGrid.IsValidGridPosition(nodeGridPosition))
                     continue;
 
                 if (!IsInAttackRange(null, startGridPosition, nodeGridPosition))
@@ -439,7 +469,7 @@ namespace UnitSystem.ActionSystem
             {
                 GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
 
-                if (LevelGrid.IsValidGridPosition(nodeGridPosition) == false)
+                if (!LevelGrid.IsValidGridPosition(nodeGridPosition))
                     continue;
 
                 // If Grid Position has a Unit there already
@@ -447,7 +477,7 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // If target is out of attack range from this Grid Position
-                if (IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition) == false)
+                if (!IsInAttackRange(null, nodeGridPosition, targetUnit.GridPosition))
                     continue;
 
                 // Check for obstacles
@@ -475,16 +505,16 @@ namespace UnitSystem.ActionSystem
             attackGridPositions.AddRange(GetActionAreaGridPositions(targetGridPosition));
             for (int i = 0; i < attackGridPositions.Count; i++)
             {
-                if (LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition) == false)
+                if (!LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition))
                     continue;
-
+                
                 if (unitAtGridPosition.health.IsDead)
                     continue;
 
                 if (Unit.alliance.IsAlly(unitAtGridPosition))
                     continue;
 
-                if (Unit.vision.IsDirectlyVisible(unitAtGridPosition) == false)
+                if (!Unit.vision.IsDirectlyVisible(unitAtGridPosition))
                     continue;
 
                 // If the loop makes it to this point, then it found a valid unit
@@ -561,13 +591,14 @@ namespace UnitSystem.ActionSystem
         public abstract float MinAttackRange();
         public abstract float MaxAttackRange();
 
+        public abstract bool CanShowAttackRange();
+
         /// <summary>A weapon's accuracy will be multiplied by this amount at the end of the calculation, rather than directly added or subtracted. Affects Ranged Accuracy & Dodge Chance.</summary>
         public abstract float AccuracyModifier();
 
         public abstract bool CanAttackThroughUnits();
 
         public abstract bool IsMeleeAttackAction();
-
         public abstract bool IsRangedAttackAction();
 
         public abstract void PlayAttackAnimation();

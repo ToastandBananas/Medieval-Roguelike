@@ -158,10 +158,10 @@ namespace GeneralUI
             if (actionBarSlot is ItemActionBarSlot)
             {
                 ItemActionBarSlot itemActionBarSlot = actionBarSlot as ItemActionBarSlot;
-                if (itemActionBarSlot.itemData == null || itemActionBarSlot.itemData.Item == null)
+                if (itemActionBarSlot.ItemData == null || itemActionBarSlot.ItemData.Item == null)
                     return;
 
-                stringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.itemData.Item.Name}</b></size></align>");
+                stringBuilder.Append($"<align=center><size=22><b>{itemActionBarSlot.ItemData.Item.Name}</b></size></align>");
             }
             else
             {
@@ -248,9 +248,9 @@ namespace GeneralUI
 
         void CalculatePosition(Slot slot)
         {
-            float tooltipWidth = rectTransform.rect.width * TooltipManager.canvas.scaleFactor;
-            float tooltipHeight = rectTransform.rect.height * TooltipManager.canvas.scaleFactor;
-            if (TooltipManager.activeInventoryTooltips == 0)
+            float tooltipWidth = rectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
+            float tooltipHeight = rectTransform.rect.height * TooltipManager.Canvas.scaleFactor;
+            if (TooltipManager.ActiveInventoryTooltips == 0)
             {
                 TooltipManager.AddToActiveInventoryTooltips();
 
@@ -259,7 +259,7 @@ namespace GeneralUI
 
                 if (slot is EquipmentSlot)
                 {
-                    slotWidth = slot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                    slotWidth = slot.InventoryItem.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
 
                     // Determine x position
                     if (newTooltipPosition.x <= tooltipWidth + slotWidth) // Too far left
@@ -278,8 +278,8 @@ namespace GeneralUI
                     float slotHeight;
 
                     InventorySlot inventorySlot = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1);
-                    slotWidth = inventorySlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
-                    slotHeight = inventorySlot.InventoryItem.RectTransform.rect.height * TooltipManager.canvas.scaleFactor;
+                    slotWidth = inventorySlot.InventoryItem.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
+                    slotHeight = inventorySlot.InventoryItem.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor;
 
                     // Determine x position
                     if (newTooltipPosition.x <= tooltipWidth + slotWidth) // Too far left
@@ -301,7 +301,7 @@ namespace GeneralUI
 
                 rectTransform.position = newTooltipPosition;
             }
-            else if (TooltipManager.activeInventoryTooltips == 1) // First weapon tooltip (can be either left or right hand weapon depending on how many are equipped)
+            else if (TooltipManager.ActiveInventoryTooltips == 1) // First weapon tooltip (can be either left or right hand weapon depending on how many are equipped)
             {
                 TooltipManager.AddToActiveInventoryTooltips();
 
@@ -332,7 +332,7 @@ namespace GeneralUI
 
                 if (equipmentSlot != null)
                 {
-                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
                     newTooltipPosition = equipmentSlot.transform.position;
                     newTooltipPosition.Set(newTooltipPosition.x - ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
 
@@ -359,7 +359,7 @@ namespace GeneralUI
 
                 if (equipmentSlot != null)
                 {
-                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.canvas.scaleFactor;
+                    float slotWidth = equipmentSlot.InventoryItem.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
                     newTooltipPosition = equipmentSlot.transform.position;
                     newTooltipPosition.Set(newTooltipPosition.x - ((tooltipWidth + slotWidth) / 2f), newTooltipPosition.y, 0);
 
@@ -374,18 +374,18 @@ namespace GeneralUI
 
         void CalculatePosition(ActionBarSlot actionBarSlot)
         {
-            newTooltipPosition.Set(actionBarSlot.transform.position.x, ActionSystemUI.ActionButtonContainer.rect.height + (rectTransform.rect.height / 2f), 0);
+            newTooltipPosition.Set(actionBarSlot.transform.position.x, ActionSystemUI.ActionButtonContainer.rect.height * TooltipManager.Canvas.scaleFactor + (rectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f), 0);
             rectTransform.position = newTooltipPosition;
         }
 
         IEnumerator CalculatePosition(Transform looseItemTransform)
         {
-            float maxTooltipHeight = rectTransform.rect.height;
+            float maxTooltipHeight = rectTransform.rect.height * TooltipManager.Canvas.scaleFactor;
             float verticalSpacing = 2f;
             while (gameObject.activeSelf && looseItemTransform == targetTransform)
             {
                 Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, looseItemTransform.position);
-                newTooltipPosition.Set(screenPosition.x, screenPosition.y + (rectTransform.rect.height * 2f), 0);
+                newTooltipPosition.Set(screenPosition.x, screenPosition.y + (rectTransform.rect.height * TooltipManager.Canvas.scaleFactor * 2f), 0);
 
                 // Loop through WorldTooltips and adjust positions to prevent vertical overlap
                 foreach (Tooltip tooltip in TooltipManager.WorldTooltips)
@@ -412,13 +412,13 @@ namespace GeneralUI
 
         IEnumerator CalculatePosition(Unit targetUnit)
         {
-            float maxTooltipHeight = rectTransform.rect.height;
+            float maxTooltipHeight = rectTransform.rect.height * TooltipManager.Canvas.scaleFactor;
             float verticalSpacing = 2f;
 
             while (gameObject.activeSelf)
             {
                 Vector2 screenPosition = RectTransformUtility.WorldToScreenPoint(Camera.main, targetUnit.transform.position);
-                newTooltipPosition.Set(screenPosition.x, screenPosition.y + (rectTransform.rect.height * 2f), 0);
+                newTooltipPosition.Set(screenPosition.x, screenPosition.y + (rectTransform.rect.height * TooltipManager.Canvas.scaleFactor * 2f), 0);
 
                 // Loop through WorldTooltips and adjust positions to prevent vertical overlap
                 foreach (Tooltip tooltip in TooltipManager.WorldTooltips)

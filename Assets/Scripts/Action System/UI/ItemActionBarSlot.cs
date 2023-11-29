@@ -4,11 +4,11 @@ namespace UnitSystem.ActionSystem.UI
 {
     public class ItemActionBarSlot : ActionBarSlot
     {
-        public ItemData itemData { get; private set; }
+        public ItemData ItemData { get; private set; }
 
         public void SetupAction(ItemData itemData)
         {
-            this.itemData = itemData;
+            ItemData = itemData;
             if (itemData == null || itemData.Item == null)
             {
                 ResetButton();
@@ -88,7 +88,7 @@ namespace UnitSystem.ActionSystem.UI
             }
         }
 
-        public void SetupIconSprite() => iconImage.sprite = itemData.Item.HotbarSprite(itemData);
+        public void SetupIconSprite() => iconImage.sprite = ItemData.Item.HotbarSprite(ItemData);
 
         public override void ShowSlot()
         {
@@ -99,7 +99,7 @@ namespace UnitSystem.ActionSystem.UI
         public override void ResetButton()
         {
             base.ResetButton();
-            itemData = null;
+            ItemData = null;
         }
     }
 }

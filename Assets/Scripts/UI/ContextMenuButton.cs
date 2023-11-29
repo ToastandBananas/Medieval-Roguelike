@@ -30,7 +30,15 @@ namespace GeneralUI
             ContextMenu.DisableContextMenu();
         }
 
-        public void SetupThrowWeaponButton(ItemData itemDataToThrow) => SetupButton($"Throw {itemDataToThrow.Item.Name}", delegate { ReadyThrownWeapon(itemDataToThrow); });
+        public void SetupThrowWeaponButton(ItemData itemDataToThrow)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append("Throw");
+            if (UnitManager.player.UnitEquipment.ItemDataEquipped(itemDataToThrow))
+                stringBuilder.Append(" Equipped");
+            stringBuilder.Append($" {itemDataToThrow.Item.Name}");
+            SetupButton(stringBuilder.ToString(), delegate { ReadyThrownWeapon(itemDataToThrow); });
+        }
 
         void ReadyThrownWeapon(ItemData itemDataToThrow)
         {
@@ -44,15 +52,16 @@ namespace GeneralUI
             ContextMenu.DisableContextMenu();
         }
 
-        public void SetupThrowItemButton() => SetupButton($"Throw", ReadyThrowItemButton);
+        public void SetupThrowItemButton() => SetupButton($"Throw", ReadyThrownItem);
 
-        void ReadyThrowItemButton()
+        void ReadyThrownItem()
         {
             ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
             if (throwAction != null)
             {
                 throwAction.SetItemToThrow(ContextMenu.TargetSlot.GetItemData());
                 UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
+                ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.GetActionBarSlot(throwAction.ActionType));
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }
 

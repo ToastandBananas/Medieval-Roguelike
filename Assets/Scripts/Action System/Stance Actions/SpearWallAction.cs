@@ -76,8 +76,12 @@ namespace UnitSystem.ActionSystem
 
             Unit.unitActionHandler.MoveAction.OnMove += CancelAction;
             Unit.health.OnTakeDamageFromMeleeAttack += CancelAction;
+
             Unit.opportunityAttackTrigger.OnEnemyEnterTrigger += AttackEnemy;
             Unit.opportunityAttackTrigger.OnEnemyMoved += OnUnitInRangeMoved;
+
+            Unit.stats.OnKnockbackTarget += OnKnockback;
+            Unit.stats.OnFailedToKnockbackTarget += OnFailedKnockback;
         }
 
         void LowerSpear()
@@ -103,8 +107,12 @@ namespace UnitSystem.ActionSystem
 
             Unit.unitActionHandler.MoveAction.OnMove -= CancelAction;
             Unit.health.OnTakeDamageFromMeleeAttack -= CancelAction;
+
             Unit.opportunityAttackTrigger.OnEnemyEnterTrigger -= AttackEnemy;
             Unit.opportunityAttackTrigger.OnEnemyMoved -= OnUnitInRangeMoved;
+
+            Unit.stats.OnKnockbackTarget -= OnKnockback;
+            Unit.stats.OnFailedToKnockbackTarget -= OnFailedKnockback;
         }
 
         bool IsValidWeapon(HeldMeleeWeapon heldMeleeWeapon) => heldMeleeWeapon != null && heldMeleeWeapon.ItemData.Item.Weapon.HasAccessToAction(ActionType);
@@ -127,7 +135,7 @@ namespace UnitSystem.ActionSystem
 
         void AttackEnemy(Unit enemyUnit, GridPosition enemyGridPosition)
         {
-            if (enemyUnit == null || enemyUnit.health.IsDead)
+            if (enemyUnit == null || enemyUnit.health.IsDead || Unit.unitActionHandler.MoveAction.IsMoving)
                 return;
 
             if (Unit.alliance.IsEnemy(enemyUnit) == false)

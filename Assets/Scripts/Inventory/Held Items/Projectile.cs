@@ -115,7 +115,11 @@ namespace InventorySystem
             meshRenderer.materials = materials;
 
             Vector3 meshSize = meshFilter.sharedMesh.bounds.size;
-            projectileCollider.height = meshSize.y * 0.8f;
+            if (itemData.Item.ThrownProjectileType == ProjectileType.BluntObject || itemData.Item.ThrownProjectileType == ProjectileType.Explosive)
+                projectileCollider.height = meshSize.y;
+            else
+                projectileCollider.height = meshSize.y * 0.8f;
+
             projectileCollider.radius = Mathf.Min(meshSize.x, meshSize.z) / 2f;
             projectileCollider.center = new(0f, 0f, projectileCollider.height / 2f);
 
@@ -270,7 +274,7 @@ namespace InventorySystem
                 float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
                 looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
             }
-            else if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt || projectileType == ProjectileType.Spear || projectileType == ProjectileType.ThrowingKnife || projectileType == ProjectileType.Axe)
+            else if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt || projectileType == ProjectileType.Spear || projectileType == ProjectileType.ThrowingDagger || projectileType == ProjectileType.Axe)
             {
                 // Debug.Log(collisionTransform.name + " hit by projectile");
                 SetupNewLooseItem(true, out LooseItem looseProjectile);
