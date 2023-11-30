@@ -165,10 +165,9 @@ namespace UnitSystem.ActionSystem
                 while (IsAttacking || Unit.unitAnimator.beingKnockedBack)
                     yield return null;
 
-                Unit.stats.UseAP(QueuedAPs[0]);
-
                 if (QueuedActions.Count > 0 && QueuedAPs.Count > 0) // This can become cleared out after a time tick update
                 {
+                    Unit.stats.UseAP(QueuedAPs[0]);
                     IsPerformingAction = true;
                     LastQueuedAction = QueuedActions[0];
                     QueuedActions[0].TakeAction();

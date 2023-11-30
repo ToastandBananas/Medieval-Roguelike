@@ -18,6 +18,7 @@ MonoBehaviour:
     designed for close-quarters combat and swift strikes.
   itemType: 1
   thrownProjectileType: 1
+  thrownAnimationType: 0
   mainMaterial: 35
   itemSize: 4
   width: 1

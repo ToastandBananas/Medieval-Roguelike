@@ -60,10 +60,20 @@ namespace InventorySystem
 
         public void StartThrow()
         {
-            if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
-                Anim.CrossFadeInFixedTime("Throw_Spear_2H", 0.1f);
-            else
-                Anim.CrossFadeInFixedTime("Throw_Spear", 0.1f);
+            if (ItemData.Item.ThrownProjectileType == ProjectileType.Spear)
+            {
+                if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.CrossFadeInFixedTime("Throw_Spear_2H", 0.1f);
+                else
+                    Anim.CrossFadeInFixedTime("Throw_Spear", 0.1f);
+            }
+            else // End-over-end animation
+            {
+                if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
+                    Anim.CrossFadeInFixedTime("Throw_2H", 0.1f);
+                else
+                    Anim.CrossFadeInFixedTime("Throw", 0.1f);
+            }
         }
 
         ///<summary>Only used in keyframe animations.</summary>
@@ -85,7 +95,7 @@ namespace InventorySystem
             projectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(throwAction.TargetEnemyUnit); });
 
             bool hitTarget = throwAction.TryHitTarget(projectile.ItemData, throwAction.TargetGridPosition);
-            unit.StartCoroutine(projectile.ShootProjectile_AtTargetUnit(throwAction.TargetEnemyUnit, throwAction, hitTarget));
+            projectile.ShootProjectileAtTarget(throwAction.TargetEnemyUnit, throwAction, hitTarget, true);
 
             throwAction.OnThrowHeldItem();
         }

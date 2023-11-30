@@ -12,6 +12,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Dagger_Iron_Material
+    second: {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Dagger_Iron_Material.001
     second: {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
   - first:

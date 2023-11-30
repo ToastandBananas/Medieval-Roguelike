@@ -78,7 +78,7 @@ namespace InventorySystem
         void ShootProjectile()
         {
             ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-            unit.StartCoroutine(LoadedProjectile.ShootProjectile_AtTargetUnit(unit.unitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.TargetEnemyUnit.GridPosition)));
+            LoadedProjectile.ShootProjectileAtTarget(unit.unitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.TargetEnemyUnit.GridPosition), false);
             LoadedProjectile = null;
 
             TryFumbleHeldItem();

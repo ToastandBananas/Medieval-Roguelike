@@ -5,12 +5,14 @@ using InteractableObjects;
 using GridSystem;
 using UnitSystem.ActionSystem;
 using EffectsSystem;
-using UnitSystem;
 using Utilities;
 using Random = UnityEngine.Random;
+using Unit = UnitSystem.Unit;
 
 namespace InventorySystem
 {
+    public enum ProjectileAnimationType { Straight, EndOverEnd }
+
     public class Projectile : MonoBehaviour
     {
         public static event EventHandler OnExplosion;
@@ -31,12 +33,12 @@ namespace InventorySystem
 
         Vector3 targetPosition, movementDirection;
 
-        public bool shouldMoveProjectile { get; private set; }
+        public bool ShouldMoveProjectile { get; private set; }
         int speed;
         float currentVelocity;
 
-        readonly int defaultThrowSpeed = 15;
-        readonly float defaultThrowArcMultiplier = 1f;
+        readonly int defaultThrowSpeed = 12;
+        readonly float defaultThrowArcMultiplier = 1.6f;
 
         Action onProjectileBehaviourComplete;
 
@@ -118,10 +120,11 @@ namespace InventorySystem
             if (itemData.Item.ThrownProjectileType == ProjectileType.BluntObject || itemData.Item.ThrownProjectileType == ProjectileType.Explosive)
                 projectileCollider.height = meshSize.y;
             else
-                projectileCollider.height = meshSize.y * 0.8f;
+                projectileCollider.height = meshSize.y * 0.85f;
 
             projectileCollider.radius = Mathf.Min(meshSize.x, meshSize.z) / 2f;
             projectileCollider.center = new(0f, 0f, projectileCollider.height / 2f);
+            projectileCollider.direction = 2;
 
             transform.position = heldItemTransform.position;
             transform.eulerAngles = heldItemTransform.eulerAngles;
@@ -134,15 +137,111 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public IEnumerator ShootProjectile_AtTargetUnit(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget)
+        public void ShootProjectileAtTarget(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget, bool beingThrown)
         {
+            if (itemData == null || itemData.Item == null)
+            {
+                shooter.unitActionHandler.SetIsAttacking(false);
+                Disable();
+                return;
+            }
+
             this.targetUnit = targetUnit;
             this.attackActionUsed = attackActionUsed;
+            if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.TargetGridPosition, out Unit unitAtGridPosition))
+                this.targetUnit = unitAtGridPosition;
+
+            SetTargetPosition(hitTarget);
             ReadyProjectile();
 
-            if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.TargetGridPosition, out Unit unitAtGridPosition))
-                targetUnit = unitAtGridPosition;
+            StartCoroutine(MoveTowardsTarget(hitTarget, beingThrown));
+        }
 
+        void ReadyProjectile()
+        {
+            transform.parent = ProjectilePool.Instance.transform;
+            projectileCollider.enabled = true;
+            trailRenderer.enabled = true;
+            meshRenderer.enabled = true;
+            ShouldMoveProjectile = true;
+
+            SetupTrail();
+        }
+
+        IEnumerator MoveTowardsTarget(bool hitTarget, bool beingThrown)
+        {
+            Vector3 startPos = transform.position;
+            Vector3 offset = GetOffset(attackActionUsed.TargetGridPosition, attackActionUsed, hitTarget);
+            targetPosition += offset;
+
+            float distance = Vector3.Distance(startPos, targetPosition);
+            float arcHeight = GetArcHeight();
+
+            float animationTime = 0f;
+            xRotationAngle = 0f;
+            ProjectileAnimationType animationType = GetProjectileAnimationType(beingThrown);
+
+            while (ShouldMoveProjectile)
+            {
+                animationTime += speed * Time.deltaTime;
+                Vector3 nextPosition = MathParabola.Parabola(startPos, targetPosition, arcHeight, animationTime / 5f);
+
+                // Current velocity & movement direction needed if this is a blunt projectile (so that it can properly bounce off the target when it becomes a LooseItem)
+                float displacement = Vector3.Distance(transform.position, nextPosition);
+                currentVelocity = displacement / Time.deltaTime;
+                movementDirection = (nextPosition - transform.position).normalized;
+
+                if (animationType == ProjectileAnimationType.EndOverEnd)
+                    FlipEndOverEnd(distance);
+                else
+                    RotateTowardsNextPosition(nextPosition);
+
+                transform.position = nextPosition;
+
+                if (transform.position.y < -30f)
+                {
+                    shooter.unitActionHandler.SetIsAttacking(false);
+                    Disable();
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+        void RotateTowardsNextPosition(Vector3 nextPosition)
+        {
+            float rotateSpeed = 100f;
+            Vector3 lookPos = (nextPosition - transform.position).normalized;
+            Quaternion rotation = Quaternion.LookRotation(lookPos);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotateSpeed * Time.deltaTime);
+        }
+
+        float xRotationAngle = 0f;
+        void FlipEndOverEnd(float distance)
+        {
+            float baseRotationSpeedPerUnitDistance = 720f; // Adjust this value as needed
+
+            // Calculate the actual rotation speed based on the distance
+            float rotationSpeed = baseRotationSpeedPerUnitDistance * distance;
+
+            // Increment the X-axis rotation
+            xRotationAngle += rotationSpeed * Time.deltaTime;
+            xRotationAngle %= 360; // Keep the angle within 0-360 degrees
+
+            // Calculate the direction to the target position
+            Vector3 direction = targetPosition - transform.position;
+            Quaternion targetAlignment = Quaternion.LookRotation(direction);
+
+            // Extract the Y component for Y-axis alignment
+            float yRotation = targetAlignment.eulerAngles.y;
+
+            // Combine the independent X rotation with Y-axis alignment and fixed Z-axis rotation
+            transform.rotation = Quaternion.Euler(xRotationAngle, yRotation, -90);
+        }
+
+        void SetTargetPosition(bool hitTarget)
+        {
             if (targetUnit != null)
             {
                 bool attackDodged = false;
@@ -163,50 +262,22 @@ namespace InventorySystem
             }
             else
                 targetPosition = attackActionUsed.TargetGridPosition.WorldPosition;
-
-            Vector3 startPos = transform.position;
-            Vector3 offset = GetOffset(attackActionUsed.TargetGridPosition, attackActionUsed, hitTarget);
-
-            float arcHeight;
-            if (itemData.Item is Ammunition)
-                arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
-            else
-                arcHeight = MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * defaultThrowArcMultiplier;
-
-            float animationTime = 0f;
-            while (shouldMoveProjectile)
-            {
-                animationTime += speed * Time.deltaTime;
-                Vector3 nextPosition = MathParabola.Parabola(startPos, targetPosition + offset, arcHeight, animationTime / 5f);
-
-                // Current velocity & movement direction needed if this is a blunt projectile (so that it can properly bounce off the target when it becomes a LooseItem)
-                float displacement = Vector3.Distance(transform.position, nextPosition);
-                currentVelocity = displacement / Time.deltaTime;
-                movementDirection = (nextPosition - transform.position).normalized;
-
-                RotateTowardsNextPosition(nextPosition);
-
-                transform.position = nextPosition;
-
-                if (transform.position.y < -30f)
-                {
-                    shooter.unitActionHandler.SetIsAttacking(false);
-                    Disable();
-                }
-
-                yield return null;
-            }
         }
 
-        void ReadyProjectile()
+        float GetArcHeight()
         {
-            transform.parent = ProjectilePool.Instance.transform;
-            projectileCollider.enabled = true;
-            trailRenderer.enabled = true;
-            meshRenderer.enabled = true;
-            shouldMoveProjectile = true;
+            if (itemData.Item is Ammunition)
+                return MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * itemData.Item.Ammunition.ArcMultiplier;
+            else
+                return MathParabola.CalculateParabolaArcHeight(shooter.GridPosition, targetUnit.GridPosition) * defaultThrowArcMultiplier;
+        }
 
-            SetupTrail();
+        ProjectileAnimationType GetProjectileAnimationType(bool beingThrown)
+        {
+            if (beingThrown || itemData.Item is Ammunition == false)
+                return itemData.Item.ThrownAnimationType;
+            else
+                return itemData.Item.Ammunition.ProjectileAnimationType;
         }
 
         Vector3 GetOffset(GridPosition targetGridPosition, BaseAttackAction attackActionUsed, bool hitTarget)
@@ -227,7 +298,7 @@ namespace InventorySystem
             }
             else // If the shooter is hitting the target, even if they dodge it, create a slight offset so they don't hit the same exact spot every time
             {
-                float maxOffset = 0.15f;
+                float maxOffset = 0.1f;
                 shootOffset.Set(Random.Range(-maxOffset, maxOffset), 0f, Random.Range(-maxOffset, maxOffset));
             }
 
@@ -245,20 +316,12 @@ namespace InventorySystem
             return shootOffset;
         }
 
-        void RotateTowardsNextPosition(Vector3 nextPosition)
-        {
-            float rotateSpeed = 100f;
-            Vector3 lookPos = (nextPosition - transform.localPosition).normalized;
-            Quaternion rotation = Quaternion.LookRotation(lookPos);
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, rotation, rotateSpeed * Time.deltaTime);
-        }
-
-        void Arrived(Transform collisionTransform)
+        void Arrived(Collider collisionCollider, Transform collisionTransform)
         {
             shooter.unitActionHandler.targetUnits.Clear();
             shooter.unitActionHandler.SetIsAttacking(false);
 
-            shouldMoveProjectile = false;
+            ShouldMoveProjectile = false;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
 
@@ -270,14 +333,14 @@ namespace InventorySystem
 
             if (projectileType == ProjectileType.BluntObject)
             {
-                SetupNewLooseItem(false, out LooseItem looseProjectile);
+                LooseItem looseProjectile = SetupNewLooseItem(collisionCollider, false);
                 float forceMagnitude = looseProjectile.RigidBody.mass * currentVelocity;
                 looseProjectile.RigidBody.AddForce(movementDirection * forceMagnitude, ForceMode.Impulse);
             }
             else if (projectileType == ProjectileType.Arrow || projectileType == ProjectileType.Bolt || projectileType == ProjectileType.Spear || projectileType == ProjectileType.ThrowingDagger || projectileType == ProjectileType.Axe)
             {
-                // Debug.Log(collisionTransform.name + " hit by projectile");
-                SetupNewLooseItem(true, out LooseItem looseProjectile);
+                // Debug.Log(collisionTransform + " hit by projectile");
+                LooseItem looseProjectile = SetupNewLooseItem(collisionCollider, true);
                 if (collisionTransform != null)
                 {
                     looseProjectile.MeshCollider.isTrigger = true;
@@ -296,8 +359,7 @@ namespace InventorySystem
                         float sphereCastRadius = 0.1f;
                         Vector3 heightOffset = Vector3.up * shooter.ShoulderHeight;
                         Vector3 shootDir = (targetPosition + heightOffset - (collider.transform.localPosition + heightOffset)).normalized;
-
-                        if (Physics.SphereCast(collider.transform.localPosition + heightOffset, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(collider.transform.localPosition + heightOffset, targetPosition + heightOffset), obstaclesMask))
+                        if (Physics.SphereCast(collider.transform.localPosition + heightOffset, sphereCastRadius, shootDir, out _, Vector3.Distance(collider.transform.localPosition + heightOffset, targetPosition + heightOffset), obstaclesMask))
                             continue; // Explosion blocked by an obstacle
 
                         if (collider.TryGetComponent(out Unit targetUnit))
@@ -322,17 +384,21 @@ namespace InventorySystem
             Disable();
         }
 
-        public void SetupNewLooseItem(bool preventMovement, out LooseItem looseProjectile)
+        public LooseItem SetupNewLooseItem(Collider collisionCollider, bool preventMovement)
         {
-            looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
+            LooseItem looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
 
-            ItemData newItemData = new ItemData();
+            ItemData newItemData = new();
             newItemData.TransferData(itemData);
             looseProjectile.SetItemData(newItemData);
 
             looseProjectile.SetupMesh();
             looseProjectile.name = newItemData.Item.name;
-            looseProjectile.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(transform.eulerAngles + meshFilter.transform.localEulerAngles));
+
+            if (collisionCollider != null)
+                looseProjectile.transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(movementDirection) * Quaternion.Euler(meshFilter.transform.localEulerAngles));
+            else
+                looseProjectile.transform.SetPositionAndRotation(transform.position, transform.rotation * Quaternion.Euler(meshFilter.transform.localEulerAngles));
 
             if (preventMovement)
             {
@@ -345,6 +411,7 @@ namespace InventorySystem
             shooter.vision.AddVisibleLooseItem(looseProjectile);
             if (targetUnit != null)
                 targetUnit.vision.AddVisibleLooseItem(looseProjectile);
+            return looseProjectile;
         }
 
         void SetupTrail()
@@ -386,7 +453,7 @@ namespace InventorySystem
             onProjectileBehaviourComplete = null;
 
             itemData = null;
-            shouldMoveProjectile = false;
+            ShouldMoveProjectile = false;
             shooter = null;
             attackActionUsed = null;
             targetUnit = null;
@@ -400,7 +467,7 @@ namespace InventorySystem
         {
             if (collider.isTrigger == false)
             {
-                // Debug.Log("Projectile stuck in: " + collider.gameObject.name);
+                Debug.Log("Projectile stuck in: " + collider.gameObject.name);
                 if (collider.CompareTag("Unit Body"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
@@ -409,7 +476,7 @@ namespace InventorySystem
                     if (targetUnit != shooter)
                     {
                         attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, false);
-                        Arrived(collider.transform);
+                        Arrived(collider, collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Unit Head"))
@@ -420,7 +487,7 @@ namespace InventorySystem
                     if (targetUnit != shooter)
                     {
                         attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, true);
-                        Arrived(collider.transform);
+                        Arrived(collider, collider.transform);
                     }
                 }
                 else if (collider.CompareTag("Shield"))
@@ -430,10 +497,10 @@ namespace InventorySystem
 
                     // DamageTarget will take into account whether the Unit blocked or not
                     attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), heldRangedWeapon, itemData, heldShield, false);
-                    Arrived(collider.transform);
+                    Arrived(collider, collider.transform);
                 }
                 else if (collider.CompareTag("Loose Item") == false)
-                    Arrived(null);
+                    Arrived(collider, null);
             }
         }
 

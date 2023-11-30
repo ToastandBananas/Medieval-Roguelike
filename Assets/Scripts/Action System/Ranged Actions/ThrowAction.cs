@@ -169,7 +169,7 @@ namespace UnitSystem.ActionSystem
 
         protected override float GetBaseDamage(ItemData itemDataHittingWith)
         {
-            if (itemDataHittingWith.Item is Weapon)
+            if (itemDataHittingWith.Item is MeleeWeapon)
                 return itemDataHittingWith.Damage * ((Unit.stats.Strength.GetValue() * 0.015f) + (Unit.stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
             else
                 return itemDataHittingWith.Item.Weight * ((Unit.stats.Strength.GetValue() * 0.025f) + (Unit.stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)

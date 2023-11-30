@@ -84,7 +84,7 @@ namespace UnitSystem
             if (projectileToDodge != null)
             {
                 // Wait until the arrow is close enough to start our dodge
-                while (projectileToDodge.shouldMoveProjectile && Vector3.Distance(unit.transform.position, projectileToDodge.transform.position) > 2f)
+                while (projectileToDodge.ShouldMoveProjectile && Vector3.Distance(unit.transform.position, projectileToDodge.transform.position) > 2f)
                     yield return null;
             }
 
@@ -102,7 +102,7 @@ namespace UnitSystem
                 // Wait until the projectile has landed before moving back
                 if (projectileToDodge != null)
                 {
-                    while (projectileToDodge.shouldMoveProjectile)
+                    while (projectileToDodge.ShouldMoveProjectile)
                         yield return null;
                 }
 

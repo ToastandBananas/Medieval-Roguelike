@@ -18,6 +18,7 @@ MonoBehaviour:
     heft, perfect for unleashing devastating cleaving attacks on your foes.
   itemType: 1
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 35
   itemSize: 5
   width: 2

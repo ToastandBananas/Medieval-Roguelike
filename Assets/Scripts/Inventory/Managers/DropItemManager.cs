@@ -240,7 +240,7 @@ namespace InventorySystem
                 HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
                 if (heldRangedWeapon.IsLoaded)
                 {
-                    heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(false, out LooseItem looseProjectile);
+                    LooseItem looseProjectile = heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(null, false);
                     looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
                     if (unit != UnitManager.player)

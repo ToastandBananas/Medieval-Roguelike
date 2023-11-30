@@ -26,6 +26,7 @@ namespace InventorySystem
         [SerializeField, TextArea(1, 5)] string description;
         [SerializeField] protected ItemType itemType;
         [SerializeField] ProjectileType thrownProjectileType = ProjectileType.BluntObject;
+        [SerializeField] ProjectileAnimationType thrownAnimationType = ProjectileAnimationType.EndOverEnd;
         [SerializeField] ItemMaterial mainMaterial;
         [SerializeField] ItemSize itemSize;
 
@@ -53,6 +54,7 @@ namespace InventorySystem
         public string Description => description;
         public ItemType ItemType => itemType;
         public ProjectileType ThrownProjectileType => thrownProjectileType;
+        public ProjectileAnimationType ThrownAnimationType => thrownAnimationType;
         public ItemMaterial MainMaterial => mainMaterial;
         public ItemSize ItemSize => itemSize;
 

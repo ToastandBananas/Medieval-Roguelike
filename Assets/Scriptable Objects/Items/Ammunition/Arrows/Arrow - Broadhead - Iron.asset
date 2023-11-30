@@ -67,7 +67,7 @@ MonoBehaviour:
     type: 3}
   insideLooseQuiverMaterial: {fileID: 2100000, guid: aecc544f4b9fa2243a60916aaf1503f1,
     type: 2}
-  capsuleColliderCenter: {x: 0.002, y: -0.002, z: 0.35}
+  capsuleColliderCenter: {x: 0, y: 0, z: 0.35}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4
   capsuleColliderDirection: 2

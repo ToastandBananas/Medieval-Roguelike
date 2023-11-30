@@ -18,6 +18,7 @@ MonoBehaviour:
     and power, making it the ideal choice for honorable combat on the battlefield.
   itemType: 1
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 35
   itemSize: 4
   width: 1
