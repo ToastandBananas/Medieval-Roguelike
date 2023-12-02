@@ -510,7 +510,10 @@ namespace UnitSystem.ActionSystem
         void SetAttackCursor()
         {
             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
+            {
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
+                ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up), mouseGridPosition.WorldPosition);
+            }
             else if (player.UnitEquipment.MeleeWeaponEquipped || player.stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);
             else

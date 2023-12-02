@@ -17,7 +17,7 @@ MonoBehaviour:
   description: A practical and simple piece of clothing suitable for daily wear.
   itemType: 80
   thrownProjectileType: 20
-  mainMaterial: 13
+  thrownAnimationType: 1
   itemSize: 2
   width: 2
   height: 1
@@ -31,15 +31,15 @@ MonoBehaviour:
   pickupMesh: {fileID: -2432090755550338912, guid: 663816d8c219c8646a110ec27bedf04d,
     type: 3}
   pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: 6ff28f9b81228b54891dba08e5ae5b09, type: 2}
+  - {fileID: 2100000, guid: 336bdd78f7354a04199bb667075dfe9b, type: 2}
   equipSlot: 6
   actionTypes: []
   defenseRange: {x: 0, y: 0}
   meshes:
   - {fileID: -2432090755550338912, guid: ea6c4885da80e564483f7b2bfe8c9e01, type: 3}
   meshRendererMaterials:
-  - {fileID: 2100000, guid: 4a9211030e898cd42bf16f28c037381b, type: 2}
+  - {fileID: 2100000, guid: 336bdd78f7354a04199bb667075dfe9b, type: 2}
   meshes_Female:
   - {fileID: -2432090755550338912, guid: c07b150f54679dd46a34e0219be0b22b, type: 3}
   meshRendererMaterials_Female:
-  - {fileID: 2100000, guid: 8d640d8eb20a34a418247266a5ae78fc, type: 2}
+  - {fileID: 2100000, guid: 336bdd78f7354a04199bb667075dfe9b, type: 2}

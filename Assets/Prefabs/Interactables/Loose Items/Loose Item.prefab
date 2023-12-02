@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3454943409024732620}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 5638617655364208937}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &4136017461024531674
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -58,7 +58,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3454943409024732620}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 0bbec3c51e193f44f9b2b96c9c7f467a, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -86,10 +86,11 @@ MonoBehaviour:
     item: {fileID: 11400000, guid: 9272f42f9fc8bbc45ab918afade34676, type: 2}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
     accuracyModifier: 0
+    damage: 0
+    knockbackChanceModifier: 0
     blockPower: 0
-    blockChanceAddOn: 0
+    blockChanceModifier: 0
     defense: 0
     value: 0
     hasBeenRandomized: 0

@@ -18,6 +18,7 @@ MonoBehaviour:
     and flexibility.
   itemType: 90
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 37
   itemSize: 5
   width: 2

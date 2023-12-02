@@ -4,6 +4,8 @@ using UnityEngine;
 using UnitSystem.ActionSystem;
 using GeneralUI;
 using UnitSystem;
+using Utilities;
+using InventorySystem;
 
 namespace GridSystem
 {
@@ -142,11 +144,15 @@ namespace GridSystem
         {
             UpdateAttackRangeGridVisual();
 
+            BaseAction selectedAction = Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction;
             if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0
-                || Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
+                || selectedAction is BaseAttackAction == false || !selectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
-            Instance.ShowAttackGridPositionList(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
+            Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
+
+            if (selectedAction.BaseAttackAction.IsRangedAttackAction())
+                ActionLineRenderer.Instance.DrawParabola(Instance.player.WorldPosition + (Instance.player.ShoulderHeight * Vector3.up), WorldMouse.currentGridPosition.WorldPosition);
         }
 
         Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

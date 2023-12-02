@@ -18,6 +18,7 @@ MonoBehaviour:
     providing solid defense without sacrificing mobility during combat.
   itemType: 90
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 24
   itemSize: 5
   width: 2

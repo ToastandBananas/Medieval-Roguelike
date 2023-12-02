@@ -64,7 +64,7 @@ namespace UnitSystem.ActionSystem
             {
                 Unit.vision.FindVisibleUnitsAndObjects();
 
-                if (CanPerformActions == false || Unit.stats.currentAP <= 0)
+                if (CanPerformActions == false || Unit.stats.CurrentAP <= 0)
                 {
                     SkipTurn(); // Unit can't do anything, so skip their turn
                     return;
@@ -235,7 +235,7 @@ namespace UnitSystem.ActionSystem
             base.FinishAction();
 
             // If the character has no AP remaining, end their turn
-            if (Unit.stats.currentAP <= 0)
+            if (Unit.stats.CurrentAP <= 0)
                 TurnManager.Instance.FinishTurn(Unit);
             else if (Unit.IsMyTurn)
                 TurnManager.Instance.StartNextUnitsTurn(Unit);

@@ -392,9 +392,9 @@ namespace UnitSystem.ActionSystem.UI
             }
         }
 
-        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.stats.lastUsedAP}";
+        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.stats.LastUsedAP}";
 
-        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.stats.currentEnergy}";
+        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.stats.CurrentEnergy}";
 
         public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.health.CurrentHealth}";
 

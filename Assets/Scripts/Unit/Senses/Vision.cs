@@ -506,16 +506,16 @@ namespace UnitSystem
                 if (TargetInViewAngle(dirToTarget))
                 {
                     // If no obstacles are in the way, add the LooseItem to the knownLooseItems dictionary
-                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false)
+                    if (Physics.Raycast(transform.position, dirToTarget, distToTarget, looseItemVisionObstacleMask) == false || distToTarget <= playerPerceptionDistance)
                         AddVisibleLooseItem(looseItem);
-                    else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
+                    else if (unit.IsPlayer && !knownLooseItems.ContainsKey(looseItem) && distToTarget > playerPerceptionDistance) // Else, hide the LooseItem's mesh renderers
                         looseItem.HideMeshRenderer();
                 }
-                else if (unit.IsPlayer && distToTarget > playerPerceptionDistance)
+                else if (unit.IsPlayer && !knownLooseItems.ContainsKey(looseItem) && distToTarget > playerPerceptionDistance)
                     looseItem.HideMeshRenderer();
             }
 
-            if (unit.IsPlayer)
+            /*if (unit.IsPlayer)
             {
                 // Check if a "visible LooseItem" is outside of the Player's view radius. If so, hide their mesh renderers
                 foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
@@ -543,7 +543,7 @@ namespace UnitSystem
                     else
                         looseItem.Key.ShowMeshRenderer();
                 }
-            }
+            }*/
         }
 
         void UpdateVisibleLooseItems()
@@ -575,15 +575,15 @@ namespace UnitSystem
                         else
                             looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
 
-                        if (unit.IsPlayer) // Hide the LooseItem's mesh renderers
-                            looseItem.Key.HideMeshRenderer();
+                        //if (unit.IsPlayer) // Hide the LooseItem's mesh renderers
+                            //looseItem.Key.HideMeshRenderer();
                     }
                     else // We can still see the LooseItem, so reset their lose sight time
                     {
                         knownLooseItems[looseItem.Key] = loseSightTime;
 
-                        if (unit.IsPlayer) // Show the LooseItem's mesh renderers
-                            looseItem.Key.ShowMeshRenderer();
+                        //if (unit.IsPlayer) // Show the LooseItem's mesh renderers
+                            //looseItem.Key.ShowMeshRenderer();
                     }
                 }
                 else // The target is outside of the view angle
@@ -593,8 +593,8 @@ namespace UnitSystem
                     else
                         looseItemsToRemove.Add(looseItem.Key); // The LooseItem is no longer visible
 
-                    if (unit.IsPlayer && Vector3.Distance(unit.transform.position, looseItemCenter) > playerPerceptionDistance) // Hide the LooseItem's mesh renderers
-                        looseItem.Key.HideMeshRenderer();
+                    //if (unit.IsPlayer && Vector3.Distance(unit.transform.position, looseItemCenter) > playerPerceptionDistance) // Hide the LooseItem's mesh renderers
+                        //looseItem.Key.HideMeshRenderer();
                 }
             }
 
@@ -624,7 +624,7 @@ namespace UnitSystem
         {
             if (knownLooseItems.ContainsKey(looseItemToRemove))
             {
-                knownLooseItems.Remove(looseItemToRemove, out int value);
+                knownLooseItems.Remove(looseItemToRemove, out _);
 
                 // If they are no longer visible to the player, hide them
                 if (looseItemToRemove.gameObject.activeSelf && unit.IsPlayer)

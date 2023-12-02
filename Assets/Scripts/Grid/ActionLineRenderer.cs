@@ -5,6 +5,8 @@ using UnitSystem.ActionSystem;
 using GeneralUI;
 using UnitSystem;
 using Utilities;
+using System.Net;
+using InventorySystem;
 
 namespace GridSystem
 {
@@ -18,7 +20,7 @@ namespace GridSystem
         static Unit player;
         static Unit targetUnit;
 
-        Vector3 lineRendererOffset = new Vector3(0f, 0.1f, 0f);
+        Vector3 lineRendererOffset = new(0f, 0.1f, 0f);
         static GridPosition currentMouseGridPosition;
         static GridPosition currentInteractableGridPosition;
         static GridPosition currentUnitGridPosition;
@@ -42,6 +44,44 @@ namespace GridSystem
         void Start()
         {
             player = UnitManager.player;
+        }
+
+        public void DrawParabola(Vector3 startPoint, Vector3 endPoint)
+        {
+            ResetLineRenderers();
+
+            float arcHeight = MathParabola.CalculateParabolaArcHeight(player.GridPosition, LevelGrid.GetGridPosition(endPoint), GetArcMultiplier());
+            float distance = Vector3.Distance(startPoint, endPoint);
+            int resolution = Mathf.RoundToInt(distance * 5);
+            if (resolution < 20)
+                resolution = 20;
+
+            Vector3[] points = new Vector3[resolution + 1];
+            for (int i = 0; i <= resolution; i++)
+            {
+                float t = (float)i / resolution;
+                points[i] = MathParabola.SampleParabola(startPoint, endPoint, arcHeight, t);
+            }
+
+            mainLineRenderer.enabled = true;
+            mainLineRenderer.positionCount = points.Length;
+            mainLineRenderer.SetPositions(points);
+        }
+
+        float GetArcMultiplier()
+        {
+            float arcMultiplier = 1f;
+            if (player.unitActionHandler.PlayerActionHandler.SelectedAction is ThrowAction)
+                arcMultiplier = Projectile.defaultThrowArcMultiplier;
+            else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+            {
+                HeldRangedWeapon heldRangedWeapon = player.unitMeshManager.GetHeldRangedWeapon();
+                if (heldRangedWeapon.LoadedProjectile != null)
+                    arcMultiplier = heldRangedWeapon.LoadedProjectile.ItemData.Item.Ammunition.ArcMultiplier;
+                else
+                    arcMultiplier = player.UnitEquipment.GetEquippedProjectile(heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType).Item.Ammunition.ArcMultiplier;
+            }
+            return arcMultiplier;
         }
 
         public IEnumerator DrawMovePath()
@@ -176,7 +216,7 @@ namespace GridSystem
                 // Re-block the unit's position, in case it was unblocked
                 if (targetUnit != null && targetUnit.health.IsDead == false)
                     targetUnit.BlockCurrentPosition();
-
+                
                 int verticeIndex = 0;
                 for (int i = 0; i < path.vectorPath.Count - 1; i++)
                 {
@@ -326,7 +366,6 @@ namespace GridSystem
         {
             mainLineRenderer.enabled = false;
             arrowHeadLineRenderer.enabled = false;
-            ResetCurrentPositions();
         }
 
         void ResetLineRenderers()

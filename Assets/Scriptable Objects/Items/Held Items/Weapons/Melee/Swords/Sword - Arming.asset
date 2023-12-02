@@ -17,10 +17,10 @@ MonoBehaviour:
   description: A balanced, one-handed blade favored by knights, offering both precision
     and power, making it the ideal choice for honorable combat on the battlefield.
   itemType: 1
+  itemSize: 4
   thrownProjectileType: 20
   thrownAnimationType: 0
-  mainMaterial: 35
-  itemSize: 4
+  throwingSpeedMultiplier: 1
   width: 1
   height: 4
   weight: 3.5

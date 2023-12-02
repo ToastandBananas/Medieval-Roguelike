@@ -34,6 +34,7 @@ namespace UnitSystem.ActionSystem
             if (Unit.UnitEquipment.QuiverEquipped() && Unit.UnitEquipment.RangedWeaponEquipped
                 && Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded == false && Unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
             {
+                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 ContextMenu.BuildReloadActionContextMenu();
             }
             else // Just reload with the only type of ammo equipped (or unload if already loaded)

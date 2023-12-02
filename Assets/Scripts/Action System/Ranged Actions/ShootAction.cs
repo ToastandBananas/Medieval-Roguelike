@@ -1,7 +1,4 @@
-using Pathfinding;
-using Pathfinding.Util;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using GridSystem;

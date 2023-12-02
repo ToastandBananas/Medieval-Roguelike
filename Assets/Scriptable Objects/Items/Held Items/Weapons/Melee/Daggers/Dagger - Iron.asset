@@ -14,11 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Iron Dagger
   pluralName: 
-  description: 
+  description: A small yet formidable blade.
   itemType: 10
-  thrownProjectileType: 2
-  mainMaterial: 35
   itemSize: 2
+  thrownProjectileType: 2
+  thrownAnimationType: 1
+  throwingSpeedMultiplier: 1.4
+  minThrowingDamageMultiplier: 1.3
+  maxThrowingDamageMultiplier: 1.5
   width: 1
   height: 2
   weight: 1
@@ -28,10 +31,10 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 30, y: 50}
-  pickupMesh: {fileID: -2432090755550338912, guid: ba5f195180d9a7e449c1cc357e90264f,
+  pickupMesh: {fileID: -2432090755550338912, guid: 2bfd44c452a45b340a8cc4504d41c75f,
     type: 3}
   pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: 35179f3bc9c90aa48984a4e1f2ebf417, type: 2}
+  - {fileID: 2100000, guid: a8da73454ca5a364c95d82487a06ab0c, type: 2}
   equipSlot: 1
   actionTypes: []
   stanceStatModifiers: []

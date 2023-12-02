@@ -17,10 +17,10 @@ MonoBehaviour:
   description: A compact and versatile thrusting weapon with a sharp, pointed head,
     designed for close-quarters combat and swift strikes.
   itemType: 1
+  itemSize: 4
   thrownProjectileType: 1
   thrownAnimationType: 0
-  mainMaterial: 35
-  itemSize: 4
+  throwingSpeedMultiplier: 1.2
   width: 1
   height: 5
   weight: 2.8

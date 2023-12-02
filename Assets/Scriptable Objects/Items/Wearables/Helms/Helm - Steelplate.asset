@@ -18,6 +18,7 @@ MonoBehaviour:
     the wearer from the harshest of blows in combat.
   itemType: 100
   thrownProjectileType: 20
+  thrownAnimationType: 1
   mainMaterial: 37
   itemSize: 3
   width: 2

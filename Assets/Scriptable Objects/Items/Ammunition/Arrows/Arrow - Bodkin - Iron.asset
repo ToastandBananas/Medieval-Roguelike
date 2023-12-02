@@ -18,7 +18,7 @@ MonoBehaviour:
     narrow, needle-like tip.
   itemType: 50
   thrownProjectileType: 20
-  mainMaterial: 9
+  thrownAnimationType: 1
   itemSize: 3
   width: 1
   height: 4
@@ -67,10 +67,11 @@ MonoBehaviour:
     type: 3}
   insideLooseQuiverMaterial: {fileID: 2100000, guid: 7890bf77ab043c24f8efbb80f9c218d9,
     type: 2}
-  capsuleColliderCenter: {x: 0, y: 0, z: 0.35}
+  capsuleColliderCenter: {x: 0, y: 0.35, z: 0}
   capsuleColliderRadius: 0.0025
   capsuleColliderHeight: 0.4
-  capsuleColliderDirection: 2
+  capsuleColliderDirection: 1
   projectileType: 0
-  speed: 15
-  arcMultiplier: 1
+  projectileAnimationType: 0
+  speedMultiplier: 1.2
+  arcMultiplier: 1.2

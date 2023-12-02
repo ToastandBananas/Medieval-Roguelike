@@ -18,6 +18,7 @@ MonoBehaviour:
     offering reliable protection without compromising visibility.
   itemType: 100
   thrownProjectileType: 20
+  thrownAnimationType: 1
   mainMaterial: 35
   itemSize: 3
   width: 2
@@ -29,10 +30,10 @@ MonoBehaviour:
   maxUses: 1
   isUsable: 1
   valueRange: {x: 100, y: 300}
-  pickupMesh: {fileID: -2432090755550338912, guid: f68634b4a5fdc5c42bf5eb0af886538b,
+  pickupMesh: {fileID: -2432090755550338912, guid: 0ac303e2e98222341a7dbab8ccabe091,
     type: 3}
   pickupMeshRendererMaterials:
-  - {fileID: 2100000, guid: 18d7b336b74e22147aa42f86402434ae, type: 2}
+  - {fileID: 2100000, guid: af35752fc17d53840b9e7676d5e2de81, type: 2}
   equipSlot: 4
   actionTypes: []
   defenseRange: {x: 20, y: 30}

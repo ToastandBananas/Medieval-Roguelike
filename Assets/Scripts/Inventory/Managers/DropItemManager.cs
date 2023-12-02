@@ -240,7 +240,7 @@ namespace InventorySystem
                 HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
                 if (heldRangedWeapon.IsLoaded)
                 {
-                    LooseItem looseProjectile = heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(null, false);
+                    LooseItem looseProjectile = heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(null, ProjectileType.BluntObject, false);
                     looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
                     if (unit != UnitManager.player)
@@ -367,8 +367,9 @@ namespace InventorySystem
             SetupLooseItem(looseItem, itemData);
 
             // Set the LooseItem's position to match the worn Helm before we add force
-            looseItem.transform.position = unit.unitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, itemData.Item.PickupMesh.bounds.size.y, 0f);
-            looseItem.transform.rotation = unit.unitMeshManager.HelmMeshRenderer.transform.rotation;
+            looseItem.transform.SetPositionAndRotation(
+                unit.unitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, unit.unitMeshManager.HelmMeshRenderer.bounds.center.y + itemData.Item.PickupMesh.bounds.center.y, 0f), 
+                unit.unitMeshManager.HelmMeshRenderer.transform.rotation);
         }
 
         static float FindMeshHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;

@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 787313fb1f6797d42b5ec414ce5a80ba, type: 3}
   m_Name: Belt - Leather - Studded - With Throwing Dagger Sheathes x 1
   m_EditorClassIdentifier: 
-  name: Studded Leather Belt
+  name: Studded Leather Knife Belt
   pluralName: 
   description: A simple, yet sturdy belt made from durable cowhide and reinforced
     with metal studs.
   itemType: 130
   thrownProjectileType: 20
+  thrownAnimationType: 1
   mainMaterial: 23
   itemSize: 2
   width: 2
@@ -40,7 +41,8 @@ MonoBehaviour:
     maxSlotsPerRow: 4
     slotWidth: 1
     slotHeight: 2
-    placeholderSprite: {fileID: 0}
+    placeholderSprite: {fileID: 21300000, guid: 6e89fbdeca571d64ea2140f9a10bef94,
+      type: 3}
     allowedItemTypes: 0a000000
   beltPouchNames:
   - Throwing Dagger Sheathes x4

@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Belt_Leather_Studded_With_BeltBag1_Material
     second: {fileID: 2100000, guid: 0ead07034d33a724684c25965c77d40d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Belt_Leather_Studded_With_MediumHipPouchx1_Material
+    second: {fileID: 2100000, guid: 0ead07034d33a724684c25965c77d40d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

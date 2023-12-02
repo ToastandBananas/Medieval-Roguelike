@@ -187,7 +187,7 @@ namespace UnitSystem
             if (fallDistance > 0f)
                 arcMultiplier *= 2f;
 
-            float arcHeight = MathParabola.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition) * arcMultiplier;
+            float arcHeight = MathParabola.CalculateParabolaArcHeight(unit.transform.position, knockbackTargetPosition, arcMultiplier);
             float animationTime = 0f;
 
             while (true)

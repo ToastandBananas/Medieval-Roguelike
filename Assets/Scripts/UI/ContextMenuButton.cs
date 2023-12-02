@@ -45,6 +45,7 @@ namespace GeneralUI
             ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
             if (throwAction != null && itemDataToThrow != null)
             {
+                UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
                 throwAction.SetItemToThrow(itemDataToThrow);
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }

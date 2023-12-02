@@ -14,7 +14,7 @@ namespace UnitSystem.ActionSystem
         public List<ItemData> Throwables { get; private set; }
         HeldItem hiddenHeldItem, thrownHeldItem;
 
-        static readonly ItemType[] throwingWeaponItemTypes = new ItemType[] { ItemType.ThrowingDagger, ItemType.ThrowingAxe, ItemType.ThrowingClub, ItemType.ThrowingStar };
+        public static readonly ItemType[] throwingWeaponItemTypes = new ItemType[] { ItemType.ThrowingDagger, ItemType.ThrowingAxe, ItemType.ThrowingClub, ItemType.ThrowingStar };
 
         static readonly float minThrowDistance = 2f;
         public static readonly float maxThrowDistance = 6f;
@@ -52,7 +52,10 @@ namespace UnitSystem.ActionSystem
             }
 
             if (Throwables.Count > 1)
+            {
+                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 ContextMenu.BuildThrowActionContextMenu();
+            }
             else if (Throwables.Count == 1)
             {
                 ItemDataToThrow = Throwables[0];
@@ -163,6 +166,7 @@ namespace UnitSystem.ActionSystem
             targetUnit.unitActionHandler.InterruptActions();
 
             float damage = GetBaseDamage(itemDataHittingWith);
+            damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
             damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
             TryKnockbackTargetUnit(targetUnit, null, itemDataHittingWith, damage, attackBlocked);
         }
@@ -280,6 +284,16 @@ namespace UnitSystem.ActionSystem
         public override string TooltipDescription()
         {
             return "<b>Throw</b> a <b>held weapon</b>, a <b>throwing weapon</b> from your <b>belt</b>, or an <b>item</b> from your <b>inventory</b>. (Throwing an inventory item comes with an added <b>AP cost</b>. To throw an item from your inventory, choose the option from the context menu.)";
+        }
+
+        public static bool IsThrowingWeapon(ItemType itemType)
+        {
+            for (int i = 0; i < throwingWeaponItemTypes.Length; i++)
+            {
+                if (throwingWeaponItemTypes[i] == itemType)
+                    return true;
+            }
+            return false;
         }
 
         public void SetItemToThrow(ItemData itemDataToThrow) => ItemDataToThrow = itemDataToThrow;

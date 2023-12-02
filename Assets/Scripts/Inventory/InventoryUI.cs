@@ -526,7 +526,7 @@ namespace InventorySystem
             return null;
         }
 
-        public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.stats.currentCarryWeight} / {UnitManager.player.stats.MaxCarryWeight} lbs";
+        public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.stats.CurrentCarryWeight} / {UnitManager.player.stats.MaxCarryWeight} lbs";
 
         public static void SetValidDragPosition(bool valid) => validDragPosition = valid;
 

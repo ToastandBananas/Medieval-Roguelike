@@ -54,10 +54,10 @@ namespace UnitSystem
             if (unit.IsNPC)
             {
                 // The unit should be at 0 AP, but if they finished their turn without performing an action (because it had to be cancelled, for example) then just zero out their currentAP
-                if (unit.stats.currentAP > 0)
-                    unit.stats.UseAP(unit.stats.currentAP);
+                if (unit.stats.CurrentAP > 0)
+                    unit.stats.UseAP(unit.stats.CurrentAP);
 
-                if (unit.stats.pooledAP <= 0)
+                if (unit.stats.PooledAP <= 0)
                 {
                     // The unit has no more pooledAP, so they can't do anything else (their turn is over)
                     npcs_FinishedTurn.Add(unit);
@@ -187,7 +187,7 @@ namespace UnitSystem
             npcs_HaventFinishedTurn.Clear();
             for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
             {
-                if (UnitManager.livingNPCs[i].stats.pooledAP > 0)
+                if (UnitManager.livingNPCs[i].stats.PooledAP > 0)
                     npcs_HaventFinishedTurn.Add(UnitManager.livingNPCs[i]);
             }
 

@@ -43,7 +43,7 @@ namespace UnitSystem.ActionSystem
             heldShield.RaiseShield();
             heldShield.Anim.SetBool("keepShieldRaised", true);
 
-            Unit.stats.energyUseActions.Add(this);
+            Unit.stats.EnergyUseActions.Add(this);
 
             ApplyStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
         }
@@ -64,7 +64,7 @@ namespace UnitSystem.ActionSystem
                 RemoveStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
             }
 
-            Unit.stats.energyUseActions.Remove(this);
+            Unit.stats.EnergyUseActions.Remove(this);
         }
 
         public override void CompleteAction()

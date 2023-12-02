@@ -67,7 +67,7 @@ namespace UnitSystem.ActionSystem
             if (leftWeaponValid)
                 leftHeldWeapon.RaiseSpearWall();
 
-            Unit.stats.energyUseActions.Add(this);
+            Unit.stats.EnergyUseActions.Add(this);
 
             if (rightWeaponValid)
                 ApplyStanceStatModifiers(rightHeldWeapon.ItemData.Item.HeldEquipment);
@@ -103,7 +103,7 @@ namespace UnitSystem.ActionSystem
             else if (leftWeaponValid)
                 RemoveStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
-            Unit.stats.energyUseActions.Remove(this);
+            Unit.stats.EnergyUseActions.Remove(this);
 
             Unit.unitActionHandler.MoveAction.OnMove -= CancelAction;
             Unit.health.OnTakeDamageFromMeleeAttack -= CancelAction;
@@ -120,7 +120,7 @@ namespace UnitSystem.ActionSystem
         public void OnKnockback()
         {
             Unit.stats.UseEnergy(energyUsedOnAttack);
-            if (Unit.stats.currentEnergy == 0)
+            if (Unit.stats.CurrentEnergy == 0)
                 CancelAction();
         }
 

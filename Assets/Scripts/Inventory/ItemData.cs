@@ -11,8 +11,10 @@ namespace InventorySystem
         [SerializeField] int currentStackSize = 1;
         [SerializeField] int remainingUses = 1;
 
-        [SerializeField] float accuracyModifier;
         [SerializeField] int damage;
+        [SerializeField] float throwingDamageMultiplier;
+
+        [SerializeField] float accuracyModifier;
         [SerializeField] float knockbackChanceModifier;
 
         [SerializeField] int blockPower;
@@ -87,6 +89,7 @@ namespace InventorySystem
                     else
                         remainingUses = 1;
 
+                    throwingDamageMultiplier = Mathf.RoundToInt(Random.Range(item.MinThrowingDamageMultiplier, item.MaxThrowingDamageMultiplier) * 100f) / 100f;
 
                     if (item is Armor)
                     {
@@ -137,6 +140,8 @@ namespace InventorySystem
             // Calculate the percentage of points that were added to the item's stats when randomized (compared to the total possible points)
             float pointIncrease = 0f; // Amount the stats have been increased by in relation to its base stat values, in total
 
+            pointIncrease += (throwingDamageMultiplier - item.MinThrowingDamageMultiplier) * 100f;
+
             if (item is Equipment)
             {
                 //if (item.Equipment.maxBaseDurability > 0)
@@ -180,6 +185,8 @@ namespace InventorySystem
         {
             // Add up all the possible points that can be added to our stats when randomized (damage, defense, etc)
             float totalPointsPossible = 0f;
+
+            totalPointsPossible += (item.MaxThrowingDamageMultiplier - item.MinThrowingDamageMultiplier) * 100f;
 
             if (item is Equipment)
             {
@@ -230,18 +237,21 @@ namespace InventorySystem
                 return false;
             }
 
+            thisItemDatasPoints += throwingDamageMultiplier * 100f;
+            otherItemDatasPoints += otherItemData.throwingDamageMultiplier * 100f;
+
             if (item is Armor)
             {
-                thisItemDatasPoints += defense * 2;
-                otherItemDatasPoints += defense * 2;
+                thisItemDatasPoints += defense * 2f;
+                otherItemDatasPoints += otherItemData.defense * 2f;
             }
             else if (item is Shield)
             {
                 thisItemDatasPoints += blockChanceModifier * 200f;
                 otherItemDatasPoints += otherItemData.blockChanceModifier * 200f;
 
-                thisItemDatasPoints += blockPower * 2;
-                otherItemDatasPoints += otherItemData.blockPower * 2;
+                thisItemDatasPoints += blockPower * 2f;
+                otherItemDatasPoints += otherItemData.blockPower * 2f;
 
                 thisItemDatasPoints += damage;
                 otherItemDatasPoints += otherItemData.damage;
@@ -257,8 +267,8 @@ namespace InventorySystem
                 thisItemDatasPoints += blockPower;
                 otherItemDatasPoints += otherItemData.blockPower;
 
-                thisItemDatasPoints += damage * 3;
-                otherItemDatasPoints += otherItemData.damage * 3;
+                thisItemDatasPoints += damage * 3f;
+                otherItemDatasPoints += otherItemData.damage * 3f;
 
                 thisItemDatasPoints += knockbackChanceModifier * 100f;
                 otherItemDatasPoints += otherItemData.knockbackChanceModifier * 100f;
@@ -280,7 +290,8 @@ namespace InventorySystem
                 && blockChanceModifier == otherItemData.blockChanceModifier
                 && damage == otherItemData.damage
                 && defense == otherItemData.defense
-                && knockbackChanceModifier == otherItemData.knockbackChanceModifier)
+                && knockbackChanceModifier == otherItemData.knockbackChanceModifier
+                && throwingDamageMultiplier == otherItemData.throwingDamageMultiplier)
                 return true;
             return false;
         }
@@ -294,8 +305,10 @@ namespace InventorySystem
             currentStackSize = itemDataToCopy.currentStackSize;
             remainingUses = itemDataToCopy.remainingUses;
 
-            accuracyModifier = itemDataToCopy.accuracyModifier;
             damage = itemDataToCopy.damage;
+            throwingDamageMultiplier = itemDataToCopy.throwingDamageMultiplier;
+
+            accuracyModifier = itemDataToCopy.accuracyModifier;
             knockbackChanceModifier = itemDataToCopy.knockbackChanceModifier;
 
             blockPower = itemDataToCopy.blockPower;
@@ -313,6 +326,7 @@ namespace InventorySystem
             temp.currentStackSize = currentStackSize;
             temp.remainingUses = remainingUses;
             temp.damage = damage;
+            temp.throwingDamageMultiplier = throwingDamageMultiplier;
             temp.accuracyModifier = accuracyModifier;
             temp.knockbackChanceModifier = knockbackChanceModifier;
             temp.blockPower = blockPower;
@@ -326,6 +340,7 @@ namespace InventorySystem
             currentStackSize = otherItemData.currentStackSize;
             remainingUses = otherItemData.remainingUses;
             damage = otherItemData.damage;
+            throwingDamageMultiplier = otherItemData.throwingDamageMultiplier;
             accuracyModifier = otherItemData.accuracyModifier;
             knockbackChanceModifier = otherItemData.knockbackChanceModifier;
             blockPower = otherItemData.blockPower;
@@ -339,6 +354,7 @@ namespace InventorySystem
             otherItemData.currentStackSize = temp.currentStackSize;
             otherItemData.remainingUses = temp.remainingUses;
             otherItemData.damage = temp.damage;
+            otherItemData.throwingDamageMultiplier = temp.throwingDamageMultiplier;
             otherItemData.accuracyModifier = temp.accuracyModifier;
             otherItemData.knockbackChanceModifier = temp.knockbackChanceModifier;
             otherItemData.blockPower = temp.blockPower;
@@ -406,8 +422,10 @@ namespace InventorySystem
         public int CurrentStackSize => currentStackSize;
         public int RemainingUses => remainingUses;
 
-        public float AccuracyModifier => accuracyModifier;
         public int Damage => damage;
+        public float ThrowingDamageMultiplier => throwingDamageMultiplier;
+
+        public float AccuracyModifier => accuracyModifier;
         public float KnockbackChanceModifier => knockbackChanceModifier;
 
         public int BlockPower => blockPower;

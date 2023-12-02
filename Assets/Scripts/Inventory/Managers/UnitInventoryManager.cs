@@ -1,5 +1,6 @@
 using InteractableObjects;
 using UnitSystem;
+using UnitSystem.ActionSystem;
 using UnityEngine;
 
 namespace InventorySystem
@@ -24,31 +25,39 @@ namespace InventorySystem
             if (itemData == null || itemData.Item == null)
                 return false;
 
-            if (unit.UnitEquipment != null)
+            if (itemData.Item is Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
             {
-                if (itemData.Item is Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
-                {
-                    if (unit.UnitEquipment.slotVisualsCreated)
-                        unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
+                if (unit.UnitEquipment.slotVisualsCreated)
+                    unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
-                    if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory && itemData.MyInventory.ContainerInventory.LooseItem != null && itemData.MyInventory.ContainerInventory.LooseItem is LooseQuiverItem)
-                        itemData.MyInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
+                if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory && itemData.MyInventory.ContainerInventory.LooseItem != null && itemData.MyInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                    itemData.MyInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
+                return true;
+            }
+                
+            if (ThrowAction.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            {
+                // We need to check each belt bag inventory's allowed item types separately, to ensure that they are specifically throwing weapon inventories, before trying to add the throwing weapon
+                if (beltInventoryManager.ParentInventory != null && beltInventoryManager.ParentInventory.AllowedItemTypeContains(ThrowAction.throwingWeaponItemTypes) && beltInventoryManager.ParentInventory.ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.ParentInventory.TryAddItem(itemData, unit))
                     return true;
+
+                for (int i = 0; i < beltInventoryManager.SubInventories.Length; i++)
+                {
+                    if (beltInventoryManager.SubInventories[i].AllowedItemTypeContains(ThrowAction.throwingWeaponItemTypes) && beltInventoryManager.SubInventories[i].ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.SubInventories[i].TryAddItem(itemData, unit))
+                        return true;
                 }
             }
 
             if (mainInventory.TryAddItem(itemData, unit))
                 return true;
-
-            if (unit.UnitEquipment != null)
-            {
-                if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
+            
+            // Try putting the item in belt bags first so that smaller items favor belt bags
+            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
                     return true;
 
-                if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
+            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
                     return true;
-            }
 
             return false;
         }

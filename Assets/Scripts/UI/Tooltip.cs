@@ -66,6 +66,14 @@ namespace GeneralUI
             else if (itemData.Item.MaxStackSize > 1)
                 stringBuilder.Append($"\n  <i>{itemData.CurrentStackSize} / {itemData.Item.MaxStackSize}</i>\n");
 
+            if (itemData.ThrowingDamageMultiplier != 0f)
+            {
+                if (itemData.ThrowingDamageMultiplier < 0f)
+                    stringBuilder.Append($"\n  Throwing Damage: {itemData.ThrowingDamageMultiplier * 100f}%");
+                else
+                    stringBuilder.Append($"\n  Throwing Damage: +{itemData.ThrowingDamageMultiplier * 100f}%");
+            }
+
             if (itemData.Item is Weapon)
             {
                 stringBuilder.Append($"\n  Damage: {itemData.Damage}");

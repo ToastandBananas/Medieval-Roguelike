@@ -18,6 +18,7 @@ MonoBehaviour:
     to the lower limbs.
   itemType: 95
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 37
   itemSize: 4
   width: 2

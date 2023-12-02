@@ -224,7 +224,7 @@ namespace UnitSystem.ActionSystem
                 else // If moving up
                     arcMultiplier += arcMultiplier * heightDifference;
 
-                float arcHeight = MathParabola.CalculateParabolaArcHeight(unitStartPosition, nextTargetPosition) * arcMultiplier;
+                float arcHeight = MathParabola.CalculateParabolaArcHeight(unitStartPosition, nextTargetPosition, arcMultiplier);
                 float animationTime = 0f;
                 
                 while (!Unit.unitAnimator.beingKnockedBack && Vector3.Distance(Unit.transform.position, nextTargetPosition) > stoppingDistance)
@@ -580,10 +580,10 @@ namespace UnitSystem.ActionSystem
             if (Unit.IsPlayer)
                 return;
 
-            if ((float)Unit.stats.lastPooledAP / defaultTileMoveCost <= 1f)
+            if ((float)Unit.stats.LastPooledAP / defaultTileMoveCost <= 1f)
                 travelDistanceMultiplier = 1f;
             else
-                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.stats.lastPooledAP / defaultTileMoveCost);
+                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.stats.LastPooledAP / defaultTileMoveCost);
         }
 
         public override bool IsValidAction()

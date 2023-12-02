@@ -16,21 +16,21 @@ namespace UnitSystem
         public delegate void OnFailedKnockbackHandler(GridPosition targetUnitGridPosition);
         public event OnFailedKnockbackHandler OnFailedToKnockbackTarget;
 
-        public int currentAP { get; private set; }
-        public int pooledAP { get; private set; }
-        public int lastPooledAP { get; private set; }
+        public int CurrentAP { get; private set; }
+        public int PooledAP { get; private set; }
+        public int LastPooledAP { get; private set; }
         public int APUntilTimeTick { get; private set; }
-        public int lastUsedAP { get; private set; }
+        public int LastUsedAP { get; private set; }
         // readonly int baseAP_PerSecond = 60;
 
-        public List<BaseAction> energyUseActions { get; private set; }
+        public List<BaseAction> EnergyUseActions { get; private set; }
 
-        public int currentEnergy { get; private set; }
+        public int CurrentEnergy { get; private set; }
         readonly int baseEnergy = 20;
         readonly float energyRegenPerTurn = 0.25f;
         float energyRegenBuildup, energyUseBuildup;
 
-        public float currentCarryWeight { get; private set; }
+        public float CurrentCarryWeight { get; private set; }
 
         [SerializeField] Unit unit;
 
@@ -67,10 +67,10 @@ namespace UnitSystem
 
         void Awake()
         {
-            energyUseActions = new List<BaseAction>();
+            EnergyUseActions = new List<BaseAction>();
 
             APUntilTimeTick = MaxAP();
-            currentEnergy = MaxEnergy();
+            CurrentEnergy = MaxEnergy();
         }
 
         void UpdateUnit()
@@ -104,7 +104,7 @@ namespace UnitSystem
         #region AP
         public void SetLastUsedAP(int amountUsed)
         {
-            lastUsedAP = amountUsed;
+            LastUsedAP = amountUsed;
             ActionSystemUI.UpdateActionPointsText();
         }
 
@@ -132,12 +132,12 @@ namespace UnitSystem
             else
             {
                 // Debug.Log("AP used: " + amount);
-                currentAP -= amount;
+                CurrentAP -= amount;
 
-                if (currentAP < 0)
+                if (CurrentAP < 0)
                 {
                     Debug.LogWarning($"Trying to use more AP than {unit.name} has...");
-                    currentAP = 0;
+                    CurrentAP = 0;
                 }
 
                 UpdateAPUntilTimeTick(amount);
@@ -157,28 +157,28 @@ namespace UnitSystem
             }
         }
 
-        public void ReplenishAP() => currentAP = MaxAP();
+        public void ReplenishAP() => CurrentAP = MaxAP();
 
-        public void AddToCurrentAP(int amountToAdd) => currentAP += amountToAdd;
+        public void AddToCurrentAP(int amountToAdd) => CurrentAP += amountToAdd;
 
         public void AddToAPPool(int amountToAdd)
         {
-            pooledAP += amountToAdd;
-            lastPooledAP = pooledAP;
+            PooledAP += amountToAdd;
+            LastPooledAP = PooledAP;
         }
 
         public void GetAPFromPool()
         {
-            int APDifference = MaxAP() - currentAP;
-            if (pooledAP > APDifference)
+            int APDifference = MaxAP() - CurrentAP;
+            if (PooledAP > APDifference)
             {
-                pooledAP -= APDifference;
-                currentAP += APDifference;
+                PooledAP -= APDifference;
+                CurrentAP += APDifference;
             }
             else
             {
-                currentAP += pooledAP;
-                pooledAP = 0;
+                CurrentAP += PooledAP;
+                PooledAP = 0;
             }
         }
 
@@ -186,15 +186,15 @@ namespace UnitSystem
         {
             // Debug.Log("Current AP: " + currentAP);
             int remainingAmount;
-            if (currentAP >= amount)
+            if (CurrentAP >= amount)
             {
                 UseAP(amount);
                 remainingAmount = 0;
             }
             else
             {
-                remainingAmount = amount - currentAP;
-                UseAP(currentAP);
+                remainingAmount = amount - CurrentAP;
+                UseAP(CurrentAP);
             }
 
             //Debug.Log("Remaining amount: " + remainingAmount);
@@ -346,11 +346,11 @@ namespace UnitSystem
         #region Carry Weight
         public float MaxCarryWeight => strength.GetValue() * 5f;
 
-        public void AdjustCarryWeight(float amount) => currentCarryWeight += Mathf.RoundToInt(amount * 100f) / 100f;
+        public void AdjustCarryWeight(float amount) => CurrentCarryWeight += Mathf.RoundToInt(amount * 100f) / 100f;
 
         public void UpdateCarryWeight()
         {
-            currentCarryWeight = 0f;
+            CurrentCarryWeight = 0f;
             if (unit.UnitInventoryManager != null)
                 AdjustCarryWeight(unit.UnitInventoryManager.GetTotalInventoryWeight());
 
@@ -366,7 +366,7 @@ namespace UnitSystem
                 InventoryUI.UpdatePlayerCarryWeightText();
         }
 
-        public float CarryWeightRatio => currentCarryWeight / MaxCarryWeight;
+        public float CarryWeightRatio => CurrentCarryWeight / MaxCarryWeight;
 
         public float EncumbranceMoveCostModifier()
         {
@@ -517,9 +517,9 @@ namespace UnitSystem
             if (amount <= 0)
                 return;
 
-            currentEnergy -= amount;
-            if (currentEnergy < 0)
-                currentEnergy = 0;
+            CurrentEnergy -= amount;
+            if (CurrentEnergy < 0)
+                CurrentEnergy = 0;
 
             if (unit.IsPlayer)
                 ActionSystemUI.UpdateEnergyText();
@@ -527,7 +527,7 @@ namespace UnitSystem
 
         public void ReplenishEnergy()
         {
-            currentEnergy = MaxEnergy();
+            CurrentEnergy = MaxEnergy();
 
             if (unit.IsPlayer)
                 ActionSystemUI.UpdateEnergyText();
@@ -535,9 +535,9 @@ namespace UnitSystem
 
         public void AddToCurrentEnergy(int amountToAdd)
         {
-            currentEnergy += amountToAdd;
-            if (currentEnergy > MaxEnergy())
-                currentEnergy = MaxEnergy();
+            CurrentEnergy += amountToAdd;
+            if (CurrentEnergy > MaxEnergy())
+                CurrentEnergy = MaxEnergy();
 
             if (unit.IsPlayer)
                 ActionSystemUI.UpdateEnergyText();
@@ -555,12 +555,12 @@ namespace UnitSystem
             }
 
             // Use Energy from Actions (stances, etc.)
-            for (int i = 0; i < energyUseActions.Count; i++)
+            for (int i = 0; i < EnergyUseActions.Count; i++)
             {
-                if (HasEnoughEnergy(Mathf.CeilToInt(energyUseActions[i].EnergyCostPerTurn())))
-                    energyUseBuildup += energyUseActions[i].EnergyCostPerTurn();
+                if (HasEnoughEnergy(Mathf.CeilToInt(EnergyUseActions[i].EnergyCostPerTurn())))
+                    energyUseBuildup += EnergyUseActions[i].EnergyCostPerTurn();
                 else
-                    energyUseActions[i].CancelAction();
+                    EnergyUseActions[i].CancelAction();
             }
 
             int amountToUse = Mathf.FloorToInt(energyUseBuildup);
@@ -568,7 +568,7 @@ namespace UnitSystem
             energyUseBuildup -= amountToUse;
         }
 
-        public bool HasEnoughEnergy(int energyCost) => currentEnergy >= energyCost;
+        public bool HasEnoughEnergy(int energyCost) => CurrentEnergy >= energyCost;
         #endregion
 
         #region Knockback

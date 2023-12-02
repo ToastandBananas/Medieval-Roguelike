@@ -37,7 +37,7 @@ namespace InventorySystem
         [Header("Projectile Info")]
         [SerializeField] ProjectileType projectileType;
         [SerializeField] ProjectileAnimationType projectileAnimationType;
-        [SerializeField] int speed = 15;
+        [SerializeField] float speedMultiplier = 1f;
 
         [Tooltip("Amount the arc height will be multiplied by. (0 = no arc)")]
         [SerializeField] float arcMultiplier = 1f;
@@ -75,7 +75,7 @@ namespace InventorySystem
 
         public ProjectileType ProjectileType => projectileType;
         public ProjectileAnimationType ProjectileAnimationType => projectileAnimationType;
-        public int Speed => speed;
+        public float SpeedMultiplier => speedMultiplier;
         public float ArcMultiplier => arcMultiplier;
     }
 }

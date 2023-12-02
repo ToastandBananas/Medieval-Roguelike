@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Boots_Leather_Fur_Material
+    second: {fileID: 2100000, guid: f4a4b58dd16355e4b87c053d62595eb8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Boots_Leather_Fur_Material.001
     second: {fileID: 2100000, guid: f4a4b58dd16355e4b87c053d62595eb8, type: 2}
   materials:

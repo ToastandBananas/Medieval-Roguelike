@@ -18,6 +18,7 @@ MonoBehaviour:
     protect your arrows.
   itemType: 70
   thrownProjectileType: 20
+  thrownAnimationType: 0
   mainMaterial: 23
   itemSize: 4
   width: 2

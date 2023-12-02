@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Gloves_Leather_Material
+    second: {fileID: 2100000, guid: 92fbc85c7e168df4085ac16c12a2239a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Gloves_Leather_Material.001
     second: {fileID: 2100000, guid: 92fbc85c7e168df4085ac16c12a2239a, type: 2}
   materials:

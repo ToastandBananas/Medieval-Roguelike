@@ -25,10 +25,14 @@ namespace InventorySystem
         [SerializeField] string pluralName;
         [SerializeField, TextArea(1, 5)] string description;
         [SerializeField] protected ItemType itemType;
+        [SerializeField] ItemSize itemSize;
+
+        [Header("Throwing")]
         [SerializeField] ProjectileType thrownProjectileType = ProjectileType.BluntObject;
         [SerializeField] ProjectileAnimationType thrownAnimationType = ProjectileAnimationType.EndOverEnd;
-        [SerializeField] ItemMaterial mainMaterial;
-        [SerializeField] ItemSize itemSize;
+        [SerializeField] float throwingSpeedMultiplier = 1f;
+        [SerializeField, Range(-10f, 10f)] float minThrowingDamageMultiplier;
+        [SerializeField, Range(-10f, 10f)] float maxThrowingDamageMultiplier;
 
         [Header("Inventory")]
         [SerializeField] protected int width = 1;
@@ -53,10 +57,13 @@ namespace InventorySystem
         public string PluralName => pluralName;
         public string Description => description;
         public ItemType ItemType => itemType;
+        public ItemSize ItemSize => itemSize;
+
         public ProjectileType ThrownProjectileType => thrownProjectileType;
         public ProjectileAnimationType ThrownAnimationType => thrownAnimationType;
-        public ItemMaterial MainMaterial => mainMaterial;
-        public ItemSize ItemSize => itemSize;
+        public float ThrowingSpeedMultiplier => throwingSpeedMultiplier;
+        public float MinThrowingDamageMultiplier => minThrowingDamageMultiplier;
+        public float MaxThrowingDamageMultiplier => maxThrowingDamageMultiplier;
 
         public int Width => width;
         public int Height => height;
@@ -75,10 +82,7 @@ namespace InventorySystem
 
         protected bool initialized;
 
-        public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1)
-        {
-            return true;
-        }
+        public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1) => isUsable;
 
         public ItemChangeThreshold[] GetItemChangeThresholds()
         {

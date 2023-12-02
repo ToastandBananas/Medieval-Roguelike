@@ -269,7 +269,7 @@ namespace UnitSystem.ActionSystem
 
         public void SetDefaultSelectedAction()
         {
-            SetSelectedActionType(FindActionTypeByName("MoveAction"), true);
+            SetSelectedActionType(MoveAction.ActionType, true);
             ActionSystemUI.SetSelectedActionSlot(null);
             ContextMenu.DisableContextMenu(true);
         }
