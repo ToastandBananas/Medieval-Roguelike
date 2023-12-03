@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 787313fb1f6797d42b5ec414ce5a80ba, type: 3}
-  m_Name: Belt - Leather - Studded - With Medium Hip Pouch x1
+  m_Name: Belt - Leather - Studded - With Hip Pouch x1
   m_EditorClassIdentifier: 
-  name: Studded Leather Belt
+  name: Studded Leather Traveller's Belt
   pluralName: 
   description: A simple, yet sturdy belt made from durable cowhide and reinforced
     with metal studs.
   itemType: 130
-  thrownProjectileType: 20
-  mainMaterial: 23
   itemSize: 2
+  thrownProjectileType: 20
+  thrownAnimationType: 1
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 1
   weight: 0.45

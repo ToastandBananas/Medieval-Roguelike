@@ -38,9 +38,7 @@ namespace InventorySystem
             if (slotCoordinates == null)
                 slotCoordinates = new List<SlotCoordinate>();
 
-            if (slotCoordinates.Count == 0)
-                CreateSlotCoordinates();
-
+            CreateSlotCoordinates();
             SetupItems();
 
             HasBeenInitialized = true;
@@ -106,7 +104,7 @@ namespace InventorySystem
                 return;
             }
 
-            if (containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null)
+            if (containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null) // We only want to run this on the Parent Inventory
             {
                 InventoryLayout[] inventorySections = null;
                 if (item is Backpack)
@@ -122,7 +120,7 @@ namespace InventorySystem
                     return;
                 }
 
-                if (containerInventoryManager.SubInventories.Length < inventorySections.Length)
+                if (containerInventoryManager.SubInventories.Length < inventorySections.Length - 1)
                     containerInventoryManager.IncreaseSubInventoriesArraySize(inventorySections.Length - 1);
 
                 for (int i = 0; i < inventorySections.Length; i++)
@@ -136,10 +134,10 @@ namespace InventorySystem
                 for (int i = containerInventoryManager.SubInventories.Length; i >= 0; i--)
                 {
                     if (i >= inventorySections.Length)
-                        containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(0, 2, 1, 1, null, null);
+                        containerInventoryManager.SubInventories[i - 1].inventoryLayout.SetLayoutValues(0, 0, 1, 1, null, null);
                 }
             }
-            else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this) // We only want to run this on the Parent Inventory
+            else if (containerInventoryManager.ParentInventory != null && containerInventoryManager.ParentInventory != this)
                 containerInventoryManager.ParentInventory.SetupInventoryLayoutFromItem(item);
         }
 
