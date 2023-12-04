@@ -512,7 +512,8 @@ namespace UnitSystem.ActionSystem
             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
             {
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
-                ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up), mouseGridPosition.WorldPosition);
+                if (player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction && player.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.IsInAttackRange(null, player.GridPosition, mouseGridPosition))
+                    ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up), mouseGridPosition.WorldPosition);
             }
             else if (player.UnitEquipment.MeleeWeaponEquipped || player.stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);

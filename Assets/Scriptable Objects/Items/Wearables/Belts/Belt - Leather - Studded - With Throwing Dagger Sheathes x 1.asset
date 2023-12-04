@@ -17,16 +17,18 @@ MonoBehaviour:
   description: A simple, yet sturdy belt made from durable cowhide and reinforced
     with metal studs.
   itemType: 130
+  itemSize: 2
   thrownProjectileType: 20
   thrownAnimationType: 1
-  mainMaterial: 23
-  itemSize: 2
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 1
   weight: 0.45
   maxStackSize: 1
-  inventorySprite: {fileID: 21300000, guid: c87e45d7504527546add04ca804b8fad, type: 3}
-  hotbarSprite: {fileID: 21300000, guid: 1bad30182f6358a419eec04a99e20444, type: 3}
+  inventorySprite: {fileID: 21300000, guid: 41106ca81b4c69749aec582d8e874ed9, type: 3}
+  hotbarSprite: {fileID: 21300000, guid: faa509dfeb216c14cb201843872efad5, type: 3}
   maxUses: 1
   isUsable: 1
   valueRange: {x: 50, y: 65}
