@@ -39,7 +39,7 @@ namespace UnitSystem
         }
 
         // Used in animation Key Frame
-        void StopAttacking() => unit.unitActionHandler.SetIsAttacking(false);
+        void StopAttacking() => unit.UnitActionHandler.SetIsAttacking(false);
 
         public void DoDodge(Unit attackingUnit, HeldItem heldItemToDodge, Projectile projectileToDodge) => StartCoroutine(Dodge(attackingUnit, heldItemToDodge, projectileToDodge));
 
@@ -48,10 +48,10 @@ namespace UnitSystem
             isDodging = true;
 
             // Face the attacker
-            if (unit.unitActionHandler.TurnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
-                unit.unitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false, 30f);
+            if (unit.UnitActionHandler.TurnAction.IsFacingTarget(attackingUnit.GridPosition) == false)
+                unit.UnitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false, 30f);
 
-            while (unit.unitActionHandler.TurnAction.isRotating)
+            while (unit.UnitActionHandler.TurnAction.isRotating)
                 yield return null;
 
             float dodgeDistance;
@@ -71,7 +71,7 @@ namespace UnitSystem
                 dodgeDirection = Random.Range(0, 2) == 0 ? -unit.transform.right : unit.transform.right;
             else
             {
-                if (heldItemToDodge == attackingUnit.unitMeshManager.leftHeldItem)
+                if (heldItemToDodge == attackingUnit.UnitMeshManager.leftHeldItem)
                     dodgeDirection = -unit.transform.right;
                 else
                     dodgeDirection = unit.transform.right;
@@ -89,7 +89,7 @@ namespace UnitSystem
             }
 
             // Dodge
-            while (beingKnockedBack == false && elapsedTime < dodgeDuration && unit.health.IsDead == false)
+            while (beingKnockedBack == false && elapsedTime < dodgeDuration && unit.Health.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / dodgeDuration;
@@ -126,7 +126,7 @@ namespace UnitSystem
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
-            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.health.IsDead == false)
+            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.Health.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
@@ -141,11 +141,11 @@ namespace UnitSystem
 
         IEnumerator DoKnockback(Unit attackingUnit)
         {
-            unit.unitActionHandler.CancelActions();
+            unit.UnitActionHandler.CancelActions();
 
             Vector3 knockbackTargetPosition;
-            if (unit.unitActionHandler.MoveAction.IsMoving)
-                knockbackTargetPosition = unit.unitActionHandler.MoveAction.LastGridPosition.WorldPosition;
+            if (unit.UnitActionHandler.MoveAction.IsMoving)
+                knockbackTargetPosition = unit.UnitActionHandler.MoveAction.LastGridPosition.WorldPosition;
             else
             {
                 Vector3 direction = (unit.WorldPosition - attackingUnit.WorldPosition).normalized;
@@ -176,7 +176,7 @@ namespace UnitSystem
             StopMovingForward();
 
             // Don't play the animation if the NPC is off-screen
-            if (unit.IsNPC && unit.unitMeshManager.IsVisibleOnScreen == false)
+            if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen == false)
             {
                 CompleteKnockback(knockbackTargetPosition, fallDistance);
                 yield break;
@@ -210,20 +210,20 @@ namespace UnitSystem
             unit.transform.position = knockbackTargetPosition;
             unit.UpdateGridPosition();
 
-            unit.unitActionHandler.MoveAction.SetFinalTargetGridPosition(unit.GridPosition);
-            unit.unitActionHandler.MoveAction.SetTargetGridPosition(unit.GridPosition);
+            unit.UnitActionHandler.MoveAction.SetFinalTargetGridPosition(unit.GridPosition);
+            unit.UnitActionHandler.MoveAction.SetTargetGridPosition(unit.GridPosition);
 
             beingKnockedBack = false;
 
             if (fallDistance > Health.minFallDistance)
-                unit.health.TakeFallDamage(fallDistance);
+                unit.Health.TakeFallDamage(fallDistance);
         }
 
         IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.health.IsDead == false && unit.unitActionHandler.MoveAction.IsMoving == false)
+            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.Health.IsDead == false && unit.UnitActionHandler.MoveAction.IsMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
@@ -236,22 +236,22 @@ namespace UnitSystem
 
         public void StopBlocking()
         {
-            if (unit.unitMeshManager.leftHeldItem != null)
+            if (unit.UnitMeshManager.leftHeldItem != null)
             {
-                if (unit.unitMeshManager.leftHeldItem.IsBlocking && unit.unitMeshManager.leftHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
-                    unit.unitMeshManager.leftHeldItem.StopBlocking();
+                if (unit.UnitMeshManager.leftHeldItem.IsBlocking && unit.UnitMeshManager.leftHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
+                    unit.UnitMeshManager.leftHeldItem.StopBlocking();
             }
-            else if (unit.unitMeshManager.rightHeldItem != null)
+            else if (unit.UnitMeshManager.rightHeldItem != null)
             {
-                if (unit.unitMeshManager.rightHeldItem.IsBlocking && unit.unitMeshManager.rightHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
-                  unit.unitMeshManager.rightHeldItem.StopBlocking();
+                if (unit.UnitMeshManager.rightHeldItem.IsBlocking && unit.UnitMeshManager.rightHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
+                  unit.UnitMeshManager.rightHeldItem.StopBlocking();
             }
         }
 
         public void Die(Transform attackerTransform)
         {
             // Hide the Unit's base
-            unit.unitMeshManager.DisableBaseMeshRenderer();
+            unit.UnitMeshManager.DisableBaseMeshRenderer();
             baseCapsuleCollider.enabled = true;
 
             float forceMagnitude = Random.Range(100, 300);
@@ -275,15 +275,15 @@ namespace UnitSystem
             // Apply head rotation
             StartCoroutine(Die_RotateHead(diedForward));
 
-            unit.rigidBody.useGravity = true;
-            unit.rigidBody.isKinematic = false;
+            unit.RigidBody.useGravity = true;
+            unit.RigidBody.isKinematic = false;
             
             // Apply force to the character's Rigidbody at the specified position
-            unit.rigidBody.AddForce(forceDirection * forceMagnitude, ForceMode.Impulse); 
+            unit.RigidBody.AddForce(forceDirection * forceMagnitude, ForceMode.Impulse); 
             
             Vector3 torqueDirection = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized;
             float torqueMagnitude = Random.Range(100, 500); // Adjust this value as needed
-            unit.rigidBody.AddTorque(torqueDirection * torqueMagnitude, ForceMode.Impulse);
+            unit.RigidBody.AddTorque(torqueDirection * torqueMagnitude, ForceMode.Impulse);
 
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
             {
@@ -292,11 +292,11 @@ namespace UnitSystem
                     DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
             }
 
-            if (unit.unitMeshManager.leftHeldItem != null)
-                DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
+            if (unit.UnitMeshManager.leftHeldItem != null)
+                DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
 
-            if (unit.unitMeshManager.rightHeldItem != null)
-                DropItemManager.DropHeldItemOnDeath(unit.unitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
+            if (unit.UnitMeshManager.rightHeldItem != null)
+                DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
 
             // Swap to the other weapon set so that when we go to loot this Unit's body, it will show the items in their equipment
             unit.UnitEquipment.SwapWeaponSet();

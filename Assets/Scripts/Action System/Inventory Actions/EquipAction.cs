@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class EquipAction : BaseInventoryAction
     {
@@ -26,7 +26,7 @@ namespace UnitSystem.ActionSystem
 
             itemDatasToEquip.Add(itemDataToEquip, targetEquipSlot);
 
-            Unit.unitActionHandler.QueueAction(this);
+            Unit.UnitActionHandler.QueueAction(this);
         }
 
         /// <summary>For when it's too risky to queue an EquipAction, such as when equipping on pickup, there would be a chance that the action gets cancelled and the item disappears after picking it up, but before equipping it.

@@ -4,7 +4,7 @@ using UnitSystem.ActionSystem.UI;
 using Utilities;
 using ContextMenu = GeneralUI.ContextMenu;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class ReloadAction : BaseAction
     {
@@ -21,7 +21,7 @@ namespace UnitSystem.ActionSystem
         public override void TakeAction()
         {
             StartAction();
-            HeldRangedWeapon heldRangedWeapon = Unit.unitMeshManager.GetHeldRangedWeapon();
+            HeldRangedWeapon heldRangedWeapon = Unit.UnitMeshManager.GetHeldRangedWeapon();
             if (heldRangedWeapon.IsLoaded)
                 Unload(heldRangedWeapon);
             else
@@ -32,9 +32,9 @@ namespace UnitSystem.ActionSystem
         {
             // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
             if (Unit.UnitEquipment.QuiverEquipped() && Unit.UnitEquipment.RangedWeaponEquipped
-                && Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded == false && Unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
+                && Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded == false && Unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
             {
-                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                Unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 ContextMenu.BuildReloadActionContextMenu();
             }
             else // Just reload with the only type of ammo equipped (or unload if already loaded)
@@ -60,20 +60,20 @@ namespace UnitSystem.ActionSystem
 
             if (Unit.IsPlayer)
             {
-                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                Unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 ActionBarSlot.UpdateIcon();
             }
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public override int ActionPointsCost()
         {
-            return Mathf.RoundToInt(defaultActionPointCost * (float)Unit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
+            return Mathf.RoundToInt(defaultActionPointCost * (float)Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && (Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded || Unit.UnitEquipment.HasValidAmmunitionEquipped());
+        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded || Unit.UnitEquipment.HasValidAmmunitionEquipped());
 
         public override bool IsInterruptable() => false;
 
@@ -92,7 +92,7 @@ namespace UnitSystem.ActionSystem
             if (Unit.UnitEquipment.RangedWeaponEquipped == false)
                 return ActionType.ActionIcon;
 
-            if (Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
+            if (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 return ActionType.CancelActionIcon;
             return ActionType.ActionIcon;
         }
@@ -102,7 +102,7 @@ namespace UnitSystem.ActionSystem
             if (Unit.UnitEquipment.RangedWeaponEquipped == false)
                 return "";
 
-            HeldRangedWeapon rangedWeapon = Unit.unitMeshManager.GetHeldRangedWeapon();
+            HeldRangedWeapon rangedWeapon = Unit.UnitMeshManager.GetHeldRangedWeapon();
             if (rangedWeapon.IsLoaded)
                 return $"Unload {StringUtilities.EnumToSpacedString(rangedWeapon.ItemData.Item.Weapon.WeaponType)}";
             else
@@ -114,7 +114,7 @@ namespace UnitSystem.ActionSystem
             if (Unit.UnitEquipment.RangedWeaponEquipped == false)
                 return "";
 
-            HeldRangedWeapon rangedWeapon = Unit.unitMeshManager.GetHeldRangedWeapon();
+            HeldRangedWeapon rangedWeapon = Unit.UnitMeshManager.GetHeldRangedWeapon();
             if (rangedWeapon.IsLoaded)
             {
                 if (rangedWeapon.LoadedProjectile != null)

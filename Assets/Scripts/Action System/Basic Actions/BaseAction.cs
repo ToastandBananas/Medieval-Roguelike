@@ -3,7 +3,7 @@ using UnityEngine;
 using UnitSystem.ActionSystem.UI;
 using GridSystem;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public abstract class BaseAction : MonoBehaviour
     {
@@ -22,7 +22,7 @@ namespace UnitSystem.ActionSystem
         public virtual void QueueAction()
         {
             // Debug.Log(name);
-            Unit.unitActionHandler.QueueAction(this);
+            Unit.UnitActionHandler.QueueAction(this);
         }
 
         public virtual void QueueAction(GridPosition targetGridPosition)

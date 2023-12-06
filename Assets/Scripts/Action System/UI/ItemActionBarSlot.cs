@@ -1,4 +1,5 @@
 using InventorySystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem.ActionSystem.UI
 {
@@ -32,7 +33,7 @@ namespace UnitSystem.ActionSystem.UI
                         if (playerActionHandler.QueuedActions.Count == 0)
                         {
                             // Only do something if the Player has a valid ranged weapon equipped that's not already loaded and valid ammunition
-                            HeldRangedWeapon heldRangedWeapon = playerActionHandler.Unit.unitMeshManager.GetHeldRangedWeapon();
+                            HeldRangedWeapon heldRangedWeapon = playerActionHandler.Unit.UnitMeshManager.GetHeldRangedWeapon();
                             if (heldRangedWeapon != null && heldRangedWeapon.IsLoaded == false && heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
                                 playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);

@@ -6,6 +6,7 @@ using GeneralUI;
 using UnitSystem;
 using Utilities;
 using InventorySystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GridSystem
 {
@@ -107,11 +108,11 @@ namespace GridSystem
                 GridSystemVisualSingle gridSystemVisualSingle = GetGridVisualSystemSingleFromPool();
                 Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(gridPositionList[i]);
 
-                if (unitAtGridPosition == null || player.vision.IsVisible(unitAtGridPosition) == false)
+                if (unitAtGridPosition == null || player.Vision.IsVisible(unitAtGridPosition) == false)
                     gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Red));
-                else if (player.alliance.IsEnemy(unitAtGridPosition))
+                else if (player.Alliance.IsEnemy(unitAtGridPosition))
                     gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Red));
-                else if (player.alliance.IsAlly(unitAtGridPosition))
+                else if (player.Alliance.IsAlly(unitAtGridPosition))
                     gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Blue));
                 else
                     gridSystemVisualSingle.SetMaterial(GetGridVisualTypeMaterial(GridVisualType.Yellow));
@@ -132,11 +133,11 @@ namespace GridSystem
         {
             HideGridVisual();
             
-            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0 
-                || Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
+            if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0 
+                || Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
-            Instance.ShowAttackRange(Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
+            Instance.ShowAttackRange(Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
         }
 
         /// <summary>Highlights grid spaces that will be hit by the currently selected attack, based off of the current mouse position. Color depends on Alliance to Player.</summary>
@@ -144,8 +145,8 @@ namespace GridSystem
         {
             UpdateAttackRangeGridVisual();
 
-            BaseAction selectedAction = Instance.player.unitActionHandler.PlayerActionHandler.SelectedAction;
-            if (Instance.player.IsMyTurn == false || Instance.player.unitActionHandler.QueuedActions.Count > 0
+            BaseAction selectedAction = Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction;
+            if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0
                 || selectedAction is BaseAttackAction == false || !selectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 

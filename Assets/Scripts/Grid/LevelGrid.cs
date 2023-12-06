@@ -160,7 +160,7 @@ namespace GridSystem
                 if (GridPositionObstructed(gridPosition)) // Grid Position already occupied by another Unit
                     continue;
 
-                collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(gridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.UnitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -211,11 +211,11 @@ namespace GridSystem
                 {
                     float sphereCastRadius = 0.1f;
                     Vector3 shootDir = (nodeGridPosition.WorldPosition + Vector3.up - (startingGridPosition.WorldPosition + Vector3.up)).normalized;
-                    if (Physics.SphereCast(startingGridPosition.WorldPosition + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + Vector3.up, startingGridPosition.WorldPosition + Vector3.up), unit.unitActionHandler.AttackObstacleMask))
+                    if (Physics.SphereCast(startingGridPosition.WorldPosition + Vector3.up, sphereCastRadius, shootDir, out RaycastHit hit, Vector3.Distance(nodeGridPosition.WorldPosition + Vector3.up, startingGridPosition.WorldPosition + Vector3.up), unit.UnitActionHandler.AttackObstacleMask))
                         continue; // Blocked by an obstacle
                 }
 
-                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.UnitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -265,7 +265,7 @@ namespace GridSystem
                 if (GridPositionObstructed(nodeGridPosition)) // Grid Position already occupied by another Unit
                     continue;
 
-                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.unitActionHandler.MoveObstacleMask);
+                collisionsCheckArray = Physics.OverlapSphere(nodeGridPosition.WorldPosition + collisionCheckOffset, 0.01f, unit.UnitActionHandler.MoveObstacleMask);
                 if (collisionsCheckArray.Length > 0)
                     continue;
 
@@ -336,7 +336,7 @@ namespace GridSystem
                 if (unitAtGridPosition == unit)
                     continue;
 
-                if (unit != null && mustBeDirectlyVisible && !unit.vision.IsDirectlyVisible(unitAtGridPosition))
+                if (unit != null && mustBeDirectlyVisible && !unit.Vision.IsDirectlyVisible(unitAtGridPosition))
                     continue;
                 return true;
             }
@@ -360,7 +360,7 @@ namespace GridSystem
         public static bool GridPositionObstructed(GridPosition gridPosition)
         {
             GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
-            if (IsValidGridPosition(gridPosition) == false || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && unitAtGridPosition.health.IsDead == false) || UnitManager.player.singleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
+            if (IsValidGridPosition(gridPosition) == false || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && unitAtGridPosition.Health.IsDead == false) || UnitManager.player.SingleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
                 return true;
             return false;
         }

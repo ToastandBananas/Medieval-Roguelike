@@ -4,6 +4,7 @@ using UnitSystem;
 using GridSystem;
 using InteractableObjects;
 using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -38,7 +39,7 @@ namespace InventorySystem
         public virtual IEnumerator ResetToIdleRotation()
         {
             Quaternion defaultRotation;
-            if (this == unit.unitMeshManager.leftHeldItem)
+            if (this == unit.UnitMeshManager.leftHeldItem)
                 defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_LeftHand);
             else
                 defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_RightHand);
@@ -79,12 +80,12 @@ namespace InventorySystem
         ///<summary>Only used in keyframe animations.</summary>
         protected void Throw()
         {
-            ThrowAction throwAction = unit.unitActionHandler.GetAction<ThrowAction>();
+            ThrowAction throwAction = unit.UnitActionHandler.GetAction<ThrowAction>();
             if (throwAction == null)
             {
                 if (unit.IsPlayer)
-                    unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
-                unit.unitActionHandler.FinishAction();
+                    unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                unit.UnitActionHandler.FinishAction();
                 TurnManager.Instance.StartNextUnitsTurn(unit);
                 Anim.CrossFadeInFixedTime("Idle", 0.1f);
                 return;
@@ -102,8 +103,8 @@ namespace InventorySystem
 
         protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
         {
-            if (targetUnit != null && !targetUnit.health.IsDead)
-                targetUnit.unitAnimator.StopBlocking();
+            if (targetUnit != null && !targetUnit.Health.IsDead)
+                targetUnit.UnitAnimator.StopBlocking();
         }
 
         public void TryFumbleHeldItem()
@@ -113,14 +114,14 @@ namespace InventorySystem
                 if (unit.UnitEquipment.ItemDataEquipped(ItemData) == false)
                     return;
 
-                unit.unitActionHandler.SetIsAttacking(false);
+                unit.UnitActionHandler.SetIsAttacking(false);
 
-                if (unit.IsNPC && unit.health.IsDead == false) // NPCs will try to pick the item back up immediately
+                if (unit.IsNPC && unit.Health.IsDead == false) // NPCs will try to pick the item back up immediately
                 {
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
                     LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
-                    myUnit.unitActionHandler.ClearActionQueue(true);
-                    myUnit.unitActionHandler.InteractAction.QueueAction(looseItem);
+                    myUnit.UnitActionHandler.ClearActionQueue(true);
+                    myUnit.UnitActionHandler.InteractAction.QueueAction(looseItem);
                 }
                 else
                     DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
@@ -137,13 +138,13 @@ namespace InventorySystem
 
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item is Weapon && itemData.Item.Weapon.IsTwoHanded))
             {
-                SetupTransform(itemData, unit.unitMeshManager.RightHeldItemParent);
-                unit.unitMeshManager.SetRightHeldItem(this);
+                SetupTransform(itemData, unit.UnitMeshManager.RightHeldItemParent);
+                unit.UnitMeshManager.SetRightHeldItem(this);
             }
             else
             {
-                SetupTransform(itemData, unit.unitMeshManager.LeftHeldItemParent);
-                unit.unitMeshManager.SetLeftHeldItem(this);
+                SetupTransform(itemData, unit.UnitMeshManager.LeftHeldItemParent);
+                unit.UnitMeshManager.SetLeftHeldItem(this);
             }
 
             HeldItem oppositeHeldItem = GetOppositeHeldItem();
@@ -174,9 +175,9 @@ namespace InventorySystem
 
         void SetupTransform(ItemData itemData, Transform heldItemParent)
         {
-            if (heldItemParent == unit.unitMeshManager.RightHeldItemParent)
+            if (heldItemParent == unit.UnitMeshManager.RightHeldItemParent)
             {
-                transform.SetParent(unit.unitMeshManager.RightHeldItemParent);
+                transform.SetParent(unit.UnitMeshManager.RightHeldItemParent);
                 if (itemData.Item is HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_RightHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand));
                 else
@@ -186,9 +187,9 @@ namespace InventorySystem
                     transform.parent.localPosition += femaleHeldItemOffset;
 
             }
-            else if (heldItemParent == unit.unitMeshManager.LeftHeldItemParent)
+            else if (heldItemParent == unit.UnitMeshManager.LeftHeldItemParent)
             {
-                transform.SetParent(unit.unitMeshManager.LeftHeldItemParent);
+                transform.SetParent(unit.UnitMeshManager.LeftHeldItemParent);
                 if (itemData.Item is HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_LeftHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand));
                 else
@@ -210,7 +211,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < ItemData.Item.Equipment.ActionTypes.Length; i++)
                 {
-                    BaseAction baseAction = unit.unitActionHandler.GetActionFromType(ItemData.Item.Equipment.ActionTypes[i]);
+                    BaseAction baseAction = unit.UnitActionHandler.GetActionFromType(ItemData.Item.Equipment.ActionTypes[i]);
                     if (baseAction != null && baseAction.ActionBarSlot != null)
                         baseAction.ActionBarSlot.UpdateIcon();
                 }
@@ -240,7 +241,7 @@ namespace InventorySystem
                         meshRenderers[i].material = ItemData.Item.HeldEquipment.MeshRendererMaterials[i];
 
                     meshFilters[i].mesh = ItemData.Item.HeldEquipment.Meshes[i];
-                    if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+                    if (unit.IsPlayer || unit.UnitMeshManager.IsVisibleOnScreen)
                         meshRenderers[i].enabled = true;
                     else
                     {
@@ -267,7 +268,7 @@ namespace InventorySystem
                         meshRenderers[i].material = ItemData.Item.PickupMeshRendererMaterials[i];
 
                     meshFilters[i].mesh = ItemData.Item.PickupMesh;
-                    if (unit.IsPlayer || unit.unitMeshManager.IsVisibleOnScreen)
+                    if (unit.IsPlayer || unit.UnitMeshManager.IsVisibleOnScreen)
                         meshRenderers[i].enabled = true;
                     else
                     {
@@ -281,7 +282,7 @@ namespace InventorySystem
         public virtual void BlockAttack(Unit attackingUnit)
         { 
             // Target Unit rotates towards this Unit & does block animation with shield or weapon
-            unit.unitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false);
+            unit.UnitActionHandler.TurnAction.RotateTowards_Unit(attackingUnit, false);
         }
 
         public virtual void StopBlocking() { }
@@ -333,10 +334,10 @@ namespace InventorySystem
                 return null;
             }
 
-            if (this == unit.unitMeshManager.leftHeldItem)
-                return unit.unitMeshManager.rightHeldItem;
-            else if (this == unit.unitMeshManager.rightHeldItem)
-                return unit.unitMeshManager.leftHeldItem;
+            if (this == unit.UnitMeshManager.leftHeldItem)
+                return unit.UnitMeshManager.rightHeldItem;
+            else if (this == unit.UnitMeshManager.rightHeldItem)
+                return unit.UnitMeshManager.leftHeldItem;
             else
                 return null;
         }

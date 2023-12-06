@@ -33,7 +33,7 @@ namespace UnitSystem
             if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
             {
                 // Debug.Log(other.gameObject.name + " can now perform actions.");
-                other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(true);
+                other.GetComponent<Unit>().UnitActionHandler.SetCanPerformActions(true);
             }
         }
 
@@ -42,7 +42,7 @@ namespace UnitSystem
             if (unitsMask == (unitsMask | (1 << other.transform.gameObject.layer)))
             {
                 // Debug.Log(other.gameObject.name + " cannot perform actions.");
-                other.GetComponent<Unit>().unitActionHandler.SetCanPerformActions(false);
+                other.GetComponent<Unit>().UnitActionHandler.SetCanPerformActions(false);
             }
         }
     }

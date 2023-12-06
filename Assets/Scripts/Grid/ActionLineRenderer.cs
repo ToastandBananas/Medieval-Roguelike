@@ -7,6 +7,7 @@ using UnitSystem;
 using Utilities;
 using System.Net;
 using InventorySystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GridSystem
 {
@@ -71,11 +72,11 @@ namespace GridSystem
         float GetArcMultiplier()
         {
             float arcMultiplier = 1f;
-            if (player.unitActionHandler.PlayerActionHandler.SelectedAction is ThrowAction)
+            if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is ThrowAction)
                 arcMultiplier = Projectile.defaultThrowArcMultiplier;
             else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
             {
-                HeldRangedWeapon heldRangedWeapon = player.unitMeshManager.GetHeldRangedWeapon();
+                HeldRangedWeapon heldRangedWeapon = player.UnitMeshManager.GetHeldRangedWeapon();
                 if (heldRangedWeapon.LoadedProjectile != null)
                     arcMultiplier = heldRangedWeapon.LoadedProjectile.ItemData.Item.Ammunition.ArcMultiplier;
                 else
@@ -117,16 +118,16 @@ namespace GridSystem
                 }
                 else if (PlayerInput.Instance.HighlightedUnit != null)
                 {
-                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
                     targetUnit = PlayerInput.Instance.HighlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
-                    if (targetUnit.health.IsDead == false && (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
+                    if (targetUnit.Health.IsDead == false && (player.Alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
                     {
-                        if (player.vision.IsVisible(targetUnit))
+                        if (player.Vision.IsVisible(targetUnit))
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
+                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -140,7 +141,7 @@ namespace GridSystem
                             targetGridPosition = targetUnit.GridPosition;
                         }
                     }
-                    else if (targetUnit.health.IsDead)
+                    else if (targetUnit.Health.IsDead)
                     {
                         if (Vector3.Distance(targetUnit.WorldPosition, player.WorldPosition) > LevelGrid.diaganolDistance)
                             targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetUnit.GridPosition, player.GridPosition, LevelGrid.diaganolDistance, false);
@@ -150,7 +151,7 @@ namespace GridSystem
                             yield break;
                         }
                     }
-                    else if (player.vision.IsVisible(targetUnit) == false)
+                    else if (player.Vision.IsVisible(targetUnit) == false)
                     {
                         targetUnit.UnblockCurrentPosition();
                         targetGridPosition = targetUnit.GridPosition;
@@ -164,14 +165,14 @@ namespace GridSystem
                 else
                 {
                     targetUnit = LevelGrid.GetUnitAtGridPosition(currentMouseGridPosition);
-                    BaseAction selectedAction = player.unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+                    BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
-                    if (targetUnit != null && player.vision.IsVisible(targetUnit))
+                    if (targetUnit != null && player.Vision.IsVisible(targetUnit))
                     {
-                        if (player.alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction)
+                        if (player.Alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction)
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.unitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
+                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -198,7 +199,7 @@ namespace GridSystem
                 path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
                 // Schedule the path for calculation
-                player.seeker.StartPath(path);
+                player.Seeker.StartPath(path);
 
                 // Wait for the path calculation to complete
                 yield return StartCoroutine(path.WaitForPath());
@@ -214,7 +215,7 @@ namespace GridSystem
                     yield break;
 
                 // Re-block the unit's position, in case it was unblocked
-                if (targetUnit != null && targetUnit.health.IsDead == false)
+                if (targetUnit != null && targetUnit.Health.IsDead == false)
                     targetUnit.BlockCurrentPosition();
                 
                 int verticeIndex = 0;
@@ -282,13 +283,13 @@ namespace GridSystem
         {
             if (player.UnitEquipment.RangedWeaponEquipped)
             {
-                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.unitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
-                    return player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
+                    return player.UnitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
                 else
-                    return player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                    return player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
             }
             else
-                return player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                return player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
         }
 
         public void DrawTurnArrow(Vector3 targetPosition)
@@ -307,7 +308,7 @@ namespace GridSystem
             mainLineRenderer.SetPosition(1, targetPosition + lineRendererOffset);
 
             float finalTargetPositionY = targetPosition.y + lineRendererOffset.y;
-            Direction turnDirection = player.unitActionHandler.TurnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
+            Direction turnDirection = player.UnitActionHandler.TurnAction.DetermineTargetTurnDirection(LevelGrid.GetGridPosition(WorldMouse.GetPosition()));
             arrowHeadLineRenderer.enabled = true;
             arrowHeadLineRenderer.positionCount = 3;
 

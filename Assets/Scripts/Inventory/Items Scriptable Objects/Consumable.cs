@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnitSystem;
 using InteractableObjects;
-using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -19,7 +19,7 @@ namespace InventorySystem
             // For each part of a consumable we're trying to eat, we should queue a separate ConsumeAction. That way we're not incurring a huge AP cost at once and consuming can be interrupted.
             for (int i = 0; i < amountToUse; i++)
             {
-                unit.unitActionHandler.GetAction<ConsumeAction>().QueueAction(itemData);
+                unit.UnitActionHandler.GetAction<ConsumeAction>().QueueAction(itemData);
             }
 
             return true;

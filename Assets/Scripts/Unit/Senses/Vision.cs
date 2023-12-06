@@ -64,7 +64,7 @@ namespace UnitSystem
             if (knownUnits.ContainsKey(unitToCheck) == false)
                 return false;
 
-            if (unitToCheck.unitMeshManager.meshesHidden)
+            if (unitToCheck.UnitMeshManager.meshesHidden)
                 return false;
 
             if (IsInLineOfSight_Raycast(unitToCheck) == false)
@@ -78,7 +78,7 @@ namespace UnitSystem
             if (knownUnits.ContainsKey(unitToCheck) == false)
                 return false;
 
-            if (unitToCheck.unitMeshManager.meshesHidden)
+            if (unitToCheck.UnitMeshManager.meshesHidden)
                 return false;
 
             return true;
@@ -136,7 +136,7 @@ namespace UnitSystem
             Vector3 offset = 2f * unitToCheck.ShoulderHeight * Vector3.up;
             Vector3 shootDir = (unitToCheck.WorldPosition + offset - transform.position).normalized;
             float distToTarget = Vector3.Distance(transform.position, unitToCheck.WorldPosition + offset);
-            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.UnitActionHandler.AttackObstacleMask))
                 return false; // Blocked by an obstacle
             return true;
         }
@@ -147,7 +147,7 @@ namespace UnitSystem
             Vector3 offset = 2f * unit.ShoulderHeight * Vector3.up;
             Vector3 shootDir = (targetGridPosition.WorldPosition + offset - transform.position).normalized;
             float distToTarget = Vector3.Distance(transform.position, targetGridPosition.WorldPosition + offset);
-            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(transform.position, sphereCastRadius, shootDir, out _, distToTarget, unit.UnitActionHandler.AttackObstacleMask))
                 return false; // Blocked by an obstacle
             return true;
         }
@@ -230,7 +230,7 @@ namespace UnitSystem
                         if (Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask) == false)
                             AddVisibleUnit(targetUnit);
                         else if (unit.IsPlayer && distToTarget > playerPerceptionDistance) // Else, hide the NPC's mesh renderers
-                            targetUnit.unitMeshManager.HideMeshRenderers();
+                            targetUnit.UnitMeshManager.HideMeshRenderers();
                     }
                 }
             }
@@ -259,26 +259,26 @@ namespace UnitSystem
 
                     if (shouldHide && knownUnit.Key != unit)
                     {
-                        if (knownUnit.Key.unitActionHandler.TargetEnemyUnit != unit && Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
+                        if (knownUnit.Key.UnitActionHandler.TargetEnemyUnit != unit && Vector3.Distance(unit.transform.position, knownUnit.Key.transform.position) > playerPerceptionDistance)
                         {
-                            knownUnit.Key.unitMeshManager.HideMeshRenderers();
-                            if (unit.unitActionHandler.TargetEnemyUnit == knownUnit.Key)
-                                unit.unitActionHandler.SetTargetEnemyUnit(null);
+                            knownUnit.Key.UnitMeshManager.HideMeshRenderers();
+                            if (unit.UnitActionHandler.TargetEnemyUnit == knownUnit.Key)
+                                unit.UnitActionHandler.SetTargetEnemyUnit(null);
                         }
                     }
                     else
-                        knownUnit.Key.unitMeshManager.ShowMeshRenderers();
+                        knownUnit.Key.UnitMeshManager.ShowMeshRenderers();
                 }
             }
 
             // Flee or Fight if not already doing so, if there are now enemies visible to this NPC
-            if (unit.IsNPC && unit.stateController.currentState != State.Flee && unit.stateController.currentState != State.Fight)
+            if (unit.IsNPC && unit.StateController.CurrentState != ActionState.Flee && unit.StateController.CurrentState != ActionState.Fight)
             {
                 if (knownEnemies.Count > 0)
                 {
-                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+                    NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
                     if (npcActionHandler.ShouldAlwaysFleeCombat())
-                        npcActionHandler.StartFlee(GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance());
+                        npcActionHandler.StartFlee(GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance);
                     else
                         npcActionHandler.StartFight();
                 }
@@ -293,7 +293,7 @@ namespace UnitSystem
             foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
             {
                 // If the visible Unit is now dead, update the appropriate lists
-                if (knownUnit.Key.health.IsDead)
+                if (knownUnit.Key.Health.IsDead)
                     UpdateDeadUnit(knownUnit.Key);
 
                 Transform targetTransform = knownUnit.Key.transform;
@@ -312,15 +312,15 @@ namespace UnitSystem
                         else
                             unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                        if (unit.IsPlayer && knownUnit.Key.unitActionHandler.TargetEnemyUnit != unit) // Hide the NPC's mesh renderers
-                            knownUnit.Key.unitMeshManager.HideMeshRenderers();
+                        if (unit.IsPlayer && knownUnit.Key.UnitActionHandler.TargetEnemyUnit != unit) // Hide the NPC's mesh renderers
+                            knownUnit.Key.UnitMeshManager.HideMeshRenderers();
                     }
                     else // We can still see the Unit, so reset their lose sight time
                     {
                         knownUnits[knownUnit.Key] = loseSightTime;
 
                         if (unit.IsPlayer) // Show the NPC's mesh renderers
-                            knownUnit.Key.unitMeshManager.ShowMeshRenderers();
+                            knownUnit.Key.UnitMeshManager.ShowMeshRenderers();
                     }
                 }
                 else // The target is outside of the view angle
@@ -330,8 +330,8 @@ namespace UnitSystem
                     else
                         unitsToRemove.Add(knownUnit.Key); // The Unit is no longer visible
 
-                    if (unit.IsPlayer && knownUnit.Key.unitActionHandler.TargetEnemyUnit != unit && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
-                        knownUnit.Key.unitMeshManager.HideMeshRenderers();
+                    if (unit.IsPlayer && knownUnit.Key.UnitActionHandler.TargetEnemyUnit != unit && Vector3.Distance(unit.transform.position, targetTransform.position) > playerPerceptionDistance) // Hide the NPC's mesh renderers
+                        knownUnit.Key.UnitMeshManager.HideMeshRenderers();
                 }
             }
 
@@ -353,17 +353,17 @@ namespace UnitSystem
                 // Add the unit to the dictionary
                 knownUnits.TryAdd(unitToAdd, loseSightTime);
 
-                if (unitToAdd.health.IsDead)
+                if (unitToAdd.Health.IsDead)
                     knownDeadUnits.Add(unitToAdd);
-                else if (unit.alliance.IsEnemy(unitToAdd))
+                else if (unit.Alliance.IsEnemy(unitToAdd))
                 {
                     knownEnemies.Add(unitToAdd);
 
                     // The Player should cancel any action (other than attacks) when becoming aware of a new enemy
-                    if (unit.IsPlayer && unit.unitActionHandler.QueuedActions.Count > 0 && unit.unitActionHandler.AttackQueuedNext() == false)
-                        unit.unitActionHandler.CancelActions();
+                    if (unit.IsPlayer && unit.UnitActionHandler.QueuedActions.Count > 0 && unit.UnitActionHandler.AttackQueuedNext() == false)
+                        unit.UnitActionHandler.CancelActions();
                 }
-                else if (unit.alliance.IsAlly(unitToAdd))
+                else if (unit.Alliance.IsAlly(unitToAdd))
                     knownAllies.Add(unitToAdd);
             }
             else // Restart the lose sight countdown
@@ -371,7 +371,7 @@ namespace UnitSystem
 
             // If this is the Player's Vision, show the newly visible NPC Unit
             if (unit.IsPlayer)
-                unitToAdd.unitMeshManager.ShowMeshRenderers();
+                unitToAdd.UnitMeshManager.ShowMeshRenderers();
         }
 
         public void RemoveVisibleUnit(Unit unitToRemove)
@@ -389,12 +389,12 @@ namespace UnitSystem
                 if (knownAllies.Contains(unitToRemove))
                     knownAllies.Remove(unitToRemove);
 
-                if (unit.unitActionHandler.TargetEnemyUnit == unitToRemove)
-                    unit.unitActionHandler.SetTargetEnemyUnit(null);
+                if (unit.UnitActionHandler.TargetEnemyUnit == unitToRemove)
+                    unit.UnitActionHandler.SetTargetEnemyUnit(null);
 
                 // If they are no longer visible to the player, hide them
                 if (unit.IsPlayer)
-                    unitToRemove.unitMeshManager.HideMeshRenderers();
+                    unitToRemove.UnitMeshManager.HideMeshRenderers();
             }
         }
 
@@ -408,43 +408,43 @@ namespace UnitSystem
             else
             {
                 // Otherwise, just become visible
-                if (targetUnit.alliance.IsEnemy(unit))
+                if (targetUnit.Alliance.IsEnemy(unit))
                     BecomeVisibleEnemyOfTarget(targetUnit);
-                else if (targetUnit.alliance.IsAlly(unit))
+                else if (targetUnit.Alliance.IsAlly(unit))
                     BecomeVisibleAllyOfTarget(targetUnit);
                 else
-                    targetUnit.vision.AddVisibleUnit(unit);
+                    targetUnit.Vision.AddVisibleUnit(unit);
             }
         }
 
         void BecomeVisibleEnemyOfTarget(Unit targetUnit)
         {
             // The target Unit becomes an enemy of this Unit's faction if they weren't already
-            if (unit.alliance.IsEnemy(targetUnit) == false)
+            if (unit.Alliance.IsEnemy(targetUnit) == false)
             {
-                targetUnit.vision.RemoveVisibleUnit(unit);
+                targetUnit.Vision.RemoveVisibleUnit(unit);
                 RemoveVisibleUnit(targetUnit);
 
-                targetUnit.alliance.AddEnemy(unit);
+                targetUnit.Alliance.AddEnemy(unit);
                 AddVisibleUnit(targetUnit);
             }
 
-            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
+            targetUnit.Vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
         }
 
         void BecomeVisibleAllyOfTarget(Unit targetUnit)
         {
             // The target Unit becomes an enemy of this Unit's faction if they weren't already
-            if (unit.alliance.IsAlly(targetUnit) == false)
+            if (unit.Alliance.IsAlly(targetUnit) == false)
             {
-                targetUnit.vision.RemoveVisibleUnit(unit);
+                targetUnit.Vision.RemoveVisibleUnit(unit);
                 RemoveVisibleUnit(targetUnit);
 
-                targetUnit.alliance.AddAlly(unit);
+                targetUnit.Alliance.AddAlly(unit);
                 AddVisibleUnit(targetUnit);
             }
 
-            targetUnit.vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
+            targetUnit.Vision.AddVisibleUnit(unit); // The target Unit becomes aware of this Unit if they weren't already
         }
 
         void UpdateDeadUnit(Unit deadUnit)
@@ -461,15 +461,15 @@ namespace UnitSystem
 
         public Unit GetClosestEnemy(bool includeTargetEnemy)
         {
-            Unit closestEnemy = unit.unitActionHandler.TargetEnemyUnit;
+            Unit closestEnemy = unit.UnitActionHandler.TargetEnemyUnit;
             float closestEnemyDistance = 1000000;
-            if (includeTargetEnemy && unit.unitActionHandler.TargetEnemyUnit != null)
-                closestEnemyDistance = Vector3.Distance(unit.WorldPosition, unit.unitActionHandler.TargetEnemyUnit.WorldPosition);
+            if (includeTargetEnemy && unit.UnitActionHandler.TargetEnemyUnit != null)
+                closestEnemyDistance = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
             for (int i = 0; i < knownEnemies.Count; i++)
             {
-                if (unit.unitActionHandler.TargetEnemyUnit != null)
+                if (unit.UnitActionHandler.TargetEnemyUnit != null)
                 {
-                    if (unit.unitActionHandler.TargetEnemyUnit.health.IsDead || (includeTargetEnemy == false && knownEnemies[i] == unit.unitActionHandler.TargetEnemyUnit))
+                    if (unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead || (includeTargetEnemy == false && knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit))
                         continue;
                 }
 

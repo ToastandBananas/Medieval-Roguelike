@@ -10,6 +10,7 @@ using InventorySystem;
 using UnitSystem;
 using Controls;
 using Pathfinding.Util;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GeneralUI
 {
@@ -60,7 +61,7 @@ namespace GeneralUI
                 contextMenuHoldTimer += Time.deltaTime;
 
             // Don't allow context menu actions while an action is already queued or when dragging items
-            if (UnitManager.player.unitActionHandler.QueuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
+            if (UnitManager.player.UnitActionHandler.QueuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
                 return;
             
             if (GameControls.gamePlayActions.menuContext.WasReleased)
@@ -91,8 +92,8 @@ namespace GeneralUI
             TargetSlot = null;
             TargetInteractable = PlayerInput.Instance.HighlightedInteractable;
             TargetUnit = PlayerInput.Instance.HighlightedUnit;
-            if (TargetUnit != null && TargetUnit.health.IsDead)
-                TargetUnit.unitInteractable.UpdateGridPosition();
+            if (TargetUnit != null && TargetUnit.Health.IsDead)
+                TargetUnit.UnitInteractable.UpdateGridPosition();
 
             if (InventoryUI.activeSlot != null)
             {
@@ -245,13 +246,13 @@ namespace GeneralUI
         static void CreateThrowWeaponButtons(out int buttonCount)
         {
             buttonCount = 0;
-            ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
+            ThrowAction throwAction = UnitManager.player.UnitActionHandler.GetAction<ThrowAction>();
             if (throwAction == null)
                 return;
 
             List<ItemData> uniqueThrowables = ListPool<ItemData>.Claim();
-            HeldMeleeWeapon leftHeldMeleeWeapon = UnitManager.player.unitMeshManager.GetLeftHeldMeleeWeapon();
-            HeldMeleeWeapon rightHeldMeleeWeapon = UnitManager.player.unitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon leftHeldMeleeWeapon = UnitManager.player.UnitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldMeleeWeapon = UnitManager.player.UnitMeshManager.GetRightHeldMeleeWeapon();
 
             // First reduce the list to held weapons and unique belt throwables only
             for (int i = 0; i < throwAction.Throwables.Count; i++)
@@ -311,8 +312,8 @@ namespace GeneralUI
 
         static void CreateAttackButton()
         {
-            if (TargetUnit == null || TargetUnit.health.IsDead || UnitManager.player.vision.IsVisible(TargetUnit) == false
-                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.stats.CanFightUnarmed == false))
+            if (TargetUnit == null || TargetUnit.Health.IsDead || UnitManager.player.Vision.IsVisible(TargetUnit) == false
+                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.Stats.CanFightUnarmed == false))
                 return;
 
             BaseAction selectedAction = UnitManager.player.SelectedAction;
@@ -448,7 +449,7 @@ namespace GeneralUI
                     return;
                 }
             }
-            else if (TargetUnit != null && TargetUnit.health.IsDead)
+            else if (TargetUnit != null && TargetUnit.Health.IsDead)
             {
                 if (Vector3.Distance(LevelGrid.GetGridPosition(TargetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;

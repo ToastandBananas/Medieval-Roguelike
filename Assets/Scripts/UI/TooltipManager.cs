@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnitSystem;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GeneralUI 
 {
@@ -76,7 +77,7 @@ namespace GeneralUI
                 // If the Player moves or rotates, we need to update the tooltips since the visible Loose Items might change
                 if (cooldown >= cooldownTime)
                 {
-                    if (playersLastPosition != UnitManager.player.GridPosition || playersLastDirection != UnitManager.player.unitActionHandler.TurnAction.currentDirection)
+                    if (playersLastPosition != UnitManager.player.GridPosition || playersLastDirection != UnitManager.player.UnitActionHandler.TurnAction.currentDirection)
                         ShowAllLooseItemTooltips();
                 }
                 else
@@ -190,17 +191,17 @@ namespace GeneralUI
         {
             ClearLooseItemTooltips();
 
-            foreach (KeyValuePair<LooseItem, int> looseItem in UnitManager.player.vision.knownLooseItems)
+            foreach (KeyValuePair<LooseItem, int> looseItem in UnitManager.player.Vision.knownLooseItems)
             {
                 if (looseItem.Key == null || looseItem.Key.transform == null || looseItem.Key.ItemData == null)
                     continue;
 
-                if (UnitManager.player.vision.IsVisible(looseItem.Key))
+                if (UnitManager.player.Vision.IsVisible(looseItem.Key))
                     GetLooseItemTooltip().ShowLooseItemTooltip(looseItem.Key, looseItem.Key.ItemData, true);
             }
             
             playersLastPosition = UnitManager.player.transform.position;
-            playersLastDirection = UnitManager.player.unitActionHandler.TurnAction.currentDirection;
+            playersLastDirection = UnitManager.player.UnitActionHandler.TurnAction.currentDirection;
         }
 
         public static void ShowUnitHitChanceTooltips(GridPosition targetGridPosition, BaseAction selectedAction)

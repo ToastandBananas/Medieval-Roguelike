@@ -6,6 +6,7 @@ using WorldSystem;
 using Utilities;
 using GridSystem;
 using System.Collections.Generic;
+using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem
 {
@@ -78,13 +79,16 @@ namespace UnitSystem
             if (unit.IsPlayer)
                 TimeSystem.IncreaseTime();
 
-            unit.vision.UpdateVision();
+            unit.Vision.UpdateVision();
 
             // We already are running this after the Move and Turn actions are complete, so no need to run it again
-            if (unit.unitActionHandler.LastQueuedAction is MoveAction == false && unit.unitActionHandler.LastQueuedAction is TurnAction == false)
-                unit.vision.FindVisibleUnitsAndObjects();
+            if (unit.UnitActionHandler.LastQueuedAction is MoveAction == false && unit.UnitActionHandler.LastQueuedAction is TurnAction == false)
+                unit.Vision.FindVisibleUnitsAndObjects();
 
             UpdateEnergy();
+
+            if (unit.IsNPC)
+                unit.UnitActionHandler.NPCActionHandler.OnTickGoals();
 
             /*
             unit.status.UpdateBuffs();
@@ -123,10 +127,10 @@ namespace UnitSystem
                 for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
                 {
                     // Every time the Player takes an action that costs AP, a correlating amount of AP is added to each NPCs AP pool (based off percentage of the Player's MaxAP used)
-                    UnitManager.livingNPCs[i].stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].stats.MaxAP()));
+                    UnitManager.livingNPCs[i].Stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].Stats.MaxAP()));
                     
                     // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
-                    UnitManager.livingNPCs[i].unitActionHandler.MoveAction.SetTravelDistanceSpeedMultiplier();
+                    UnitManager.livingNPCs[i].UnitActionHandler.MoveAction.SetTravelDistanceSpeedMultiplier();
                 }
             }
             else
@@ -321,7 +325,7 @@ namespace UnitSystem
             if (weaponAttackingWith != null)
                 weapon = weaponAttackingWith.ItemData.Item.Weapon;
 
-            float modifier = 1f - (attackingUnit.stats.WeaponSkill(weapon) / 100f * 0.4f);
+            float modifier = 1f - (attackingUnit.Stats.WeaponSkill(weapon) / 100f * 0.4f);
             float baseModifier = modifier;
             if (weaponAttackingWith != null)
                 modifier -= baseModifier * weaponAttackingWith.ItemData.AccuracyModifier;
@@ -358,9 +362,9 @@ namespace UnitSystem
                 AdjustCarryWeight(unit.UnitEquipment.GetTotalEquipmentWeight());
 
             if (CarryWeightRatio >= 2f)
-                unit.unitActionHandler.MoveAction.SetCanMove(false);
+                unit.UnitActionHandler.MoveAction.SetCanMove(false);
             else
-                unit.unitActionHandler.MoveAction.SetCanMove(true);
+                unit.UnitActionHandler.MoveAction.SetCanMove(true);
 
             if (unit.IsPlayer)
                 InventoryUI.UpdatePlayerCarryWeightText();
@@ -442,7 +446,7 @@ namespace UnitSystem
             if (weaponAttackingWith != null)
                 weapon = weaponAttackingWith.ItemData.Item.Weapon;
 
-            float modifier = 1f - (attackingUnit.stats.WeaponSkill(weapon) / 100f * 0.5f);
+            float modifier = 1f - (attackingUnit.Stats.WeaponSkill(weapon) / 100f * 0.5f);
             float baseModifier = modifier;
 
             if (weaponAttackingWith != null)
@@ -474,18 +478,18 @@ namespace UnitSystem
                 {
                     if (unit.UnitEquipment.IsDualWielding)
                     {
-                        bool attackerBesideUnit = targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit);
-                        float mainWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetRightHeldMeleeWeapon(), actionToUse, false, attackerBesideUnit);
-                        float secondaryWeaponHitChance = targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetLeftHeldMeleeWeapon(), actionToUse, true, attackerBesideUnit);
+                        bool attackerBesideUnit = targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit);
+                        float mainWeaponHitChance = targetUnit.Stats.DodgeChance(unit, unit.UnitMeshManager.GetRightHeldMeleeWeapon(), actionToUse, false, attackerBesideUnit);
+                        float secondaryWeaponHitChance = targetUnit.Stats.DodgeChance(unit, unit.UnitMeshManager.GetLeftHeldMeleeWeapon(), actionToUse, true, attackerBesideUnit);
                         hitChance = 1f - (mainWeaponHitChance * secondaryWeaponHitChance);
                     }
                     else if (unit.UnitEquipment.MeleeWeaponEquipped)
-                        hitChance = 1f - targetUnit.stats.DodgeChance(unit, unit.unitMeshManager.GetPrimaryHeldMeleeWeapon(), actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit));
+                        hitChance = 1f - targetUnit.Stats.DodgeChance(unit, unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon(), actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit));
                     else
-                        hitChance = 1f - targetUnit.stats.DodgeChance(unit, null, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit));
+                        hitChance = 1f - targetUnit.Stats.DodgeChance(unit, null, actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit));
                 }
                 else
-                    hitChance = 1f - targetUnit.stats.DodgeChance(unit, null, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit));
+                    hitChance = 1f - targetUnit.Stats.DodgeChance(unit, null, actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit));
             }
             else if (actionToUse.IsRangedAttackAction())
             {
@@ -494,13 +498,13 @@ namespace UnitSystem
                     if (actionToUse is ThrowAction)
                     {
                         ThrowAction throwAction = actionToUse as ThrowAction;
-                        hitChance = ThrowingAccuracy(throwAction.ItemDataToThrow, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, null, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit)));
+                        hitChance = ThrowingAccuracy(throwAction.ItemDataToThrow, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.Stats.DodgeChance(unit, null, actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit)));
                     }
                     else
                     {
-                        HeldItem rangedWeapon = unit.unitMeshManager.GetHeldRangedWeapon();
+                        HeldItem rangedWeapon = unit.UnitMeshManager.GetHeldRangedWeapon();
                         if (unit.UnitEquipment.RangedWeaponEquipped)
-                            hitChance = RangedAccuracy(rangedWeapon, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.stats.DodgeChance(unit, rangedWeapon, actionToUse, false, targetUnit.unitActionHandler.TurnAction.AttackerBesideUnit(unit)));
+                            hitChance = RangedAccuracy(rangedWeapon, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.Stats.DodgeChance(unit, rangedWeapon, actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit)));
                     }
                 }
             }
@@ -575,15 +579,15 @@ namespace UnitSystem
         public bool TryKnockback(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData weaponItemDataHittingWith, bool attackBlocked)
         {
             float random = Random.Range(0f, 1f);
-            if (random <= unit.stats.KnockbackChance(heldItemAttackingWith, weaponItemDataHittingWith, targetUnit, attackBlocked))
+            if (random <= unit.Stats.KnockbackChance(heldItemAttackingWith, weaponItemDataHittingWith, targetUnit, attackBlocked))
             {
-                targetUnit.unitAnimator.Knockback(unit);
+                targetUnit.UnitAnimator.Knockback(unit);
                 OnKnockbackTarget?.Invoke();
                 return true;
             }
 
-            if (targetUnit.unitActionHandler.MoveAction.AboutToMove)
-                OnFailedToKnockbackTarget?.Invoke(targetUnit.unitActionHandler.MoveAction.NextTargetGridPosition);
+            if (targetUnit.UnitActionHandler.MoveAction.AboutToMove)
+                OnFailedToKnockbackTarget?.Invoke(targetUnit.UnitActionHandler.MoveAction.NextTargetGridPosition);
             else
                 OnFailedToKnockbackTarget?.Invoke(targetUnit.GridPosition);
 
@@ -603,7 +607,7 @@ namespace UnitSystem
 
             // Less likely to knock back a stronger opponent and more likely to knockback a weaker one
             knockbackChance += strength.GetValue() / 100f * 0.25f;
-            knockbackChance -= targetUnit.stats.strength.GetValue() / 100f * 0.25f;
+            knockbackChance -= targetUnit.Stats.strength.GetValue() / 100f * 0.25f;
 
             if (heldItem != null)
                 knockbackChance += baseKnockbackChance * heldItem.ItemData.KnockbackChanceModifier;
@@ -613,7 +617,7 @@ namespace UnitSystem
             // Knockback effectiveness is reduced when dual wielding
             if (heldItem != null && unit.UnitEquipment.IsDualWielding)
             {
-                if (heldItem == unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                if (heldItem == unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon())
                     knockbackChance *= Weapon.dualWieldPrimaryEfficiency;
                 else
                     knockbackChance *= Weapon.dualWieldSecondaryEfficiency;

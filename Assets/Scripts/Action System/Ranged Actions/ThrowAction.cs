@@ -6,7 +6,7 @@ using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 using ContextMenu = GeneralUI.ContextMenu;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class ThrowAction : BaseAttackAction
     {
@@ -30,11 +30,11 @@ namespace UnitSystem.ActionSystem
             Throwables.Clear();
             ItemDataToThrow = null;
 
-            HeldMeleeWeapon leftMeleeWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon leftMeleeWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             if (leftMeleeWeapon != null)
                 Throwables.Add(leftMeleeWeapon.ItemData);
 
-            HeldMeleeWeapon rightMeleeWeapon = Unit.unitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon rightMeleeWeapon = Unit.UnitMeshManager.GetRightHeldMeleeWeapon();
             if (rightMeleeWeapon != null)
                 Throwables.Add(rightMeleeWeapon.ItemData);
 
@@ -53,7 +53,7 @@ namespace UnitSystem.ActionSystem
 
             if (Throwables.Count > 1)
             {
-                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                Unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
                 ContextMenu.BuildThrowActionContextMenu();
             }
             else if (Throwables.Count == 1)
@@ -62,7 +62,7 @@ namespace UnitSystem.ActionSystem
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }
             else
-                Unit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                Unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
         }
 
         public override int ActionPointsCost()
@@ -87,7 +87,7 @@ namespace UnitSystem.ActionSystem
         {
             if (TargetEnemyUnit != null)
             {
-                while (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
+                while (TargetEnemyUnit.UnitActionHandler.MoveAction.IsMoving || TargetEnemyUnit.UnitAnimator.beingKnockedBack)
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
@@ -98,14 +98,14 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            if (Unit.IsPlayer || TargetEnemyUnit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen || TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen)
+            if (Unit.IsPlayer || TargetEnemyUnit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen || TargetEnemyUnit.UnitMeshManager.IsVisibleOnScreen)
             {
                 // Rotate towards the target
-                if (!Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
-                    Unit.unitActionHandler.TurnAction.RotateTowards_Unit(TargetEnemyUnit, false);
+                if (!Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
+                    Unit.UnitActionHandler.TurnAction.RotateTowards_Unit(TargetEnemyUnit, false);
 
                 // Wait to finish any rotations already in progress
-                while (Unit.unitActionHandler.TurnAction.isRotating)
+                while (Unit.UnitActionHandler.TurnAction.isRotating)
                     yield return null;
 
                 // If the target Unit moved out of range, queue a movement instead
@@ -116,11 +116,11 @@ namespace UnitSystem.ActionSystem
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (TargetEnemyUnit != null && TargetEnemyUnit.unitActionHandler.TryBlockRangedAttack(Unit, null, false))
+                if (TargetEnemyUnit != null && TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
-                    TargetEnemyUnit.unitActionHandler.TurnAction.RotateTowards_Unit(Unit, false);
-                    Unit.unitActionHandler.targetUnits.TryGetValue(TargetEnemyUnit, out HeldItem itemBlockedWith);
+                    TargetEnemyUnit.UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, false);
+                    Unit.UnitActionHandler.TargetUnits.TryGetValue(TargetEnemyUnit, out HeldItem itemBlockedWith);
                     if (itemBlockedWith != null)
                         itemBlockedWith.BlockAttack(Unit);
                 }
@@ -131,14 +131,14 @@ namespace UnitSystem.ActionSystem
             else
             {
                 // Rotate towards the target
-                if (TargetEnemyUnit != null && !Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
-                    Unit.unitActionHandler.TurnAction.RotateTowards_Unit(TargetEnemyUnit, true);
+                if (TargetEnemyUnit != null && !Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
+                    Unit.UnitActionHandler.TurnAction.RotateTowards_Unit(TargetEnemyUnit, true);
 
                 bool hitTarget = TryHitTarget(ItemDataToThrow, TargetGridPosition);
 
                 bool attackBlocked = false;
                 if (TargetEnemyUnit != null)
-                    attackBlocked = TargetEnemyUnit.unitActionHandler.TryBlockRangedAttack(Unit, null, false);
+                    attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, false);
 
                 bool headShot = false;
                 if (hitTarget)
@@ -146,12 +146,12 @@ namespace UnitSystem.ActionSystem
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
-                    TargetEnemyUnit.unitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
+                    TargetEnemyUnit.UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
 
-                Unit.unitActionHandler.SetIsAttacking(false);
+                Unit.UnitActionHandler.SetIsAttacking(false);
             }
 
-            while (Unit.unitActionHandler.IsAttacking)
+            while (Unit.UnitActionHandler.IsAttacking)
                 yield return null;
 
             CompleteAction();
@@ -160,10 +160,10 @@ namespace UnitSystem.ActionSystem
 
         public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
-            if (targetUnit == null || targetUnit.health.IsDead || itemDataHittingWith == null)
+            if (targetUnit == null || targetUnit.Health.IsDead || itemDataHittingWith == null)
                 return;
 
-            targetUnit.unitActionHandler.InterruptActions();
+            targetUnit.UnitActionHandler.InterruptActions();
 
             float damage = GetBaseDamage(itemDataHittingWith);
             damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
@@ -174,15 +174,15 @@ namespace UnitSystem.ActionSystem
         protected override float GetBaseDamage(ItemData itemDataHittingWith)
         {
             if (itemDataHittingWith.Item is MeleeWeapon)
-                return itemDataHittingWith.Damage * ((Unit.stats.Strength.GetValue() * 0.015f) + (Unit.stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
+                return itemDataHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
             else
-                return itemDataHittingWith.Item.Weight * ((Unit.stats.Strength.GetValue() * 0.025f) + (Unit.stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
+                return itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
         }
 
         public bool TryHitTarget(ItemData itemDataToThrow, GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 1f);
-            float rangedAccuracy = Unit.stats.ThrowingAccuracy(itemDataToThrow, targetGridPosition, this);
+            float rangedAccuracy = Unit.Stats.ThrowingAccuracy(itemDataToThrow, targetGridPosition, this);
             if (random <= rangedAccuracy)
                 return true;
             return false;
@@ -190,24 +190,24 @@ namespace UnitSystem.ActionSystem
 
         public override void PlayAttackAnimation()
         {
-            Unit.unitActionHandler.TurnAction.RotateTowardsAttackPosition(TargetEnemyUnit.WorldPosition);
-            if (Unit.unitMeshManager.rightHeldItem != null && ItemDataToThrow == Unit.unitMeshManager.rightHeldItem.ItemData)
-                Unit.unitMeshManager.rightHeldItem.StartThrow();
-            else if (Unit.unitMeshManager.leftHeldItem != null && ItemDataToThrow == Unit.unitMeshManager.leftHeldItem.ItemData)
-                Unit.unitMeshManager.leftHeldItem.StartThrow();
+            Unit.UnitActionHandler.TurnAction.RotateTowardsAttackPosition(TargetEnemyUnit.WorldPosition);
+            if (Unit.UnitMeshManager.rightHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.rightHeldItem.ItemData)
+                Unit.UnitMeshManager.rightHeldItem.StartThrow();
+            else if (Unit.UnitMeshManager.leftHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.leftHeldItem.ItemData)
+                Unit.UnitMeshManager.leftHeldItem.StartThrow();
             else if (ItemDataToThrow.MyInventory != null) // If throwing an item from an inventory
             {
-                if (Unit.unitMeshManager.leftHeldItem != null && Unit.unitMeshManager.rightHeldItem != null)
+                if (Unit.UnitMeshManager.leftHeldItem != null && Unit.UnitMeshManager.rightHeldItem != null)
                 {
-                    Unit.unitMeshManager.rightHeldItem.HideMeshes();
-                    hiddenHeldItem = Unit.unitMeshManager.rightHeldItem;
+                    Unit.UnitMeshManager.rightHeldItem.HideMeshes();
+                    hiddenHeldItem = Unit.UnitMeshManager.rightHeldItem;
 
-                    SetupAndThrowItem(Unit.unitMeshManager.RightHeldItemParent);
+                    SetupAndThrowItem(Unit.UnitMeshManager.RightHeldItemParent);
                 }
-                else if (Unit.unitMeshManager.leftHeldItem == null)
-                    SetupAndThrowItem(Unit.unitMeshManager.LeftHeldItemParent);
+                else if (Unit.UnitMeshManager.leftHeldItem == null)
+                    SetupAndThrowItem(Unit.UnitMeshManager.LeftHeldItemParent);
                 else
-                    SetupAndThrowItem(Unit.unitMeshManager.RightHeldItemParent);
+                    SetupAndThrowItem(Unit.UnitMeshManager.RightHeldItemParent);
             }
             else
                 Debug.LogWarning($"The Item {Unit.name} is trying to throw isn't a held item, nor is it inside an inventory...");
@@ -223,7 +223,7 @@ namespace UnitSystem.ActionSystem
 
         void ShowHiddenHeldItem()
         {
-            if (hiddenHeldItem != null && (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen))
+            if (hiddenHeldItem != null && (Unit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen))
                 hiddenHeldItem.ShowMeshes();
             hiddenHeldItem = null;
         }
@@ -236,7 +236,7 @@ namespace UnitSystem.ActionSystem
             {
                 // If this item is not coming from a belt bag with special throwing item slots, queue an Inventory Action (for removing the item from the inventory before throwing it)
                 if (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.ContainsItemData(ItemDataToThrow) || !Unit.BeltInventoryManager.ParentInventory.AllowedItemTypeContains(throwingWeaponItemTypes))
-                    Unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(ItemDataToThrow, 1, ItemDataToThrow.MyInventory is ContainerInventory ? ItemDataToThrow.MyInventory.ContainerInventory.containerInventoryManager : null);
+                    Unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(ItemDataToThrow, 1, ItemDataToThrow.MyInventory is ContainerInventory ? ItemDataToThrow.MyInventory.ContainerInventory.containerInventoryManager : null);
 
                 if (ItemDataToThrow.CurrentStackSize > 1)
                     ItemDataToThrow.AdjustCurrentStackSize(-1);
@@ -257,12 +257,12 @@ namespace UnitSystem.ActionSystem
             if (Unit.IsPlayer)
             {
                 TargetEnemyUnit = null;
-                Unit.unitActionHandler.SetTargetEnemyUnit(null);
+                Unit.UnitActionHandler.SetTargetEnemyUnit(null);
             }
 
             ShowHiddenHeldItem();
             Throwables.Clear();
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
         }
 
         public override bool IsValidAction() => true;
@@ -277,7 +277,7 @@ namespace UnitSystem.ActionSystem
         public override string ActionName()
         {
             if (Unit.UnitEquipment.MeleeWeaponEquipped && !Unit.UnitEquipment.IsDualWielding && (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) || !Unit.BeltInventoryManager.ContainsAnyItems()))
-                return $"Throw {Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}";
+                return $"Throw {Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}";
             return "Throw Item";
         }
 
@@ -316,7 +316,7 @@ namespace UnitSystem.ActionSystem
 
         public override float MinAttackRange() => minThrowDistance;
 
-        public override float MaxAttackRange() => ItemDataToThrow != null ? Unit.stats.MaxThrowRange(ItemDataToThrow.Item) : minThrowDistance;
+        public override float MaxAttackRange() => ItemDataToThrow != null ? Unit.Stats.MaxThrowRange(ItemDataToThrow.Item) : minThrowDistance;
 
         public override bool CanAttackThroughUnits()
         {

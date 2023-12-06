@@ -4,7 +4,7 @@ using GridSystem;
 using GeneralUI;
 using UnitSystem.ActionSystem.UI;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public enum Direction { North, East, South, West, NorthWest, NorthEast, SouthWest, SouthEast, Center }
 
@@ -30,7 +30,7 @@ namespace UnitSystem.ActionSystem
             if (targetDirection == currentDirection)
                 return;
 
-            Unit.unitActionHandler.QueueAction(this);
+            Unit.UnitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()
@@ -41,7 +41,7 @@ namespace UnitSystem.ActionSystem
             SetTargetPosition(targetDirection);
             StartAction();
 
-            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
+            if (Unit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen)
                 Turn(false);
             else
                 Turn(true);
@@ -56,7 +56,7 @@ namespace UnitSystem.ActionSystem
 
             // Don't start the next Unit's turn after doing a TurnAction, it costs so few AP it's not worth it. If they don't have enough AP for another action, their turn will end in the TakeTurn method anyways
             if (Unit.IsNPC)
-                Unit.unitActionHandler.TakeTurn(); 
+                Unit.UnitActionHandler.TakeTurn(); 
             // But we DO want to start the next Unit's turn after the Player does a TurnAction because we'll be adding to each NPC's pooled AP
             // (We don't want to allow infinite Player TurnActions in a row, building the pooled AP up to a massive amount, plus this will add to the realism of rotating taking in game time)
             else
@@ -121,7 +121,7 @@ namespace UnitSystem.ActionSystem
             Unit.transform.rotation = targetRotation;
             SetCurrentDirection();
 
-            Unit.vision.FindVisibleUnitsAndObjects();
+            Unit.Vision.FindVisibleUnitsAndObjects();
         }
 
         public void RotateTowards_Unit(Unit targetUnit, bool rotateInstantly, float rotateSpeed = 20f) => RotateTowardsPosition(targetUnit.GridPosition.WorldPosition, rotateInstantly, rotateSpeed);
@@ -138,7 +138,7 @@ namespace UnitSystem.ActionSystem
                 yield return null;
             }
 
-            while (Unit.unitActionHandler.IsAttacking)
+            while (Unit.UnitActionHandler.IsAttacking)
             {
                 Vector3 lookPos = (new Vector3(targetPosition.x, Unit.transform.position.y, targetPosition.z) - Unit.transform.position).normalized;
                 Quaternion rotation = Quaternion.LookRotation(lookPos);
@@ -461,7 +461,7 @@ namespace UnitSystem.ActionSystem
             Vector3 unitPos = Unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.UnitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.South || currentDirection == Direction.SouthWest || currentDirection == Direction.SouthEast) && unitPos.z > attackerPos.z)
@@ -506,7 +506,7 @@ namespace UnitSystem.ActionSystem
             Vector3 unitPos = Unit.transform.position;
             Vector3 attackerPos = attackingUnit.transform.position;
 
-            switch (attackingUnit.unitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
+            switch (attackingUnit.UnitActionHandler.TurnAction.currentDirection) // Direction the attacking Unit is facing
             {
                 case Direction.North:
                     if ((currentDirection == Direction.West || currentDirection == Direction.East) && unitPos.x == attackerPos.x && unitPos.z > attackerPos.z)
@@ -547,7 +547,7 @@ namespace UnitSystem.ActionSystem
         public override void CompleteAction()
         {
             base.CompleteAction();
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
         }
 
         public bool IsFacingTarget(GridPosition targetGridPosition) => targetGridPosition == Unit.GridPosition ? true : GetTargetTurnDirection(targetGridPosition) == currentDirection;

@@ -35,9 +35,9 @@ namespace InventorySystem
         public void RaiseShield()
         {
             IsBlocking = true;
-            if (unit.unitMeshManager.leftHeldItem == this)
+            if (unit.UnitMeshManager.leftHeldItem == this)
                 Anim.CrossFadeInFixedTime("RaiseShield_L", defaultBlockTransitionTime);
-            else if (unit.unitMeshManager.rightHeldItem == this)
+            else if (unit.UnitMeshManager.rightHeldItem == this)
                 Anim.CrossFadeInFixedTime("RaiseShield_R", defaultBlockTransitionTime);
         }
 
@@ -48,9 +48,9 @@ namespace InventorySystem
                 return;
 
             IsBlocking = false;
-            if (unit.unitMeshManager.leftHeldItem == this)
+            if (unit.UnitMeshManager.leftHeldItem == this)
                 Anim.Play("LowerShield_L");
-            else if (unit.unitMeshManager.rightHeldItem == this)
+            else if (unit.UnitMeshManager.rightHeldItem == this)
                 Anim.Play("LowerShield_R");
         }
 
@@ -58,9 +58,9 @@ namespace InventorySystem
         {
             if (IsBlocking)
             {
-                if (unit.unitMeshManager.leftHeldItem == this)
+                if (unit.UnitMeshManager.leftHeldItem == this)
                     Anim.Play("BlockRecoil_L");
-                else if (unit.unitMeshManager.rightHeldItem == this)
+                else if (unit.UnitMeshManager.rightHeldItem == this)
                     Anim.Play("BlockRecoil_R");
             }
         }
@@ -69,8 +69,8 @@ namespace InventorySystem
         {
             Shield shield = ItemData.Item as Shield;
 
-            float fumbleChance = (0.5f - (unit.stats.ShieldSkill.GetValue() / 100f)) * 0.4f; // Shield skill modifier
-            fumbleChance += shield.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Shield weight to strength ratio modifier
+            float fumbleChance = (0.5f - (unit.Stats.ShieldSkill.GetValue() / 100f)) * 0.4f; // Shield skill modifier
+            fumbleChance += shield.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Shield weight to strength ratio modifier
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

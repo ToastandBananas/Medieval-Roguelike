@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace UnitSystem.ActionSystem
 {
-    public enum State { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
+    public enum ActionState { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
 
     public class StateController : MonoBehaviour
     {
-        [SerializeField] State defaultState;
-        public State currentState { get; private set; }
+        [SerializeField] ActionState defaultState;
+        public ActionState CurrentState { get; private set; }
 
         Unit unit;
         NPCActionHandler npcActionHandler;
@@ -15,40 +15,40 @@ namespace UnitSystem.ActionSystem
         void Start()
         {
             unit = GetComponent<Unit>();
-            npcActionHandler = unit.unitActionHandler as NPCActionHandler;
+            npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
 
             if (DefaultStateInvalid())
             {
                 Debug.LogWarning(unit.name + "'s default State is <" + defaultState.ToString() + "> which is an invalid default State to have. Fix me!");
-                ChangeDefaultState(State.Idle);
+                ChangeDefaultState(ActionState.Idle);
             }
 
             SetToDefaultState();
         }
 
-        public void SetCurrentState(State state)
+        public void SetCurrentState(ActionState state)
         {
             npcActionHandler.ResetToDefaults();
-            currentState = state;
+            CurrentState = state;
         }
 
         public void SetToDefaultState()
         {
             if (npcActionHandler.shouldFollowLeader && npcActionHandler.Leader() != null)
-                SetCurrentState(State.Follow);
+                SetCurrentState(ActionState.Follow);
             else
             {
                 if (DefaultStateInvalid())
-                    ChangeDefaultState(State.Idle);
+                    ChangeDefaultState(ActionState.Idle);
 
                 SetCurrentState(defaultState);
             }
         }
 
-        bool DefaultStateInvalid() => defaultState == State.Fight || defaultState == State.Flee || defaultState == State.InspectSound;
+        bool DefaultStateInvalid() => defaultState == ActionState.Fight || defaultState == ActionState.Flee || defaultState == ActionState.InspectSound;
 
-        public State DefaultState() => defaultState;
+        public ActionState DefaultState() => defaultState;
 
-        public void ChangeDefaultState(State newDefaultState) => defaultState = newDefaultState;
+        public void ChangeDefaultState(ActionState newDefaultState) => defaultState = newDefaultState;
     }
 }

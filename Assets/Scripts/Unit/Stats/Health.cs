@@ -44,7 +44,7 @@ namespace UnitSystem
             if (currentHealth == 0)
                 Die(attacker);
             else if (attacker != null)
-                unit.unitAnimator.DoSlightKnockback(attacker.transform);
+                unit.UnitAnimator.DoSlightKnockback(attacker.transform);
         }
 
         public void OnHitByMeleeAttack() => OnTakeDamageFromMeleeAttack?.Invoke();
@@ -56,11 +56,11 @@ namespace UnitSystem
             float modifiedMaxFallDistance = CalculateModifiedMaxFallDistance();
 
             if (fallDistance <= minFallDistance) return 0;
-            if (fallDistance >= modifiedMaxFallDistance) return unit.health.MaxHealth; // Instant death
+            if (fallDistance >= modifiedMaxFallDistance) return unit.Health.MaxHealth; // Instant death
 
             // Calculate the damage percentage based on fall distance
             float damagePercent = (fallDistance - minFallDistance) / (modifiedMaxFallDistance - minFallDistance);
-            int damage = Mathf.RoundToInt(damagePercent * unit.health.MaxHealth);
+            int damage = Mathf.RoundToInt(damagePercent * unit.Health.MaxHealth);
             if (damage < 1)
                 damage = 1;
 
@@ -73,10 +73,10 @@ namespace UnitSystem
             float baseLethalFallDistance = 6f;
             float strengthFactor = 0.035f;
             float carryWeightFactor = 2f;
-            float strengthBonus = unit.stats.Strength.GetValue() * strengthFactor;
+            float strengthBonus = unit.Stats.Strength.GetValue() * strengthFactor;
 
             // Calculate the carry weight ratio. This can exceed 1 if carrying more than max capacity
-            float carryWeightRatio = unit.stats.CarryWeightRatio;
+            float carryWeightRatio = unit.Stats.CarryWeightRatio;
 
             // Adjust carry weight penalty to be more severe if carrying beyond max capacity
             float carryWeightPenalty;
@@ -126,19 +126,19 @@ namespace UnitSystem
             LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
 
             unit.UnblockCurrentPosition();
-            unit.unitInteractable.enabled = true;
-            unit.opportunityAttackTrigger.gameObject.SetActive(false);
+            unit.UnitInteractable.enabled = true;
+            unit.OpportunityAttackTrigger.gameObject.SetActive(false);
 
-            unit.unitActionHandler.ClearActionQueue(true, true);
+            unit.UnitActionHandler.ClearActionQueue(true, true);
 
             if (attacker != null)
             {
-                unit.unitAnimator.Die(attacker.transform);
+                unit.UnitAnimator.Die(attacker.transform);
                 if (attacker.IsPlayer)
-                    attacker.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                    attacker.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
             }
             else // Took damage from something like a fall, status effect, etc.
-                unit.unitAnimator.Die(null);
+                unit.UnitAnimator.Die(null);
         }
 
         public bool IsDead => currentHealth <= 0;

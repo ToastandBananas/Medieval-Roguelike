@@ -2,6 +2,7 @@ using UnityEngine;
 using UnitSystem.ActionSystem;
 using UnitSystem;
 using InteractableObjects;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -23,8 +24,8 @@ namespace InventorySystem
             else if (looseItemUsing != null && looseItemUsing is LooseContainerItem)
                 itemsContainerInventoryManager = looseItemUsing.LooseContainerItem.ContainerInventoryManager;
 
-            unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, amountToUse, itemsContainerInventoryManager, InventoryActionType.Equip);
-            unit.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, equipSlot, itemsContainerInventoryManager);
+            unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, amountToUse, itemsContainerInventoryManager, InventoryActionType.Equip);
+            unit.UnitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, equipSlot, itemsContainerInventoryManager);
             return canEquipItem;
         }
 

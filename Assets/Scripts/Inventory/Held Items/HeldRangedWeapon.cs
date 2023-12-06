@@ -2,9 +2,9 @@ using System.Collections;
 using UnityEngine;
 using GridSystem;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using Utilities;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -20,7 +20,7 @@ namespace InventorySystem
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
-            Unit targetEnemyUnit = unit.unitActionHandler.TargetEnemyUnit;
+            Unit targetEnemyUnit = unit.UnitActionHandler.TargetEnemyUnit;
             LoadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 
             IsLoaded = false;
@@ -77,8 +77,8 @@ namespace InventorySystem
         /// <summary> Used in keyframe animation.</summary>
         void ShootProjectile()
         {
-            ShootAction shootAction = unit.unitActionHandler.GetAction<ShootAction>();
-            LoadedProjectile.ShootProjectileAtTarget(unit.unitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.unitActionHandler.TargetEnemyUnit.GridPosition), false);
+            ShootAction shootAction = unit.UnitActionHandler.GetAction<ShootAction>();
+            LoadedProjectile.ShootProjectileAtTarget(unit.UnitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.UnitActionHandler.TargetEnemyUnit.GridPosition), false);
             LoadedProjectile = null;
 
             TryFumbleHeldItem();
@@ -106,7 +106,7 @@ namespace InventorySystem
             Quaternion targetRotation = Quaternion.Euler(0f, -90f, CalculateZRotation(targetGridPosition));
             float rotateSpeed = 5f;
 
-            while (unit.unitActionHandler.IsAttacking)
+            while (unit.UnitActionHandler.IsAttacking)
             {
                 transform.parent.localRotation = Quaternion.Slerp(transform.parent.localRotation, targetRotation, rotateSpeed * Time.deltaTime);
                 yield return null;
@@ -135,8 +135,8 @@ namespace InventorySystem
         {
             RangedWeapon weapon = ItemData.Item as RangedWeapon;
 
-            float fumbleChance = (0.5f - (unit.stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
-            fumbleChance += weapon.Weight / unit.stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
+            float fumbleChance = (0.5f - (unit.Stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
+            fumbleChance += weapon.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

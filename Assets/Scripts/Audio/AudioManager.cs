@@ -67,17 +67,17 @@ namespace SoundSystem
                     if (unitMakingSound != null && unitMakingSound == unit)
                         continue;
 
-                    if (unit.stateController.currentState == State.Fight || unit.stateController.currentState == State.Flee)
+                    if (unit.StateController.CurrentState == ActionState.Fight || unit.StateController.CurrentState == ActionState.Flee)
                         continue;
 
-                    NPCActionHandler npcActionHandler = unit.unitActionHandler as NPCActionHandler;
-                    if (unit.stateController.currentState == State.InspectSound && npcActionHandler.soundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                    NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
+                    if (unit.StateController.CurrentState == ActionState.InspectSound && npcActionHandler.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
                         continue;
 
                     bool soundHeard = true;
                     Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight)) - (soundPosition + (Vector3.up * unit.ShoulderHeight));
                     float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
-                    RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.unitActionHandler.AttackObstacleMask);
+                    RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.UnitActionHandler.AttackObstacleMask);
                     if (hits.Length > 0)
                     {
                         float soundMuffle = hits.Length * muffleAmountPerObstacle;
@@ -86,7 +86,7 @@ namespace SoundSystem
                             soundHeard = false;
                         else if (distToUnit > soundRadiusAfterMuffle) // If the sound position is not within the Unit's hearing radius after muffling
                         {
-                            if (distToUnit - soundRadiusAfterMuffle - unit.hearing.HearingRadius() > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
+                            if (distToUnit - soundRadiusAfterMuffle - unit.Hearing.HearingRadius() > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
                                 soundHeard = false;
                         }
                     }
@@ -95,7 +95,7 @@ namespace SoundSystem
                     {
                         Debug.Log(unit.name + " heard: " + soundName);
                         npcActionHandler.SetSoundGridPosition(soundPosition);
-                        unit.stateController.SetCurrentState(State.InspectSound);
+                        unit.StateController.SetCurrentState(ActionState.InspectSound);
                     }
                 }
             }

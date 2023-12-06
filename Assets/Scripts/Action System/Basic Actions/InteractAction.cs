@@ -3,43 +3,42 @@ using GridSystem;
 using InteractableObjects;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
-using Utilities;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class InteractAction : BaseAction
     {
-        public Interactable targetInteractable { get; private set; }
+        public Interactable TargetInteractable { get; private set; }
 
         public void QueueAction(Interactable targetInteractable)
         {
-            this.targetInteractable = targetInteractable;
+            this.TargetInteractable = targetInteractable;
             TargetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
             if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
-                Unit.unitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
+                Unit.UnitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
-                Unit.unitActionHandler.QueueAction(this);
+                Unit.UnitActionHandler.QueueAction(this);
         }
 
         public void QueueActionImmediately(Interactable targetInteractable)
         {
-            this.targetInteractable = targetInteractable;
+            this.TargetInteractable = targetInteractable;
             TargetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
             if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
-                Unit.unitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
+                Unit.UnitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
-                Unit.unitActionHandler.QueueAction(this, true);
+                Unit.UnitActionHandler.QueueAction(this, true);
         }
 
         public override void TakeAction()
         {
             StartAction();
 
-            if (targetInteractable == null || targetInteractable.gameObject.activeSelf == false)
+            if (TargetInteractable == null || TargetInteractable.gameObject.activeSelf == false)
             {
                 CompleteAction();
                 return;
@@ -50,25 +49,25 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator Interact()
         {
-            TurnAction turnAction = Unit.unitActionHandler.TurnAction;
-            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
+            TurnAction turnAction = Unit.UnitActionHandler.TurnAction;
+            if (Unit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen)
             {
-                if (turnAction.IsFacingTarget(targetInteractable.GridPosition()) == false)
-                    turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed * 2f);
+                if (turnAction.IsFacingTarget(TargetInteractable.GridPosition()) == false)
+                    turnAction.RotateTowardsPosition(TargetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed * 2f);
 
-                while (Unit.unitActionHandler.TurnAction.isRotating)
+                while (Unit.UnitActionHandler.TurnAction.isRotating)
                     yield return null;
             }
             else
-                turnAction.RotateTowardsPosition(targetInteractable.GridPosition().WorldPosition, true);
+                turnAction.RotateTowardsPosition(TargetInteractable.GridPosition().WorldPosition, true);
 
-            if (targetInteractable == null)
+            if (TargetInteractable == null)
             {
                 CompleteAction();
                 yield break;
             }
 
-            Interactable interactable = targetInteractable;
+            Interactable interactable = TargetInteractable;
             CompleteAction();
 
             // Perform the interaction
@@ -76,17 +75,17 @@ namespace UnitSystem.ActionSystem
                 interactable.Interact(Unit);
         }
 
-        public void SetTargetInteractable(Interactable interactable) => targetInteractable = interactable;
+        public void SetTargetInteractable(Interactable interactable) => TargetInteractable = interactable;
 
         public override int ActionPointsCost()
         {
-            if (targetInteractable is Door)
+            if (TargetInteractable is Door)
                 return 150;
-            else if (targetInteractable is LooseItem)
+            else if (TargetInteractable is LooseItem)
             {
-                if (targetInteractable is LooseContainerItem)
+                if (TargetInteractable is LooseContainerItem)
                 {
-                    LooseContainerItem looseContainerItem = targetInteractable as LooseContainerItem;
+                    LooseContainerItem looseContainerItem = TargetInteractable as LooseContainerItem;
                     if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // If a LooseContainerItem has any items in its inventory, then the interaction will be to open it up and look inside, costing AP
                         return 200;
                 }
@@ -100,8 +99,8 @@ namespace UnitSystem.ActionSystem
         public override void CompleteAction()
         {
             base.CompleteAction();
-            targetInteractable = null;
-            Unit.unitActionHandler.FinishAction();
+            TargetInteractable = null;
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 

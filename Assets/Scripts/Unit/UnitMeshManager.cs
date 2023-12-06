@@ -61,7 +61,7 @@ namespace UnitSystem
                 meshRenderers[i].enabled = true;
             }
 
-            if (myUnit.health.IsDead == false)
+            if (myUnit.Health.IsDead == false)
                 baseMeshFilter.mesh = baseMesh;
 
             if (leftHeldItem != null)
@@ -287,6 +287,6 @@ namespace UnitSystem
         public MeshRenderer BodyMeshRenderer => bodyMeshRenderer;
         public MeshRenderer HelmMeshRenderer => helmMeshRenderer;
 
-        public bool IsVisibleOnScreen => meshesHidden == false && bodyMeshRenderer.isVisible && UnitManager.player.vision.IsKnown(myUnit);
+        public bool IsVisibleOnScreen => meshesHidden == false && bodyMeshRenderer.isVisible && UnitManager.player.Vision.IsKnown(myUnit);
     }
 }

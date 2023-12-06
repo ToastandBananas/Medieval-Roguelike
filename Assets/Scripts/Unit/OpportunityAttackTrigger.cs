@@ -16,14 +16,14 @@ public class OpportunityAttackTrigger : MonoBehaviour
 
     public void UpdateColliderRadius()
     {
-        float maxAttackRange = myUnit.stats.UnarmedAttackRange;
+        float maxAttackRange = myUnit.Stats.UnarmedAttackRange;
         if (myUnit.UnitEquipment.MeleeWeaponEquipped)
         {
-            if (myUnit.unitMeshManager.leftHeldItem != null && myUnit.unitMeshManager.leftHeldItem is HeldMeleeWeapon)
-                maxAttackRange = myUnit.unitMeshManager.leftHeldItem.ItemData.Item.Weapon.MaxRange;
+            if (myUnit.UnitMeshManager.leftHeldItem != null && myUnit.UnitMeshManager.leftHeldItem is HeldMeleeWeapon)
+                maxAttackRange = myUnit.UnitMeshManager.leftHeldItem.ItemData.Item.Weapon.MaxRange;
 
-            if (myUnit.unitMeshManager.rightHeldItem != null && myUnit.unitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.unitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
-                maxAttackRange = myUnit.unitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange;
+            if (myUnit.UnitMeshManager.rightHeldItem != null && myUnit.UnitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
+                maxAttackRange = myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange;
         }
         else if (myUnit.UnitEquipment.RangedWeaponEquipped)
             maxAttackRange = 0.1f;
@@ -42,7 +42,7 @@ public class OpportunityAttackTrigger : MonoBehaviour
                 return;
 
             Unit unit = other.gameObject.GetComponent<Unit>();
-            unit.unitsWhoCouldOpportunityAttackMe.Add(myUnit);
+            unit.UnitsWhoCouldOpportunityAttackMe.Add(myUnit);
             OnEnemyEnterTrigger?.Invoke(unit, unit.GridPosition);
         }
     }
@@ -54,7 +54,7 @@ public class OpportunityAttackTrigger : MonoBehaviour
             if (other.transform == transform.parent)
                 return;
 
-            other.gameObject.GetComponent<Unit>().unitsWhoCouldOpportunityAttackMe.Remove(myUnit);
+            other.gameObject.GetComponent<Unit>().UnitsWhoCouldOpportunityAttackMe.Remove(myUnit);
         }
     }
 }

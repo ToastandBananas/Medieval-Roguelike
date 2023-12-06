@@ -158,6 +158,7 @@ Transform:
   m_Children:
   - {fileID: 3098208011218999462}
   - {fileID: 8969485865295368387}
+  - {fileID: 5126983126038519930}
   - {fileID: 6452321778511306523}
   - {fileID: 3111289815627948730}
   m_Father: {fileID: 0}
@@ -233,6 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d0514e9dc7bcb4aa65d2ed464ed279, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  actionsParent: {fileID: 8969485865295368387}
   availableActionTypes:
   - {fileID: 11400000, guid: e40d38b46a394e54dbd80dac34e3e64d, type: 2}
   - {fileID: 11400000, guid: 42978d32b3a6dce43bf4f37c14a40f23, type: 2}
@@ -255,12 +257,14 @@ MonoBehaviour:
   unitToFleeFrom: {fileID: 0}
   stopFollowDistance: 3
   leader: {fileID: 0}
+  shouldFollowLeader: 0
   patrolPoints:
   - {x: 8, y: 1.5, z: 8}
   - {x: 3, y: 0, z: 3}
   defaultPosition: {x: 0, y: 0, z: 0}
   minWanderDistance: 5
   maxWanderDistance: 100
+  goalPlanner: {fileID: 2216957945130549951}
 --- !u!114 &8186792645671146690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,7 +428,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c9d1716ce9c529438c79b913443c156, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionsParent: {fileID: 8969485865295368387}
   gender: 0
   shoulderHeight: 0.25
   unitInventoryManager: {fileID: 2873528818137102224}
@@ -470,6 +473,93 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3adc24834c6fd8b4ea9432743e8846ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1486526473944499246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8684486903846577658}
+  - component: {fileID: 6390836875097447432}
+  - component: {fileID: 4608094722299836015}
+  - component: {fileID: 4401879320944975698}
+  - component: {fileID: 2721300738942315948}
+  m_Layer: 3
+  m_Name: Goal Actions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8684486903846577658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5126983126038519930}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6390836875097447432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b117eece8133e63418fda3bde00e47e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4608094722299836015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e2a5ba453f40294c9a536b63739d30d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultPosition: {x: 0, y: 0, z: 0}
+  minWanderDistance: 5
+  maxWanderDistance: 20
+--- !u!114 &4401879320944975698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91dafee7debca8147af523361eaafe37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxChaseDistance: 25
+--- !u!114 &2721300738942315948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74b29a2bba314c64bab68735d44ba0c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2147645918628440969
@@ -645,7 +735,7 @@ Transform:
   - {fileID: 5433956466646616075}
   - {fileID: 5482159175935672585}
   m_Father: {fileID: 1377663264827766488}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3527360981528888809
 GameObject:
@@ -734,7 +824,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1377663264827766488}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &4573029513530131606
 SphereCollider:
@@ -896,8 +986,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -908,8 +999,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -920,8 +1012,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -932,8 +1025,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -944,8 +1038,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -956,8 +1051,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -968,8 +1064,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -980,8 +1077,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -992,8 +1090,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1004,8 +1103,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1016,8 +1116,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1028,8 +1129,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1040,8 +1142,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1052,8 +1155,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1064,8 +1168,9 @@ MonoBehaviour:
     item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    accuracyModifier: 0
     damage: 0
+    throwingDamageMultiplier: 0
+    accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
@@ -1698,6 +1803,92 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 8babfb57a6fe1214ca5ce9ecdecfd5a3, type: 3}
+--- !u!1 &8865296860276153408
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5126983126038519930}
+  - component: {fileID: 2216957945130549951}
+  - component: {fileID: 8742798106528070840}
+  - component: {fileID: 602305102233162061}
+  - component: {fileID: 9065619861715094470}
+  m_Layer: 3
+  m_Name: Goals
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5126983126038519930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8865296860276153408}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8684486903846577658}
+  m_Father: {fileID: 1377663264827766488}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2216957945130549951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8865296860276153408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4b017b300805ad49bc45110948c119c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8742798106528070840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8865296860276153408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3d93b00bcdcb1e40ab477ae0ad8a311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priority: 10
+--- !u!114 &602305102233162061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8865296860276153408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d7dcb761d8ad474a961773e22c9d31c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9065619861715094470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8865296860276153408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ec860346e1ef84096959913a7b5bc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fightPriority: 60
 --- !u!1 &9181293001617359986
 GameObject:
   m_ObjectHideFlags: 0

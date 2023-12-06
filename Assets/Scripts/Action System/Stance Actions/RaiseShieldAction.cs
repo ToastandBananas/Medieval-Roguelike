@@ -2,7 +2,7 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class RaiseShieldAction : BaseStanceAction
     {
@@ -12,7 +12,7 @@ namespace UnitSystem.ActionSystem
 
         bool shieldRaised;
 
-        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * Unit.unitMeshManager.GetHeldShield().ItemData.Item.Weight * 0.5f);
+        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * Unit.UnitMeshManager.GetHeldShield().ItemData.Item.Weight * 0.5f);
 
         public override void TakeAction()
         {
@@ -32,7 +32,7 @@ namespace UnitSystem.ActionSystem
 
         void RaiseShield()
         {
-            HeldShield heldShield = Unit.unitMeshManager.GetHeldShield();
+            HeldShield heldShield = Unit.UnitMeshManager.GetHeldShield();
             if (heldShield == null)
                 return;
 
@@ -43,14 +43,14 @@ namespace UnitSystem.ActionSystem
             heldShield.RaiseShield();
             heldShield.Anim.SetBool("keepShieldRaised", true);
 
-            Unit.stats.EnergyUseActions.Add(this);
+            Unit.Stats.EnergyUseActions.Add(this);
 
             ApplyStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
         }
 
         void LowerShield()
         {
-            HeldShield heldShield = Unit.unitMeshManager.GetHeldShield();
+            HeldShield heldShield = Unit.UnitMeshManager.GetHeldShield();
             shieldRaised = false;
 
             if (heldShield != null)
@@ -64,14 +64,14 @@ namespace UnitSystem.ActionSystem
                 RemoveStanceStatModifiers(heldShield.ItemData.Item.HeldEquipment);
             }
 
-            Unit.stats.EnergyUseActions.Remove(this);
+            Unit.Stats.EnergyUseActions.Remove(this);
         }
 
         public override void CompleteAction()
         {
             base.CompleteAction();
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
@@ -87,7 +87,7 @@ namespace UnitSystem.ActionSystem
 
         public override Sprite ActionIcon()
         {
-            HeldShield heldShield = Unit.unitMeshManager.GetHeldShield();
+            HeldShield heldShield = Unit.UnitMeshManager.GetHeldShield();
             if (heldShield == null)
                 return ActionType.ActionIcon;
 
@@ -98,7 +98,7 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            HeldShield heldShield = Unit.unitMeshManager.GetHeldShield();
+            HeldShield heldShield = Unit.UnitMeshManager.GetHeldShield();
             if (heldShield == null)
             {
                 Debug.LogWarning($"Held Shield is null, yet {Unit.name} has a {name} available to them...");
@@ -118,7 +118,7 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            HeldShield heldShield = Unit.unitMeshManager.GetHeldShield();
+            HeldShield heldShield = Unit.UnitMeshManager.GetHeldShield();
             if (heldShield == null)
                 return "Raise Shield";
 

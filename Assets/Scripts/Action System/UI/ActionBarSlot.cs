@@ -1,5 +1,6 @@
 using GeneralUI;
 using InventorySystem;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -105,7 +106,7 @@ namespace UnitSystem.ActionSystem.UI
                 return;
             }
 
-            if (Action.IsValidAction() && playerActionHandler.Unit.stats.HasEnoughEnergy(Action.InitialEnergyCost()))
+            if (Action.IsValidAction() && playerActionHandler.Unit.Stats.HasEnoughEnergy(Action.InitialEnergyCost()))
                 ActivateButton();
             else
                 DeactivateButton();

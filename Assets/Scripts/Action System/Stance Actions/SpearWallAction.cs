@@ -4,7 +4,7 @@ using System.Collections;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class SpearWallAction : BaseStanceAction
     {
@@ -19,8 +19,8 @@ namespace UnitSystem.ActionSystem
             if (spearRaised)
                 return 0; 
             
-            HeldMeleeWeapon primaryHeldWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            HeldMeleeWeapon secondaryHeldWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon primaryHeldWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon secondaryHeldWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             bool primaryWeaponValid = IsValidWeapon(primaryHeldWeapon);
             bool secondaryWeaponValid = IsValidWeapon(secondaryHeldWeapon);
             float cost = 0f;
@@ -51,8 +51,8 @@ namespace UnitSystem.ActionSystem
 
         void RaiseSpear()
         {
-            HeldMeleeWeapon rightHeldWeapon = Unit.unitMeshManager.GetRightHeldMeleeWeapon();
-            HeldMeleeWeapon leftHeldWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldWeapon = Unit.UnitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon leftHeldWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             bool rightWeaponValid = IsValidWeapon(rightHeldWeapon);
             bool leftWeaponValid = IsValidWeapon(leftHeldWeapon);
 
@@ -67,27 +67,27 @@ namespace UnitSystem.ActionSystem
             if (leftWeaponValid)
                 leftHeldWeapon.RaiseSpearWall();
 
-            Unit.stats.EnergyUseActions.Add(this);
+            Unit.Stats.EnergyUseActions.Add(this);
 
             if (rightWeaponValid)
                 ApplyStanceStatModifiers(rightHeldWeapon.ItemData.Item.HeldEquipment);
             else
                 ApplyStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
-            Unit.unitActionHandler.MoveAction.OnMove += CancelAction;
-            Unit.health.OnTakeDamageFromMeleeAttack += CancelAction;
+            Unit.UnitActionHandler.MoveAction.OnMove += CancelAction;
+            Unit.Health.OnTakeDamageFromMeleeAttack += CancelAction;
 
-            Unit.opportunityAttackTrigger.OnEnemyEnterTrigger += AttackEnemy;
-            Unit.opportunityAttackTrigger.OnEnemyMoved += OnUnitInRangeMoved;
+            Unit.OpportunityAttackTrigger.OnEnemyEnterTrigger += AttackEnemy;
+            Unit.OpportunityAttackTrigger.OnEnemyMoved += OnUnitInRangeMoved;
 
-            Unit.stats.OnKnockbackTarget += OnKnockback;
-            Unit.stats.OnFailedToKnockbackTarget += OnFailedKnockback;
+            Unit.Stats.OnKnockbackTarget += OnKnockback;
+            Unit.Stats.OnFailedToKnockbackTarget += OnFailedKnockback;
         }
 
         void LowerSpear()
         {
-            HeldMeleeWeapon rightHeldWeapon = Unit.unitMeshManager.GetRightHeldMeleeWeapon();
-            HeldMeleeWeapon leftHeldWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldWeapon = Unit.UnitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon leftHeldWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             bool rightWeaponValid = IsValidWeapon(rightHeldWeapon);
             bool leftWeaponValid = IsValidWeapon(leftHeldWeapon);
 
@@ -103,30 +103,30 @@ namespace UnitSystem.ActionSystem
             else if (leftWeaponValid)
                 RemoveStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
-            Unit.stats.EnergyUseActions.Remove(this);
+            Unit.Stats.EnergyUseActions.Remove(this);
 
-            Unit.unitActionHandler.MoveAction.OnMove -= CancelAction;
-            Unit.health.OnTakeDamageFromMeleeAttack -= CancelAction;
+            Unit.UnitActionHandler.MoveAction.OnMove -= CancelAction;
+            Unit.Health.OnTakeDamageFromMeleeAttack -= CancelAction;
 
-            Unit.opportunityAttackTrigger.OnEnemyEnterTrigger -= AttackEnemy;
-            Unit.opportunityAttackTrigger.OnEnemyMoved -= OnUnitInRangeMoved;
+            Unit.OpportunityAttackTrigger.OnEnemyEnterTrigger -= AttackEnemy;
+            Unit.OpportunityAttackTrigger.OnEnemyMoved -= OnUnitInRangeMoved;
 
-            Unit.stats.OnKnockbackTarget -= OnKnockback;
-            Unit.stats.OnFailedToKnockbackTarget -= OnFailedKnockback;
+            Unit.Stats.OnKnockbackTarget -= OnKnockback;
+            Unit.Stats.OnFailedToKnockbackTarget -= OnFailedKnockback;
         }
 
         bool IsValidWeapon(HeldMeleeWeapon heldMeleeWeapon) => heldMeleeWeapon != null && heldMeleeWeapon.ItemData.Item.Weapon.HasAccessToAction(ActionType);
 
         public void OnKnockback()
         {
-            Unit.stats.UseEnergy(energyUsedOnAttack);
-            if (Unit.stats.CurrentEnergy == 0)
+            Unit.Stats.UseEnergy(energyUsedOnAttack);
+            if (Unit.Stats.CurrentEnergy == 0)
                 CancelAction();
         }
 
         public void OnFailedKnockback(GridPosition targetUnitGridPosition)
         {
-            Unit.stats.UseEnergy(energyUsedOnAttack); 
+            Unit.Stats.UseEnergy(energyUsedOnAttack); 
             if (Vector3.Distance(Unit.WorldPosition, targetUnitGridPosition.WorldPosition) <= LevelGrid.diaganolDistance)
                 CancelAction();
         }
@@ -135,19 +135,19 @@ namespace UnitSystem.ActionSystem
 
         void AttackEnemy(Unit enemyUnit, GridPosition enemyGridPosition)
         {
-            if (enemyUnit == null || enemyUnit.health.IsDead || Unit.unitActionHandler.MoveAction.IsMoving)
+            if (enemyUnit == null || enemyUnit.Health.IsDead || Unit.UnitActionHandler.MoveAction.IsMoving)
                 return;
 
-            if (Unit.alliance.IsEnemy(enemyUnit) == false)
+            if (Unit.Alliance.IsEnemy(enemyUnit) == false)
                 return;
 
             // The Unit must be at least somewhat facing the enemyUnit
-            if (Unit.vision.IsDirectlyVisible(enemyUnit) == false || Unit.vision.TargetInOpportunityAttackViewAngle(enemyUnit.transform) == false)
+            if (Unit.Vision.IsDirectlyVisible(enemyUnit) == false || Unit.Vision.TargetInOpportunityAttackViewAngle(enemyUnit.transform) == false)
                 return;
 
             // Check if the enemyUnit is within the Unit's attack range
-            HeldMeleeWeapon rightHeldWeapon = Unit.unitMeshManager.GetRightHeldMeleeWeapon();
-            HeldMeleeWeapon leftHeldWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldWeapon = Unit.UnitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon leftHeldWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             bool rightWeaponValid = IsValidWeapon(rightHeldWeapon);
             bool leftWeaponValid = IsValidWeapon(leftHeldWeapon);
 
@@ -167,14 +167,14 @@ namespace UnitSystem.ActionSystem
             if (!inAttackRangeOfLeftWeapon && !inAttackRangeOfRightWeapon)
                 return;
 
-            Unit.unitActionHandler.GetAction<MeleeAction>().DoOpportunityAttack(enemyUnit);
+            Unit.UnitActionHandler.GetAction<MeleeAction>().DoOpportunityAttack(enemyUnit);
         }
 
         public override void CompleteAction()
         {
             base.CompleteAction();
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
@@ -186,7 +186,7 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator CancelAction_Coroutine()
         {
-            while (Unit.unitActionHandler.IsAttacking)
+            while (Unit.UnitActionHandler.IsAttacking)
                 yield return null;
 
             LowerSpear();
@@ -199,7 +199,7 @@ namespace UnitSystem.ActionSystem
 
         public override Sprite ActionIcon()
         {
-            if (!IsValidWeapon(Unit.unitMeshManager.GetRightHeldMeleeWeapon()) && !IsValidWeapon(Unit.unitMeshManager.GetLeftHeldMeleeWeapon()))
+            if (!IsValidWeapon(Unit.UnitMeshManager.GetRightHeldMeleeWeapon()) && !IsValidWeapon(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon()))
                 return ActionType.ActionIcon;
 
             if (!spearRaised)
@@ -209,8 +209,8 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            HeldMeleeWeapon rightHeldWeapon = Unit.unitMeshManager.GetRightHeldMeleeWeapon();
-            HeldMeleeWeapon leftHeldWeapon = Unit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon rightHeldWeapon = Unit.UnitMeshManager.GetRightHeldMeleeWeapon();
+            HeldMeleeWeapon leftHeldWeapon = Unit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             bool rightWeaponValid = IsValidWeapon(rightHeldWeapon);
             bool leftWeaponValid = IsValidWeapon(leftHeldWeapon);
 
@@ -237,7 +237,7 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            if (!IsValidWeapon(Unit.unitMeshManager.GetRightHeldMeleeWeapon()) && !IsValidWeapon(Unit.unitMeshManager.GetLeftHeldMeleeWeapon()))
+            if (!IsValidWeapon(Unit.UnitMeshManager.GetRightHeldMeleeWeapon()) && !IsValidWeapon(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon()))
                 return "Spear Wall";
 
             if (!spearRaised)
@@ -251,10 +251,10 @@ namespace UnitSystem.ActionSystem
         public override float EnergyCostPerTurn()
         {
             float cost = 0f;
-            if (IsValidWeapon(Unit.unitMeshManager.GetRightHeldMeleeWeapon()))
+            if (IsValidWeapon(Unit.UnitMeshManager.GetRightHeldMeleeWeapon()))
                 cost += 3f;
 
-            if (IsValidWeapon(Unit.unitMeshManager.GetLeftHeldMeleeWeapon()))
+            if (IsValidWeapon(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon()))
                 cost += 3f;
             return cost;
         }

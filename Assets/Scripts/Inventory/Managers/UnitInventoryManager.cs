@@ -1,6 +1,7 @@
 using InteractableObjects;
 using UnitSystem;
 using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace InventorySystem

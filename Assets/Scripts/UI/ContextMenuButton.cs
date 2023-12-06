@@ -5,10 +5,10 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using InteractableObjects;
 using GridSystem;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using InventorySystem;
 using UnitSystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GeneralUI
 {
@@ -24,7 +24,7 @@ namespace GeneralUI
 
         void ReloadProjectile(ItemData projectileItemData)
         {
-            ReloadAction reloadAction = UnitManager.player.unitActionHandler.GetAction<ReloadAction>();
+            ReloadAction reloadAction = UnitManager.player.UnitActionHandler.GetAction<ReloadAction>();
             if (reloadAction != null)
                 reloadAction.QueueAction(projectileItemData);
             ContextMenu.DisableContextMenu();
@@ -42,10 +42,10 @@ namespace GeneralUI
 
         void ReadyThrownWeapon(ItemData itemDataToThrow)
         {
-            ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
+            ThrowAction throwAction = UnitManager.player.UnitActionHandler.GetAction<ThrowAction>();
             if (throwAction != null && itemDataToThrow != null)
             {
-                UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
+                UnitManager.player.UnitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
                 throwAction.SetItemToThrow(itemDataToThrow);
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }
@@ -57,11 +57,11 @@ namespace GeneralUI
 
         void ReadyThrownItem()
         {
-            ThrowAction throwAction = UnitManager.player.unitActionHandler.GetAction<ThrowAction>();
+            ThrowAction throwAction = UnitManager.player.UnitActionHandler.GetAction<ThrowAction>();
             if (throwAction != null)
             {
                 throwAction.SetItemToThrow(ContextMenu.TargetSlot.GetItemData());
-                UnitManager.player.unitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
+                UnitManager.player.UnitActionHandler.PlayerActionHandler.SetSelectedActionType(throwAction.ActionType, false);
                 ActionSystemUI.SetSelectedActionSlot(ActionSystemUI.GetActionBarSlot(throwAction.ActionType));
                 GridSystemVisual.UpdateAttackRangeGridVisual();
             }
@@ -73,13 +73,13 @@ namespace GeneralUI
 
         void MoveTo(GridPosition targetGridPosition)
         {
-            UnitManager.player.unitActionHandler.MoveAction.QueueAction(targetGridPosition);
+            UnitManager.player.UnitActionHandler.MoveAction.QueueAction(targetGridPosition);
             ContextMenu.DisableContextMenu();
         }
 
         public void SetupAttackButton()
         {
-            if (UnitManager.player.unitActionHandler.IsInAttackRange(ContextMenu.TargetUnit, true))
+            if (UnitManager.player.UnitActionHandler.IsInAttackRange(ContextMenu.TargetUnit, true))
                 SetupButton("Attack", delegate { Attack(true); });
             else
                 SetupButton("Move to Attack", delegate { Attack(false); });
@@ -87,17 +87,17 @@ namespace GeneralUI
 
         void Attack(bool isInAttackRange)
         {
-            UnitManager.player.unitActionHandler.SetTargetEnemyUnit(ContextMenu.TargetUnit);
+            UnitManager.player.UnitActionHandler.SetTargetEnemyUnit(ContextMenu.TargetUnit);
 
             if (isInAttackRange)
-                UnitManager.player.unitActionHandler.PlayerActionHandler.AttackTarget();
+                UnitManager.player.UnitActionHandler.PlayerActionHandler.AttackTarget();
             else
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
                 if (UnitManager.player.UnitEquipment.RangedWeaponEquipped && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
-                    UnitManager.player.unitActionHandler.MoveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));
+                    UnitManager.player.UnitActionHandler.MoveAction.QueueAction(UnitManager.player.UnitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));
                 else // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
-                    UnitManager.player.unitActionHandler.MoveAction.QueueAction(UnitManager.player.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));
+                    UnitManager.player.UnitActionHandler.MoveAction.QueueAction(UnitManager.player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));
             }
 
             ContextMenu.DisableContextMenu();
@@ -157,7 +157,7 @@ namespace GeneralUI
         {
             if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
             {
-                UnitManager.player.unitActionHandler.InteractAction.QueueAction(ContextMenu.TargetInteractable);
+                UnitManager.player.UnitActionHandler.InteractAction.QueueAction(ContextMenu.TargetInteractable);
             }
             else if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory)
             {
@@ -298,7 +298,7 @@ namespace GeneralUI
         void UnequipItem()
         {
             EquipmentSlot equipmentSlot = ContextMenu.TargetSlot as EquipmentSlot;
-            UnitManager.player.unitActionHandler.GetAction<UnequipAction>().QueueAction(equipmentSlot.EquipSlot, equipmentSlot is ContainerEquipmentSlot ? equipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
+            UnitManager.player.UnitActionHandler.GetAction<UnequipAction>().QueueAction(equipmentSlot.EquipSlot, equipmentSlot is ContainerEquipmentSlot ? equipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
             ContextMenu.DisableContextMenu();
         }
 
@@ -312,9 +312,9 @@ namespace GeneralUI
                 InventoryUI.ShowContainerUI(containerEquipmentSlot.containerInventoryManager, containerEquipmentSlot.ParentSlot().GetItemData().Item);
             }
             else if (ContextMenu.TargetInteractable != null)
-                UnitManager.player.unitActionHandler.InteractAction.QueueAction(ContextMenu.TargetInteractable);
+                UnitManager.player.UnitActionHandler.InteractAction.QueueAction(ContextMenu.TargetInteractable);
             else if (ContextMenu.TargetUnit != null)
-                UnitManager.player.unitActionHandler.InteractAction.QueueAction(ContextMenu.TargetUnit.unitInteractable);
+                UnitManager.player.UnitActionHandler.InteractAction.QueueAction(ContextMenu.TargetUnit.UnitInteractable);
 
             ContextMenu.DisableContextMenu();
         }
@@ -358,10 +358,10 @@ namespace GeneralUI
                     EquipmentSlot targetEquipmentSlot = ContextMenu.TargetSlot as EquipmentSlot;
 
                     // If the slot owner is dead, then it just means the Player is trying to drop a dead Unit's equipment
-                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.health.IsDead)
-                        UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
+                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.Health.IsDead)
+                        UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
                     else
-                        targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(ContextMenu.TargetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
+                        targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(ContextMenu.TargetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
 
                     DropItemManager.DropItem(targetEquipmentSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
                 }

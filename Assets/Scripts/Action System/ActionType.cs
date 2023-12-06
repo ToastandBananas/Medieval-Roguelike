@@ -1,4 +1,5 @@
 using System;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem
@@ -16,7 +17,7 @@ namespace UnitSystem.ActionSystem
         public Sprite ActionIcon => actionIcon;
         public Sprite CancelActionIcon => cancelActionIcon;
 
-        readonly string actionTypeNamespace = "UnitSystem.ActionSystem.";
+        readonly string actionTypeNamespace = "UnitSystem.ActionSystem.Action.";
 
         // Convert the stored string back to a Type
         public Type GetActionType() => Type.GetType(actionTypeNamespace + actionTypeName);

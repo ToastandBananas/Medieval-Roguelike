@@ -1,6 +1,6 @@
 using InventorySystem;
 
-namespace UnitSystem.ActionSystem 
+namespace UnitSystem.ActionSystem.Actions
 {
     public abstract class BaseStanceAction : BaseAction
     {
@@ -14,14 +14,14 @@ namespace UnitSystem.ActionSystem
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.ApplyModifiers(Unit.stats);
+                stanceStatModifier.StatModifier.ApplyModifiers(Unit.Stats);
         }
 
         protected void RemoveStanceStatModifiers(HeldEquipment heldEquipment)
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)
-                stanceStatModifier.StatModifier.RemoveModifiers(Unit.stats);
+                stanceStatModifier.StatModifier.RemoveModifiers(Unit.Stats);
         }
     }
 }

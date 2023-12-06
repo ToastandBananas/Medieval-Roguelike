@@ -10,6 +10,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
 using InventorySystem;
 using UnityEngine.TextCore.Text;
+using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem.ActionSystem.UI
 {
@@ -72,7 +73,7 @@ namespace UnitSystem.ActionSystem.UI
             }
             Instance = this;
 
-            playerActionHandler = UnitManager.player.unitActionHandler as PlayerActionHandler;
+            playerActionHandler = UnitManager.player.UnitActionHandler as PlayerActionHandler;
             playerActionHandler.OnSelectedActionChanged += UnitActionSystem_OnSelectedActionChanged;
 
             basicActionButtons = basicActionsParentTransform.GetComponentsInChildren<ActionBarSlot>().ToList();
@@ -392,11 +393,11 @@ namespace UnitSystem.ActionSystem.UI
             }
         }
 
-        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.stats.LastUsedAP}";
+        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.Stats.LastUsedAP}";
 
-        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.stats.CurrentEnergy}";
+        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.Stats.CurrentEnergy}";
 
-        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.health.CurrentHealth}";
+        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.Health.CurrentHealth}";
 
         public static RectTransform ActionButtonContainer => Instance.actionButtonContainer;
     }

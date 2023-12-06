@@ -2,7 +2,7 @@ using InventorySystem;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem 
+namespace UnitSystem.ActionSystem.Actions
 {
     public class UnequipAction : BaseInventoryAction
     {
@@ -16,7 +16,7 @@ namespace UnitSystem.ActionSystem
             this.itemsContainerInventoryManager = itemsContainerInventoryManager;
 
             targetEquipSlots.Add(targetEquipSlot);
-            Unit.unitActionHandler.QueueAction(this);
+            Unit.UnitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()

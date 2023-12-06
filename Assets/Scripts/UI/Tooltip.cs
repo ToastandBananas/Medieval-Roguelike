@@ -9,6 +9,7 @@ using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using System.Collections;
 using InteractableObjects;
+using UnitSystem.ActionSystem.Actions;
 
 namespace GeneralUI
 {
@@ -220,10 +221,10 @@ namespace GeneralUI
         {
             if (selectedAction is BaseAttackAction)
             {
-                if (targetUnit.health.IsDead)
+                if (targetUnit.Health.IsDead)
                     return;
 
-                float hitChance = UnitManager.player.stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;
+                float hitChance = UnitManager.player.Stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;
                 if (hitChance < 0f) 
                     hitChance = 0f;
                 else if (hitChance > 100f) 
@@ -252,7 +253,7 @@ namespace GeneralUI
             gameObject.SetActive(false);
         }
 
-        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.unitActionHandler.InteractAction.QueueAction(looseItem);
+        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.UnitActionHandler.InteractAction.QueueAction(looseItem);
 
         void CalculatePosition(Slot slot)
         {

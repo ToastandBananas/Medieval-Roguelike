@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem
@@ -44,10 +45,10 @@ namespace UnitSystem.ActionSystem
         public static BaseAction GetAction(Type type, ActionType actionType, Unit unit)
         {
             // Try to get the action from the Unit's list of available actions first
-            for (int i = 0; i < unit.unitActionHandler.AvailableActions.Count; i++)
+            for (int i = 0; i < unit.UnitActionHandler.AvailableActions.Count; i++)
             {
-                if (unit.unitActionHandler.AvailableActions[i].GetType() == type)
-                    return unit.unitActionHandler.AvailableActions[i];
+                if (unit.UnitActionHandler.AvailableActions[i].GetType() == type)
+                    return unit.UnitActionHandler.AvailableActions[i];
             }
 
             // Else, find an available action of the specified type from the pool
@@ -71,12 +72,12 @@ namespace UnitSystem.ActionSystem
         {
             action.Setup(unit, actionType);
 
-            unit.unitActionHandler.AvailableActions.Add(action);
+            unit.UnitActionHandler.AvailableActions.Add(action);
             if (action is BaseAttackAction)
-                unit.unitActionHandler.AvailableCombatActions.Add(action as BaseAttackAction);
+                unit.UnitActionHandler.AvailableCombatActions.Add(action as BaseAttackAction);
 
             actions.Remove(action);
-            action.transform.SetParent(unit.ActionsParent);
+            action.transform.SetParent(unit.UnitActionHandler.ActionsParent);
             action.gameObject.SetActive(true);
         }
 
@@ -101,13 +102,13 @@ namespace UnitSystem.ActionSystem
         public static void ReturnToPool(BaseAction action)
         {
             // De-queue the action if necessary
-            action.Unit.unitActionHandler.RemoveActionFromQueue(action);
+            action.Unit.UnitActionHandler.RemoveActionFromQueue(action);
 
             action.OnReturnToPool();
 
-            action.Unit.unitActionHandler.AvailableActions.Remove(action);
+            action.Unit.UnitActionHandler.AvailableActions.Remove(action);
             if (action is BaseAttackAction)
-                action.Unit.unitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
+                action.Unit.UnitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
 
             action.transform.SetParent(Instance.transform);
             actions.Add(action);

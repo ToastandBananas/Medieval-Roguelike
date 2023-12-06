@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnitSystem;
-using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -8,8 +8,8 @@ namespace InventorySystem
     {
         public void SwapWeaponSet()
         {
-            if (UnitManager.player.IsMyTurn && UnitManager.player.unitActionHandler.IsPerformingAction == false && UnitManager.player.unitActionHandler.MoveAction.IsMoving == false)
-                UnitManager.player.unitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
+            if (UnitManager.player.IsMyTurn && UnitManager.player.UnitActionHandler.IsPerformingAction == false && UnitManager.player.UnitActionHandler.MoveAction.IsMoving == false)
+                UnitManager.player.UnitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
         }
     }
 }

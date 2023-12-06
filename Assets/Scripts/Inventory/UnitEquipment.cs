@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnitSystem;
 using UnitSystem.ActionSystem;
+using UnitSystem.ActionSystem.Actions;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 using Utilities;
@@ -134,7 +135,7 @@ namespace InventorySystem
                 // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
                 if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item is Weapon && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon.IsTwoHanded)))
                 {
-                    myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(equippedItemDatas[(int)oppositeWeaponSlot], equippedItemDatas[(int)oppositeWeaponSlot].CurrentStackSize, null, InventoryActionType.Unequip);
+                    myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(equippedItemDatas[(int)oppositeWeaponSlot], equippedItemDatas[(int)oppositeWeaponSlot].CurrentStackSize, null, InventoryActionType.Unequip);
                     UnequipItem(oppositeWeaponSlot);
                 }
             }
@@ -151,7 +152,7 @@ namespace InventorySystem
                 else if (itemDataUnequipping.Item is Quiver)
                     unequippedContainerInventoryManager = myUnit.QuiverInventoryManager;
 
-                myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
+                myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
                 UnequipItem(targetEquipSlot);
             }
             
@@ -180,10 +181,10 @@ namespace InventorySystem
 
             // Set the size of the opportunity attack trigger
             if (IsHeldItemEquipSlot(targetEquipSlot))
-                myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+                myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             if (myUnit != null)
-                myUnit.stats.UpdateCarryWeight();
+                myUnit.Stats.UpdateCarryWeight();
 
             if ((currentWeaponSet == WeaponSet.One && (targetEquipSlot == EquipSlot.LeftHeldItem2 || targetEquipSlot == EquipSlot.RightHeldItem2))
                 || (currentWeaponSet == WeaponSet.Two && (targetEquipSlot == EquipSlot.LeftHeldItem1 || targetEquipSlot == EquipSlot.RightHeldItem1)))
@@ -316,7 +317,7 @@ namespace InventorySystem
                 GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
 
                 if (myUnit != null)
-                    myUnit.stats.UpdateCarryWeight();
+                    myUnit.Stats.UpdateCarryWeight();
 
                 if (ammoItemData.CurrentStackSize <= 0)
                 {
@@ -396,11 +397,11 @@ namespace InventorySystem
                 equippedItemDatas[targetEquipSlotIndex] = null;
 
                 if (myUnit != null)
-                    myUnit.stats.UpdateCarryWeight();
+                    myUnit.Stats.UpdateCarryWeight();
 
                 // Set the size of the opportunity attack trigger
                 if (IsHeldItemEquipSlot((EquipSlot)targetEquipSlotIndex))
-                    myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+                    myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
 
                 ActionSystemUI.UpdateActionVisuals();
             }
@@ -432,10 +433,10 @@ namespace InventorySystem
                         itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (InventoryUI.DraggedItem.myUnitEquipment.myUnit.health.IsDead)
-                        myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    if (InventoryUI.DraggedItem.myUnitEquipment.myUnit.Health.IsDead)
+                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        InventoryUI.DraggedItem.myUnitEquipment.myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        InventoryUI.DraggedItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     InventoryUI.DraggedItem.myUnitEquipment.RemoveEquipment(itemDataToRemove);
                 }
@@ -444,10 +445,10 @@ namespace InventorySystem
                     if (InventoryUI.DraggedItem.myInventory.MyUnit != null)
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
-                        if (InventoryUI.DraggedItem.myInventory.MyUnit.health.IsDead)
-                            myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                        if (InventoryUI.DraggedItem.myInventory.MyUnit.Health.IsDead)
+                            myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            InventoryUI.DraggedItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
                     InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove, true);
@@ -468,10 +469,10 @@ namespace InventorySystem
                         itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (targetInventoryItem.myUnitEquipment.myUnit.health.IsDead)
-                        myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    if (targetInventoryItem.myUnitEquipment.myUnit.Health.IsDead)
+                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        targetInventoryItem.myUnitEquipment.myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        targetInventoryItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.itemData);
                 }
@@ -480,10 +481,10 @@ namespace InventorySystem
                     if (targetInventoryItem.myInventory.MyUnit != null)
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
-                        if (targetInventoryItem.myInventory.MyUnit.health.IsDead)
-                            myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                        if (targetInventoryItem.myInventory.MyUnit.Health.IsDead)
+                            myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            targetInventoryItem.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            targetInventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
                     targetInventoryItem.myInventory.RemoveItem(itemDataToRemove, true);
@@ -494,10 +495,10 @@ namespace InventorySystem
                 if (itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit != null)
                 {
                     // If the Player is removing an Item from a dead Unit's inventory
-                    if (itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.health.IsDead)
-                        myUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                    if (itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.Health.IsDead)
+                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                        itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                        itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                 }
 
                 itemDataToRemove.InventorySlotCoordinate.myInventory.RemoveItem(itemDataToRemove, true);
@@ -557,11 +558,11 @@ namespace InventorySystem
             equippedItemDatas[(int)equipSlot] = null;
 
             if (myUnit != null)
-                myUnit.stats.UpdateCarryWeight();
+                myUnit.Stats.UpdateCarryWeight();
 
             // Set the size of the opportunity attack trigger
             if (IsHeldItemEquipSlot(equipSlot))
-                myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+                myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
         }
 
         public void CreateSlotVisuals()
@@ -681,7 +682,7 @@ namespace InventorySystem
                 AddActions(equippedItemDatas[(int)targetEquipSlot].Item as Equipment);
             }
 
-            myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+            myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
         }
 
         void AddActions(Equipment equipment)
@@ -691,10 +692,10 @@ namespace InventorySystem
 
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
-                if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
+                if (myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
                     continue;
 
-                myUnit.unitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
+                myUnit.UnitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
                 equipment.ActionTypes[i].GetAction(myUnit);
 
                 if (myUnit.IsPlayer)
@@ -710,7 +711,7 @@ namespace InventorySystem
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
                 BaseAction action = equipment.ActionTypes[i].GetAction(myUnit);
-                if (myUnit.unitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is MeleeAction && myUnit.stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
+                if (myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is MeleeAction && myUnit.Stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
                     continue;
 
                 if (IsHeldItemEquipSlot(equipSlot))
@@ -739,7 +740,7 @@ namespace InventorySystem
                     ActionSystemUI.RemoveButton(equipment.ActionTypes[i]);
 
                 ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
-                myUnit.unitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
+                myUnit.UnitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
             }
 
             if (myUnit.IsPlayer)
@@ -868,7 +869,7 @@ namespace InventorySystem
 
         void SetupEquipmentMesh(EquipSlot equipSlot, ItemData itemData)
         {
-            if (myUnit.health.IsDead)
+            if (myUnit.Health.IsDead)
                 return;
 
             // We only show meshes for these types of equipment:
@@ -895,10 +896,10 @@ namespace InventorySystem
                 heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
 
                 if (myUnit.IsPlayer)
-                    myUnit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                    myUnit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
             }
             else
-                myUnit.unitMeshManager.SetupWearableMesh(equipSlot, (VisibleArmor)itemData.Item);
+                myUnit.UnitMeshManager.SetupWearableMesh(equipSlot, (VisibleArmor)itemData.Item);
         }
 
         public void RemoveEquipmentMesh(EquipSlot equipSlot)
@@ -926,13 +927,13 @@ namespace InventorySystem
                         equipSlot = oppositeEquipSlot;
                 }
 
-                myUnit.unitMeshManager.ReturnHeldItemToPool(equipSlot);
+                myUnit.UnitMeshManager.ReturnHeldItemToPool(equipSlot);
 
                 if (myUnit.IsPlayer)
-                    myUnit.unitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
+                    myUnit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
             }
             else
-                myUnit.unitMeshManager.RemoveMesh(equipSlot);
+                myUnit.UnitMeshManager.RemoveMesh(equipSlot);
         }
 
         public void SwapWeaponSet()
@@ -940,7 +941,7 @@ namespace InventorySystem
             if (myUnit.IsPlayer && InventoryUI.isDraggingItem)
                 InventoryUI.ReplaceDraggedItem();
 
-            myUnit.unitActionHandler.ClearActionQueue(false);
+            myUnit.UnitActionHandler.ClearActionQueue(false);
 
             if (currentWeaponSet == WeaponSet.One)
             {
@@ -1065,11 +1066,11 @@ namespace InventorySystem
                 }
             }
 
-            myUnit.opportunityAttackTrigger.UpdateColliderRadius();
+            myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
             ActionSystemUI.UpdateActionVisuals();
         }
 
-        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon().CurrentHeldItemStance == HeldItemStance.Versatile;
+        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().CurrentHeldItemStance == HeldItemStance.Versatile;
 
         public ItemData GetRangedWeaponFromOtherWeaponSet()
         {
@@ -1151,8 +1152,8 @@ namespace InventorySystem
 
         public void GetEquippedWeapons(out Weapon primaryWeapon, out Weapon secondaryWeapon)
         {
-            HeldMeleeWeapon primaryHeldMeleeWeapon = myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
-            HeldMeleeWeapon secondaryHeldMeleeWeapon = myUnit.unitMeshManager.GetLeftHeldMeleeWeapon();
+            HeldMeleeWeapon primaryHeldMeleeWeapon = myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon secondaryHeldMeleeWeapon = myUnit.UnitMeshManager.GetLeftHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon != null && secondaryHeldMeleeWeapon != null)
             {
                 primaryWeapon = primaryHeldMeleeWeapon.ItemData.Item.Weapon;
@@ -1167,7 +1168,7 @@ namespace InventorySystem
             }
             else if (RangedWeaponEquipped)
             {
-                HeldRangedWeapon heldRangedWeapon = myUnit.unitMeshManager.GetHeldRangedWeapon();
+                HeldRangedWeapon heldRangedWeapon = myUnit.UnitMeshManager.GetHeldRangedWeapon();
                 if (heldRangedWeapon != null)
                     primaryWeapon = heldRangedWeapon.ItemData.Item.Weapon;
                 else
@@ -1191,13 +1192,13 @@ namespace InventorySystem
             return EquipSlot.LeftHeldItem1;
         }
 
-        public bool IsDualWielding => myUnit.unitMeshManager.GetLeftHeldMeleeWeapon() != null && myUnit.unitMeshManager.GetRightHeldMeleeWeapon() != null;
+        public bool IsDualWielding => myUnit.UnitMeshManager.GetLeftHeldMeleeWeapon() != null && myUnit.UnitMeshManager.GetRightHeldMeleeWeapon() != null;
 
-        public bool MeleeWeaponEquipped => myUnit.unitMeshManager.GetPrimaryHeldMeleeWeapon() != null;
+        public bool MeleeWeaponEquipped => myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon() != null;
 
-        public bool RangedWeaponEquipped => myUnit.unitMeshManager.GetHeldRangedWeapon() != null;
+        public bool RangedWeaponEquipped => myUnit.UnitMeshManager.GetHeldRangedWeapon() != null;
 
-        public bool ShieldEquipped => myUnit.unitMeshManager.GetHeldShield() != null;
+        public bool ShieldEquipped => myUnit.UnitMeshManager.GetHeldShield() != null;
 
         public bool IsUnarmed => (MeleeWeaponEquipped == false && RangedWeaponEquipped == false) || (RangedWeaponEquipped && HasValidAmmunitionEquipped() == false);
 
@@ -1213,14 +1214,14 @@ namespace InventorySystem
 
         public bool QuiverEquipped() => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver;
 
-        public bool HasValidAmmunitionEquipped() => HasValidAmmunitionEquipped(RangedWeaponEquipped ? myUnit.unitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon : null);
+        public bool HasValidAmmunitionEquipped() => HasValidAmmunitionEquipped(RangedWeaponEquipped ? myUnit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon : null);
 
         public bool HasValidAmmunitionEquipped(RangedWeapon rangedWeapon)
         {
             if (rangedWeapon == null)
                 return false;
 
-            if (RangedWeaponEquipped && myUnit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
+            if (RangedWeaponEquipped && myUnit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 return true;
 
             if (QuiverEquipped())

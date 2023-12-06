@@ -9,6 +9,7 @@ using UnitSystem;
 using UnitSystem.ActionSystem;
 using GeneralUI;
 using TMPro;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -94,7 +95,7 @@ namespace InventorySystem
             if (isDraggingItem == false)
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.IsMyTurn == false || UnitManager.player.unitActionHandler.QueuedActions.Count > 0)
+                if (UnitManager.player.IsMyTurn == false || UnitManager.player.UnitActionHandler.QueuedActions.Count > 0)
                     return;
 
                 // If we select an item
@@ -145,7 +146,7 @@ namespace InventorySystem
             else // If we are dragging an item
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.unitActionHandler.QueuedActions.Count > 0)
+                if (UnitManager.player.UnitActionHandler.QueuedActions.Count > 0)
                 {
                     ReplaceDraggedItem();
                     return;
@@ -194,7 +195,7 @@ namespace InventorySystem
                             else
                             {
                                 EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                                UnitManager.player.unitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
+                                UnitManager.player.UnitActionHandler.GetAction<EquipAction>().QueueAction(draggedItem.itemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
                                 lastInventoryInteractedWith = null;
                             }
 
@@ -526,7 +527,7 @@ namespace InventorySystem
             return null;
         }
 
-        public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.stats.CurrentCarryWeight} / {UnitManager.player.stats.MaxCarryWeight} lbs";
+        public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.Stats.CurrentCarryWeight} / {UnitManager.player.Stats.MaxCarryWeight} lbs";
 
         public static void SetValidDragPosition(bool valid) => validDragPosition = valid;
 

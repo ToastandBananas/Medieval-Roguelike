@@ -5,6 +5,7 @@ using UnitSystem;
 using UnitSystem.ActionSystem;
 using Pathfinding.Util;
 using System.Collections.Generic;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InteractableObjects
 {
@@ -34,8 +35,8 @@ namespace InteractableObjects
             if (itemData == null || itemData.Item == null)
                 return;
 
-            if (unitPickingUpItem.unitActionHandler.TurnAction.IsFacingTarget(gridPosition) == false)
-                unitPickingUpItem.unitActionHandler.TurnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.unitActionHandler.TurnAction.DefaultRotateSpeed * 2f);
+            if (unitPickingUpItem.UnitActionHandler.TurnAction.IsFacingTarget(gridPosition) == false)
+                unitPickingUpItem.UnitActionHandler.TurnAction.RotateTowardsPosition(gridPosition.WorldPosition, false, unitPickingUpItem.UnitActionHandler.TurnAction.DefaultRotateSpeed * 2f);
 
             List<LooseItem> looseProjectiles = ListPool<LooseItem>.Claim();
             if (itemData.Item is Shield && transform.childCount > 1)
@@ -53,7 +54,7 @@ namespace InteractableObjects
             if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
                 TryTakeStuckProjectiles(unitPickingUpItem, looseProjectiles);
-                unitPickingUpItem.vision.RemoveVisibleLooseItem(this);
+                unitPickingUpItem.Vision.RemoveVisibleLooseItem(this);
                 LooseItemPool.ReturnToPool(this);
             }
             else
@@ -112,15 +113,15 @@ namespace InteractableObjects
                         if ((itemData.Item is Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot) == false)
                         {
                             equipped = true;
-                            unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
-                            unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, oppositeEquipSlot, null);
+                            unitPickingUpItem.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
+                            unitPickingUpItem.UnitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, oppositeEquipSlot, null);
                         }
                     }
                     else
                     {
                         equipped = true;
-                        unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
-                        unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, null);
+                        unitPickingUpItem.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, null);
+                        unitPickingUpItem.UnitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, null);
                     }
                 }
                 /*else if (UnitEquipment.IsRingEquipSlot(targetEquipSlot))
@@ -143,8 +144,8 @@ namespace InteractableObjects
                 else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false || (itemData.Item is Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
                 {
                     equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
-                    unitPickingUpItem.unitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null, InventoryActionType.Equip);
-                    unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
+                    unitPickingUpItem.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemData, itemData.CurrentStackSize, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null, InventoryActionType.Equip);
+                    unitPickingUpItem.UnitActionHandler.GetAction<EquipAction>().TakeActionImmediately(itemData, targetEquipSlot, this is LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
                 }
             }
             

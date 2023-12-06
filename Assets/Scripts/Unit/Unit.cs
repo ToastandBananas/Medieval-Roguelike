@@ -5,6 +5,7 @@ using InteractableObjects;
 using GridSystem;
 using UnitSystem.ActionSystem;
 using InventorySystem;
+using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem
 {
@@ -13,9 +14,6 @@ namespace UnitSystem
 
     public class Unit : MonoBehaviour
     {
-        [Header("Transforms")]
-        [SerializeField] Transform actionsParent;
-
         [Header("Unit Info")]
         [SerializeField] Gender gender;
         [SerializeField] float shoulderHeight = 0.25f;
@@ -24,23 +22,23 @@ namespace UnitSystem
         [SerializeField] UnitInventoryManager unitInventoryManager;
         [SerializeField] UnitEquipment myUnitEquipment;
 
-        public SingleNodeBlocker singleNodeBlocker { get; private set; }
+        public SingleNodeBlocker SingleNodeBlocker { get; private set; }
 
-        public Alliance alliance { get; private set; }
-        public Health health { get; private set; }
-        public Hearing hearing { get; private set; }
-        public OpportunityAttackTrigger opportunityAttackTrigger { get; private set; }
-        public Rigidbody rigidBody { get; private set; }
-        public Seeker seeker { get; private set; }
-        public StateController stateController { get; private set; }
-        public Stats stats { get; private set; }
-        public UnitActionHandler unitActionHandler { get; private set; }
-        public UnitAnimator unitAnimator { get; private set; }
-        public UnitInteractable unitInteractable { get; private set; }
-        public UnitMeshManager unitMeshManager { get; private set; }
-        public Vision vision { get; private set; }
+        public Alliance Alliance { get; private set; }
+        public Health Health { get; private set; }
+        public Hearing Hearing { get; private set; }
+        public OpportunityAttackTrigger OpportunityAttackTrigger { get; private set; }
+        public Rigidbody RigidBody { get; private set; }
+        public Seeker Seeker { get; private set; }
+        public StateController StateController { get; private set; }
+        public Stats Stats { get; private set; }
+        public UnitActionHandler UnitActionHandler { get; private set; }
+        public UnitAnimator UnitAnimator { get; private set; }
+        public UnitInteractable UnitInteractable { get; private set; }
+        public UnitMeshManager UnitMeshManager { get; private set; }
+        public Vision Vision { get; private set; }
 
-        public List<Unit> unitsWhoCouldOpportunityAttackMe { get; private set; }
+        public List<Unit> UnitsWhoCouldOpportunityAttackMe { get; private set; }
 
         GridPosition gridPosition;
 
@@ -49,42 +47,45 @@ namespace UnitSystem
             // Center the Unit's position on whatever tile they're on
             CenterPosition();
 
-            singleNodeBlocker = GetComponent<SingleNodeBlocker>();
-            alliance = GetComponent<Alliance>();
-            if (TryGetComponent(out UnitInteractable unitInteractable))
-                this.unitInteractable = unitInteractable;
-            health = GetComponent<Health>();
-            hearing = GetComponentInChildren<Hearing>();
-            opportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
-            rigidBody = GetComponent<Rigidbody>();
-            seeker = GetComponent<Seeker>();
-            stateController = GetComponent<StateController>();
-            stats = GetComponent<Stats>();
-            unitActionHandler = GetComponent<UnitActionHandler>();
-            unitAnimator = GetComponentInChildren<UnitAnimator>();
-            unitMeshManager = GetComponent<UnitMeshManager>();
-            vision = GetComponentInChildren<Vision>();
+            SingleNodeBlocker = GetComponent<SingleNodeBlocker>();
+            Alliance = GetComponent<Alliance>();
+            Health = GetComponent<Health>();
+            Hearing = GetComponentInChildren<Hearing>();
+            OpportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
+            RigidBody = GetComponent<Rigidbody>();
+            Seeker = GetComponent<Seeker>();
+            StateController = GetComponent<StateController>();
+            Stats = GetComponent<Stats>();
+            UnitActionHandler = GetComponent<UnitActionHandler>();
+            UnitAnimator = GetComponentInChildren<UnitAnimator>();
+            UnitMeshManager = GetComponent<UnitMeshManager>();
+            Vision = GetComponentInChildren<Vision>();
 
-            unitsWhoCouldOpportunityAttackMe = new List<Unit>();
+            if (IsNPC)
+            {
+                if (TryGetComponent(out UnitInteractable unitInteractable)) UnitInteractable = unitInteractable;
+            }
+
+            UnitsWhoCouldOpportunityAttackMe = new List<Unit>();
         }
 
         void Start()
         {
-            singleNodeBlocker.manager = LevelGrid.BlockManager;
-            LevelGrid.AddSingleNodeBlockerToList(singleNodeBlocker, LevelGrid.UnitSingleNodeBlockerList);
+            SingleNodeBlocker.manager = LevelGrid.BlockManager;
+            LevelGrid.AddSingleNodeBlockerToList(SingleNodeBlocker, LevelGrid.UnitSingleNodeBlockerList);
 
             if (IsNPC)
             {
-                if (health.IsDead)
+                if (Health.IsDead)
                 {
                     UnblockCurrentPosition();
-                    if (unitInteractable != null)
-                        unitInteractable.enabled = true;
+                    if (UnitInteractable != null)
+                        UnitInteractable.enabled = true;
                 }
                 else
                     BlockCurrentPosition();
 
-                unitMeshManager.HideMeshRenderers();
+                UnitMeshManager.HideMeshRenderers();
             }
 
             gridPosition.Set(transform.position);
@@ -125,24 +126,24 @@ namespace UnitSystem
         public float GetAttackRange()
         {
             if (myUnitEquipment.RangedWeaponEquipped && myUnitEquipment.HasValidAmmunitionEquipped())
-                return unitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
+                return UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
             else if (myUnitEquipment.IsDualWielding)
             {
-                float primaryWeaponAttackRange = unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
-                float secondaryWeaponAttackRange = unitMeshManager.GetLeftHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+                float primaryWeaponAttackRange = UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+                float secondaryWeaponAttackRange = UnitMeshManager.GetLeftHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
                 return Mathf.Max(primaryWeaponAttackRange, secondaryWeaponAttackRange);
             }
             else if (myUnitEquipment.MeleeWeaponEquipped)
-                return unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+                return UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
             else
-                return stats.UnarmedAttackRange;
+                return Stats.UnarmedAttackRange;
         }
 
-        public void BlockCurrentPosition() => singleNodeBlocker.BlockAtCurrentPosition();
+        public void BlockCurrentPosition() => SingleNodeBlocker.BlockAtCurrentPosition();
 
-        public void BlockAtPosition(Vector3 position) => singleNodeBlocker.BlockAt(position);
+        public void BlockAtPosition(Vector3 position) => SingleNodeBlocker.BlockAt(position);
 
-        public void UnblockCurrentPosition() => singleNodeBlocker.Unblock();
+        public void UnblockCurrentPosition() => SingleNodeBlocker.Unblock();
 
         public bool IsNPC => gameObject.CompareTag("Player") == false;
 
@@ -156,7 +157,7 @@ namespace UnitSystem
 
         public void CenterPosition() => transform.position = LevelGrid.SnapPosition(transform.position);
 
-        public BaseAction SelectedAction => unitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(this);
+        public BaseAction SelectedAction => UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(this);
 
         public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
         public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;
@@ -165,9 +166,7 @@ namespace UnitSystem
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
 
-        public Transform ActionsParent => actionsParent;
-
-        public GridPosition GridPosition => health.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
+        public GridPosition GridPosition => Health.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
 
         public Gender Gender => gender;
     }

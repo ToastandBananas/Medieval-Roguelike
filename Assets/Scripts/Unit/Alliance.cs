@@ -22,16 +22,16 @@ namespace UnitSystem
 
         public bool IsAlly(Unit unitToCheck)
         {
-            Faction unitsFaction = unitToCheck.alliance.CurrentFaction();
-            if (unitsFaction == currentFaction || alliedFactions.Contains(unitsFaction) || unitToCheck.alliance.alliedFactions.Contains(currentFaction))
+            Faction unitsFaction = unitToCheck.Alliance.CurrentFaction();
+            if (unitsFaction == currentFaction || alliedFactions.Contains(unitsFaction) || unitToCheck.Alliance.alliedFactions.Contains(currentFaction))
                 return true;
             return false;
         }
 
         public bool IsEnemy(Unit unitToCheck)
         {
-            Faction unitsFaction = unitToCheck.alliance.CurrentFaction();
-            if (enemyFactions.Contains(unitsFaction) || unitToCheck.alliance.enemyFactions.Contains(currentFaction))
+            Faction unitsFaction = unitToCheck.Alliance.CurrentFaction();
+            if (enemyFactions.Contains(unitsFaction) || unitToCheck.Alliance.enemyFactions.Contains(currentFaction))
                 return true;
             return false;
         }
@@ -45,7 +45,7 @@ namespace UnitSystem
 
         public void AddEnemy(Unit newEnemy)
         {
-            Faction enemyFaction = newEnemy.alliance.CurrentFaction();
+            Faction enemyFaction = newEnemy.Alliance.CurrentFaction();
             RemoveAlly(newEnemy);
             if (enemyFactions.Contains(enemyFaction) == false)
                 enemyFactions.Add(enemyFaction);
@@ -53,14 +53,14 @@ namespace UnitSystem
 
         public void RemoveEnemy(Unit enemy)
         {
-            Faction enemyFaction = enemy.alliance.CurrentFaction();
+            Faction enemyFaction = enemy.Alliance.CurrentFaction();
             if (enemyFactions.Contains(enemyFaction))
                 enemyFactions.Remove(enemyFaction);
         }
 
         public void AddAlly(Unit newAlly)
         {
-            Faction allyFaction = newAlly.alliance.CurrentFaction();
+            Faction allyFaction = newAlly.Alliance.CurrentFaction();
             RemoveEnemy(newAlly);
             if (alliedFactions.Contains(allyFaction) == false)
                 alliedFactions.Add(allyFaction);
@@ -68,7 +68,7 @@ namespace UnitSystem
 
         public void RemoveAlly(Unit ally)
         {
-            Faction allyFaction = ally.alliance.CurrentFaction();
+            Faction allyFaction = ally.Alliance.CurrentFaction();
             if (alliedFactions.Contains(allyFaction))
                 alliedFactions.Remove(allyFaction);
         }

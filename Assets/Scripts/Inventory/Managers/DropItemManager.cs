@@ -1,10 +1,10 @@
 using UnityEngine;
 using InteractableObjects;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
+using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
@@ -41,14 +41,14 @@ namespace InventorySystem
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
-            unit.vision.AddVisibleLooseItem(looseItem);
+            unit.Vision.AddVisibleLooseItem(looseItem);
 
             if (unit != UnitManager.player)
             {
-                if (UnitManager.player.vision.IsVisible(unit) == false)
+                if (UnitManager.player.Vision.IsVisible(unit) == false)
                     looseItem.HideMeshRenderer();
                 else
-                    UnitManager.player.vision.AddVisibleLooseItem(looseItem);
+                    UnitManager.player.Vision.AddVisibleLooseItem(looseItem);
             }
 
             if (inventory != null)
@@ -59,18 +59,18 @@ namespace InventorySystem
                 InventoryUI.DisableDraggedItem();
 
             if (inventory.MyUnit != null)
-                inventory.MyUnit.stats.UpdateCarryWeight();
+                inventory.MyUnit.Stats.UpdateCarryWeight();
 
             // In this case, the Player is dropping an item from a dead Unit's inventory
-            if (unit.health.IsDead)
+            if (unit.Health.IsDead)
             {
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
             }
             else
             {
-                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
-                unit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+                unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
             }
 
             TooltipManager.UpdateLooseItemTooltips();
@@ -94,8 +94,8 @@ namespace InventorySystem
             ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
-            if (unitEquipment.MyUnit.health.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield))
-                SetupHeldItemDrop(unitEquipment.MyUnit.unitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
+            if (unitEquipment.MyUnit.Health.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield))
+                SetupHeldItemDrop(unitEquipment.MyUnit.UnitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
             else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver) || (equipSlot == EquipSlot.Belt))
@@ -107,20 +107,20 @@ namespace InventorySystem
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
 
             // We queue each action twice to account for unequipping the item before dropping it
-            if (unitEquipment.MyUnit.health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
+            if (unitEquipment.MyUnit.Health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
                 if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
-                    UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                UnitManager.player.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
             else
             {
                 // The context menu already accounts for unequipping AP cost by calling an UnequipAction
                 if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
-                    unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    unitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                unitEquipment.MyUnit.unitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+                unitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
 
             float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);
@@ -128,14 +128,14 @@ namespace InventorySystem
             // Apply force to the dropped item
             looseItem.RigidBody.AddForce(dropDirection * randomForceMagnitude, ForceMode.Impulse);
 
-            unitEquipment.MyUnit.vision.AddVisibleLooseItem(looseItem);
+            unitEquipment.MyUnit.Vision.AddVisibleLooseItem(looseItem);
 
             if (unitEquipment.MyUnit != UnitManager.player)
             {
-                if (UnitManager.player.vision.IsVisible(unitEquipment.MyUnit) == false)
+                if (UnitManager.player.Vision.IsVisible(unitEquipment.MyUnit) == false)
                     looseItem.HideMeshRenderer();
                 else
-                    UnitManager.player.vision.AddVisibleLooseItem(looseItem);
+                    UnitManager.player.Vision.AddVisibleLooseItem(looseItem);
             }
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.itemData)
@@ -151,10 +151,10 @@ namespace InventorySystem
             unitEquipment.RemoveEquipment(unitEquipment.EquippedItemDatas[(int)equipSlot]);
 
             if (unitEquipment.MyUnit != null)
-                unitEquipment.MyUnit.stats.UpdateCarryWeight();
+                unitEquipment.MyUnit.Stats.UpdateCarryWeight();
 
             if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
-                unitEquipment.MyUnit.opportunityAttackTrigger.UpdateColliderRadius();
+                unitEquipment.MyUnit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             ActionSystemUI.UpdateActionVisuals();
             TooltipManager.UpdateLooseItemTooltips();
@@ -195,10 +195,10 @@ namespace InventorySystem
 
             if (unit != UnitManager.player)
             {
-                if (UnitManager.player.vision.IsVisible(unit) == false)
+                if (UnitManager.player.Vision.IsVisible(unit) == false)
                     looseHelm.HideMeshRenderer();
                 else
-                    UnitManager.player.vision.AddVisibleLooseItem(looseHelm);
+                    UnitManager.player.Vision.AddVisibleLooseItem(looseHelm);
             }
 
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
@@ -245,10 +245,10 @@ namespace InventorySystem
 
                     if (unit != UnitManager.player)
                     {
-                        if (UnitManager.player.vision.IsVisible(unit) == false)
+                        if (UnitManager.player.Vision.IsVisible(unit) == false)
                             looseProjectile.HideMeshRenderer();
                         else
-                            UnitManager.player.vision.AddVisibleLooseItem(looseProjectile);
+                            UnitManager.player.Vision.AddVisibleLooseItem(looseProjectile);
                     }
                 }
             }
@@ -258,15 +258,15 @@ namespace InventorySystem
 
             if (unit != UnitManager.player)
             {
-                if (UnitManager.player.vision.IsVisible(unit) == false)
+                if (UnitManager.player.Vision.IsVisible(unit) == false)
                     looseWeapon.HideMeshRenderer();
                 else
-                    UnitManager.player.vision.AddVisibleLooseItem(looseWeapon);
+                    UnitManager.player.Vision.AddVisibleLooseItem(looseWeapon);
             }
 
             // Get rid of the HeldItem
             EquipSlot equipSlot;
-            if (heldItem == unit.unitMeshManager.rightHeldItem)
+            if (heldItem == unit.UnitMeshManager.rightHeldItem)
             {
                 if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
                 {
@@ -292,7 +292,7 @@ namespace InventorySystem
             }
 
             unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
-            unit.opportunityAttackTrigger.UpdateColliderRadius();
+            unit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             if (unit.IsNPC)
                 TooltipManager.UpdateLooseItemTooltips();
@@ -368,8 +368,8 @@ namespace InventorySystem
 
             // Set the LooseItem's position to match the worn Helm before we add force
             looseItem.transform.SetPositionAndRotation(
-                unit.unitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, unit.unitMeshManager.HelmMeshRenderer.bounds.center.y + itemData.Item.PickupMesh.bounds.center.y, 0f), 
-                unit.unitMeshManager.HelmMeshRenderer.transform.rotation);
+                unit.UnitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, unit.UnitMeshManager.HelmMeshRenderer.bounds.center.y + itemData.Item.PickupMesh.bounds.center.y, 0f), 
+                unit.UnitMeshManager.HelmMeshRenderer.transform.rotation);
         }
 
         static float FindMeshHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;
@@ -398,16 +398,16 @@ namespace InventorySystem
         {
             Vector3 forceDirection = unit.transform.forward; // In front of Unit
             float raycastDistance = 1.2f;
-            if (Physics.Raycast(unit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.Raycast(unit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
             {
                 forceDirection = -unit.transform.forward; // Behind Unit
-                if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
                 {
                     forceDirection = unit.transform.right; // Right of Unit
-                    if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                    if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
                     {
                         forceDirection = -unit.transform.right; // Left of Unit
-                        if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.unitActionHandler.AttackObstacleMask))
+                        if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
                             forceDirection = unit.transform.up; // Above Unit
                     }
                 }

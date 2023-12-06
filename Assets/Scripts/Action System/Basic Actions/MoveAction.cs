@@ -8,7 +8,7 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using Utilities;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class MoveAction : BaseAction
     {
@@ -46,7 +46,7 @@ namespace UnitSystem.ActionSystem
         public override void QueueAction(GridPosition finalTargetGridPosition)
         {
             TargetGridPosition = finalTargetGridPosition;
-            Unit.unitActionHandler.QueueAction(this);
+            Unit.UnitActionHandler.QueueAction(this);
         }
 
         public override void TakeAction()
@@ -117,50 +117,50 @@ namespace UnitSystem.ActionSystem
 
             AboutToMove = true;
 
-            while (Unit.unitAnimator.beingKnockedBack)
+            while (Unit.UnitAnimator.beingKnockedBack)
                 yield return null;
 
             // Check for Opportunity Attacks & Spear Wall attacks
-            for (int i = Unit.unitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
+            for (int i = Unit.UnitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
-                Unit opportunityAttackingUnit = Unit.unitsWhoCouldOpportunityAttackMe[i];
-                if (opportunityAttackingUnit.health.IsDead)
+                Unit opportunityAttackingUnit = Unit.UnitsWhoCouldOpportunityAttackMe[i];
+                if (opportunityAttackingUnit.Health.IsDead)
                 {
-                    Unit.unitsWhoCouldOpportunityAttackMe.RemoveAt(i);
+                    Unit.UnitsWhoCouldOpportunityAttackMe.RemoveAt(i);
                     continue;
                 }
 
-                if (Unit.alliance.IsEnemy(opportunityAttackingUnit) == false)
+                if (Unit.Alliance.IsEnemy(opportunityAttackingUnit) == false)
                     continue;
 
                 // Only melee Unit's can do an opportunity attack
-                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped == false && opportunityAttackingUnit.stats.CanFightUnarmed == false))
+                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped == false && opportunityAttackingUnit.Stats.CanFightUnarmed == false))
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
-                if (opportunityAttackingUnit.vision.IsDirectlyVisible(Unit) == false || opportunityAttackingUnit.vision.TargetInOpportunityAttackViewAngle(Unit.transform) == false)
+                if (opportunityAttackingUnit.Vision.IsDirectlyVisible(Unit) == false || opportunityAttackingUnit.Vision.TargetInOpportunityAttackViewAngle(Unit.transform) == false)
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
-                MeleeAction opponentsMeleeAction = opportunityAttackingUnit.unitActionHandler.GetAction<MeleeAction>();
+                MeleeAction opponentsMeleeAction = opportunityAttackingUnit.UnitActionHandler.GetAction<MeleeAction>();
                 if (opponentsMeleeAction.IsInAttackRange(Unit) == false)
                     continue;
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
                 if (opponentsMeleeAction.IsInAttackRange(Unit, opportunityAttackingUnit.GridPosition, NextTargetGridPosition))
                 {
-                    opportunityAttackingUnit.opportunityAttackTrigger.OnEnemyUnitMoved(Unit, NextTargetGridPosition);
+                    opportunityAttackingUnit.OpportunityAttackTrigger.OnEnemyUnitMoved(Unit, NextTargetGridPosition);
                     continue;
                 }
 
                 opponentsMeleeAction.DoOpportunityAttack(Unit);
 
-                while (opportunityAttackingUnit.unitActionHandler.IsAttacking)
+                while (opportunityAttackingUnit.UnitActionHandler.IsAttacking)
                     yield return null;
             }
 
             // This Unit can die during an opportunity attack
-            if (Unit.health.IsDead)
+            if (Unit.Health.IsDead)
             {
                 CompleteAction();
                 yield break;
@@ -188,14 +188,14 @@ namespace UnitSystem.ActionSystem
             Vector3 nextPointOnPath = positionList[positionIndex];
             Direction directionToNextPosition;
 
-            if (Unit.IsPlayer || Unit.unitMeshManager.IsVisibleOnScreen)
+            if (Unit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen)
             {
                 Vector3 unitStartPosition = Unit.transform.position;
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
 
                 // Start rotating towards the target position
-                Unit.unitActionHandler.TurnAction.SetTargetPosition(directionToNextPosition);
-                Unit.unitActionHandler.TurnAction.RotateTowards_CurrentTargetPosition(false);
+                Unit.UnitActionHandler.TurnAction.SetTargetPosition(directionToNextPosition);
+                Unit.UnitActionHandler.TurnAction.RotateTowards_CurrentTargetPosition(false);
 
                 float heightDifference = nextTargetPosition.y - unitStartPosition.y;
                 if (heightDifference == 0f) moveSpeed = defaultMoveSpeed;
@@ -213,7 +213,7 @@ namespace UnitSystem.ActionSystem
                         finalMoveSpeed += finalMoveSpeed * Mathf.Abs(heightDifference);
                 }
 
-                Unit.unitAnimator.StartMovingForward(); // Move animation
+                Unit.UnitAnimator.StartMovingForward(); // Move animation
 
                 float stoppingDistance = 0.00625f;
                 float distanceToTriggerStopAnimation = 0.75f;
@@ -227,9 +227,9 @@ namespace UnitSystem.ActionSystem
                 float arcHeight = MathParabola.CalculateParabolaArcHeight(unitStartPosition, nextTargetPosition, arcMultiplier);
                 float animationTime = 0f;
                 
-                while (!Unit.unitAnimator.beingKnockedBack && Vector3.Distance(Unit.transform.position, nextTargetPosition) > stoppingDistance)
+                while (!Unit.UnitAnimator.beingKnockedBack && Vector3.Distance(Unit.transform.position, nextTargetPosition) > stoppingDistance)
                 {
-                    while (Unit.unitAnimator.isDodging)
+                    while (Unit.UnitAnimator.isDodging)
                         yield return null;
 
                     // If the target position is on the same Y coordinate, just move directly towards it
@@ -247,11 +247,11 @@ namespace UnitSystem.ActionSystem
                     }
 
                     // Determine if the Unit should stop their move animation
-                    if (Unit.unitActionHandler.TargetEnemyUnit == null)
+                    if (Unit.UnitActionHandler.TargetEnemyUnit == null)
                     {
                         float distanceToFinalPosition = Vector3.Distance(Unit.transform.position, LevelGrid.GetWorldPosition(FinalTargetGridPosition));
                         if (distanceToFinalPosition <= distanceToTriggerStopAnimation)
-                            Unit.unitAnimator.StopMovingForward();
+                            Unit.UnitAnimator.StopMovingForward();
                     }
 
                     yield return null;
@@ -260,12 +260,12 @@ namespace UnitSystem.ActionSystem
             else // Move and rotate instantly while NPC is offscreen
             {
                 directionToNextPosition = GetDirectionToNextTargetPosition(nextPointOnPath);
-                Unit.unitActionHandler.TurnAction.RotateTowards_Direction(directionToNextPosition, true);
+                Unit.UnitActionHandler.TurnAction.RotateTowards_Direction(directionToNextPosition, true);
 
                 TurnManager.Instance.StartNextUnitsTurn(Unit);
             }
 
-            while (Unit.unitAnimator.beingKnockedBack)
+            while (Unit.UnitAnimator.beingKnockedBack)
                 yield return null;
 
             Unit.transform.position = nextTargetPosition;
@@ -279,7 +279,7 @@ namespace UnitSystem.ActionSystem
             TryQueueNextAction();
 
             // Check for newly visible Units
-            Unit.vision.FindVisibleUnitsAndObjects();
+            Unit.Vision.FindVisibleUnitsAndObjects();
         }
 
         void TryQueueNextAction()
@@ -287,39 +287,39 @@ namespace UnitSystem.ActionSystem
             if (Unit.IsPlayer)
             {
                 // If the Player has a target Interactable
-                InteractAction interactAction = Unit.unitActionHandler.InteractAction;
-                if (interactAction.targetInteractable != null && Vector3.Distance(Unit.WorldPosition, interactAction.targetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
+                InteractAction interactAction = Unit.UnitActionHandler.InteractAction;
+                if (interactAction.TargetInteractable != null && Vector3.Distance(Unit.WorldPosition, interactAction.TargetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
-                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.TargetEnemyUnit.health.IsDead)
-                    Unit.unitActionHandler.CancelActions();
+                else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead)
+                    Unit.UnitActionHandler.CancelActions();
                 // If the Player is trying to attack an enemy and they are in range, stop moving and attack
-                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.IsInAttackRange(Unit.unitActionHandler.TargetEnemyUnit, true))
+                else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.IsInAttackRange(Unit.UnitActionHandler.TargetEnemyUnit, true))
                 {
-                    Unit.unitAnimator.StopMovingForward();
-                    Unit.unitActionHandler.PlayerActionHandler.AttackTarget();
+                    Unit.UnitAnimator.StopMovingForward();
+                    Unit.UnitActionHandler.PlayerActionHandler.AttackTarget();
                 }
                 // If the enemy moved positions, set the target position to the nearest possible attack position
-                else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.PreviousTargetEnemyGridPosition != Unit.unitActionHandler.TargetEnemyUnit.GridPosition)
+                else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
                     QueueMoveToTargetEnemy();
                 // If the Player hasn't reached their destination, add the next move to the queue
                 else if (Unit.GridPosition != FinalTargetGridPosition)
-                    Unit.unitActionHandler.QueueAction(this);
+                    Unit.UnitActionHandler.QueueAction(this);
             }
             else // If NPC
             {
                 // If they're trying to attack
-                if (Unit.stateController.currentState == State.Fight && Unit.unitActionHandler.TargetEnemyUnit != null)
+                if (Unit.StateController.CurrentState == ActionState.Fight && Unit.UnitActionHandler.TargetEnemyUnit != null)
                 {
                     // If they're in range, stop moving and attack
-                    if (Unit.unitActionHandler.IsInAttackRange(Unit.unitActionHandler.TargetEnemyUnit, false))
+                    if (Unit.UnitActionHandler.IsInAttackRange(Unit.UnitActionHandler.TargetEnemyUnit, false))
                     {
-                        Unit.unitAnimator.StopMovingForward();
-                        NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
+                        Unit.UnitAnimator.StopMovingForward();
+                        NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
                         npcActionHandler.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
-                    else if (Unit.unitActionHandler.TargetEnemyUnit != null && Unit.unitActionHandler.TargetEnemyUnit.health.IsDead == false && Unit.unitActionHandler.PreviousTargetEnemyGridPosition != Unit.unitActionHandler.TargetEnemyUnit.GridPosition)
+                    else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead == false && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
                         QueueMoveToTargetEnemy();
                 }
             }
@@ -327,18 +327,18 @@ namespace UnitSystem.ActionSystem
 
         void QueueMoveToTargetEnemy()
         {
-            Unit.unitActionHandler.SetPreviousTargetEnemyGridPosition(Unit.unitActionHandler.TargetEnemyUnit.GridPosition);
+            Unit.UnitActionHandler.SetPreviousTargetEnemyGridPosition(Unit.UnitActionHandler.TargetEnemyUnit.GridPosition);
 
-            if (Unit.IsPlayer && Unit.unitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction)
-                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
+            if (Unit.IsPlayer && Unit.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction)
+                Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));
             else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
-                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
-            else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.stats.CanFightUnarmed)
-                Unit.unitActionHandler.MoveAction.QueueAction(Unit.unitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.unitActionHandler.TargetEnemyUnit));
+                Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));
+            else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
+                Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));
             else
             {
-                Unit.unitActionHandler.SetTargetEnemyUnit(null);
-                Unit.unitActionHandler.SkipTurn();
+                Unit.UnitActionHandler.SetTargetEnemyUnit(null);
+                Unit.UnitActionHandler.SkipTurn();
                 return;
             }
         }
@@ -346,7 +346,7 @@ namespace UnitSystem.ActionSystem
         void GetPathToTargetPosition(GridPosition targetGridPosition)
         {
             Unit unitAtTargetGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
+            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.Health.IsDead == false)
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
                 targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, false);
@@ -360,17 +360,17 @@ namespace UnitSystem.ActionSystem
             path.traversalProvider = LevelGrid.DefaultTraversalProvider;
 
             // Schedule the path for calculation
-            Unit.seeker.StartPath(path);
+            Unit.Seeker.StartPath(path);
 
             // Force the path request to complete immediately. This assumes the graph is small enough that this will not cause any lag
             path.BlockUntilCalculated();
 
             if (Unit.IsNPC && path.vectorPath.Count == 0)
             {
-                NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
-                if (Unit.stateController.currentState == State.Patrol)
+                NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
+                if (Unit.StateController.CurrentState == ActionState.Patrol)
                 {
-                    GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.currentPatrolPointIndex]);
+                    GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.CurrentPatrolPointIndex]);
                     npcActionHandler.IncreasePatrolPointIndex();
                     FinalTargetGridPosition = patrolPointGridPosition;
                 }
@@ -389,7 +389,7 @@ namespace UnitSystem.ActionSystem
             }
 
             Unit.BlockCurrentPosition();
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.health.IsDead == false)
+            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.Health.IsDead == false)
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
 
@@ -430,7 +430,7 @@ namespace UnitSystem.ActionSystem
                     Door door = interactable as Door;
                     if (door.isOpen == false)
                     {
-                        Unit.unitActionHandler.InteractAction.QueueActionImmediately(door);
+                        Unit.UnitActionHandler.InteractAction.QueueActionImmediately(door);
                         return 0;
                     }
                 }
@@ -454,9 +454,9 @@ namespace UnitSystem.ActionSystem
 
                 if (Unit.IsNPC)
                 {
-                    if (Unit.stateController.currentState == State.Patrol)
+                    if (Unit.StateController.CurrentState == ActionState.Patrol)
                     {
-                        NPCActionHandler npcActionHandler = Unit.unitActionHandler as NPCActionHandler;
+                        NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
                         npcActionHandler.AssignNextPatrolTargetPosition();
                     }
                 }
@@ -465,7 +465,7 @@ namespace UnitSystem.ActionSystem
             Unit.BlockCurrentPosition();
 
             // if (unit.IsPlayer) Debug.Log("Move Cost (" + nextTargetPosition + "): " + Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier()));
-            return Mathf.RoundToInt(cost * Unit.stats.EncumbranceMoveCostModifier());
+            return Mathf.RoundToInt(cost * Unit.Stats.EncumbranceMoveCostModifier());
         }
 
         Vector3 GetNextPathPosition_XZ(Vector3 nextPointOnPath)
@@ -546,14 +546,14 @@ namespace UnitSystem.ActionSystem
             GraphNode node = AstarPath.active.GetNearest(tilePosition).node;
             // if (unit.IsPlayer) Debug.Log("Tag #" + node.Tag + " penalty is: ");
 
-            for (int i = 0; i < Unit.seeker.tagPenalties.Length; i++)
+            for (int i = 0; i < Unit.Seeker.tagPenalties.Length; i++)
             {
                 if (node.Tag == i)
                 {
-                    if (Unit.seeker.tagPenalties[i] == 0)
+                    if (Unit.Seeker.tagPenalties[i] == 0)
                         return 0f;
                     else
-                        return Unit.seeker.tagPenalties[i] / 1000f;
+                        return Unit.Seeker.tagPenalties[i] / 1000f;
                 }
             }
 
@@ -567,12 +567,12 @@ namespace UnitSystem.ActionSystem
             // Unblock the Unit's position, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
             if (Unit.IsPlayer)
                 Unit.UnblockCurrentPosition();
-            else if (Unit.health.IsDead == false)
+            else if (Unit.Health.IsDead == false)
                 Unit.BlockCurrentPosition();
 
             IsMoving = false;
             AboutToMove = false;
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
         }
 
         public void SetTravelDistanceSpeedMultiplier()
@@ -580,10 +580,10 @@ namespace UnitSystem.ActionSystem
             if (Unit.IsPlayer)
                 return;
 
-            if ((float)Unit.stats.LastPooledAP / defaultTileMoveCost <= 1f)
+            if ((float)Unit.Stats.LastPooledAP / defaultTileMoveCost <= 1f)
                 travelDistanceMultiplier = 1f;
             else
-                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.stats.LastPooledAP / defaultTileMoveCost);
+                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.Stats.LastPooledAP / defaultTileMoveCost);
         }
 
         public override bool IsValidAction()

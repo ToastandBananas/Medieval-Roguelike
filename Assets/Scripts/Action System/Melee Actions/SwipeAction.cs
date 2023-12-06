@@ -8,7 +8,7 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using System.Collections;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class SwipeAction : BaseAttackAction
     {
@@ -19,7 +19,7 @@ namespace UnitSystem.ActionSystem
             float cost;
             if (Unit.UnitEquipment != null)
             {
-                cost = baseAPCost * ActionPointCostModifier_WeaponType(Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon);
+                cost = baseAPCost * ActionPointCostModifier_WeaponType(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon);
 
                 if (Unit.UnitEquipment.InVersatileStance)
                     cost *= 1.35f;
@@ -28,20 +28,20 @@ namespace UnitSystem.ActionSystem
                 cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
 
             // If not facing the target position, add the cost of turning towards that position
-            Unit.unitActionHandler.TurnAction.DetermineTargetTurnDirection(TargetGridPosition);
-            cost += Unit.unitActionHandler.TurnAction.ActionPointsCost();
+            Unit.UnitActionHandler.TurnAction.DetermineTargetTurnDirection(TargetGridPosition);
+            cost += Unit.UnitActionHandler.TurnAction.ActionPointsCost();
             return Mathf.RoundToInt(cost);
         }
 
         public override void TakeAction()
         {
-            if (Unit.unitActionHandler.IsAttacking) return;
+            if (Unit.UnitActionHandler.IsAttacking) return;
 
-            if (IsValidUnitInActionArea(TargetGridPosition) == false || Unit.stats.HasEnoughEnergy(InitialEnergyCost()) == false)
+            if (IsValidUnitInActionArea(TargetGridPosition) == false || Unit.Stats.HasEnoughEnergy(InitialEnergyCost()) == false)
             {
-                Unit.unitActionHandler.SetTargetEnemyUnit(null);
-                Unit.unitActionHandler.ClearQueuedAttack();
-                Unit.unitActionHandler.FinishAction();
+                Unit.UnitActionHandler.SetTargetEnemyUnit(null);
+                Unit.UnitActionHandler.ClearQueuedAttack();
+                Unit.UnitActionHandler.FinishAction();
                 return;
             }
 
@@ -60,8 +60,8 @@ namespace UnitSystem.ActionSystem
 
         public override void PlayAttackAnimation()
         {
-            Unit.unitAnimator.StartMeleeAttack();
-            Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().DoSwipeAttack(TargetGridPosition);
+            Unit.UnitAnimator.StartMeleeAttack();
+            Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().DoSwipeAttack(TargetGridPosition);
         }
 
         public override List<GridPosition> GetActionAreaGridPositions(GridPosition targetGridPosition)
@@ -86,13 +86,13 @@ namespace UnitSystem.ActionSystem
             // Check for obstacles
             float sphereCastRadius = 0.1f;
             Vector3 heightOffset = 2f * Unit.ShoulderHeight * Vector3.up;
-            if (Physics.SphereCast(Unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition + heightOffset, Unit.WorldPosition + heightOffset), Unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(Unit.WorldPosition + heightOffset, sphereCastRadius, directionToTarget, out RaycastHit hit, Vector3.Distance(targetGridPosition.WorldPosition + heightOffset, Unit.WorldPosition + heightOffset), Unit.UnitActionHandler.AttackObstacleMask))
             {
                 // Debug.Log(targetGridPosition.WorldPosition + " (the target position) is blocked by " + hit.collider.name);
                 return validGridPositionsList;
             }
 
-            float maxAttackRange = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+            float maxAttackRange = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
             float boundsDimension = (maxAttackRange * 2) + 0.1f;
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
             nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(targetGridPosition.WorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
@@ -127,7 +127,7 @@ namespace UnitSystem.ActionSystem
 
                 // Check for obstacles
                 Vector3 directionToAttackPosition = (nodeGridPosition.WorldPosition + heightOffset - (Unit.WorldPosition + heightOffset)).normalized;
-                if (Physics.SphereCast(Unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out _, Vector3.Distance(nodeGridPosition.WorldPosition + heightOffset, Unit.WorldPosition + heightOffset), Unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(Unit.WorldPosition + heightOffset, sphereCastRadius, directionToAttackPosition, out _, Vector3.Distance(nodeGridPosition.WorldPosition + heightOffset, Unit.WorldPosition + heightOffset), Unit.UnitActionHandler.AttackObstacleMask))
                 {
                     // Debug.Log(nodeGridPosition.WorldPosition + " is blocked by " + hit.collider.name);
                     continue;
@@ -173,10 +173,10 @@ namespace UnitSystem.ActionSystem
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.health.IsDead == false)
+            if (IsValidAction() && targetUnit != null && targetUnit.Health.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.health.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.Health.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
 
                 if (distance < MinAttackRange())
@@ -214,24 +214,24 @@ namespace UnitSystem.ActionSystem
                     continue;
 
                 // Skip this unit if they're dead
-                if (unitAtGridPosition.health.IsDead)
+                if (unitAtGridPosition.Health.IsDead)
                     continue;
 
-                if (Unit.alliance.IsEnemy(unitAtGridPosition))
+                if (Unit.Alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 50f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 50f - (unitAtGridPosition.health.CurrentHealthNormalized * 50f);
+                    finalActionValue += 50f - (unitAtGridPosition.Health.CurrentHealthNormalized * 50f);
                 }
-                else if (Unit.alliance.IsAlly(unitAtGridPosition))
+                else if (Unit.Alliance.IsAlly(unitAtGridPosition))
                 {
                     // Allies in the action area decrease this action's value
                     finalActionValue -= 100f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 100f - (unitAtGridPosition.health.CurrentHealthNormalized * 100f);
+                    finalActionValue -= 100f - (unitAtGridPosition.Health.CurrentHealthNormalized * 100f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
@@ -243,7 +243,7 @@ namespace UnitSystem.ActionSystem
                     finalActionValue -= 25f;
 
                     // Lower neutral unit health gives this action less value
-                    finalActionValue -= 25f - (unitAtGridPosition.health.CurrentHealthNormalized * 25f);
+                    finalActionValue -= 25f - (unitAtGridPosition.Health.CurrentHealthNormalized * 25f);
 
                     // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
                     if (unitAtGridPosition.IsPlayer)
@@ -276,14 +276,14 @@ namespace UnitSystem.ActionSystem
             base.CompleteAction();
 
             if (Unit.IsPlayer)
-                Unit.unitActionHandler.SetTargetEnemyUnit(null);
+                Unit.UnitActionHandler.SetTargetEnemyUnit(null);
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
         }
 
         public override string TooltipDescription()
         {
-            return $"Harness the might of your <b>{Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
+            return $"Harness the might of your <b>{Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}</b> to execute a wide-reaching swipe, striking multiple foes in a single, devastating motion.";
         }
 
         public override float AccuracyModifier() => 0.75f;
@@ -310,8 +310,8 @@ namespace UnitSystem.ActionSystem
 
         public override bool CanAttackThroughUnits() => true;
 
-        public override float MinAttackRange() => Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MinRange;
+        public override float MinAttackRange() => Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MinRange;
 
-        public override float MaxAttackRange() => Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
+        public override float MaxAttackRange() => Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon.MaxRange;
     }
 }

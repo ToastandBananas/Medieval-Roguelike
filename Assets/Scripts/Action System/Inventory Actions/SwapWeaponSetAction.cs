@@ -1,7 +1,7 @@
 using UnityEngine;
 using InventorySystem;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class SwapWeaponSetAction : BaseInventoryAction
     {
@@ -9,9 +9,9 @@ namespace UnitSystem.ActionSystem
 
         public override void QueueAction()
         {
-            Unit.unitActionHandler.ClearActionQueue(true);
-            if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.unitMeshManager.GetHeldRangedWeapon().IsLoaded)
-                Unit.unitActionHandler.GetAction<UnloadAction>().QueueAction();
+            Unit.UnitActionHandler.ClearActionQueue(true);
+            if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
+                Unit.UnitActionHandler.GetAction<ReloadAction>().QueueAction();
 
             base.QueueAction();
         }

@@ -2,7 +2,7 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem 
+namespace UnitSystem.ActionSystem.Actions
 {
     public class VersatileStanceAction : BaseStanceAction
     {
@@ -13,7 +13,7 @@ namespace UnitSystem.ActionSystem
 
         public override HeldItemStance HeldItemStance() => InventorySystem.HeldItemStance.Versatile;
 
-        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weight * 0.5f);
+        public override int ActionPointsCost() => Mathf.RoundToInt(baseAPCost * Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weight * 0.5f);
 
         public override void TakeAction()
         {
@@ -32,7 +32,7 @@ namespace UnitSystem.ActionSystem
             if (Unit.UnitEquipment.IsDualWielding || Unit.UnitEquipment.MeleeWeaponEquipped == false)
                 return;
 
-            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon != null)
             {
                 if (primaryHeldMeleeWeapon.ItemData.Item.Weapon.IsTwoHanded)
@@ -58,14 +58,14 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         public override void CancelAction()
         {
             base.CancelAction();
-            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon != null && inVersatileStance)
                 primaryHeldMeleeWeapon.HeldMeleeWeapon.SetDefaultWeaponStance();
 
@@ -77,7 +77,7 @@ namespace UnitSystem.ActionSystem
         {
             if (Unit != null && Unit.UnitEquipment.IsDualWielding == false && Unit.UnitEquipment.MeleeWeaponEquipped && Unit.UnitEquipment.ShieldEquipped == false)
             {
-                HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+                HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
                 if (primaryHeldMeleeWeapon.CurrentHeldItemStance != InventorySystem.HeldItemStance.Default && primaryHeldMeleeWeapon.CurrentHeldItemStance != InventorySystem.HeldItemStance.Versatile)
                     return false;
                 else
@@ -88,7 +88,7 @@ namespace UnitSystem.ActionSystem
 
         public override Sprite ActionIcon()
         {
-            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (primaryHeldMeleeWeapon == null)
                 return ActionType.ActionIcon;
 
@@ -99,7 +99,7 @@ namespace UnitSystem.ActionSystem
 
         public override string TooltipDescription()
         {
-            HeldMeleeWeapon heldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon heldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (heldMeleeWeapon == null) 
             {
                 Debug.LogWarning($"Melee weapon is null, yet {Unit.name} has a {name} available to them...");
@@ -114,7 +114,7 @@ namespace UnitSystem.ActionSystem
 
         public override string ActionName()
         {
-            HeldMeleeWeapon heldMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon heldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
             if (heldMeleeWeapon == null)
                 return "Two-Hand Weapon Stance";
 

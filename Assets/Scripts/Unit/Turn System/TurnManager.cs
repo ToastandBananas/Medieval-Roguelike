@@ -48,16 +48,16 @@ namespace UnitSystem
             if (unit != activeUnit)
                 return;
 
-            if (unit.health.IsDead == false)
+            if (unit.Health.IsDead == false)
                 unit.BlockCurrentPosition();
 
             if (unit.IsNPC)
             {
                 // The unit should be at 0 AP, but if they finished their turn without performing an action (because it had to be cancelled, for example) then just zero out their currentAP
-                if (unit.stats.CurrentAP > 0)
-                    unit.stats.UseAP(unit.stats.CurrentAP);
+                if (unit.Stats.CurrentAP > 0)
+                    unit.Stats.UseAP(unit.Stats.CurrentAP);
 
-                if (unit.stats.PooledAP <= 0)
+                if (unit.Stats.PooledAP <= 0)
                 {
                     // The unit has no more pooledAP, so they can't do anything else (their turn is over)
                     npcs_FinishedTurn.Add(unit);
@@ -74,7 +74,7 @@ namespace UnitSystem
                         npcTurnIndex--;
 
                     // Refill their currentAP with some (or the remainder) of their pooledAP
-                    unit.stats.GetAPFromPool();
+                    unit.Stats.GetAPFromPool();
                 }
             }
             else
@@ -85,16 +85,16 @@ namespace UnitSystem
 
         void StartUnitsTurn(Unit unit)
         {
-            if (UnitManager.player.health.IsDead)
+            if (UnitManager.player.Health.IsDead)
                 return;
             
             activeUnit = unit;
             turnNumber++;
 
-            if (unit.health.IsDead)
+            if (unit.Health.IsDead)
             {
-                unit.unitActionHandler.CancelActions();
-                unit.unitActionHandler.ClearActionQueue(true, true);
+                unit.UnitActionHandler.CancelActions();
+                unit.UnitActionHandler.ClearActionQueue(true, true);
 
                 // Debug.LogWarning(unit + " is dead, but they are trying to take their turn...");
                 if (unit.IsNPC)
@@ -117,7 +117,7 @@ namespace UnitSystem
                 if (unit.IsPlayer)
                     GridSystemVisual.UpdateAttackGridVisual();
                 
-                unit.unitActionHandler.TakeTurn();
+                unit.UnitActionHandler.TakeTurn();
             }
         }
 
@@ -132,7 +132,7 @@ namespace UnitSystem
         IEnumerator DoNextUnitsTurn(bool increaseTurnIndex = true)
         {
             // If the final Unit is still performing an action or if someone is attacking
-            while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].unitActionHandler.IsPerformingAction)
+            while (npcs_HaventFinishedTurn.Count == 1 && npcs_HaventFinishedTurn[0].UnitActionHandler.IsPerformingAction)
                 yield return null;
 
             // Increase the turn index or go back to 0 if it's time for a new round of turns
@@ -168,7 +168,7 @@ namespace UnitSystem
 
                 for (int i = 0; i < npcs_HaventFinishedTurn.Count; i++)
                 {
-                    npcs_HaventFinishedTurn[i].stats.GetAPFromPool();
+                    npcs_HaventFinishedTurn[i].Stats.GetAPFromPool();
                 }
 
                 StartNextUnitsTurn(activeUnit);
@@ -187,12 +187,12 @@ namespace UnitSystem
             npcs_HaventFinishedTurn.Clear();
             for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
             {
-                if (UnitManager.livingNPCs[i].stats.PooledAP > 0)
+                if (UnitManager.livingNPCs[i].Stats.PooledAP > 0)
                     npcs_HaventFinishedTurn.Add(UnitManager.livingNPCs[i]);
             }
 
             if (npcs_HaventFinishedTurn.Count > 0)
-                npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.stats.Speed.GetValue()).ToList();
+                npcs_HaventFinishedTurn = npcs_HaventFinishedTurn.OrderByDescending(npc => npc.Stats.Speed.GetValue()).ToList();
         }
 
         public bool IsPlayerTurn() => activeUnit == UnitManager.player;

@@ -3,7 +3,7 @@ using UnitSystem.ActionSystem.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public class ConsumeAction : BaseInventoryAction
     {

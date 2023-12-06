@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public abstract class BaseAttackAction : BaseAction
     {
@@ -34,37 +34,37 @@ namespace UnitSystem.ActionSystem
         protected void MoveToTargetInstead()
         {
             CompleteAction();
-            Unit.unitActionHandler.SetIsAttacking(false);
-            Unit.unitActionHandler.MoveAction.QueueAction(GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+            Unit.UnitActionHandler.SetIsAttacking(false);
+            Unit.UnitActionHandler.MoveAction.QueueAction(GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
         protected override void StartAction()
         {
             base.StartAction();
-            Unit.unitActionHandler.SetIsAttacking(true);
-            Unit.stats.UseEnergy(InitialEnergyCost());
+            Unit.UnitActionHandler.SetIsAttacking(true);
+            Unit.Stats.UseEnergy(InitialEnergyCost());
             if (Unit.IsPlayer && TargetEnemyUnit != null)
-                TargetEnemyUnit.unitActionHandler.NPCActionHandler.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
+                TargetEnemyUnit.UnitActionHandler.NPCActionHandler.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
         }
 
         protected void SetTargetEnemyUnit()
         {
             if (LevelGrid.HasUnitAtGridPosition(TargetGridPosition, out Unit unitAtGridPosition))
             {
-                Unit.unitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
+                Unit.UnitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
                 TargetEnemyUnit = unitAtGridPosition;
             }
-            else if (Unit.unitActionHandler.TargetEnemyUnit != null)
-                TargetEnemyUnit = Unit.unitActionHandler.TargetEnemyUnit;
+            else if (Unit.UnitActionHandler.TargetEnemyUnit != null)
+                TargetEnemyUnit = Unit.UnitActionHandler.TargetEnemyUnit;
         }
 
         public virtual void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
         {
-            if (targetUnit == null || targetUnit.health.IsDead)
+            if (targetUnit == null || targetUnit.Health.IsDead)
                 return;
             
-            targetUnit.unitActionHandler.InterruptActions();
+            targetUnit.UnitActionHandler.InterruptActions();
 
             float damage = GetBaseDamage(heldItemAttackingWith, itemDataHittingWith);
             damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
@@ -79,7 +79,7 @@ namespace UnitSystem.ActionSystem
                 baseDamage = heldItemAttackingWith.ItemData.Damage;
                 if (Unit.UnitEquipment.IsDualWielding)
                 {
-                    if (heldItemAttackingWith == Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon())
+                    if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon())
                         baseDamage *= Weapon.dualWieldPrimaryEfficiency;
                     else
                         baseDamage *= Weapon.dualWieldSecondaryEfficiency;
@@ -117,7 +117,7 @@ namespace UnitSystem.ActionSystem
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                targetUnit.Health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             else
             {
@@ -126,7 +126,7 @@ namespace UnitSystem.ActionSystem
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                targetUnit.Health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             
             return Mathf.RoundToInt(currentDamage);
@@ -148,7 +148,7 @@ namespace UnitSystem.ActionSystem
             if (heldItemBlockedWith is HeldShield)
             {
                 HeldShield shieldBlockedWith = heldItemBlockedWith as HeldShield;
-                blockAmount = targetUnit.stats.BlockPower(shieldBlockedWith);
+                blockAmount = targetUnit.Stats.BlockPower(shieldBlockedWith);
 
                 // Play the recoil animation & then lower the shield if not in Raise Shield Stance
                 shieldBlockedWith.Recoil();
@@ -159,11 +159,11 @@ namespace UnitSystem.ActionSystem
             else if (heldItemBlockedWith is HeldMeleeWeapon)
             {
                 HeldMeleeWeapon meleeWeaponBlockedWith = heldItemBlockedWith as HeldMeleeWeapon;
-                blockAmount = targetUnit.stats.BlockPower(meleeWeaponBlockedWith);
+                blockAmount = targetUnit.Stats.BlockPower(meleeWeaponBlockedWith);
 
                 if (targetUnit.UnitEquipment.IsDualWielding)
                 {
-                    if (meleeWeaponBlockedWith == targetUnit.unitMeshManager.GetRightHeldMeleeWeapon())
+                    if (meleeWeaponBlockedWith == targetUnit.UnitMeshManager.GetRightHeldMeleeWeapon())
                         blockAmount *= Weapon.dualWieldPrimaryEfficiency;
                     else
                         blockAmount *= Weapon.dualWieldSecondaryEfficiency;
@@ -183,17 +183,17 @@ namespace UnitSystem.ActionSystem
         {
             // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
             bool knockedBack = false;
-            if ((damageAmount > 0f || attackBlocked) && !targetUnit.health.IsDead)
+            if ((damageAmount > 0f || attackBlocked) && !targetUnit.Health.IsDead)
             {
-                knockedBack = Unit.stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
+                knockedBack = Unit.Stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
                 if (IsMeleeAttackAction())
-                    targetUnit.health.OnHitByMeleeAttack();
+                    targetUnit.Health.OnHitByMeleeAttack();
             }
         }
 
         public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, bool headShot)
         {
-            foreach (KeyValuePair<Unit, HeldItem> target in Unit.unitActionHandler.targetUnits)
+            foreach (KeyValuePair<Unit, HeldItem> target in Unit.UnitActionHandler.TargetUnits)
             {
                 Unit targetUnit = target.Key;
                 HeldItem itemBlockedWith = target.Value;
@@ -219,7 +219,7 @@ namespace UnitSystem.ActionSystem
 
         public virtual int UnarmedAttackDamage()
         {
-            return Unit.stats.BaseUnarmedDamage;
+            return Unit.Stats.BaseUnarmedDamage;
         }
 
         protected virtual IEnumerator DoAttack()
@@ -234,20 +234,20 @@ namespace UnitSystem.ActionSystem
                 targetUnits.Add(targetUnit);
 
                 // The unit being attacked becomes aware of this unit
-                Unit.vision.BecomeVisibleUnitOfTarget(targetUnit, targetUnit.unitActionHandler.targetUnits.Count == 1);
+                Unit.Vision.BecomeVisibleUnitOfTarget(targetUnit, targetUnit.UnitActionHandler.TargetUnits.Count == 1);
             }
 
             // We need to skip a frame in case the target Unit's meshes are being enabled due to becoming visible
             yield return null; 
             
-            HeldMeleeWeapon primaryMeleeWeapon = Unit.unitMeshManager.GetPrimaryHeldMeleeWeapon();
+            HeldMeleeWeapon primaryMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();
 
             // If this is the Player attacking, or if this is an NPC that's visible on screen
-            if (Unit.IsPlayer || (TargetEnemyUnit != null && TargetEnemyUnit.IsPlayer) || Unit.unitMeshManager.IsVisibleOnScreen || (TargetEnemyUnit != null && TargetEnemyUnit.unitMeshManager.IsVisibleOnScreen))
+            if (Unit.IsPlayer || (TargetEnemyUnit != null && TargetEnemyUnit.IsPlayer) || Unit.UnitMeshManager.IsVisibleOnScreen || (TargetEnemyUnit != null && TargetEnemyUnit.UnitMeshManager.IsVisibleOnScreen))
             {
                 if (TargetEnemyUnit != null)
                 {
-                    while (TargetEnemyUnit.unitActionHandler.MoveAction.IsMoving || TargetEnemyUnit.unitAnimator.beingKnockedBack)
+                    while (TargetEnemyUnit.UnitActionHandler.MoveAction.IsMoving || TargetEnemyUnit.UnitAnimator.beingKnockedBack)
                         yield return null;
 
                     // If the target Unit moved out of range, queue a movement instead
@@ -261,29 +261,29 @@ namespace UnitSystem.ActionSystem
                 // Rotate towards the target
                 if (targetUnits.Count == 1) // If there's only 1 target Unit in the attack area, they mind as well just face that target
                 {
-                    if (Unit.unitActionHandler.TurnAction.IsFacingTarget(targetUnits[0].GridPosition) == false)
-                        Unit.unitActionHandler.TurnAction.RotateTowardsPosition(targetUnits[0].transform.position, false);
+                    if (Unit.UnitActionHandler.TurnAction.IsFacingTarget(targetUnits[0].GridPosition) == false)
+                        Unit.UnitActionHandler.TurnAction.RotateTowardsPosition(targetUnits[0].transform.position, false);
                 }
                 else
                 {
-                    if (Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
-                        Unit.unitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, false);
+                    if (Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
+                        Unit.UnitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, false);
                 }
 
                 // Wait to finish any rotations already in progress
-                while (Unit.unitActionHandler.TurnAction.isRotating)
+                while (Unit.UnitActionHandler.TurnAction.isRotating)
                     yield return null;
 
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false))
-                        targetUnits[i].unitAnimator.DoDodge(Unit, primaryMeleeWeapon, null);
+                    if (targetUnits[i].UnitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false))
+                        targetUnits[i].UnitAnimator.DoDodge(Unit, primaryMeleeWeapon, null);
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnits[i].unitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
-                        Unit.unitActionHandler.targetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
+                        bool attackBlocked = targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
+                        Unit.UnitActionHandler.TargetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
                         if (attackBlocked && itemBlockedWith != null)
@@ -299,32 +299,32 @@ namespace UnitSystem.ActionSystem
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 // Rotate towards the target
-                if (Unit.unitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
-                    Unit.unitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, true);
+                if (Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetGridPosition) == false)
+                    Unit.UnitActionHandler.TurnAction.RotateTowardsPosition(TargetGridPosition.WorldPosition, true);
 
                 for (int i = 0; i < targetUnits.Count; i++)
                 {
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
-                    if (targetUnits[i].unitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false) == false)
+                    if (targetUnits[i].UnitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false) == false)
                     {
                         bool headShot = false;
 
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnits[i].unitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false))
-                            targetUnits[i].unitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
+                        if (targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false))
+                            targetUnits[i].UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
 
                         // Damage this unit
                         DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot);
                     }
                 }
 
-                Unit.unitActionHandler.SetIsAttacking(false);
+                Unit.UnitActionHandler.SetIsAttacking(false);
             }
 
             ListPool<Unit>.Release(targetUnits);
 
             // Wait until the attack lands before completing the action
-            while (Unit.unitActionHandler.IsAttacking)
+            while (Unit.UnitActionHandler.IsAttacking)
                 yield return null;
 
             CompleteAction();
@@ -335,7 +335,7 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            Unit.unitActionHandler.targetUnits.Clear();
+            Unit.UnitActionHandler.TargetUnits.Clear();
         }
 
         public bool OtherUnitInTheWay(Unit unit, GridPosition startGridPosition, GridPosition targetGridPosition)
@@ -348,9 +348,9 @@ namespace UnitSystem.ActionSystem
             float raycastDistance = Vector3.Distance(startGridPosition.WorldPosition, targetGridPosition.WorldPosition);
             Vector3 attackDir = (targetGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
             Vector3 offset = 0.1f * Vector3.up;
-            if (Physics.Raycast(startGridPosition.WorldPosition + offset, attackDir, out RaycastHit hit, raycastDistance, unit.vision.UnitsMask))
+            if (Physics.Raycast(startGridPosition.WorldPosition + offset, attackDir, out RaycastHit hit, raycastDistance, unit.Vision.UnitsMask))
             {
-                if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject && unit.vision.IsVisible(hit.collider.gameObject))
+                if (hit.collider.gameObject != unit.gameObject && hit.collider.gameObject != targetUnit.gameObject && unit.Vision.IsVisible(hit.collider.gameObject))
                     return true;
             }
             return false;
@@ -369,7 +369,7 @@ namespace UnitSystem.ActionSystem
             float raycastDistance = Vector3.Distance(Unit.WorldPosition, targetGridPosition.WorldPosition);
             Vector3 offset = 2f * Unit.ShoulderHeight * Vector3.up;
             Vector3 attackDir = (Unit.WorldPosition - targetGridPosition.WorldPosition).normalized;
-            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
+            if (Physics.SphereCast(targetGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.UnitActionHandler.AttackObstacleMask))
                 return validGridPositionsList; // Blocked by an obstacle
 
             // Check if there's a Unit in the way of the attack
@@ -403,7 +403,7 @@ namespace UnitSystem.ActionSystem
                 float raycastDistance = Vector3.Distance(Unit.WorldPosition, nodeGridPosition.WorldPosition);
                 Vector3 offset = 2f * Unit.ShoulderHeight * Vector3.up;
                 Vector3 attackDir = (nodeGridPosition.WorldPosition - startGridPosition.WorldPosition).normalized;
-                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(startGridPosition.WorldPosition + offset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.UnitActionHandler.AttackObstacleMask))
                     continue;
 
                 // Check if there's a Unit in the way of the attack (but only if the attack can't be performed through or over other Units)
@@ -486,7 +486,7 @@ namespace UnitSystem.ActionSystem
                 Vector3 targetUnitOffset = 2f * targetUnit.ShoulderHeight * Vector3.up;
                 float raycastDistance = Vector3.Distance(nodeGridPosition.WorldPosition + unitOffset, targetUnit.WorldPosition + targetUnitOffset);
                 Vector3 attackDir = (nodeGridPosition.WorldPosition + unitOffset - (targetUnit.WorldPosition + targetUnitOffset)).normalized;
-                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.unitActionHandler.AttackObstacleMask))
+                if (Physics.SphereCast(targetUnit.WorldPosition + targetUnitOffset, sphereCastRadius, attackDir, out _, raycastDistance, Unit.UnitActionHandler.AttackObstacleMask))
                     continue;
 
                 if (!CanAttackThroughUnits() && OtherUnitInTheWay(Unit, nodeGridPosition, targetUnit.GridPosition))
@@ -508,13 +508,13 @@ namespace UnitSystem.ActionSystem
                 if (!LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition))
                     continue;
                 
-                if (unitAtGridPosition.health.IsDead)
+                if (unitAtGridPosition.Health.IsDead)
                     continue;
 
-                if (Unit.alliance.IsAlly(unitAtGridPosition))
+                if (Unit.Alliance.IsAlly(unitAtGridPosition))
                     continue;
 
-                if (!Unit.vision.IsDirectlyVisible(unitAtGridPosition))
+                if (!Unit.Vision.IsDirectlyVisible(unitAtGridPosition))
                     continue;
 
                 // If the loop makes it to this point, then it found a valid unit
@@ -564,10 +564,10 @@ namespace UnitSystem.ActionSystem
             // Check for obstacles
             if (targetUnit != null)
             {
-                if (!Unit.vision.IsInLineOfSight_SphereCast(targetUnit))
+                if (!Unit.Vision.IsInLineOfSight_SphereCast(targetUnit))
                     return false;
             }
-            else if (!Unit.vision.IsInLineOfSight_SphereCast(targetGridPosition))
+            else if (!Unit.Vision.IsInLineOfSight_SphereCast(targetGridPosition))
                 return false;
 
             // Check if there's a Unit in the way of the attack (but only for actions that can't attack through or over other Units)

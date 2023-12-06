@@ -2,7 +2,7 @@ using InventorySystem;
 using UnityEngine;
 using UnitSystem.ActionSystem.UI;
 
-namespace UnitSystem.ActionSystem
+namespace UnitSystem.ActionSystem.Actions
 {
     public abstract class BaseInventoryAction : BaseAction
     {
@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem
         {
             base.CompleteAction();
 
-            Unit.unitActionHandler.FinishAction();
+            Unit.UnitActionHandler.FinishAction();
             TurnManager.Instance.StartNextUnitsTurn(Unit);
         }
 
