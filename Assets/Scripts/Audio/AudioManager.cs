@@ -58,24 +58,24 @@ namespace SoundSystem
                 {
                     // Unit unit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
                     Unit unit = LevelGrid.GetUnitAtPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position);
-                    if (unit == null)
+                    if (unit == null || unit.IsPlayer)
                         continue;
 
-                    if (unit.IsPlayer)
+                    if (unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction == null)
                         continue;
 
                     if (unitMakingSound != null && unitMakingSound == unit)
                         continue;
 
-                    if (unit.StateController.CurrentState == ActionState.Fight || unit.StateController.CurrentState == ActionState.Flee)
+                    if (unit.StateController.CurrentState == GoalState.Fight || unit.StateController.CurrentState == GoalState.Flee)
                         continue;
 
                     NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
-                    if (unit.StateController.CurrentState == ActionState.InspectSound && npcActionHandler.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                    if (unit.StateController.CurrentState == GoalState.InspectSound && npcActionHandler.GoalPlanner.InspectSoundAction.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
                         continue;
 
                     bool soundHeard = true;
-                    Vector3 dir = (unit.transform.position + (Vector3.up * unit.ShoulderHeight)) - (soundPosition + (Vector3.up * unit.ShoulderHeight));
+                    Vector3 dir = unit.transform.position + (Vector3.up * unit.ShoulderHeight) - (soundPosition + (Vector3.up * unit.ShoulderHeight));
                     float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
                     RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.UnitActionHandler.AttackObstacleMask);
                     if (hits.Length > 0)
@@ -94,8 +94,8 @@ namespace SoundSystem
                     if (soundHeard)
                     {
                         Debug.Log(unit.name + " heard: " + soundName);
-                        npcActionHandler.SetSoundGridPosition(soundPosition);
-                        unit.StateController.SetCurrentState(ActionState.InspectSound);
+                        npcActionHandler.GoalPlanner.InspectSoundAction.SetSoundGridPosition(soundPosition);
+                        unit.StateController.SetCurrentState(GoalState.InspectSound);
                     }
                 }
             }

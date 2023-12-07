@@ -1,3 +1,4 @@
+using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.Goals
@@ -6,11 +7,18 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
     {
         [SerializeField] int fightPriority = 60;
 
-        int currentPriority = 0;
+        int currentPriority = 0; 
+        
+        GoalAction_Fight fightAction;
+
+        void Start()
+        {
+            fightAction = (GoalAction_Fight)goalPlanner.GetGoalAction(typeof(GoalAction_Fight));
+        }
 
         public override void OnTickGoal()
         {
-            if (unit.Vision.knownEnemies.Count == 0)
+            if (unit.Vision.knownEnemies.Count == 0 || fightAction == null)
                 return;
 
             if (unit.UnitActionHandler.TargetEnemyUnit != null)
@@ -20,7 +28,7 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
                 {
                     if (unit.Vision.knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit)
                     {
-                        if (Vector3.Distance(unit.UnitActionHandler.NPCActionHandler.StartChaseGridPosition.WorldPosition, unit.WorldPosition) > unit.UnitActionHandler.NPCActionHandler.MaxChaseDistance)
+                        if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) > fightAction.MaxChaseDistance)
                             currentPriority = 0;
                         else
                             currentPriority = fightPriority;
@@ -36,7 +44,7 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
             for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)
             {
                 // Found a new target
-                if (Vector3.Distance(unit.UnitActionHandler.NPCActionHandler.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= unit.UnitActionHandler.NPCActionHandler.MaxChaseDistance)
+                if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= fightAction.MaxChaseDistance)
                 {
                     currentPriority = fightPriority;
                     return;
@@ -56,13 +64,13 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 
         public override bool CanRun()
         {
-            if (unit.Vision.knownEnemies.Count == 0)
+            if (unit.Vision.knownEnemies.Count == 0 || fightAction == null)
                 return false;
 
             if (unit.UnitEquipment.IsUnarmed && !unit.Stats.CanFightUnarmed)
                 return false;
 
-            if (Vector3.Distance(unit.UnitActionHandler.NPCActionHandler.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= unit.UnitActionHandler.NPCActionHandler.MaxChaseDistance || unit.Vision.knownEnemies.Count > 1)
+            if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= fightAction.MaxChaseDistance || unit.Vision.knownEnemies.Count > 1)
                 return true;
             return false;
         }

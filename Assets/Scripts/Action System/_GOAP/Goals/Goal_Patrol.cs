@@ -1,11 +1,19 @@
+using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.Goals
 {
     public class Goal_Patrol : Goal_Base
     {
-        public override int CalculatePriority() => unit.StateController.DefaultState() == ActionState.Patrol ? defaultStatePriority : 0;
+        GoalAction_Patrol patrolAction;
 
-        public override bool CanRun() => true;
+        void Start()
+        {
+            patrolAction = (GoalAction_Patrol)goalPlanner.GetGoalAction(typeof(GoalAction_Patrol));
+        }
+
+        public override int CalculatePriority() => unit.StateController.DefaultState == GoalState.Patrol ? defaultStatePriority : 0;
+
+        public override bool CanRun() => patrolAction != null && patrolAction.PatrolPointCount > 0;
     }
 }

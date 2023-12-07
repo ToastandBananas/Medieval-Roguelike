@@ -9,7 +9,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
     public class GoalAction_Wander : GoalAction_Base
     {
-        [SerializeField] Vector3 defaultPosition;
         [SerializeField] int minWanderDistance = 5;
         [SerializeField] int maxWanderDistance = 20;
         GridPosition wanderGridPosition;

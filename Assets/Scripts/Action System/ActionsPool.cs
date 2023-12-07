@@ -10,7 +10,7 @@ namespace UnitSystem.ActionSystem
     {
         public static ActionsPool Instance;
 
-        static List<BaseAction> actions = new List<BaseAction>();
+        static List<BaseAction> actions = new();
 
         [SerializeField] int amountToPool = 0;
 

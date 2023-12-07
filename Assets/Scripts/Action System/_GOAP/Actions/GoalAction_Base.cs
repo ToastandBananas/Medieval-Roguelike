@@ -5,7 +5,7 @@ using UnitSystem.ActionSystem.GOAP.Goals;
 
 namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
-    public class GoalAction_Base : MonoBehaviour
+    public abstract class GoalAction_Base : MonoBehaviour
     {
         protected Unit unit;
         protected NPCActionHandler npcActionHandler;
@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
         }
 
-        public virtual List<Type> SupportedGoals() => null;
+        public abstract List<Type> SupportedGoals();
 
         public virtual float Cost() => 0f;
 

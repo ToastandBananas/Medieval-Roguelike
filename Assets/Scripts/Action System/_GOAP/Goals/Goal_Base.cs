@@ -3,21 +3,23 @@ using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.Goals
 {
-    public class Goal_Base : MonoBehaviour
+    public abstract class Goal_Base : MonoBehaviour
     {
         protected Unit unit;
+        protected GoalPlanner goalPlanner;
         protected GoalAction_Base linkedGoalAction;
 
         protected readonly int defaultStatePriority = 20;
 
-        void Awake()
+        protected virtual void Awake()
         {
             unit = GetComponentInParent<Unit>();
+            goalPlanner = unit.UnitActionHandler.NPCActionHandler.GoalPlanner;
         }
 
-        public virtual bool CanRun() => false;
+        public abstract bool CanRun();
 
-        public virtual int CalculatePriority() => -1;
+        public abstract int CalculatePriority();
 
         public virtual void OnGoalActivated(GoalAction_Base linkedGoalAction) => this.linkedGoalAction = linkedGoalAction;
 

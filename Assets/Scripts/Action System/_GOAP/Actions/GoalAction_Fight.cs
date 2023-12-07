@@ -23,7 +23,12 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Fight) });
         List<NPCAIAction> npcAIActions = new();
 
-        Goal_Fight fightGoal;
+        public GoalAction_Flee FleeAction { get; private set; }
+
+        void Start()
+        {
+            FleeAction = npcActionHandler.GoalPlanner.GetGoalAction(typeof(GoalAction_Flee)) as GoalAction_Flee;
+        }
 
         public override List<Type> SupportedGoals() => supportedGoals;
 
@@ -32,8 +37,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         public override void OnActivated(Goal_Base linkedGoal)
         {
             base.OnActivated(linkedGoal);
-
-            fightGoal = (Goal_Fight)linkedGoal;
             Fight();
         }
 
@@ -109,9 +112,13 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                         npcActionHandler.GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
                     }
-                    else
+                    else if (FleeAction != null)
+                    {
                         // Else flee somewhere
-                        npcActionHandler.StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                        FleeAction.StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
+                        npcActionHandler.DetermineAction();
+                        return;
+                    }
                 }
             }
 
@@ -121,7 +128,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 {
                     SetTargetEnemyUnit(null);
                     unit.StateController.SetToDefaultState();
-                    npcActionHandler.GoalPlanner.DetermineGoal();
+                    npcActionHandler.DetermineAction();
                 }
                 else
                     npcActionHandler.MoveAction.QueueAction(LevelGrid.GetGridPosition(npcActionHandler.DefaultPosition));
@@ -139,12 +146,15 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
             FindBestTargetEnemy();
 
+            if (unit.StateController.CurrentState == GoalState.Flee)
+                return;
+
             // If there's no target enemy Unit, try to find one, else switch States
             if (npcActionHandler.TargetEnemyUnit == null || npcActionHandler.TargetEnemyUnit.Health.IsDead)
             {
                 SetTargetEnemyUnit(null);
                 unit.StateController.SetToDefaultState();
-                npcActionHandler.GoalPlanner.DetermineGoal();
+                npcActionHandler.DetermineAction();
                 return;
             }
 
@@ -249,7 +259,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public void StartFight()
         {
-            unit.StateController.SetCurrentState(ActionState.Fight);
+            unit.StateController.SetCurrentState(GoalState.Fight);
             FindBestTargetEnemy();
             npcActionHandler.ClearActionQueue(false);
 
@@ -257,7 +267,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             {
                 SetTargetEnemyUnit(null);
                 unit.StateController.SetToDefaultState();
-                npcActionHandler.GoalPlanner.DetermineGoal();
+                npcActionHandler.DetermineAction();
                 return;
             }
         }
@@ -266,7 +276,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         {
             if (npcActionHandler.TargetEnemyUnit == null)
             {
-                npcActionHandler.GoalPlanner.DetermineGoal();
+                npcActionHandler.DetermineAction();
                 return;
             }
 
@@ -325,8 +335,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     }
                     else
                     {
-                        npcActionHandler.StartFlee(unit.Vision.GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance);
-                        npcActionHandler.GoalPlanner.DetermineGoal();
+                        npcActionHandler.GoalPlanner.FleeAction.StartFlee(unit.Vision.GetClosestEnemy(true), npcActionHandler.GoalPlanner.FleeAction.DefaultFleeDistance);
+                        npcActionHandler.DetermineAction();
                     }
                 }
             }

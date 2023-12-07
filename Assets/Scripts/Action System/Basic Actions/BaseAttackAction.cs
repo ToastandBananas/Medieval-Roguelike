@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem.Actions
             Unit.UnitActionHandler.SetIsAttacking(true);
             Unit.Stats.UseEnergy(InitialEnergyCost());
             if (Unit.IsPlayer && TargetEnemyUnit != null)
-                TargetEnemyUnit.UnitActionHandler.NPCActionHandler.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
+                TargetEnemyUnit.UnitActionHandler.NPCActionHandler.GoalPlanner.FightAction.SetStartChaseGridPosition(TargetEnemyUnit.GridPosition);
         }
 
         protected void SetTargetEnemyUnit()

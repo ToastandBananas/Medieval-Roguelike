@@ -7,6 +7,7 @@ using GridSystem;
 using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using Utilities;
+using UnitSystem.ActionSystem.GOAP.GoalActions;
 
 namespace UnitSystem.ActionSystem.Actions
 {
@@ -309,14 +310,13 @@ namespace UnitSystem.ActionSystem.Actions
             else // If NPC
             {
                 // If they're trying to attack
-                if (Unit.StateController.CurrentState == ActionState.Fight && Unit.UnitActionHandler.TargetEnemyUnit != null)
+                if (Unit.StateController.CurrentState == GoalState.Fight && Unit.UnitActionHandler.TargetEnemyUnit != null)
                 {
                     // If they're in range, stop moving and attack
                     if (Unit.UnitActionHandler.IsInAttackRange(Unit.UnitActionHandler.TargetEnemyUnit, false))
                     {
                         Unit.UnitAnimator.StopMovingForward();
-                        NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
-                        npcActionHandler.ChooseCombatAction();
+                        Unit.UnitActionHandler.NPCActionHandler.GoalPlanner.FightAction.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
                     else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead == false && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
@@ -368,10 +368,11 @@ namespace UnitSystem.ActionSystem.Actions
             if (Unit.IsNPC && path.vectorPath.Count == 0)
             {
                 NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
-                if (Unit.StateController.CurrentState == ActionState.Patrol)
+                GoalAction_Patrol patrolAction = npcActionHandler.GoalPlanner.GetGoalAction(typeof(GoalAction_Patrol)) as GoalAction_Patrol;
+                if (patrolAction != null && Unit.StateController.CurrentState == GoalState.Patrol)
                 {
-                    GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(npcActionHandler.PatrolPoints()[npcActionHandler.CurrentPatrolPointIndex]);
-                    npcActionHandler.IncreasePatrolPointIndex();
+                    GridPosition patrolPointGridPosition = LevelGrid.GetGridPosition(patrolAction.PatrolPoints[patrolAction.CurrentPatrolPointIndex]);
+                    patrolAction.IncreasePatrolPointIndex();
                     FinalTargetGridPosition = patrolPointGridPosition;
                 }
 
@@ -454,10 +455,12 @@ namespace UnitSystem.ActionSystem.Actions
 
                 if (Unit.IsNPC)
                 {
-                    if (Unit.StateController.CurrentState == ActionState.Patrol)
+                    if (Unit.StateController.CurrentState == GoalState.Patrol)
                     {
                         NPCActionHandler npcActionHandler = Unit.UnitActionHandler as NPCActionHandler;
-                        npcActionHandler.AssignNextPatrolTargetPosition();
+                        GoalAction_Patrol patrolAction = npcActionHandler.GoalPlanner.GetGoalAction(typeof(GoalAction_Patrol)) as GoalAction_Patrol;
+                        if (patrolAction != null)
+                            patrolAction.AssignNextPatrolTargetPosition();
                     }
                 }
             }

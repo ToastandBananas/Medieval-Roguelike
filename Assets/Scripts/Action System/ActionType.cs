@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem
         public Sprite ActionIcon => actionIcon;
         public Sprite CancelActionIcon => cancelActionIcon;
 
-        readonly string actionTypeNamespace = "UnitSystem.ActionSystem.Action.";
+        readonly string actionTypeNamespace = "UnitSystem.ActionSystem.Actions.";
 
         // Convert the stored string back to a Type
         public Type GetActionType() => Type.GetType(actionTypeNamespace + actionTypeName);

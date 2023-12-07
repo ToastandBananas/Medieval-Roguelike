@@ -272,17 +272,14 @@ namespace UnitSystem
             }
 
             // Flee or Fight if not already doing so, if there are now enemies visible to this NPC
-            if (unit.IsNPC && unit.StateController.CurrentState != ActionState.Flee && unit.StateController.CurrentState != ActionState.Fight)
+            /*if (knownEnemies.Count > 0 && unit.IsNPC && unit.StateController.CurrentState != GoalState.Flee && unit.StateController.CurrentState != GoalState.Fight)
             {
-                if (knownEnemies.Count > 0)
-                {
-                    NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
-                    if (npcActionHandler.ShouldAlwaysFleeCombat())
-                        npcActionHandler.StartFlee(GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance);
-                    else
-                        npcActionHandler.StartFight();
-                }
-            }
+                NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
+                if (npcActionHandler.ShouldAlwaysFleeCombat)
+                    npcActionHandler.StartFlee(GetClosestEnemy(true), npcActionHandler.DefaultFleeDistance);
+                else
+                    npcActionHandler.StartFight();
+            }*/
         }
 
         void UpdateVisibleUnits()
@@ -459,22 +456,27 @@ namespace UnitSystem
                 knownAllies.Remove(deadUnit);
         }
 
-        public Unit GetClosestEnemy(bool includeTargetEnemy)
+        public Unit GetClosestEnemy(bool includeTargetEnemy, float maxDistance = Mathf.Infinity)
         {
-            Unit closestEnemy = unit.UnitActionHandler.TargetEnemyUnit;
+            Unit closestEnemy = null;
             float closestEnemyDistance = 1000000;
-            if (includeTargetEnemy && unit.UnitActionHandler.TargetEnemyUnit != null)
-                closestEnemyDistance = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
+            if (includeTargetEnemy && unit.UnitActionHandler.TargetEnemyUnit != null && !unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead)
+            {
+                float distToTargetEnemy = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
+                if (distToTargetEnemy <= maxDistance)
+                {
+                    closestEnemy = unit.UnitActionHandler.TargetEnemyUnit;
+                    closestEnemyDistance = distToTargetEnemy;
+                }
+            }
+
             for (int i = 0; i < knownEnemies.Count; i++)
             {
-                if (unit.UnitActionHandler.TargetEnemyUnit != null)
-                {
-                    if (unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead || (includeTargetEnemy == false && knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit))
-                        continue;
-                }
+                if (unit.UnitActionHandler.TargetEnemyUnit != null && (unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead || (!includeTargetEnemy && knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit)))
+                    continue;
 
-                float distToEnemy = Vector3.Distance(transform.position, knownEnemies[i].transform.position);
-                if (distToEnemy < closestEnemyDistance)
+                float distToEnemy = Vector3.Distance(unit.WorldPosition, knownEnemies[i].WorldPosition);
+                if (distToEnemy < closestEnemyDistance && distToEnemy <= maxDistance)
                 {
                     closestEnemy = knownEnemies[i];
                     closestEnemyDistance = distToEnemy;

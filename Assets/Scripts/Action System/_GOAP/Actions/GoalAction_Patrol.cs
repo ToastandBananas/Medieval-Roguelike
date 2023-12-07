@@ -111,11 +111,11 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 Debug.LogWarning("No patrol points set for " + name);
                 patrolIterationCount = 0;
 
-                if (unit.StateController.DefaultState() == ActionState.Patrol)
-                    unit.StateController.ChangeDefaultState(ActionState.Idle);
+                if (unit.StateController.DefaultState == GoalState.Patrol)
+                    unit.StateController.ChangeDefaultState(GoalState.Idle);
 
-                unit.StateController.SetCurrentState(ActionState.Idle);
-                npcActionHandler.GoalPlanner.DetermineGoal();
+                unit.StateController.SetCurrentState(GoalState.Idle);
+                npcActionHandler.DetermineAction();
             }
         }
 
@@ -159,7 +159,9 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public void SetHasAlternativePatrolPoint(bool hasAlternativePatrolPoint) => this.hasAlternativePatrolPoint = hasAlternativePatrolPoint;
 
-        public Vector3[] PatrolPoints() => patrolPoints;
+        public Vector3[] PatrolPoints => patrolPoints;
+
+        public int PatrolPointCount => patrolPoints.Length;
         #endregion
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnitSystem.ActionSystem.GOAP.Goals;
 using UnityEngine;
@@ -12,10 +13,22 @@ namespace UnitSystem.ActionSystem.GOAP
         Goal_Base activeGoal;
         GoalAction_Base activeGoalAction;
 
+        // Cache commonly accessed actions that most NPCs will have
+        public GoalAction_Fight FightAction { get; private set; }
+        public GoalAction_Flee FleeAction { get; private set; }
+        public GoalAction_InspectSound InspectSoundAction { get; private set; }
+
         void Awake()
         {
             Goals = GetComponents<Goal_Base>();
             GoalActions = GetComponentsInChildren<GoalAction_Base>();
+        }
+
+        void Start()
+        {
+            FightAction = GetGoalAction(typeof(GoalAction_Fight)) as GoalAction_Fight;
+            FleeAction = GetGoalAction(typeof(GoalAction_Flee)) as GoalAction_Flee;
+            InspectSoundAction = GetGoalAction(typeof(GoalAction_InspectSound)) as GoalAction_InspectSound;
         }
 
         public void DetermineGoal()
@@ -94,6 +107,26 @@ namespace UnitSystem.ActionSystem.GOAP
             // Tick the action
             if (activeGoalAction != null)
                 activeGoalAction.OnTick();
+        }
+
+        public Goal_Base GetGoal(Type goalType)
+        {
+            for (int i = 0; i < Goals.Length; i++)
+            {
+                if (Goals[i].GetType() == goalType)
+                    return Goals[i];
+            }
+            return null;
+        }
+
+        public GoalAction_Base GetGoalAction(Type goalType)
+        {
+            for (int i = 0; i < GoalActions.Length; i++)
+            {
+                if (GoalActions[i].GetType() == goalType)
+                    return GoalActions[i];
+            }
+            return null;
         }
     }
 }

@@ -2,53 +2,49 @@ using UnityEngine;
 
 namespace UnitSystem.ActionSystem
 {
-    public enum ActionState { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
+    public enum GoalState { Idle, Patrol, Wander, Follow, InspectSound, Fight, Flee, Hunt, FindFood }
 
     public class StateController : MonoBehaviour
     {
-        [SerializeField] ActionState defaultState;
-        public ActionState CurrentState { get; private set; }
+        [SerializeField] GoalState defaultState;
+        public GoalState CurrentState { get; private set; }
 
         Unit unit;
-        NPCActionHandler npcActionHandler;
+        //NPCActionHandler npcActionHandler;
 
         void Start()
         {
             unit = GetComponent<Unit>();
-            npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
+            //npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
 
-            if (DefaultStateInvalid())
+            if (DefaultStateInvalid)
             {
                 Debug.LogWarning(unit.name + "'s default State is <" + defaultState.ToString() + "> which is an invalid default State to have. Fix me!");
-                ChangeDefaultState(ActionState.Idle);
+                ChangeDefaultState(GoalState.Idle);
             }
 
             SetToDefaultState();
         }
 
-        public void SetCurrentState(ActionState state)
-        {
-            npcActionHandler.ResetToDefaults();
-            CurrentState = state;
-        }
+        public void SetCurrentState(GoalState state) => CurrentState = state;
 
         public void SetToDefaultState()
         {
-            if (npcActionHandler.shouldFollowLeader && npcActionHandler.Leader() != null)
-                SetCurrentState(ActionState.Follow);
-            else
-            {
-                if (DefaultStateInvalid())
-                    ChangeDefaultState(ActionState.Idle);
+            //if (npcActionHandler.ShouldFollowLeader && npcActionHandler.Leader != null)
+                //SetCurrentState(GoalState.Follow);
+            //else
+            //{
+                if (DefaultStateInvalid)
+                    ChangeDefaultState(GoalState.Idle);
 
                 SetCurrentState(defaultState);
-            }
+            //}
         }
 
-        bool DefaultStateInvalid() => defaultState == ActionState.Fight || defaultState == ActionState.Flee || defaultState == ActionState.InspectSound;
+        bool DefaultStateInvalid => defaultState == GoalState.Fight || defaultState == GoalState.Flee || defaultState == GoalState.InspectSound;
 
-        public ActionState DefaultState() => defaultState;
+        public GoalState DefaultState => defaultState;
 
-        public void ChangeDefaultState(ActionState newDefaultState) => defaultState = newDefaultState;
+        public void ChangeDefaultState(GoalState newDefaultState) => defaultState = newDefaultState;
     }
 }
