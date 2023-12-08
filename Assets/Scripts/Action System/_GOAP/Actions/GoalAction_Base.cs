@@ -9,7 +9,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
     {
         protected Unit unit;
         protected NPCActionHandler npcActionHandler;
-        protected Goal_Base linkedGoal;
+        public Goal_Base LinkedGoal { get; protected set; }
 
         void Awake()
         {
@@ -21,10 +21,11 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public virtual float Cost() => 0f;
 
-        public virtual void OnActivated(Goal_Base linkedGoal) => this.linkedGoal = linkedGoal;
+        public virtual void OnActivated(Goal_Base linkedGoal) => this.LinkedGoal = linkedGoal;
 
-        public virtual void OnDeactivated() => linkedGoal = null;
+        public virtual void OnDeactivated() => LinkedGoal = null;
 
-        public virtual void OnTick() { }
+        /// <summary>This is where the logic for the action should go.</summary>
+        public abstract void OnTick();
     }
 }

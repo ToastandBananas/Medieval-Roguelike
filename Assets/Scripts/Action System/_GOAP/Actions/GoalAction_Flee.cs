@@ -18,9 +18,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Flee) });
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             Flee();
         }
 
@@ -38,7 +37,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             // If there's no Unit to flee from or if the Unit to flee from died
             if (unitToFleeFrom == null || unitToFleeFrom.Health.IsDead)
             {
-                unit.StateController.SetToDefaultState(); // Variables are reset in this method
+                unit.StateController.SetToDefaultState();
                 npcActionHandler.DetermineAction();
                 return;
             }
@@ -48,7 +47,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             // If the Unit has fled far enough
             if (distanceFromUnitToFleeFrom >= fleeDistance)
             {
-                unit.StateController.SetToDefaultState(); // Variables are also reset in this method
+                unit.StateController.SetToDefaultState();
                 npcActionHandler.DetermineAction();
                 return;
             }
@@ -74,7 +73,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public void StartFlee(Unit unitToFleeFrom, int fleeDistance)
         {
-            if (unitToFleeFrom == null)
+            if (unitToFleeFrom == null || unitToFleeFrom.Health.IsDead)
                 return;
 
             unit.StateController.SetCurrentState(GoalState.Flee);

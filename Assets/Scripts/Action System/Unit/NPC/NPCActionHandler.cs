@@ -130,7 +130,6 @@ namespace UnitSystem.ActionSystem
                 {
                     if (TargetEnemyUnit.Health.IsDead)
                     {
-                        Unit.StateController.SetToDefaultState();
                         CancelActions();
                         TurnManager.Instance.FinishTurn(Unit);
                         return;

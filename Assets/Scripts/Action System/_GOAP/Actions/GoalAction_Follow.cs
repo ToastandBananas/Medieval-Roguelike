@@ -18,9 +18,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override float Cost() => 0f;
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             Follow();
         }
 
@@ -31,7 +30,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             {
                 Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
                 shouldFollowLeader = false;
-                unit.StateController.SetToDefaultState();
                 npcActionHandler.DetermineAction();
                 return;
             }

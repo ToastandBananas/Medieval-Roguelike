@@ -5,7 +5,9 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 {
     public class Goal_Flee : Goal_Base
     {
+        [Tooltip("Needs to remain higher than fight goal priority")]
         [SerializeField] int fleePriority = 80;
+
         GoalAction_Flee fleeAction;
 
         void Start()
@@ -17,6 +19,12 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
         {
             if (fleeAction.UnitToFleeFrom != null && fleeAction.FledFarEnough)
                 fleeAction.ResetToDefaults();
+        }
+
+        public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
+        {
+            base.OnGoalActivated(linkedGoalAction);
+            unit.StateController.SetCurrentState(GoalState.Flee);
         }
 
         public override int CalculatePriority()

@@ -20,9 +20,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override float Cost() => 0f;
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             Patrol();
         }
 
@@ -114,7 +113,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 if (unit.StateController.DefaultState == GoalState.Patrol)
                     unit.StateController.ChangeDefaultState(GoalState.Idle);
 
-                unit.StateController.SetCurrentState(GoalState.Idle);
                 npcActionHandler.DetermineAction();
             }
         }

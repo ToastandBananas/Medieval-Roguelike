@@ -106,7 +106,10 @@ namespace UnitSystem.ActionSystem.GOAP
 
             // Tick the action
             if (activeGoalAction != null)
+            {
+                //Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()}");
                 activeGoalAction.OnTick();
+            }
         }
 
         public Goal_Base GetGoal(Type goalType)

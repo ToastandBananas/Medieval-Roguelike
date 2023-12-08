@@ -12,9 +12,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override float Cost() => 0f;
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             unit.UnitActionHandler.SkipTurn();
         }
     }

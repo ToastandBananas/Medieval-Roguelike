@@ -211,7 +211,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < ItemData.Item.Equipment.ActionTypes.Length; i++)
                 {
-                    BaseAction baseAction = unit.UnitActionHandler.GetActionFromType(ItemData.Item.Equipment.ActionTypes[i]);
+                    BaseAction baseAction = unit.UnitActionHandler.GetActionFromActionType(ItemData.Item.Equipment.ActionTypes[i]);
                     if (baseAction != null && baseAction.ActionBarSlot != null)
                         baseAction.ActionBarSlot.UpdateIcon();
                 }

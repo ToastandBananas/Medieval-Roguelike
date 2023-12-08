@@ -1,5 +1,4 @@
 using UnitSystem.ActionSystem.GOAP.GoalActions;
-using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.Goals
 {
@@ -10,6 +9,12 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
         void Start()
         {
             patrolAction = (GoalAction_Patrol)goalPlanner.GetGoalAction(typeof(GoalAction_Patrol));
+        }
+
+        public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
+        {
+            base.OnGoalActivated(linkedGoalAction);
+            unit.StateController.SetCurrentState(GoalState.Patrol);
         }
 
         public override int CalculatePriority() => unit.StateController.DefaultState == GoalState.Patrol ? defaultStatePriority : 0;

@@ -15,8 +15,8 @@ namespace Utilities
             // PauseWhenLessThanTargetFPS(30);
             if (Input.GetKeyDown(KeyCode.T))
             {
-                DebugPause();
-                // PlayTestSound();
+                // DebugPause();
+                PlayTestSound();
             }
         }
 

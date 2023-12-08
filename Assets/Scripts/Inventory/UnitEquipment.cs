@@ -1200,7 +1200,7 @@ namespace InventorySystem
 
         public bool ShieldEquipped => myUnit.UnitMeshManager.GetHeldShield() != null;
 
-        public bool IsUnarmed => (MeleeWeaponEquipped == false && RangedWeaponEquipped == false) || (RangedWeaponEquipped && HasValidAmmunitionEquipped() == false);
+        public bool IsUnarmed => (!MeleeWeaponEquipped && (!RangedWeaponEquipped || !HasValidAmmunitionEquipped()));
 
         public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 

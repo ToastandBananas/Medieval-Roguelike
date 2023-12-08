@@ -9,14 +9,10 @@ namespace UnitSystem.ActionSystem
         [SerializeField] GoalState defaultState;
         public GoalState CurrentState { get; private set; }
 
-        Unit unit;
-        //NPCActionHandler npcActionHandler;
+        [SerializeField] Unit unit;
 
         void Start()
         {
-            unit = GetComponent<Unit>();
-            //npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
-
             if (DefaultStateInvalid)
             {
                 Debug.LogWarning(unit.name + "'s default State is <" + defaultState.ToString() + "> which is an invalid default State to have. Fix me!");
@@ -30,18 +26,12 @@ namespace UnitSystem.ActionSystem
 
         public void SetToDefaultState()
         {
-            //if (npcActionHandler.ShouldFollowLeader && npcActionHandler.Leader != null)
-                //SetCurrentState(GoalState.Follow);
-            //else
-            //{
-                if (DefaultStateInvalid)
-                    ChangeDefaultState(GoalState.Idle);
-
-                SetCurrentState(defaultState);
-            //}
+            if (DefaultStateInvalid)
+                ChangeDefaultState(GoalState.Idle);
+            SetCurrentState(defaultState);
         }
 
-        bool DefaultStateInvalid => defaultState == GoalState.Fight || defaultState == GoalState.Flee || defaultState == GoalState.InspectSound;
+        bool DefaultStateInvalid => defaultState == GoalState.Fight || defaultState == GoalState.Flee || defaultState == GoalState.InspectSound || defaultState == GoalState.FindFood;
 
         public GoalState DefaultState => defaultState;
 

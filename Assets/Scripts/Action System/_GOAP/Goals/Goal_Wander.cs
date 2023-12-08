@@ -1,19 +1,17 @@
 using UnitSystem.ActionSystem.GOAP.GoalActions;
-using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.Goals
 {
     public class Goal_Wander : Goal_Base
     {
-        GoalAction_Wander wanderAction;
-
-        void Start()
+        public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
         {
-            wanderAction = (GoalAction_Wander)goalPlanner.GetGoalAction(typeof(GoalAction_Wander));
+            base.OnGoalActivated(linkedGoalAction);
+            unit.StateController.SetCurrentState(GoalState.Wander);
         }
 
         public override int CalculatePriority() => unit.StateController.DefaultState == GoalState.Wander ? defaultStatePriority : 0;
 
-        public override bool CanRun() => wanderAction != null;
+        public override bool CanRun() => true;
     }
 }

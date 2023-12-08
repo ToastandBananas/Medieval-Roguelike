@@ -12,6 +12,12 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
             followAction = (GoalAction_Follow)goalPlanner.GetGoalAction(typeof(GoalAction_Follow));
         }
 
+        public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
+        {
+            base.OnGoalActivated(linkedGoalAction);
+            unit.StateController.SetCurrentState(GoalState.Follow);
+        }
+
         public override int CalculatePriority()
         {
             if (followAction.ShouldFollowLeader) // If should follow leader, this should have a higher priority regardless of the Unit's default goal state

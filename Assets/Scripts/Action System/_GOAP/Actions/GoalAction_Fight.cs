@@ -1,5 +1,4 @@
 using GridSystem;
-using InteractableObjects;
 using InventorySystem;
 using Pathfinding.Util;
 using System;
@@ -18,7 +17,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         [SerializeField] float maxChaseDistance = 25f;
         public float MaxChaseDistance => maxChaseDistance;
         public GridPosition StartChaseGridPosition { get; private set; }
-        bool shouldStopChasing;
+        public bool ShouldStopChasing { get; private set; }
 
         readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Fight) });
         List<NPCAIAction> npcAIActions = new();
@@ -32,67 +31,17 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override List<Type> SupportedGoals() => supportedGoals;
 
-        public override float Cost() => 0f;
+        public override float Cost() => 10;
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             Fight();
-        }
-
-        public override void OnDeactivated()
-        {
-            base.OnDeactivated();
-            shouldStopChasing = false;
         }
 
         #region Fight
         void Fight()
         {
-            if (unit.UnitEquipment.IsUnarmed)
-            {
-                bool weaponNearby = TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon);
-
-                // If a weapon was found and it's next to this Unit, pick it up (the weapon is likely there from fumbling it)
-                if (weaponNearby && distanceToWeapon <= LevelGrid.diaganolDistance)
-                {
-                    npcActionHandler.InteractAction.QueueAction(foundLooseWeapon);
-                    return;
-                }
-
-                // If no weapons whatsoever are equipped
-                if (unit.UnitEquipment.OtherWeaponSet_IsEmpty())
-                {
-                    // Equip any weapon from their inventory if they have one
-                    if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
-                    {
-                        npcActionHandler.GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
-                        return;
-                    }
-                    // Else, try pickup the nearby weapon
-                    else if (weaponNearby)
-                    {
-                        npcActionHandler.InteractAction.QueueAction(foundLooseWeapon);
-                        return;
-                    }
-                }
-                else // If there are weapons in the other weapon set
-                {
-                    // Swap to their melee weapon set if they have one
-                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
-                    {
-                        npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
-                        return;
-                    }
-                    // Else, swap to their ranged weapon set if they have ammo
-                    else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
-                    {
-                        npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
-                        return;
-                    }
-                }
-            }
-            else if (unit.UnitEquipment.RangedWeaponEquipped)
+            if (unit.UnitEquipment.RangedWeaponEquipped)
             {
                 Unit closestEnemy = unit.Vision.GetClosestEnemy(true);
                 float minShootRange = unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
@@ -122,7 +71,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 }
             }
 
-            if (shouldStopChasing)
+            if (ShouldStopChasing)
             {
                 if (unit.GridPosition == LevelGrid.GetGridPosition(npcActionHandler.DefaultPosition))
                 {
@@ -138,7 +87,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             {
                 if (Vector3.Distance(StartChaseGridPosition.WorldPosition, unit.WorldPosition) >= maxChaseDistance)
                 {
-                    shouldStopChasing = true;
+                    ShouldStopChasing = true;
                     npcActionHandler.MoveAction.QueueAction(LevelGrid.GetGridPosition(npcActionHandler.DefaultPosition));
                     return;
                 }
@@ -153,7 +102,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             if (npcActionHandler.TargetEnemyUnit == null || npcActionHandler.TargetEnemyUnit.Health.IsDead)
             {
                 SetTargetEnemyUnit(null);
-                unit.StateController.SetToDefaultState();
                 npcActionHandler.DetermineAction();
                 return;
             }
@@ -167,7 +115,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         public void SetStartChaseGridPosition(GridPosition newGridPosition)
         {
             StartChaseGridPosition = newGridPosition;
-            shouldStopChasing = false;
+            ShouldStopChasing = false;
         }
 
         public void ChooseCombatAction() => StartCoroutine(ChooseCombatAction_Coroutine());
@@ -254,21 +202,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
                 ListPool<NPCAIAction>.Release(filteredNPCAIActions);
                 ListPool<int>.Release(accumulatedWeights);
-            }
-        }
-
-        public void StartFight()
-        {
-            unit.StateController.SetCurrentState(GoalState.Fight);
-            FindBestTargetEnemy();
-            npcActionHandler.ClearActionQueue(false);
-
-            if (npcActionHandler.TargetEnemyUnit == null || npcActionHandler.TargetEnemyUnit.Health.IsDead)
-            {
-                SetTargetEnemyUnit(null);
-                unit.StateController.SetToDefaultState();
-                npcActionHandler.DetermineAction();
-                return;
             }
         }
 
@@ -360,51 +293,15 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             SetTargetEnemyUnit(closestEnemy);
         }
 
-        void SetTargetEnemyUnit(Unit target)
+        public void SetTargetEnemyUnit(Unit target)
         {
             if (target != null && target != npcActionHandler.TargetEnemyUnit)
             {
                 StartChaseGridPosition = unit.GridPosition;
-                shouldStopChasing = false;
+                ShouldStopChasing = false;
             }
 
             npcActionHandler.SetTargetEnemyUnit(target);
-        }
-
-        public bool TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon)
-        {
-            LooseItem closestLooseWeapon = unit.Vision.GetClosestWeapon(out float distanceToClosestWeapon);
-            if (closestLooseWeapon == null)
-            {
-                foundLooseWeapon = null;
-                distanceToWeapon = distanceToClosestWeapon;
-                return false;
-            }
-
-            if (closestLooseWeapon.ItemData.Item is RangedWeapon)
-            {
-                if (unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon))
-                {
-                    foundLooseWeapon = closestLooseWeapon;
-                    distanceToWeapon = distanceToClosestWeapon;
-                    return true;
-                }
-                else
-                {
-                    LooseItem closestLooseMeleeWeapon = unit.Vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
-                    if (closestLooseMeleeWeapon != null)
-                    {
-                        foundLooseWeapon = closestLooseMeleeWeapon;
-                        distanceToWeapon = distanceToClosestMeleeWeapon;
-                        return true;
-                    }
-                }
-
-            }
-
-            foundLooseWeapon = closestLooseWeapon;
-            distanceToWeapon = distanceToClosestWeapon;
-            return true;
         }
         #endregion
     }

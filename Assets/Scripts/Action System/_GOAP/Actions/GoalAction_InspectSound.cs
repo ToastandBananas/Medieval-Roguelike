@@ -17,9 +17,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_InspectSound) });
 
-        public override void OnActivated(Goal_Base linkedGoal)
+        public override void OnTick()
         {
-            base.OnActivated(linkedGoal);
             InspectSound();
         }
 

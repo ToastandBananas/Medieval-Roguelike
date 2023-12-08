@@ -18,40 +18,42 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 
         public override void OnTickGoal()
         {
-            if (unit.Vision.knownEnemies.Count == 0 || fightAction == null)
-                return;
-
             if (unit.UnitActionHandler.TargetEnemyUnit != null)
             {
-                // Check if the current target is still within the max chase distance (from the start chase position)
-                for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)
+                if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) >= fightAction.MaxChaseDistance)
                 {
-                    if (unit.Vision.knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit)
+                    Unit newTargetEnemy = unit.Vision.GetClosestEnemy(false);
+                    if (newTargetEnemy != null)
                     {
-                        if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) > fightAction.MaxChaseDistance)
-                            currentPriority = 0;
-                        else
-                            currentPriority = fightPriority;
+                        fightAction.SetTargetEnemyUnit(newTargetEnemy);
+                        currentPriority = fightPriority;
                         return;
                     }
-                }
 
-                // If not, clear our current target
-                unit.UnitActionHandler.SetTargetEnemyUnit(null);
+                    currentPriority = 0;
+                }
+                else
+                    currentPriority = fightPriority;
+                return;
             }
 
             // Acquire a new target if possible
-            for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)
+            Unit closestEnemy = unit.Vision.GetClosestEnemy(false);
+            if (closestEnemy != null)
             {
-                // Found a new target
-                if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= fightAction.MaxChaseDistance)
-                {
-                    currentPriority = fightPriority;
-                    return;
-                }
+                fightAction.SetTargetEnemyUnit(closestEnemy);
+                currentPriority = fightPriority;
+                return;
             }
 
             currentPriority = 0;
+        }
+
+        public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
+        {
+            base.OnGoalActivated(linkedGoalAction);
+            unit.StateController.SetCurrentState(GoalState.Fight);
+            fightAction.SetStartChaseGridPosition(unit.GridPosition);
         }
 
         public override void OnGoalDeactivated()
@@ -64,15 +66,15 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 
         public override bool CanRun()
         {
-            if (unit.Vision.knownEnemies.Count == 0 || fightAction == null)
+            if ((unit.Vision.knownEnemies.Count == 0 && unit.UnitActionHandler.TargetEnemyUnit == null) || fightAction == null)
                 return false;
 
             if (unit.UnitEquipment.IsUnarmed && !unit.Stats.CanFightUnarmed)
                 return false;
 
-            if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) <= fightAction.MaxChaseDistance || unit.Vision.knownEnemies.Count > 1)
-                return true;
-            return false;
+            if (Vector3.Distance(fightAction.StartChaseGridPosition.WorldPosition, unit.WorldPosition) >= fightAction.MaxChaseDistance)
+                return false;
+            return true;
         }
     }
 }

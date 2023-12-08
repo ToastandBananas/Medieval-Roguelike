@@ -468,7 +468,7 @@ namespace UnitSystem.ActionSystem
             return null;
         }
 
-        public BaseAction GetActionFromType(ActionType actionType)
+        public BaseAction GetActionFromActionType(ActionType actionType)
         {
             for (int i = 0; i < availableActions.Count; i++)
             {

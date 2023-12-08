@@ -513,8 +513,15 @@ namespace UnitSystem.ActionSystem
             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
             {
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
+
                 if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction && player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.IsInAttackRange(null, player.GridPosition, mouseGridPosition))
-                    ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up), mouseGridPosition.WorldPosition);
+                    ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), mouseGridPosition.WorldPosition);
+                else if (HighlightedUnit != null)
+                {
+                    ShootAction shootAction = player.UnitActionHandler.GetAction<ShootAction>();
+                    if (shootAction != null && shootAction.IsInAttackRange(HighlightedUnit, player.GridPosition, HighlightedUnit.GridPosition))
+                        ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), HighlightedUnit.WorldPosition + (HighlightedUnit.ShoulderHeight * Vector3.up));
+                }
             }
             else if (player.UnitEquipment.MeleeWeaponEquipped || player.Stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);
