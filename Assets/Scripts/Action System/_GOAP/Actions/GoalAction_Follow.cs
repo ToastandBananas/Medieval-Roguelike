@@ -12,12 +12,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         [SerializeField] bool shouldFollowLeader;
         public bool ShouldFollowLeader => shouldFollowLeader;
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Follow) });
-
-        public override List<Type> SupportedGoals() => supportedGoals;
-
-        public override float Cost() => 0f;
-
         public override void OnTick()
         {
             Follow();

@@ -16,8 +16,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         int fleeDistance;
         bool needsNewFleeDestination = true;
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Flee) });
-
         public override void OnTick()
         {
             Flee();
@@ -28,8 +26,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             base.OnDeactivated();
             ResetToDefaults();
         }
-
-        public override List<Type> SupportedGoals() => supportedGoals;
 
         #region Flee
         void Flee()

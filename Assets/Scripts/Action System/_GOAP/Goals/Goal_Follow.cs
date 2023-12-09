@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
@@ -7,10 +9,14 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
     {
         GoalAction_Follow followAction;
 
+        readonly List<Type> supportedGoalActions = new(new Type[] { typeof(GoalAction_Follow) });
+
         void Start()
         {
             followAction = (GoalAction_Follow)goalPlanner.GetGoalAction(typeof(GoalAction_Follow));
         }
+
+        public override List<Type> SupportedGoalActions() => supportedGoalActions;
 
         public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
         {

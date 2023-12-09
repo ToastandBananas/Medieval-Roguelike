@@ -6,7 +6,7 @@ namespace Utilities
 {
     public class StringUtilities : MonoBehaviour
     {
-        static StringBuilder stringBuilder = new StringBuilder();
+        static readonly StringBuilder stringBuilder = new();
 
         public static string EnumToSpacedString(Enum enumValue)
         {
@@ -29,6 +29,45 @@ namespace Utilities
         }
 
         public static string SplitTextIntoParagraphs(string originalText, int maxCharsPerLine)
+        {
+            stringBuilder.Clear();
+            int currentLineLength = 0;
+            bool insideTag = false;
+
+            foreach (char c in originalText)
+            {
+                // Check if we are entering or exiting a tag
+                if (c == '<') insideTag = true;
+                else if (c == '>') insideTag = false;
+
+                // Only process non-tag characters
+                if (!insideTag)
+                {
+                    if (c == ' ' && currentLineLength >= maxCharsPerLine)
+                    {
+                        // New line at space if line length exceeded
+                        stringBuilder.AppendLine();
+                        currentLineLength = 0;
+                    }
+                    else
+                    {
+                        // Add character to line
+                        stringBuilder.Append(c);
+                        currentLineLength++;
+                    }
+                }
+                else
+                {
+                    // Always add tag characters
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
+        }
+
+
+        /*public static string SplitTextIntoParagraphs(string originalText, int maxCharsPerLine)
         {
             stringBuilder.Clear();
             int currentLineLength = 0;
@@ -55,6 +94,6 @@ namespace Utilities
             }
 
             return stringBuilder.ToString();
-        }
+        }*/
     }
 }

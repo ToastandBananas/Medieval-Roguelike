@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Melee Action
   m_EditorClassIdentifier: 
   actionName: Melee Attack
-  actionTypeName: MeleeAction
+  actionTypeName: Action_Melee
   actionIcon: {fileID: 21300000, guid: 402420273b9f5c746a393a942beca69b, type: 3}
+  cancelActionIcon: {fileID: 0}

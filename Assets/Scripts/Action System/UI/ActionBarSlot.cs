@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem.UI
         [SerializeField] protected ActionBarSection actionBarSection = ActionBarSection.None;
 
         public ActionType ActionType { get; protected set; }
-        public BaseAction Action { get; protected set; }
+        public Action_Base Action { get; protected set; }
 
         protected PlayerActionHandler playerActionHandler;
 

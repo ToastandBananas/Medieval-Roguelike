@@ -14,21 +14,22 @@ namespace UnitSystem.ActionSystem
         /// <summary>The Units targeted by the last attack and the item they blocked with (if they successfully blocked).</summary>
         public Dictionary<Unit, HeldItem> TargetUnits { get; private set; }
 
-        public List<BaseAction> QueuedActions { get; private set; }
-        public BaseAttackAction QueuedAttack { get; private set; }
-        public BaseAction LastQueuedAction { get; protected set; }
+        public List<Action_Base> QueuedActions { get; private set; }
+        public Action_BaseAttack QueuedAttack { get; private set; }
+        public Action_Base LastQueuedAction { get; protected set; }
         public List<int> QueuedAPs { get; protected set; }
 
         [Header("Actions")]
         [SerializeField] Transform actionsParent;
         [SerializeField] List<ActionType> availableActionTypes = new();
-        protected List<BaseAction> availableActions = new();
-        protected List<BaseAttackAction> availableCombatActions = new();
+        protected List<Action_Base> availableActions = new();
+        protected List<Action_BaseAttack> availableCombatActions = new();
+        protected List<Action_BaseStance> availableStanceActions = new();
 
         // Cached Actions (actions that every Unit will have)
-        public InteractAction InteractAction { get; private set; }
-        public MoveAction MoveAction { get; private set; }
-        public TurnAction TurnAction { get; private set; }
+        public Action_Interact InteractAction { get; private set; }
+        public Action_Move MoveAction { get; private set; }
+        public Action_Turn TurnAction { get; private set; }
 
         public Unit Unit { get; private set; }
         public Unit TargetEnemyUnit { get; protected set; }
@@ -45,7 +46,7 @@ namespace UnitSystem.ActionSystem
         public virtual void Awake()
         {
             Unit = GetComponent<Unit>();
-            QueuedActions = new List<BaseAction>();
+            QueuedActions = new List<Action_Base>();
             QueuedAPs = new List<int>();
 
             // Determine which BaseActions are combat actions and add them to the combatActions list
@@ -54,15 +55,15 @@ namespace UnitSystem.ActionSystem
                 availableActionTypes[i].GetAction(Unit);
             }
 
-            InteractAction = GetAction<InteractAction>();
-            MoveAction = GetAction<MoveAction>();
-            TurnAction = GetAction<TurnAction>();
+            InteractAction = GetAction<Action_Interact>();
+            MoveAction = GetAction<Action_Move>();
+            TurnAction = GetAction<Action_Turn>();
 
             TargetUnits = new Dictionary<Unit, HeldItem>();
         }
 
         #region Action Queue
-        public virtual void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
+        public virtual void QueueAction(Action_Base action, bool addToFrontOfQueue = false)
         {
             //if (Unit.IsPlayer)
                 //Debug.Log(Unit.name + " queues: " + action.name + " for " + action.ActionPointsCost() + " AP");
@@ -79,7 +80,7 @@ namespace UnitSystem.ActionSystem
 
             for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
-                if ((action is MoveAction && QueuedActions[i] is BaseAttackAction) || (action is BaseAttackAction && QueuedActions[i] is MoveAction))
+                if ((action is Action_Move && QueuedActions[i] is Action_BaseAttack) || (action is Action_BaseAttack && QueuedActions[i] is Action_Move))
                 {
                     int actionIndex = QueuedActions.IndexOf(QueuedActions[i]);
                     QueuedActions.RemoveAt(actionIndex);
@@ -103,13 +104,13 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            if (action is BaseAttackAction)
+            if (action is Action_BaseAttack)
                 Unit.UnitAnimator.StopMovingForward();
 
             StartCoroutine(TryTakeTurn());
         }
 
-        public void RemoveActionFromQueue(BaseAction action)
+        public void RemoveActionFromQueue(Action_Base action)
         {
             if (QueuedActions.Contains(action))
             {
@@ -141,7 +142,7 @@ namespace UnitSystem.ActionSystem
 
         public void ForceQueueAP(int amountAP)
         {
-            QueuedActions.Add(GetAction<InventoryAction>()); // Use InventoryAction because it doesn't actually do anything in its TakeAction method
+            QueuedActions.Add(GetAction<Action_Inventory>()); // Use InventoryAction because it doesn't actually do anything in its TakeAction method
             QueuedAPs.Add(amountAP);
             StartCoroutine(TryTakeTurn());
         }
@@ -174,7 +175,7 @@ namespace UnitSystem.ActionSystem
 
         IEnumerator CancelActions_Coroutine()
         {
-            if (QueuedActions.Count > 0 && QueuedActions[0] is MoveAction == false)
+            if (QueuedActions.Count > 0 && QueuedActions[0] is Action_Move == false)
             {
                 while (IsPerformingAction)
                     yield return null;
@@ -234,7 +235,7 @@ namespace UnitSystem.ActionSystem
             QueuedAttack = null;
             for (int i = QueuedActions.Count - 1; i >= 0; i--)
             {
-                if (QueuedActions[i] is BaseAttackAction)
+                if (QueuedActions[i] is Action_BaseAttack)
                 {
                     QueuedActions.RemoveAt(i);
                     if (QueuedAPs.Count >= i + 1)
@@ -243,7 +244,7 @@ namespace UnitSystem.ActionSystem
             }
         }
 
-        public bool AttackQueuedNext() => QueuedActions.Count > 0 && QueuedActions[0] is BaseAttackAction;
+        public bool AttackQueuedNext() => QueuedActions.Count > 0 && QueuedActions[0] is Action_BaseAttack;
         #endregion
 
         #region Combat
@@ -251,17 +252,17 @@ namespace UnitSystem.ActionSystem
         {
             if (defaultCombatActionsOnly)
             {
-                if (Unit.UnitEquipment.RangedWeaponEquipped && GetAction<ShootAction>().IsValidAction() && Unit.SelectedAction is MeleeAction == false && GetAction<ShootAction>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
+                if (Unit.UnitEquipment.RangedWeaponEquipped && GetAction<Action_Shoot>().IsValidAction() && Unit.SelectedAction is Action_Melee == false && GetAction<Action_Shoot>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((Unit.SelectedAction is MeleeAction || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.Stats.CanFightUnarmed && (Unit.UnitEquipment.RangedWeaponEquipped == false || Unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<MeleeAction>().IsValidAction() && GetAction<MeleeAction>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
+                if ((Unit.SelectedAction is Action_Melee || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.Stats.CanFightUnarmed && (Unit.UnitEquipment.RangedWeaponEquipped == false || Unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<Action_Melee>().IsValidAction() && GetAction<Action_Melee>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else
             {
                 for (int i = 0; i < availableCombatActions.Count; i++)
                 {
-                    BaseAttackAction action = availableCombatActions[i];
+                    Action_BaseAttack action = availableCombatActions[i];
                     if (action.IsValidAction() && Unit.Stats.HasEnoughEnergy(action.InitialEnergyCost()) && action.IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                         return true;
                 }
@@ -269,7 +270,7 @@ namespace UnitSystem.ActionSystem
             return false;
         }
 
-        public bool TryDodgeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, BaseAttackAction attackAction, bool attackerUsingOffhand)
+        public bool TryDodgeAttack(Unit attackingUnit, HeldItem weaponAttackingWith, Action_BaseAttack attackAction, bool attackerUsingOffhand)
         {
             // If the attacker is in front of this Unit (greater chance to block)
             if (TurnAction.AttackerInFrontOfUnit(attackingUnit))
@@ -278,7 +279,7 @@ namespace UnitSystem.ActionSystem
                 bool attackDodged = random <= Unit.Stats.DodgeChance(attackingUnit, weaponAttackingWith, attackAction, attackerUsingOffhand, false);
                 if (attackDodged && weaponAttackingWith != null && weaponAttackingWith.CurrentHeldItemStance == HeldItemStance.SpearWall && Vector3.Distance(Unit.WorldPosition, attackingUnit.WorldPosition) <= LevelGrid.diaganolDistance)
                 {
-                    SpearWallAction spearWallAction = attackingUnit.UnitActionHandler.GetAction<SpearWallAction>();
+                    Action_SpearWall spearWallAction = attackingUnit.UnitActionHandler.GetAction<Action_SpearWall>();
                     if (spearWallAction != null)
                         spearWallAction.CancelAction();
                 }
@@ -457,7 +458,7 @@ namespace UnitSystem.ActionSystem
         }
         #endregion
 
-        public T GetAction<T>() where T : BaseAction
+        public T GetAction<T>() where T : Action_Base
         {
             foreach (ActionType actionType in availableActionTypes)
             {
@@ -468,7 +469,7 @@ namespace UnitSystem.ActionSystem
             return null;
         }
 
-        public BaseAction GetActionFromActionType(ActionType actionType)
+        public Action_Base GetActionFromActionType(ActionType actionType)
         {
             for (int i = 0; i < availableActions.Count; i++)
             {
@@ -515,7 +516,7 @@ namespace UnitSystem.ActionSystem
                 PreviousTargetEnemyGridPosition = target.GridPosition;
         }
 
-        public void SetQueuedAttack(BaseAttackAction attackAction, GridPosition targetAttackGridPosition)
+        public void SetQueuedAttack(Action_BaseAttack attackAction, GridPosition targetAttackGridPosition)
         {
             if (attackAction != null)
             {
@@ -545,7 +546,8 @@ namespace UnitSystem.ActionSystem
         public Transform ActionsParent => actionsParent;
 
         public List<ActionType> AvailableActionTypes => availableActionTypes;
-        public List<BaseAction> AvailableActions => availableActions;
-        public List<BaseAttackAction> AvailableCombatActions => availableCombatActions;
+        public List<Action_Base> AvailableActions => availableActions;
+        public List<Action_BaseAttack> AvailableCombatActions => availableCombatActions;
+        public List<Action_BaseStance> AvailableStanceActions => availableStanceActions;
     }
 }

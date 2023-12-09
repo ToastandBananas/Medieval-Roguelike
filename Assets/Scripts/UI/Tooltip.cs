@@ -5,7 +5,6 @@ using InventorySystem;
 using TMPro;
 using Utilities;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using System.Collections;
 using InteractableObjects;
@@ -20,7 +19,7 @@ namespace GeneralUI
         [SerializeField] Image image;
         [SerializeField] Button button;
 
-        StringBuilder stringBuilder = new StringBuilder();
+        readonly StringBuilder stringBuilder = new();
 
         readonly int maxCharactersPerLine_Title = 20;
         readonly int maxCharactersPerLine = 44;
@@ -217,14 +216,14 @@ namespace GeneralUI
             StartCoroutine(CalculatePosition(targetTransform));
         }
 
-        public void ShowUnitHitChanceTooltip(Unit targetUnit, BaseAction selectedAction)
+        public void ShowUnitHitChanceTooltip(Unit targetUnit, Action_Base selectedAction)
         {
-            if (selectedAction is BaseAttackAction)
+            if (selectedAction is Action_BaseAttack)
             {
                 if (targetUnit.Health.IsDead)
                     return;
 
-                float hitChance = UnitManager.player.Stats.HitChance(targetUnit, selectedAction as BaseAttackAction) * 100f;
+                float hitChance = UnitManager.player.Stats.HitChance(targetUnit, selectedAction as Action_BaseAttack) * 100f;
                 if (hitChance < 0f) 
                     hitChance = 0f;
                 else if (hitChance > 100f) 

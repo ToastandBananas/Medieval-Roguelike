@@ -64,13 +64,13 @@ namespace InventorySystem
             // In this case, the Player is dropping an item from a dead Unit's inventory
             if (unit.Health.IsDead)
             {
-                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
-                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+                UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
             }
             else
             {
-                unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
-                unit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
+                unit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
+                unit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
             }
 
             TooltipManager.UpdateLooseItemTooltips();
@@ -110,17 +110,17 @@ namespace InventorySystem
             if (unitEquipment.MyUnit.Health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
                 if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
-                    UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                UnitManager.player.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+                UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
             else
             {
                 // The context menu already accounts for unequipping AP cost by calling an UnequipAction
                 if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
-                    unitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                    unitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                unitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
+                unitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
             }
 
             float randomForceMagnitude = Random.Range(looseItem.RigidBody.mass * 0.8f, looseItem.RigidBody.mass * 3f);

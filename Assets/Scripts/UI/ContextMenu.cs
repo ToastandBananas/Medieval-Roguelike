@@ -246,7 +246,7 @@ namespace GeneralUI
         static void CreateThrowWeaponButtons(out int buttonCount)
         {
             buttonCount = 0;
-            ThrowAction throwAction = UnitManager.player.UnitActionHandler.GetAction<ThrowAction>();
+            Action_Throw throwAction = UnitManager.player.UnitActionHandler.GetAction<Action_Throw>();
             if (throwAction == null)
                 return;
 
@@ -316,8 +316,8 @@ namespace GeneralUI
                 || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.Stats.CanFightUnarmed == false))
                 return;
 
-            BaseAction selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is MoveAction == false && selectedAction.IsDefaultAttackAction == false) || (TargetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
+            Action_Base selectedAction = UnitManager.player.SelectedAction;
+            if ((selectedAction is Action_Move == false && selectedAction.IsDefaultAttackAction == false) || (TargetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();

@@ -5,7 +5,7 @@ namespace UnitSystem.ActionSystem
 {
     public class NPCAIAction
     {
-        public BaseAction baseAction;
+        public Action_Base baseAction;
         public GridPosition actionGridPosition;
         public int actionValue;
     }

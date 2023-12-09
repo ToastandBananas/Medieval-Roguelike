@@ -204,7 +204,7 @@ namespace GeneralUI
             playersLastDirection = UnitManager.player.UnitActionHandler.TurnAction.currentDirection;
         }
 
-        public static void ShowUnitHitChanceTooltips(GridPosition targetGridPosition, BaseAction selectedAction)
+        public static void ShowUnitHitChanceTooltips(GridPosition targetGridPosition, Action_Base selectedAction)
         {
             ClearUnitTooltips();
 

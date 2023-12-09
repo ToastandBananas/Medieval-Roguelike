@@ -14,12 +14,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         int patrolIterationCount;
         readonly int maxPatrolIterations = 5;
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Patrol) });
-
-        public override List<Type> SupportedGoals() => supportedGoals;
-
-        public override float Cost() => 0f;
-
         public override void OnTick()
         {
             Patrol();

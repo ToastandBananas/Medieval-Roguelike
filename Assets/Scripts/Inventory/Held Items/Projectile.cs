@@ -30,7 +30,7 @@ namespace InventorySystem
         [SerializeField] ItemData itemData;
 
         Unit shooter, targetUnit;
-        BaseAttackAction attackActionUsed;
+        Action_BaseAttack attackActionUsed;
 
         Vector3 targetPosition, movementDirection;
 
@@ -147,7 +147,7 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public void ShootProjectileAtTarget(Unit targetUnit, BaseAttackAction attackActionUsed, bool hitTarget, bool beingThrown)
+        public void ShootProjectileAtTarget(Unit targetUnit, Action_BaseAttack attackActionUsed, bool hitTarget, bool beingThrown)
         {
             if (itemData == null || itemData.Item == null)
             {
@@ -233,7 +233,6 @@ namespace InventorySystem
             float rotateSpeed = 150f;
             Vector3 lookPos = (nextPosition - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(lookPos);
-            lookRotation.x = 0;
 
             // Get the spin rotation
             Quaternion spinRotation = Spin();
@@ -325,7 +324,7 @@ namespace InventorySystem
                 return itemData.Item.Ammunition.ProjectileAnimationType;
         }
 
-        Vector3 GetOffset(GridPosition targetGridPosition, BaseAttackAction attackActionUsed, bool hitTarget)
+        Vector3 GetOffset(GridPosition targetGridPosition, Action_BaseAttack attackActionUsed, bool hitTarget)
         {
             Vector3 shootOffset = Vector3.zero;
             if (hitTarget == false) // If the shooter is missing

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Move Action
   m_EditorClassIdentifier: 
   actionName: Move
-  actionTypeName: MoveAction
+  actionTypeName: Action_Move
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

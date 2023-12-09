@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Unequip Action
   m_EditorClassIdentifier: 
   actionName: Unequip
-  actionTypeName: UnequipAction
+  actionTypeName: Action_Unequip
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

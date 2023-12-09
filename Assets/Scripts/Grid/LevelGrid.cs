@@ -322,7 +322,7 @@ namespace GridSystem
             return nearestGridPosition;
         }
 
-        public static bool HasAnyUnitWithinRange(Unit unit, GridPosition startGridPosition, float range, bool startGridPositionValid, bool mustBeDirectlyVisible)
+        public static bool HasAnyUnitWithinRange(Unit unit, GridPosition startGridPosition, float range, bool startGridPositionValid, bool mustBeDirectlyVisible, bool enemiesOnly)
         {
             validGridPositionsList = GetSurroundingGridPositions(startGridPosition, range, true, startGridPositionValid);
             for (int i = 0; i < gridPositionsList.Count; i++)
@@ -336,8 +336,15 @@ namespace GridSystem
                 if (unitAtGridPosition == unit)
                     continue;
 
-                if (unit != null && mustBeDirectlyVisible && !unit.Vision.IsDirectlyVisible(unitAtGridPosition))
-                    continue;
+                if (unit != null)
+                {
+                    if (enemiesOnly && !unit.Alliance.IsEnemy(unitAtGridPosition))
+                        continue;
+
+                    if (mustBeDirectlyVisible && !unit.Vision.IsDirectlyVisible(unitAtGridPosition))
+                        continue;
+                }
+
                 return true;
             }
             return false;
@@ -360,14 +367,14 @@ namespace GridSystem
         public static bool GridPositionObstructed(GridPosition gridPosition)
         {
             GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
-            if (IsValidGridPosition(gridPosition) == false || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && unitAtGridPosition.Health.IsDead == false) || UnitManager.player.SingleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || node.Walkable == false)
+            if (!IsValidGridPosition(gridPosition) || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && !unitAtGridPosition.Health.IsDead) || UnitManager.player.SingleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || !node.Walkable)
                 return true;
             return false;
         }
 
         public static bool HasUnitAtGridPosition(GridPosition gridPosition, out Unit unit) => units.TryGetValue(gridPosition, out unit);
 
-        public static bool HasInteractableAtGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out Interactable interactable);
+        public static bool HasInteractableAtGridPosition(GridPosition gridPosition) => interactableObjects.TryGetValue(gridPosition, out _);
 
         public static BlockManager BlockManager => Instance.blockManager;
 

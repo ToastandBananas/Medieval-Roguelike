@@ -10,7 +10,7 @@ namespace UnitSystem.ActionSystem
     {
         public static ActionsPool Instance;
 
-        static List<BaseAction> actions = new();
+        static List<Action_Base> actions = new();
 
         [SerializeField] int amountToPool = 0;
 
@@ -31,7 +31,7 @@ namespace UnitSystem.ActionSystem
                 return;
 
             // Use reflection to find all types that inherit from BaseAction
-            List<Type> actionTypes = FindDerivedTypes<BaseAction>();
+            List<Type> actionTypes = FindDerivedTypes<Action_Base>();
             foreach (Type type in actionTypes)
             {
                 for (int i = 0; i < amountToPool; i++)
@@ -42,7 +42,7 @@ namespace UnitSystem.ActionSystem
             }
         }
 
-        public static BaseAction GetAction(Type type, ActionType actionType, Unit unit)
+        public static Action_Base GetAction(Type type, ActionType actionType, Unit unit)
         {
             // Try to get the action from the Unit's list of available actions first
             for (int i = 0; i < unit.UnitActionHandler.AvailableActions.Count; i++)
@@ -57,33 +57,35 @@ namespace UnitSystem.ActionSystem
                 if (actions[i].gameObject.activeSelf || actions[i].GetType() != type)
                     continue;
 
-                BaseAction action = actions[i];
+                Action_Base action = actions[i];
                 SetupAction(action, actionType, unit);
                 return action;
             }
 
             // If no available action of the specified type is found, create a new one
-            BaseAction newAction = CreateNewAction(type);
+            Action_Base newAction = CreateNewAction(type);
             SetupAction(newAction, actionType, unit);
             return newAction;
         }
 
-        static void SetupAction(BaseAction action, ActionType actionType, Unit unit)
+        static void SetupAction(Action_Base action, ActionType actionType, Unit unit)
         {
             action.Setup(unit, actionType);
 
             unit.UnitActionHandler.AvailableActions.Add(action);
-            if (action is BaseAttackAction)
-                unit.UnitActionHandler.AvailableCombatActions.Add(action as BaseAttackAction);
+            if (action is Action_BaseAttack)
+                unit.UnitActionHandler.AvailableCombatActions.Add(action as Action_BaseAttack);
+            else if (action is Action_BaseStance)
+                unit.UnitActionHandler.AvailableStanceActions.Add(action as Action_BaseStance);
 
             actions.Remove(action);
             action.transform.SetParent(unit.UnitActionHandler.ActionsParent);
             action.gameObject.SetActive(true);
         }
 
-        static BaseAction CreateNewAction(Type type)
+        static Action_Base CreateNewAction(Type type)
         {
-            BaseAction action = (BaseAction)new GameObject(type.Name).AddComponent(type);
+            Action_Base action = (Action_Base)new GameObject(type.Name).AddComponent(type);
             actions.Add(action);
             action.transform.SetParent(Instance.transform);
             action.gameObject.SetActive(false);
@@ -99,7 +101,7 @@ namespace UnitSystem.ActionSystem
                 .ToList();
         }
 
-        public static void ReturnToPool(BaseAction action)
+        public static void ReturnToPool(Action_Base action)
         {
             // De-queue the action if necessary
             action.Unit.UnitActionHandler.RemoveActionFromQueue(action);
@@ -107,8 +109,10 @@ namespace UnitSystem.ActionSystem
             action.OnReturnToPool();
 
             action.Unit.UnitActionHandler.AvailableActions.Remove(action);
-            if (action is BaseAttackAction)
-                action.Unit.UnitActionHandler.AvailableCombatActions.Remove(action as BaseAttackAction);
+            if (action is Action_BaseAttack)
+                action.Unit.UnitActionHandler.AvailableCombatActions.Remove(action as Action_BaseAttack);
+            else if (action is Action_BaseStance)
+                action.Unit.UnitActionHandler.AvailableStanceActions.Remove(action as Action_BaseStance);
 
             action.transform.SetParent(Instance.transform);
             actions.Add(action);

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Reload Action
   m_EditorClassIdentifier: 
   actionName: Reload
-  actionTypeName: ReloadAction
+  actionTypeName: Action_Reload
   actionIcon: {fileID: 21300000, guid: bccb593887c43b345a00000126dda0fe, type: 3}
   cancelActionIcon: {fileID: 21300000, guid: 047cab462c5dbe049a4f411e0ac46914, type: 3}

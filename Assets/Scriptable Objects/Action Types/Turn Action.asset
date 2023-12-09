@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Turn Action
   m_EditorClassIdentifier: 
   actionName: Turn
-  actionTypeName: TurnAction
+  actionTypeName: Action_Turn
   actionIcon: {fileID: 21300000, guid: 37507ac814fab1f41bc9e39ff83d3041, type: 3}
+  cancelActionIcon: {fileID: 0}

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Swap Weapon Set Action
   m_EditorClassIdentifier: 
   actionName: Swap Weapon Set
-  actionTypeName: SwapWeaponSetAction
+  actionTypeName: Action_SwapWeaponSet
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

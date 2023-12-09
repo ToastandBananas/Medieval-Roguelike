@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Consume Action
   m_EditorClassIdentifier: 
   actionName: Consume
-  actionTypeName: ConsumeAction
+  actionTypeName: Action_Consume
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

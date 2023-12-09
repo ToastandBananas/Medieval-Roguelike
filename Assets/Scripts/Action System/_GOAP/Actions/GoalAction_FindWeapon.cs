@@ -1,19 +1,30 @@
 using GridSystem;
 using InteractableObjects;
 using InventorySystem;
-using System;
-using System.Collections.Generic;
 using UnitSystem.ActionSystem.Actions;
-using UnitSystem.ActionSystem.GOAP.Goals;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
     public class GoalAction_FindWeapon : GoalAction_Base
     {
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_FindWeapon) });
+        GoalAction_Fight fightAction;
 
-        public override List<Type> SupportedGoals() => supportedGoals;
+        void Start()
+        {
+            fightAction = (GoalAction_Fight)npcActionHandler.GoalPlanner.GetGoalAction(typeof(GoalAction_Fight));
+        }
+
+        public override float Cost()
+        {
+            if (!unit.UnitEquipment.IsUnarmed)
+                return 100f;
+
+            if (unit.Stats.CanFightUnarmed)
+                return 45f + (unit.Stats.UnarmedSkill.GetValue() / 10f);
+
+            return 100f;
+        }
 
         public override void OnTick()
         {
@@ -36,20 +47,38 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             {
                 // Equip any weapon from their inventory if they have one
                 if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
-                    npcActionHandler.GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                {
+                    npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                    return;
+                }
                 // Else, try pickup the nearby weapon
                 else if (weaponNearby)
+                {
                     npcActionHandler.InteractAction.QueueAction(foundLooseWeapon);
+                    return;
+                }
             }
             else // If there are weapons in the other weapon set
             {
                 // Swap to their melee weapon set if they have one
                 if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
-                    npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
+                {
+                    npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
+                    return;
+                }
                 // Else, swap to their ranged weapon set if they have ammo
                 else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
-                    npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
+                {
+                    npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
+                    return;
+                }
             }
+
+            // Failed to find a weapon, so just fight or skip turn
+            if (fightAction != null)
+                fightAction.OnTick();
+            else
+                TurnManager.Instance.FinishTurn(unit);
         }
 
         public bool TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon)

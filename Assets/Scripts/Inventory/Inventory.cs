@@ -89,7 +89,7 @@ namespace InventorySystem
                         originalInventory.RemoveItem(newItemData, true);
 
                     if (unitAdding != null && originalInventory != this)
-                        unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize, null);
+                        unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, startingStackSize, null);
 
                     return true;
                 }
@@ -101,7 +101,7 @@ namespace InventorySystem
 
                     // If some was added to other stacks, queue an InventoryAction for the amount added
                     if (startingStackSize != newItemData.CurrentStackSize && unitAdding != null && originalInventory != this)
-                        unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize, null);
+                        unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize, null);
                 }
             }
 
@@ -137,7 +137,7 @@ namespace InventorySystem
                 }
 
                 if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
-                    unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                    unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
                 if (myUnit != null)
                     myUnit.Stats.UpdateCarryWeight();
@@ -226,7 +226,7 @@ namespace InventorySystem
 
                             // Queue an InventoryAction for the amount added to the stack
                             if (unitAdding != null && originalInventory != this)
-                                unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize, null);
+                                unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize, null);
                         }
                     }
                 }
@@ -284,7 +284,7 @@ namespace InventorySystem
             }
 
             if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
-                unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
             if (myUnit != null)
                 myUnit.Stats.UpdateCarryWeight();
@@ -337,10 +337,10 @@ namespace InventorySystem
                         if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.Health.IsDead)
                         {
                             if (unitAdding != null)
-                                unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                                unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                         }
                         else if (InventoryUI.lastInventoryInteractedWith != this) // Otherwise, the Unit who has this item equipped can just remove it themselves
-                            InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                            InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                     }
 
                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.RemoveItem(newItemData, true);
@@ -352,10 +352,10 @@ namespace InventorySystem
                     if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.Health.IsDead)
                     {
                         if (unitAdding != null)
-                            unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                            unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
                     }
                     else // Otherwise, the Unit who has this item equipped can just remove it themselves
-                        InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                        InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
 
                     InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.RemoveEquipment(newItemData);
                 }
@@ -374,10 +374,10 @@ namespace InventorySystem
                     if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.Health.IsDead)
                     {
                         if (unitAdding != null)
-                            unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                            unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
                     }
                     else // Otherwise, the Unit who has this item equipped can just remove it themselves
-                        InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                        InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
 
                     InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.itemData);
                 }
@@ -390,10 +390,10 @@ namespace InventorySystem
                         if (InventoryUI.DraggedItem.myInventory.MyUnit.Health.IsDead)
                         {
                             if (unitAdding != null)
-                                unitAdding.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                                unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                         }
                         else // Otherwise, the Unit who owns this item can just remove it themselves
-                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                     }
 
                     InventoryUI.DraggedItem.myInventory.RemoveItem(newItemData, true);

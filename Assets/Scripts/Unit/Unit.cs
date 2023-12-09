@@ -157,7 +157,7 @@ namespace UnitSystem
 
         public void CenterPosition() => transform.position = LevelGrid.SnapPosition(transform.position);
 
-        public BaseAction SelectedAction => UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(this);
+        public Action_Base SelectedAction => UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(this);
 
         public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
         public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;

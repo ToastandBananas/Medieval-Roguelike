@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Inventory Action
   m_EditorClassIdentifier: 
   actionName: Inventory Action
-  actionTypeName: InventoryAction
+  actionTypeName: Action_Inventory
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

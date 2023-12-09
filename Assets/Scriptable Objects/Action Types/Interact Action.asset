@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Interact Action
   m_EditorClassIdentifier: 
   actionName: Interact
-  actionTypeName: InteractAction
+  actionTypeName: Action_Interact
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

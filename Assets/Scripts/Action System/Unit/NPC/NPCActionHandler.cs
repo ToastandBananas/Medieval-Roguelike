@@ -145,21 +145,21 @@ namespace UnitSystem.ActionSystem
                         {
                             if (Unit.UnitEquipment.OtherWeaponSet_IsMelee())
                             {
-                                GetAction<SwapWeaponSetAction>().QueueAction();
+                                GetAction<Action_SwapWeaponSet>().QueueAction();
                                 return;
                             }
                             else if (Unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                             {
-                                GetAction<SwapWeaponSetAction>().QueueAction();
-                                GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                                GetAction<Action_SwapWeaponSet>().QueueAction();
+                                GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                                 return;
                             }
                             else if (Unit.Stats.CanFightUnarmed && Random.Range(0, 2) == 0) // 50% chance to fight unarmed vs to flee
                             {
-                                if (GetAction<MeleeAction>().IsInAttackRange(closestEnemy, Unit.GridPosition, closestEnemy.GridPosition))
-                                    GetAction<MeleeAction>().QueueAction(closestEnemy);
+                                if (GetAction<Action_Melee>().IsInAttackRange(closestEnemy, Unit.GridPosition, closestEnemy.GridPosition))
+                                    GetAction<Action_Melee>().QueueAction(closestEnemy);
                                 else
-                                    MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, closestEnemy));
+                                    MoveAction.QueueAction(GetAction<Action_Melee>().GetNearestAttackPosition(Unit.GridPosition, closestEnemy));
                                 return;
                             }
 
@@ -168,28 +168,28 @@ namespace UnitSystem.ActionSystem
                             if (fleeAction != null)
                                 fleeAction.StartFlee(closestEnemy, Mathf.RoundToInt(minShootRange + Random.Range(2, Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange - 2)));
                         }
-                        else if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
+                        else if (GetAction<Action_Shoot>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                         {
                             // Shoot the target enemy
                             if (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
-                                GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
+                                GetAction<Action_Shoot>().QueueAction(TargetEnemyUnit);
                             else
-                                GetAction<ReloadAction>().QueueAction();
+                                GetAction<Action_Reload>().QueueAction();
                             return;
                         }
                         else
                         {
-                            MoveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+                            MoveAction.QueueAction(GetAction<Action_Shoot>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                             return;
                         }
                     }
                     else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
                     {
                         // Melee attack the target enemy
-                        if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
-                            GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
+                        if (GetAction<Action_Melee>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
+                            GetAction<Action_Melee>().QueueAction(TargetEnemyUnit);
                         else
-                            MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+                            MoveAction.QueueAction(GetAction<Action_Melee>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         return;
                     }
                 }

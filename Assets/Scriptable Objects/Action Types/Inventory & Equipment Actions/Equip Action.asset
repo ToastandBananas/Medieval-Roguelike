@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Equip Action
   m_EditorClassIdentifier: 
   actionName: Equip
-  actionTypeName: EquipAction
+  actionTypeName: Action_Equip
   actionIcon: {fileID: 0}
+  cancelActionIcon: {fileID: 0}

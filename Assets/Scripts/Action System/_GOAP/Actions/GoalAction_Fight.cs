@@ -1,12 +1,10 @@
 using GridSystem;
 using InventorySystem;
 using Pathfinding.Util;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnitSystem.ActionSystem.Actions;
-using UnitSystem.ActionSystem.GOAP.Goals;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,7 +17,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         public GridPosition StartChaseGridPosition { get; private set; }
         public bool ShouldStopChasing { get; private set; }
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Fight) });
         List<NPCAIAction> npcAIActions = new();
 
         public GoalAction_Flee FleeAction { get; private set; }
@@ -29,9 +26,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             FleeAction = npcActionHandler.GoalPlanner.GetGoalAction(typeof(GoalAction_Flee)) as GoalAction_Flee;
         }
 
-        public override List<Type> SupportedGoals() => supportedGoals;
-
-        public override float Cost() => 10;
+        public override float Cost() => 50;
 
         public override void OnTick()
         {
@@ -47,18 +42,18 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 float minShootRange = unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if (closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
+                if ((closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance) || !unit.UnitEquipment.HasValidAmmunitionEquipped())
                 {
                     // If the Unit has a melee weapon, switch to it
                     if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
                     {
-                        npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
+                        npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         return;
                     }
                     else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
-                        npcActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
-                        npcActionHandler.GetAction<EquipAction>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                        npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
+                        npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
                     }
                     else if (FleeAction != null)
@@ -122,7 +117,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public IEnumerator ChooseCombatAction_Coroutine()
         {
-            BaseAttackAction chosenCombatAction = null;
+            Action_BaseAttack chosenCombatAction = null;
             npcAIActions.Clear();
 
             // Loop through all combat actions
@@ -171,7 +166,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 int selectedIndex = accumulatedWeights.FindIndex(weight => weight >= randomWeight);
 
                 // Get the BaseAttackAction from the corresponding NPCAIAction
-                chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction as BaseAttackAction;
+                chosenCombatAction = filteredNPCAIActions[selectedIndex].baseAction as Action_BaseAttack;
 
                 // If an action was found
                 if (chosenCombatAction != null)
@@ -235,7 +230,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     npcAIActions.Clear();
                     if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     {
-                        ShootAction shootAction = npcActionHandler.GetAction<ShootAction>();
+                        Action_Shoot shootAction = npcActionHandler.GetAction<Action_Shoot>();
                         for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)
                         {
                             npcAIActions.Add(shootAction.GetNPCAIAction_Unit(unit.Vision.knownEnemies[i]));
@@ -252,7 +247,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     }
                     else if (unit.UnitEquipment.MeleeWeaponEquipped || unit.Stats.CanFightUnarmed)
                     {
-                        MeleeAction meleeAction = npcActionHandler.GetAction<MeleeAction>();
+                        Action_Melee meleeAction = npcActionHandler.GetAction<Action_Melee>();
                         for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)
                         {
                             npcAIActions.Add(meleeAction.GetNPCAIAction_Unit(unit.Vision.knownEnemies[i]));

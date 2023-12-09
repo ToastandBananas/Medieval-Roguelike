@@ -15,8 +15,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         int maxInspectSoundIterations;
         bool needsNewSoundInspectPosition = true;
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_InspectSound) });
-
         public override void OnTick()
         {
             InspectSound();
@@ -28,8 +26,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             needsNewSoundInspectPosition = true;
             inspectSoundIterations = 0;
         }
-
-        public override List<Type> SupportedGoals() => supportedGoals;
 
         #region Inspect Sound
         void InspectSound()

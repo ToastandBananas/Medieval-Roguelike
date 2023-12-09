@@ -37,15 +37,15 @@ namespace InventorySystem
                 return true;
             }
                 
-            if (ThrowAction.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            if (Action_Throw.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
             {
                 // We need to check each belt bag inventory's allowed item types separately, to ensure that they are specifically throwing weapon inventories, before trying to add the throwing weapon
-                if (beltInventoryManager.ParentInventory != null && beltInventoryManager.ParentInventory.AllowedItemTypeContains(ThrowAction.throwingWeaponItemTypes) && beltInventoryManager.ParentInventory.ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.ParentInventory.TryAddItem(itemData, unit))
+                if (beltInventoryManager.ParentInventory != null && beltInventoryManager.ParentInventory.AllowedItemTypeContains(Action_Throw.throwingWeaponItemTypes) && beltInventoryManager.ParentInventory.ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.ParentInventory.TryAddItem(itemData, unit))
                     return true;
 
                 for (int i = 0; i < beltInventoryManager.SubInventories.Length; i++)
                 {
-                    if (beltInventoryManager.SubInventories[i].AllowedItemTypeContains(ThrowAction.throwingWeaponItemTypes) && beltInventoryManager.SubInventories[i].ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.SubInventories[i].TryAddItem(itemData, unit))
+                    if (beltInventoryManager.SubInventories[i].AllowedItemTypeContains(Action_Throw.throwingWeaponItemTypes) && beltInventoryManager.SubInventories[i].ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.SubInventories[i].TryAddItem(itemData, unit))
                         return true;
                 }
             }

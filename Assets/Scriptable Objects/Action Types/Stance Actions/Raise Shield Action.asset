@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Raise Shield Action
   m_EditorClassIdentifier: 
   actionName: Raise Shield
-  actionTypeName: RaiseShieldAction
+  actionTypeName: Action_RaiseShield
   actionIcon: {fileID: 21300000, guid: a38f3502457dc8f4392096466967650f, type: 3}
   cancelActionIcon: {fileID: 21300000, guid: 931908eaf68a09b4c9079d43c655f46a, type: 3}

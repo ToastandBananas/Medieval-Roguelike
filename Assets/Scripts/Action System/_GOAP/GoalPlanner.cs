@@ -50,10 +50,11 @@ namespace UnitSystem.ActionSystem.GOAP
                 for (int j = 0; j < GoalActions.Length; j++)
                 {
                     // Is the Goal supported?
-                    if (!GoalActions[j].SupportedGoals().Contains(Goals[i].GetType()))
+                    if (!Goals[i].SupportedGoalActions().Contains(GoalActions[j].GetType()))
                         continue;
 
                     // Found a suitable Goal Action
+                    // Debug.Log($"{GoalActions[j].GetType().Name} Cost: {GoalActions[j].Cost()}");
                     if (candidateAction == null || GoalActions[j].Cost() < candidateAction.Cost())
                         candidateAction = GoalActions[j];
                 }
@@ -107,7 +108,7 @@ namespace UnitSystem.ActionSystem.GOAP
             // Tick the action
             if (activeGoalAction != null)
             {
-                //Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()}");
+                Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()} | Cost: {activeGoalAction.Cost()}");
                 activeGoalAction.OnTick();
             }
         }

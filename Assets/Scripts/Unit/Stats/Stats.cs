@@ -24,7 +24,7 @@ namespace UnitSystem
         public int LastUsedAP { get; private set; }
         // readonly int baseAP_PerSecond = 60;
 
-        public List<BaseAction> EnergyUseActions { get; private set; }
+        public List<Action_Base> EnergyUseActions { get; private set; }
 
         public int CurrentEnergy { get; private set; }
         readonly int baseEnergy = 20;
@@ -68,7 +68,7 @@ namespace UnitSystem
 
         void Awake()
         {
-            EnergyUseActions = new List<BaseAction>();
+            EnergyUseActions = new List<Action_Base>();
 
             APUntilTimeTick = MaxAP();
             CurrentEnergy = MaxEnergy();
@@ -82,7 +82,7 @@ namespace UnitSystem
             unit.Vision.UpdateVision();
 
             // We already are running this after the Move and Turn actions are complete, so no need to run it again
-            if (unit.UnitActionHandler.LastQueuedAction is MoveAction == false && unit.UnitActionHandler.LastQueuedAction is TurnAction == false)
+            if (unit.UnitActionHandler.LastQueuedAction is Action_Move == false && unit.UnitActionHandler.LastQueuedAction is Action_Turn == false)
                 unit.Vision.FindVisibleUnitsAndObjects();
 
             UpdateEnergy();
@@ -223,7 +223,7 @@ namespace UnitSystem
             blockChance += baseBlockChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
             if (heldShield.CurrentHeldItemStance == HeldItemStance.RaiseShield)
-                blockChance += baseBlockChance * RaiseShieldAction.blockChanceModifier;
+                blockChance += baseBlockChance * Action_RaiseShield.blockChanceModifier;
 
             // Block chance is reduced depending on the attacker's weapon skill
             blockChance *= EnemyWeaponSkill_BlockChanceModifier(attackingUnit, weaponAttackingWith, attackerUsingOffhand);
@@ -391,7 +391,7 @@ namespace UnitSystem
         #endregion
 
         #region Dodging
-        public float DodgeChance(Unit attackingUnit, HeldItem weaponBeingAttackedWith, BaseAttackAction attackAction, bool attackerUsingOffhand, bool attackerBesideUnit)
+        public float DodgeChance(Unit attackingUnit, HeldItem weaponBeingAttackedWith, Action_BaseAttack attackAction, bool attackerUsingOffhand, bool attackerBesideUnit)
         {
             float dodgeChance;
             if (CarryWeightRatio < 2f)
@@ -469,7 +469,7 @@ namespace UnitSystem
         }
 
         /// <summary>Does not take into account block chance, but does take into account dodge chance (and ranged accuracy, for ranged attacks). Only used for the Hit Chance Tooltip.</summary>
-        public float HitChance(Unit targetUnit, BaseAttackAction actionToUse)
+        public float HitChance(Unit targetUnit, Action_BaseAttack actionToUse)
         {
             float hitChance = 0f;
             if (actionToUse.IsMeleeAttackAction())
@@ -495,9 +495,9 @@ namespace UnitSystem
             {
                 if (unit.UnitEquipment != null)
                 {
-                    if (actionToUse is ThrowAction)
+                    if (actionToUse is Action_Throw)
                     {
-                        ThrowAction throwAction = actionToUse as ThrowAction;
+                        Action_Throw throwAction = actionToUse as Action_Throw;
                         hitChance = ThrowingAccuracy(throwAction.ItemDataToThrow, targetUnit.GridPosition, actionToUse) * (1f - targetUnit.Stats.DodgeChance(unit, null, actionToUse, false, targetUnit.UnitActionHandler.TurnAction.AttackerBesideUnit(unit)));
                     }
                     else
@@ -624,7 +624,7 @@ namespace UnitSystem
             }
 
             if (heldItem != null && heldItem.CurrentHeldItemStance == HeldItemStance.SpearWall)
-                knockbackChance *= SpearWallAction.knockbackChanceModifier;
+                knockbackChance *= Action_SpearWall.knockbackChanceModifier;
 
             if (attackBlocked)
                 knockbackChance *= 0.25f;
@@ -659,7 +659,7 @@ namespace UnitSystem
         #endregion
 
         #region Ranged
-        public float RangedAccuracy(HeldItem rangedWeapon, GridPosition targetGridPosition, BaseAttackAction attackAction)
+        public float RangedAccuracy(HeldItem rangedWeapon, GridPosition targetGridPosition, Action_BaseAttack attackAction)
         {
             if (rangedWeapon == null)
                 return 0f;
@@ -689,7 +689,7 @@ namespace UnitSystem
             return accuracy;
         }
 
-        public float ThrowingAccuracy(ItemData itemDataToThrow, GridPosition targetGridPosition, BaseAttackAction attackAction)
+        public float ThrowingAccuracy(ItemData itemDataToThrow, GridPosition targetGridPosition, Action_BaseAttack attackAction)
         {
             if (itemDataToThrow == null)
                 return 0f;
@@ -722,10 +722,10 @@ namespace UnitSystem
         {
             float throwRange = (strength.GetValue() / 12f) + (throwingSkill.GetValue() / 12f); // 8.33 distance at 100 skill for each
             throwRange -= thrownItem.Weight / 2f; // Minus 0.5 per pound
-            if (throwRange < ThrowAction.minMaxThrowDistance)
-                throwRange = ThrowAction.minMaxThrowDistance;
-            else if (throwRange > ThrowAction.maxThrowDistance)
-                throwRange = ThrowAction.maxThrowDistance;
+            if (throwRange < Action_Throw.minMaxThrowDistance)
+                throwRange = Action_Throw.minMaxThrowDistance;
+            else if (throwRange > Action_Throw.maxThrowDistance)
+                throwRange = Action_Throw.maxThrowDistance;
             return throwRange;
         }
         #endregion

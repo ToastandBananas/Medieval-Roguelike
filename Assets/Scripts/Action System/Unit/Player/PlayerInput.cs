@@ -73,7 +73,7 @@ namespace UnitSystem.ActionSystem
             if (!player.Health.IsDead)
             {
                 // If the Player was holding the button for turn mode (the Turn Action) and then they release it
-                if (GameControls.gamePlayActions.turnMode.WasReleased && player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player) is TurnAction)
+                if (GameControls.gamePlayActions.turnMode.WasReleased && player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player) is Action_Turn)
                 {
                     // Reset the line renderer and go back to the Move Action
                     ActionLineRenderer.ResetCurrentPositions();
@@ -106,9 +106,9 @@ namespace UnitSystem.ActionSystem
 
                     if (GameControls.gamePlayActions.switchVersatileStance.WasPressed)
                     {
-                        VersatileStanceAction versatileStanceAction = player.UnitActionHandler.GetAction<VersatileStanceAction>();
+                        Action_VersatileStance versatileStanceAction = player.UnitActionHandler.GetAction<Action_VersatileStance>();
                         if (versatileStanceAction != null && versatileStanceAction.IsValidAction())
-                            player.UnitActionHandler.GetAction<VersatileStanceAction>().QueueAction();
+                            player.UnitActionHandler.GetAction<Action_VersatileStance>().QueueAction();
                         return;
                     }
 
@@ -116,11 +116,11 @@ namespace UnitSystem.ActionSystem
                     SetupCursorAndLineRenderer();
 
                     // If the Player is trying to perform the Turn Action
-                    if (GameControls.gamePlayActions.turnMode.IsPressed || player.UnitActionHandler.PlayerActionHandler.SelectedAction is TurnAction)
+                    if (GameControls.gamePlayActions.turnMode.IsPressed || player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Turn)
                         HandleTurnMode();
                     // If the Player is trying to swap their weapon set
                     else if (GameControls.gamePlayActions.swapWeapons.WasPressed && !GameControls.gamePlayActions.turnMode.IsPressed)
-                        player.UnitActionHandler.GetAction<SwapWeaponSetAction>().QueueAction();
+                        player.UnitActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                     // If the Player selects a grid position to try and perform an action
                     else if (GameControls.gamePlayActions.select.WasPressed)
                         HandleActions();
@@ -140,7 +140,7 @@ namespace UnitSystem.ActionSystem
 
         void HandleTurnMode()
         {
-            TurnAction turnAction = player.UnitActionHandler.TurnAction;
+            Action_Turn turnAction = player.UnitActionHandler.TurnAction;
             player.UnitActionHandler.PlayerActionHandler.SetSelectedActionType(turnAction.ActionType, true);
             WorldMouse.ChangeCursor(CursorState.Default);
 
@@ -176,19 +176,19 @@ namespace UnitSystem.ActionSystem
             else if (LevelGrid.IsValidGridPosition(mouseGridPosition) && AstarPath.active.GetNearest(mouseGridPosition.WorldPosition).node.Walkable)
             {
                 Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
-                BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+                Action_Base selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
                 // If the mouse is hovering over a living unit that's in the player's Vision
                 if (unitAtGridPosition != null && unitAtGridPosition.Health.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                    if (player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) && (player.Alliance.IsEnemy(unitAtGridPosition) || (player.Alliance.IsNeutral(unitAtGridPosition) && selectedAction is BaseAttackAction)))
+                    if (player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) && (player.Alliance.IsEnemy(unitAtGridPosition) || (player.Alliance.IsNeutral(unitAtGridPosition) && selectedAction is Action_BaseAttack)))
                     {
                         // Set the Unit as the target enemy
                         player.UnitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
 
                         // If the player has an attack action selected
-                        if (selectedAction is BaseAttackAction)
+                        if (selectedAction is Action_BaseAttack)
                         {
                             // If the target is in attack range
                             if (selectedAction.BaseAttackAction.IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
@@ -218,7 +218,7 @@ namespace UnitSystem.ActionSystem
                                 return;
 
                             // If the target is in shooting range
-                            if (player.UnitActionHandler.GetAction<ShootAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
+                            if (player.UnitActionHandler.GetAction<Action_Shoot>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 HighlightedUnit = null;
                                 TooltipManager.ClearUnitTooltips();
@@ -236,7 +236,7 @@ namespace UnitSystem.ActionSystem
                                 return;
 
                             // If the target is in attack range
-                            if (player.UnitActionHandler.GetAction<MeleeAction>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
+                            if (player.UnitActionHandler.GetAction<Action_Melee>().IsInAttackRange(unitAtGridPosition, player.GridPosition, mouseGridPosition))
                             {
                                 // If the target enemy unit is already completely surrounded by other units or other obstructions
                                 float attackRange = player.GetAttackRange();
@@ -261,13 +261,13 @@ namespace UnitSystem.ActionSystem
                         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                         // If the player has a Move, Melee, or Shoot Action selected
-                        if (selectedAction.IsDefaultAttackAction || selectedAction is MoveAction)
+                        if (selectedAction.IsDefaultAttackAction || selectedAction is Action_Move)
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is MeleeAction == false)
+                            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is Action_Melee == false)
                             {
                                 if (player.UnitActionHandler.MoveAction.CanMove)
-                                    player.UnitActionHandler.MoveAction.QueueAction(player.UnitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                    player.UnitActionHandler.MoveAction.QueueAction(player.UnitActionHandler.GetAction<Action_Shoot>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                                 else
                                     Debug.Log("You cannot move...");
                             }
@@ -275,7 +275,7 @@ namespace UnitSystem.ActionSystem
                             else if (player.UnitEquipment.MeleeWeaponEquipped || player.Stats.CanFightUnarmed)
                             {
                                 if (player.UnitActionHandler.MoveAction.CanMove)
-                                    player.UnitActionHandler.MoveAction.QueueAction(player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
+                                    player.UnitActionHandler.MoveAction.QueueAction(player.UnitActionHandler.GetAction<Action_Melee>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
                                 else
                                     Debug.Log("You cannot move...");
                             }
@@ -303,7 +303,7 @@ namespace UnitSystem.ActionSystem
                     }
                 }
                 // If there's no unit or a dead unit at the mouse position, but the player is still trying to attack this position (probably trying to use a multi-tile attack)
-                else if (selectedAction is BaseAttackAction)
+                else if (selectedAction is Action_BaseAttack)
                 {
                     // Make sure the Player has enough energy for the attack
                     if (!player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()))
@@ -317,7 +317,7 @@ namespace UnitSystem.ActionSystem
                     selectedAction.BaseAttackAction.QueueAction(mouseGridPosition);
                 }
                 // If there's no unit or a dead unit at the mouse position & move action is selected
-                else if (selectedAction is MoveAction)
+                else if (selectedAction is Action_Move)
                 {
                     // If there's a non-visible Unit at this position and they're one tile away and could directly be within the line of sight (basically just meaning there's no obstacles in the way), just turn to face that tile
                     if (unitAtGridPosition != null && Vector3.Distance(player.WorldPosition, unitAtGridPosition.WorldPosition) <= LevelGrid.diaganolDistance && player.Vision.IsInLineOfSight_Raycast(unitAtGridPosition))
@@ -348,11 +348,11 @@ namespace UnitSystem.ActionSystem
             if (mouseGridPosition != lastMouseGridPosition)
                 HighlightedUnit = null;
 
-            BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+            Action_Base selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
             if (selectedAction != null)
             {
-                if (selectedAction is MoveAction)
+                if (selectedAction is Action_Move)
                 {
                     if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit interactableHit, 1000, interactableMask))
                     {
@@ -401,9 +401,9 @@ namespace UnitSystem.ActionSystem
                                 if (HighlightedUnit != player && !HighlightedUnit.Health.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
-                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<ShootAction>());
+                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
                                     else
-                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<MeleeAction>());
+                                        TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<Action_Melee>());
                                 }
                                 else
                                     TooltipManager.ClearUnitTooltips();
@@ -432,9 +432,9 @@ namespace UnitSystem.ActionSystem
                             if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && unitAtGridPosition.Health.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
                             {
                                 if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
-                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<ShootAction>());
+                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
                                 else
-                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<MeleeAction>());
+                                    TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Melee>());
                             }
                             else
                                 TooltipManager.ClearUnitTooltips();
@@ -453,7 +453,7 @@ namespace UnitSystem.ActionSystem
 
                     StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                 }
-                else if (selectedAction is BaseAttackAction)
+                else if (selectedAction is Action_BaseAttack)
                 {
                     ClearHighlightedInteractable();
                     Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(mouseGridPosition);
@@ -481,7 +481,7 @@ namespace UnitSystem.ActionSystem
                         WorldMouse.ChangeCursor(CursorState.Default);
                     }
                 }
-                else if (selectedAction is TurnAction)
+                else if (selectedAction is Action_Turn)
                 {
                     if (HighlightedUnit != null)
                         TooltipManager.ClearUnitTooltips();
@@ -510,15 +510,15 @@ namespace UnitSystem.ActionSystem
 
         void SetAttackCursor()
         {
-            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
+            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
             {
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
 
-                if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction && player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.IsInAttackRange(null, player.GridPosition, mouseGridPosition))
+                if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack && player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.IsInAttackRange(null, player.GridPosition, mouseGridPosition))
                     ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), mouseGridPosition.WorldPosition);
                 else if (HighlightedUnit != null)
                 {
-                    ShootAction shootAction = player.UnitActionHandler.GetAction<ShootAction>();
+                    Action_Shoot shootAction = player.UnitActionHandler.GetAction<Action_Shoot>();
                     if (shootAction != null && shootAction.IsInAttackRange(HighlightedUnit, player.GridPosition, HighlightedUnit.GridPosition))
                         ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), HighlightedUnit.WorldPosition + (HighlightedUnit.ShoulderHeight * Vector3.up));
                 }
@@ -529,7 +529,7 @@ namespace UnitSystem.ActionSystem
                 WorldMouse.ChangeCursor(CursorState.Default);
         }
 
-        bool AttackActionSelected() => player.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction;
+        bool AttackActionSelected() => player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack;
 
         public void SetAutoAttack(bool shouldAutoAttack) => AutoAttack = shouldAutoAttack;
     }

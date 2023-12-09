@@ -480,6 +480,8 @@ GameObject:
   - component: {fileID: 6390836875097447432}
   - component: {fileID: 2771978249573231427}
   - component: {fileID: 2721300738942315948}
+  - component: {fileID: 6428187103190038221}
+  - component: {fileID: 6289764022947298966}
   - component: {fileID: 4608094722299836015}
   m_Layer: 3
   m_Name: Goal Actions
@@ -594,6 +596,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   patrolPoints: []
+--- !u!114 &6428187103190038221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa2926990f2df9640b9976e9a32518f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distanceToPreferMeleeCombat: 3
+--- !u!114 &6289764022947298966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486526473944499246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa93e3046d06a4340873840d9539bf56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4608094722299836015
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1860,7 +1887,6 @@ GameObject:
   - component: {fileID: 5126983126038519930}
   - component: {fileID: 2216957945130549951}
   - component: {fileID: 9065619861715094470}
-  - component: {fileID: 6355044967439684570}
   - component: {fileID: 4196559352342773799}
   - component: {fileID: 8660167500921935949}
   - component: {fileID: 8742798106528070840}
@@ -1915,18 +1941,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fightPriority: 60
---- !u!114 &6355044967439684570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8865296860276153408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1717f178c4bb45f418b7ed57fafecc41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4196559352342773799
 MonoBehaviour:
   m_ObjectHideFlags: 0

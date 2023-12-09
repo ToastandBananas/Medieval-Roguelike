@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Versatile Stance Action
   m_EditorClassIdentifier: 
   actionName: Versatile Stance
-  actionTypeName: VersatileStanceAction
+  actionTypeName: Action_VersatileStance
   actionIcon: {fileID: 21300000, guid: 0ed72547a9ae8ad4c9a8402f8660d980, type: 3}
   cancelActionIcon: {fileID: 21300000, guid: ec69606c0e0c0a140b6e5a3a311a4a4f, type: 3}

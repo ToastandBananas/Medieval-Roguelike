@@ -122,7 +122,7 @@ namespace GridSystem
             }
         }
 
-        public void ShowAttackRange(BaseAction attackAction, GridPosition startGridPosition, GridVisualType gridVisualType)
+        public void ShowAttackRange(Action_Base attackAction, GridPosition startGridPosition, GridVisualType gridVisualType)
         {
             gridPositionsList = attackAction.GetActionGridPositionsInRange(startGridPosition);
             ShowGridPositionList(gridPositionsList, gridVisualType);
@@ -134,7 +134,7 @@ namespace GridSystem
             HideGridVisual();
             
             if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0 
-                || Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction is BaseAttackAction == false || !Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
+                || Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack == false || !Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
             Instance.ShowAttackRange(Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction, Instance.player.GridPosition, GridVisualType.RedSoft);
@@ -145,9 +145,9 @@ namespace GridSystem
         {
             UpdateAttackRangeGridVisual();
 
-            BaseAction selectedAction = Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction;
+            Action_Base selectedAction = Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction;
             if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0
-                || selectedAction is BaseAttackAction == false || !selectedAction.BaseAttackAction.CanShowAttackRange())
+                || selectedAction is Action_BaseAttack == false || !selectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
             Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));

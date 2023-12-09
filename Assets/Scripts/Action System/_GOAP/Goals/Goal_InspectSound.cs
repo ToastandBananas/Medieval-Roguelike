@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
@@ -10,10 +12,14 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 
         GoalAction_InspectSound inspectSoundAction;
 
+        readonly List<Type> supportedGoalActions = new(new Type[] { typeof(GoalAction_InspectSound) });
+
         void Start()
         {
             inspectSoundAction = (GoalAction_InspectSound)goalPlanner.GetGoalAction(typeof(GoalAction_InspectSound));
         }
+
+        public override List<Type> SupportedGoalActions() => supportedGoalActions;
 
         public override void OnGoalActivated(GoalAction_Base linkedGoalAction)
         {

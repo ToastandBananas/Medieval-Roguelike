@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
@@ -16,6 +18,8 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
             unit = GetComponentInParent<Unit>();
             goalPlanner = unit.UnitActionHandler.NPCActionHandler.GoalPlanner;
         }
+
+        public abstract List<Type> SupportedGoalActions();
 
         public abstract bool CanRun();
 

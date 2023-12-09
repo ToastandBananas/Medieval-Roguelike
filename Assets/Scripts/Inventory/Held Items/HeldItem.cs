@@ -80,7 +80,7 @@ namespace InventorySystem
         ///<summary>Only used in keyframe animations.</summary>
         protected void Throw()
         {
-            ThrowAction throwAction = unit.UnitActionHandler.GetAction<ThrowAction>();
+            Action_Throw throwAction = unit.UnitActionHandler.GetAction<Action_Throw>();
             if (throwAction == null)
             {
                 if (unit.IsPlayer)
@@ -211,7 +211,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < ItemData.Item.Equipment.ActionTypes.Length; i++)
                 {
-                    BaseAction baseAction = unit.UnitActionHandler.GetActionFromActionType(ItemData.Item.Equipment.ActionTypes[i]);
+                    Action_Base baseAction = unit.UnitActionHandler.GetActionFromActionType(ItemData.Item.Equipment.ActionTypes[i]);
                     if (baseAction != null && baseAction.ActionBarSlot != null)
                         baseAction.ActionBarSlot.UpdateIcon();
                 }

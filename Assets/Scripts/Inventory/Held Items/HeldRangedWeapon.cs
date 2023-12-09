@@ -77,7 +77,7 @@ namespace InventorySystem
         /// <summary> Used in keyframe animation.</summary>
         void ShootProjectile()
         {
-            ShootAction shootAction = unit.UnitActionHandler.GetAction<ShootAction>();
+            Action_Shoot shootAction = unit.UnitActionHandler.GetAction<Action_Shoot>();
             LoadedProjectile.ShootProjectileAtTarget(unit.UnitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.UnitActionHandler.TargetEnemyUnit.GridPosition), false);
             LoadedProjectile = null;
 

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Spear Wall Action
   m_EditorClassIdentifier: 
   actionName: Spear Wall
-  actionTypeName: SpearWallAction
+  actionTypeName: Action_SpearWall
   actionIcon: {fileID: 21300000, guid: 94b91bf68f1415c40a70f395eca17f5d, type: 3}
   cancelActionIcon: {fileID: 21300000, guid: a1f9821a1c2359f4d8ba448b0bfba73f, type: 3}

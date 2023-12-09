@@ -72,7 +72,7 @@ namespace GridSystem
         float GetArcMultiplier()
         {
             float arcMultiplier = 1f;
-            if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is ThrowAction)
+            if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Throw)
                 arcMultiplier = Projectile.defaultThrowArcMultiplier;
             else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
             {
@@ -118,7 +118,7 @@ namespace GridSystem
                 }
                 else if (PlayerInput.Instance.HighlightedUnit != null)
                 {
-                    BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+                    Action_Base selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
                     targetUnit = PlayerInput.Instance.HighlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
@@ -127,7 +127,7 @@ namespace GridSystem
                         if (player.Vision.IsVisible(targetUnit))
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
+                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is Action_Move == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -165,14 +165,14 @@ namespace GridSystem
                 else
                 {
                     targetUnit = LevelGrid.GetUnitAtGridPosition(currentMouseGridPosition);
-                    BaseAction selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
+                    Action_Base selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
                     if (targetUnit != null && player.Vision.IsVisible(targetUnit))
                     {
                         if (player.Alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction)
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is MoveAction == false))
+                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is Action_Move == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -283,13 +283,13 @@ namespace GridSystem
         {
             if (player.UnitEquipment.RangedWeaponEquipped)
             {
-                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is MeleeAction == false)
-                    return player.UnitActionHandler.GetAction<ShootAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
+                    return player.UnitActionHandler.GetAction<Action_Shoot>().GetNearestAttackPosition(player.GridPosition, targetUnit);
                 else
-                    return player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                    return player.UnitActionHandler.GetAction<Action_Melee>().GetNearestAttackPosition(player.GridPosition, targetUnit);
             }
             else
-                return player.UnitActionHandler.GetAction<MeleeAction>().GetNearestAttackPosition(player.GridPosition, targetUnit);
+                return player.UnitActionHandler.GetAction<Action_Melee>().GetNearestAttackPosition(player.GridPosition, targetUnit);
         }
 
         public void DrawTurnArrow(Vector3 targetPosition)

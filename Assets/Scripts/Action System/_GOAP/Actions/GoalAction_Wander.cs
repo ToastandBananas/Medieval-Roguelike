@@ -14,12 +14,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         GridPosition wanderGridPosition;
         bool wanderPositionSet;
 
-        readonly List<Type> supportedGoals = new(new Type[] { typeof(Goal_Wander) });
-
-        public override List<Type> SupportedGoals() => supportedGoals;
-
-        public override float Cost() => 0f;
-
         public override void OnTick()
         {
             Wander();

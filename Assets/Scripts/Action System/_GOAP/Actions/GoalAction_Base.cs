@@ -17,8 +17,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
         }
 
-        public abstract List<Type> SupportedGoals();
-
+        /// <summary>Cost determines which Goal Action will be chosen for a Goal. (Lowest cost will be chosen).</summary>
         public virtual float Cost() => 0f;
 
         public virtual void OnActivated(Goal_Base linkedGoal) => this.LinkedGoal = linkedGoal;

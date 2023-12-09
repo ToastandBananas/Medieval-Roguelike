@@ -34,7 +34,7 @@ namespace UnitSystem.ActionSystem
                 onClickActionBarCooldown += Time.deltaTime;
         }
 
-        public override void QueueAction(BaseAction action, bool addToFrontOfQueue = false)
+        public override void QueueAction(Action_Base action, bool addToFrontOfQueue = false)
         {
             base.QueueAction(action, addToFrontOfQueue);
 
@@ -104,29 +104,29 @@ namespace UnitSystem.ActionSystem
                                 CancelActions();
                                 return;
                             }
-                            else if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
+                            else if (GetAction<Action_Shoot>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                             {
                                 // Shoot the target enemy
                                 ClearActionQueue(true);
                                 if (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
-                                    GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
+                                    GetAction<Action_Shoot>().QueueAction(TargetEnemyUnit);
                                 else
-                                    GetAction<ReloadAction>().QueueAction();
+                                    GetAction<Action_Reload>().QueueAction();
                             }
                             else // If they're out of the shoot range, move towards the enemy
-                                MoveAction.QueueAction(GetAction<ShootAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+                                MoveAction.QueueAction(GetAction<Action_Shoot>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         }
                         // Handle default melee attack
                         else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
                         {
-                            if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
+                            if (GetAction<Action_Melee>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))
                             {
                                 // Melee attack the target enemy
                                 ClearActionQueue(false);
-                                GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
+                                GetAction<Action_Melee>().QueueAction(TargetEnemyUnit);
                             }
                             else // If they're out of melee range, move towards the enemy
-                                MoveAction.QueueAction(GetAction<MeleeAction>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
+                                MoveAction.QueueAction(GetAction<Action_Melee>().GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit));
                         }
                     }
                 }
@@ -185,8 +185,8 @@ namespace UnitSystem.ActionSystem
             if (TargetEnemyUnit == null)
                 yield break;
 
-            BaseAction selectedAction = SelectedActionType.GetAction(Unit);
-            if (selectedAction is BaseAttackAction)
+            Action_Base selectedAction = SelectedActionType.GetAction(Unit);
+            if (selectedAction is Action_BaseAttack)
             {
                 if (TargetEnemyUnit.UnitActionHandler.MoveAction.IsMoving) // Wait for the targetEnemyUnit to stop moving
                 {
@@ -223,17 +223,17 @@ namespace UnitSystem.ActionSystem
                             yield break;
                         }
 
-                        if (GetAction<ShootAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
+                        if (GetAction<Action_Shoot>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                         {
                             MoveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit)); // Move to the nearest valid attack position
                             yield break;
                         }
                     }
 
-                    GetAction<ShootAction>().QueueAction(TargetEnemyUnit);
+                    GetAction<Action_Shoot>().QueueAction(TargetEnemyUnit);
                 }
                 else
-                    GetAction<ReloadAction>().QueueAction();
+                    GetAction<Action_Reload>().QueueAction();
             }
             else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
             {
@@ -248,18 +248,18 @@ namespace UnitSystem.ActionSystem
                         yield break;
                     }
 
-                    if (GetAction<MeleeAction>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
+                    if (GetAction<Action_Melee>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition) == false) // Check if they're now out of attack range
                     {
                         MoveAction.QueueAction(selectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, TargetEnemyUnit)); // Move to the nearest valid attack position
                         yield break;
                     }
                 }
 
-                GetAction<MeleeAction>().QueueAction(TargetEnemyUnit);
+                GetAction<Action_Melee>().QueueAction(TargetEnemyUnit);
             }
         }
 
-        public BaseAction SelectedAction => SelectedActionType != null ? SelectedActionType.GetAction(Unit) : null;
+        public Action_Base SelectedAction => SelectedActionType != null ? SelectedActionType.GetAction(Unit) : null;
 
         public void SetSelectedActionType(ActionType actionType, bool invokeActionChangedDelegate)
         {
@@ -275,7 +275,7 @@ namespace UnitSystem.ActionSystem
             ContextMenu.DisableContextMenu(true);
         }
 
-        public bool DefaultActionIsSelected => SelectedAction is MoveAction;
+        public bool DefaultActionIsSelected => SelectedAction is Action_Move;
 
         public void OnClick_ActionBarSlot(ActionType actionType)
         {

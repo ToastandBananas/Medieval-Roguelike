@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
@@ -10,10 +12,14 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
 
         GoalAction_Flee fleeAction;
 
+        readonly List<Type> supportedGoalActions = new(new Type[] { typeof(GoalAction_Flee) });
+
         void Start()
         {
             fleeAction = (GoalAction_Flee)goalPlanner.GetGoalAction(typeof(GoalAction_Flee));
         }
+
+        public override List<Type> SupportedGoalActions() => supportedGoalActions;
 
         public override void OnTickGoal()
         {

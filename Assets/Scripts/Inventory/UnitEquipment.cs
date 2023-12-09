@@ -135,7 +135,7 @@ namespace InventorySystem
                 // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
                 if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item is Weapon && newItemData.Item.Weapon.IsTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item is Weapon && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon.IsTwoHanded)))
                 {
-                    myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(equippedItemDatas[(int)oppositeWeaponSlot], equippedItemDatas[(int)oppositeWeaponSlot].CurrentStackSize, null, InventoryActionType.Unequip);
+                    myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(equippedItemDatas[(int)oppositeWeaponSlot], equippedItemDatas[(int)oppositeWeaponSlot].CurrentStackSize, null, InventoryActionType.Unequip);
                     UnequipItem(oppositeWeaponSlot);
                 }
             }
@@ -152,7 +152,7 @@ namespace InventorySystem
                 else if (itemDataUnequipping.Item is Quiver)
                     unequippedContainerInventoryManager = myUnit.QuiverInventoryManager;
 
-                myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
+                myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
                 UnequipItem(targetEquipSlot);
             }
             
@@ -314,7 +314,8 @@ namespace InventorySystem
                     ammoItemData.AdjustCurrentStackSize(-roomInStack);
                 }
 
-                GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
+                if (slotVisualsCreated)
+                    GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
 
                 if (myUnit != null)
                     myUnit.Stats.UpdateCarryWeight();
@@ -434,9 +435,9 @@ namespace InventorySystem
 
                     // If the Player is removing an Item from a dead Unit's equipment
                     if (InventoryUI.DraggedItem.myUnitEquipment.myUnit.Health.IsDead)
-                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        InventoryUI.DraggedItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        InventoryUI.DraggedItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     InventoryUI.DraggedItem.myUnitEquipment.RemoveEquipment(itemDataToRemove);
                 }
@@ -446,9 +447,9 @@ namespace InventorySystem
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
                         if (InventoryUI.DraggedItem.myInventory.MyUnit.Health.IsDead)
-                            myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
                     InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove, true);
@@ -470,9 +471,9 @@ namespace InventorySystem
 
                     // If the Player is removing an Item from a dead Unit's equipment
                     if (targetInventoryItem.myUnitEquipment.myUnit.Health.IsDead)
-                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        targetInventoryItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        targetInventoryItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.itemData);
                 }
@@ -482,9 +483,9 @@ namespace InventorySystem
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
                         if (targetInventoryItem.myInventory.MyUnit.Health.IsDead)
-                            myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            targetInventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            targetInventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
                     targetInventoryItem.myInventory.RemoveItem(itemDataToRemove, true);
@@ -496,9 +497,9 @@ namespace InventorySystem
                 {
                     // If the Player is removing an Item from a dead Unit's inventory
                     if (itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.Health.IsDead)
-                        myUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                        myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                        itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.UnitActionHandler.GetAction<InventoryAction>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                        itemDataToRemove.InventorySlotCoordinate.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                 }
 
                 itemDataToRemove.InventorySlotCoordinate.myInventory.RemoveItem(itemDataToRemove, true);
@@ -710,8 +711,8 @@ namespace InventorySystem
         {
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
-                BaseAction action = equipment.ActionTypes[i].GetAction(myUnit);
-                if (myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is MeleeAction && myUnit.Stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
+                Action_Base action = equipment.ActionTypes[i].GetAction(myUnit);
+                if (myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) == false || (action is Action_Melee && myUnit.Stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
                     continue;
 
                 if (IsHeldItemEquipSlot(equipSlot))

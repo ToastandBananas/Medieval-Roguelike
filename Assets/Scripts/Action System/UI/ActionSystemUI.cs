@@ -192,7 +192,7 @@ namespace UnitSystem.ActionSystem.UI
 
         public static void AddButton(ActionType actionType)
         {
-            BaseAction baseAction = actionType.GetAction(UnitManager.player);
+            Action_Base baseAction = actionType.GetAction(UnitManager.player);
             if (baseAction.ActionBarSection() == ActionBarSection.Basic)
             {
                 for (int i = 0; i < basicActionButtons.Count; i++)
@@ -221,7 +221,7 @@ namespace UnitSystem.ActionSystem.UI
 
         public static void RemoveButton(ActionType actionType)
         {
-            BaseAction baseAction = actionType.GetAction(UnitManager.player);
+            Action_Base baseAction = actionType.GetAction(UnitManager.player);
             if (baseAction == null)
                 return;
 

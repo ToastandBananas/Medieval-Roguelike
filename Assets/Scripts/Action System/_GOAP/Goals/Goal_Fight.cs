@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
 using UnityEngine;
 
@@ -11,10 +13,14 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
         
         GoalAction_Fight fightAction;
 
+        readonly List<Type> supportedGoalActions = new(new Type[] { typeof(GoalAction_Fight), typeof(GoalAction_FindWeapon), typeof(GoalAction_SwitchStance), typeof(GoalAction_SwapWeaponSet) });
+
         void Start()
         {
             fightAction = (GoalAction_Fight)goalPlanner.GetGoalAction(typeof(GoalAction_Fight));
         }
+
+        public override List<Type> SupportedGoalActions() => supportedGoalActions;
 
         public override void OnTickGoal()
         {

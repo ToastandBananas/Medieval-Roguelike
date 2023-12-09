@@ -24,7 +24,7 @@ namespace UnitSystem.ActionSystem.UI
                 if (itemData.Item is Ammunition)
                 {
                     // We just need to assign any basic action, since the Player might not have a Reload Action at the time of assigning the item to a hotbar slot
-                    ActionType = playerActionHandler.GetAction<InventoryAction>().ActionType;
+                    ActionType = playerActionHandler.GetAction<Action_Inventory>().ActionType;
                     Action = ActionType.GetAction(playerActionHandler.Unit);
 
                     button.onClick.RemoveAllListeners();
@@ -36,7 +36,7 @@ namespace UnitSystem.ActionSystem.UI
                             HeldRangedWeapon heldRangedWeapon = playerActionHandler.Unit.UnitMeshManager.GetHeldRangedWeapon();
                             if (heldRangedWeapon != null && heldRangedWeapon.IsLoaded == false && heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType == itemData.Item.Ammunition.ProjectileType)
                             {
-                                playerActionHandler.GetAction<ReloadAction>().QueueAction(itemData);
+                                playerActionHandler.GetAction<Action_Reload>().QueueAction(itemData);
                                 if (itemData.CurrentStackSize == 1)
                                     ResetButton();
                             }
@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem.UI
                 }
                 else
                 {
-                    ActionType = playerActionHandler.GetAction<EquipAction>().ActionType;
+                    ActionType = playerActionHandler.GetAction<Action_Equip>().ActionType;
                     Action = ActionType.GetAction(playerActionHandler.Unit);
 
                     button.onClick.RemoveAllListeners();
@@ -56,7 +56,7 @@ namespace UnitSystem.ActionSystem.UI
                             if (playerActionHandler.Unit.UnitEquipment.CanEquipItem(itemData) == false)
                                 return;
 
-                            EquipAction equipAction = Action as EquipAction;
+                            Action_Equip equipAction = Action as Action_Equip;
                             equipAction.QueueAction(itemData, itemData.Item.Equipment.EquipSlot, null);
                             ResetButton();
                         }
@@ -65,7 +65,7 @@ namespace UnitSystem.ActionSystem.UI
             }
             else if (itemData.Item is Consumable)
             {
-                ActionType = playerActionHandler.GetAction<ConsumeAction>().ActionType;
+                ActionType = playerActionHandler.GetAction<Action_Consume>().ActionType;
                 Action = ActionType.GetAction(playerActionHandler.Unit);
 
                 button.onClick.RemoveAllListeners();
@@ -75,13 +75,13 @@ namespace UnitSystem.ActionSystem.UI
                     {
                         if ((itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize == 1) || (itemData.Item.MaxUses > 1 && itemData.RemainingUses == 1))
                         {
-                            ConsumeAction consumeAction = Action as ConsumeAction;
+                            Action_Consume consumeAction = Action as Action_Consume;
                             consumeAction.QueueAction(itemData);
                             ResetButton();
                         }
                         else
                         {
-                            ConsumeAction consumeAction = Action as ConsumeAction;
+                            Action_Consume consumeAction = Action as Action_Consume;
                             consumeAction.QueueAction(itemData);
                         }
                     }
