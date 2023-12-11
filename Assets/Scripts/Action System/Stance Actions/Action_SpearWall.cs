@@ -257,7 +257,7 @@ namespace UnitSystem.ActionSystem.Actions
                 return "Lower Spear Wall";
         }
 
-        public override int InitialEnergyCost() => 5;
+        public override int EnergyCost() => 5;
 
         public override float EnergyCostPerTurn()
         {

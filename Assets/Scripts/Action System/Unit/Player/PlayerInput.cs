@@ -112,6 +112,15 @@ namespace UnitSystem.ActionSystem
                         return;
                     }
 
+                    if (GameControls.gamePlayActions.sneak.WasPressed)
+                        player.UnitActionHandler.MoveAction.SetMoveMode(MoveMode.Sneak);
+                    else if (GameControls.gamePlayActions.walk.WasPressed)
+                        player.UnitActionHandler.MoveAction.SetMoveMode(MoveMode.Walk);
+                    else if (GameControls.gamePlayActions.run.WasPressed)
+                        player.UnitActionHandler.MoveAction.SetMoveMode(MoveMode.Run);
+                    else if (GameControls.gamePlayActions.sprint.WasPressed)
+                        player.UnitActionHandler.MoveAction.SetMoveMode(MoveMode.Sprint);
+
                     // Display the appropriate mouse cursor and line renderer, depending on what/who is at mouse grid position and which action is currently selected by the player
                     SetupCursorAndLineRenderer();
 
@@ -182,7 +191,7 @@ namespace UnitSystem.ActionSystem
                 if (unitAtGridPosition != null && unitAtGridPosition.Health.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
-                    if (player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()) && (player.Alliance.IsEnemy(unitAtGridPosition) || (player.Alliance.IsNeutral(unitAtGridPosition) && selectedAction is Action_BaseAttack)))
+                    if (player.Stats.HasEnoughEnergy(selectedAction.EnergyCost()) && (player.Alliance.IsEnemy(unitAtGridPosition) || (player.Alliance.IsNeutral(unitAtGridPosition) && selectedAction is Action_BaseAttack)))
                     {
                         // Set the Unit as the target enemy
                         player.UnitActionHandler.SetTargetEnemyUnit(unitAtGridPosition);
@@ -295,7 +304,7 @@ namespace UnitSystem.ActionSystem
                     else // The unit the mouse is hovering over is not an attackable unit (likely an ally or a dead unit) or the Player doesn't have enough energy for the selected action
                     {
                         // Set the selected action to Move if the Player doesn't have enough energy for their selected action
-                        if (!player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()))
+                        if (!player.Stats.HasEnoughEnergy(selectedAction.EnergyCost()))
                             player.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
 
                         player.UnitActionHandler.SetTargetEnemyUnit(null);
@@ -306,7 +315,7 @@ namespace UnitSystem.ActionSystem
                 else if (selectedAction is Action_BaseAttack)
                 {
                     // Make sure the Player has enough energy for the attack
-                    if (!player.Stats.HasEnoughEnergy(selectedAction.InitialEnergyCost()))
+                    if (!player.Stats.HasEnoughEnergy(selectedAction.EnergyCost()))
                         return;
 
                     // If there's any enemy or neutral unit within the attack positions

@@ -11,6 +11,8 @@ using UnitSystem.ActionSystem.GOAP.GoalActions;
 
 namespace UnitSystem.ActionSystem.Actions
 {
+    public enum MoveMode { Sneak, Walk, Run, Sprint }
+
     public class Action_Move : Action_Base
     {
         public delegate void OnMoveHandler();
@@ -25,7 +27,9 @@ namespace UnitSystem.ActionSystem.Actions
         public bool IsMoving { get; private set; }
         public bool CanMove { get; private set; }
 
-        List<Vector3> positionList = new();
+        MoveMode currentMoveMode = MoveMode.Walk;
+
+        readonly List<Vector3> positionList = new();
         int positionIndex;
 
         readonly float defaultMoveSpeed = 3.5f;
@@ -46,6 +50,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
         {
+            ClampMoveMode();
             TargetGridPosition = finalTargetGridPosition;
             Unit.UnitActionHandler.QueueAction(this);
         }
@@ -73,16 +78,8 @@ namespace UnitSystem.ActionSystem.Actions
         IEnumerator Move()
         {
             // If there's no path
-            if (positionList.Count == 0 || FinalTargetGridPosition == Unit.GridPosition)
+            if (!CanMove || positionList.Count == 0 || FinalTargetGridPosition == Unit.GridPosition)
             {
-                CompleteAction();
-                TurnManager.Instance.StartNextUnitsTurn(Unit);
-                yield break;
-            }
-
-            if (CanMove == false)
-            {
-                Debug.Log($"{Unit.name} tries to move, but they can't.");
                 CompleteAction();
                 TurnManager.Instance.StartNextUnitsTurn(Unit);
                 yield break;
@@ -131,20 +128,20 @@ namespace UnitSystem.ActionSystem.Actions
                     continue;
                 }
 
-                if (Unit.Alliance.IsEnemy(opportunityAttackingUnit) == false)
+                if (!Unit.Alliance.IsEnemy(opportunityAttackingUnit))
                     continue;
 
                 // Only melee Unit's can do an opportunity attack
-                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped || (opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped == false && opportunityAttackingUnit.Stats.CanFightUnarmed == false))
+                if (opportunityAttackingUnit.UnitEquipment.RangedWeaponEquipped || (!opportunityAttackingUnit.UnitEquipment.MeleeWeaponEquipped && !opportunityAttackingUnit.Stats.CanFightUnarmed))
                     continue;
 
                 // The enemy must be at least somewhat facing this Unit
-                if (opportunityAttackingUnit.Vision.IsDirectlyVisible(Unit) == false || opportunityAttackingUnit.Vision.TargetInOpportunityAttackViewAngle(Unit.transform) == false)
+                if (!opportunityAttackingUnit.Vision.IsDirectlyVisible(Unit) || !opportunityAttackingUnit.Vision.TargetInOpportunityAttackViewAngle(Unit.transform))
                     continue;
 
                 // Check if the Unit is starting out within the nearbyUnit's attack range
                 Action_Melee opponentsMeleeAction = opportunityAttackingUnit.UnitActionHandler.GetAction<Action_Melee>();
-                if (opponentsMeleeAction.IsInAttackRange(Unit) == false)
+                if (!opponentsMeleeAction.IsInAttackRange(Unit))
                     continue;
 
                 // Check if the Unit is moving to a position outside of the nearbyUnit's attack range
@@ -319,7 +316,7 @@ namespace UnitSystem.ActionSystem.Actions
                         Unit.UnitActionHandler.NPCActionHandler.GoalPlanner.FightAction.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
-                    else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead == false && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
+                    else if (Unit.UnitActionHandler.TargetEnemyUnit != null && !Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
                         QueueMoveToTargetEnemy();
                 }
             }
@@ -390,14 +387,13 @@ namespace UnitSystem.ActionSystem.Actions
             }
 
             Unit.BlockCurrentPosition();
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.Health.IsDead == false)
+            if (unitAtTargetGridPosition != null && !unitAtTargetGridPosition.Health.IsDead)
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
 
         public override int ActionPointsCost()
         {
-            int cost = defaultTileMoveCost;
-            float floatCost = cost;
+            float cost = defaultTileMoveCost;
 
             if (positionIndex >= positionList.Count)
                 positionIndex = positionList.Count - 1;
@@ -407,7 +403,7 @@ namespace UnitSystem.ActionSystem.Actions
                 GetPathToTargetPosition(TargetGridPosition);
 
             if (positionList.Count == 0)
-                return cost;
+                return Mathf.RoundToInt(cost);
 
             // Check for an Interactable on the next move position
             Vector3 nextPointOnPath = positionList[positionIndex];
@@ -418,7 +414,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (nextPointOnPath.y - unitPosition.y > 0f)
                 nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
             // If the next path position is below the unit's current position
-            else if (nextPointOnPath.y - unitPosition.y < 0f && (Mathf.Approximately(nextPathPosition.x, unitPosition.x) == false || Mathf.Approximately(nextPathPosition.z, unitPosition.z) == false))
+            else if (nextPointOnPath.y - unitPosition.y < 0f && (!Mathf.Approximately(nextPathPosition.x, unitPosition.x) || !Mathf.Approximately(nextPathPosition.z, unitPosition.z)))
                 nextPathPosition.Set(nextPathPosition.x, nextPointOnPath.y, nextPathPosition.z);
 
             // If there's an Interactable on the next path position
@@ -443,11 +439,11 @@ namespace UnitSystem.ActionSystem.Actions
 
             float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
 
-            floatCost += floatCost * tileCostMultiplier;
+            cost += cost * tileCostMultiplier;
             if (LevelGrid.IsDiagonal(Unit.WorldPosition, nextTargetPosition))
-                floatCost *= 1.4f;
+                cost *= 1.4f;
 
-            cost = Mathf.RoundToInt(floatCost);
+            cost *= MoveModeMultiplier() * Unit.Stats.EncumbranceMoveCostModifier();
 
             if (nextTargetPosition == Unit.transform.position)
             {
@@ -467,8 +463,20 @@ namespace UnitSystem.ActionSystem.Actions
 
             Unit.BlockCurrentPosition();
 
-            // if (unit.IsPlayer) Debug.Log("Move Cost (" + nextTargetPosition + "): " + Mathf.RoundToInt(cost * unit.stats.EncumbranceMoveCostModifier()));
-            return Mathf.RoundToInt(cost * Unit.Stats.EncumbranceMoveCostModifier());
+            // if (unit.IsPlayer) Debug.Log("Move Cost (" + nextTargetPosition + "): " + Mathf.RoundToInt(cost));
+            return Mathf.RoundToInt(cost);
+        }
+
+        float MoveModeMultiplier()
+        {
+            return currentMoveMode switch
+            {
+                MoveMode.Sneak => 2f,
+                MoveMode.Walk => 1f,
+                MoveMode.Run => 0.5f,
+                MoveMode.Sprint => 0.25f,
+                _ => 1f,
+            };
         }
 
         Vector3 GetNextPathPosition_XZ(Vector3 nextPointOnPath)
@@ -498,7 +506,7 @@ namespace UnitSystem.ActionSystem.Actions
         {
             Vector3 nextPointOnPath = positionList[positionIndex];
             Vector3 nextTargetPosition;
-            if (Mathf.Approximately(nextPointOnPath.y, Unit.transform.position.y) == false)
+            if (!Mathf.Approximately(nextPointOnPath.y, Unit.transform.position.y))
                 nextTargetPosition = nextPointOnPath;
             else if (Mathf.RoundToInt(nextPointOnPath.x) == Mathf.RoundToInt(Unit.transform.position.x) && Mathf.RoundToInt(nextPointOnPath.z) > Mathf.RoundToInt(Unit.transform.position.z)) // North
                 nextTargetPosition = new Vector3(Unit.transform.position.x, Unit.transform.position.y, Unit.transform.position.z + 1);
@@ -563,6 +571,18 @@ namespace UnitSystem.ActionSystem.Actions
             return 1f;
         }
 
+        public override int EnergyCost()
+        {
+            return currentMoveMode switch
+            {
+                MoveMode.Sneak => 0,
+                MoveMode.Walk => 0,
+                MoveMode.Run => 1,
+                MoveMode.Sprint => 3,
+                _ => 0,
+            };
+        }
+
         public override void CompleteAction()
         {
             base.CompleteAction();
@@ -573,9 +593,26 @@ namespace UnitSystem.ActionSystem.Actions
             else if (Unit.Health.IsDead == false)
                 Unit.BlockCurrentPosition();
 
+            ClampMoveMode();
+
             IsMoving = false;
             AboutToMove = false;
             Unit.UnitActionHandler.FinishAction();
+        }
+
+        void ClampMoveMode()
+        {
+            if (currentMoveMode == MoveMode.Sprint)
+            {
+                if (!Unit.Stats.HasEnoughEnergy(EnergyCost()))
+                {
+                    currentMoveMode = MoveMode.Run;
+                    if (!Unit.Stats.HasEnoughEnergy(EnergyCost()))
+                        currentMoveMode = MoveMode.Walk;
+                }
+            }
+            else if (currentMoveMode == MoveMode.Run && !Unit.Stats.HasEnoughEnergy(EnergyCost()))
+                currentMoveMode = MoveMode.Walk;
         }
 
         public void SetTravelDistanceSpeedMultiplier()
@@ -595,7 +632,15 @@ namespace UnitSystem.ActionSystem.Actions
             return true;
         }
 
-        public void SetCanMove(bool canMove) => this.CanMove = canMove;
+        public void SetMoveMode(MoveMode moveMode)
+        {
+            MoveMode previousMoveMode = currentMoveMode;
+            currentMoveMode = moveMode;
+            if (!Unit.Stats.HasEnoughEnergy(EnergyCost()))
+                currentMoveMode = previousMoveMode;
+        }
+
+        public void SetCanMove(bool canMove) => CanMove = canMove;
 
         public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => FinalTargetGridPosition = finalGridPosition;
 
@@ -608,8 +653,6 @@ namespace UnitSystem.ActionSystem.Actions
         public override bool ActionIsUsedInstantly() => false;
 
         public override bool CanBeClearedFromActionQueue() => true;
-
-        public override int InitialEnergyCost() => 0;
 
         public override NPCAIAction GetNPCAIAction_ActionGridPosition(GridPosition actionGridPosition) => null;
 

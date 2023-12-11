@@ -37,7 +37,7 @@ namespace UnitSystem.ActionSystem.Actions
         {
             if (Unit.UnitActionHandler.IsAttacking) return;
 
-            if (IsValidUnitInActionArea(TargetGridPosition) == false || Unit.Stats.HasEnoughEnergy(InitialEnergyCost()) == false)
+            if (IsValidUnitInActionArea(TargetGridPosition) == false || Unit.Stats.HasEnoughEnergy(EnergyCost()) == false)
             {
                 Unit.UnitActionHandler.SetTargetEnemyUnit(null);
                 Unit.UnitActionHandler.ClearQueuedAttack();
@@ -288,7 +288,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override float AccuracyModifier() => 0.75f;
 
-        public override int InitialEnergyCost() => 25;
+        public override int EnergyCost() => 25;
 
         public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.MeleeWeaponEquipped;
 

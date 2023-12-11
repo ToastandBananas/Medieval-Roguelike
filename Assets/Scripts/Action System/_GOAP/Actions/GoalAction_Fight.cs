@@ -123,10 +123,10 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             // Loop through all combat actions
             for (int i = 0; i < npcActionHandler.AvailableCombatActions.Count; i++)
             {
-                if (npcActionHandler.AvailableCombatActions[i].IsValidAction() == false)
+                if (!npcActionHandler.AvailableCombatActions[i].IsValidAction())
                     continue;
 
-                if (unit.Stats.HasEnoughEnergy(npcActionHandler.AvailableCombatActions[i].InitialEnergyCost()) == false)
+                if (!unit.Stats.HasEnoughEnergy(npcActionHandler.AvailableCombatActions[i].EnergyCost()))
                     continue;
 
                 // Loop through every grid position in range of the combat action
@@ -177,7 +177,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                         while (unitAtActionGridPosition.UnitActionHandler.MoveAction.IsMoving)
                             yield return null;
 
-                        if (chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, unit.GridPosition, unitAtActionGridPosition.GridPosition) == false) // If the target Unit moved out of range
+                        if (!chosenCombatAction.IsInAttackRange(unitAtActionGridPosition, unit.GridPosition, unitAtActionGridPosition.GridPosition)) // If the target Unit moved out of range
                         {
                             npcActionHandler.SetTargetEnemyUnit(unitAtActionGridPosition);
                             PursueTargetEnemy();
@@ -210,7 +210,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
             // If there's no space around the enemy unit, try to find another enemy to attack
             if (npcActionHandler.TargetEnemyUnit.IsCompletelySurrounded(unit.GetAttackRange()))
-                SwitchTargetEnemies(out Unit oldEnemy, out Unit newEnemy);
+                SwitchTargetEnemies(out _, out _);
 
             npcActionHandler.MoveAction.QueueAction(LevelGrid.FindNearestValidGridPosition(npcActionHandler.TargetEnemyUnit.GridPosition, unit, 10));
         }

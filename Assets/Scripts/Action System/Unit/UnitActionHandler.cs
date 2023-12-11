@@ -26,7 +26,7 @@ namespace UnitSystem.ActionSystem
         protected List<Action_BaseAttack> availableCombatActions = new();
         protected List<Action_BaseStance> availableStanceActions = new();
 
-        // Cached Actions (actions that every Unit will have)
+        // Cached Actions (actions that every Unit will have and use often)
         public Action_Interact InteractAction { get; private set; }
         public Action_Move MoveAction { get; private set; }
         public Action_Turn TurnAction { get; private set; }
@@ -262,8 +262,8 @@ namespace UnitSystem.ActionSystem
             {
                 for (int i = 0; i < availableCombatActions.Count; i++)
                 {
-                    Action_BaseAttack action = availableCombatActions[i];
-                    if (action.IsValidAction() && Unit.Stats.HasEnoughEnergy(action.InitialEnergyCost()) && action.IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
+                    Action_BaseAttack combatAction = availableCombatActions[i];
+                    if (combatAction.IsValidAction() && Unit.Stats.HasEnoughEnergy(combatAction.EnergyCost()) && combatAction.IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                         return true;
                 }
             }

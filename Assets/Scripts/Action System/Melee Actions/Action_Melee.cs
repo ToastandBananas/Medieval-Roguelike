@@ -399,7 +399,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override float AccuracyModifier() => 1f;
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 

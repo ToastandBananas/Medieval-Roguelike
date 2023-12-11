@@ -269,7 +269,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override bool CanShowAttackRange() => ItemDataToThrow != null;
 
-        public override int InitialEnergyCost()
+        public override int EnergyCost()
         {
             return 10;
         }

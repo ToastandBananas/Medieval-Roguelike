@@ -14,7 +14,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public abstract void TakeAction();
 
-        protected virtual void StartAction() { }
+        protected virtual void StartAction() => Unit.Stats.UseEnergy(EnergyCost());
 
         public virtual void SetTargetGridPosition(GridPosition gridPosition) => TargetGridPosition = gridPosition;
 
@@ -27,7 +27,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public virtual void QueueAction(GridPosition targetGridPosition)
         {
-            this.TargetGridPosition = targetGridPosition;
+            TargetGridPosition = targetGridPosition;
             QueueAction();
         }
 
@@ -130,7 +130,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public abstract int ActionPointsCost();
 
-        public abstract int InitialEnergyCost();
+        public abstract int EnergyCost();
 
         public virtual float EnergyCostPerTurn() => 0f;
     }

@@ -7,6 +7,9 @@ namespace Controls
         // Action Buttons
         public PlayerAction select, turnMode, skipTurn, cancelAction, swapWeapons, switchVersatileStance;
 
+        // Move Mode Buttons
+        public PlayerAction sneak, walk, run, sprint;
+
         // Mouse Buttons
         public PlayerAction leftMouseClick, rightMouseClick, mouseScrollWheelClick;
 
@@ -35,6 +38,11 @@ namespace Controls
             cancelAction = CreatePlayerAction("CancelAction");
             swapWeapons = CreatePlayerAction("SwapWeapons");
             switchVersatileStance = CreatePlayerAction("SwitchVersatileStance");
+
+            sneak = CreatePlayerAction("Sneak");
+            walk = CreatePlayerAction("Walk");
+            run = CreatePlayerAction("Run");
+            sprint = CreatePlayerAction("Sprint");
 
             leftMouseClick = CreatePlayerAction("LeftMouseClick");
             rightMouseClick = CreatePlayerAction("RightMouseClick");

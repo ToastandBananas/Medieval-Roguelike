@@ -19,7 +19,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             for (int i = 0; i < unit.UnitActionHandler.AvailableStanceActions.Count; i++)
             {
                 // Is the stance action valid and does the Unit have enough energy?
-                if (!unit.UnitActionHandler.AvailableStanceActions[i].IsValidAction() || !unit.Stats.HasEnoughEnergy(unit.UnitActionHandler.AvailableStanceActions[i].InitialEnergyCost()))
+                if (!unit.UnitActionHandler.AvailableStanceActions[i].IsValidAction() || !unit.Stats.HasEnoughEnergy(unit.UnitActionHandler.AvailableStanceActions[i].EnergyCost()))
                     continue;
 
                 if (Random.Range(0f, 1f) < unit.UnitActionHandler.AvailableStanceActions[i].NPCChanceToSwitchStance())

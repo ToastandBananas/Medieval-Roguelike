@@ -85,7 +85,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override bool ActionIsUsedInstantly() => true;
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
 
         public override Sprite ActionIcon()
         {

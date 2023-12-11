@@ -118,6 +118,6 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override bool CanBeClearedFromActionQueue() => true;
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
     }
 }

@@ -133,7 +133,7 @@ namespace UnitSystem.ActionSystem.Actions
                 return "One-Hand Weapon Stance";
         }
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 

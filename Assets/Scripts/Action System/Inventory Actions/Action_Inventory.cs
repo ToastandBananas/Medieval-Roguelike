@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem.Actions
             return cost;
         }
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
 
         public override bool IsInterruptable() => false;
 

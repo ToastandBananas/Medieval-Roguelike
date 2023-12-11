@@ -15,6 +15,7 @@ namespace Controls
 
         void BindDefaultControls()
         {
+            // Action Buttons
             gamePlayActions.select.AddDefaultBinding(Mouse.LeftButton);
             gamePlayActions.select.AddDefaultBinding(InputControlType.Action1); // X(PS4) / A(Xbox)
 
@@ -30,8 +31,14 @@ namespace Controls
             gamePlayActions.swapWeapons.AddDefaultBinding(Key.Tab);
             gamePlayActions.swapWeapons.AddDefaultBinding(InputControlType.Action4); // Triangle(PS4) / Y(Xbox)
 
-            gamePlayActions.switchVersatileStance.AddDefaultBinding(Key.V);
+            gamePlayActions.switchVersatileStance.AddDefaultBinding(Key.F);
             gamePlayActions.switchVersatileStance.AddDefaultBinding(InputControlType.Action3);
+
+            // Move Mode Buttons
+            gamePlayActions.sneak.AddDefaultBinding(Key.Z);
+            gamePlayActions.walk.AddDefaultBinding(Key.X);
+            gamePlayActions.run.AddDefaultBinding(Key.C);
+            gamePlayActions.sprint.AddDefaultBinding(Key.V);
 
             // Mouse Buttons
             gamePlayActions.leftMouseClick.AddDefaultBinding(Mouse.LeftButton);

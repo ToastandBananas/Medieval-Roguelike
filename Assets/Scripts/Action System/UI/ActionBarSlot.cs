@@ -106,7 +106,7 @@ namespace UnitSystem.ActionSystem.UI
                 return;
             }
 
-            if (Action.IsValidAction() && playerActionHandler.Unit.Stats.HasEnoughEnergy(Action.InitialEnergyCost()))
+            if (Action.IsValidAction() && playerActionHandler.Unit.Stats.HasEnoughEnergy(Action.EnergyCost()))
                 ActivateButton();
             else
                 DeactivateButton();

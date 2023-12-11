@@ -154,7 +154,7 @@ namespace UnitSystem.ActionSystem.Actions
                 return "Lower Shield";
         }
 
-        public override int InitialEnergyCost() => 5;
+        public override int EnergyCost() => 5;
 
         public override float EnergyCostPerTurn() => 3f;
 

@@ -562,7 +562,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override int ActionPointsCost() => singleTurnSegmentAPCost * GetRotationsSegmentCount();
 
-        public override int InitialEnergyCost() => 0;
+        public override int EnergyCost() => 0;
 
         public override bool ActionIsUsedInstantly() => false;
 
