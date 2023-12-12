@@ -133,7 +133,7 @@ namespace GridSystem
         {
             HideGridVisual();
             
-            if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0 
+            if (!Instance.player.IsMyTurn || Instance.player.UnitActionHandler.QueuedActions.Count > 0 
                 || Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack == false || !Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 
@@ -146,7 +146,7 @@ namespace GridSystem
             UpdateAttackRangeGridVisual();
 
             Action_Base selectedAction = Instance.player.UnitActionHandler.PlayerActionHandler.SelectedAction;
-            if (Instance.player.IsMyTurn == false || Instance.player.UnitActionHandler.QueuedActions.Count > 0
+            if (!Instance.player.IsMyTurn || Instance.player.UnitActionHandler.QueuedActions.Count > 0
                 || selectedAction is Action_BaseAttack == false || !selectedAction.BaseAttackAction.CanShowAttackRange())
                 return;
 

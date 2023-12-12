@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UnitSystem.ActionSystem.GOAP.Goals;
+using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
@@ -17,10 +16,16 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
         }
 
+        public virtual MoveMode PreferredMoveMode() => MoveMode.Walk;
+
         /// <summary>Cost determines which Goal Action will be chosen for a Goal. (Lowest cost will be chosen).</summary>
         public virtual float Cost() => 0f;
 
-        public virtual void OnActivated(Goal_Base linkedGoal) => this.LinkedGoal = linkedGoal;
+        public virtual void OnActivated(Goal_Base linkedGoal)
+        {
+            LinkedGoal = linkedGoal;
+            unit.UnitActionHandler.MoveAction.SetMoveMode(PreferredMoveMode());
+        }
 
         public virtual void OnDeactivated() => LinkedGoal = null;
 

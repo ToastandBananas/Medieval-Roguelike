@@ -26,6 +26,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             return 100f;
         }
 
+        public override MoveMode PreferredMoveMode() => MoveMode.Run;
+
         public override void OnTick()
         {
             FindWeapon();
@@ -43,7 +45,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             }
 
             // If no weapons whatsoever are equipped
-            if (unit.UnitEquipment.OtherWeaponSet_IsEmpty())
+            if (!unit.UnitEquipment.OtherWeaponSet_IsEmpty() && !unit.UnitEquipment.OtherWeaponSet_IsRanged())
             {
                 // Equip any weapon from their inventory if they have one
                 if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
@@ -60,16 +62,43 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             }
             else // If there are weapons in the other weapon set
             {
+                float distanceToTargetEnemy = 0f;
+                if (unit.UnitActionHandler.TargetEnemyUnit != null)
+                    distanceToTargetEnemy = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
+
                 // Swap to their melee weapon set if they have one
-                if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                if (distanceToTargetEnemy <= npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat)
                 {
-                    npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
-                    return;
+                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    {
+                        npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
+                        return;
+                    }
+                    else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    {
+                        npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                        return;
+                    }
+                    else if (weaponNearby)
+                    {
+                        npcActionHandler.InteractAction.QueueAction(foundLooseWeapon);
+                        return;
+                    }
                 }
                 // Else, swap to their ranged weapon set if they have ammo
                 else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
                 {
                     npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
+                    return;
+                }
+                else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                {
+                    npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
+                    return;
+                }
+                else if (weaponNearby)
+                {
+                    npcActionHandler.InteractAction.QueueAction(foundLooseWeapon);
                     return;
                 }
             }

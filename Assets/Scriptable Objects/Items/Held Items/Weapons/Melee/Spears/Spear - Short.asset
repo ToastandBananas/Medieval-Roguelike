@@ -21,6 +21,8 @@ MonoBehaviour:
   thrownProjectileType: 1
   thrownAnimationType: 0
   throwingSpeedMultiplier: 1.2
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 1
   height: 5
   weight: 2.8
@@ -54,7 +56,12 @@ MonoBehaviour:
   isVersatile: 1
   canDualWield: 1
   attackRange: {x: 1, y: 1.7}
-  damageRange: {x: 4, y: 9}
+  minDamageRange: {x: 5, y: 6}
+  maxDamageRange: {x: 7, y: 9}
+  minArmorPierce: 0
+  maxArmorPierce: 0
+  minArmorEffectiveness: 0
+  maxArmorEffectiveness: 0
   minAccuracyModifier: 0.11
   maxAccuracyModifier: 0.14
   minBlockChanceModifier: -0.05

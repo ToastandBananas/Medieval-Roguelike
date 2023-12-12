@@ -5,8 +5,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
     public class GoalAction_SwapWeaponSet : GoalAction_Base
     {
-        [SerializeField] float distanceToPreferMeleeCombat = 3f;
-
         public override float Cost()
         {
             if (unit.UnitActionHandler.TargetEnemyUnit == null)
@@ -15,12 +13,12 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             float distanceToTargetEnemy = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
             if (unit.UnitEquipment.RangedWeaponEquipped) 
             {
-                if (distanceToTargetEnemy <= distanceToPreferMeleeCombat || !unit.UnitEquipment.HasValidAmmunitionEquipped())
+                if (distanceToTargetEnemy <= npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat || !unit.UnitEquipment.HasValidAmmunitionEquipped())
                     return 0f; // Swap to melee weapon
             }
             else // If melee weapon equipped or unarmed
             {
-                if (distanceToTargetEnemy > distanceToPreferMeleeCombat && unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                if (distanceToTargetEnemy > npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat && unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped())
                     return 0f; // Swap to ranged weapon
             }
             

@@ -159,15 +159,15 @@ namespace UnitSystem.ActionSystem
 
         public virtual void FinishAction()
         {
-            if (QueuedActions.Count == 0)
-                return;
-            
-            QueuedActions.RemoveAt(0);
+            if (QueuedActions.Count > 0)
+                QueuedActions.RemoveAt(0);
+
             if (QueuedAPs.Count > 0)
                 QueuedAPs.RemoveAt(0);
 
             IsPerformingAction = false;
 
+            // Do this in case the Unit moved
             GridSystemVisual.UpdateAttackGridVisual();
         }
 

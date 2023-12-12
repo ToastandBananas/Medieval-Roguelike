@@ -1,7 +1,7 @@
 using GridSystem;
 using System;
 using System.Collections.Generic;
-using UnitSystem.ActionSystem.GOAP.Goals;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.GoalActions
@@ -15,6 +15,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         float unitToFleeFrom_PreviousDistance;
         int fleeDistance;
         bool needsNewFleeDestination = true;
+
+        public override MoveMode PreferredMoveMode() => MoveMode.Sprint;
 
         public override void OnTick()
         {

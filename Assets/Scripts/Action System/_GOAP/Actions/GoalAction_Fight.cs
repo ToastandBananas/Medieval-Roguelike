@@ -12,7 +12,10 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 {
     public class GoalAction_Fight : GoalAction_Base
     {
+        [SerializeField] float distanceToPreferMeleeCombat = 3f;
         [SerializeField] float maxChaseDistance = 25f;
+
+        public float DistanceToPreferMeleeCombat => distanceToPreferMeleeCombat;
         public float MaxChaseDistance => maxChaseDistance;
         public GridPosition StartChaseGridPosition { get; private set; }
         public bool ShouldStopChasing { get; private set; }
@@ -28,8 +31,17 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override float Cost() => 50;
 
+        public override MoveMode PreferredMoveMode()
+        {
+            if (npcActionHandler.Unit.Stats.CurrentEnergyNormalized >= 0.5f) // Has 50% or more energy left
+                return MoveMode.Sprint;
+            else
+                return MoveMode.Run;
+        }
+
         public override void OnTick()
         {
+            npcActionHandler.MoveAction.SetMoveMode(PreferredMoveMode());
             Fight();
         }
 

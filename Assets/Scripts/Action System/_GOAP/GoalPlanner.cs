@@ -16,6 +16,7 @@ namespace UnitSystem.ActionSystem.GOAP
         // Cache commonly accessed actions that most NPCs will have
         public GoalAction_Fight FightAction { get; private set; }
         public GoalAction_Flee FleeAction { get; private set; }
+        public GoalAction_Follow FollowAction { get; private set; }
         public GoalAction_InspectSound InspectSoundAction { get; private set; }
 
         void Awake()
@@ -28,6 +29,7 @@ namespace UnitSystem.ActionSystem.GOAP
         {
             FightAction = GetGoalAction(typeof(GoalAction_Fight)) as GoalAction_Fight;
             FleeAction = GetGoalAction(typeof(GoalAction_Flee)) as GoalAction_Flee;
+            FollowAction = GetGoalAction(typeof(GoalAction_Follow)) as GoalAction_Follow;
             InspectSoundAction = GetGoalAction(typeof(GoalAction_InspectSound)) as GoalAction_InspectSound;
         }
 
@@ -108,7 +110,7 @@ namespace UnitSystem.ActionSystem.GOAP
             // Tick the action
             if (activeGoalAction != null)
             {
-                Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()} | Cost: {activeGoalAction.Cost()}");
+                // Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()} | Cost: {activeGoalAction.Cost()}");
                 activeGoalAction.OnTick();
             }
         }

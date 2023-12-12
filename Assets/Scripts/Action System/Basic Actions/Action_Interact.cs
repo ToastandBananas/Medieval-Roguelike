@@ -10,35 +10,23 @@ namespace UnitSystem.ActionSystem.Actions
     {
         public Interactable TargetInteractable { get; private set; }
 
-        public void QueueAction(Interactable targetInteractable)
+        public void QueueAction(Interactable targetInteractable, bool queueImmediately = false)
         {
-            this.TargetInteractable = targetInteractable;
+            TargetInteractable = targetInteractable;
             TargetGridPosition = targetInteractable.GridPosition();
 
             // If the Unit is too far away to Interact, move to it first
             if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
                 Unit.UnitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
             else
-                Unit.UnitActionHandler.QueueAction(this);
-        }
-
-        public void QueueActionImmediately(Interactable targetInteractable)
-        {
-            this.TargetInteractable = targetInteractable;
-            TargetGridPosition = targetInteractable.GridPosition();
-
-            // If the Unit is too far away to Interact, move to it first
-            if (Vector3.Distance(Unit.WorldPosition, TargetGridPosition.WorldPosition) > LevelGrid.diaganolDistance)
-                Unit.UnitActionHandler.MoveAction.QueueAction(LevelGrid.GetNearestSurroundingGridPosition(TargetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, true));
-            else
-                Unit.UnitActionHandler.QueueAction(this, true);
+                Unit.UnitActionHandler.QueueAction(this, queueImmediately);
         }
 
         public override void TakeAction()
         {
             StartAction();
 
-            if (TargetInteractable == null || TargetInteractable.gameObject.activeSelf == false)
+            if (TargetInteractable == null || !TargetInteractable.gameObject.activeSelf)
             {
                 CompleteAction();
                 return;
@@ -52,7 +40,7 @@ namespace UnitSystem.ActionSystem.Actions
             Action_Turn turnAction = Unit.UnitActionHandler.TurnAction;
             if (Unit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen)
             {
-                if (turnAction.IsFacingTarget(TargetInteractable.GridPosition()) == false)
+                if (!turnAction.IsFacingTarget(TargetInteractable.GridPosition()))
                     turnAction.RotateTowardsPosition(TargetInteractable.GridPosition().WorldPosition, false, turnAction.DefaultRotateSpeed * 2f);
 
                 while (Unit.UnitActionHandler.TurnAction.isRotating)
@@ -71,7 +59,7 @@ namespace UnitSystem.ActionSystem.Actions
             CompleteAction();
 
             // Perform the interaction
-            if (interactable.CanInteractAtMyGridPosition() || LevelGrid.HasUnitAtGridPosition(interactable.GridPosition(), out _) == false)
+            if (interactable.CanInteractAtMyGridPosition() || !LevelGrid.HasUnitAtGridPosition(interactable.GridPosition(), out _))
                 interactable.Interact(Unit);
         }
 

@@ -9,6 +9,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override void QueueAction()
         {
+            Debug.Log("Swap Weapon Set Action");
             Unit.UnitActionHandler.ClearActionQueue(true);
             if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 Unit.UnitActionHandler.GetAction<Action_Reload>().QueueAction();

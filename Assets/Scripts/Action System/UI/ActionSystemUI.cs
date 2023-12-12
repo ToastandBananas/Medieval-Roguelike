@@ -2,14 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using GridSystem;
 using System.Linq;
 using Controls;
 using UnityEngine.UI;
-using ContextMenu = GeneralUI.ContextMenu;
 using GeneralUI;
 using InventorySystem;
-using UnityEngine.TextCore.Text;
 using UnitSystem.ActionSystem.Actions;
 
 namespace UnitSystem.ActionSystem.UI

@@ -1,6 +1,7 @@
 using GridSystem;
 using System;
 using System.Collections.Generic;
+using UnitSystem.ActionSystem.Actions;
 using UnitSystem.ActionSystem.GOAP.Goals;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -14,6 +15,8 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         int inspectSoundIterations;
         int maxInspectSoundIterations;
         bool needsNewSoundInspectPosition = true;
+
+        public override MoveMode PreferredMoveMode() => MoveMode.Run;
 
         public override void OnTick()
         {

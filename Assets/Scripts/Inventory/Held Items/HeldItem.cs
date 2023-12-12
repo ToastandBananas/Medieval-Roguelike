@@ -111,12 +111,12 @@ namespace InventorySystem
         {
             if (Random.Range(0f, 1f) <= GetFumbleChance())
             {
-                if (unit.UnitEquipment.ItemDataEquipped(ItemData) == false)
+                if (!unit.UnitEquipment.ItemDataEquipped(ItemData))
                     return;
 
                 unit.UnitActionHandler.SetIsAttacking(false);
 
-                if (unit.IsNPC && unit.Health.IsDead == false) // NPCs will try to pick the item back up immediately
+                if (unit.IsNPC && !unit.Health.IsDead) // NPCs will try to pick the item back up immediately
                 {
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
                     LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
@@ -230,7 +230,7 @@ namespace InventorySystem
                         for (int j = 0; j < materials.Length; j++)
                         {
                             if (j > ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1)
-                                materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[ItemData.Item.HeldEquipment.MeshRendererMaterials.Length - 1];
+                                materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[^1]; // Last index in array
                             else
                                 materials[j] = ItemData.Item.HeldEquipment.MeshRendererMaterials[j];
                         }
@@ -257,7 +257,7 @@ namespace InventorySystem
                         for (int j = 0; j < materials.Length; j++)
                         {
                             if (j > ItemData.Item.PickupMeshRendererMaterials.Length - 1)
-                                materials[j] = ItemData.Item.PickupMeshRendererMaterials[ItemData.Item.PickupMeshRendererMaterials.Length - 1];
+                                materials[j] = ItemData.Item.PickupMeshRendererMaterials[^1]; // Last index in array
                             else
                                 materials[j] = ItemData.Item.PickupMeshRendererMaterials[j];
                         }

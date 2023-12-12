@@ -215,6 +215,8 @@ namespace UnitSystem
 
             beingKnockedBack = false;
 
+            StopMovingForward();
+
             if (fallDistance > Health.minFallDistance)
                 unit.Health.TakeFallDamage(fallDistance);
         }

@@ -10,7 +10,8 @@ namespace InventorySystem
         [SerializeField] Vector2Int blockPowerRange;
 
         [Header("Shield Bash Damage")]
-        [SerializeField] Vector2Int damageRange;
+        [SerializeField] Vector2Int minDamageRange;
+        [SerializeField] Vector2Int maxDamageRange;
 
         [Header("Modifiers")]
         [SerializeField, Range(-1f, 1f)] float minBlockChanceModifier;
@@ -28,8 +29,10 @@ namespace InventorySystem
         public int MinBlockPower => blockPowerRange.x;
         public int MaxBlockPower => blockPowerRange.y;
 
-        public int MinDamage => damageRange.x;
-        public int MaxDamage => damageRange.y;
+        public int MinMinimumDamage => minDamageRange.x;
+        public int MaxMinimumDamage => minDamageRange.y;
+        public int MinMaximumDamage => maxDamageRange.x;
+        public int MaxMaximumDamage => maxDamageRange.y;
 
         public float MinBlockChanceModifier => minBlockChanceModifier;
         public float MaxBlockChanceModifier => maxBlockChanceModifier;

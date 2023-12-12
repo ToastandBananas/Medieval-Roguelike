@@ -17,7 +17,14 @@ namespace InventorySystem
 
         [Header("Weapon Stats")]
         [SerializeField] Vector2 attackRange = Vector2.one;
-        [SerializeField] Vector2Int damageRange = Vector2Int.one;
+        [SerializeField] Vector2Int minDamageRange = Vector2Int.one;
+        [SerializeField] Vector2Int maxDamageRange = Vector2Int.one;
+
+        [Header("Damage Against Armor")]
+        [SerializeField, Range(0f, 5f)] float minArmorPierce;
+        [SerializeField, Range(0f, 5f)] float maxArmorPierce;
+        [SerializeField, Range(0f, 5f)] float minArmorEffectiveness;
+        [SerializeField, Range(0f, 5f)] float maxArmorEffectiveness;
 
         [Header("Modifiers")]
         [SerializeField, Range(-1f, 1f)] float minAccuracyModifier;
@@ -35,8 +42,15 @@ namespace InventorySystem
         public float MinRange => attackRange.x;
         public float MaxRange => attackRange.y;
 
-        public int MinDamage => damageRange.x;
-        public int MaxDamage => damageRange.y;
+        public int MinMinimumDamage => minDamageRange.x;
+        public int MaxMinimumDamage => minDamageRange.y;
+        public int MinMaximumDamage => maxDamageRange.x;
+        public int MaxMaximumDamage => maxDamageRange.y;
+
+        public float MinArmorPierce => minArmorPierce;
+        public float MaxArmorPierce => maxArmorPierce;
+        public float MinArmorEffectiveness => minArmorEffectiveness;
+        public float MaxArmorEffectiveness => maxArmorEffectiveness;
 
         public float MinAccuracyModifier => minAccuracyModifier;
         public float MaxAccuracyModifier => maxAccuracyModifier;

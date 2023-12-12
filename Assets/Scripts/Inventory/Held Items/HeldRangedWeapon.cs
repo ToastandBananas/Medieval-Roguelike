@@ -84,13 +84,18 @@ namespace InventorySystem
             TryFumbleHeldItem();
         }
 
-        // Used in animation keyframe
+        /// <summary> Used in keyframe animation.</summary>
         public override IEnumerator ResetToIdleRotation()
         {
             Quaternion defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_RightHand);
             Quaternion startRotation = transform.parent.localRotation;
             float time = 0f;
             float duration = 0.25f;
+
+            // Wait for the attack rotation to finish
+            while (unit.UnitActionHandler.IsAttacking)
+                yield return null;
+
             while (time < duration)
             {
                 transform.parent.localRotation = Quaternion.Slerp(startRotation, defaultRotation, time / duration);

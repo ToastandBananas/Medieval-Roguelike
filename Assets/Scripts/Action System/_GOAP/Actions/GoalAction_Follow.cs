@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using UnitSystem.ActionSystem.GOAP.Goals;
+using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace UnitSystem.ActionSystem.GOAP.GoalActions
@@ -12,8 +11,11 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         [SerializeField] bool shouldFollowLeader;
         public bool ShouldFollowLeader => shouldFollowLeader;
 
+        public override MoveMode PreferredMoveMode() => leader != null ? leader.UnitActionHandler.MoveAction.CurrentMoveMode : MoveMode.Walk;
+
         public override void OnTick()
         {
+            npcActionHandler.MoveAction.SetMoveMode(PreferredMoveMode());
             Follow();
         }
 
@@ -22,7 +24,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         {
             if (leader == null || leader.Health.IsDead)
             {
-                Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
+                // Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
                 shouldFollowLeader = false;
                 npcActionHandler.DetermineAction();
                 return;

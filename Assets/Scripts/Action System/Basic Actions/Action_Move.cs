@@ -46,6 +46,7 @@ namespace UnitSystem.ActionSystem.Actions
             moveSpeed = defaultMoveSpeed;
             TargetGridPosition = Unit.GridPosition;
             LastGridPosition = Unit.GridPosition;
+            SetMoveMode(MoveMode.Walk);
         }
 
         public override void QueueAction(GridPosition finalTargetGridPosition)
@@ -263,15 +264,20 @@ namespace UnitSystem.ActionSystem.Actions
                 TurnManager.Instance.StartNextUnitsTurn(Unit);
             }
 
-            while (Unit.UnitAnimator.beingKnockedBack)
-                yield return null;
+            if (Unit.UnitAnimator.beingKnockedBack)
+            {
+                while (Unit.UnitAnimator.beingKnockedBack)
+                    yield return null;
+            }
+            else
+            {
+                Unit.transform.position = nextTargetPosition;
+                Unit.UpdateGridPosition();
 
-            Unit.transform.position = nextTargetPosition;
-            Unit.UpdateGridPosition();
-
-            // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
-            if (positionIndex < positionList.Count && Unit.transform.position == positionList[positionIndex] && Unit.transform.position != FinalTargetGridPosition.WorldPosition)
-                positionIndex++;
+                // If the Unit has reached the next point in the Path's position list, but hasn't reached the final position, increase the index
+                if (positionIndex < positionList.Count && Unit.transform.position == positionList[positionIndex] && Unit.transform.position != FinalTargetGridPosition.WorldPosition)
+                    positionIndex++;
+            }
 
             CompleteAction();
             TryQueueNextAction();
@@ -425,9 +431,9 @@ namespace UnitSystem.ActionSystem.Actions
                 if (interactable is Door)
                 {
                     Door door = interactable as Door;
-                    if (door.isOpen == false)
+                    if (!door.isOpen)
                     {
-                        Unit.UnitActionHandler.InteractAction.QueueActionImmediately(door);
+                        Unit.UnitActionHandler.InteractAction.QueueAction(door, true);
                         return 0;
                     }
                 }
@@ -600,6 +606,30 @@ namespace UnitSystem.ActionSystem.Actions
             Unit.UnitActionHandler.FinishAction();
         }
 
+        public void SetTravelDistanceSpeedMultiplier()
+        {
+            if (Unit.IsPlayer)
+                return;
+
+            if ((float)Unit.Stats.LastPooledAP / defaultTileMoveCost <= 1f)
+                travelDistanceMultiplier = 1f;
+            else
+                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.Stats.LastPooledAP / defaultTileMoveCost);
+        }
+
+        public override bool IsValidAction() => CanMove;
+
+        public MoveMode CurrentMoveMode => currentMoveMode;
+
+        public void SetMoveMode(MoveMode moveMode)
+        {
+            if (currentMoveMode == moveMode)
+                return;
+
+            currentMoveMode = moveMode;
+            ClampMoveMode();
+        }
+
         void ClampMoveMode()
         {
             if (currentMoveMode == MoveMode.Sprint)
@@ -613,31 +643,9 @@ namespace UnitSystem.ActionSystem.Actions
             }
             else if (currentMoveMode == MoveMode.Run && !Unit.Stats.HasEnoughEnergy(EnergyCost()))
                 currentMoveMode = MoveMode.Walk;
-        }
 
-        public void SetTravelDistanceSpeedMultiplier()
-        {
             if (Unit.IsPlayer)
-                return;
-
-            if ((float)Unit.Stats.LastPooledAP / defaultTileMoveCost <= 1f)
-                travelDistanceMultiplier = 1f;
-            else
-                travelDistanceMultiplier = Mathf.FloorToInt((float)Unit.Stats.LastPooledAP / defaultTileMoveCost);
-        }
-
-        public override bool IsValidAction()
-        {
-            // TODO: Test if the unit is immobile for whatever reason (broken legs, some sort of spell effect, etc.)
-            return true;
-        }
-
-        public void SetMoveMode(MoveMode moveMode)
-        {
-            MoveMode previousMoveMode = currentMoveMode;
-            currentMoveMode = moveMode;
-            if (!Unit.Stats.HasEnoughEnergy(EnergyCost()))
-                currentMoveMode = previousMoveMode;
+                MoveModeButtonManager.SetActiveMoveModeButton(currentMoveMode);
         }
 
         public void SetCanMove(bool canMove) => CanMove = canMove;

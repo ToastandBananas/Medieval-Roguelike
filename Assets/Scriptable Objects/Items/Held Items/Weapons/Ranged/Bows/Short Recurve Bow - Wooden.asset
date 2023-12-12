@@ -18,9 +18,12 @@ MonoBehaviour:
     precision and speed, making it a versatile choice for archers in need of close-quarters
     accuracy.
   itemType: 30
-  thrownProjectileType: 20
-  mainMaterial: 9
   itemSize: 4
+  thrownProjectileType: 20
+  thrownAnimationType: 1
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 4
   weight: 2.5
@@ -60,7 +63,12 @@ MonoBehaviour:
   isVersatile: 0
   canDualWield: 0
   attackRange: {x: 2, y: 10}
-  damageRange: {x: 4, y: 8}
+  minDamageRange: {x: 4, y: 6}
+  maxDamageRange: {x: 7, y: 10}
+  minArmorPierce: 0
+  maxArmorPierce: 0
+  minArmorEffectiveness: 0
+  maxArmorEffectiveness: 0
   minAccuracyModifier: 0.05
   maxAccuracyModifier: 0.1
   minBlockChanceModifier: 0

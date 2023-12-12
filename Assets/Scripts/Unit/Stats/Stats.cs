@@ -514,7 +514,9 @@ namespace UnitSystem
         #endregion
 
         #region Energy
-        public int MaxEnergy() => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 10f));
+        public int MaxEnergy() => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 3f));
+
+        public float CurrentEnergyNormalized => (float)CurrentEnergy / MaxEnergy();
 
         public void UseEnergy(int amount)
         {

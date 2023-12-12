@@ -76,7 +76,7 @@ namespace GeneralUI
 
             if (itemData.Item is Weapon)
             {
-                stringBuilder.Append($"\n  Damage: {itemData.Damage}");
+                stringBuilder.Append($"\n  Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
 
                 if (itemData.AccuracyModifier != 0f)
                 {
@@ -110,7 +110,7 @@ namespace GeneralUI
                         stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
                 }
 
-                stringBuilder.Append($"\n  Bash Damage: {itemData.Damage}");
+                stringBuilder.Append($"\n  Bash Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Armor)

@@ -18,9 +18,12 @@ MonoBehaviour:
     with iron bindings, providing reliable protection while allowing agile maneuvers
     in the heat of battle.
   itemType: 20
-  thrownProjectileType: 20
-  mainMaterial: 9
   itemSize: 4
+  thrownProjectileType: 20
+  thrownAnimationType: 1
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 4
   weight: 18
@@ -50,6 +53,7 @@ MonoBehaviour:
   idleRotation_Left: {x: 0, y: -30, z: 0}
   idleRotation_Right: {x: 0, y: 30, z: 0}
   blockPowerRange: {x: 12, y: 18}
-  damageRange: {x: 4, y: 7}
+  minDamageRange: {x: 12, y: 15}
+  maxDamageRange: {x: 17, y: 20}
   minBlockChanceModifier: 0.1
   maxBlockChanceModifier: 0.15

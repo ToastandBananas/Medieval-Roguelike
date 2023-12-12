@@ -656,7 +656,7 @@ namespace UnitSystem
 
         public LooseItem GetClosestWeapon(out float distanceToWeapon)
         {
-            LooseItem closestLooseMeleeWeapon = null;
+            LooseItem closestWeapon = null;
             float closestWeaponDistance = 1000000;
             foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
             {
@@ -666,13 +666,13 @@ namespace UnitSystem
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
                 if (distToLooseItem < closestWeaponDistance)
                 {
-                    closestLooseMeleeWeapon = knownLooseItem.Key;
+                    closestWeapon = knownLooseItem.Key;
                     closestWeaponDistance = distToLooseItem;
                 }
             }
 
             distanceToWeapon = closestWeaponDistance;
-            return closestLooseMeleeWeapon;
+            return closestWeapon;
         }
 
         public LooseItem GetClosestMeleeWeapon(out float distanceToWeapon)

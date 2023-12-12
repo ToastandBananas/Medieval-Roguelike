@@ -352,7 +352,7 @@ PrefabInstance:
     - target: {fileID: 3454943409024732620, guid: 17071e32cebe6024d9a7f365e066b03a,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17071e32cebe6024d9a7f365e066b03a, type: 3}
@@ -26557,6 +26557,11 @@ PrefabInstance:
         type: 3}
       propertyPath: bowSkill.baseValue
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
+        type: 3}
+      propertyPath: endurance.baseValue
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3713523194178401732, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
