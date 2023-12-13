@@ -140,9 +140,8 @@ namespace UnitSystem.ActionSystem.Actions
                 if (TargetEnemyUnit != null)
                     attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, false);
 
-                bool headShot = false;
                 if (hitTarget)
-                    DamageTargets(null, ItemDataToThrow, headShot);
+                    DamageTargets(null, ItemDataToThrow);
 
                 // If the attack was blocked and the unit isn't facing their attacker, turn to face the attacker
                 if (attackBlocked)
@@ -158,22 +157,22 @@ namespace UnitSystem.ActionSystem.Actions
             TurnManager.Instance.StartNextUnitsTurn(Unit); // This must remain outside of CompleteAction in case we need to call CompleteAction early within MoveToTargetInstead
         }
 
-        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
+        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot, bool headshotPredetermined)
         {
-            if (targetUnit == null || targetUnit.Health.IsDead || itemDataHittingWith == null)
+            if (targetUnit == null || targetUnit.HealthSystem.IsDead || itemDataHittingWith == null)
                 return;
 
             targetUnit.UnitActionHandler.InterruptActions();
 
             float damage = GetBaseDamage(itemDataHittingWith);
             damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
-            damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
+            damage = DealDamageToTarget(targetUnit, GetBodyPartHit(targetUnit, headShot, headshotPredetermined), itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
             TryKnockbackTargetUnit(targetUnit, null, itemDataHittingWith, damage, attackBlocked);
         }
 
         protected override float GetBaseDamage(ItemData itemDataHittingWith)
         {
-            if (itemDataHittingWith.Item is MeleeWeapon)
+            if (itemDataHittingWith.Item is Item_MeleeWeapon)
                 return itemDataHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
             else
                 return itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
@@ -318,9 +317,6 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override float MaxAttackRange() => ItemDataToThrow != null ? Unit.Stats.MaxThrowRange(ItemDataToThrow.Item) : minThrowDistance;
 
-        public override bool CanAttackThroughUnits()
-        {
-            return false;
-        }
+        public override bool CanAttackThroughUnits() => false;
     }
 }

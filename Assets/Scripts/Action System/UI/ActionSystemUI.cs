@@ -394,7 +394,7 @@ namespace UnitSystem.ActionSystem.UI
 
         public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.Stats.CurrentEnergy}";
 
-        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.Health.CurrentHealth}";
+        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.HealthSystem.CurrentHealth}";
 
         public static RectTransform ActionButtonContainer => Instance.actionButtonContainer;
     }

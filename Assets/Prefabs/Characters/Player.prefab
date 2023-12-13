@@ -215,12 +215,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myUnit: {fileID: 6440773195933579921}
   equippedItemDatas:
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -228,12 +232,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -241,12 +249,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -254,12 +266,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -267,12 +283,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -280,12 +300,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -293,12 +317,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -306,12 +334,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -319,12 +351,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -332,12 +368,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -345,12 +385,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -358,12 +402,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -371,12 +419,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -384,12 +436,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -397,12 +453,16 @@ MonoBehaviour:
     defense: 0
     value: 0
     hasBeenRandomized: 0
-  - name: 
-    item: {fileID: 0}
+  - item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
-    damage: 0
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
     throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
@@ -1311,11 +1371,43 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e2d83e1aba336c48a1ac55459b7a771, type: 3}
+  m_Script: {fileID: 11500000, guid: 233595894712a4449a55eaff303583e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10000
+  maxHealth: 100
   currentHealth: -1
+  minFallDamageDistance: 1
+  bodyParts:
+  - bodyPartIndex: 0
+    bodyPartSide: 0
+    bodyPartType: 0
+    healthModifier: 2
+    hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 0
+    bodyPartType: 1
+    healthModifier: 4
+    hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 1
+    bodyPartType: 2
+    healthModifier: 2.5
+    hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 2
+    bodyPartType: 2
+    healthModifier: 2.5
+    hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 1
+    bodyPartType: 3
+    healthModifier: 3
+    hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 2
+    bodyPartType: 3
+    healthModifier: 3
+    hitChanceWeight: 1
 --- !u!114 &2894362986920051941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1435,6 +1527,11 @@ MonoBehaviour:
     modifiers: 
     percentModifiers: []
   strength:
+    baseValue: 50
+    minValue: 1
+    modifiers: 
+    percentModifiers: []
+  vitality:
     baseValue: 50
     minValue: 1
     modifiers: 

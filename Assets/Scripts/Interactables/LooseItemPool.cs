@@ -11,22 +11,22 @@ namespace InteractableObjects
 
         [Header("Default Loose Item")]
         [SerializeField] Transform looseItemParent;
-        [SerializeField] LooseItem looseItemPrefab;
+        [SerializeField] Interactable_LooseItem looseItemPrefab;
         [SerializeField] int amountLooseItemsToPool = 10;
 
         [Header("Loose Container Item")]
         [SerializeField] Transform looseContainerItemParent;
-        [SerializeField] LooseItem looseContainerItemPrefab;
+        [SerializeField] Interactable_LooseItem looseContainerItemPrefab;
         [SerializeField] int amountLooseContainerItemsToPool = 2;
 
         [Header("Loose Quivers")]
         [SerializeField] Transform looseQuiverItemParent;
-        [SerializeField] LooseItem looseQuiverPrefab;
+        [SerializeField] Interactable_LooseItem looseQuiverPrefab;
         [SerializeField] int amountLooseQuiversToPool = 1;
 
-        List<LooseItem> looseItems = new List<LooseItem>();
-        List<LooseItem> looseContainerItems = new List<LooseItem>();
-        List<LooseItem> looseQuivers = new List<LooseItem>();
+        List<Interactable_LooseItem> looseItems = new List<Interactable_LooseItem>();
+        List<Interactable_LooseItem> looseContainerItems = new List<Interactable_LooseItem>();
+        List<Interactable_LooseItem> looseQuivers = new List<Interactable_LooseItem>();
 
         void Awake()
         {
@@ -38,14 +38,14 @@ namespace InteractableObjects
             }
             Instance = this;
 
-            foreach (LooseItem looseItem in FindObjectsOfType<LooseItem>())
+            foreach (Interactable_LooseItem looseItem in FindObjectsOfType<Interactable_LooseItem>())
             {
                 if (looseItem is LooseQuiverItem)
                 {
                     looseQuivers.Add(looseItem);
                     looseItem.transform.SetParent(looseQuiverItemParent);
                 }
-                else if (looseItem is LooseContainerItem)
+                else if (looseItem is Interactable_LooseContainerItem)
                 {
                     looseContainerItems.Add(looseItem);
                     looseItem.transform.SetParent(looseContainerItemParent);
@@ -62,24 +62,24 @@ namespace InteractableObjects
         {
             for (int i = 0; i < amountLooseItemsToPool; i++)
             {
-                LooseItem newLooseItem = CreateNewLooseItem();
+                Interactable_LooseItem newLooseItem = CreateNewLooseItem();
                 newLooseItem.gameObject.SetActive(false);
             }
 
             for (int i = 0; i < amountLooseContainerItemsToPool; i++)
             {
-                LooseItem newLooseItem = CreateNewLooseContainerItem();
+                Interactable_LooseItem newLooseItem = CreateNewLooseContainerItem();
                 newLooseItem.gameObject.SetActive(false);
             }
 
             for (int i = 0; i < amountLooseQuiversToPool; i++)
             {
-                LooseItem newLooseItem = CreateNewLooseQuiver();
+                Interactable_LooseItem newLooseItem = CreateNewLooseQuiver();
                 newLooseItem.gameObject.SetActive(false);
             }
         }
 
-        public LooseItem GetLooseItemFromPool()
+        public Interactable_LooseItem GetLooseItemFromPool()
         {
             for (int i = 0; i < looseItems.Count; i++)
             {
@@ -90,14 +90,14 @@ namespace InteractableObjects
             return CreateNewLooseItem();
         }
 
-        LooseItem CreateNewLooseItem()
+        Interactable_LooseItem CreateNewLooseItem()
         {
-            LooseItem newLooseItem = Instantiate(looseItemPrefab, looseItemParent).GetComponent<LooseItem>();
+            Interactable_LooseItem newLooseItem = Instantiate(looseItemPrefab, looseItemParent).GetComponent<Interactable_LooseItem>();
             looseItems.Add(newLooseItem);
             return newLooseItem;
         }
 
-        public LooseItem GetLooseContainerItemFromPool()
+        public Interactable_LooseItem GetLooseContainerItemFromPool()
         {
             for (int i = 0; i < looseContainerItems.Count; i++)
             {
@@ -108,14 +108,14 @@ namespace InteractableObjects
             return CreateNewLooseContainerItem();
         }
 
-        LooseItem CreateNewLooseContainerItem()
+        Interactable_LooseItem CreateNewLooseContainerItem()
         {
-            LooseItem newLooseContainerItem = Instantiate(looseContainerItemPrefab, looseContainerItemParent).GetComponent<LooseItem>();
+            Interactable_LooseItem newLooseContainerItem = Instantiate(looseContainerItemPrefab, looseContainerItemParent).GetComponent<Interactable_LooseItem>();
             looseContainerItems.Add(newLooseContainerItem);
             return newLooseContainerItem;
         }
 
-        public LooseItem GetLooseQuiverItemFromPool()
+        public Interactable_LooseItem GetLooseQuiverItemFromPool()
         {
             for (int i = 0; i < looseQuivers.Count; i++)
             {
@@ -126,14 +126,14 @@ namespace InteractableObjects
             return CreateNewLooseQuiver();
         }
 
-        LooseItem CreateNewLooseQuiver()
+        Interactable_LooseItem CreateNewLooseQuiver()
         {
-            LooseItem newLooseQuiver = Instantiate(looseQuiverPrefab, looseQuiverItemParent).GetComponent<LooseItem>();
+            Interactable_LooseItem newLooseQuiver = Instantiate(looseQuiverPrefab, looseQuiverItemParent).GetComponent<Interactable_LooseItem>();
             looseQuivers.Add(newLooseQuiver);
             return newLooseQuiver;
         }
 
-        public static void ReturnToPool(LooseItem looseItem)
+        public static void ReturnToPool(Interactable_LooseItem looseItem)
         {
             if (looseItem is LooseQuiverItem)
             {
@@ -144,9 +144,9 @@ namespace InteractableObjects
                 looseQuiver.transform.SetParent(Instance.looseQuiverItemParent);
                 looseQuiver.HideArrowMeshes();
             }
-            else if (looseItem is LooseContainerItem)
+            else if (looseItem is Interactable_LooseContainerItem)
             {
-                LooseContainerItem looseContainerItem = (LooseContainerItem)looseItem;
+                Interactable_LooseContainerItem looseContainerItem = (Interactable_LooseContainerItem)looseItem;
                 if (looseContainerItem.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
 

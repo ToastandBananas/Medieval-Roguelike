@@ -41,7 +41,7 @@ namespace InventorySystem
             {
                 spriteItemData = itemData;
 
-                if (mySlot is EquipmentSlot && spriteItemData.Item is Quiver)
+                if (mySlot is EquipmentSlot && spriteItemData.Item is Item_Quiver)
                     iconImage.sprite = spriteItemData.Item.Quiver.EquippedSprite;
                 else
                     iconImage.sprite = spriteItemData.Item.InventorySprite(spriteItemData);
@@ -64,7 +64,7 @@ namespace InventorySystem
 
             if (mySlot is EquipmentSlot && mySlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
             {
-                if (spriteItemData.Item is Quiver)
+                if (spriteItemData.Item is Item_Quiver)
                     QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * (spriteItemData.Item.Height + 1));
                 else
                     QuiverInventoryItem.IconsParent_RectTransform.sizeDelta = new Vector2(slotSize * spriteItemData.Item.Width, slotSize * spriteItemData.Item.Height);

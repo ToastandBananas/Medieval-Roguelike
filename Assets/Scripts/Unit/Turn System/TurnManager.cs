@@ -48,7 +48,7 @@ namespace UnitSystem
             if (unit != activeUnit)
                 return;
 
-            if (unit.Health.IsDead == false)
+            if (unit.HealthSystem.IsDead == false)
                 unit.BlockCurrentPosition();
 
             if (unit.IsNPC)
@@ -85,13 +85,13 @@ namespace UnitSystem
 
         void StartUnitsTurn(Unit unit)
         {
-            if (UnitManager.player.Health.IsDead)
+            if (UnitManager.player.HealthSystem.IsDead)
                 return;
             
             activeUnit = unit;
             turnNumber++;
 
-            if (unit.Health.IsDead)
+            if (unit.HealthSystem.IsDead)
             {
                 unit.UnitActionHandler.CancelActions();
                 unit.UnitActionHandler.ClearActionQueue(true, true);

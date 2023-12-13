@@ -38,7 +38,7 @@ namespace UnitSystem.ActionSystem.GOAP.Goals
             if (fleeAction.UnitToFleeFrom == null && unit.Vision.knownEnemies.Count > 0 && fleeAction.ShouldAlwaysFleeCombat)
                 fleeAction.StartFlee(unit.Vision.GetClosestEnemy(true, fleeAction.DefaultFleeDistance), fleeAction.DefaultFleeDistance);
 
-            if (fleeAction.UnitToFleeFrom != null && !fleeAction.UnitToFleeFrom.Health.IsDead && !fleeAction.FledFarEnough)
+            if (fleeAction.UnitToFleeFrom != null && !fleeAction.UnitToFleeFrom.HealthSystem.IsDead && !fleeAction.FledFarEnough)
                 return fleePriority;
             return -1;
         }

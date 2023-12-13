@@ -33,7 +33,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         void Flee()
         {
             // If there's no Unit to flee from or if the Unit to flee from died
-            if (unitToFleeFrom == null || unitToFleeFrom.Health.IsDead)
+            if (unitToFleeFrom == null || unitToFleeFrom.HealthSystem.IsDead)
             {
                 unit.StateController.SetToDefaultState();
                 npcActionHandler.DetermineAction();
@@ -71,7 +71,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public void StartFlee(Unit unitToFleeFrom, int fleeDistance)
         {
-            if (unitToFleeFrom == null || unitToFleeFrom.Health.IsDead)
+            if (unitToFleeFrom == null || unitToFleeFrom.HealthSystem.IsDead)
                 return;
 
             unit.StateController.SetCurrentState(GoalState.Flee);

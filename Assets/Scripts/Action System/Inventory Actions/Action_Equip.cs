@@ -13,7 +13,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
         {
-            if (itemDataToEquip.Item is Equipment == false)
+            if (itemDataToEquip.Item is Item_Equipment == false)
             {
                 Debug.LogWarning($"{itemDataToEquip.Item.Name} is not a type of Equipment, but you're trying to queue an EquipAction...");
                 return;
@@ -33,7 +33,7 @@ namespace UnitSystem.ActionSystem.Actions
         /// In such a case, we should queue an InventoryAction instead of type Equip and then call this method.</summary>
         public void TakeActionImmediately(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
         {
-            if (itemDataToEquip.Item is Equipment == false)
+            if (itemDataToEquip.Item is Item_Equipment == false)
             {
                 Debug.LogWarning($"{itemDataToEquip.Item.Name} is not a type of Equipment, but you're trying to queue an EquipAction...");
                 return;
@@ -86,11 +86,11 @@ namespace UnitSystem.ActionSystem.Actions
         public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
         {
             float costMultiplier = 1f;
-            if (itemData.Item is Equipment)
+            if (itemData.Item is Item_Equipment)
             {
                 if (UnitEquipment.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
                 {
-                    if (itemData.Item is Weapon)
+                    if (itemData.Item is Item_Weapon)
                         costMultiplier = 0.4f;
                     else
                         costMultiplier = 0.6f;

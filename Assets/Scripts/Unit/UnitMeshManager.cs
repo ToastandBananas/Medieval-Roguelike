@@ -61,7 +61,7 @@ namespace UnitSystem
                 meshRenderers[i].enabled = true;
             }
 
-            if (myUnit.Health.IsDead == false)
+            if (myUnit.HealthSystem.IsDead == false)
                 baseMeshFilter.mesh = baseMesh;
 
             if (leftHeldItem != null)
@@ -98,9 +98,9 @@ namespace UnitSystem
 
         public HeldMeleeWeapon GetPrimaryHeldMeleeWeapon()
         {
-            if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
+            if (rightHeldItem != null && rightHeldItem.ItemData.Item is Item_MeleeWeapon)
                 return rightHeldItem as HeldMeleeWeapon;
-            else if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
+            else if (leftHeldItem != null && leftHeldItem.ItemData.Item is Item_MeleeWeapon)
                 return leftHeldItem as HeldMeleeWeapon;
             return null;
         }
@@ -117,35 +117,35 @@ namespace UnitSystem
 
         public HeldRangedWeapon GetHeldRangedWeapon()
         {
-            if (rightHeldItem != null && rightHeldItem.ItemData.Item is RangedWeapon)
+            if (rightHeldItem != null && rightHeldItem.ItemData.Item is Item_RangedWeapon)
                 return rightHeldItem as HeldRangedWeapon;
             return null;
         }
 
         public HeldMeleeWeapon GetLeftHeldMeleeWeapon()
         {
-            if (leftHeldItem != null && leftHeldItem.ItemData.Item is MeleeWeapon)
+            if (leftHeldItem != null && leftHeldItem.ItemData.Item is Item_MeleeWeapon)
                 return leftHeldItem as HeldMeleeWeapon;
             return null;
         }
 
         public HeldMeleeWeapon GetRightHeldMeleeWeapon()
         {
-            if (rightHeldItem != null && rightHeldItem.ItemData.Item is MeleeWeapon)
+            if (rightHeldItem != null && rightHeldItem.ItemData.Item is Item_MeleeWeapon)
                 return rightHeldItem as HeldMeleeWeapon;
             return null;
         }
 
         public HeldShield GetHeldShield()
         {
-            if (leftHeldItem != null && leftHeldItem.ItemData.Item is Shield)
+            if (leftHeldItem != null && leftHeldItem.ItemData.Item is Item_Shield)
                 return leftHeldItem as HeldShield;
-            else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Shield)
+            else if (rightHeldItem != null && rightHeldItem.ItemData.Item is Item_Shield)
                 return rightHeldItem as HeldShield;
             return null;
         }
 
-        public void SetupWearableMesh(EquipSlot equipSlot, VisibleArmor wearable)
+        public void SetupWearableMesh(EquipSlot equipSlot, Item_VisibleArmor wearable)
         {
             if (wearable == null)
                 return;
@@ -169,7 +169,7 @@ namespace UnitSystem
                 HideMesh(equipSlot);
         }
 
-        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, VisibleArmor wearable)
+        void AssignMeshAndMaterials(MeshFilter meshFilter, MeshRenderer meshRenderer, Item_VisibleArmor wearable)
         {
             if (myUnit.Gender == Gender.Male)
             {

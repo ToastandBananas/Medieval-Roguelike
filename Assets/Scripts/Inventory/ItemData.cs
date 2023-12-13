@@ -9,22 +9,27 @@ namespace InventorySystem
         [SerializeField] int currentStackSize = 1;
         [SerializeField] int remainingUses = 1;
 
+        [SerializeField] int maxDurability;
+        [SerializeField] int currentDurability;
+
+        [Header("Weapons")]
         [SerializeField] int minDamage;
         [SerializeField] int maxDamage;
         [SerializeField] float throwingDamageMultiplier;
 
-        [SerializeField] float armorEffectiveness;
+        [SerializeField] float effectivenessAgainstArmor;
         [SerializeField] float armorPierce;
 
         [SerializeField] float accuracyModifier;
         [SerializeField] float knockbackChanceModifier;
 
+        [Header("Defensive")]
         [SerializeField] int blockPower;
         [SerializeField] float blockChanceModifier;
         [SerializeField] int defense;
 
+        [Header("Other")]
         [SerializeField] int value;
-
         [SerializeField] bool hasBeenRandomized;
 
         SlotCoordinate inventorySlotCoordinate;
@@ -85,34 +90,40 @@ namespace InventorySystem
 
                     throwingDamageMultiplier = Mathf.RoundToInt(Random.Range(item.MinThrowingDamageMultiplier, item.MaxThrowingDamageMultiplier) * 100f) / 100f;
 
-                    if (item is Equipment)
+                    if (item is Item_Equipment)
                     {
-                        if (item is Armor)
+                        if (item is Item_Armor)
                         {
-                            Armor armor = item as Armor;
+                            Item_Armor armor = item as Item_Armor;
                             defense = Random.Range(armor.MinDefense, armor.MaxDefense + 1);
+                            maxDurability = Random.Range(armor.MinDurability, armor.MaxDurability + 1);
                         }
-                        else if (item is Shield)
+                        else if (item is Item_Shield)
                         {
-                            Shield shield = item as Shield;
+                            Item_Shield shield = item as Item_Shield;
                             blockChanceModifier = Mathf.RoundToInt(Random.Range(shield.MinBlockChanceModifier, shield.MaxBlockChanceModifier) * 100f) / 100f;
                             blockPower = Random.Range(shield.MinBlockPower, shield.MaxBlockPower + 1);
+                            maxDurability = Random.Range(shield.MinDurability, shield.MaxDurability + 1);
                             minDamage = Random.Range(shield.MinMinimumDamage, shield.MaxMinimumDamage + 1);
                             maxDamage = Random.Range(shield.MinMaximumDamage, shield.MaxMaximumDamage + 1);
                         }
-                        else if (item is Weapon)
+                        else if (item is Item_Weapon)
                         {
-                            Weapon weapon = item as Weapon;
+                            Item_Weapon weapon = item as Item_Weapon;
                             accuracyModifier = Mathf.RoundToInt(Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier) * 100f) / 100f;
-                            armorEffectiveness = Mathf.RoundToInt(Random.Range(weapon.MinArmorEffectiveness, weapon.MaxArmorEffectiveness) * 100f) / 100f;
+                            effectivenessAgainstArmor = Mathf.RoundToInt(Random.Range(weapon.MinArmorEffectiveness, weapon.MaxArmorEffectiveness) * 100f) / 100f;
                             armorPierce = Mathf.RoundToInt(Random.Range(weapon.MinArmorPierce, weapon.MaxArmorPierce) * 100f) / 100f;
                             blockChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinBlockChanceModifier, weapon.MaxBlockChanceModifier) * 100f) / 100f;
+                            maxDurability = Random.Range(weapon.MinDurability, weapon.MaxDurability + 1);
                             minDamage = Random.Range(weapon.MinMinimumDamage, weapon.MaxMinimumDamage + 1);
                             maxDamage = Random.Range(weapon.MinMaximumDamage, weapon.MaxMaximumDamage + 1);
                             knockbackChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinKnockbackModifier, weapon.MaxKnockbackModifier) * 100f) / 100f;
                         }
+
+                        currentDurability = Random.Range(Mathf.RoundToInt(0.2f * maxDurability), maxDurability + 1);
+                        if (currentDurability < 0) currentDurability = 0;
                     }
-                    else if (item is Consumable)
+                    else if (item is Item_Consumable)
                     {
 
                     }
@@ -153,39 +164,39 @@ namespace InventorySystem
             // Throwing
             currentPoints += (throwingDamageMultiplier - item.MinThrowingDamageMultiplier) * 100f;
 
-            if (item is Equipment)
+            if (item is Item_Equipment)
             {
-                //if (item.Equipment.maxBaseDurability > 0)
-                //pointIncrease += (maxDurability - equipment.minBaseDurability);
-
-                if (item is Armor)
+                if (item is Item_Armor)
                 {
-                    Armor armor = item as Armor;
+                    Item_Armor armor = item as Item_Armor;
                     currentPoints += (defense - armor.MinDefense) * 2f;
+                    currentPoints += (maxDurability - armor.MinDurability) * 0.5f;
                 }
-                else if (item is Shield)
+                else if (item is Item_Shield)
                 {
-                    Shield shield = item as Shield;
+                    Item_Shield shield = item as Item_Shield;
                     currentPoints += (blockChanceModifier - shield.MinBlockChanceModifier) * 200f;
                     currentPoints += (blockPower - shield.MinBlockPower) * 2f;
+                    currentPoints += (maxDurability - shield.MinDurability) * 0.5f;
                     currentPoints += minDamage - shield.MinMinimumDamage * 0.5f;
                     currentPoints += maxDamage - shield.MinMaximumDamage * 0.5f;
                 }
-                else if (item is Weapon)
+                else if (item is Item_Weapon)
                 {
-                    Weapon weapon = item as Weapon;
+                    Item_Weapon weapon = item as Item_Weapon;
                     currentPoints += (accuracyModifier - weapon.MinAccuracyModifier) * 50f;
-                    currentPoints += (armorEffectiveness = weapon.MinArmorEffectiveness) * 50f;
+                    currentPoints += (effectivenessAgainstArmor = weapon.MinArmorEffectiveness) * 50f;
                     currentPoints += (armorPierce - weapon.MinArmorPierce) * 50f;
                     currentPoints += (blockChanceModifier - weapon.MinBlockChanceModifier) * 50f;
+                    currentPoints += (maxDurability - weapon.MinDurability) * 0.5f;
                     currentPoints += (minDamage - weapon.MinMinimumDamage) * 1.5f;
                     currentPoints += (maxDamage - weapon.MinMaximumDamage) * 1.5f;
                     currentPoints += (knockbackChanceModifier - weapon.MinKnockbackModifier) * 50f;
                 }
             }
-            else if (item is Consumable)
+            else if (item is Item_Consumable)
             {
-                Consumable consumable = item as Consumable;
+                Item_Consumable consumable = item as Item_Consumable;
                 //if (item.Consumable.ItemType == ItemType.Food)
                 //pointIncrease += (freshness - consumable.minBaseFreshness) * 2f;
             }
@@ -201,39 +212,40 @@ namespace InventorySystem
             // Add up all the possible points that can be added to our stats when randomized (damage, defense, etc)
             float totalPointsPossible = 0f;
 
+            // Throwing
             totalPointsPossible += (item.MaxThrowingDamageMultiplier - item.MinThrowingDamageMultiplier) * 100f;
 
-            if (item is Equipment)
+            if (item is Item_Equipment)
             {
-                //if (equipment.maxBaseDurability > 0)
-                    //totalPointsPossible += (equipment.maxBaseDurability - equipment.minBaseDurability);
-
-                if (item is Armor)
+                if (item is Item_Armor)
                 {
-                    Armor armor = item as Armor;
+                    Item_Armor armor = item as Item_Armor;
                     totalPointsPossible += (armor.MaxDefense - armor.MinDefense) * 2f;
+                    totalPointsPossible += (armor.MaxDurability - armor.MinDurability) * 0.5f;
                 }
-                else if (item is Shield)
+                else if (item is Item_Shield)
                 {
-                    Shield shield = item as Shield;
+                    Item_Shield shield = item as Item_Shield;
                     totalPointsPossible += (shield.MaxBlockChanceModifier - shield.MinBlockChanceModifier) * 200f;
                     totalPointsPossible += (shield.MaxBlockPower - shield.MinBlockPower) * 2f;
+                    totalPointsPossible += (shield.MaxDurability - shield.MinDurability) * 0.5f;
                     totalPointsPossible += (shield.MaxMinimumDamage - shield.MinMinimumDamage) * 0.5f;
                     totalPointsPossible += (shield.MaxMaximumDamage - shield.MinMaximumDamage) * 0.5f;
                 }
-                else if (item is Weapon)
+                else if (item is Item_Weapon)
                 {
-                    Weapon weapon = item as Weapon;
+                    Item_Weapon weapon = item as Item_Weapon;
                     totalPointsPossible += (weapon.MaxAccuracyModifier - weapon.MinAccuracyModifier) * 50f;
                     totalPointsPossible += (weapon.MaxArmorEffectiveness - weapon.MinArmorEffectiveness) * 50f;
                     totalPointsPossible += (weapon.MaxArmorPierce - weapon.MinArmorPierce) * 50f;
                     totalPointsPossible += (weapon.MaxBlockChanceModifier - weapon.MinBlockChanceModifier) * 50f;
+                    totalPointsPossible += (weapon.MaxDurability - weapon.MinDurability) *0.5f;
                     totalPointsPossible += (weapon.MaxMinimumDamage - weapon.MinMinimumDamage) * 1.5f;
                     totalPointsPossible += (weapon.MaxMaximumDamage - weapon.MinMaximumDamage) * 1.5f;
                     totalPointsPossible += (weapon.MaxKnockbackModifier - weapon.MinKnockbackModifier) * 50f;
                 }
             }
-            else if (item is Consumable)
+            else if (item is Item_Consumable)
             {
                 //if (item.Consumable.ItemType == ItemType.Food)
                     //totalPointsPossible += (consumable.maxBaseFreshness - consumable.minBaseFreshness) * 2f;
@@ -247,6 +259,12 @@ namespace InventorySystem
 
         public bool IsBetterThan(ItemData otherItemData)
         {
+            if (otherItemData == null)
+            {
+                Debug.LogWarning("Other Item Data is null...");
+                return false;
+            }
+
             if (item == null || otherItemData.item == null)
             {
                 Debug.LogWarning($"Item is null for one of the ItemDatas being compared... | This Item: {item} | Other Item: {otherItemData.item}");
@@ -259,22 +277,24 @@ namespace InventorySystem
                 return false;
             }
 
-            if (GetCurrentPointValue() > otherItemData.GetCurrentPointValue())
-                return true;
-            return false;
+            return GetCurrentPointValue() > otherItemData.GetCurrentPointValue();
         }
 
         public bool IsEqual(ItemData otherItemData)
         {
             if (otherItemData == null)
+            {
+                Debug.LogWarning("Other Item Data is null...");
                 return false;
+            }
 
             return item == otherItemData.item
                 && accuracyModifier == otherItemData.accuracyModifier
-                && armorEffectiveness == otherItemData.armorEffectiveness
+                && effectivenessAgainstArmor == otherItemData.effectivenessAgainstArmor
                 && armorPierce == otherItemData.armorPierce
                 && blockPower == otherItemData.blockPower
                 && blockChanceModifier == otherItemData.blockChanceModifier
+                && maxDurability == otherItemData.maxDurability
                 && minDamage == otherItemData.minDamage
                 && maxDamage == otherItemData.maxDamage
                 && defense == otherItemData.defense
@@ -290,11 +310,14 @@ namespace InventorySystem
             currentStackSize = itemDataToCopy.currentStackSize;
             remainingUses = itemDataToCopy.remainingUses;
 
+            maxDurability = itemDataToCopy.maxDurability;
+            currentDurability = itemDataToCopy.currentDurability;
+
             minDamage = itemDataToCopy.minDamage;
             maxDamage = itemDataToCopy.maxDamage;
             throwingDamageMultiplier = itemDataToCopy.throwingDamageMultiplier;
 
-            armorEffectiveness = itemDataToCopy.armorEffectiveness;
+            effectivenessAgainstArmor = itemDataToCopy.effectivenessAgainstArmor;
             armorPierce = itemDataToCopy.armorPierce;
 
             accuracyModifier = itemDataToCopy.accuracyModifier;
@@ -353,6 +376,16 @@ namespace InventorySystem
                 return item.Weight * currentStackSize;
         }
 
+        public void AdjustDurability(int amount)
+        {
+            currentDurability += amount;
+            currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
+            if (currentDurability == 0)
+            {
+                Debug.Log(item.Name + " broke");
+            }
+        }
+
         public void Use(int uses) => remainingUses -= uses;
 
         public void AddToUses(int uses) => remainingUses += uses;
@@ -364,6 +397,9 @@ namespace InventorySystem
         public Item Item => item;
         public int CurrentStackSize => currentStackSize;
         public int RemainingUses => remainingUses;
+
+        public int MaxDurability => maxDurability;
+        public int CurrentDurability => currentDurability;
 
         public int Damage => Random.Range(minDamage, maxDamage + 1);
         public int MinDamage => minDamage;

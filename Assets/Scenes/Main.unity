@@ -608,8 +608,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 977471041796225770, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: startingEquipment.Array.data[1]
@@ -625,8 +624,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[10]
       value: 
-      objectReference: {fileID: 11400000, guid: 1e901ed2726598740843f609cc4e89ff,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1166776781850707519, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: defaultState
@@ -4212,7 +4210,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355335, z: -0.14644659, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4603,7 +4601,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355335, z: -0.14644659, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7161,8 +7159,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1622894842228627832, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: startingEquipment.Array.data[4]
@@ -7179,8 +7176,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[10]
       value: 
-      objectReference: {fileID: 11400000, guid: 1f620a765bdb2484baa943f8836936f8,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1668419534299702698, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.size
@@ -7190,14 +7186,12 @@ PrefabInstance:
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.data[0].item
       value: 
-      objectReference: {fileID: 11400000, guid: 1e901ed2726598740843f609cc4e89ff,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1668419534299702698, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.data[1].item
       value: 
-      objectReference: {fileID: 11400000, guid: e65b4b3164a23a5468026be5efd22ff0,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2376645249300741617, guid: 46362c1558fca5c418d75d8b6a96cfee,
         type: 3}
       propertyPath: maxChaseDistance
@@ -18777,8 +18771,7 @@ PrefabInstance:
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.data[0].item
       value: 
-      objectReference: {fileID: 11400000, guid: e65b4b3164a23a5468026be5efd22ff0,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 504428574042382846, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: startingEquipment.Array.data[0]
@@ -18789,8 +18782,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[10]
       value: 
-      objectReference: {fileID: 11400000, guid: 1f620a765bdb2484baa943f8836936f8,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1377663264827766488, guid: b11ee58c5596a834b90b6384fd32c127,
         type: 3}
       propertyPath: m_RootOrder
@@ -26456,14 +26448,12 @@ PrefabInstance:
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.data[0].item
       value: 
-      objectReference: {fileID: 11400000, guid: e65b4b3164a23a5468026be5efd22ff0,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1782432552993377815, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: parentInventory.itemDatas.Array.data[1].item
       value: 
-      objectReference: {fileID: 11400000, guid: 1e901ed2726598740843f609cc4e89ff,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2208422553791110067, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: m_IsActive
@@ -26640,14 +26630,12 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[9]
       value: 
-      objectReference: {fileID: 11400000, guid: 1955efedb2e8ef4458f2d4eb02a16dae,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: startingEquipment.Array.data[10]
       value: 
-      objectReference: {fileID: 11400000, guid: 1f620a765bdb2484baa943f8836936f8,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4966063475579553678, guid: 9cd58403f3e6e864b8d7fded7e5447d4,
         type: 3}
       propertyPath: startingEquipment.Array.data[11]
@@ -30118,8 +30106,7 @@ PrefabInstance:
         type: 3}
       propertyPath: startingEquipment.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: c9c615ccacfb013448ef1b8f1cbb9177,
-        type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7223484227263100194, guid: 2ba3233deb15ad042a16a8a9526156ab,
         type: 3}
       propertyPath: currentFaction

@@ -13,7 +13,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public void QueueAction(ItemData itemData)
         {
-            if (itemData.Item is Consumable == false)
+            if (itemData.Item is Item_Consumable == false)
             {
                 Debug.LogWarning($"{itemData.Item.Name} is not a consumable, but you're trying to queue a ConsumeAction...");
                 return;

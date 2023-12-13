@@ -63,14 +63,14 @@ namespace InventorySystem
         {
             if (ItemData.Item.ThrownProjectileType == ProjectileType.Spear)
             {
-                if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
+                if (ItemData.Item is Item_Weapon && ItemData.Item.Weapon.IsTwoHanded)
                     Anim.CrossFadeInFixedTime("Throw_Spear_2H", 0.1f);
                 else
                     Anim.CrossFadeInFixedTime("Throw_Spear", 0.1f);
             }
             else // End-over-end animation
             {
-                if (ItemData.Item is Weapon && ItemData.Item.Weapon.IsTwoHanded)
+                if (ItemData.Item is Item_Weapon && ItemData.Item.Weapon.IsTwoHanded)
                     Anim.CrossFadeInFixedTime("Throw_2H", 0.1f);
                 else
                     Anim.CrossFadeInFixedTime("Throw", 0.1f);
@@ -103,7 +103,7 @@ namespace InventorySystem
 
         protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
         {
-            if (targetUnit != null && !targetUnit.Health.IsDead)
+            if (targetUnit != null && !targetUnit.HealthSystem.IsDead)
                 targetUnit.UnitAnimator.StopBlocking();
         }
 
@@ -116,10 +116,10 @@ namespace InventorySystem
 
                 unit.UnitActionHandler.SetIsAttacking(false);
 
-                if (unit.IsNPC && !unit.Health.IsDead) // NPCs will try to pick the item back up immediately
+                if (unit.IsNPC && !unit.HealthSystem.IsDead) // NPCs will try to pick the item back up immediately
                 {
                     Unit myUnit = unit; // unit will become null after dropping, so we need to create a reference to it in order to queue the IntaractAction
-                    LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
+                    Interactable_LooseItem looseItem = DropItemManager.DropItem(myUnit.UnitEquipment, myUnit.UnitEquipment.GetEquipSlotFromItemData(ItemData));
                     myUnit.UnitActionHandler.ClearActionQueue(true);
                     myUnit.UnitActionHandler.InteractAction.QueueAction(looseItem);
                 }
@@ -136,7 +136,7 @@ namespace InventorySystem
             this.unit = unit;
             name = itemData.Item.Name;
 
-            if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item is Weapon && itemData.Item.Weapon.IsTwoHanded))
+            if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item is Item_Weapon && itemData.Item.Weapon.IsTwoHanded))
             {
                 SetupTransform(itemData, unit.UnitMeshManager.RightHeldItemParent);
                 unit.UnitMeshManager.SetRightHeldItem(this);
@@ -178,7 +178,7 @@ namespace InventorySystem
             if (heldItemParent == unit.UnitMeshManager.RightHeldItemParent)
             {
                 transform.SetParent(unit.UnitMeshManager.RightHeldItemParent);
-                if (itemData.Item is HeldEquipment)
+                if (itemData.Item is Item_HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_RightHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand));
                 else
                     transform.parent.SetLocalPositionAndRotation(defaultRightHeldItemPosition, Quaternion.Euler(defaultHeldItemRotation));
@@ -190,7 +190,7 @@ namespace InventorySystem
             else if (heldItemParent == unit.UnitMeshManager.LeftHeldItemParent)
             {
                 transform.SetParent(unit.UnitMeshManager.LeftHeldItemParent);
-                if (itemData.Item is HeldEquipment)
+                if (itemData.Item is Item_HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_LeftHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand));
                 else
                     transform.parent.SetLocalPositionAndRotation(defaultLeftHeldItemPosition, Quaternion.Euler(defaultHeldItemRotation));
@@ -222,7 +222,7 @@ namespace InventorySystem
         {
             for (int i = 0; i < meshRenderers.Length; i++)
             {
-                if (ItemData.Item is HeldEquipment)
+                if (ItemData.Item is Item_HeldEquipment)
                 {
                     if (meshRenderers.Length == 1) // For items that have one mesh, but one or more materials (like an arrow with a metallic tip and non-metallic shaft)
                     {

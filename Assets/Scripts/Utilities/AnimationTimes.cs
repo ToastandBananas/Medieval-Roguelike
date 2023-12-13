@@ -109,16 +109,16 @@ namespace Utilities
             }
         }
 
-        public float DefaultWeaponAttackTime(Weapon weapon)
+        public float DefaultWeaponAttackTime(Item_Weapon weapon)
         {
-            if (weapon is MeleeWeapon)
+            if (weapon is Item_MeleeWeapon)
             {
                 if (weapon.IsTwoHanded)
                     return defaultAttack_2H_Time;
                 else
                     return defaultAttack_1H_Time;
             }
-            else if (weapon is RangedWeapon)
+            else if (weapon is Item_RangedWeapon)
             {
                 return defaultShoot_Time;
             }

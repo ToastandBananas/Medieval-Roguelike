@@ -134,7 +134,7 @@ namespace GeneralUI
         {
             GetInventoryTooltip().ShowInventoryTooltip(slot);
 
-            if (slot.GetItemData().Item is Equipment == false)
+            if (slot.GetItemData().Item is Item_Equipment == false)
                 return;
 
             if (slot is EquipmentSlot == false || slot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)
@@ -175,7 +175,7 @@ namespace GeneralUI
             GetInventoryTooltip().ShowActionTooltip(actionBarSlot);
         }
 
-        public static void ShowLooseItemTooltip(LooseItem looseItem, ItemData looseItemData)
+        public static void ShowLooseItemTooltip(Interactable_LooseItem looseItem, ItemData looseItemData)
         {
             if (looseItem == null || looseItemData == null || looseItemData.Item == null)
                 return;
@@ -191,7 +191,7 @@ namespace GeneralUI
         {
             ClearLooseItemTooltips();
 
-            foreach (KeyValuePair<LooseItem, int> looseItem in UnitManager.player.Vision.knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> looseItem in UnitManager.player.Vision.knownLooseItems)
             {
                 if (looseItem.Key == null || looseItem.Key.transform == null || looseItem.Key.ItemData == null)
                     continue;

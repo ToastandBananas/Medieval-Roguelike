@@ -25,7 +25,7 @@ namespace UnitSystem
         public SingleNodeBlocker SingleNodeBlocker { get; private set; }
 
         public Alliance Alliance { get; private set; }
-        public Health Health { get; private set; }
+        public HealthSystem HealthSystem { get; private set; }
         public Hearing Hearing { get; private set; }
         public OpportunityAttackTrigger OpportunityAttackTrigger { get; private set; }
         public Rigidbody RigidBody { get; private set; }
@@ -34,7 +34,7 @@ namespace UnitSystem
         public Stats Stats { get; private set; }
         public UnitActionHandler UnitActionHandler { get; private set; }
         public UnitAnimator UnitAnimator { get; private set; }
-        public UnitInteractable UnitInteractable { get; private set; }
+        public Interactable_Unit UnitInteractable { get; private set; }
         public UnitMeshManager UnitMeshManager { get; private set; }
         public Vision Vision { get; private set; }
 
@@ -49,7 +49,7 @@ namespace UnitSystem
 
             SingleNodeBlocker = GetComponent<SingleNodeBlocker>();
             Alliance = GetComponent<Alliance>();
-            Health = GetComponent<Health>();
+            HealthSystem = GetComponent<HealthSystem>();
             Hearing = GetComponentInChildren<Hearing>();
             OpportunityAttackTrigger = GetComponentInChildren<OpportunityAttackTrigger>();
             RigidBody = GetComponent<Rigidbody>();
@@ -63,7 +63,7 @@ namespace UnitSystem
 
             if (IsNPC)
             {
-                if (TryGetComponent(out UnitInteractable unitInteractable)) UnitInteractable = unitInteractable;
+                if (TryGetComponent(out Interactable_Unit unitInteractable)) UnitInteractable = unitInteractable;
             }
 
             UnitsWhoCouldOpportunityAttackMe = new List<Unit>();
@@ -76,7 +76,7 @@ namespace UnitSystem
 
             if (IsNPC)
             {
-                if (Health.IsDead)
+                if (HealthSystem.IsDead)
                 {
                     UnblockCurrentPosition();
                     if (UnitInteractable != null)
@@ -166,7 +166,7 @@ namespace UnitSystem
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
 
-        public GridPosition GridPosition => Health.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
+        public GridPosition GridPosition => HealthSystem.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
 
         public Gender Gender => gender;
     }

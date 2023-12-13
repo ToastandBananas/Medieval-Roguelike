@@ -70,7 +70,7 @@ namespace UnitSystem.ActionSystem
                 return;
             }
             
-            if (!player.Health.IsDead)
+            if (!player.HealthSystem.IsDead)
             {
                 // If the Player was holding the button for turn mode (the Turn Action) and then they release it
                 if (GameControls.gamePlayActions.turnMode.WasReleased && player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player) is Action_Turn)
@@ -171,7 +171,7 @@ namespace UnitSystem.ActionSystem
                 player.UnitActionHandler.InteractAction.QueueAction(HighlightedInteractable);
             }
             // If the mouse is hovering over a dead Unit
-            else if (HighlightedUnit != null && HighlightedUnit.Health.IsDead)
+            else if (HighlightedUnit != null && HighlightedUnit.HealthSystem.IsDead)
             {
                 // Interact with or move to the dead Unit
                 player.UnitActionHandler.InteractAction.QueueAction(HighlightedUnit.UnitInteractable);
@@ -188,7 +188,7 @@ namespace UnitSystem.ActionSystem
                 Action_Base selectedAction = player.UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(player);
 
                 // If the mouse is hovering over a living unit that's in the player's Vision
-                if (unitAtGridPosition != null && unitAtGridPosition.Health.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
+                if (unitAtGridPosition != null && unitAtGridPosition.HealthSystem.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
                 {
                     // If the unit is someone the player can attack (an enemy, or a neutral unit, but only if we have an attack action selected)
                     if (player.Stats.HasEnoughEnergy(selectedAction.EnergyCost()) && (player.Alliance.IsEnemy(unitAtGridPosition) || (player.Alliance.IsNeutral(unitAtGridPosition) && selectedAction is Action_BaseAttack)))
@@ -223,7 +223,7 @@ namespace UnitSystem.ActionSystem
                         else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                         {
                             // Do nothing if the target unit is dead
-                            if (unitAtGridPosition.Health.IsDead)
+                            if (unitAtGridPosition.HealthSystem.IsDead)
                                 return;
 
                             // If the target is in shooting range
@@ -241,7 +241,7 @@ namespace UnitSystem.ActionSystem
                         else if (player.UnitEquipment.MeleeWeaponEquipped || player.UnitEquipment.IsUnarmed || player.UnitEquipment.RangedWeaponEquipped)
                         {
                             // Do nothing if the target unit is dead
-                            if (unitAtGridPosition.Health.IsDead)
+                            if (unitAtGridPosition.HealthSystem.IsDead)
                                 return;
 
                             // If the target is in attack range
@@ -371,9 +371,9 @@ namespace UnitSystem.ActionSystem
                             if (interactableHit.transform.TryGetComponent(out Interactable interactable))
                             {
                                 HighlightedInteractable = interactable;
-                                if (interactable is LooseItem)
+                                if (interactable is Interactable_LooseItem)
                                 {
-                                    LooseItem looseItem = interactable as LooseItem;
+                                    Interactable_LooseItem looseItem = interactable as Interactable_LooseItem;
                                     TooltipManager.ShowLooseItemTooltip(looseItem, looseItem.ItemData);
                                 }
                             }
@@ -381,11 +381,11 @@ namespace UnitSystem.ActionSystem
 
                         if (HighlightedInteractable == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
-                        else if (HighlightedInteractable is LooseItem)
+                        else if (HighlightedInteractable is Interactable_LooseItem)
                         {
-                            if (HighlightedInteractable is LooseContainerItem)
+                            if (HighlightedInteractable is Interactable_LooseContainerItem)
                             {
-                                LooseContainerItem highlightedContainer = HighlightedInteractable as LooseContainerItem;
+                                Interactable_LooseContainerItem highlightedContainer = HighlightedInteractable as Interactable_LooseContainerItem;
                                 if (highlightedContainer.ContainerInventoryManager != null && highlightedContainer.ContainerInventoryManager.ContainsAnyItems())
                                     WorldMouse.ChangeCursor(CursorState.LootBag);
                                 else
@@ -395,7 +395,7 @@ namespace UnitSystem.ActionSystem
                                 WorldMouse.ChangeCursor(CursorState.PickupItem);
 
                         }
-                        else if (HighlightedInteractable is Door)
+                        else if (HighlightedInteractable is Interactable_Door)
                             WorldMouse.ChangeCursor(CursorState.UseDoor);
                     }
                     else if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit unitHit, 1000, unitMask))
@@ -407,7 +407,7 @@ namespace UnitSystem.ActionSystem
                             if (unitHit.transform.TryGetComponent(out Unit targetUnit))
                             {
                                 HighlightedUnit = targetUnit;
-                                if (HighlightedUnit != player && !HighlightedUnit.Health.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
+                                if (HighlightedUnit != player && !HighlightedUnit.HealthSystem.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
@@ -423,7 +423,7 @@ namespace UnitSystem.ActionSystem
                         
                         if (HighlightedUnit == null)
                             WorldMouse.ChangeCursor(CursorState.Default);
-                        else if (HighlightedUnit.Health.IsDead && player.Vision.IsVisible(HighlightedUnit))
+                        else if (HighlightedUnit.HealthSystem.IsDead && player.Vision.IsVisible(HighlightedUnit))
                             WorldMouse.ChangeCursor(CursorState.LootBag);
                         else if (player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                             SetAttackCursor();
@@ -438,7 +438,7 @@ namespace UnitSystem.ActionSystem
                             ClearHighlightedInteractable();
                             SetAttackCursor();
                             
-                            if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && unitAtGridPosition.Health.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
+                            if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && unitAtGridPosition.HealthSystem.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
                             {
                                 if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
@@ -476,7 +476,7 @@ namespace UnitSystem.ActionSystem
                         GridSystemVisual.UpdateAttackGridVisual();
                     }
 
-                    if (unitAtGridPosition != null && !unitAtGridPosition.Health.IsDead && !player.Alliance.IsAlly(unitAtGridPosition) && player.Vision.IsVisible(unitAtGridPosition))
+                    if (unitAtGridPosition != null && !unitAtGridPosition.HealthSystem.IsDead && !player.Alliance.IsAlly(unitAtGridPosition) && player.Vision.IsVisible(unitAtGridPosition))
                     {
                         StartCoroutine(ActionLineRenderer.Instance.DrawMovePath());
                         SetAttackCursor();

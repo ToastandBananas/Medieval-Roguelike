@@ -70,7 +70,7 @@ namespace UnitSystem.ActionSystem
 
             GridSystemVisual.HideGridVisual();
 
-            if (Unit.Health.IsDead)
+            if (Unit.HealthSystem.IsDead)
             {
                 ClearActionQueue(true, true);
                 return;
@@ -362,7 +362,7 @@ namespace UnitSystem.ActionSystem
                     {
                         // Try blocking with right weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldPrimaryEfficiency)
+                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Item_Weapon.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.UnitActionHandler.TargetUnits.ContainsKey(Unit) == false)
                                 attackingUnit.UnitActionHandler.TargetUnits.Add(Unit, Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon());
@@ -371,7 +371,7 @@ namespace UnitSystem.ActionSystem
 
                         // Try blocking with left weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Weapon.dualWieldSecondaryEfficiency)
+                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, false, false) * Item_Weapon.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.UnitActionHandler.TargetUnits.ContainsKey(Unit) == false)
                                 attackingUnit.UnitActionHandler.TargetUnits.Add(Unit, Unit.UnitMeshManager.GetLeftHeldMeleeWeapon());
@@ -422,7 +422,7 @@ namespace UnitSystem.ActionSystem
                     {
                         // Try blocking with right weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldPrimaryEfficiency)
+                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Item_Weapon.dualWieldPrimaryEfficiency)
                         {
                             if (attackingUnit.UnitActionHandler.TargetUnits.ContainsKey(Unit) == false)
                                 attackingUnit.UnitActionHandler.TargetUnits.Add(Unit, Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon());
@@ -431,7 +431,7 @@ namespace UnitSystem.ActionSystem
 
                         // Try blocking with left weapon
                         random = Random.Range(0f, 1f);
-                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Weapon.dualWieldSecondaryEfficiency)
+                        if (random <= Unit.Stats.WeaponBlockChance(Unit.UnitMeshManager.GetLeftHeldMeleeWeapon(), attackingUnit, weaponAttackingWith, attackerUsingOffhand, true, false) * Item_Weapon.dualWieldSecondaryEfficiency)
                         {
                             if (attackingUnit.UnitActionHandler.TargetUnits.ContainsKey(Unit) == false)
                                 attackingUnit.UnitActionHandler.TargetUnits.Add(Unit, Unit.UnitMeshManager.GetLeftHeldMeleeWeapon());
@@ -505,7 +505,7 @@ namespace UnitSystem.ActionSystem
 
         public virtual void SetTargetEnemyUnit(Unit target)
         {
-            if (target != null && target.Health.IsDead)
+            if (target != null && target.HealthSystem.IsDead)
             {
                 TargetEnemyUnit = null;
                 return;

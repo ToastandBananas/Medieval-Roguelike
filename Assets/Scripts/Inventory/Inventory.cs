@@ -334,7 +334,7 @@ namespace InventorySystem
                     if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit != null)
                     {
                         // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.Health.IsDead)
+                        if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory.MyUnit.HealthSystem.IsDead)
                         {
                             if (unitAdding != null)
                                 unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
@@ -349,7 +349,7 @@ namespace InventorySystem
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.Health.IsDead)
+                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.myUnitEquipment.MyUnit.HealthSystem.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
@@ -371,7 +371,7 @@ namespace InventorySystem
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.Health.IsDead)
+                    if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.HealthSystem.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
@@ -387,7 +387,7 @@ namespace InventorySystem
                     if (InventoryUI.DraggedItem.myInventory.myUnit != null)
                     {
                         // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.DraggedItem.myInventory.MyUnit.Health.IsDead)
+                        if (InventoryUI.DraggedItem.myInventory.MyUnit.HealthSystem.IsDead)
                         {
                             if (unitAdding != null)
                                 unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
@@ -412,7 +412,7 @@ namespace InventorySystem
 
         void TryTakeStuckProjectiles(ItemData newItemData)
         {
-            if (newItemData.Item is Shield == false || myUnit == null || myUnit.UnitEquipment == null || myUnit.UnitEquipment.ItemDataEquipped(newItemData) == false)
+            if (newItemData.Item is Item_Shield == false || myUnit == null || myUnit.UnitEquipment == null || myUnit.UnitEquipment.ItemDataEquipped(newItemData) == false)
                 return;
 
             // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them
@@ -429,7 +429,7 @@ namespace InventorySystem
                     if (heldShield.transform.GetChild(i).CompareTag("Loose Item") == false)
                         continue;
 
-                    LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<LooseItem>();
+                    Interactable_LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<Interactable_LooseItem>();
                     if (myUnit.UnitInventoryManager.TryAddItemToInventories(looseProjectile.ItemData))
                         LooseItemPool.ReturnToPool(looseProjectile);
                     else

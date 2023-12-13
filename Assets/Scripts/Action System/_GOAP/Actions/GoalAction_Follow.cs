@@ -22,7 +22,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         #region Follow
         void Follow()
         {
-            if (leader == null || leader.Health.IsDead)
+            if (leader == null || leader.HealthSystem.IsDead)
             {
                 // Debug.LogWarning("Leader for " + unit.name + " is null or dead, but they are in the Follow state.");
                 shouldFollowLeader = false;

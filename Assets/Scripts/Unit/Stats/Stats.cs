@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.UI;
 using InventorySystem;
 using WorldSystem;
@@ -40,6 +39,7 @@ namespace UnitSystem
         [SerializeField] IntStat endurance;
         [SerializeField] IntStat speed;
         [SerializeField] IntStat strength;
+        [SerializeField] IntStat vitality;
 
         [Header("Weapon Skills")]
         [SerializeField] IntStat axeSkill;
@@ -243,7 +243,7 @@ namespace UnitSystem
 
         public float WeaponBlockChance(HeldMeleeWeapon heldWeapon, Unit attackingUnit, HeldItem weaponBeingAttackedWith, bool attackerUsingOffhand, bool attackerBesideUnit, bool shieldEquipped)
         {
-            Weapon weapon = heldWeapon.ItemData.Item.Weapon;
+            Item_Weapon weapon = heldWeapon.ItemData.Item.Weapon;
             float blockChance = swordSkill.GetValue() / 100f * 0.6f * WeaponBlockModifier(weapon);
             float baseBlockChance = blockChance;
 
@@ -277,11 +277,11 @@ namespace UnitSystem
 
         public int BlockPower(HeldMeleeWeapon heldWeapon)
         {
-            Weapon weapon = heldWeapon.ItemData.Item as Weapon;
+            Item_Weapon weapon = heldWeapon.ItemData.Item as Item_Weapon;
             return Mathf.RoundToInt((NaturalBlockPower + Mathf.RoundToInt(WeaponSkill(weapon) * 0.5f)) * WeaponBlockModifier(weapon));
         }
 
-        public float WeaponBlockModifier(Weapon weapon)
+        public float WeaponBlockModifier(Item_Weapon weapon)
         {
             if (weapon == null)
                 return 0f;
@@ -321,7 +321,7 @@ namespace UnitSystem
         ///<summary>A lower number is worse for the Unit being attacked, as their block chance will be multiplied by this.</summary>
         float EnemyWeaponSkill_BlockChanceModifier(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
-            Weapon weapon = null;
+            Item_Weapon weapon = null;
             if (weaponAttackingWith != null)
                 weapon = weaponAttackingWith.ItemData.Item.Weapon;
 
@@ -334,9 +334,9 @@ namespace UnitSystem
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += baseModifier * (1f - Weapon.dualWieldSecondaryEfficiency);
+                    modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += baseModifier * (1f - Weapon.dualWieldPrimaryEfficiency);
+                    modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
             }
 
             if (modifier < 0f)
@@ -360,11 +360,6 @@ namespace UnitSystem
 
             if (unit.UnitEquipment != null)
                 AdjustCarryWeight(unit.UnitEquipment.GetTotalEquipmentWeight());
-
-            if (CarryWeightRatio >= 2f)
-                unit.UnitActionHandler.MoveAction.SetCanMove(false);
-            else
-                unit.UnitActionHandler.MoveAction.SetCanMove(true);
 
             if (unit.IsPlayer)
                 InventoryUI.UpdatePlayerCarryWeightText();
@@ -442,7 +437,7 @@ namespace UnitSystem
         ///<summary>A lower number is worse for the Unit being attacked, as their dodge chance will be multiplied by this.</summary>
         float EnemyWeaponSkillDodgeChanceModifier(Unit attackingUnit, HeldItem weaponAttackingWith, bool attackerUsingOffhand)
         {
-            Weapon weapon = null;
+            Item_Weapon weapon = null;
             if (weaponAttackingWith != null)
                 weapon = weaponAttackingWith.ItemData.Item.Weapon;
 
@@ -456,9 +451,9 @@ namespace UnitSystem
             if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
             {
                 if (attackerUsingOffhand)
-                    modifier += baseModifier * (1f - Weapon.dualWieldSecondaryEfficiency);
+                    modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
                 else
-                    modifier += baseModifier * (1f - Weapon.dualWieldPrimaryEfficiency);
+                    modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
             }
 
             if (modifier < 0f)
@@ -598,11 +593,11 @@ namespace UnitSystem
 
         public float KnockbackChance(HeldItem heldItem, ItemData weaponHitWith, Unit targetUnit, bool attackBlocked)
         {
-            Weapon weapon = null;
-            if (heldItem != null && heldItem.ItemData.Item is Weapon)
-                weapon = heldItem.ItemData.Item as Weapon;
-            else if (weaponHitWith != null && weaponHitWith.Item is Weapon)
-                weapon = weaponHitWith.Item as Weapon;
+            Item_Weapon weapon = null;
+            if (heldItem != null && heldItem.ItemData.Item is Item_Weapon)
+                weapon = heldItem.ItemData.Item as Item_Weapon;
+            else if (weaponHitWith != null && weaponHitWith.Item is Item_Weapon)
+                weapon = weaponHitWith.Item as Item_Weapon;
 
             float knockbackChance = WeaponKnockbackChance(weapon);
             float baseKnockbackChance = knockbackChance;
@@ -620,9 +615,9 @@ namespace UnitSystem
             if (heldItem != null && unit.UnitEquipment.IsDualWielding)
             {
                 if (heldItem == unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon())
-                    knockbackChance *= Weapon.dualWieldPrimaryEfficiency;
+                    knockbackChance *= Item_Weapon.dualWieldPrimaryEfficiency;
                 else
-                    knockbackChance *= Weapon.dualWieldSecondaryEfficiency;
+                    knockbackChance *= Item_Weapon.dualWieldSecondaryEfficiency;
             }
 
             if (heldItem != null && heldItem.CurrentHeldItemStance == HeldItemStance.SpearWall)
@@ -638,7 +633,7 @@ namespace UnitSystem
             return knockbackChance;
         }
 
-        float WeaponKnockbackChance(Weapon weapon)
+        float WeaponKnockbackChance(Item_Weapon weapon)
         {
             if (weapon == null) // Unarmed
                 return 0.1f;
@@ -732,7 +727,7 @@ namespace UnitSystem
         }
         #endregion
 
-        public int WeaponSkill(Weapon weapon)
+        public int WeaponSkill(Item_Weapon weapon)
         {
             if (weapon == null) // Unarmed
                 return unarmedSkill.GetValue();
@@ -769,6 +764,7 @@ namespace UnitSystem
         public IntStat Endurance => endurance;
         public IntStat Speed => speed;
         public IntStat Strength => strength;
+        public IntStat Vitality => vitality;
 
         public IntStat AxeSkill => axeSkill;
         public IntStat BowSkill => bowSkill;

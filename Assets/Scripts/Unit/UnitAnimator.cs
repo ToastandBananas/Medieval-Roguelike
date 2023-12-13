@@ -89,7 +89,7 @@ namespace UnitSystem
             }
 
             // Dodge
-            while (beingKnockedBack == false && elapsedTime < dodgeDuration && unit.Health.IsDead == false)
+            while (beingKnockedBack == false && elapsedTime < dodgeDuration && unit.HealthSystem.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 float t = elapsedTime / dodgeDuration;
@@ -126,7 +126,7 @@ namespace UnitSystem
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
-            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.Health.IsDead == false)
+            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.HealthSystem.IsDead == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
@@ -217,15 +217,15 @@ namespace UnitSystem
 
             StopMovingForward();
 
-            if (fallDistance > Health.minFallDistance)
-                unit.Health.TakeFallDamage(fallDistance);
+            if (fallDistance > unit.HealthSystem.MinFallDamageDistance)
+                unit.HealthSystem.TakeFallDamage(fallDistance);
         }
 
         IEnumerator ReturnToOriginalPosition(Vector3 currentPosition, Vector3 originalPosition, float returnDuration)
         {
             // Return to original position
             float elapsedTime = 0f;
-            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.Health.IsDead == false && unit.UnitActionHandler.MoveAction.IsMoving == false)
+            while (beingKnockedBack == false && elapsedTime < returnDuration && unit.HealthSystem.IsDead == false && unit.UnitActionHandler.MoveAction.IsMoving == false)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(currentPosition, originalPosition, elapsedTime / returnDuration);
@@ -289,7 +289,7 @@ namespace UnitSystem
 
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
             {
-                Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Helm;
+                Item_Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Item_Helm;
                 if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 1f) <= helm.FallOffOnDeathChance)
                     DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
             }

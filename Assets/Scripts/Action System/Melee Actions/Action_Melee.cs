@@ -22,7 +22,7 @@ namespace UnitSystem.ActionSystem.Actions
             float cost;
             if (Unit.UnitEquipment != null)
             {
-                Unit.UnitEquipment.GetEquippedWeapons(out Weapon primaryWeapon, out Weapon secondaryWeapon);
+                Unit.UnitEquipment.GetEquippedWeapons(out Item_Weapon primaryWeapon, out Item_Weapon secondaryWeapon);
                 if (primaryWeapon != null)
                 {
                     if (secondaryWeapon != null)
@@ -55,7 +55,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (TargetEnemyUnit == null)
                 SetTargetEnemyUnit();
 
-            if (TargetEnemyUnit == null || TargetEnemyUnit.Health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.HealthSystem.IsDead)
             {
                 TargetEnemyUnit = null;
                 Unit.UnitActionHandler.SetTargetEnemyUnit(null);
@@ -162,7 +162,7 @@ namespace UnitSystem.ActionSystem.Actions
                         primaryHeldWeapon.DoDefaultAttack(TargetGridPosition);
                         AttackTarget(primaryHeldWeapon, primaryHeldWeapon.ItemData, false);
 
-                        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(primaryHeldWeapon.ItemData.Item as Weapon) / 2f) + 0.05f);
+                        yield return new WaitForSeconds((AnimationTimes.Instance.DefaultWeaponAttackTime(primaryHeldWeapon.ItemData.Item as Item_Weapon) / 2f) + 0.05f);
 
                         secondaryHeldWeapon.DoDefaultAttack(TargetGridPosition);
                         AttackTarget(secondaryHeldWeapon, secondaryHeldWeapon.ItemData, true);
@@ -205,14 +205,13 @@ namespace UnitSystem.ActionSystem.Actions
                 // Try to dodge or block the attack
                 bool attackDodged = false;
                 bool attackBlocked = false;
-                bool headShot = false;
                 if (Unit.UnitEquipment.IsUnarmed || Unit.UnitEquipment.RangedWeaponEquipped) // Unarmed or has a ranged weapon equipped, but no ammo
                 {
                     attackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, null, this, false);
                     if (attackDodged == false)
                     {
                         attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, null, false);
-                        DamageTargets(null, null, headShot);
+                        DamageTargets(null, null);
                     }
                 }
                 else if (Unit.UnitEquipment.IsDualWielding) // Dual wield attack
@@ -231,7 +230,7 @@ namespace UnitSystem.ActionSystem.Actions
                         if (mainAttackDodged == false)
                         {
                             mainAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, false);
-                            DamageTargets(Unit.UnitMeshManager.rightHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.rightHeldItem.ItemData, headShot);
+                            DamageTargets(Unit.UnitMeshManager.rightHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.rightHeldItem.ItemData);
                         }
                     }
 
@@ -243,7 +242,7 @@ namespace UnitSystem.ActionSystem.Actions
                         if (offhandAttackDodged == false)
                         {
                             offhandAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, true);
-                            DamageTargets(Unit.UnitMeshManager.leftHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.leftHeldItem.ItemData, headShot);
+                            DamageTargets(Unit.UnitMeshManager.leftHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.leftHeldItem.ItemData);
                         }
                     }
 
@@ -261,9 +260,9 @@ namespace UnitSystem.ActionSystem.Actions
                     {
                         attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
                         if (primaryMeleeWeapon != null)
-                            DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot); // Right hand weapon attack
+                            DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData); // Right hand weapon attack
                         else
-                            DamageTargets(null, null, headShot); // Fallback to unarmed damage
+                            DamageTargets(null, null); // Fallback to unarmed damage
                     }
                 }
 
@@ -301,10 +300,10 @@ namespace UnitSystem.ActionSystem.Actions
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.Health.IsDead == false)
+            if (IsValidAction() && targetUnit != null && targetUnit.HealthSystem.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.Health.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.HealthSystem.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
                 float minAttackRange = 1f;
                 if (Unit.UnitEquipment.IsDualWielding)
@@ -341,13 +340,13 @@ namespace UnitSystem.ActionSystem.Actions
             if (LevelGrid.HasUnitAtGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                if (unitAtGridPosition.Health.IsDead == false && Unit.Alliance.IsEnemy(unitAtGridPosition))
+                if (unitAtGridPosition.HealthSystem.IsDead == false && Unit.Alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 70f - (unitAtGridPosition.Health.CurrentHealthNormalized * 70f);
+                    finalActionValue += 70f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 70f);
 
                     // Favor the targetEnemyUnit
                     if (Unit.UnitActionHandler.TargetEnemyUnit != null && unitAtGridPosition == Unit.UnitActionHandler.TargetEnemyUnit)
@@ -375,7 +374,7 @@ namespace UnitSystem.ActionSystem.Actions
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && !unitAtGridPosition.Health.IsDead && !Unit.Alliance.IsAlly(unitAtGridPosition) && Unit.Vision.IsDirectlyVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && !unitAtGridPosition.HealthSystem.IsDead && !Unit.Alliance.IsAlly(unitAtGridPosition) && Unit.Vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }

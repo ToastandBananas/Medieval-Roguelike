@@ -30,13 +30,13 @@ namespace UnitSystem
         [SerializeField] LayerMask looseItemVisionObstacleMask;
         [SerializeField] LayerMask interactableMask;
 
-        public ConcurrentDictionary<LooseItem, int> knownLooseItems { get; private set; }
+        public ConcurrentDictionary<Interactable_LooseItem, int> knownLooseItems { get; private set; }
         public ConcurrentDictionary<Unit, int> knownUnits { get; private set; }
         public List<Unit> knownDeadUnits { get; private set; }
         public List<Unit> knownEnemies { get; private set; }
         public List<Unit> knownAllies { get; private set; }
 
-        List<LooseItem> looseItemsToRemove = new List<LooseItem>();
+        List<Interactable_LooseItem> looseItemsToRemove = new List<Interactable_LooseItem>();
         List<Unit> unitsToRemove = new List<Unit>();
 
         Collider[] looseItemsInViewRadius;
@@ -49,7 +49,7 @@ namespace UnitSystem
 
         void Awake()
         {
-            knownLooseItems = new ConcurrentDictionary<LooseItem, int>();
+            knownLooseItems = new ConcurrentDictionary<Interactable_LooseItem, int>();
             knownUnits = new ConcurrentDictionary<Unit, int>();
             knownDeadUnits = new List<Unit>();
             knownEnemies = new List<Unit>();
@@ -102,7 +102,7 @@ namespace UnitSystem
             return IsVisible(targetUnit);
         }
 
-        public bool IsVisible(LooseItem looseItemToCheck)
+        public bool IsVisible(Interactable_LooseItem looseItemToCheck)
         {
             if (knownLooseItems.ContainsKey(looseItemToCheck) == false)
                 return false;
@@ -123,7 +123,7 @@ namespace UnitSystem
             return false;
         }
 
-        public bool IsKnown(LooseItem looseItemToCheck)
+        public bool IsKnown(Interactable_LooseItem looseItemToCheck)
         {
             if (knownLooseItems.ContainsKey(looseItemToCheck))
                 return true;
@@ -163,7 +163,7 @@ namespace UnitSystem
             return false;
         }
 
-        bool IsInLineOfSight_Raycast(LooseItem looseItem)
+        bool IsInLineOfSight_Raycast(Interactable_LooseItem looseItem)
         {
             Vector3 looseItemCenter = looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center);
             Vector3 dirToTarget = (looseItemCenter - transform.position).normalized;
@@ -290,7 +290,7 @@ namespace UnitSystem
             foreach (KeyValuePair<Unit, int> knownUnit in knownUnits)
             {
                 // If the visible Unit is now dead, update the appropriate lists
-                if (knownUnit.Key.Health.IsDead)
+                if (knownUnit.Key.HealthSystem.IsDead)
                     UpdateDeadUnit(knownUnit.Key);
 
                 Transform targetTransform = knownUnit.Key.transform;
@@ -350,7 +350,7 @@ namespace UnitSystem
                 // Add the unit to the dictionary
                 knownUnits.TryAdd(unitToAdd, loseSightTime);
 
-                if (unitToAdd.Health.IsDead)
+                if (unitToAdd.HealthSystem.IsDead)
                     knownDeadUnits.Add(unitToAdd);
                 else if (unit.Alliance.IsEnemy(unitToAdd))
                 {
@@ -460,7 +460,7 @@ namespace UnitSystem
         {
             Unit closestEnemy = null;
             float closestEnemyDistance = 1000000;
-            if (includeTargetEnemy && unit.UnitActionHandler.TargetEnemyUnit != null && !unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead)
+            if (includeTargetEnemy && unit.UnitActionHandler.TargetEnemyUnit != null && !unit.UnitActionHandler.TargetEnemyUnit.HealthSystem.IsDead)
             {
                 float distToTargetEnemy = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
                 if (distToTargetEnemy <= maxDistance)
@@ -472,7 +472,7 @@ namespace UnitSystem
 
             for (int i = 0; i < knownEnemies.Count; i++)
             {
-                if (unit.UnitActionHandler.TargetEnemyUnit != null && (unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead || (!includeTargetEnemy && knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit)))
+                if (unit.UnitActionHandler.TargetEnemyUnit != null && (unit.UnitActionHandler.TargetEnemyUnit.HealthSystem.IsDead || (!includeTargetEnemy && knownEnemies[i] == unit.UnitActionHandler.TargetEnemyUnit)))
                     continue;
 
                 float distToEnemy = Vector3.Distance(unit.WorldPosition, knownEnemies[i].WorldPosition);
@@ -497,7 +497,7 @@ namespace UnitSystem
                     continue;
 
                 // If the LooseItem in the view radius is already "known", skip it
-                if (looseItemsInViewRadius[i].transform.TryGetComponent(out LooseItem looseItem) == false || knownLooseItems.ContainsKey(looseItem))
+                if (looseItemsInViewRadius[i].transform.TryGetComponent(out Interactable_LooseItem looseItem) == false || knownLooseItems.ContainsKey(looseItem))
                     continue;
 
                 Vector3 looseItemCenter = looseItem.transform.TransformPoint(looseItem.MeshCollider.sharedMesh.bounds.center);
@@ -553,7 +553,7 @@ namespace UnitSystem
             looseItemsToRemove.Clear();
 
             // Check if LooseItems that were in sight are now out of sight
-            foreach (KeyValuePair<LooseItem, int> looseItem in knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> looseItem in knownLooseItems)
             {
                 if (looseItem.Key == null || looseItem.Key.gameObject.activeSelf == false)
                 {
@@ -607,7 +607,7 @@ namespace UnitSystem
             }
         }
 
-        public void AddVisibleLooseItem(LooseItem looseItemToAdd)
+        public void AddVisibleLooseItem(Interactable_LooseItem looseItemToAdd)
         {
             if (knownLooseItems.ContainsKey(looseItemToAdd) == false)
             {
@@ -622,7 +622,7 @@ namespace UnitSystem
                 looseItemToAdd.ShowMeshRenderer();
         }
 
-        public void RemoveVisibleLooseItem(LooseItem looseItemToRemove)
+        public void RemoveVisibleLooseItem(Interactable_LooseItem looseItemToRemove)
         {
             if (knownLooseItems.ContainsKey(looseItemToRemove))
             {
@@ -634,11 +634,11 @@ namespace UnitSystem
             }
         }
 
-        public LooseItem GetClosestLooseItem(out float distanceToLooseItem)
+        public Interactable_LooseItem GetClosestLooseItem(out float distanceToLooseItem)
         {
-            LooseItem closestLooseItem = null;
+            Interactable_LooseItem closestLooseItem = null;
             float closestLooseItemDistance = 1000000;
-            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
                 if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null)
                     continue;
@@ -654,13 +654,13 @@ namespace UnitSystem
             return closestLooseItem;
         }
 
-        public LooseItem GetClosestWeapon(out float distanceToWeapon)
+        public Interactable_LooseItem GetClosestWeapon(out float distanceToWeapon)
         {
-            LooseItem closestWeapon = null;
+            Interactable_LooseItem closestWeapon = null;
             float closestWeaponDistance = 1000000;
-            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Weapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_Weapon == false)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
@@ -675,13 +675,13 @@ namespace UnitSystem
             return closestWeapon;
         }
 
-        public LooseItem GetClosestMeleeWeapon(out float distanceToWeapon)
+        public Interactable_LooseItem GetClosestMeleeWeapon(out float distanceToWeapon)
         {
-            LooseItem closestLooseMeleeWeapon = null;
+            Interactable_LooseItem closestLooseMeleeWeapon = null;
             float closestMeleeWeaponDistance = 1000000;
-            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is MeleeWeapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_MeleeWeapon == false)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
@@ -696,13 +696,13 @@ namespace UnitSystem
             return closestLooseMeleeWeapon;
         }
 
-        public LooseItem GetClosestRangedWeapon(out float distanceToWeapon)
+        public Interactable_LooseItem GetClosestRangedWeapon(out float distanceToWeapon)
         {
-            LooseItem closestLooseRangedWeapon = null;
+            Interactable_LooseItem closestLooseRangedWeapon = null;
             float closestRangedWeaponDistance = 1000000;
-            foreach (KeyValuePair<LooseItem, int> knownLooseItem in knownLooseItems)
+            foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is RangedWeapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_RangedWeapon == false)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);

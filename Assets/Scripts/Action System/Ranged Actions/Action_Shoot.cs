@@ -53,7 +53,7 @@ namespace UnitSystem.ActionSystem.Actions
                     TargetEnemyUnit = targetUnit;
             }
 
-            if (TargetEnemyUnit == null || TargetEnemyUnit.Health.IsDead)
+            if (TargetEnemyUnit == null || TargetEnemyUnit.HealthSystem.IsDead)
             {
                 TargetEnemyUnit = null;
                 Unit.UnitActionHandler.SetTargetEnemyUnit(null);
@@ -142,9 +142,8 @@ namespace UnitSystem.ActionSystem.Actions
             {
                 bool missedTarget = TryHitTarget(TargetEnemyUnit.GridPosition);
                 bool attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, heldRangedWeapon, false);
-                bool headShot = false;
                 if (!missedTarget)
-                    DamageTargets(heldRangedWeapon, heldRangedWeapon.LoadedProjectile.ItemData, headShot);
+                    DamageTargets(heldRangedWeapon, heldRangedWeapon.LoadedProjectile.ItemData);
 
                 // Rotate towards the target
                 if (!Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
@@ -215,10 +214,10 @@ namespace UnitSystem.ActionSystem.Actions
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && !targetUnit.Health.IsDead)
+            if (IsValidAction() && targetUnit != null && !targetUnit.HealthSystem.IsDead)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.Health.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.HealthSystem.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
                 if (distance < Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
                     finalActionValue = 0f;
@@ -249,13 +248,13 @@ namespace UnitSystem.ActionSystem.Actions
             if (LevelGrid.HasUnitAtGridPosition(actionGridPosition, out Unit unitAtGridPosition))
             {
                 // Adjust the finalActionValue based on the Alliance of the unit at the grid position
-                if (!unitAtGridPosition.Health.IsDead && Unit.Alliance.IsEnemy(unitAtGridPosition))
+                if (!unitAtGridPosition.HealthSystem.IsDead && Unit.Alliance.IsEnemy(unitAtGridPosition))
                 {
                     // Enemies in the action area increase this action's value
                     finalActionValue += 70f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 70f - (unitAtGridPosition.Health.CurrentHealthNormalized * 70f);
+                    finalActionValue += 70f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 70f);
 
                     // Favor the targetEnemyUnit
                     if (Unit.UnitActionHandler.TargetEnemyUnit != null && unitAtGridPosition == Unit.UnitActionHandler.TargetEnemyUnit)
@@ -289,7 +288,7 @@ namespace UnitSystem.ActionSystem.Actions
         public override bool IsValidUnitInActionArea(GridPosition targetGridPosition)
         {
             Unit unitAtGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtGridPosition != null && !unitAtGridPosition.Health.IsDead && !Unit.Alliance.IsAlly(unitAtGridPosition) && Unit.Vision.IsDirectlyVisible(unitAtGridPosition))
+            if (unitAtGridPosition != null && !unitAtGridPosition.HealthSystem.IsDead && !Unit.Alliance.IsAlly(unitAtGridPosition) && Unit.Vision.IsDirectlyVisible(unitAtGridPosition))
                 return true;
             return false;
         }
@@ -303,7 +302,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override string TooltipDescription()
         {
-            RangedWeapon rangedWeapon = Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon;
+            Item_RangedWeapon rangedWeapon = Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon;
             if (rangedWeapon.WeaponType == WeaponType.Bow)
                 return $"Draw your <b>{rangedWeapon.Name}'s</b> bowstring taut and release a deadly arrow towards your target.";
             else if (rangedWeapon.WeaponType == WeaponType.Crossbow)

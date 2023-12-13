@@ -67,13 +67,13 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override int ActionPointsCost()
         {
-            if (TargetInteractable is Door)
+            if (TargetInteractable is Interactable_Door)
                 return 150;
-            else if (TargetInteractable is LooseItem)
+            else if (TargetInteractable is Interactable_LooseItem)
             {
-                if (TargetInteractable is LooseContainerItem)
+                if (TargetInteractable is Interactable_LooseContainerItem)
                 {
-                    LooseContainerItem looseContainerItem = TargetInteractable as LooseContainerItem;
+                    Interactable_LooseContainerItem looseContainerItem = TargetInteractable as Interactable_LooseContainerItem;
                     if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // If a LooseContainerItem has any items in its inventory, then the interaction will be to open it up and look inside, costing AP
                         return 200;
                 }

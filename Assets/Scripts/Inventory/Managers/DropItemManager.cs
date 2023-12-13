@@ -24,10 +24,10 @@ namespace InventorySystem
             if (unit == null)
                 unit = UnitManager.player;
 
-            LooseItem looseItem;
-            if (itemDataToDrop.Item is Backpack)
+            Interactable_LooseItem looseItem;
+            if (itemDataToDrop.Item is Item_Backpack)
                 looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
-            else if (itemDataToDrop.Item is Quiver)
+            else if (itemDataToDrop.Item is Item_Quiver)
                 looseItem = LooseItemPool.Instance.GetLooseQuiverItemFromPool();
             else
                 looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
@@ -62,7 +62,7 @@ namespace InventorySystem
                 inventory.MyUnit.Stats.UpdateCarryWeight();
 
             // In this case, the Player is dropping an item from a dead Unit's inventory
-            if (unit.Health.IsDead)
+            if (unit.HealthSystem.IsDead)
             {
                 UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null);
                 UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, null, InventoryActionType.Drop);
@@ -76,17 +76,17 @@ namespace InventorySystem
             TooltipManager.UpdateLooseItemTooltips();
         }
 
-        public static LooseItem DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
+        public static Interactable_LooseItem DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
         {
             if (unitEquipment.EquipSlotIsFull(equipSlot) == false)
                 return null;
 
-            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Equipment, equipSlot);
+            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Item_Equipment, equipSlot);
 
-            LooseItem looseItem;
-            if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver)
+            Interactable_LooseItem looseItem;
+            if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Quiver)
                 looseItem = LooseItemPool.Instance.GetLooseQuiverItemFromPool();
-            else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is WearableContainer)
+            else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_WearableContainer)
                 looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
             else
                 looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
@@ -94,11 +94,11 @@ namespace InventorySystem
             ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
-            if (unitEquipment.MyUnit.Health.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Shield))
+            if (unitEquipment.MyUnit.HealthSystem.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Shield))
                 SetupHeldItemDrop(unitEquipment.MyUnit.UnitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
-            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Quiver) || (equipSlot == EquipSlot.Belt))
+            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Quiver) || (equipSlot == EquipSlot.Belt))
             {
                 SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
                 itemsContainerInventoryManager = looseItem.LooseContainerItem.ContainerInventoryManager;
@@ -107,7 +107,7 @@ namespace InventorySystem
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
 
             // We queue each action twice to account for unequipping the item before dropping it
-            if (unitEquipment.MyUnit.Health.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
+            if (unitEquipment.MyUnit.HealthSystem.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
                 if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
                     UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
@@ -164,7 +164,7 @@ namespace InventorySystem
 
         public static void DropHelmOnDeath(ItemData itemData, Unit unit, Transform attackerTransform, bool diedForward)
         {
-            LooseItem looseHelm = LooseItemPool.Instance.GetLooseItemFromPool();
+            Interactable_LooseItem looseHelm = LooseItemPool.Instance.GetLooseItemFromPool();
 
             float randomForceMagnitude = Random.Range(looseHelm.RigidBody.mass, looseHelm.RigidBody.mass * 6f);
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
@@ -209,7 +209,7 @@ namespace InventorySystem
 
         public static void DropHeldItemOnDeath(HeldItem heldItem, Unit unit, Transform attackerTransform, bool diedForward)
         {
-            LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
+            Interactable_LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
 
             float randomForceMagnitude = Random.Range(looseWeapon.RigidBody.mass, looseWeapon.RigidBody.mass * 6f);
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
@@ -240,7 +240,7 @@ namespace InventorySystem
                 HeldRangedWeapon heldRangedWeapon = heldItem as HeldRangedWeapon;
                 if (heldRangedWeapon.IsLoaded)
                 {
-                    LooseItem looseProjectile = heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(null, ProjectileType.BluntObject, false);
+                    Interactable_LooseItem looseProjectile = heldRangedWeapon.LoadedProjectile.SetupNewLooseItem(null, ProjectileType.BluntObject, false);
                     looseProjectile.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
                     if (unit != UnitManager.player)
@@ -270,14 +270,14 @@ namespace InventorySystem
             {
                 if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
                 {
-                    if (heldItem.ItemData.Item is Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
+                    if (heldItem.ItemData.Item is Item_Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem1;
                     else
                         equipSlot = EquipSlot.RightHeldItem1;
                 }
                 else
                 {
-                    if (heldItem.ItemData.Item is Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
+                    if (heldItem.ItemData.Item is Item_Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem2;
                     else
                         equipSlot = EquipSlot.RightHeldItem2;
@@ -298,7 +298,7 @@ namespace InventorySystem
                 TooltipManager.UpdateLooseItemTooltips();
         }
 
-        static void SetupItemDrop(LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
+        static void SetupItemDrop(Interactable_LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
         {
             SetupLooseItem(looseItem, itemData);
 
@@ -310,7 +310,7 @@ namespace InventorySystem
             looseItem.gameObject.SetActive(true);
         }
 
-        static void SetupContainerItemDrop(UnitEquipment unitEquipment, EquipSlot equipSlot, LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
+        static void SetupContainerItemDrop(UnitEquipment unitEquipment, EquipSlot equipSlot, Interactable_LooseItem looseItem, ItemData itemData, Unit unit, Vector3 dropDirection)
         {
             SetupItemDrop(looseItem, itemData, unit, dropDirection);
 
@@ -339,11 +339,11 @@ namespace InventorySystem
             }
         }
 
-        static void SetupHeldItemDrop(HeldItem heldItem, LooseItem looseItem)
+        static void SetupHeldItemDrop(HeldItem heldItem, Interactable_LooseItem looseItem)
         {
             SetupLooseItem(looseItem, heldItem.ItemData);
 
-            if (heldItem.ItemData.Item is Shield && heldItem.transform.childCount > 1)
+            if (heldItem.ItemData.Item is Item_Shield && heldItem.transform.childCount > 1)
             {
                 HeldShield heldShield = heldItem as HeldShield;
                 Vector3 yOffset = new Vector3(0f, FindMeshHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
@@ -362,7 +362,7 @@ namespace InventorySystem
             looseItem.transform.rotation = heldItem.transform.rotation;
         }
 
-        static void SetupHelmItemDrop(LooseItem looseItem, ItemData itemData, Unit unit)
+        static void SetupHelmItemDrop(Interactable_LooseItem looseItem, ItemData itemData, Unit unit)
         {
             SetupLooseItem(looseItem, itemData);
 
@@ -374,7 +374,7 @@ namespace InventorySystem
 
         static float FindMeshHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;
 
-        static void SetupLooseItem(LooseItem looseItem, ItemData itemData)
+        static void SetupLooseItem(Interactable_LooseItem looseItem, ItemData itemData)
         {
             looseItem.SetItemData(itemData);
             looseItem.SetupMesh();
@@ -383,11 +383,11 @@ namespace InventorySystem
             looseItem.gameObject.SetActive(true);
         }
 
-        static void SetupStuckLooseProjectile(Transform looseProjectileTransform, LooseItem looseItem, Vector3 yOffset)
+        static void SetupStuckLooseProjectile(Transform looseProjectileTransform, Interactable_LooseItem looseItem, Vector3 yOffset)
         {
             Vector3 projectilePosition = looseProjectileTransform.localPosition;
             Quaternion projectileRotation = looseProjectileTransform.localRotation;
-            LooseItem looseProjectile = looseProjectileTransform.GetComponent<LooseItem>();
+            Interactable_LooseItem looseProjectile = looseProjectileTransform.GetComponent<Interactable_LooseItem>();
             looseProjectile.MeshCollider.enabled = false;
             looseProjectileTransform.SetParent(looseItem.transform);
             looseProjectileTransform.transform.localPosition = projectilePosition + yOffset;

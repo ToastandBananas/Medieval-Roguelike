@@ -21,7 +21,7 @@ namespace InventorySystem
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                     return true;
             }
 
@@ -38,13 +38,13 @@ namespace InventorySystem
 
             if (IsFull())
             {
-                if (inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                     oppositeWeaponSlot.HideItemIcon();
                     oppositeWeaponSlot.SetEmptySlotSprite();
                 }
-                else if (inventoryItem.itemData.Item is Quiver)
+                else if (inventoryItem.itemData.Item is Item_Quiver)
                     inventoryItem.QuiverInventoryItem.HideQuiverSprites();
             }
 
@@ -88,7 +88,7 @@ namespace InventorySystem
 
             if (IsHeldItemSlot())
             {
-                if (inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                     if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
@@ -122,17 +122,17 @@ namespace InventorySystem
             bool validSlot = false;
             Item draggedItem = InventoryUI.DraggedItem.itemData.Item;
 
-            if (myUnitEquipment.MyUnit.Health.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
+            if (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
                 validSlot = false;
             else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
                 validSlot = true;
             else if (equipSlot == EquipSlot.Belt && myUnitEquipment.BeltBagEquipped())
                 validSlot = true;
-            else if (draggedItem is Equipment)
+            else if (draggedItem is Item_Equipment)
             {
                 if (draggedItem.Equipment.EquipSlot == equipSlot)
                     validSlot = true;
-                else if ((draggedItem is Weapon || draggedItem is Shield) && IsHeldItemSlot())
+                else if ((draggedItem is Item_Weapon || draggedItem is Item_Shield) && IsHeldItemSlot())
                     validSlot = true;
                 //else if (draggedItem is Ring && IsRingSlot())
                     //validSlot = true;
@@ -161,12 +161,12 @@ namespace InventorySystem
             SetEmptySlotSprite();
             if (IsHeldItemSlot() && IsFull())
             {
-                if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item is Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                     GetOppositeWeaponSlot().SetEmptySlotSprite();
                 else
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                    if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                    if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
                         oppositeWeaponSlot.SetEmptySlotSprite();
                 }
             }

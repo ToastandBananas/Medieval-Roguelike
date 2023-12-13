@@ -86,7 +86,7 @@ namespace UnitSystem.ActionSystem.Actions
                 ApplyStanceStatModifiers(leftHeldWeapon.ItemData.Item.HeldEquipment);
 
             Unit.UnitActionHandler.MoveAction.OnMove += CancelAction;
-            Unit.Health.OnTakeDamageFromMeleeAttack += CancelAction;
+            Unit.HealthSystem.OnTakeDamageFromMeleeAttack += CancelAction;
 
             Unit.OpportunityAttackTrigger.OnEnemyEnterTrigger += AttackEnemy;
             Unit.OpportunityAttackTrigger.OnEnemyMoved += OnUnitInRangeMoved;
@@ -117,7 +117,7 @@ namespace UnitSystem.ActionSystem.Actions
             Unit.Stats.EnergyUseActions.Remove(this);
 
             Unit.UnitActionHandler.MoveAction.OnMove -= CancelAction;
-            Unit.Health.OnTakeDamageFromMeleeAttack -= CancelAction;
+            Unit.HealthSystem.OnTakeDamageFromMeleeAttack -= CancelAction;
 
             Unit.OpportunityAttackTrigger.OnEnemyEnterTrigger -= AttackEnemy;
             Unit.OpportunityAttackTrigger.OnEnemyMoved -= OnUnitInRangeMoved;
@@ -146,7 +146,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         void AttackEnemy(Unit enemyUnit, GridPosition enemyGridPosition)
         {
-            if (enemyUnit == null || enemyUnit.Health.IsDead || Unit.UnitActionHandler.MoveAction.IsMoving)
+            if (enemyUnit == null || enemyUnit.HealthSystem.IsDead || Unit.UnitActionHandler.MoveAction.IsMoving)
                 return;
 
             if (Unit.Alliance.IsEnemy(enemyUnit) == false)

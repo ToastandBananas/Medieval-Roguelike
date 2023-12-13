@@ -25,7 +25,6 @@ namespace UnitSystem.ActionSystem.Actions
 
         public bool AboutToMove { get; private set; }
         public bool IsMoving { get; private set; }
-        public bool CanMove { get; private set; }
 
         MoveMode currentMoveMode = MoveMode.Walk;
 
@@ -42,7 +41,6 @@ namespace UnitSystem.ActionSystem.Actions
 
         void Start()
         {
-            CanMove = true;
             moveSpeed = defaultMoveSpeed;
             TargetGridPosition = Unit.GridPosition;
             LastGridPosition = Unit.GridPosition;
@@ -123,7 +121,7 @@ namespace UnitSystem.ActionSystem.Actions
             for (int i = Unit.UnitsWhoCouldOpportunityAttackMe.Count - 1; i >= 0; i--)
             {
                 Unit opportunityAttackingUnit = Unit.UnitsWhoCouldOpportunityAttackMe[i];
-                if (opportunityAttackingUnit.Health.IsDead)
+                if (opportunityAttackingUnit.HealthSystem.IsDead)
                 {
                     Unit.UnitsWhoCouldOpportunityAttackMe.RemoveAt(i);
                     continue;
@@ -159,7 +157,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
 
             // This Unit can die during an opportunity attack
-            if (Unit.Health.IsDead)
+            if (Unit.HealthSystem.IsDead)
             {
                 CompleteAction();
                 yield break;
@@ -295,7 +293,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (interactAction.TargetInteractable != null && Vector3.Distance(Unit.WorldPosition, interactAction.TargetInteractable.GridPosition().WorldPosition) <= LevelGrid.diaganolDistance)
                     interactAction.QueueAction();
                 // If the target enemy Unit died
-                else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead)
+                else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.HealthSystem.IsDead)
                     Unit.UnitActionHandler.CancelActions();
                 // If the Player is trying to attack an enemy and they are in range, stop moving and attack
                 else if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.IsInAttackRange(Unit.UnitActionHandler.TargetEnemyUnit, true))
@@ -322,7 +320,7 @@ namespace UnitSystem.ActionSystem.Actions
                         Unit.UnitActionHandler.NPCActionHandler.GoalPlanner.FightAction.ChooseCombatAction();
                     }
                     // If the enemy moved positions, set the target position to the nearest possible attack position
-                    else if (Unit.UnitActionHandler.TargetEnemyUnit != null && !Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
+                    else if (Unit.UnitActionHandler.TargetEnemyUnit != null && !Unit.UnitActionHandler.TargetEnemyUnit.HealthSystem.IsDead && Unit.UnitActionHandler.PreviousTargetEnemyGridPosition != Unit.UnitActionHandler.TargetEnemyUnit.GridPosition)
                         QueueMoveToTargetEnemy();
                 }
             }
@@ -349,7 +347,7 @@ namespace UnitSystem.ActionSystem.Actions
         void GetPathToTargetPosition(GridPosition targetGridPosition)
         {
             Unit unitAtTargetGridPosition = LevelGrid.GetUnitAtGridPosition(targetGridPosition);
-            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.Health.IsDead == false)
+            if (unitAtTargetGridPosition != null && unitAtTargetGridPosition.HealthSystem.IsDead == false)
             {
                 unitAtTargetGridPosition.UnblockCurrentPosition();
                 targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(targetGridPosition, Unit.GridPosition, LevelGrid.diaganolDistance, false);
@@ -393,7 +391,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
 
             Unit.BlockCurrentPosition();
-            if (unitAtTargetGridPosition != null && !unitAtTargetGridPosition.Health.IsDead)
+            if (unitAtTargetGridPosition != null && !unitAtTargetGridPosition.HealthSystem.IsDead)
                 unitAtTargetGridPosition.BlockCurrentPosition();
         }
 
@@ -428,10 +426,10 @@ namespace UnitSystem.ActionSystem.Actions
             if (LevelGrid.HasInteractableAtGridPosition(nextGridPosition))
             {
                 Interactable interactable = LevelGrid.GetInteractableAtGridPosition(nextGridPosition);
-                if (interactable is Door)
+                if (interactable is Interactable_Door)
                 {
-                    Door door = interactable as Door;
-                    if (!door.isOpen)
+                    Interactable_Door door = interactable as Interactable_Door;
+                    if (!door.IsOpen)
                     {
                         Unit.UnitActionHandler.InteractAction.QueueAction(door, true);
                         return 0;
@@ -449,7 +447,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (LevelGrid.IsDiagonal(Unit.WorldPosition, nextTargetPosition))
                 cost *= 1.4f;
 
-            cost *= MoveModeMultiplier() * Unit.Stats.EncumbranceMoveCostModifier();
+            cost *= MoveModeMultiplier() * Unit.Stats.EncumbranceMoveCostModifier() * Unit.HealthSystem.MoveCostMobilityMultiplier;
 
             if (nextTargetPosition == Unit.transform.position)
             {
@@ -596,7 +594,7 @@ namespace UnitSystem.ActionSystem.Actions
             // Unblock the Unit's position, in case it's still their turn after this action ( so that the ActionLineRenderer will work). If not, it will be blocked again in the TurnManager's finish turn methods
             if (Unit.IsPlayer)
                 Unit.UnblockCurrentPosition();
-            else if (Unit.Health.IsDead == false)
+            else if (Unit.HealthSystem.IsDead == false)
                 Unit.BlockCurrentPosition();
 
             ClampMoveMode();
@@ -648,7 +646,7 @@ namespace UnitSystem.ActionSystem.Actions
                 MoveModeButtonManager.SetActiveMoveModeButton(currentMoveMode);
         }
 
-        public void SetCanMove(bool canMove) => CanMove = canMove;
+        public bool CanMove => Unit.Stats.CarryWeightRatio < 2f && !Unit.HealthSystem.IsImmobile;
 
         public void SetFinalTargetGridPosition(GridPosition finalGridPosition) => FinalTargetGridPosition = finalGridPosition;
 

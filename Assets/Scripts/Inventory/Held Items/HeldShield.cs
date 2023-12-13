@@ -67,7 +67,7 @@ namespace InventorySystem
 
         protected override float GetFumbleChance()
         {
-            Shield shield = ItemData.Item as Shield;
+            Item_Shield shield = ItemData.Item as Item_Shield;
 
             float fumbleChance = (0.5f - (unit.Stats.ShieldSkill.GetValue() / 100f)) * 0.4f; // Shield skill modifier
             fumbleChance += shield.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Shield weight to strength ratio modifier

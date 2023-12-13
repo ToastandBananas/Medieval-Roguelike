@@ -92,7 +92,7 @@ namespace InventorySystem
 
             ContainerInventory currentParentInventory = parentInventory;
             ContainerInventory[] currentSubInventories = subInventories;
-            LooseItem currentLooseItem = parentInventory.LooseItem;
+            Interactable_LooseItem currentLooseItem = parentInventory.LooseItem;
             Unit currentUnit = parentInventory.MyUnit;
 
             // Set Unit & LooseItem references
@@ -186,7 +186,7 @@ namespace InventorySystem
             return false;
         }
 
-        public void SetLooseItem(LooseItem looseItem)
+        public void SetLooseItem(Interactable_LooseItem looseItem)
         {
             parentInventory.SetLooseItem(looseItem);
             for (int i = 0; i < subInventories.Length; i++)

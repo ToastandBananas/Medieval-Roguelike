@@ -58,16 +58,28 @@ namespace UnitSystem.ActionSystem.Actions
                 TargetEnemyUnit = Unit.UnitActionHandler.TargetEnemyUnit;
         }
 
-        public virtual void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot)
+        public virtual void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot, bool headshotPredetermined)
         {
-            if (targetUnit == null || targetUnit.Health.IsDead)
+            if (targetUnit == null || targetUnit.HealthSystem.IsDead)
                 return;
             
             targetUnit.UnitActionHandler.InterruptActions();
 
             float damage = GetBaseDamage(heldItemAttackingWith, itemDataHittingWith);
-            damage = DealDamageToTarget(targetUnit, itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
+            damage = DealDamageToTarget(targetUnit, GetBodyPartHit(targetUnit, headShot, headshotPredetermined), itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
             TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemDataHittingWith, damage, attackBlocked);
+        }
+
+        protected BodyPart GetBodyPartHit(Unit targetUnit, bool headShot, bool headshotPredetermined)
+        {
+            if (headshotPredetermined)
+            {
+                if (headShot)
+                    return targetUnit.HealthSystem.GetBodyPart(BodyPartType.Head, BodyPartSide.NotApplicable, BodyPartIndex.Only);
+                else
+                    return targetUnit.HealthSystem.GetBodyPartToHit(false);
+            }
+            return targetUnit.HealthSystem.GetBodyPartToHit(true);
         }
 
         protected virtual float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
@@ -79,9 +91,9 @@ namespace UnitSystem.ActionSystem.Actions
                 if (Unit.UnitEquipment.IsDualWielding)
                 {
                     if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon())
-                        baseDamage *= Weapon.dualWieldPrimaryEfficiency;
+                        baseDamage *= Item_Weapon.dualWieldPrimaryEfficiency;
                     else
-                        baseDamage *= Weapon.dualWieldSecondaryEfficiency;
+                        baseDamage *= Item_Weapon.dualWieldSecondaryEfficiency;
                 }
                 else if (Unit.UnitEquipment.InVersatileStance)
                     baseDamage *= Action_VersatileStance.damageModifier;
@@ -102,9 +114,9 @@ namespace UnitSystem.ActionSystem.Actions
                 return UnarmedAttackDamage();
         }
 
-        protected int DealDamageToTarget(Unit targetUnit, ItemData itemHittingWith, HeldItem heldItemBlockedWith, float currentDamage, out bool attackBlocked)
+        protected int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, ItemData itemHittingWith, HeldItem heldItemBlockedWith, float currentDamage, out bool attackBlocked)
         {
-            float armorAbsorbAmount = GetTargetArmorAbsorbtionAmount(targetUnit, itemHittingWith, currentDamage);
+            float armorAbsorbAmount = GetTargetArmorAbsorbtionAmount(targetUnit, bodyPartHit, itemHittingWith, currentDamage);
 
             // If the attack was blocked
             if (heldItemBlockedWith != null)
@@ -116,7 +128,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.Health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                targetUnit.HealthSystem.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             else
             {
@@ -125,13 +137,13 @@ namespace UnitSystem.ActionSystem.Actions
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.Health.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                targetUnit.HealthSystem.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             
             return Mathf.RoundToInt(currentDamage);
         }
 
-        float GetTargetArmorAbsorbtionAmount(Unit targetUnit, ItemData itemHittingWith, float currentDamage)
+        float GetTargetArmorAbsorbtionAmount(Unit targetUnit, BodyPart bodyPartHit, ItemData itemHittingWith, float currentDamage)
         {
             // TODO: Calculate armor's damage absorbtion
             float armorAbsorbAmount = 0f;
@@ -163,9 +175,9 @@ namespace UnitSystem.ActionSystem.Actions
                 if (targetUnit.UnitEquipment.IsDualWielding)
                 {
                     if (meleeWeaponBlockedWith == targetUnit.UnitMeshManager.GetRightHeldMeleeWeapon())
-                        blockAmount *= Weapon.dualWieldPrimaryEfficiency;
+                        blockAmount *= Item_Weapon.dualWieldPrimaryEfficiency;
                     else
-                        blockAmount *= Weapon.dualWieldSecondaryEfficiency;
+                        blockAmount *= Item_Weapon.dualWieldSecondaryEfficiency;
                 }
 
                 // Play the recoil animation & then lower the weapon
@@ -181,22 +193,21 @@ namespace UnitSystem.ActionSystem.Actions
         protected void TryKnockbackTargetUnit(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, float damageAmount, bool attackBlocked)
         {
             // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
-            bool knockedBack = false;
-            if ((damageAmount > 0f || attackBlocked) && !targetUnit.Health.IsDead)
+            if ((damageAmount > 0f || attackBlocked) && !targetUnit.HealthSystem.IsDead)
             {
-                knockedBack = Unit.Stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
+                Unit.Stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
                 if (IsMeleeAttackAction())
-                    targetUnit.Health.OnHitByMeleeAttack();
+                    targetUnit.HealthSystem.OnHitByMeleeAttack();
             }
         }
 
-        public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, bool headShot)
+        public virtual void DamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith)
         {
             foreach (KeyValuePair<Unit, HeldItem> target in Unit.UnitActionHandler.TargetUnits)
             {
                 Unit targetUnit = target.Key;
                 HeldItem itemBlockedWith = target.Value;
-                DamageTarget(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, itemBlockedWith, headShot);
+                DamageTarget(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, itemBlockedWith, false, false);
             }
 
             if (heldWeaponAttackingWith != null)
@@ -205,15 +216,12 @@ namespace UnitSystem.ActionSystem.Actions
 
         public virtual IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith)
         {
-            // TODO: Come up with a headshot method
-            bool headShot = false;
-
             if (heldWeaponAttackingWith != null)
-                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.ItemData.Item as Weapon));
+                yield return new WaitForSeconds(AnimationTimes.Instance.DefaultWeaponAttackTime(heldWeaponAttackingWith.ItemData.Item as Item_Weapon));
             else
                 yield return new WaitForSeconds(AnimationTimes.Instance.UnarmedAttackTime() * 0.5f);
 
-            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith, headShot);
+            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith);
         }
 
         public virtual int UnarmedAttackDamage()
@@ -306,14 +314,12 @@ namespace UnitSystem.ActionSystem.Actions
                     // The targetUnit tries to dodge, and if they fail that, they try to block instead
                     if (targetUnits[i].UnitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false) == false)
                     {
-                        bool headShot = false;
-
                         // The targetUnit tries to block the attack and if they do, they face their attacker
                         if (targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false))
                             targetUnits[i].UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
 
                         // Damage this unit
-                        DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData, headShot);
+                        DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData);
                     }
                 }
 
@@ -507,7 +513,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (!LevelGrid.HasUnitAtGridPosition(attackGridPositions[i], out Unit unitAtGridPosition))
                     continue;
                 
-                if (unitAtGridPosition.Health.IsDead)
+                if (unitAtGridPosition.HealthSystem.IsDead)
                     continue;
 
                 if (Unit.Alliance.IsAlly(unitAtGridPosition))
@@ -525,7 +531,7 @@ namespace UnitSystem.ActionSystem.Actions
             return false;
         }
 
-        protected float ActionPointCostModifier_WeaponType(Weapon weapon)
+        protected float ActionPointCostModifier_WeaponType(Item_Weapon weapon)
         {
             if (weapon == null) // Unarmed
                 return 0.5f;

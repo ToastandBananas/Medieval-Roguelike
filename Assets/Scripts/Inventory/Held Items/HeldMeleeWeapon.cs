@@ -57,7 +57,7 @@ namespace InventorySystem
                 }
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
-                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Shield)
+                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Item_Shield)
                     oppositeHeldItem.Anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
             }
             else if (this == unit.UnitMeshManager.leftHeldItem)
@@ -68,7 +68,7 @@ namespace InventorySystem
                     Anim.CrossFadeInFixedTime("DefaultThrustAttack_1H_L", defaultAttackTransitionTime);
 
                 HeldItem oppositeHeldItem = GetOppositeHeldItem();
-                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Shield)
+                if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Item_Shield)
                     oppositeHeldItem.Anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_R", defaultAttackTransitionTime);
             }
 
@@ -191,7 +191,7 @@ namespace InventorySystem
 
         protected override float GetFumbleChance()
         {
-            MeleeWeapon weapon = ItemData.Item as MeleeWeapon;
+            Item_MeleeWeapon weapon = ItemData.Item as Item_MeleeWeapon;
 
             float fumbleChance = (0.5f - (unit.Stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
             fumbleChance += weapon.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier

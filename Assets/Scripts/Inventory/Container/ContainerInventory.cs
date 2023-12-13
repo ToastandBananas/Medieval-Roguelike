@@ -8,11 +8,11 @@ namespace InventorySystem
     [System.Serializable]
     public class ContainerInventory : Inventory
     {
-        [SerializeField] LooseItem looseItem;
+        [SerializeField] Interactable_LooseItem looseItem;
 
         public ContainerInventoryManager containerInventoryManager { get; private set; }
 
-        public ContainerInventory(Unit myUnit, LooseItem looseItem, ContainerInventoryManager containerInventoryManager)
+        public ContainerInventory(Unit myUnit, Interactable_LooseItem looseItem, ContainerInventoryManager containerInventoryManager)
         {
             this.myUnit = myUnit;
             this.looseItem = looseItem;
@@ -28,11 +28,11 @@ namespace InventorySystem
             else if (myUnit != null) 
             {
                 if (containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.BackpackEquipped())
-                    SetupInventoryLayoutFromItem((Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+                    SetupInventoryLayoutFromItem((Item_Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
                 else if (containerInventoryManager == myUnit.BeltInventoryManager && myUnit.UnitEquipment.BeltBagEquipped())
-                    SetupInventoryLayoutFromItem((Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
+                    SetupInventoryLayoutFromItem((Item_Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
                 else if (containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.QuiverEquipped())
-                    SetupInventoryLayoutFromItem((Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+                    SetupInventoryLayoutFromItem((Item_Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
             }
 
             if (slotCoordinates == null)
@@ -107,11 +107,11 @@ namespace InventorySystem
             if (containerInventoryManager.ParentInventory == this || containerInventoryManager.ParentInventory == null) // We only want to run this on the Parent Inventory
             {
                 InventoryLayout[] inventorySections = null;
-                if (item is Backpack)
+                if (item is Item_Backpack)
                     inventorySections = item.Backpack.InventorySections;
-                else if (item is Belt)
+                else if (item is Item_Belt)
                     inventorySections = item.Belt.InventorySections;
-                else if (item is Quiver)
+                else if (item is Item_Quiver)
                     inventorySections = item.Quiver.InventorySections;
 
                 if (inventorySections == null)
@@ -145,9 +145,9 @@ namespace InventorySystem
 
         public ContainerInventory[] SubInventories => containerInventoryManager.SubInventories;
 
-        public LooseItem LooseItem => looseItem;
+        public Interactable_LooseItem LooseItem => looseItem;
 
-        public void SetLooseItem(LooseItem newLooseItem) => looseItem = newLooseItem;
+        public void SetLooseItem(Interactable_LooseItem newLooseItem) => looseItem = newLooseItem;
 
         public void SetContainerInventoryManager(ContainerInventoryManager manager) => containerInventoryManager = manager;
     }

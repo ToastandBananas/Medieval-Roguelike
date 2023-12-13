@@ -117,7 +117,7 @@ namespace InventorySystem
                         if ((activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.RightHeldItem2) && (activeEquipmentSlot.InventoryItem.itemData == null || activeEquipmentSlot.InventoryItem.itemData.Item == null))
                         {
                             EquipmentSlot oppositeWeaponSlot = activeEquipmentSlot.GetOppositeWeaponSlot();
-                            if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item is Weapon && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                            if (oppositeWeaponSlot.InventoryItem.itemData.Item != null && oppositeWeaponSlot.InventoryItem.itemData.Item is Item_Weapon && oppositeWeaponSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                             {
                                 SetupDraggedItem(oppositeWeaponSlot.InventoryItem.itemData, oppositeWeaponSlot, oppositeWeaponSlot.InventoryItem.myUnitEquipment);
                                 oppositeWeaponSlot.InventoryItem.DisableIconImage();
@@ -129,7 +129,7 @@ namespace InventorySystem
                         {
                             SetupDraggedItem(activeEquipmentSlot.InventoryItem.itemData, activeSlot, activeSlot.InventoryItem.myUnitEquipment);
 
-                            if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item is Weapon && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                            if ((activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem1 || activeEquipmentSlot.EquipSlot == EquipSlot.LeftHeldItem2) && activeEquipmentSlot.InventoryItem.itemData.Item is Item_Weapon && activeEquipmentSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                                 activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem.DisableIconImage();
                         }
 
@@ -172,7 +172,7 @@ namespace InventorySystem
                         else if (activeSlot is EquipmentSlot)
                         {
                             // If drag/dropping an item onto an equipped backpack
-                            if ((draggedItem.itemData.Item is Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Back) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Back && UnitManager.player.UnitEquipment.BackpackEquipped())
+                            if ((draggedItem.itemData.Item is Item_Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Back) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Back && UnitManager.player.UnitEquipment.BackpackEquipped())
                             {
                                 if (UnitManager.player.BackpackInventoryManager.TryAddItem(draggedItem.itemData, UnitManager.player))
                                 {
@@ -182,7 +182,7 @@ namespace InventorySystem
                                 else
                                     ReplaceDraggedItem();
                             }
-                            else if ((draggedItem.itemData.Item is Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Belt) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                            else if ((draggedItem.itemData.Item is Item_Equipment == false || draggedItem.itemData.Item.Equipment.EquipSlot != EquipSlot.Belt) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt && UnitManager.player.UnitEquipment.BeltBagEquipped())
                             {
                                 if (UnitManager.player.BeltInventoryManager.TryAddItem(draggedItem.itemData, UnitManager.player))
                                 {
@@ -331,12 +331,12 @@ namespace InventorySystem
                     EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
                     parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
 
-                    if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item is Weapon && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                    if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item is Item_Weapon && parentEquipmentSlotDraggedFrom.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
                     {
                         EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
                         oppositeWeaponSlot.SetFullSlotSprite();
                     }
-                    else if (parentEquipmentSlotDraggedFrom.EquipSlot == EquipSlot.Quiver && Instance.draggedItem.itemData.Item is Quiver)
+                    else if (parentEquipmentSlotDraggedFrom.EquipSlot == EquipSlot.Quiver && Instance.draggedItem.itemData.Item is Item_Quiver)
                         parentEquipmentSlotDraggedFrom.InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                 }
 

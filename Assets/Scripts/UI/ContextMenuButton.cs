@@ -109,12 +109,12 @@ namespace GeneralUI
         {
             if (UnitManager.player.BackpackInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
-                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.TargetInteractable);
+                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
+                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
-            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
+            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
-                LooseItem looseItem = ContextMenu.TargetInteractable as LooseItem;
+                Interactable_LooseItem looseItem = ContextMenu.TargetInteractable as Interactable_LooseItem;
                 looseItem.JiggleItem();
             }
 
@@ -127,12 +127,12 @@ namespace GeneralUI
         {
             if (UnitManager.player.BeltInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
-                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.TargetInteractable);
+                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
+                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
-            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
+            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
-                LooseItem looseItem = ContextMenu.TargetInteractable as LooseItem;
+                Interactable_LooseItem looseItem = ContextMenu.TargetInteractable as Interactable_LooseItem;
                 looseItem.JiggleItem();
             }
 
@@ -155,7 +155,7 @@ namespace GeneralUI
 
         void TakeItem(ItemData itemData)
         {
-            if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
+            if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
                 UnitManager.player.UnitActionHandler.InteractAction.QueueAction(ContextMenu.TargetInteractable);
             }
@@ -171,8 +171,8 @@ namespace GeneralUI
             {
                 if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
                     InventoryUI.npcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
-                else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.TargetInteractable);
+                else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
+                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
 
             ContextMenu.DisableContextMenu();
@@ -180,7 +180,7 @@ namespace GeneralUI
 
         public void SetupUseItemButton(ItemData itemData, int amountToUse = 1)
         {
-            if (itemData.Item is Equipment)
+            if (itemData.Item is Item_Equipment)
             {
                 if (UnitManager.player.UnitEquipment.ItemDataEquipped(itemData))
                 {
@@ -197,9 +197,9 @@ namespace GeneralUI
                 }
                 else if (ContextMenu.TargetInteractable != null || (ContextMenu.TargetSlot != null && (ContextMenu.TargetSlot is EquipmentSlot == false || ContextMenu.TargetSlot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)))
                 {
-                    if (itemData.Item is Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Quiver)
+                    if (itemData.Item is Item_Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver)
                     {
-                        Quiver quiver = UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Quiver;
+                        Item_Quiver quiver = UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Item_Quiver;
                         if (quiver.AllowedProjectileType == itemData.Item.Ammunition.ProjectileType)
                             SetupButton("Add to Quiver", delegate { UseItem(itemData); });
                         else
@@ -213,9 +213,9 @@ namespace GeneralUI
             {
                 stringBuilder.Clear();
 
-                if (itemData.Item is Consumable)
+                if (itemData.Item is Item_Consumable)
                 {
-                    Consumable consumable = itemData.Item as Consumable;
+                    Item_Consumable consumable = itemData.Item as Item_Consumable;
 
                     if ((itemData.Item.MaxUses > 1 && amountToUse != itemData.RemainingUses) || (itemData.Item.MaxStackSize > 1 && amountToUse != itemData.CurrentStackSize))
                         stringBuilder.Append("    ");
@@ -281,14 +281,14 @@ namespace GeneralUI
 
         void UseItem(ItemData itemData, int amountToUse = 1)
         {
-            if (itemData.Item.Use(UnitManager.player, itemData, ContextMenu.TargetSlot != null ? ContextMenu.TargetSlot : null, ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseContainerItem ? ContextMenu.TargetInteractable as LooseContainerItem : null, amountToUse))
+            if (itemData.Item.Use(UnitManager.player, itemData, ContextMenu.TargetSlot != null ? ContextMenu.TargetSlot : null, ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseContainerItem ? ContextMenu.TargetInteractable as Interactable_LooseContainerItem : null, amountToUse))
             {
-                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
-                    LooseItemPool.ReturnToPool((LooseItem)ContextMenu.TargetInteractable);
+                if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
+                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
-            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is LooseItem)
+            else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
-                LooseItem looseItem = ContextMenu.TargetInteractable as LooseItem;
+                Interactable_LooseItem looseItem = ContextMenu.TargetInteractable as Interactable_LooseItem;
                 looseItem.JiggleItem();
             }
 
@@ -330,7 +330,7 @@ namespace GeneralUI
             }
             else if (ContextMenu.TargetInteractable != null)
             {
-                LooseContainerItem looseContainerItem = ContextMenu.TargetInteractable as LooseContainerItem;
+                Interactable_LooseContainerItem looseContainerItem = ContextMenu.TargetInteractable as Interactable_LooseContainerItem;
                 InventoryUI.GetContainerUI(looseContainerItem.ContainerInventoryManager).CloseContainerInventory();
             }
             else if (ContextMenu.TargetUnit != null)
@@ -358,7 +358,7 @@ namespace GeneralUI
                     EquipmentSlot targetEquipmentSlot = ContextMenu.TargetSlot as EquipmentSlot;
 
                     // If the slot owner is dead, then it just means the Player is trying to drop a dead Unit's equipment
-                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.Health.IsDead)
+                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.HealthSystem.IsDead)
                         UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
                     else
                         targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(ContextMenu.TargetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);

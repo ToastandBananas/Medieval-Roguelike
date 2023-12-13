@@ -367,7 +367,7 @@ namespace GridSystem
         public static bool GridPositionObstructed(GridPosition gridPosition)
         {
             GraphNode node = AstarPath.active.GetNearest(gridPosition.WorldPosition).node;
-            if (!IsValidGridPosition(gridPosition) || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && !unitAtGridPosition.Health.IsDead) || UnitManager.player.SingleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || !node.Walkable)
+            if (!IsValidGridPosition(gridPosition) || (HasUnitAtGridPosition(gridPosition, out Unit unitAtGridPosition) && !unitAtGridPosition.HealthSystem.IsDead) || UnitManager.player.SingleNodeBlocker.manager.NodeContainsAnyOf(node, unitSingleNodeBlockers) || !node.Walkable)
                 return true;
             return false;
         }

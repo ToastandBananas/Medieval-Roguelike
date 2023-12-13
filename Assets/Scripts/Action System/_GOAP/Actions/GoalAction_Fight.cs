@@ -106,7 +106,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 return;
 
             // If there's no target enemy Unit, try to find one, else switch States
-            if (npcActionHandler.TargetEnemyUnit == null || npcActionHandler.TargetEnemyUnit.Health.IsDead)
+            if (npcActionHandler.TargetEnemyUnit == null || npcActionHandler.TargetEnemyUnit.HealthSystem.IsDead)
             {
                 SetTargetEnemyUnit(null);
                 npcActionHandler.DetermineAction();
@@ -229,7 +229,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         void FindBestTargetEnemy()
         {
-            if (unit.Health.IsDead)
+            if (unit.HealthSystem.IsDead)
                 return;
 
             if (unit.Vision.knownEnemies.Count > 0)

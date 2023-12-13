@@ -19,9 +19,9 @@ namespace UnitSystem.ActionSystem.UI
             SetupIconSprite();
             ShowSlot();
 
-            if (itemData.Item is Equipment)
+            if (itemData.Item is Item_Equipment)
             {
-                if (itemData.Item is Ammunition)
+                if (itemData.Item is Item_Ammunition)
                 {
                     // We just need to assign any basic action, since the Player might not have a Reload Action at the time of assigning the item to a hotbar slot
                     ActionType = playerActionHandler.GetAction<Action_Inventory>().ActionType;
@@ -63,7 +63,7 @@ namespace UnitSystem.ActionSystem.UI
                     });
                 }
             }
-            else if (itemData.Item is Consumable)
+            else if (itemData.Item is Item_Consumable)
             {
                 ActionType = playerActionHandler.GetAction<Action_Consume>().ActionType;
                 Action = ActionType.GetAction(playerActionHandler.Unit);

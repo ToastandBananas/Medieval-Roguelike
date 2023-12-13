@@ -35,7 +35,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         void FindWeapon()
         {
-            bool weaponNearby = TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon);
+            bool weaponNearby = TryFindNearbyWeapon(out Interactable_LooseItem foundLooseWeapon, out float distanceToWeapon);
 
             // If a weapon was found and it's next to this Unit, pick it up (the weapon is likely there from fumbling it)
             if (weaponNearby && distanceToWeapon <= LevelGrid.diaganolDistance)
@@ -86,7 +86,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     }
                 }
                 // Else, swap to their ranged weapon set if they have ammo
-                else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as RangedWeapon))
+                else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as Item_RangedWeapon))
                 {
                     npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                     return;
@@ -110,9 +110,9 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 TurnManager.Instance.FinishTurn(unit);
         }
 
-        public bool TryFindNearbyWeapon(out LooseItem foundLooseWeapon, out float distanceToWeapon)
+        public bool TryFindNearbyWeapon(out Interactable_LooseItem foundLooseWeapon, out float distanceToWeapon)
         {
-            LooseItem closestLooseWeapon = unit.Vision.GetClosestWeapon(out float distanceToClosestWeapon);
+            Interactable_LooseItem closestLooseWeapon = unit.Vision.GetClosestWeapon(out float distanceToClosestWeapon);
             if (closestLooseWeapon == null)
             {
                 foundLooseWeapon = null;
@@ -120,7 +120,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 return false;
             }
 
-            if (closestLooseWeapon.ItemData.Item is RangedWeapon)
+            if (closestLooseWeapon.ItemData.Item is Item_RangedWeapon)
             {
                 if (unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon))
                 {
@@ -130,7 +130,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 }
                 else
                 {
-                    LooseItem closestLooseMeleeWeapon = unit.Vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
+                    Interactable_LooseItem closestLooseMeleeWeapon = unit.Vision.GetClosestMeleeWeapon(out float distanceToClosestMeleeWeapon);
                     if (closestLooseMeleeWeapon != null)
                     {
                         foundLooseWeapon = closestLooseMeleeWeapon;

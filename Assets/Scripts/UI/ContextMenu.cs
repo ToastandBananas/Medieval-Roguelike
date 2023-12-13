@@ -92,7 +92,7 @@ namespace GeneralUI
             TargetSlot = null;
             TargetInteractable = PlayerInput.Instance.HighlightedInteractable;
             TargetUnit = PlayerInput.Instance.HighlightedUnit;
-            if (TargetUnit != null && TargetUnit.Health.IsDead)
+            if (TargetUnit != null && TargetUnit.HealthSystem.IsDead)
                 TargetUnit.UnitInteractable.UpdateGridPosition();
 
             if (InventoryUI.activeSlot != null)
@@ -300,7 +300,7 @@ namespace GeneralUI
         {
             GridPosition targetGridPosition;
             if (TargetInteractable != null)
-                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(TargetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, TargetInteractable is LooseItem);
+                targetGridPosition = LevelGrid.GetNearestSurroundingGridPosition(TargetInteractable.GridPosition(), UnitManager.player.GridPosition, LevelGrid.diaganolDistance, TargetInteractable is Interactable_LooseItem);
             else
                 targetGridPosition = WorldMouse.CurrentGridPosition();
 
@@ -312,7 +312,7 @@ namespace GeneralUI
 
         static void CreateAttackButton()
         {
-            if (TargetUnit == null || TargetUnit.Health.IsDead || UnitManager.player.Vision.IsVisible(TargetUnit) == false
+            if (TargetUnit == null || TargetUnit.HealthSystem.IsDead || UnitManager.player.Vision.IsVisible(TargetUnit) == false
                 || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.Stats.CanFightUnarmed == false))
                 return;
 
@@ -325,7 +325,7 @@ namespace GeneralUI
 
         static void CreateAddToBagButtons()
         {
-            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is Interactable_LooseItem == false))
                 return;
 
             ItemData itemData = null;
@@ -336,12 +336,12 @@ namespace GeneralUI
 
                 itemData = TargetSlot.GetItemData();
             }
-            else if (TargetInteractable != null && TargetInteractable is LooseItem)
+            else if (TargetInteractable != null && TargetInteractable is Interactable_LooseItem)
             {
-                LooseItem targetLooseItem = TargetInteractable as LooseItem;
-                if (targetLooseItem is LooseContainerItem)
+                Interactable_LooseItem targetLooseItem = TargetInteractable as Interactable_LooseItem;
+                if (targetLooseItem is Interactable_LooseContainerItem)
                 {
-                    LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
+                    Interactable_LooseContainerItem looseContainerItem = targetLooseItem as Interactable_LooseContainerItem;
                     if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // We can't put a container inside an inventory if it has items inside of it
                         return;
                 }
@@ -374,7 +374,7 @@ namespace GeneralUI
 
         static void CreateTakeItemButton()
         {
-            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is Interactable_LooseItem == false))
                 return;
 
             ItemData itemData = null;
@@ -395,12 +395,12 @@ namespace GeneralUI
 
                 itemData = TargetSlot.GetItemData();
             }
-            else if (TargetInteractable != null && TargetInteractable is LooseItem)
+            else if (TargetInteractable != null && TargetInteractable is Interactable_LooseItem)
             {
-                LooseItem targetLooseItem = TargetInteractable as LooseItem;
-                if (targetLooseItem is LooseContainerItem)
+                Interactable_LooseItem targetLooseItem = TargetInteractable as Interactable_LooseItem;
+                if (targetLooseItem is Interactable_LooseContainerItem)
                 {
-                    LooseContainerItem looseContainerItem = targetLooseItem as LooseContainerItem;
+                    Interactable_LooseContainerItem looseContainerItem = targetLooseItem as Interactable_LooseContainerItem;
                     if (looseContainerItem.ContainerInventoryManager.ContainsAnyItems()) // We can't put containers with items inside of them into an inventory
                         return;
                 }
@@ -416,7 +416,7 @@ namespace GeneralUI
 
         static void CreateOpenContainerButton()
         {
-            if (TargetSlot != null && TargetSlot is ContainerEquipmentSlot && TargetSlot.IsFull() && TargetSlot.GetItemData().Item is WearableContainer)
+            if (TargetSlot != null && TargetSlot is ContainerEquipmentSlot && TargetSlot.IsFull() && TargetSlot.GetItemData().Item is Item_WearableContainer)
             {
                 ContainerEquipmentSlot containerEquipmentSlot = TargetSlot as ContainerEquipmentSlot;
                 if (containerEquipmentSlot.containerInventoryManager == null)
@@ -434,10 +434,10 @@ namespace GeneralUI
                     return;
                 }
             }
-            else if (TargetInteractable != null && TargetInteractable is LooseContainerItem)
+            else if (TargetInteractable != null && TargetInteractable is Interactable_LooseContainerItem)
             {
-                LooseContainerItem looseContainerItem = TargetInteractable as LooseContainerItem;
-                if (looseContainerItem.ItemData.Item is WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
+                Interactable_LooseContainerItem looseContainerItem = TargetInteractable as Interactable_LooseContainerItem;
+                if (looseContainerItem.ItemData.Item is Item_WearableContainer && looseContainerItem.ItemData.Item.WearableContainer.HasAnInventory() == false) // Some belts, for example, won't have an inventory, so don't create this button
                     return;
 
                 if (Vector3.Distance(TargetInteractable.GridPosition().WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
@@ -449,7 +449,7 @@ namespace GeneralUI
                     return;
                 }
             }
-            else if (TargetUnit != null && TargetUnit.Health.IsDead)
+            else if (TargetUnit != null && TargetUnit.HealthSystem.IsDead)
             {
                 if (Vector3.Distance(LevelGrid.GetGridPosition(TargetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
@@ -470,7 +470,7 @@ namespace GeneralUI
 
         static void CreateUseItemButtons()
         {
-            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is LooseItem == false))
+            if ((TargetSlot == null || !TargetSlot.IsFull()) && (TargetInteractable == null || TargetInteractable is Interactable_LooseItem == false))
                 return;
 
             ItemData itemData = null;
@@ -478,17 +478,17 @@ namespace GeneralUI
                 itemData = TargetSlot.GetItemData();
             else if (TargetInteractable != null)
             {
-                LooseItem looseItem = TargetInteractable as LooseItem;
+                Interactable_LooseItem looseItem = TargetInteractable as Interactable_LooseItem;
                 itemData = looseItem.ItemData;
 
-                if (itemData.Item is Equipment == false)
+                if (itemData.Item is Item_Equipment == false)
                     return;
             }
 
             if (itemData == null || itemData.Item == null || !itemData.Item.IsUsable)
                 return;
 
-            if (itemData.Item is Ammunition && UnitManager.player.QuiverInventoryManager.Contains(itemData))
+            if (itemData.Item is Item_Ammunition && UnitManager.player.QuiverInventoryManager.Contains(itemData))
                 return;
 
             if (itemData.Item.MaxUses > 1 && itemData.RemainingUses > 1)
@@ -509,7 +509,7 @@ namespace GeneralUI
 
                 GetContextMenuButton().SetupUseItemButton(itemData, 1); // Use 1
             }
-            else if (itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize > 1 && itemData.Item is Ammunition == false)
+            else if (itemData.Item.MaxStackSize > 1 && itemData.CurrentStackSize > 1 && itemData.Item is Item_Ammunition == false)
             {
                 GetContextMenuButton().SetupUseItemButton(itemData, itemData.CurrentStackSize); // Use all
 

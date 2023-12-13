@@ -14,14 +14,14 @@ namespace UnitSystem.ActionSystem.Actions
 
         public abstract HeldItemStance HeldItemStance();
 
-        protected void ApplyStanceStatModifiers(HeldEquipment heldEquipment)
+        protected void ApplyStanceStatModifiers(Item_HeldEquipment heldEquipment)
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)
                 stanceStatModifier.StatModifier.ApplyModifiers(Unit.Stats);
         }
 
-        protected void RemoveStanceStatModifiers(HeldEquipment heldEquipment)
+        protected void RemoveStanceStatModifiers(Item_HeldEquipment heldEquipment)
         {
             StanceStatModifier_ScriptableObject stanceStatModifier = heldEquipment.GetStanceStatModifier(HeldItemStance());
             if (stanceStatModifier != null)

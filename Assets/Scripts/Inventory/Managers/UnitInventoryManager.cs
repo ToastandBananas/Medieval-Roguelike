@@ -26,7 +26,7 @@ namespace InventorySystem
             if (itemData == null || itemData.Item == null)
                 return false;
 
-            if (itemData.Item is Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
+            if (itemData.Item is Item_Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
             {
                 if (unit.UnitEquipment.slotVisualsCreated)
                     unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
@@ -112,7 +112,7 @@ namespace InventorySystem
             bestWeaponItemData = null;
             for (int i = 0; i < mainInventory.ItemDatas.Count; i++)
             {
-                if (mainInventory.ItemDatas[i].Item is MeleeWeapon)
+                if (mainInventory.ItemDatas[i].Item is Item_MeleeWeapon)
                 {
                     if (bestWeaponItemData == null || mainInventory.ItemDatas[i].IsBetterThan(bestWeaponItemData))
                         bestWeaponItemData = mainInventory.ItemDatas[i];
@@ -123,7 +123,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
-                    if (backpackInventoryManager.ParentInventory.ItemDatas[i].Item is MeleeWeapon)
+                    if (backpackInventoryManager.ParentInventory.ItemDatas[i].Item is Item_MeleeWeapon)
                     {
                         if (bestWeaponItemData == null || backpackInventoryManager.ParentInventory.ItemDatas[i].IsBetterThan(bestWeaponItemData))
                             bestWeaponItemData = backpackInventoryManager.ParentInventory.ItemDatas[i];
@@ -134,7 +134,7 @@ namespace InventorySystem
                 {
                     for (int i = 0; i < backpackInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
                     {
-                        if (backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Item is MeleeWeapon)
+                        if (backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Item is Item_MeleeWeapon)
                         {
                             if (bestWeaponItemData == null || backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].IsBetterThan(bestWeaponItemData))
                                 bestWeaponItemData = backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i];
@@ -147,7 +147,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
-                    if (beltInventoryManager.ParentInventory.ItemDatas[i].Item is MeleeWeapon)
+                    if (beltInventoryManager.ParentInventory.ItemDatas[i].Item is Item_MeleeWeapon)
                     {
                         if (bestWeaponItemData == null || beltInventoryManager.ParentInventory.ItemDatas[i].IsBetterThan(bestWeaponItemData))
                             bestWeaponItemData = beltInventoryManager.ParentInventory.ItemDatas[i];
@@ -158,7 +158,7 @@ namespace InventorySystem
                 {
                     for (int i = 0; i < beltInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
                     {
-                        if (beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Item is MeleeWeapon)
+                        if (beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Item is Item_MeleeWeapon)
                         {
                             if (bestWeaponItemData == null || beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].IsBetterThan(bestWeaponItemData))
                                 bestWeaponItemData = beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i];

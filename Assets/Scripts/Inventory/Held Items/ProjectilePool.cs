@@ -11,8 +11,8 @@ namespace InventorySystem
         [SerializeField] int amountToPool = 40;
 
         [Header("Scriptable Objects")]
-        [SerializeField] Ammunition arrow;
-        [SerializeField] Ammunition bomb;
+        [SerializeField] Item_Ammunition arrow;
+        [SerializeField] Item_Ammunition bomb;
 
         List<Projectile> projectiles = new List<Projectile>();
 
@@ -60,8 +60,8 @@ namespace InventorySystem
             projectile.gameObject.SetActive(false);
         }
 
-        public Ammunition Arrow_SO() => arrow;
+        public Item_Ammunition Arrow_SO() => arrow;
 
-        public Ammunition Bomb_SO() => bomb;
+        public Item_Ammunition Bomb_SO() => bomb;
     }
 }

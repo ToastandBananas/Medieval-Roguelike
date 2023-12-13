@@ -82,13 +82,13 @@ namespace InventorySystem
 
         protected bool initialized;
 
-        public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, LooseItem looseItemUsing, int amountToUse = 1) => isUsable;
+        public virtual bool Use(Unit unit, ItemData itemData, Slot slotUsingFrom, Interactable_LooseItem looseItemUsing, int amountToUse = 1) => isUsable;
 
         public ItemChangeThreshold[] GetItemChangeThresholds()
         {
-            if (this is Ammunition)
+            if (this is Item_Ammunition)
                 return Ammunition.ItemChangeThresholds;
-            else if (this is Consumable)
+            else if (this is Item_Consumable)
                 return Consumable.ItemChangeThresholds;
             return null;
         }
@@ -117,44 +117,44 @@ namespace InventorySystem
             }
         }
 
-        public BasicItem BasicItem => this as BasicItem;
+        public Item_Basic BasicItem => this as Item_Basic;
 
-        public Backpack Backpack => this as Backpack;
+        public Item_Backpack Backpack => this as Item_Backpack;
 
-        public Consumable Consumable => this as Consumable;
+        public Item_Consumable Consumable => this as Item_Consumable;
 
-        public Equipment Equipment => this as Equipment;
+        public Item_Equipment Equipment => this as Item_Equipment;
 
-        public HeldEquipment HeldEquipment => this as HeldEquipment;
+        public Item_HeldEquipment HeldEquipment => this as Item_HeldEquipment;
 
-        public Ammunition Ammunition => this as Ammunition;
+        public Item_Ammunition Ammunition => this as Item_Ammunition;
 
-        public Shield Shield => this as Shield;
+        public Item_Shield Shield => this as Item_Shield;
 
-        public Weapon Weapon => this as Weapon;
+        public Item_Weapon Weapon => this as Item_Weapon;
 
-        public Armor Armor => this as Armor;
+        public Item_Armor Armor => this as Item_Armor;
 
-        public BodyArmor BodyArmor => this as BodyArmor;
+        public Item_BodyArmor BodyArmor => this as Item_BodyArmor;
 
-        public Boots Boots => this as Boots;
+        public Item_Boots Boots => this as Item_Boots;
 
-        public Shirt Shirt => this as Shirt;
+        public Item_Shirt Shirt => this as Item_Shirt;
 
-        public Helm Helm => this as Helm;
+        public Item_Helm Helm => this as Item_Helm;
 
-        public MeleeWeapon MeleeWeapon => this as MeleeWeapon;
+        public Item_MeleeWeapon MeleeWeapon => this as Item_MeleeWeapon;
 
-        public RangedWeapon RangedWeapon => this as RangedWeapon;
+        public Item_RangedWeapon RangedWeapon => this as Item_RangedWeapon;
 
-        public Wearable Wearable => this as Wearable;
+        public Item_Wearable Wearable => this as Item_Wearable;
 
-        public VisibleArmor VisibleArmor => this as VisibleArmor;
+        public Item_VisibleArmor VisibleArmor => this as Item_VisibleArmor;
 
-        public WearableContainer WearableContainer => this as WearableContainer;
+        public Item_WearableContainer WearableContainer => this as Item_WearableContainer;
 
-        public Quiver Quiver => this as Quiver;
+        public Item_Quiver Quiver => this as Item_Quiver;
 
-        public Belt Belt => this as Belt;
+        public Item_Belt Belt => this as Item_Belt;
     }
 }

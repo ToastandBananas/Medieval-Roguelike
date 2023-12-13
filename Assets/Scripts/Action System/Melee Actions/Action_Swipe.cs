@@ -173,10 +173,10 @@ namespace UnitSystem.ActionSystem.Actions
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {
             float finalActionValue = 0f;
-            if (IsValidAction() && targetUnit != null && targetUnit.Health.IsDead == false)
+            if (IsValidAction() && targetUnit != null && targetUnit.HealthSystem.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.Health.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.HealthSystem.CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
 
                 if (distance < MinAttackRange())
@@ -214,7 +214,7 @@ namespace UnitSystem.ActionSystem.Actions
                     continue;
 
                 // Skip this unit if they're dead
-                if (unitAtGridPosition.Health.IsDead)
+                if (unitAtGridPosition.HealthSystem.IsDead)
                     continue;
 
                 if (Unit.Alliance.IsEnemy(unitAtGridPosition))
@@ -223,7 +223,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue += 50f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 50f - (unitAtGridPosition.Health.CurrentHealthNormalized * 50f);
+                    finalActionValue += 50f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 50f);
                 }
                 else if (Unit.Alliance.IsAlly(unitAtGridPosition))
                 {
@@ -231,7 +231,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue -= 100f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 100f - (unitAtGridPosition.Health.CurrentHealthNormalized * 100f);
+                    finalActionValue -= 100f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 100f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
@@ -243,7 +243,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue -= 25f;
 
                     // Lower neutral unit health gives this action less value
-                    finalActionValue -= 25f - (unitAtGridPosition.Health.CurrentHealthNormalized * 25f);
+                    finalActionValue -= 25f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 25f);
 
                     // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
                     if (unitAtGridPosition.IsPlayer)
@@ -263,12 +263,8 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override IEnumerator WaitToDamageTargets(HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith)
         {
-            // TODO: Come up with a headshot method
-            bool headShot = false;
-
             yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
-
-            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith, headShot);
+            DamageTargets(heldWeaponAttackingWith, itemDataHittingWith);
         }
 
         public override void CompleteAction()

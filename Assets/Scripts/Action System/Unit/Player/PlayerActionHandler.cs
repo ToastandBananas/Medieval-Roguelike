@@ -44,7 +44,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (Unit.IsMyTurn && !Unit.Health.IsDead)
+            if (Unit.IsMyTurn && !Unit.HealthSystem.IsDead)
             {
                 Unit.Vision.FindVisibleUnitsAndObjects();
 
@@ -89,7 +89,7 @@ namespace UnitSystem.ActionSystem
                     else if (TargetEnemyUnit != null)
                     {
                         // If the target enemy is dead, cancel the action
-                        if (TargetEnemyUnit.Health.IsDead)
+                        if (TargetEnemyUnit.HealthSystem.IsDead)
                         {
                             CancelActions();
                             return;
@@ -152,7 +152,7 @@ namespace UnitSystem.ActionSystem
 
         public override IEnumerator GetNextQueuedAction()
         {
-            if (Unit.Health.IsDead)
+            if (Unit.HealthSystem.IsDead)
             {
                 ClearActionQueue(true, true);
                 GridSystemVisual.HideGridVisual();

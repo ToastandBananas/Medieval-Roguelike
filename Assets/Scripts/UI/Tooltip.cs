@@ -38,10 +38,10 @@ namespace GeneralUI
 
             // Name
             stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}</size></b></align>\n");
-            if (itemData.Item is Weapon)
+            if (itemData.Item is Item_Weapon)
             {
                 stringBuilder.Append("<align=center><i><size=18>");
-                if (itemData.Item is MeleeWeapon)
+                if (itemData.Item is Item_MeleeWeapon)
                 {
                     if (itemData.Item.MeleeWeapon.IsTwoHanded)
                         stringBuilder.Append("Two-Handed ");
@@ -74,7 +74,7 @@ namespace GeneralUI
                     stringBuilder.Append($"\n  Throwing Damage: +{itemData.ThrowingDamageMultiplier * 100f}%");
             }
 
-            if (itemData.Item is Weapon)
+            if (itemData.Item is Item_Weapon)
             {
                 stringBuilder.Append($"\n  Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
 
@@ -95,7 +95,7 @@ namespace GeneralUI
                 }
                 stringBuilder.Append("\n");
             }
-            else if (itemData.Item is Shield)
+            else if (itemData.Item is Item_Shield)
             {
                 if (itemData.BlockPower < 0)
                     stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
@@ -113,13 +113,13 @@ namespace GeneralUI
                 stringBuilder.Append($"\n  Bash Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
                 stringBuilder.Append("\n");
             }
-            else if (itemData.Item is Armor)
+            else if (itemData.Item is Item_Armor)
             {
                 if (itemData.Defense != 0)
                     stringBuilder.Append($"\n  Armor: {itemData.Defense}");
                 stringBuilder.Append("\n");
             }
-            else if (itemData.Item is Backpack)
+            else if (itemData.Item is Item_Backpack)
             {
                 if (itemData.Item.Backpack.InventorySections.Length > 1)
                 {
@@ -127,15 +127,15 @@ namespace GeneralUI
                     stringBuilder.Append("\n");
                 }
             }
-            else if (itemData.Item is Quiver)
+            else if (itemData.Item is Item_Quiver)
             {
                 stringBuilder.Append($"\n  <i>+{itemData.Item.Quiver.InventorySections[0].AmountOfSlots} {StringUtilities.EnumToSpacedString(itemData.Item.Quiver.InventorySections[0].AllowedItemTypes[0])} slots</i>");
                 stringBuilder.Append("\n");
             }
-            else if (itemData.Item is Belt)
+            else if (itemData.Item is Item_Belt)
             {
                 // Added Belt Attachments
-                Belt belt = itemData.Item as Belt;
+                Item_Belt belt = itemData.Item as Item_Belt;
                 if (belt.BeltPouchNames.Length > 0)
                 {
                     for (int i = 0; i < belt.BeltPouchNames.Length; i++)
@@ -184,7 +184,7 @@ namespace GeneralUI
             CalculatePosition(actionBarSlot);
         }
 
-        public void ShowLooseItemTooltip(LooseItem looseItem, ItemData looseItemData, bool clickable)
+        public void ShowLooseItemTooltip(Interactable_LooseItem looseItem, ItemData looseItemData, bool clickable)
         {
             if (looseItem == null || looseItemData == null || looseItemData.Item == null)
                 ClearTooltip();
@@ -220,7 +220,7 @@ namespace GeneralUI
         {
             if (selectedAction is Action_BaseAttack)
             {
-                if (targetUnit.Health.IsDead)
+                if (targetUnit.HealthSystem.IsDead)
                     return;
 
                 float hitChance = UnitManager.player.Stats.HitChance(targetUnit, selectedAction as Action_BaseAttack) * 100f;
@@ -252,7 +252,7 @@ namespace GeneralUI
             gameObject.SetActive(false);
         }
 
-        void InteractWithLooseItem_OnClick(LooseItem looseItem) => UnitManager.player.UnitActionHandler.InteractAction.QueueAction(looseItem);
+        void InteractWithLooseItem_OnClick(Interactable_LooseItem looseItem) => UnitManager.player.UnitActionHandler.InteractAction.QueueAction(looseItem);
 
         void CalculatePosition(Slot slot)
         {

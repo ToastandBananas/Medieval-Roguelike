@@ -84,7 +84,7 @@ namespace UnitSystem.ActionSystem
 
         public override void TakeTurn()
         {
-            if (Unit.IsMyTurn && !Unit.Health.IsDead)
+            if (Unit.IsMyTurn && !Unit.HealthSystem.IsDead)
             {
                 Unit.Vision.FindVisibleUnitsAndObjects();
 
@@ -128,7 +128,7 @@ namespace UnitSystem.ActionSystem
                 }
                 else if (Unit.StateController.CurrentState == GoalState.Fight && QueuedActions.Count > 0 && QueuedActions[0] == MoveAction && TargetEnemyUnit != null)
                 {
-                    if (TargetEnemyUnit.Health.IsDead)
+                    if (TargetEnemyUnit.HealthSystem.IsDead)
                     {
                         CancelActions();
                         TurnManager.Instance.FinishTurn(Unit);
@@ -222,7 +222,7 @@ namespace UnitSystem.ActionSystem
             {
                 int APRemainder = Unit.Stats.UseAPAndGetRemainder(QueuedAPs[0]);
                 LastQueuedAction = QueuedActions[0];
-                if (Unit.Health.IsDead)
+                if (Unit.HealthSystem.IsDead)
                 {
                     ClearActionQueue(true, true);
                     yield break;
@@ -268,7 +268,7 @@ namespace UnitSystem.ActionSystem
 
         public void DetermineAction()
         {
-            if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.Health.IsDead)
+            if (Unit.UnitActionHandler.TargetEnemyUnit != null && Unit.UnitActionHandler.TargetEnemyUnit.HealthSystem.IsDead)
                 Unit.UnitActionHandler.SetTargetEnemyUnit(null);
 
             goalPlanner.DetermineGoal();
