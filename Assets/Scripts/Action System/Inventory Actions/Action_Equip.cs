@@ -55,7 +55,7 @@ namespace UnitSystem.ActionSystem.Actions
             EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
             if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
-                if (Unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                if (Unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (targetEquipSlot == EquipSlot.LeftHeldItem2)
                         targetEquipSlot = EquipSlot.LeftHeldItem1;

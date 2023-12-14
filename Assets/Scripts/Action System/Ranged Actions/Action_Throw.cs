@@ -8,7 +8,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 
 namespace UnitSystem.ActionSystem.Actions
 {
-    public class Action_Throw : Action_BaseAttack
+    public class Action_Throw : Action_BaseRangedAttack
     {
         public ItemData ItemDataToThrow { get; private set; }
         public List<ItemData> Throwables { get; private set; }
@@ -134,7 +134,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (TargetEnemyUnit != null && !Unit.UnitActionHandler.TurnAction.IsFacingTarget(TargetEnemyUnit.GridPosition))
                     Unit.UnitActionHandler.TurnAction.RotateTowards_Unit(TargetEnemyUnit, true);
 
-                bool hitTarget = TryHitTarget(ItemDataToThrow, TargetGridPosition);
+                bool hitTarget = TryHitTarget(TargetGridPosition);
 
                 bool attackBlocked = false;
                 if (TargetEnemyUnit != null)
@@ -157,31 +157,21 @@ namespace UnitSystem.ActionSystem.Actions
             TurnManager.Instance.StartNextUnitsTurn(Unit); // This must remain outside of CompleteAction in case we need to call CompleteAction early within MoveToTargetInstead
         }
 
-        public override void DamageTarget(Unit targetUnit, HeldItem heldWeaponAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot, bool headshotPredetermined)
+        protected override float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
         {
-            if (targetUnit == null || targetUnit.HealthSystem.IsDead || itemDataHittingWith == null)
-                return;
-
-            targetUnit.UnitActionHandler.InterruptActions();
-
-            float damage = GetBaseDamage(itemDataHittingWith);
-            damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
-            damage = DealDamageToTarget(targetUnit, GetBodyPartHit(targetUnit, headShot, headshotPredetermined), itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
-            TryKnockbackTargetUnit(targetUnit, null, itemDataHittingWith, damage, attackBlocked);
-        }
-
-        protected override float GetBaseDamage(ItemData itemDataHittingWith)
-        {
+            float damage;
             if (itemDataHittingWith.Item is Item_MeleeWeapon)
-                return itemDataHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
+                damage = itemDataHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
             else
-                return itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
+                damage = itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
+            damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
+            return damage;
         }
 
-        public bool TryHitTarget(ItemData itemDataToThrow, GridPosition targetGridPosition)
+        public override bool TryHitTarget(GridPosition targetGridPosition)
         {
             float random = Random.Range(0f, 1f);
-            float rangedAccuracy = Unit.Stats.ThrowingAccuracy(itemDataToThrow, targetGridPosition, this);
+            float rangedAccuracy = Unit.Stats.ThrowingAccuracy(ItemDataToThrow, targetGridPosition, this);
             if (random <= rangedAccuracy)
                 return true;
             return false;

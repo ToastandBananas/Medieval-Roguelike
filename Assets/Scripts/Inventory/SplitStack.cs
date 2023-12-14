@@ -99,9 +99,9 @@ namespace InventorySystem
                 if (myInventory.TryAddItem(newItemData, null, false) == false)
                     InventoryUI.SetupDraggedItem(newItemData, null, (Inventory)null);
 
-                if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                if (myInventory is ContainerInventory && myInventory.ContainerInventory.LooseItem != null && myInventory.ContainerInventory.LooseItem is Interactable_LooseQuiverItem)
                     myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
-                else if (myInventory.MyUnit.UnitEquipment.slotVisualsCreated && myInventory is ContainerInventory && myInventory.ContainerInventory.containerInventoryManager == myInventory.MyUnit.QuiverInventoryManager)
+                else if (myInventory.MyUnit.UnitEquipment.SlotVisualsCreated && myInventory is ContainerInventory && myInventory.ContainerInventory.containerInventoryManager == myInventory.MyUnit.QuiverInventoryManager)
                     myInventory.MyUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
             }
             else

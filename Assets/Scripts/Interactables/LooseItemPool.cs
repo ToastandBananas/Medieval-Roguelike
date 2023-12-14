@@ -40,7 +40,7 @@ namespace InteractableObjects
 
             foreach (Interactable_LooseItem looseItem in FindObjectsOfType<Interactable_LooseItem>())
             {
-                if (looseItem is LooseQuiverItem)
+                if (looseItem is Interactable_LooseQuiverItem)
                 {
                     looseQuivers.Add(looseItem);
                     looseItem.transform.SetParent(looseQuiverItemParent);
@@ -135,9 +135,9 @@ namespace InteractableObjects
 
         public static void ReturnToPool(Interactable_LooseItem looseItem)
         {
-            if (looseItem is LooseQuiverItem)
+            if (looseItem is Interactable_LooseQuiverItem)
             {
-                LooseQuiverItem looseQuiver = (LooseQuiverItem)looseItem;
+                Interactable_LooseQuiverItem looseQuiver = (Interactable_LooseQuiverItem)looseItem;
                 if (looseQuiver.ContainerInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(looseQuiver.ContainerInventoryManager).CloseContainerInventory();
 

@@ -26,14 +26,6 @@ namespace InventorySystem
         [SerializeField] Mesh insideLooseQuiverMesh;
         [SerializeField] Material insideLooseQuiverMaterial;
 
-        [Header("Collider Info")]
-        [SerializeField] Vector3 capsuleColliderCenter;
-        [SerializeField] float capsuleColliderRadius;
-        [SerializeField] float capsuleColliderHeight;
-
-        [Tooltip("0: X-Axis, 1: Y-Axis, 2: Z-axis")]
-        [SerializeField][Range(0, 2)] int capsuleColliderDirection;
-
         [Header("Projectile Info")]
         [SerializeField] ProjectileType projectileType;
         [SerializeField] ProjectileAnimationType projectileAnimationType;
@@ -58,6 +50,7 @@ namespace InventorySystem
             if (initialized == false)
             {
                 equipSlot = EquipSlot.Quiver;
+                itemSize = ItemSize.Medium;
                 initialized = true;
             }
         }
@@ -67,11 +60,6 @@ namespace InventorySystem
 
         public Mesh InsideLooseQuiverMesh => insideLooseQuiverMesh;
         public Material InsideLooseQuiverMaterial => insideLooseQuiverMaterial;
-
-        public Vector3 CapsuleColliderCenter => capsuleColliderCenter;
-        public float CapsuleColliderRadius => capsuleColliderRadius;
-        public float CapsuleColliderHeight => capsuleColliderHeight;
-        public int CapsuleColliderDirection => capsuleColliderDirection;
 
         public ProjectileType ProjectileType => projectileType;
         public ProjectileAnimationType ProjectileAnimationType => projectileAnimationType;

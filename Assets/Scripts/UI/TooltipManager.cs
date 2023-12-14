@@ -142,7 +142,7 @@ namespace GeneralUI
                 EquipSlot equipSlot = slot.GetItemData().Item.Equipment.EquipSlot;
                 if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 {
-                    if (UnitManager.player.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                    if (UnitManager.player.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                     {
                         if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                             GetInventoryTooltip().ShowInventoryTooltip(UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1));

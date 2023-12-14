@@ -30,6 +30,7 @@ namespace InventorySystem
 
         Unit shooter, targetUnit;
         Action_BaseAttack attackActionUsed;
+        HeldRangedWeapon heldRangedWeaponUsed;
 
         Vector3 targetPosition, movementDirection;
 
@@ -44,9 +45,6 @@ namespace InventorySystem
         {
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
-
-            itemData.RandomizeData();
-            itemData.SetCurrentStackSize(1);
         }
 
         public void SetupAmmunition(ItemData itemData, Unit shooter, Transform parentTransform)
@@ -146,7 +144,7 @@ namespace InventorySystem
 
         public void AddDelegate(Action delegateAction) => onProjectileBehaviourComplete += delegateAction;
 
-        public void ShootProjectileAtTarget(Unit targetUnit, Action_BaseAttack attackActionUsed, bool hitTarget, bool beingThrown)
+        public void ShootProjectileAtTarget(Unit targetUnit, HeldRangedWeapon heldRangedWeaponUsed, Action_BaseAttack attackActionUsed, bool hitTarget, bool beingThrown)
         {
             if (itemData == null || itemData.Item == null)
             {
@@ -157,6 +155,7 @@ namespace InventorySystem
 
             this.targetUnit = targetUnit;
             this.attackActionUsed = attackActionUsed;
+            this.heldRangedWeaponUsed = heldRangedWeaponUsed;
             if (targetUnit == null && LevelGrid.HasUnitAtGridPosition(attackActionUsed.TargetGridPosition, out Unit unitAtGridPosition))
                 this.targetUnit = unitAtGridPosition;
 
@@ -410,7 +409,8 @@ namespace InventorySystem
                             shooter.Vision.BecomeVisibleUnitOfTarget(targetUnit, true);
 
                             // TODO: Less damage the further away from explosion
-                            targetUnit.HealthSystem.TakeDamage(30, shooter);
+                            int damage = 30;
+                            targetUnit.HealthSystem.DamageAllBodyParts(damage, damage / 4, damage / 3, damage / 2, shooter);
                         }
                     }
                 }
@@ -520,6 +520,7 @@ namespace InventorySystem
             ShouldMoveProjectile = false;
             shooter = null;
             attackActionUsed = null;
+            heldRangedWeaponUsed = null;
             targetUnit = null;
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
@@ -529,42 +530,41 @@ namespace InventorySystem
 
         void OnTriggerEnter(Collider collider)
         {
-            if (collider.isTrigger == false)
+            if (!collider.isTrigger)
             {
                 // Debug.Log("Projectile stuck in: " + collider.gameObject.name);
                 if (collider.CompareTag("Unit Body"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
-                    if (targetUnit != shooter)
-                    {
-                        HeldRangedWeapon heldRangedWeapon = shooter.UnitMeshManager.GetHeldRangedWeapon();
-                        attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, false, true);
-                        Arrived(collider, collider.transform, false);
-                    }
+                    if (targetUnit == shooter)
+                        return;
+                    
+                    attackActionUsed.DamageBodyPart(targetUnit, targetUnit.HealthSystem.GetBodyPart(UnitSystem.BodyPartType.Torso), heldRangedWeaponUsed, itemData, null);
+                    Arrived(collider, collider.transform, false);
+                    
                 }
                 else if (collider.CompareTag("Unit Head"))
                 {
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
-                    if (targetUnit != shooter)
-                    {
-                        HeldRangedWeapon heldRangedWeapon = shooter.UnitMeshManager.GetHeldRangedWeapon();
-                        attackActionUsed.DamageTarget(targetUnit, heldRangedWeapon, itemData, null, true, true);
-                        Arrived(collider, collider.transform, false);
-                    }
+                    if (targetUnit == shooter)
+                        return;
+                    
+                    attackActionUsed.DamageBodyPart(targetUnit, targetUnit.HealthSystem.GetBodyPart(UnitSystem.BodyPartType.Head), heldRangedWeaponUsed, itemData, null);
+                    Arrived(collider, collider.transform, false);
+                    
                 }
                 else if (collider.CompareTag("Shield"))
                 {
                     HeldShield heldShield = collider.GetComponent<HeldShield>();
-                    if (heldShield != shooter.UnitMeshManager.leftHeldItem && heldShield != shooter.UnitMeshManager.rightHeldItem)
-                    {
-                        HeldRangedWeapon heldRangedWeapon = shooter.UnitMeshManager.GetHeldRangedWeapon();
+                    if (heldShield == shooter.UnitMeshManager.leftHeldItem || heldShield == shooter.UnitMeshManager.rightHeldItem)
+                        return;
 
-                        // DamageTarget will take into account whether the Unit blocked or not
-                        attackActionUsed.DamageTarget(collider.GetComponentInParent<Unit>(), heldRangedWeapon, itemData, heldShield, false, true);
-                        Arrived(collider, collider.transform, false);
-                    }
+                    Unit targetUnit = collider.GetComponentInParent<Unit>();
+                    attackActionUsed.DamageBodyPart(targetUnit, targetUnit.HealthSystem.GetBodyPart(UnitSystem.BodyPartType.Torso), heldRangedWeaponUsed, itemData, heldShield);
+                    Arrived(collider, collider.transform, false);
+                    
                 }
-                else if (collider.CompareTag("Loose Item") == false)
+                else if (!collider.CompareTag("Loose Item"))
                     Arrived(collider, null, false);
             }
         }

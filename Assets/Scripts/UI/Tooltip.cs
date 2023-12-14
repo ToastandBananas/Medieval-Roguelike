@@ -53,7 +53,7 @@ namespace GeneralUI
             }
 
             // If Equipped
-            if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.slots.Contains((EquipmentSlot)slot)))
+            if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.Slots.Contains((EquipmentSlot)slot)))
                 stringBuilder.Append("<align=center><i><b><size=18>- Equipped -</size></b></i></align>\n\n");
             else
                 stringBuilder.Append("\n");
@@ -317,7 +317,7 @@ namespace GeneralUI
                 EquipmentSlot equipmentSlot = null;
                 if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 {
-                    if (UnitManager.player.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                    if (UnitManager.player.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                     {
                         if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                             equipmentSlot = UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1);
@@ -354,7 +354,7 @@ namespace GeneralUI
             else // Second weapon tooltip (always right hand weapon)
             {
                 EquipmentSlot equipmentSlot = null;
-                if (UnitManager.player.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                if (UnitManager.player.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
                         equipmentSlot = UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1);

@@ -27,6 +27,13 @@ namespace UnitSystem
         int currentHealth;
         readonly IntStat maxHealth = new();
 
+        public void InitializeHealth(HealthSystem healthSystem)
+        {
+            HealthSystem = healthSystem;
+            SetBaseMaxHealth();
+            currentHealth = maxHealth.GetValue();
+        }
+
         public void TakeDamage(int damageAmount, Unit attacker)
         {
             if (damageAmount <= 0)
@@ -62,8 +69,8 @@ namespace UnitSystem
             if (currentHealth > maxHealth.GetValue())
                 currentHealth = maxHealth.GetValue();
 
-            if (startHealth <= 0 && bodyPartType == BodyPartType.Leg)
-                HealthSystem.AdjustMobilityPercent(1f / HealthSystem.LegCount());
+            if (startHealth <= 0 && currentHealth > 0)
+                OnEnabled();
         }
 
         void OnDisabled(Unit attacker)
@@ -96,6 +103,26 @@ namespace UnitSystem
             }
         }
 
+        void OnEnabled()
+        {
+            switch (bodyPartType)
+            {
+                case BodyPartType.Head:
+                    HealthSystem.Resurrect();
+                    break;
+                case BodyPartType.Torso:
+                    HealthSystem.Resurrect();
+                    break;
+                case BodyPartType.Arm:
+                    break;
+                case BodyPartType.Leg:
+                    HealthSystem.AdjustMobilityPercent(1f / HealthSystem.LegCount());
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public bool IsDisabled => currentHealth <= 0;
 
         public void SetBaseMaxHealth()
@@ -105,8 +132,6 @@ namespace UnitSystem
             currentHealth = Mathf.RoundToInt(maxHealth.GetValue() * normalizedHealth);
         }
 
-        public void AssignHealthSystem(HealthSystem health) => HealthSystem = health;
-
         public BodyPartIndex BodyPartIndex => bodyPartIndex;
         public BodyPartSide BodyPartSide => bodyPartSide;
         public BodyPartType BodyPartType => bodyPartType;
@@ -115,6 +140,8 @@ namespace UnitSystem
         public float CurrentHealthNormalized => (float)currentHealth / maxHealth.GetValue();
 
         public int HitChanceWeight => hitChanceWeight;
+
+        public IntStat MaxHealth => maxHealth;
 
         public string Name()
         {

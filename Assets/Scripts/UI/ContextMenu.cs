@@ -290,7 +290,7 @@ namespace GeneralUI
 
         static void CreateThrowItemButton()
         {
-            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && !TargetSlot.EquipmentSlot.IsHeldItemSlot()))
+            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && (!TargetSlot.EquipmentSlot.IsHeldItemSlot() || TargetSlot.GetItemData().Item is Item_MeleeWeapon == false)))
                 return;
 
             GetContextMenuButton().SetupThrowItemButton();
@@ -454,7 +454,7 @@ namespace GeneralUI
                 if (Vector3.Distance(LevelGrid.GetGridPosition(TargetUnit.transform.position).WorldPosition, UnitManager.player.WorldPosition) > LevelGrid.diaganolDistance)
                     return;
 
-                if (TargetUnit.UnitEquipment.slotVisualsCreated)
+                if (TargetUnit.UnitEquipment.SlotVisualsCreated)
                 {
                     CreateCloseContainerButton();
                     return;

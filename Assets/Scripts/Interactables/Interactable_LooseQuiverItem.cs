@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace InteractableObjects
 {
-    public class LooseQuiverItem : Interactable_LooseContainerItem
+    public class Interactable_LooseQuiverItem : Interactable_LooseContainerItem
     {
         [Header("Arrow Meshes")]
         [SerializeField] MeshFilter[] arrowMeshFilters;

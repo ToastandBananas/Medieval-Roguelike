@@ -23,14 +23,13 @@ namespace InventorySystem
         public bool HasBeenInitialized { get; protected set; }
 
         protected List<InventorySlot> slots;
-        protected List<SlotCoordinate> slotCoordinates;
+        protected List<SlotCoordinate> slotCoordinates = new();
 
         protected Transform slotsParent;
 
         public virtual void Initialize()
         {
-            if (slotCoordinates == null)
-                slotCoordinates = new List<SlotCoordinate>();
+            slotCoordinates ??= new();
 
             CreateSlotCoordinates();
             SetSlotsList();
@@ -400,10 +399,10 @@ namespace InventorySystem
                     if (InventoryUI.DraggedItem.myInventory is ContainerInventory)
                     {
                         // If we drag arrows out of a Loose Quiver
-                        if (InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem != null && InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                        if (InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem != null && InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem is Interactable_LooseQuiverItem)
                             InventoryUI.DraggedItem.myInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                         // If we drag arrows out of a Unit's equipped Quiver
-                        else if (InventoryUI.DraggedItem.myInventory.myUnit != null && InventoryUI.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.DraggedItem.myInventory.myUnit.QuiverInventoryManager && InventoryUI.DraggedItem.myInventory.MyUnit.UnitEquipment.slotVisualsCreated)
+                        else if (InventoryUI.DraggedItem.myInventory.myUnit != null && InventoryUI.DraggedItem.myInventory.ContainerInventory.containerInventoryManager == InventoryUI.DraggedItem.myInventory.myUnit.QuiverInventoryManager && InventoryUI.DraggedItem.myInventory.MyUnit.UnitEquipment.SlotVisualsCreated)
                             InventoryUI.DraggedItem.myInventory.MyUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                     }
                 }
@@ -467,10 +466,10 @@ namespace InventorySystem
             if (this is ContainerInventory)
             {
                 // If arrows are being removed from a Loose Quiver
-                if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is LooseQuiverItem)
+                if (ContainerInventory.LooseItem != null && ContainerInventory.LooseItem is Interactable_LooseQuiverItem)
                     ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
                 // If arrows are being removed from an equipped Quiver
-                else if (myUnit != null && ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.slotVisualsCreated)
+                else if (myUnit != null && ContainerInventory.containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.SlotVisualsCreated)
                     myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
             }
         }
@@ -685,11 +684,14 @@ namespace InventorySystem
             for (int i = itemDatas.Count - 1; i >= 0; i--)
             {
                 if (itemDatas[i].Item == null)
+                {
+                    itemDatas.Remove(itemDatas[i]);
                     continue;
+                }
 
                 itemDatas[i].RandomizeData();
 
-                if (TryAddItem(itemDatas[i], null, false) == false)
+                if (!TryAddItem(itemDatas[i], null, false))
                 {
                     Debug.LogWarning($"{itemDatas[i].Item.name} can't fit in inventory...");
                     itemDatas.Remove(itemDatas[i]);

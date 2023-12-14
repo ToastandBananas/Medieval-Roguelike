@@ -14,6 +14,9 @@ namespace UnitSystem.ActionSystem.Actions
     {
         readonly int baseAPCost = 300;
 
+        readonly BodyPartType[] adjustedHitChance_BodyPartTypes = { BodyPartType.Leg };
+        readonly float[] adjustedHitChance_Weights = { 2f };
+
         public override int ActionPointsCost()
         {
             float cost;
@@ -176,7 +179,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (IsValidAction() && targetUnit != null && targetUnit.HealthSystem.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.HealthSystem.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
 
                 if (distance < MinAttackRange())
@@ -223,7 +226,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue += 50f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 50f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 50f);
+                    finalActionValue += 50f - (unitAtGridPosition.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 50f);
                 }
                 else if (Unit.Alliance.IsAlly(unitAtGridPosition))
                 {
@@ -231,7 +234,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue -= 100f;
 
                     // Lower ally health gives this action less value
-                    finalActionValue -= 100f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 100f);
+                    finalActionValue -= 100f - (unitAtGridPosition.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 100f);
 
                     // Provide some padding in case the ally is the Player (we don't want their allied followers hitting them)
                     if (unitAtGridPosition.IsPlayer)
@@ -243,7 +246,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue -= 25f;
 
                     // Lower neutral unit health gives this action less value
-                    finalActionValue -= 25f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 25f);
+                    finalActionValue -= 25f - (unitAtGridPosition.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 25f);
 
                     // Provide some padding in case the neutral unit is the Player (we don't want neutral units to hit the Player unless it's a very desireable position to attack)
                     if (unitAtGridPosition.IsPlayer)
@@ -266,6 +269,10 @@ namespace UnitSystem.ActionSystem.Actions
             yield return new WaitForSeconds(AnimationTimes.Instance.SwipeAttackTime());
             DamageTargets(heldWeaponAttackingWith, itemDataHittingWith);
         }
+
+        public override BodyPartType[] AdjustedHitChance_BodyPartTypes => adjustedHitChance_BodyPartTypes;
+
+        public override float[] AdjustedHitChance_Weights => adjustedHitChance_Weights;
 
         public override void CompleteAction()
         {

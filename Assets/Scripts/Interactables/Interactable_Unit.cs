@@ -17,7 +17,7 @@ namespace InteractableObjects
 
         public override void Interact(Unit unitInteracting)
         {
-            if (myUnit.UnitEquipment.slotVisualsCreated == false)
+            if (myUnit.UnitEquipment.SlotVisualsCreated == false)
             {
                 InventoryUI.ClearNPCInventorySlots();
 

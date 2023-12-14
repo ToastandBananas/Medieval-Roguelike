@@ -9,17 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e724c628a682061469b14a57d938e03e, type: 3}
+  m_Script: {fileID: 11500000, guid: cadf1be102940544fbc1dbd41a46f6e4, type: 3}
   m_Name: Arrow - Broadhead - Iron
   m_EditorClassIdentifier: 
   name: Iron Broadhead Arrow
   pluralName: 
-  description: Designed for combat and hunting, this arrow inflicts devastating wounds
-    with its twin razor-sharp blades.
+  description: The Broadhead Arrow, with its broad, razor-sharp tip, excels in causing
+    extensive tissue damage, ideal for hunting and combat.
   itemType: 50
-  thrownProjectileType: 20
-  thrownAnimationType: 1
   itemSize: 3
+  thrownProjectileType: 20
+  thrownAnimationType: 0
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 1
   height: 4
   weight: 0.1
@@ -28,7 +31,7 @@ MonoBehaviour:
   hotbarSprite: {fileID: 21300000, guid: c530bc9a75e19084abfd8673f4bfd710, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 0, y: 0}
+  valueRange: {x: 10, y: 10}
   pickupMesh: {fileID: -2432090755550338912, guid: 764c7485f705dbc4db8f1e92ec6dcb1d,
     type: 3}
   pickupMeshRendererMaterials:
@@ -37,21 +40,21 @@ MonoBehaviour:
   equipSlot: 10
   actionTypes: []
   itemChangeThresholds:
-  - thresholdPercentage: 5
-    newItem: {fileID: 11400000}
-    newSprite: {fileID: 21300000, guid: c25b98996d259ad41bd44627ff2fe666, type: 3}
-  - thresholdPercentage: 10
-    newItem: {fileID: 11400000}
-    newSprite: {fileID: 21300000, guid: be553cd6f85913042926c317c1cbe48c, type: 3}
-  - thresholdPercentage: 15
-    newItem: {fileID: 11400000}
-    newSprite: {fileID: 21300000, guid: fd1ce2a7d8f5fdf4eab2cc400c35b95a, type: 3}
-  - thresholdPercentage: 20
-    newItem: {fileID: 11400000}
-    newSprite: {fileID: 21300000, guid: fc169a7d1409fd04b841762500ee7bf8, type: 3}
-  - thresholdPercentage: 25
-    newItem: {fileID: 11400000}
+  - thresholdPercentage: 0.25
+    newItem: {fileID: 0}
     newSprite: {fileID: 21300000, guid: 6cba8d92abcf58a499e0b8275072e9de, type: 3}
+  - thresholdPercentage: 0.2
+    newItem: {fileID: 0}
+    newSprite: {fileID: 21300000, guid: fc169a7d1409fd04b841762500ee7bf8, type: 3}
+  - thresholdPercentage: 0.15
+    newItem: {fileID: 0}
+    newSprite: {fileID: 21300000, guid: fd1ce2a7d8f5fdf4eab2cc400c35b95a, type: 3}
+  - thresholdPercentage: 0.1
+    newItem: {fileID: 0}
+    newSprite: {fileID: 21300000, guid: be553cd6f85913042926c317c1cbe48c, type: 3}
+  - thresholdPercentage: 0.05
+    newItem: {fileID: 0}
+    newSprite: {fileID: 21300000, guid: c25b98996d259ad41bd44627ff2fe666, type: 3}
   quiverSprites:
   - {fileID: 21300000, guid: 0fff3178a4bf04045b1562c39a1382c1, type: 3}
   - {fileID: 21300000, guid: fb03ffbe831ea724cacd2839f0bf6f4f, type: 3}
@@ -67,11 +70,7 @@ MonoBehaviour:
     type: 3}
   insideLooseQuiverMaterial: {fileID: 2100000, guid: aecc544f4b9fa2243a60916aaf1503f1,
     type: 2}
-  capsuleColliderCenter: {x: 0, y: 0.35, z: 0}
-  capsuleColliderRadius: 0.0025
-  capsuleColliderHeight: 0.4
-  capsuleColliderDirection: 1
   projectileType: 0
   projectileAnimationType: 0
   speedMultiplier: 1.2
-  arcMultiplier: 1.2
+  arcMultiplier: 0.8

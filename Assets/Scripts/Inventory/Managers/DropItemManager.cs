@@ -145,7 +145,7 @@ namespace InventorySystem
 
                 InventoryUI.DisableDraggedItem();
             }
-            else if (unitEquipment.slotVisualsCreated)
+            else if (unitEquipment.SlotVisualsCreated)
                 unitEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
             unitEquipment.RemoveEquipment(unitEquipment.EquippedItemDatas[(int)equipSlot]);
@@ -268,7 +268,7 @@ namespace InventorySystem
             EquipSlot equipSlot;
             if (heldItem == unit.UnitMeshManager.rightHeldItem)
             {
-                if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                if (unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (heldItem.ItemData.Item is Item_Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem1;
@@ -285,7 +285,7 @@ namespace InventorySystem
             }
             else
             {
-                if (unit.UnitEquipment.currentWeaponSet == WeaponSet.One)
+                if (unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
                     equipSlot = EquipSlot.LeftHeldItem1;
                 else
                     equipSlot = EquipSlot.LeftHeldItem2;
@@ -333,7 +333,7 @@ namespace InventorySystem
                 if (unitEquipment.MyUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
                     InventoryUI.GetContainerUI(unitEquipment.MyUnit.QuiverInventoryManager).CloseContainerInventory();
 
-                LooseQuiverItem looseQuiverItem = looseItem as LooseQuiverItem;
+                Interactable_LooseQuiverItem looseQuiverItem = looseItem as Interactable_LooseQuiverItem;
                 looseQuiverItem.ContainerInventoryManager.SwapInventories(unitEquipment.MyUnit.QuiverInventoryManager);
                 looseQuiverItem.UpdateArrowMeshes();
             }

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 615e281f73550c344aabfc2f8661dedb, type: 3}
+  m_Script: {fileID: 11500000, guid: 7a72e363367a8424faba736ea65f9deb, type: 3}
   m_Name: Shield - Reinforced Tower - Wooden
   m_EditorClassIdentifier: 
   name: Reinforced Wooden Tower Shield
@@ -18,21 +18,21 @@ MonoBehaviour:
     with iron bindings, providing reliable protection while allowing agile maneuvers
     in the heat of battle.
   itemType: 20
-  itemSize: 4
+  itemSize: 5
   thrownProjectileType: 20
-  thrownAnimationType: 1
+  thrownAnimationType: 0
   throwingSpeedMultiplier: 1
   minThrowingDamageMultiplier: 0
   maxThrowingDamageMultiplier: 0
   width: 2
   height: 4
-  weight: 18
+  weight: 16
   maxStackSize: 1
   inventorySprite: {fileID: 21300000, guid: 09faf35f3b20db347b4a26b9d1704148, type: 3}
   hotbarSprite: {fileID: 21300000, guid: f5a5ba26d9946b641a3bffe14fc7716a, type: 3}
   maxUses: 1
   isUsable: 1
-  valueRange: {x: 150, y: 330}
+  valueRange: {x: 100, y: 150}
   pickupMesh: {fileID: -2432090755550338912, guid: 8e7bc138b2beaeb429553502bddbfcae,
     type: 3}
   pickupMeshRendererMaterials:
@@ -52,8 +52,9 @@ MonoBehaviour:
   idlePosition_Right: {x: -0.23, y: 0, z: -0.23}
   idleRotation_Left: {x: 0, y: -30, z: 0}
   idleRotation_Right: {x: 0, y: 30, z: 0}
-  blockPowerRange: {x: 12, y: 18}
-  minDamageRange: {x: 12, y: 15}
-  maxDamageRange: {x: 17, y: 20}
-  minBlockChanceModifier: 0.1
-  maxBlockChanceModifier: 0.15
+  blockPowerRange: {x: 12, y: 16}
+  durabilityRange: {x: 90, y: 110}
+  minDamageRange: {x: 10, y: 13}
+  maxDamageRange: {x: 14, y: 16}
+  minBlockChanceModifier: 0.12
+  maxBlockChanceModifier: 0.16

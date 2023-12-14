@@ -2,7 +2,6 @@ using UnityEngine;
 using GridSystem;
 using InventorySystem;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using Pathfinding.Util;
 using System.Collections.Generic;
 using UnitSystem.ActionSystem.Actions;
@@ -28,6 +27,12 @@ namespace InteractableObjects
                 SetupMesh();
 
             HideMeshRenderer();
+        }
+
+        void Start()
+        {
+            if (itemData.Item == null)
+                Debug.LogWarning($"{name}'s Item is null...");
         }
 
         public override void Interact(Unit unitPickingUpItem)
@@ -99,7 +104,7 @@ namespace InteractableObjects
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
                 if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
                 {
-                    if (unitPickingUpItem.UnitEquipment.currentWeaponSet == WeaponSet.Two)
+                    if (unitPickingUpItem.UnitEquipment.CurrentWeaponSet == WeaponSet.Two)
                     {
                         if (targetEquipSlot == EquipSlot.LeftHeldItem1)
                             targetEquipSlot = EquipSlot.LeftHeldItem2;
@@ -225,7 +230,7 @@ namespace InteractableObjects
         }
 
         public Interactable_LooseContainerItem LooseContainerItem => this as Interactable_LooseContainerItem;
-        public LooseQuiverItem LooseQuiverItem => this as LooseQuiverItem;
+        public Interactable_LooseQuiverItem LooseQuiverItem => this as Interactable_LooseQuiverItem;
 
         public ItemData ItemData => itemData;
 

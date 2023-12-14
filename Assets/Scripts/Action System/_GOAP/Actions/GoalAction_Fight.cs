@@ -141,12 +141,15 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 if (!unit.Stats.HasEnoughEnergy(npcActionHandler.AvailableCombatActions[i].EnergyCost()))
                     continue;
 
-                // Loop through every grid position in range of the combat action
-                foreach (GridPosition gridPositionInRange in npcActionHandler.AvailableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition))
+                List<GridPosition> gridPositionsInRange = ListPool<GridPosition>.Claim();
+                gridPositionsInRange.AddRange(npcActionHandler.AvailableCombatActions[i].GetActionGridPositionsInRange(unit.GridPosition));
+                for (int j = 0; j < gridPositionsInRange.Count; j++)
                 {
                     // For each of these grid positions, get the best one for this combat action
-                    npcAIActions.Add(npcActionHandler.AvailableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionInRange));
+                    npcAIActions.Add(npcActionHandler.AvailableCombatActions[i].GetNPCAIAction_ActionGridPosition(gridPositionsInRange[j]));
                 }
+
+                ListPool<GridPosition>.Release(gridPositionsInRange);
             }
 
             // Sort the list of best NPCAIActions by the highest action value

@@ -303,7 +303,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (IsValidAction() && targetUnit != null && targetUnit.HealthSystem.IsDead == false)
             {
                 // Target the Unit with the lowest health and/or the nearest target
-                finalActionValue += 500 - (targetUnit.HealthSystem.CurrentHealthNormalized * 100f);
+                finalActionValue += 500 - (targetUnit.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 100f);
                 float distance = Vector3.Distance(Unit.WorldPosition, targetUnit.WorldPosition);
                 float minAttackRange = 1f;
                 if (Unit.UnitEquipment.IsDualWielding)
@@ -346,7 +346,7 @@ namespace UnitSystem.ActionSystem.Actions
                     finalActionValue += 70f;
 
                     // Lower enemy health gives this action more value
-                    finalActionValue += 70f - (unitAtGridPosition.HealthSystem.CurrentHealthNormalized * 70f);
+                    finalActionValue += 70f - (unitAtGridPosition.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealthNormalized * 70f);
 
                     // Favor the targetEnemyUnit
                     if (Unit.UnitActionHandler.TargetEnemyUnit != null && unitAtGridPosition == Unit.UnitActionHandler.TargetEnemyUnit)

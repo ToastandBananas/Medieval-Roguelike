@@ -17,17 +17,32 @@ namespace InventorySystem
         public Projectile LoadedProjectile { get; private set; }
         public bool IsLoaded { get; private set; }
 
+        Action_BaseRangedAttack attackActionUsed;
+
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
+            Debug.LogWarning("The other version of DoDefaultAttack should be used for ranged weapons. Defaulting to Shoot Action for now...");
+            DoDefaultAttack(targetGridPosition, unit.UnitActionHandler.GetAction<Action_Shoot>());
+        }
+
+        public void DoDefaultAttack(GridPosition targetGridPosition, Action_BaseAttack attackActionUsed)
+        {
+            if (attackActionUsed == null)
+            {
+                TurnManager.Instance.FinishTurn(unit);
+                return;
+            }
+
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
             Unit targetEnemyUnit = unit.UnitActionHandler.TargetEnemyUnit;
+            this.attackActionUsed = attackActionUsed as Action_BaseRangedAttack;
             LoadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 
             IsLoaded = false;
             bowLineRenderer.StringStartFollowingTargetPositions();
             Anim.Play("Shoot");
 
-            StartCoroutine(RotateRangedWeapon(targetEnemyUnit.GridPosition));
+            StartCoroutine(RotateRangedWeapon(targetGridPosition));
         }
 
         public void LoadProjectile(ItemData projectileItemData)
@@ -77,9 +92,9 @@ namespace InventorySystem
         /// <summary> Used in keyframe animation.</summary>
         void ShootProjectile()
         {
-            Action_Shoot shootAction = unit.UnitActionHandler.GetAction<Action_Shoot>();
-            LoadedProjectile.ShootProjectileAtTarget(unit.UnitActionHandler.TargetEnemyUnit, shootAction, shootAction.TryHitTarget(unit.UnitActionHandler.TargetEnemyUnit.GridPosition), false);
+            LoadedProjectile.ShootProjectileAtTarget(unit.UnitActionHandler.TargetEnemyUnit, this, attackActionUsed, attackActionUsed.TryHitTarget(unit.UnitActionHandler.TargetEnemyUnit.GridPosition), false);
             LoadedProjectile = null;
+            attackActionUsed = null;
 
             TryFumbleHeldItem();
         }

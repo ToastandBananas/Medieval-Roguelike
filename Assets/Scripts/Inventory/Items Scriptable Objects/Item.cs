@@ -25,11 +25,11 @@ namespace InventorySystem
         [SerializeField] string pluralName;
         [SerializeField, TextArea(1, 5)] string description;
         [SerializeField] protected ItemType itemType;
-        [SerializeField] ItemSize itemSize;
+        [SerializeField] protected ItemSize itemSize;
 
         [Header("Throwing")]
         [SerializeField] ProjectileType thrownProjectileType = ProjectileType.BluntObject;
-        [SerializeField] ProjectileAnimationType thrownAnimationType = ProjectileAnimationType.EndOverEnd;
+        [SerializeField] ProjectileAnimationType thrownAnimationType = ProjectileAnimationType.Straight;
         [SerializeField] float throwingSpeedMultiplier = 1f;
         [SerializeField, Range(-10f, 10f)] float minThrowingDamageMultiplier;
         [SerializeField, Range(-10f, 10f)] float maxThrowingDamageMultiplier;

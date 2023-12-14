@@ -95,8 +95,8 @@ namespace InventorySystem
             projectile.SetupThrownItem(throwAction.ItemDataToThrow, unit, transform);
             projectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(throwAction.TargetEnemyUnit); });
 
-            bool hitTarget = throwAction.TryHitTarget(projectile.ItemData, throwAction.TargetGridPosition);
-            projectile.ShootProjectileAtTarget(throwAction.TargetEnemyUnit, throwAction, hitTarget, true);
+            bool hitTarget = throwAction.TryHitTarget(throwAction.TargetGridPosition);
+            projectile.ShootProjectileAtTarget(throwAction.TargetEnemyUnit, null, throwAction, hitTarget, true);
 
             throwAction.OnThrowHeldItem();
         }

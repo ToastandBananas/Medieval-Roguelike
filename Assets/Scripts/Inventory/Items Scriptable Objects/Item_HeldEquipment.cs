@@ -5,7 +5,6 @@ namespace InventorySystem
 {
     public abstract class Item_HeldEquipment : Item_Equipment
     {
-        [Header("Stance Stat Modifiers")]
         [SerializeField] StanceStatModifier_ScriptableObject[] stanceStatModifiers;
 
         [Header("Equipped Mesh")]

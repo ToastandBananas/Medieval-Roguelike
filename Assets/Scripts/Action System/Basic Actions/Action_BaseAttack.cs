@@ -18,14 +18,14 @@ namespace UnitSystem.ActionSystem.Actions
 
         public virtual void QueueAction(Unit targetEnemyUnit)
         {
-            this.TargetEnemyUnit = targetEnemyUnit;
+            TargetEnemyUnit = targetEnemyUnit;
             TargetGridPosition = targetEnemyUnit.GridPosition;
             QueueAction();
         }
 
         public override void QueueAction(GridPosition targetGridPosition)
         {
-            this.TargetGridPosition = targetGridPosition;
+            TargetGridPosition = targetGridPosition;
             if (LevelGrid.HasUnitAtGridPosition(targetGridPosition, out Unit targetUnit))
                 TargetEnemyUnit = targetUnit;
             QueueAction();
@@ -58,29 +58,28 @@ namespace UnitSystem.ActionSystem.Actions
                 TargetEnemyUnit = Unit.UnitActionHandler.TargetEnemyUnit;
         }
 
-        public virtual void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, bool headShot, bool headshotPredetermined)
+        public void DamageTarget(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith)
         {
-            if (targetUnit == null || targetUnit.HealthSystem.IsDead)
+            DamageBodyPart(targetUnit, GetBodyPartHit(targetUnit), heldItemAttackingWith, itemDataHittingWith, heldItemBlockedWith);
+        }
+
+        public void DamageBodyPart(Unit targetUnit, BodyPart bodyPart, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith)
+        {
+            if (targetUnit == null || bodyPart == null || targetUnit.HealthSystem.IsDead)
                 return;
-            
+
             targetUnit.UnitActionHandler.InterruptActions();
 
-            float damage = GetBaseDamage(heldItemAttackingWith, itemDataHittingWith);
-            damage = DealDamageToTarget(targetUnit, GetBodyPartHit(targetUnit, headShot, headshotPredetermined), itemDataHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
-            TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemDataHittingWith, damage, attackBlocked);
+            float damage = GetBaseDamage(heldItemAttackingWith, itemHittingWith);
+            damage = DealDamageToTarget(targetUnit, bodyPart, itemHittingWith, heldItemBlockedWith, damage, out bool attackBlocked);
+            TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemHittingWith, damage, attackBlocked);
         }
 
-        protected BodyPart GetBodyPartHit(Unit targetUnit, bool headShot, bool headshotPredetermined)
-        {
-            if (headshotPredetermined)
-            {
-                if (headShot)
-                    return targetUnit.HealthSystem.GetBodyPart(BodyPartType.Head, BodyPartSide.NotApplicable, BodyPartIndex.Only);
-                else
-                    return targetUnit.HealthSystem.GetBodyPartToHit(false);
-            }
-            return targetUnit.HealthSystem.GetBodyPartToHit(true);
-        }
+        public virtual BodyPartType[] AdjustedHitChance_BodyPartTypes => null;
+
+        public virtual float[] AdjustedHitChance_Weights => null;
+
+        protected virtual BodyPart GetBodyPartHit(Unit targetUnit) => targetUnit.HealthSystem.GetRandomBodyPartToHit(this);
 
         protected virtual float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
         {
@@ -106,15 +105,7 @@ namespace UnitSystem.ActionSystem.Actions
             return baseDamage;
         }
 
-        protected virtual float GetBaseDamage(ItemData itemDataHittingWith)
-        {
-            if (itemDataHittingWith != null)
-                return itemDataHittingWith.Damage;
-            else
-                return UnarmedAttackDamage();
-        }
-
-        protected int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, ItemData itemHittingWith, HeldItem heldItemBlockedWith, float currentDamage, out bool attackBlocked)
+        int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, ItemData itemHittingWith, HeldItem heldItemBlockedWith, float currentDamage, out bool attackBlocked)
         {
             float armorAbsorbAmount = GetTargetArmorAbsorbtionAmount(targetUnit, bodyPartHit, itemHittingWith, currentDamage);
 
@@ -128,7 +119,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.HealthSystem.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                bodyPartHit.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             else
             {
@@ -137,7 +128,7 @@ namespace UnitSystem.ActionSystem.Actions
                 if (currentDamage < 0)
                     currentDamage = 0f;
 
-                targetUnit.HealthSystem.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
+                bodyPartHit.TakeDamage(Mathf.RoundToInt(currentDamage), Unit);
             }
             
             return Mathf.RoundToInt(currentDamage);
@@ -207,7 +198,7 @@ namespace UnitSystem.ActionSystem.Actions
             {
                 Unit targetUnit = target.Key;
                 HeldItem itemBlockedWith = target.Value;
-                DamageTarget(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, itemBlockedWith, false, false);
+                DamageTarget(targetUnit, heldWeaponAttackingWith, itemDataHittingWith, itemBlockedWith);
             }
 
             if (heldWeaponAttackingWith != null)

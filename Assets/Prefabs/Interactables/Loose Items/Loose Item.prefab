@@ -74,7 +74,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3454943409024732620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec949deb910010449afe0d2861dcc946, type: 3}
+  m_Script: {fileID: 11500000, guid: 240f50589ef01a04185806fd9079e304, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   meshFilter: {fileID: 2609432991551950628}
@@ -82,12 +82,17 @@ MonoBehaviour:
   meshCollider: {fileID: 2372850988380590422}
   rigidBody: {fileID: 4136017461024531674}
   itemData:
-    name: 
-    item: {fileID: 11400000, guid: 9272f42f9fc8bbc45ab918afade34676, type: 2}
+    item: {fileID: 0}
     currentStackSize: 1
     remainingUses: 1
+    maxDurability: 0
+    currentDurability: 0
+    minDamage: 0
+    maxDamage: 0
+    throwingDamageMultiplier: 0
+    effectivenessAgainstArmor: 0
+    armorPierce: 0
     accuracyModifier: 0
-    damage: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0

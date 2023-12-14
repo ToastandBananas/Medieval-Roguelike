@@ -2,6 +2,8 @@ using UnityEngine;
 using GridSystem;
 using UnitSystem.ActionSystem.UI;
 using EffectsSystem;
+using UnitSystem.ActionSystem.Actions;
+using UnityEditor.Timeline.Actions;
 
 namespace UnitSystem
 {
@@ -10,13 +12,10 @@ namespace UnitSystem
         public delegate void TakeMeleeDamageHandler();
         public event TakeMeleeDamageHandler OnTakeDamageFromMeleeAttack;
 
-        [Header("Health Stats")]
-        [SerializeField] int maxHealth = 100;
-        [SerializeField] int currentHealth = -1;
         [SerializeField] float minFallDamageDistance = 1f; // No damage under this distance
-
-        [Header("Body Parts")]
         [SerializeField] BodyPart[] bodyParts;
+
+        public bool IsDead { get; private set; }
 
         float mobilityPercent = 1f;
 
@@ -26,48 +25,52 @@ namespace UnitSystem
         {
             unit = GetComponent<Unit>();
 
-            if (currentHealth == -1)
-                currentHealth = maxHealth;
-
             for (int i = 0; i < bodyParts.Length; i++)
-                bodyParts[i].AssignHealthSystem(this);
+                bodyParts[i].InitializeHealth(this);
+
+            if (GetBodyPart(BodyPartType.Head).IsDisabled || GetBodyPart(BodyPartType.Torso).IsDisabled)
+                IsDead = true;
         }
 
-        public void TakeDamage(int damageAmount, Unit attacker)
+        public void DamageAllBodyParts(int torsoDamage, int headDamage, int legDamage, int armDamage, Unit attacker)
         {
-            if (damageAmount <= 0)
-                return;
-
-            currentHealth -= damageAmount;
-
-            if (currentHealth < 0)
-                currentHealth = 0;
-
-            if (unit.IsPlayer)
-                ActionSystemUI.UpdateHealthText();
-
-            // SpawnBlood(attackerTransform);
-
-            if (currentHealth == 0)
-                Die(attacker);
-            else if (attacker != null)
-                unit.UnitAnimator.DoSlightKnockback(attacker.transform);
+            for (int i = 0; i < bodyParts.Length; i++)
+            {
+                if (bodyParts[i].BodyPartType == BodyPartType.Leg)
+                    bodyParts[i].TakeDamage(legDamage, attacker);
+                else if (bodyParts[i].BodyPartType == BodyPartType.Arm)
+                    bodyParts[i].TakeDamage(armDamage, attacker);
+                else if (bodyParts[i].BodyPartType == BodyPartType.Head)
+                    bodyParts[i].TakeDamage(headDamage, attacker);
+                else
+                    bodyParts[i].TakeDamage(torsoDamage, attacker);
+            }
         }
 
         public void OnHitByMeleeAttack() => OnTakeDamageFromMeleeAttack?.Invoke();
 
-        public void TakeFallDamage(float fallDistance) => TakeDamage(CalculateFallDamage(fallDistance), null);
+        public void TakeFallDamage(float fallDistance)
+        {
+            int fallDamage = CalculateFallDamage(fallDistance);
+            GetBodyPart(BodyPartType.Torso).TakeDamage(fallDamage, null);
+
+            for (int i = 0; i < bodyParts.Length; i++)
+            {
+                if (bodyParts[i].BodyPartType == BodyPartType.Leg)
+                    bodyParts[i].TakeDamage(fallDamage, null);
+            }
+        }
 
         int CalculateFallDamage(float fallDistance)
         {
             float modifiedMaxFallDistance = CalculateModifiedMaxFallDistance();
 
             if (fallDistance <= minFallDamageDistance) return 0;
-            if (fallDistance >= modifiedMaxFallDistance) return unit.HealthSystem.MaxHealth; // Instant death
+            if (fallDistance >= modifiedMaxFallDistance) return GetBodyPart(BodyPartType.Torso).MaxHealth.GetValue(); // Instant death
 
             // Calculate the damage percentage based on fall distance
             float damagePercent = (fallDistance - minFallDamageDistance) / (modifiedMaxFallDistance - minFallDamageDistance);
-            int damage = Mathf.RoundToInt(damagePercent * unit.HealthSystem.MaxHealth);
+            int damage = Mathf.RoundToInt(damagePercent * GetBodyPart(BodyPartType.Torso).MaxHealth.GetValue());
             if (damage < 1)
                 damage = 1;
 
@@ -98,16 +101,6 @@ namespace UnitSystem
             return Mathf.Max(baseLethalFallDistance + strengthBonus - carryWeightPenalty, 1); // Ensure it doesn't go below 1
         }
 
-        public void IncreaseHealth(int healAmount)
-        {
-            currentHealth += healAmount;
-            if (currentHealth > maxHealth)
-                currentHealth = maxHealth;
-
-            if (unit.IsPlayer)
-                ActionSystemUI.UpdateHealthText();
-        }
-
         void SpawnBlood(Transform attackerTransform)
         {
             ParticleSystem blood = ParticleEffectPool.Instance.GetParticleEffectFromPool(ParticleSystemData.ParticleSystemType.BloodSpray);
@@ -128,6 +121,8 @@ namespace UnitSystem
 
         public void Die(Unit attacker)
         {
+            IsDead = true;
+
             UnitManager.deadNPCs.Add(unit);
             UnitManager.livingNPCs.Remove(unit);
             LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
@@ -148,7 +143,21 @@ namespace UnitSystem
                 unit.UnitAnimator.Die(null);
         }
 
-        public BodyPart GetBodyPart(BodyPartType type, BodyPartSide side, BodyPartIndex bodyPartIndex)
+        public void Resurrect()
+        {
+            IsDead = false;
+
+            UnitManager.deadNPCs.Remove(unit);
+            UnitManager.livingNPCs.Add(unit);
+
+            // TODO: Resurrect animation
+            // TODO: Get nearest valid position to resurrect on and move them to it
+
+            unit.UpdateGridPosition();
+            LevelGrid.AddUnitAtGridPosition(unit.GridPosition, unit);
+        }
+
+        public BodyPart GetBodyPart(BodyPartType type, BodyPartSide side = BodyPartSide.NotApplicable, BodyPartIndex bodyPartIndex = BodyPartIndex.Only)
         {
             for (int i = 0; i < bodyParts.Length; i++)
             {
@@ -166,35 +175,75 @@ namespace UnitSystem
             return count;
         }
 
-        public BodyPart GetBodyPartToHit(bool canHitHead)
+        public BodyPart GetRandomBodyPartToHit(Action_BaseAttack attackAction)
         {
-            int totalHitChanceWeight = TotalHitChanceWeight(canHitHead);
+            int totalHitChanceWeight = TotalHitChanceWeight(attackAction);
             int random = Random.Range(0, totalHitChanceWeight + 1);
             int hitChanceIndex = 0;
 
             for (int i = 0; i < bodyParts.Length; i++)
             {
-                if (!canHitHead && bodyParts[i].BodyPartType == BodyPartType.Head)
+                if (bodyParts[i].IsDisabled) // This body part's health is already at 0, so skip it
                     continue;
 
-                hitChanceIndex += bodyParts[i].HitChanceWeight;
+                bool weightAdded = false;
+                if (attackAction != null && attackAction.AdjustedHitChance_BodyPartTypes != null && attackAction.AdjustedHitChance_Weights != null)
+                {
+                    for (int j = 0; j < attackAction.AdjustedHitChance_BodyPartTypes.Length; j++)
+                    {
+                        if (attackAction.AdjustedHitChance_BodyPartTypes[j] == bodyParts[i].BodyPartType)
+                        {
+                            if (attackAction.AdjustedHitChance_Weights.Length > j)
+                                hitChanceIndex += Mathf.RoundToInt(bodyParts[i].HitChanceWeight * attackAction.AdjustedHitChance_Weights[j]);
+                            else
+                                hitChanceIndex += bodyParts[i].HitChanceWeight;
+
+                            weightAdded = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!weightAdded)
+                    hitChanceIndex += bodyParts[i].HitChanceWeight;
+
                 if (random < hitChanceIndex)
                     return bodyParts[i];
             }
 
-            return GetBodyPart(BodyPartType.Torso, BodyPartSide.NotApplicable, BodyPartIndex.Only);
+            return GetBodyPart(BodyPartType.Torso);
         }
 
-        int TotalHitChanceWeight(bool canHitHead)
+        int TotalHitChanceWeight(Action_BaseAttack attackAction)
         {
             int total = 0;
             for (int i = 0; i < bodyParts.Length; i++)
             {
-                if (!canHitHead && bodyParts[i].BodyPartType == BodyPartType.Head)
+                if (bodyParts[i].IsDisabled) // This body part's health is already at 0, so don't try to hit it
                     continue;
 
-                total += bodyParts[i].HitChanceWeight;
+                bool weightAdded = false;
+                if (attackAction != null && attackAction.AdjustedHitChance_BodyPartTypes != null && attackAction.AdjustedHitChance_Weights != null)
+                {
+                    for (int j = 0; j < attackAction.AdjustedHitChance_BodyPartTypes.Length; j++)
+                    {
+                        if (attackAction.AdjustedHitChance_BodyPartTypes[j] == bodyParts[i].BodyPartType)
+                        {
+                            if (attackAction.AdjustedHitChance_Weights.Length > j)
+                                total += Mathf.RoundToInt(bodyParts[i].HitChanceWeight * attackAction.AdjustedHitChance_Weights[j]);
+                            else
+                                break;
+
+                            weightAdded = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!weightAdded)
+                    total += bodyParts[i].HitChanceWeight;
             }
+
             return total;
         }
 
@@ -210,11 +259,6 @@ namespace UnitSystem
         public float MoveCostMobilityMultiplier => 1f + (1f - Unit.HealthSystem.mobilityPercent);
 
         public bool IsImmobile => mobilityPercent <= 0f;
-        public bool IsDead => currentHealth <= 0;
-
-        public float CurrentHealthNormalized => (float)currentHealth / maxHealth;
-        public int MaxHealth => maxHealth;
-        public int CurrentHealth => currentHealth;
 
         public float MinFallDamageDistance => minFallDamageDistance;
     }

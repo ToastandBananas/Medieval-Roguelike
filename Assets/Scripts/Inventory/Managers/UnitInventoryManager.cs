@@ -28,10 +28,10 @@ namespace InventorySystem
 
             if (itemData.Item is Item_Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
             {
-                if (unit.UnitEquipment.slotVisualsCreated)
+                if (unit.UnitEquipment.SlotVisualsCreated)
                     unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
 
-                if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory && itemData.MyInventory.ContainerInventory.LooseItem != null && itemData.MyInventory.ContainerInventory.LooseItem is LooseQuiverItem)
+                if (itemData.MyInventory != null && itemData.MyInventory is ContainerInventory && itemData.MyInventory.ContainerInventory.LooseItem != null && itemData.MyInventory.ContainerInventory.LooseItem is Interactable_LooseQuiverItem)
                     itemData.MyInventory.ContainerInventory.LooseItem.LooseQuiverItem.UpdateArrowMeshes();
 
                 return true;

@@ -80,7 +80,7 @@ namespace InventorySystem
         {
             bool added = base.TryAddItemAt(targetSlotCoordinate, newItemData, unitAdding);
 
-            if (looseItem != null && looseItem is LooseQuiverItem)
+            if (looseItem != null && looseItem is Interactable_LooseQuiverItem)
                 looseItem.LooseQuiverItem.UpdateArrowMeshes();
             else if (SlotVisualsCreated && myUnit != null && containerInventoryManager == myUnit.QuiverInventoryManager)
                 myUnit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
@@ -100,7 +100,7 @@ namespace InventorySystem
         {
             if (item == null)
             {
-                Debug.LogWarning("Item is null for this container inventory...");
+                // Debug.LogWarning("Item is null for this container inventory...");
                 return;
             }
 
