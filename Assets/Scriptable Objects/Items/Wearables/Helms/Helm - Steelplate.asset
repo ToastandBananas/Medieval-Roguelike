@@ -17,10 +17,12 @@ MonoBehaviour:
   description: A formidable piece of head armor, forged from solid steel to shield
     the wearer from the harshest of blows in combat.
   itemType: 100
+  itemSize: 3
   thrownProjectileType: 20
   thrownAnimationType: 1
-  mainMaterial: 37
-  itemSize: 3
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 2
   weight: 8
@@ -37,6 +39,7 @@ MonoBehaviour:
   equipSlot: 4
   actionTypes: []
   defenseRange: {x: 45, y: 52}
+  durabilityRange: {x: 720, y: 800}
   meshes:
   - {fileID: -2432090755550338912, guid: b9624c6b6f57b4d43a3a964ccbd56585, type: 3}
   meshRendererMaterials:

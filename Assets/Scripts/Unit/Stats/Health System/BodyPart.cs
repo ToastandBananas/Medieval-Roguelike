@@ -20,7 +20,7 @@ namespace UnitSystem
         [SerializeField] float healthModifier = 2f;
 
         [Tooltip("This value will determine the percent chance of it being hit by an attack. (hitChanceWeight / TotalHitChanceWeight)")]
-        [SerializeField] int hitChanceWeight = 1;
+        [SerializeField] float hitChanceWeight = 1f;
 
         public HealthSystem HealthSystem { get; private set; }
 
@@ -139,7 +139,7 @@ namespace UnitSystem
         public int CurrentHealth => currentHealth;
         public float CurrentHealthNormalized => (float)currentHealth / maxHealth.GetValue();
 
-        public int HitChanceWeight => hitChanceWeight;
+        public float HitChanceWeight => hitChanceWeight;
 
         public IntStat MaxHealth => maxHealth;
 

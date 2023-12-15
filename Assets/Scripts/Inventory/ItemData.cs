@@ -406,6 +406,9 @@ namespace InventorySystem
         public int MaxDamage => maxDamage;
         public float ThrowingDamageMultiplier => throwingDamageMultiplier;
 
+        public float EffectivenessAgainstArmor => effectivenessAgainstArmor;
+        public float ArmorPierce => armorPierce;
+
         public float AccuracyModifier => accuracyModifier;
         public float KnockbackChanceModifier => knockbackChanceModifier;
 

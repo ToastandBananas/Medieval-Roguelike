@@ -177,9 +177,9 @@ namespace UnitSystem
 
         public BodyPart GetRandomBodyPartToHit(Action_BaseAttack attackAction)
         {
-            int totalHitChanceWeight = TotalHitChanceWeight(attackAction);
-            int random = Random.Range(0, totalHitChanceWeight + 1);
-            int hitChanceIndex = 0;
+            float totalHitChanceWeight = TotalHitChanceWeight(attackAction);
+            float random = Random.Range(0f, totalHitChanceWeight);
+            float hitChanceIndex = 0f;
 
             for (int i = 0; i < bodyParts.Length; i++)
             {
@@ -214,9 +214,9 @@ namespace UnitSystem
             return GetBodyPart(BodyPartType.Torso);
         }
 
-        int TotalHitChanceWeight(Action_BaseAttack attackAction)
+        float TotalHitChanceWeight(Action_BaseAttack attackAction)
         {
-            int total = 0;
+            float total = 0f;
             for (int i = 0; i < bodyParts.Length; i++)
             {
                 if (bodyParts[i].IsDisabled) // This body part's health is already at 0, so don't try to hit it

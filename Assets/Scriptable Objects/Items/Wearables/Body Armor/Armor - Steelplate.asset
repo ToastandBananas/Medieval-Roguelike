@@ -17,10 +17,12 @@ MonoBehaviour:
   description: A formidable suit of full plate armor known for its exceptional protection
     and flexibility.
   itemType: 90
+  itemSize: 5
   thrownProjectileType: 20
   thrownAnimationType: 0
-  mainMaterial: 37
-  itemSize: 5
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 4
   weight: 54
@@ -37,6 +39,7 @@ MonoBehaviour:
   equipSlot: 5
   actionTypes: []
   defenseRange: {x: 82, y: 90}
+  durabilityRange: {x: 800, y: 870}
   meshes:
   - {fileID: -2432090755550338912, guid: be6f52c4d5f932741be1ae8d0c51e6e9, type: 3}
   meshRendererMaterials:
@@ -45,3 +48,4 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 1067aeaeb0e120f489f78a2e50aac7c8, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 6cba61e335e127e428785c75e4c66940, type: 2}
+  protectsArms: 0

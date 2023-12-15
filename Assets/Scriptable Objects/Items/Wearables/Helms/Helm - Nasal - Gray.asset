@@ -17,10 +17,12 @@ MonoBehaviour:
   description: A sturdy piece of headgear with a distinctive, pointed nose guard,
     offering reliable protection without compromising visibility.
   itemType: 100
+  itemSize: 3
   thrownProjectileType: 20
   thrownAnimationType: 1
-  mainMaterial: 35
-  itemSize: 3
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 2
   weight: 4.8
@@ -37,6 +39,7 @@ MonoBehaviour:
   equipSlot: 4
   actionTypes: []
   defenseRange: {x: 20, y: 30}
+  durabilityRange: {x: 180, y: 220}
   meshes:
   - {fileID: -2432090755550338912, guid: bcb70c09c1af2ea4fb8b86658ab46bd3, type: 3}
   meshRendererMaterials:

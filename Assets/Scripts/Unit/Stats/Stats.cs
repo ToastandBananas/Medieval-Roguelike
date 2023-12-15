@@ -636,7 +636,7 @@ namespace UnitSystem
         float WeaponKnockbackChance(Item_Weapon weapon)
         {
             if (weapon == null) // Unarmed
-                return 0.1f;
+                return UnarmedKnockbackChance;
 
             return weapon.WeaponType switch
             {
@@ -650,7 +650,7 @@ namespace UnitSystem
                 WeaponType.WarHammer => 0.3f,
                 WeaponType.Spear => 0.1f,
                 WeaponType.Polearm => 0.25f,
-                _ => 0.1f,
+                _ => UnarmedKnockbackChance
             };
         }
         #endregion
@@ -727,6 +727,16 @@ namespace UnitSystem
         }
         #endregion
 
+        #region Unarmed
+        public float UnarmedArmorPierce => (strength.GetValue() / 200f) + (unarmedSkill.GetValue() / 200f); // 50% at 100 Strength + 50% at 100 Unarmed Skill
+        public float UnarmedEffectivenessAgainstArmor => (strength.GetValue() / 100f) + (unarmedSkill.GetValue() / 100f); // 100% at 100 Strength + 100% at 100 Unarmed Skill
+        float UnarmedKnockbackChance => unarmedSkill.GetValue() / 150f; // 66.66% at 100 Unarmed Skill
+
+        public bool CanFightUnarmed => canFightUnarmed;
+        public float UnarmedAttackRange => unarmedAttackRange;
+        public int BaseUnarmedDamage => baseUnarmedDamage;
+        #endregion
+
         public int WeaponSkill(Item_Weapon weapon)
         {
             if (weapon == null) // Unarmed
@@ -756,7 +766,7 @@ namespace UnitSystem
                     return polearmSkill.GetValue();
                 default:
                     Debug.LogError(weapon.WeaponType.ToString() + " has not been implemented in this method. Fix me!");
-                    return 0;
+                    return unarmedSkill.GetValue();
             }
         }
 
@@ -778,9 +788,5 @@ namespace UnitSystem
         public IntStat ThrowingSkill => throwingSkill;
         public IntStat UnarmedSkill => unarmedSkill;
         public IntStat WarHammerSkill => warHammerSkill;
-
-        public bool CanFightUnarmed => canFightUnarmed;
-        public float UnarmedAttackRange => unarmedAttackRange;
-        public int BaseUnarmedDamage => baseUnarmedDamage;
     }
 }

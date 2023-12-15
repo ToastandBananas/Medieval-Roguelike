@@ -53,12 +53,13 @@ MonoBehaviour:
   isVersatile: 0
   canDualWield: 0
   attackRange: {x: 1, y: 2.2}
+  durabilityRange: {x: 360, y: 400}
   minDamageRange: {x: 15, y: 19}
   maxDamageRange: {x: 21, y: 25}
-  minArmorPierce: 0
-  maxArmorPierce: 0
-  minArmorEffectiveness: 0
-  maxArmorEffectiveness: 0
+  minArmorPierce: 0.8
+  maxArmorPierce: 0.85
+  minArmorEffectiveness: 1.2
+  maxArmorEffectiveness: 1.25
   minAccuracyModifier: 0
   maxAccuracyModifier: 0
   minBlockChanceModifier: -0.06

@@ -27,7 +27,7 @@ namespace GridSystem
         static GridPosition currentUnitGridPosition;
         static GridPosition currentPlayerPosition;
 
-        static readonly GridPosition defaultGridPosition = new GridPosition(100000, 100000, 100000);
+        static readonly GridPosition defaultGridPosition = new(100000, 100000, 100000);
 
         void Awake()
         {
@@ -99,6 +99,8 @@ namespace GridSystem
 
                 if (PlayerInput.Instance.HighlightedUnit == player || currentMouseGridPosition == currentPlayerPosition)
                 {
+                    currentMouseGridPosition = player.GridPosition;
+                    ResetLineRenderers();
                     HideLineRenderers();
                     yield break;
                 }
@@ -122,12 +124,12 @@ namespace GridSystem
                     targetUnit = PlayerInput.Instance.HighlightedUnit;
                     currentUnitGridPosition = targetUnit.GridPosition;
 
-                    if (targetUnit.HealthSystem.IsDead == false && (player.Alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
+                    if (!targetUnit.HealthSystem.IsDead && (player.Alliance.IsEnemy(targetUnit) || selectedAction.IsDefaultAttackAction))
                     {
                         if (player.Vision.IsVisible(targetUnit))
                         {
                             // If the enemy Unit is in attack range or if they're out of range and the player has a non-default attack action selected, no need to show the line renderer
-                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (selectedAction.IsDefaultAttackAction == false && selectedAction is Action_Move == false))
+                            if (player.UnitActionHandler.IsInAttackRange(targetUnit, true) || (!selectedAction.IsDefaultAttackAction && selectedAction is Action_Move == false))
                             {
                                 HideLineRenderers();
                                 yield break;
@@ -211,11 +213,11 @@ namespace GridSystem
                 if (path.error || path == null)
                     yield break;
 
-                if (LevelGrid.IsValidGridPosition(targetGridPosition) == false || AstarPath.active.GetNearest(targetGridPosition.WorldPosition).node.Walkable == false)
+                if (!LevelGrid.IsValidGridPosition(targetGridPosition) || !AstarPath.active.GetNearest(targetGridPosition.WorldPosition).node.Walkable)
                     yield break;
 
                 // Re-block the unit's position, in case it was unblocked
-                if (targetUnit != null && targetUnit.HealthSystem.IsDead == false)
+                if (targetUnit != null && !targetUnit.HealthSystem.IsDead)
                     targetUnit.BlockCurrentPosition();
                 
                 int verticeIndex = 0;
