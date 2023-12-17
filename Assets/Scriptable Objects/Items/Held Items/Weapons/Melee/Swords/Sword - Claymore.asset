@@ -56,8 +56,8 @@ MonoBehaviour:
   durabilityRange: {x: 360, y: 400}
   minDamageRange: {x: 15, y: 19}
   maxDamageRange: {x: 21, y: 25}
-  minArmorPierce: 0.8
-  maxArmorPierce: 0.85
+  minArmorPierce: 0.6
+  maxArmorPierce: 0.65
   minArmorEffectiveness: 1.2
   maxArmorEffectiveness: 1.25
   minAccuracyModifier: 0

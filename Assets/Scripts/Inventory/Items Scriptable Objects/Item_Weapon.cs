@@ -21,7 +21,7 @@ namespace InventorySystem
         [SerializeField] Vector2Int minDamageRange = Vector2Int.one;
         [SerializeField] Vector2Int maxDamageRange = Vector2Int.one;
 
-        [Header("Damage Against Armor")]
+        [Header("Effectiveness Against Armor")]
         [SerializeField, Range(0f, 1f)] float minArmorPierce;
         [SerializeField, Range(0f, 1f)] float maxArmorPierce;
         [SerializeField, Range(0f, 5f)] float minArmorEffectiveness;

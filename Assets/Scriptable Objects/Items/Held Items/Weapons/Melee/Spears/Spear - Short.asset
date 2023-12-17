@@ -21,8 +21,8 @@ MonoBehaviour:
   thrownProjectileType: 1
   thrownAnimationType: 0
   throwingSpeedMultiplier: 1.2
-  minThrowingDamageMultiplier: 0
-  maxThrowingDamageMultiplier: 0
+  minThrowingDamageMultiplier: 1.3
+  maxThrowingDamageMultiplier: 1.45
   width: 1
   height: 5
   weight: 2.8
@@ -59,10 +59,10 @@ MonoBehaviour:
   durabilityRange: {x: 40, y: 48}
   minDamageRange: {x: 5, y: 6}
   maxDamageRange: {x: 7, y: 9}
-  minArmorPierce: 0.85
-  maxArmorPierce: 0.9
+  minArmorPierce: 0.35
+  maxArmorPierce: 0.4
   minArmorEffectiveness: 0.9
-  maxArmorEffectiveness: 1
+  maxArmorEffectiveness: 0.95
   minAccuracyModifier: 0.11
   maxAccuracyModifier: 0.14
   minBlockChanceModifier: -0.05

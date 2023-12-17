@@ -51,6 +51,31 @@ namespace GeneralUI
 
                 stringBuilder.Append($"{StringUtilities.EnumToSpacedString(itemData.Item.Weapon.WeaponType)}</size></i></align>\n");
             }
+            else if (itemData.Item is Item_Armor)
+            {
+                stringBuilder.Append("<size=18><align=center><i>Protects ");
+                if (itemData.Item is Item_BodyArmor)
+                {
+                    stringBuilder.Append("torso");
+                    if (itemData.Item.BodyArmor.ProtectsArms && itemData.Item.BodyArmor.ProtectsLegs)
+                        stringBuilder.Append(", arms, and legs");
+                    else if (itemData.Item.BodyArmor.ProtectsArms)
+                        stringBuilder.Append(" and arms");
+                    else if (itemData.Item.BodyArmor.ProtectsLegs)
+                        stringBuilder.Append(" and legs");
+                }
+                else if (itemData.Item is Item_Shirt)
+                {
+                    stringBuilder.Append("torso");
+                    if (itemData.Item.Shirt.ProtectsArms)
+                        stringBuilder.Append(" and arms");
+                }
+                else if (itemData.Item is Item_LegArmor)
+                    stringBuilder.Append(" legs");
+                else if (itemData.Item is Item_Helm)
+                    stringBuilder.Append(" head");
+                stringBuilder.Append("</i></align></size>\n");
+            }
 
             // If Equipped
             if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.Slots.Contains((EquipmentSlot)slot)))
@@ -60,11 +85,6 @@ namespace GeneralUI
 
             // Description
             stringBuilder.Append($"<size=16>{StringUtilities.SplitTextIntoParagraphs(itemData.Item.Description, maxCharactersPerLine)}</size>\n");
-
-            if (itemData.Item.MaxUses > 1)
-                stringBuilder.Append($"\n  <i>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</i>\n");
-            else if (itemData.Item.MaxStackSize > 1)
-                stringBuilder.Append($"\n  <i>{itemData.CurrentStackSize} / {itemData.Item.MaxStackSize}</i>\n");
 
             if (itemData.ThrowingDamageMultiplier != 0f)
             {
@@ -77,6 +97,8 @@ namespace GeneralUI
             if (itemData.Item is Item_Weapon)
             {
                 stringBuilder.Append($"\n  Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
+                stringBuilder.Append($"\n  Armor Pierce: {itemData.ArmorPierce * 100f}%");
+                stringBuilder.Append($"\n  Vs. Armor: {itemData.EffectivenessAgainstArmor * 100f}%");
 
                 if (itemData.AccuracyModifier != 0f)
                 {
@@ -93,6 +115,7 @@ namespace GeneralUI
                     else
                         stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
                 }
+
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Item_Shield)
@@ -115,8 +138,36 @@ namespace GeneralUI
             }
             else if (itemData.Item is Item_Armor)
             {
-                if (itemData.Defense != 0)
-                    stringBuilder.Append($"\n  Armor: {itemData.Defense}");
+                /*stringBuilder.Append("\n<size=16><align=center>- Protects ");
+                if (itemData.Item is Item_BodyArmor)
+                {
+                    stringBuilder.Append("torso");
+                    if (itemData.Item.BodyArmor.ProtectsArms && itemData.Item.BodyArmor.ProtectsLegs)
+                        stringBuilder.Append(", arms, and legs");
+                    else if (itemData.Item.BodyArmor.ProtectsArms)
+                        stringBuilder.Append(" and arms");
+                    else if (itemData.Item.BodyArmor.ProtectsLegs)
+                        stringBuilder.Append(" and legs");
+                }
+                else if (itemData.Item is Item_Shirt)
+                {
+                    stringBuilder.Append("torso");
+                    if (itemData.Item.Shirt.ProtectsArms)
+                        stringBuilder.Append(" and arms");
+                }
+                else if (itemData.Item is Item_LegArmor)
+                    stringBuilder.Append(" legs");
+                else if (itemData.Item is Item_Helm)
+                    stringBuilder.Append(" head");
+                stringBuilder.Append(" -</align></size>\n");*/
+
+                stringBuilder.Append($"\n  Armor: {itemData.Defense}");
+                stringBuilder.Append("\n");
+            }
+            else if (itemData.Item is Item_Ammunition)
+            {
+                stringBuilder.Append($"\n  Armor Pierce: {itemData.ArmorPierce * 100f}%");
+                stringBuilder.Append($"\n  Vs. Armor: {itemData.EffectivenessAgainstArmor * 100f}%");
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Item_Backpack)
@@ -149,9 +200,27 @@ namespace GeneralUI
                     stringBuilder.Append("\n");
                 }
             }
+            
+            // Durability, uses, or stack size
+            if (itemData.MaxDurability != 0f)
+            {
+                stringBuilder.Append($"\n<size=16>Durability: {itemData.CurrentDurability} / {itemData.MaxDurability}</size>");
+                if (itemData.CurrentDurability <= 0)
+                    stringBuilder.Append(" <b><size=16>(Broken)</size></b>");
+            }
+            else if (itemData.Item.MaxUses > 1)
+                stringBuilder.Append($"\n<size=16>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</size>");
+            else if (itemData.Item.MaxStackSize > 1)
+                stringBuilder.Append($"\n<size=16>Remaining: {itemData.CurrentStackSize} / {itemData.Item.MaxStackSize}</size>");
 
+            // Weight
             stringBuilder.Append($"\n<size=16>Weight: {itemData.Weight()} lbs</size>");
-            stringBuilder.Append($"\n<size=16>Value: {itemData.Value} g ({Mathf.RoundToInt(itemData.Value / itemData.Weight() * 100f) / 100f} g/lb)</size>");
+
+            // Value
+            if (itemData.Item.MaxStackSize > 1)
+                stringBuilder.Append($"\n<size=16>Value: {itemData.Value * itemData.CurrentStackSize} g ({itemData.Value}g each at {Mathf.RoundToInt(itemData.Value / itemData.Item.Weight * 100f) / 100f} g/lb)</size>");
+            else
+                stringBuilder.Append($"\n<size=16>Value: {itemData.Value} g ({Mathf.RoundToInt(itemData.Value / itemData.Item.Weight * 100f) / 100f} g/lb)</size>");
 
             textMesh.text = stringBuilder.ToString();
             gameObject.SetActive(true);
@@ -298,10 +367,10 @@ namespace GeneralUI
                     // Determine y position
                     if (newTooltipPosition.y >= Screen.height - (tooltipHeight / 2f)) // Too close to the top
                         newTooltipPosition.Set(newTooltipPosition.x, Screen.height - (tooltipHeight / 2f) - defaultSlotSize, 0);
-                    else if (Mathf.RoundToInt(slotHeight) == defaultSlotSize) // Abnormal slot size (i.e. arrow slot)
+                    else if (Mathf.RoundToInt(slotHeight / TooltipManager.Canvas.scaleFactor) == defaultSlotSize) // Normal slot size
                         newTooltipPosition.Set(newTooltipPosition.x, newTooltipPosition.y + (itemHeight * (slotHeight / 2f)) - (slotHeight / 2f), 0);
-                    else
-                        newTooltipPosition.Set(newTooltipPosition.x, newTooltipPosition.y + (itemHeight * slotHeight / 2f) - (slotHeight / 2f), 0);
+                    else // Abnormal slot size (i.e. arrow slot)
+                        newTooltipPosition.Set(newTooltipPosition.x, newTooltipPosition.y, 0);
 
                     if (newTooltipPosition.y <= tooltipHeight / 2f) // Too close to the bottom
                         newTooltipPosition.Set(newTooltipPosition.x, (tooltipHeight / 2f) + defaultSlotSize, 0);

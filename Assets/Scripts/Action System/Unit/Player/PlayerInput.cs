@@ -407,7 +407,7 @@ namespace UnitSystem.ActionSystem
                             if (unitHit.transform.TryGetComponent(out Unit targetUnit))
                             {
                                 HighlightedUnit = targetUnit;
-                                mouseGridPosition = targetUnit.GridPosition;
+                                //mouseGridPosition = targetUnit.GridPosition;
                                 if (HighlightedUnit != player && !HighlightedUnit.HealthSystem.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
@@ -439,15 +439,13 @@ namespace UnitSystem.ActionSystem
                             ClearHighlightedInteractable();
                             SetAttackCursor();
                             
-                            if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && unitAtGridPosition.HealthSystem.IsDead == false && player.Vision.IsVisible(unitAtGridPosition))
+                            if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && !unitAtGridPosition.HealthSystem.IsDead && player.Vision.IsVisible(unitAtGridPosition))
                             {
                                 if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
                                 else
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Melee>());
                             }
-                            else
-                                TooltipManager.ClearUnitTooltips();
 
                             HighlightedUnit = unitAtGridPosition;
                         }
@@ -521,18 +519,7 @@ namespace UnitSystem.ActionSystem
         void SetAttackCursor()
         {
             if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
-            {
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
-
-                if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack && player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.IsInAttackRange(null, player.GridPosition, mouseGridPosition))
-                    ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), mouseGridPosition.WorldPosition);
-                else if (HighlightedUnit != null)
-                {
-                    Action_Shoot shootAction = player.UnitActionHandler.GetAction<Action_Shoot>();
-                    if (shootAction != null && shootAction.IsInAttackRange(HighlightedUnit, player.GridPosition, HighlightedUnit.GridPosition))
-                        ActionLineRenderer.Instance.DrawParabola(player.WorldPosition + (player.ShoulderHeight * Vector3.up) + (0.33f * player.transform.forward), HighlightedUnit.WorldPosition + (HighlightedUnit.ShoulderHeight * Vector3.up));
-                }
-            }
             else if (player.UnitEquipment.MeleeWeaponEquipped || player.Stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);
             else

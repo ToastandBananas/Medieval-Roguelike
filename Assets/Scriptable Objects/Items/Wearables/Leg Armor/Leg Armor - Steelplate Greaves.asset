@@ -38,5 +38,5 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 01b1e4093164ee54ebcf5f776649da88, type: 2}
   equipSlot: 12
   actionTypes: []
-  defenseRange: {x: 82, y: 90}
+  defenseRange: {x: 12, y: 14}
   durabilityRange: {x: 800, y: 870}

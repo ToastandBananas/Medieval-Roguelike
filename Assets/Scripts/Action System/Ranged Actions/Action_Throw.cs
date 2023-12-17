@@ -20,6 +20,9 @@ namespace UnitSystem.ActionSystem.Actions
         public static readonly float maxThrowDistance = 6f;
         public static readonly float minMaxThrowDistance = 2.85f;
 
+        readonly float defaultThrowEffectivenessAgainstArmor = 1f;
+        readonly float defaultThrowArmorPierce = 0.33f;
+
         void Awake()
         {
             Throwables = new();
@@ -166,6 +169,23 @@ namespace UnitSystem.ActionSystem.Actions
                 damage = itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
             damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
             return damage;
+        }
+
+        protected override float GetEffectivenessAgainstArmor(HeldItem heldItemAttackingWith, ItemData itemHittingWith)
+        {
+            if (itemHittingWith != null && itemHittingWith.EffectivenessAgainstArmor > 0f)
+                return itemHittingWith.EffectivenessAgainstArmor;
+            return defaultThrowEffectivenessAgainstArmor * EffectivenessAgainstArmorModifier();
+        }
+
+        protected override float GetArmorPierce(HeldItem heldItemAttackingWith, ItemData itemHittingWith)
+        {
+            float armorPierce;
+            if (itemHittingWith != null && itemHittingWith.ArmorPierce > 0f)
+                armorPierce = itemHittingWith.ArmorPierce * ArmorPierceModifier();
+            else
+                armorPierce = defaultThrowArmorPierce * ArmorPierceModifier();
+            return Mathf.Clamp01(armorPierce);
         }
 
         public override bool TryHitTarget(GridPosition targetGridPosition)

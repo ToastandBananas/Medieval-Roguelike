@@ -34,6 +34,10 @@ namespace InventorySystem
         [Tooltip("Amount the arc height will be multiplied by. (0 = no arc)")]
         [SerializeField] float arcMultiplier = 1f;
 
+        [Header("Effectiveness Against Armor")]
+        [SerializeField, Range(0f, 1f)] float armorPierce;
+        [SerializeField, Range(0f, 5f)] float armorEffectiveness;
+
         public override Sprite InventorySprite(ItemData itemData = null)
         {
             if (itemData == null)
@@ -65,5 +69,8 @@ namespace InventorySystem
         public ProjectileAnimationType ProjectileAnimationType => projectileAnimationType;
         public float SpeedMultiplier => speedMultiplier;
         public float ArcMultiplier => arcMultiplier;
+
+        public float ArmorPierce => armorPierce;
+        public float ArmorEffectiveness => armorEffectiveness;
     }
 }

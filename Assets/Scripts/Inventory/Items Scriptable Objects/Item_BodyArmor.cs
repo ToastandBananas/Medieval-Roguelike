@@ -5,8 +5,9 @@ namespace InventorySystem
     [CreateAssetMenu(fileName = "New Body Armor", menuName = "Inventory/Body Armor")]
     public class Item_BodyArmor : Item_VisibleArmor
     {
-        [Header("Body Armor Info")]
+        [Header("Secondary Protection")]
         [SerializeField] bool protectsArms;
+        [SerializeField] bool protectsLegs;
 
         void OnEnable()
         {
@@ -18,5 +19,6 @@ namespace InventorySystem
         }
 
         public bool ProtectsArms => protectsArms;
+        public bool ProtectsLegs => protectsLegs;
     }
 }

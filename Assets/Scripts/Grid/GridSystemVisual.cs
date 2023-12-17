@@ -152,8 +152,11 @@ namespace GridSystem
 
             Instance.ShowAttackGridPositionList(selectedAction.GetActionAreaGridPositions(WorldMouse.currentGridPosition));
 
-            if (selectedAction.BaseAttackAction.IsRangedAttackAction())
+            if (WorldMouse.currentGridPosition != Instance.player.GridPosition && selectedAction.BaseAttackAction.IsRangedAttackAction() && LevelGrid.HasUnitAtGridPosition(WorldMouse.currentGridPosition, out _)
+                && selectedAction.BaseAttackAction.IsInAttackRange(null, Instance.player.GridPosition, WorldMouse.currentGridPosition))
+            {
                 ActionLineRenderer.Instance.DrawParabola(Instance.player.WorldPosition + (Instance.player.ShoulderHeight * Vector3.up), WorldMouse.currentGridPosition.WorldPosition);
+            }
         }
 
         Material GetGridVisualTypeMaterial(GridVisualType gridVisualType)

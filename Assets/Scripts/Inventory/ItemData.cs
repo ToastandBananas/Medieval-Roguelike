@@ -92,7 +92,13 @@ namespace InventorySystem
 
                     if (item is Item_Equipment)
                     {
-                        if (item is Item_Armor)
+                        if (item is Item_Ammunition)
+                        {
+                            Item_Ammunition ammo = item as Item_Ammunition;
+                            armorPierce = Mathf.RoundToInt(ammo.ArmorPierce * 100f) / 100f;
+                            effectivenessAgainstArmor = Mathf.RoundToInt(ammo.ArmorEffectiveness * 100f) / 100f;
+                        }
+                        else if (item is Item_Armor)
                         {
                             Item_Armor armor = item as Item_Armor;
                             defense = Random.Range(armor.MinDefense, armor.MaxDefense + 1);
@@ -166,7 +172,9 @@ namespace InventorySystem
 
             if (item is Item_Equipment)
             {
-                if (item is Item_Armor)
+                if (item is Item_Ammunition) // Ammo will always have a static value
+                    currentPoints = 1f;
+                else if (item is Item_Armor)
                 {
                     Item_Armor armor = item as Item_Armor;
                     currentPoints += (defense - armor.MinDefense) * 2f;
@@ -217,7 +225,9 @@ namespace InventorySystem
 
             if (item is Item_Equipment)
             {
-                if (item is Item_Armor)
+                if (item is Item_Ammunition) // Ammo will always have a static value
+                    totalPointsPossible = 1f;
+                else if (item is Item_Armor)
                 {
                     Item_Armor armor = item as Item_Armor;
                     totalPointsPossible += (armor.MaxDefense - armor.MinDefense) * 2f;
@@ -376,9 +386,26 @@ namespace InventorySystem
                 return item.Weight * currentStackSize;
         }
 
-        public void AdjustDurability(int amount)
+        public void RepairDurability(int amount)
         {
+            if (maxDurability <= 0 || amount == 0)
+                return;
+
+            if (amount < 0) amount *= -1;
+
             currentDurability += amount;
+            currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
+        }
+
+        public void DamageDurability(int amount)
+        {
+            if (maxDurability <= 0 || amount == 0)
+                return;
+
+            if (amount < 0) amount *= -1;
+
+            // Debug.Log($"Damaging {item.Name} for {amount} durability");
+            currentDurability -= amount;
             currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
             if (currentDurability == 0)
             {
