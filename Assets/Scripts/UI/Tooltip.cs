@@ -86,7 +86,7 @@ namespace GeneralUI
             // Description
             stringBuilder.Append($"<size=16>{StringUtilities.SplitTextIntoParagraphs(itemData.Item.Description, maxCharactersPerLine)}</size>\n");
 
-            if (itemData.ThrowingDamageMultiplier != 0f)
+            if (itemData.ThrowingDamageMultiplier != 0f && itemData.Item is Item_Weapon == false)
             {
                 if (itemData.ThrowingDamageMultiplier < 0f)
                     stringBuilder.Append($"\n  Throwing Damage: {itemData.ThrowingDamageMultiplier * 100f}%");
@@ -97,6 +97,15 @@ namespace GeneralUI
             if (itemData.Item is Item_Weapon)
             {
                 stringBuilder.Append($"\n  Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
+
+                if (itemData.ThrowingDamageMultiplier != 0f)
+                {
+                    if (itemData.ThrowingDamageMultiplier < 0f)
+                        stringBuilder.Append($"\n  Throwing Damage: {itemData.ThrowingDamageMultiplier * 100f}%");
+                    else
+                        stringBuilder.Append($"\n  Throwing Damage: +{itemData.ThrowingDamageMultiplier * 100f}%");
+                }
+
                 stringBuilder.Append($"\n  Armor Pierce: {itemData.ArmorPierce * 100f}%");
                 stringBuilder.Append($"\n  Vs. Armor: {itemData.EffectivenessAgainstArmor * 100f}%");
 
@@ -120,11 +129,6 @@ namespace GeneralUI
             }
             else if (itemData.Item is Item_Shield)
             {
-                if (itemData.BlockPower < 0)
-                    stringBuilder.Append($"\n  Block Power: {itemData.BlockPower}");
-                else
-                    stringBuilder.Append($"\n  Block Power: +{itemData.BlockPower}");
-
                 if (itemData.BlockChanceModifier != 0f)
                 {
                     if (itemData.BlockChanceModifier < 0f)
@@ -138,29 +142,6 @@ namespace GeneralUI
             }
             else if (itemData.Item is Item_Armor)
             {
-                /*stringBuilder.Append("\n<size=16><align=center>- Protects ");
-                if (itemData.Item is Item_BodyArmor)
-                {
-                    stringBuilder.Append("torso");
-                    if (itemData.Item.BodyArmor.ProtectsArms && itemData.Item.BodyArmor.ProtectsLegs)
-                        stringBuilder.Append(", arms, and legs");
-                    else if (itemData.Item.BodyArmor.ProtectsArms)
-                        stringBuilder.Append(" and arms");
-                    else if (itemData.Item.BodyArmor.ProtectsLegs)
-                        stringBuilder.Append(" and legs");
-                }
-                else if (itemData.Item is Item_Shirt)
-                {
-                    stringBuilder.Append("torso");
-                    if (itemData.Item.Shirt.ProtectsArms)
-                        stringBuilder.Append(" and arms");
-                }
-                else if (itemData.Item is Item_LegArmor)
-                    stringBuilder.Append(" legs");
-                else if (itemData.Item is Item_Helm)
-                    stringBuilder.Append(" head");
-                stringBuilder.Append(" -</align></size>\n");*/
-
                 stringBuilder.Append($"\n  Armor: {itemData.Defense}");
                 stringBuilder.Append("\n");
             }
@@ -206,7 +187,7 @@ namespace GeneralUI
             {
                 stringBuilder.Append($"\n<size=16>Durability: {itemData.CurrentDurability} / {itemData.MaxDurability}</size>");
                 if (itemData.CurrentDurability <= 0)
-                    stringBuilder.Append(" <b><size=16>(Broken)</size></b>");
+                    stringBuilder.Append(" <size=16>(Broken)</size>");
             }
             else if (itemData.Item.MaxUses > 1)
                 stringBuilder.Append($"\n<size=16>Remaining Uses: {itemData.RemainingUses} / {itemData.Item.MaxUses}</size>");

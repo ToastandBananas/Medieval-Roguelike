@@ -39,9 +39,7 @@ namespace InventorySystem
 
             // Setup our starting equipment
             for (int i = 0; i < startingEquipment.Length; i++)
-            {
                 equippedItemDatas[i].SetItem(startingEquipment[i]);
-            }
 
             if (myUnit.IsPlayer)
                 CreateSlotVisuals();
@@ -55,12 +53,12 @@ namespace InventorySystem
 
         public bool CanEquipItemAt(ItemData newItemData, EquipSlot targetEquipSlot)
         {
-            if (newItemData.Item is Item_Equipment == false)
+            if (newItemData.Item is Item_Equipment == false || newItemData.IsBroken)
                 return false;
 
-            if ((IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsHeldItemEquipSlot(targetEquipSlot) == false)
+            if ((IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && !IsHeldItemEquipSlot(targetEquipSlot))
                 //|| (IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) && IsRingEquipSlot(targetEquipSlot) == false)
-                || (IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) == false && /*IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) == false &&*/ newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
+                || (!IsHeldItemEquipSlot(newItemData.Item.Equipment.EquipSlot) && /*IsRingEquipSlot(newItemData.Item.Equipment.EquipSlot) == false &&*/ newItemData.Item.Equipment.EquipSlot != targetEquipSlot))
                 return false;
 
             if (targetEquipSlot == EquipSlot.Quiver && newItemData.Item is Item_Ammunition)
@@ -78,7 +76,7 @@ namespace InventorySystem
                         SlotCoordinate slotCoord = myUnit.QuiverInventoryManager.ParentInventory.GetSlotCoordinate(i + 1, 1).parentSlotCoordinate;
 
                         // If there's an empty slot, the ammo will fit
-                        if (slotCoord.isFull == false) 
+                        if (!slotCoord.isFull) 
                             return true;
                         else if (newItemData.IsEqual(slotCoord.itemData))
                             availableSpace += slotCoord.itemData.Item.MaxStackSize - slotCoord.itemData.CurrentStackSize;
@@ -87,11 +85,11 @@ namespace InventorySystem
                 else
                 {
                     // If the slot is empty, the ammo will fit
-                    if (EquipSlotHasItem(EquipSlot.Quiver) == false)
+                    if (!EquipSlotHasItem(EquipSlot.Quiver))
                         return true;
 
                     // We would just be replacing the ammo in this case, so return true
-                    if (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) == false)
+                    if (!newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]))
                         return true;
 
                     availableSpace = quiverSlotItemData.Item.MaxStackSize - quiverSlotItemData.CurrentStackSize;
@@ -118,7 +116,8 @@ namespace InventorySystem
             }
 
             // If trying to place ammo on a Quiver slot that has a Quiver or the same type of arrows equipped
-            if (newItemData.Item is Item_Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
+            if (newItemData.Item is Item_Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) 
+                && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
                 TryAddToEquippedAmmunition(newItemData);
             else
                 Equip(newItemData, targetEquipSlot);
@@ -369,7 +368,7 @@ namespace InventorySystem
                 else if (EquipSlotIsFull(targetEquipSlot))
                 {
                     EquipSlot oppositeWeaponEquipSlot = GetOppositeWeaponEquipSlot(targetEquipSlot);
-                    if (EquipSlotIsFull(oppositeWeaponEquipSlot) == false)
+                    if (!EquipSlotIsFull(oppositeWeaponEquipSlot))
                         targetEquipSlot = oppositeWeaponEquipSlot;
                 }
             }
@@ -1309,6 +1308,9 @@ namespace InventorySystem
 
         public bool ItemDataEquipped(ItemData itemData)
         {
+            if (itemData == null || itemData.Item == null)
+                return false;
+
             for (int i = 0; i < equippedItemDatas.Length; i++)
             {
                 if (equippedItemDatas[i] == itemData)

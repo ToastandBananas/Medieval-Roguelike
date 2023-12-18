@@ -1,3 +1,4 @@
+using UnitSystem;
 using UnityEngine;
 
 namespace InventorySystem
@@ -48,7 +49,7 @@ namespace InventorySystem
         {
             if (item != null)
             {
-                if (forceRandomization || hasBeenRandomized == false)
+                if (forceRandomization || !hasBeenRandomized)
                 {
                     hasBeenRandomized = true;
 
@@ -391,32 +392,45 @@ namespace InventorySystem
             if (maxDurability <= 0 || amount == 0)
                 return;
 
-            if (amount < 0) amount *= -1;
+            if (amount < 0)
+            {
+                Debug.LogWarning($"Durability repair amount to {item.Name} is less than 0...");
+                amount *= -1;
+            }
 
             currentDurability += amount;
             currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
         }
 
-        public void DamageDurability(int amount)
+        public void DamageDurability(Unit unit, int amount)
         {
             if (maxDurability <= 0 || amount == 0)
                 return;
 
-            if (amount < 0) amount *= -1;
+            if (amount < 0)
+            {
+                Debug.LogWarning($"Durability damage to {item.Name} is less than 0...");
+                amount *= -1;
+            }
 
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
             currentDurability -= amount;
             currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
             if (currentDurability == 0)
             {
+                if (!unit.UnitEquipment.ItemDataEquipped(this))
+                    return;
+
                 Debug.Log(item.Name + " broke");
+                if (this == unit.UnitMeshManager.leftHeldItem.ItemData || this == unit.UnitMeshManager.rightHeldItem.ItemData || (this == unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
+                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(this));
+                else
+                    unit.UnitEquipment.UnequipItem(unit.UnitEquipment.GetEquipSlotFromItemData(this));
             }
         }
 
         public void Use(int uses) => remainingUses -= uses;
-
         public void AddToUses(int uses) => remainingUses += uses;
-
         public void ReplenishUses() => remainingUses = item.MaxUses;
 
         public void SetItem(Item newItem) => item = newItem;
@@ -427,6 +441,7 @@ namespace InventorySystem
 
         public int MaxDurability => maxDurability;
         public int CurrentDurability => currentDurability;
+        public bool IsBroken => maxDurability > 0 && currentDurability <= 0;
 
         public int Damage => Random.Range(minDamage, maxDamage + 1);
         public int MinDamage => minDamage;
@@ -444,13 +459,11 @@ namespace InventorySystem
         public int Defense => defense;
 
         public int Value => value;
-
-        public bool ShouldRandomize => hasBeenRandomized;
-
-        public SlotCoordinate InventorySlotCoordinate => inventorySlotCoordinate;
-
-        public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
+        public bool ShouldRandomize => !hasBeenRandomized;
 
         public Inventory MyInventory => inventorySlotCoordinate != null && inventorySlotCoordinate.myInventory != null ? inventorySlotCoordinate.myInventory : null;
+        public SlotCoordinate InventorySlotCoordinate => inventorySlotCoordinate;
+        public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
+
     }
 }

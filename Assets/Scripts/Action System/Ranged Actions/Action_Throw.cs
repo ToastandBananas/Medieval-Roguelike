@@ -20,6 +20,8 @@ namespace UnitSystem.ActionSystem.Actions
         public static readonly float maxThrowDistance = 6f;
         public static readonly float minMaxThrowDistance = 2.85f;
 
+        public static readonly float brokenItemDamageModifier = 0.1f;
+
         readonly float defaultThrowEffectivenessAgainstArmor = 1f;
         readonly float defaultThrowArmorPierce = 0.33f;
 
@@ -168,6 +170,8 @@ namespace UnitSystem.ActionSystem.Actions
             else
                 damage = itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
             damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
+
+            if (itemDataHittingWith.IsBroken) damage *= brokenItemDamageModifier;
             return damage;
         }
 

@@ -126,14 +126,14 @@ namespace UnitSystem
             Vector3 knockbackTargetPosition = originalPosition + knockbackDirection * knockbackForce;
 
             // Knockback
-            while (beingKnockedBack == false && elapsedTime < knockbackDuration && unit.HealthSystem.IsDead == false)
+            while (!beingKnockedBack && elapsedTime < knockbackDuration && !unit.HealthSystem.IsDead)
             {
                 elapsedTime += Time.deltaTime;
                 unit.transform.position = Vector3.Lerp(originalPosition, knockbackTargetPosition, elapsedTime / knockbackDuration);
                 yield return null;
             }
 
-            if (beingKnockedBack == false)
+            if (!beingKnockedBack)
                 StartCoroutine(ReturnToOriginalPosition(knockbackTargetPosition, originalPosition, 0.1f));
         }
 

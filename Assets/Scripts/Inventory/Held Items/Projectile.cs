@@ -559,6 +559,7 @@ namespace InventorySystem
                     if (heldShield == shooter.UnitMeshManager.leftHeldItem || heldShield == shooter.UnitMeshManager.rightHeldItem)
                         return;
 
+                    // This won't actually do any damage since the attack was blocked, but it will still have a chance to knockback the targetUnit
                     Unit targetUnit = collider.GetComponentInParent<Unit>();
                     attackActionUsed.DamageBodyPart(targetUnit, targetUnit.HealthSystem.GetBodyPart(UnitSystem.BodyPartType.Torso), heldRangedWeaponUsed, itemData, heldShield);
                     Arrived(collider, collider.transform, false);

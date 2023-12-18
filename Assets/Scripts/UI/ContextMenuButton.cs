@@ -30,6 +30,7 @@ namespace GeneralUI
             ContextMenu.DisableContextMenu();
         }
 
+        /// <summary>Generated from action button.</summary>
         public void SetupThrowWeaponButton(ItemData itemDataToThrow)
         {
             stringBuilder.Clear();
@@ -53,7 +54,14 @@ namespace GeneralUI
             ContextMenu.DisableContextMenu();
         }
 
-        public void SetupThrowItemButton() => SetupButton($"Throw", ReadyThrownItem);
+        public void SetupThrowItemButton(ItemData itemDataToThrow)
+        {
+            stringBuilder.Clear();
+            stringBuilder.Append("Throw");
+            if (itemDataToThrow.IsBroken)
+                stringBuilder.Append($" (Broken: -{(1f - Action_Throw.brokenItemDamageModifier) * 100f}% Damage)");
+            SetupButton(stringBuilder.ToString(), ReadyThrownItem);
+        }
 
         void ReadyThrownItem()
         {

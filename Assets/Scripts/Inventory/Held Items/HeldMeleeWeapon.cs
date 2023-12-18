@@ -157,7 +157,7 @@ namespace InventorySystem
                 Anim.Play("LowerWeapon_1H_L");
         }
 
-        public void Recoil()
+        public override void Recoil()
         {
             if (unit.UnitMeshManager.rightHeldItem == this)
             {

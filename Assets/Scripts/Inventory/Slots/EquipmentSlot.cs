@@ -122,7 +122,7 @@ namespace InventorySystem
             bool validSlot = false;
             Item draggedItem = InventoryUI.DraggedItem.itemData.Item;
 
-            if (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this))
+            if (InventoryUI.DraggedItem.itemData.IsBroken || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this)))
                 validSlot = false;
             else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
                 validSlot = true;

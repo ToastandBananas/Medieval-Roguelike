@@ -45,7 +45,7 @@ namespace InventorySystem
         public void LowerShield()
         {
             // Don't lower the Unit's shield if they should keep blocking (due to Raise Shield Action)
-            if (shouldKeepBlocking || IsBlocking == false)
+            if (shouldKeepBlocking || !IsBlocking)
                 return;
 
             IsBlocking = false;
@@ -55,7 +55,7 @@ namespace InventorySystem
                 Anim.Play("LowerShield_R");
         }
 
-        public void Recoil()
+        public override void Recoil()
         {
             if (IsBlocking)
             {

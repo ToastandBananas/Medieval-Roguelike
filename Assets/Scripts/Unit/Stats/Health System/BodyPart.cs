@@ -37,7 +37,11 @@ namespace UnitSystem
         public void TakeDamage(int damageAmount, Unit attacker)
         {
             if (damageAmount <= 0)
+            {
+                if (attacker != null)
+                    HealthSystem.Unit.UnitAnimator.DoSlightKnockback(attacker.transform);
                 return;
+            }
 
             int startHealth = currentHealth;
             currentHealth -= damageAmount;

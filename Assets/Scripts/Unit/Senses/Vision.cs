@@ -640,7 +640,7 @@ namespace UnitSystem
             float closestLooseItemDistance = 1000000;
             foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.IsBroken)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
@@ -660,7 +660,7 @@ namespace UnitSystem
             float closestWeaponDistance = 1000000;
             foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_Weapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_Weapon == false || knownLooseItem.Key.ItemData.IsBroken)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
@@ -681,7 +681,7 @@ namespace UnitSystem
             float closestMeleeWeaponDistance = 1000000;
             foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_MeleeWeapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_MeleeWeapon == false || knownLooseItem.Key.ItemData.IsBroken)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);
@@ -702,7 +702,7 @@ namespace UnitSystem
             float closestRangedWeaponDistance = 1000000;
             foreach (KeyValuePair<Interactable_LooseItem, int> knownLooseItem in knownLooseItems)
             {
-                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_RangedWeapon == false)
+                if (knownLooseItem.Key.ItemData == null || knownLooseItem.Key.ItemData.Item == null || knownLooseItem.Key.ItemData.Item is Item_RangedWeapon == false || knownLooseItem.Key.ItemData.IsBroken)
                     continue;
 
                 float distToLooseItem = Vector3.Distance(unit.WorldPosition, knownLooseItem.Key.GridPosition().WorldPosition);

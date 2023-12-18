@@ -280,9 +280,7 @@ namespace GeneralUI
             }
 
             for (int i = 0; i < uniqueThrowables.Count; i++)
-            {
                 GetContextMenuButton().SetupThrowWeaponButton(throwAction.Throwables[i]);
-            }
 
             buttonCount = uniqueThrowables.Count;
             ListPool<ItemData>.Release(uniqueThrowables);
@@ -290,10 +288,10 @@ namespace GeneralUI
 
         static void CreateThrowItemButton()
         {
-            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && (!TargetSlot.EquipmentSlot.IsHeldItemSlot() || TargetSlot.GetItemData().Item is Item_MeleeWeapon == false)))
+            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && (!TargetSlot.EquipmentSlot.IsHeldItemSlot() || (TargetSlot.GetItemData().Item is Item_MeleeWeapon == false && TargetSlot.GetItemData().Item is Item_Shield == false))))
                 return;
 
-            GetContextMenuButton().SetupThrowItemButton();
+            GetContextMenuButton().SetupThrowItemButton(TargetSlot.GetItemData());
         }
 
         static void CreateMoveToButton()
@@ -485,7 +483,7 @@ namespace GeneralUI
                     return;
             }
 
-            if (itemData == null || itemData.Item == null || !itemData.Item.IsUsable)
+            if (itemData == null || itemData.Item == null || !itemData.Item.IsUsable || itemData.IsBroken)
                 return;
 
             if (itemData.Item is Item_Ammunition && UnitManager.player.QuiverInventoryManager.Contains(itemData))

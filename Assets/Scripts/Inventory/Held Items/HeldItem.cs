@@ -287,6 +287,8 @@ namespace InventorySystem
 
         public virtual void StopBlocking() { }
 
+        public virtual void Recoil() { }
+
         public void SetDefaultWeaponStance()
         {
             if (CurrentHeldItemStance == HeldItemStance.Versatile)

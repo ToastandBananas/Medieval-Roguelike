@@ -71,9 +71,10 @@ namespace UnitSystem.ActionSystem.Actions
             if (targetUnit == null || bodyPart == null || targetUnit.HealthSystem.IsDead)
                 return;
 
-            targetUnit.UnitActionHandler.InterruptActions();
+            int damageDone = DealDamageToTarget(targetUnit, bodyPart, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith, out bool attackBlocked);
+            if (damageDone > 0)
+                targetUnit.UnitActionHandler.InterruptActions(); // Only interrupt actions if the attack did damage
 
-            float damageDone = DealDamageToTarget(targetUnit, bodyPart, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith, out bool attackBlocked);
             TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemHittingWith, damageDone, attackBlocked);
         }
 
@@ -109,21 +110,65 @@ namespace UnitSystem.ActionSystem.Actions
 
         int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith, out bool attackBlocked)
         {
-            DamageArmorAndWeapon(targetUnit, bodyPartHit, heldItemAttackingWith, itemHittingWith, GetBaseDamage(heldItemAttackingWith, itemHittingWith), out float damageAfterArmor);
+            float damageAfterArmor = 0f;
 
-            // If the attack was blocked
+            // If the attack was blocked, damage the blocking item's durability, as well as the weapon attacking with
             if (heldItemBlockedWith != null)
             {
                 attackBlocked = true;
-                damageAfterArmor -= GetTargetUnitBlockAmount(targetUnit, heldItemBlockedWith);
-            }
-            else
-                attackBlocked = false;
+                int damage = Mathf.RoundToInt(GetBaseDamage(heldItemAttackingWith, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith));
+                heldItemBlockedWith.ItemData.DamageDurability(Unit, damage);
+                if (targetUnit.UnitEquipment.ItemDataEquipped(heldItemBlockedWith.ItemData))
+                {
+                    // Play the recoil animation & then lower the shield if not in Raise Shield Stance
+                    heldItemBlockedWith.Recoil();
 
-            if (damageAfterArmor < 0) damageAfterArmor = 0f;
+                    // Potentially fumble & drop the shield
+                    heldItemBlockedWith.TryFumbleHeldItem();
+                }
+
+                Unit.StartCoroutine(DamageWeaponAgainstBlock(targetUnit, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith));
+                // damageAfterArmor -= GetTargetUnitBlockAmount(targetUnit, heldItemBlockedWith);
+            }
+            else // If the attack hit the target, determine/apply the final damage to the hit body part, damage their armor's durability, and damage the item attacking with
+            {
+                attackBlocked = false;
+                DamageArmorAndWeapon(targetUnit, bodyPartHit, heldItemAttackingWith, itemHittingWith, GetBaseDamage(heldItemAttackingWith, itemHittingWith), out damageAfterArmor);
+                if (damageAfterArmor < 0f) damageAfterArmor = 0f;
+            }
 
             bodyPartHit.TakeDamage(Mathf.RoundToInt(damageAfterArmor), Unit);
             return Mathf.RoundToInt(damageAfterArmor);
+        }
+
+        IEnumerator DamageWeaponAgainstBlock(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith)
+        {
+            while (Unit.UnitActionHandler.IsAttacking) // Wait to finish attacking, in case the weapon is dropped (otherwise it would cause a null reference error for the held weapon in knockback)
+                yield return null;
+
+            if (heldItemBlockedWith == null || heldItemBlockedWith.ItemData == null || heldItemBlockedWith.ItemData.Item == null)
+                yield break;
+
+            if (heldItemAttackingWith != null)
+            {
+                if (heldItemAttackingWith.ItemData == null || heldItemAttackingWith.ItemData.Item == null)
+                    yield break;
+
+                if (heldItemBlockedWith is HeldShield)
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
+                else if (heldItemBlockedWith is HeldMeleeWeapon)
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
+            }
+            else if (itemHittingWith != null && itemHittingWith.MaxDurability > 0)
+            {
+                if (itemHittingWith.Item == null)
+                    yield break;
+
+                if (heldItemBlockedWith is HeldShield)
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
+                else if (heldItemBlockedWith is HeldMeleeWeapon)
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
+            }
         }
 
         void DamageArmorAndWeapon(Unit targetUnit, BodyPart bodyPartHit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, float damage, out float damageAfterArmor)
@@ -167,14 +212,28 @@ namespace UnitSystem.ActionSystem.Actions
             float excessDamage2 = damage * (1f - armorPierce) * (1f - durabilityDamageDoneRatio2);                                     //Debug.Log($"Excess Damage 2: {excessDamage2}");
 
             // Damage weapon's durability
-            if (heldItemAttackingWith != null)
-                heldItemAttackingWith.ItemData.DamageDurability(WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
-            else
-                itemHittingWith?.DamageDurability(WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
+            Unit.StartCoroutine(DamageWeaponAgainstArmor(heldItemAttackingWith, itemHittingWith, defenseLayer1, durabilityDamageDoneRatio1, defenseLayer2, durabilityDamageDoneRatio2));
 
             // Total damage to targetUnit is the sum of pierced and excess damage from both armor layers
             // Debug.Log($"Final Damage: {piercedDamage2 + excessDamage2}");
             damageAfterArmor = piercedDamage2 + excessDamage2;
+        }
+
+        IEnumerator DamageWeaponAgainstArmor(HeldItem heldItemAttackingWith, ItemData itemHittingWith, int defenseLayer1, float durabilityDamageDoneRatio1, int defenseLayer2, float durabilityDamageDoneRatio2)
+        {
+            while (Unit.UnitActionHandler.IsAttacking) // Wait to finish attacking, in case the weapon is dropped (otherwise it would cause a null reference error for the held weapon in knockback)
+                yield return null;
+
+            if (heldItemAttackingWith != null)
+            {
+                if (heldItemAttackingWith.ItemData != null && heldItemAttackingWith.ItemData.Item != null)
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
+            }
+            else if (itemHittingWith != null)
+            {
+                if (itemHittingWith.Item != null)
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
+            }
         }
 
         protected virtual float GetEffectivenessAgainstArmor(HeldItem heldItemAttackingWith, ItemData itemHittingWith)
@@ -275,28 +334,28 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor)) 
                     { 
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 case BodyPartType.Arm:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsArms) 
                     { 
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 case BodyPartType.Leg:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Legs))
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 default:
@@ -316,14 +375,14 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 case BodyPartType.Arm:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.ProtectsArms)
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
                     }
                     break;
                 default:
@@ -337,7 +396,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         protected virtual float ArmorPierceModifier() => 1f;
 
-        protected float GetTargetUnitBlockAmount(Unit targetUnit, HeldItem heldItemBlockedWith)
+        /*protected float GetTargetUnitBlockAmount(Unit targetUnit, HeldItem heldItemBlockedWith)
         {
             float blockAmount = 0f;
             if (heldItemBlockedWith == null)
@@ -375,7 +434,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
 
             return blockAmount;
-        }
+        }*/
 
         protected void TryKnockbackTargetUnit(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, float damageAmount, bool attackBlocked)
         {

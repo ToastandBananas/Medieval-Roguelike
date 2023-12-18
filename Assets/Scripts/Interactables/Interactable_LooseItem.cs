@@ -88,13 +88,16 @@ namespace InteractableObjects
         protected bool TryEquipOnPickup(Unit unitPickingUpItem)
         {
             bool equipped = false;
+            if (itemData.IsBroken)
+                return false;
+
             if (itemData.Item is Item_Equipment)
             {
                 // Don't equip a second shield
                 if (itemData.Item is Item_Shield && unitPickingUpItem.UnitEquipment.ShieldEquipped)
                     return false;
 
-                if (itemData.Item is Item_Weapon && itemData.Item.Weapon.IsTwoHanded && unitPickingUpItem.UnitEquipment.MeleeWeaponEquipped)
+                if (itemData.Item is Item_Weapon && itemData.Item.Weapon.IsTwoHanded && (unitPickingUpItem.UnitEquipment.MeleeWeaponEquipped || unitPickingUpItem.UnitEquipment.ShieldEquipped))
                     return false;
 
                 // Don't equip a second weapon or a shield if the character is in Versatile Stance
@@ -115,7 +118,7 @@ namespace InteractableObjects
                     if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot))
                     {
                         EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
-                        if ((itemData.Item is Item_Weapon == false || itemData.Item.Weapon.IsTwoHanded == false) && unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot) == false)
+                        if ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && !unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot))
                         {
                             equipped = true;
                             unitPickingUpItem.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemData, itemData.CurrentStackSize, null);
@@ -146,11 +149,14 @@ namespace InteractableObjects
                         unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, null);
                     }
                 }*/
-                else if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) == false || (itemData.Item is Item_Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
+                else if (!unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) || (itemData.Item is Item_Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
                 {
                     equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
-                    unitPickingUpItem.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemData, itemData.CurrentStackSize, this is Interactable_LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null, InventoryActionType.Equip);
-                    unitPickingUpItem.UnitActionHandler.GetAction<Action_Equip>().TakeActionImmediately(itemData, targetEquipSlot, this is Interactable_LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
+                    if (equipped)
+                    {
+                        unitPickingUpItem.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemData, itemData.CurrentStackSize, this is Interactable_LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null, InventoryActionType.Equip);
+                        unitPickingUpItem.UnitActionHandler.GetAction<Action_Equip>().TakeActionImmediately(itemData, targetEquipSlot, this is Interactable_LooseContainerItem ? LooseContainerItem.ContainerInventoryManager : null);
+                    }
                 }
             }
             

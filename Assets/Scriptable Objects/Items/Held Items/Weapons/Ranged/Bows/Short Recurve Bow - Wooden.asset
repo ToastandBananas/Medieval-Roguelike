@@ -62,7 +62,7 @@ MonoBehaviour:
   isTwoHanded: 1
   isVersatile: 0
   canDualWield: 0
-  attackRange: {x: 2, y: 10}
+  attackRange: {x: 2, y: 8}
   durabilityRange: {x: 80, y: 95}
   minDamageRange: {x: 4, y: 6}
   maxDamageRange: {x: 7, y: 10}
