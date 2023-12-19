@@ -11,7 +11,7 @@ namespace InventorySystem
         [SerializeField] int remainingUses = 1;
 
         [SerializeField] int maxDurability;
-        [SerializeField] int currentDurability;
+        [SerializeField] float currentDurability;
 
         [Header("Weapons")]
         [SerializeField] int minDamage;
@@ -127,8 +127,8 @@ namespace InventorySystem
                             knockbackChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinKnockbackModifier, weapon.MaxKnockbackModifier) * 100f) / 100f;
                         }
 
-                        currentDurability = Random.Range(Mathf.RoundToInt(0.2f * maxDurability), maxDurability + 1);
-                        if (currentDurability < 0) currentDurability = 0;
+                        currentDurability = Random.Range(0.5f * maxDurability, maxDurability);
+                        if (currentDurability < 0f) currentDurability = 0f;
                     }
                     else if (item is Item_Consumable)
                     {
@@ -387,45 +387,45 @@ namespace InventorySystem
                 return item.Weight * currentStackSize;
         }
 
-        public void RepairDurability(int amount)
+        public void RepairDurability(float amount)
         {
-            if (maxDurability <= 0 || amount == 0)
+            if (maxDurability <= 0f || amount == 0f)
                 return;
 
-            if (amount < 0)
+            if (amount < 0f)
             {
                 Debug.LogWarning($"Durability repair amount to {item.Name} is less than 0...");
                 amount *= -1;
             }
 
             currentDurability += amount;
-            currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
+            currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
         }
 
-        public void DamageDurability(Unit unit, int amount)
+        public void DamageDurability(Unit targetUnit, float amount)
         {
-            if (maxDurability <= 0 || amount == 0)
+            if (maxDurability <= 0f || amount == 0f)
                 return;
 
-            if (amount < 0)
+            if (amount < 0f)
             {
                 Debug.LogWarning($"Durability damage to {item.Name} is less than 0...");
-                amount *= -1;
+                amount *= -1f;
             }
 
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
             currentDurability -= amount;
-            currentDurability = Mathf.Clamp(currentDurability, 0, maxDurability);
-            if (currentDurability == 0)
+            currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
+            if (currentDurability == 0f)
             {
-                if (!unit.UnitEquipment.ItemDataEquipped(this))
+                Debug.Log(item.Name + " broke");
+                if (!targetUnit.UnitEquipment.ItemDataEquipped(this))
                     return;
 
-                Debug.Log(item.Name + " broke");
-                if (this == unit.UnitMeshManager.leftHeldItem.ItemData || this == unit.UnitMeshManager.rightHeldItem.ItemData || (this == unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
-                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(this));
+                if (this == targetUnit.UnitMeshManager.leftHeldItem.ItemData || this == targetUnit.UnitMeshManager.rightHeldItem.ItemData || (this == targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
+                    DropItemManager.DropItem(targetUnit.UnitEquipment, targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));
                 else
-                    unit.UnitEquipment.UnequipItem(unit.UnitEquipment.GetEquipSlotFromItemData(this));
+                    targetUnit.UnitEquipment.UnequipItem(targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));
             }
         }
 
@@ -440,8 +440,8 @@ namespace InventorySystem
         public int RemainingUses => remainingUses;
 
         public int MaxDurability => maxDurability;
-        public int CurrentDurability => currentDurability;
-        public bool IsBroken => maxDurability > 0 && currentDurability <= 0;
+        public float CurrentDurability => currentDurability;
+        public bool IsBroken => maxDurability > 0f && currentDurability <= 0f;
 
         public int Damage => Random.Range(minDamage, maxDamage + 1);
         public int MinDamage => minDamage;

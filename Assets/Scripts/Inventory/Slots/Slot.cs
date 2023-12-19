@@ -17,15 +17,15 @@ namespace InventorySystem
 
         public virtual void ShowSlotImage()
         {
-            if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+            if (inventoryItem.ItemData == null || inventoryItem.ItemData.Item == null)
             {
                 Debug.LogWarning("There is no item in this slot...");
                 return;
             }
 
-            if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
+            if (inventoryItem.ItemData.Item.InventorySprite(inventoryItem.ItemData) == null)
             {
-                Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
+                Debug.LogError($"Sprite for {inventoryItem.ItemData.Item.name} is not yet set in the item's ScriptableObject");
                 return;
             }
 

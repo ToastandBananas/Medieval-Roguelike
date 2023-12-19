@@ -41,8 +41,8 @@ namespace InventorySystem
                 return;
             }
 
-            int width = inventoryItem.itemData.Item.Width;
-            int height = inventoryItem.itemData.Item.Height;
+            int width = inventoryItem.ItemData.Item.Width;
+            int height = inventoryItem.ItemData.Item.Height;
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
@@ -122,7 +122,7 @@ namespace InventorySystem
 
         public override void SetupEmptySlotSprites()
         {
-            if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+            if (inventoryItem.ItemData == null || inventoryItem.ItemData.Item == null)
                 return;
 
             if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
@@ -131,9 +131,9 @@ namespace InventorySystem
                 return;
             }
 
-            for (int x = 0; x < inventoryItem.itemData.Item.Width; x++)
+            for (int x = 0; x < inventoryItem.ItemData.Item.Width; x++)
             {
-                for (int y = 0; y < inventoryItem.itemData.Item.Height; y++)
+                for (int y = 0; y < inventoryItem.ItemData.Item.Height; y++)
                 {
                     myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y).SetEmptySlotSprite();
                 }
@@ -174,22 +174,22 @@ namespace InventorySystem
 
         public override void HighlightSlots()
         {
-            int width = InventoryUI.DraggedItem.itemData.Item.Width;
-            int height = InventoryUI.DraggedItem.itemData.Item.Height;
+            int width = InventoryUI.DraggedItem.ItemData.Item.Width;
+            int height = InventoryUI.DraggedItem.ItemData.Item.Height;
 
-            bool validSlot = !InventoryUI.OverlappingMultipleItems(slotCoordinate, InventoryUI.DraggedItem.itemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
+            bool validSlot = !InventoryUI.OverlappingMultipleItems(slotCoordinate, InventoryUI.DraggedItem.ItemData, out SlotCoordinate overlappedItemsParentSlotCoordinate, out int overlappedItemCount);
 
             if (validSlot)
             {
                 if (myInventory.MyUnit != null && myInventory.MyUnit.HealthSystem.IsDead
-                    && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.myInventory != myInventory))
+                    && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory != myInventory))
                 {
                     validSlot = false;
                 }
-                else if (myInventory.ItemTypeAllowed(InventoryUI.DraggedItem.itemData.Item.ItemType))
+                else if (myInventory.ItemTypeAllowed(InventoryUI.DraggedItem.ItemData.Item.ItemType))
                 {
                     if (myInventory.InventoryLayout.HasStandardSlotSize() == false) // Non-standard slot size
-                        validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.DraggedItem.itemData.Item);
+                        validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.DraggedItem.ItemData.Item);
                     else if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0) // Standard slot size
                         validSlot = false;
                 }
@@ -242,9 +242,9 @@ namespace InventorySystem
                 return;
             }
 
-            for (int x = 0; x < InventoryUI.DraggedItem.itemData.Item.Width; x++)
+            for (int x = 0; x < InventoryUI.DraggedItem.ItemData.Item.Width; x++)
             {
-                for (int y = 0; y < InventoryUI.DraggedItem.itemData.Item.Height; y++)
+                for (int y = 0; y < InventoryUI.DraggedItem.ItemData.Item.Height; y++)
                 {
                     InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
                     if (slotToHighlight == null)

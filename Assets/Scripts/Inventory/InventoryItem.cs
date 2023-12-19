@@ -7,12 +7,13 @@ namespace InventorySystem
 {
     public class InventoryItem : MonoBehaviour
     {
-        public Inventory myInventory { get; private set; }
-        public UnitEquipment myUnitEquipment { get; private set; }
-        public ItemData itemData { get; private set; }
+        public Inventory MyInventory { get; private set; }
+        public UnitEquipment MyUnitEquipment { get; private set; }
+        public ItemData ItemData { get; private set; }
 
         [Header("Components")]
         [SerializeField] protected Image iconImage;
+        [SerializeField] protected Image brokenIconImage;
         [SerializeField] protected RectTransform rectTransform;
         [SerializeField] protected Slot mySlot;
         [SerializeField] protected TextMeshProUGUI stackSizeText;
@@ -20,26 +21,26 @@ namespace InventorySystem
         public readonly static int slotSize = 60;
         public readonly static float placeholderIconSizeFactor = 5f / 6f;
 
-        public Vector2 GetDraggedItemOffset() => new Vector2(((-itemData.Item.Width * slotSize) / 2) + (slotSize / 2), ((itemData.Item.Height * slotSize) / 2) - (slotSize / 2));
+        public Vector2 GetDraggedItemOffset() => new Vector2(((-ItemData.Item.Width * slotSize) / 2) + (slotSize / 2), ((ItemData.Item.Height * slotSize) / 2) - (slotSize / 2));
 
         public void SetupIconSprite(bool fullyOpaque)
         {
             ItemData spriteItemData;
-            if ((itemData == null || itemData.Item == null) && mySlot is EquipmentSlot)
+            if ((ItemData == null || ItemData.Item == null) && mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
                 if (myEquipmentSlot.IsHeldItemSlot())
                 {
                     EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
-                    spriteItemData = oppositeWeaponSlot.InventoryItem.itemData;
-                    iconImage.sprite = oppositeWeaponSlot.InventoryItem.itemData.Item.InventorySprite(spriteItemData);
+                    spriteItemData = oppositeWeaponSlot.InventoryItem.ItemData;
+                    iconImage.sprite = oppositeWeaponSlot.InventoryItem.ItemData.Item.InventorySprite(spriteItemData);
                 }
                 else
                     return;
             }
             else
             {
-                spriteItemData = itemData;
+                spriteItemData = ItemData;
 
                 if (mySlot is EquipmentSlot && spriteItemData.Item is Item_Quiver)
                     iconImage.sprite = spriteItemData.Item.Quiver.EquippedSprite;
@@ -50,7 +51,7 @@ namespace InventorySystem
             // Setup icon size
             if (mySlot is InventorySlot)
             {
-                if (myInventory.InventoryLayout.HasStandardSlotSize())
+                if (MyInventory.InventoryLayout.HasStandardSlotSize())
                 {
                     rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.Width - 1), 0);
                     rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.Height - 1));
@@ -101,17 +102,17 @@ namespace InventorySystem
 
         public void ShowPlaceholderIcon()
         {
-            if (myInventory != null && myInventory.InventoryLayout.PlaceholderSprite != null)
+            if (MyInventory != null && MyInventory.InventoryLayout.PlaceholderSprite != null)
             {
-                iconImage.sprite = myInventory.InventoryLayout.PlaceholderSprite;
-                iconImage.rectTransform.sizeDelta = new Vector2(slotSize * myInventory.InventoryLayout.SlotWidth * placeholderIconSizeFactor, slotSize * myInventory.InventoryLayout.SlotHeight * placeholderIconSizeFactor);
+                iconImage.sprite = MyInventory.InventoryLayout.PlaceholderSprite;
+                iconImage.rectTransform.sizeDelta = new Vector2(slotSize * MyInventory.InventoryLayout.SlotWidth * placeholderIconSizeFactor, slotSize * MyInventory.InventoryLayout.SlotHeight * placeholderIconSizeFactor);
 
                 // Setup opacity
                 Color imageColor = iconImage.color;
                 imageColor.a = 0.5f;
                 iconImage.color = imageColor;
             }
-            else if (myUnitEquipment != null && mySlot != null)
+            else if (MyUnitEquipment != null && mySlot != null)
             {
                 mySlot.EquipmentSlot.PlaceholderImage.enabled = true;
                 iconImage.enabled = false;
@@ -122,9 +123,9 @@ namespace InventorySystem
 
         public void SetupDraggedSprite()
         {
-            iconImage.sprite = itemData.Item.InventorySprite(itemData);
-            rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.Width, slotSize * itemData.Item.Height);
-            iconImage.rectTransform.sizeDelta = new Vector2(slotSize * itemData.Item.Width, slotSize * itemData.Item.Height);
+            iconImage.sprite = ItemData.Item.InventorySprite(ItemData);
+            rectTransform.sizeDelta = new Vector2(slotSize * ItemData.Item.Width, slotSize * ItemData.Item.Height);
+            iconImage.rectTransform.sizeDelta = new Vector2(slotSize * ItemData.Item.Width, slotSize * ItemData.Item.Height);
             EnableIconImage();
         }
 
@@ -132,21 +133,21 @@ namespace InventorySystem
         {
             if (mySlot == null || mySlot is EquipmentSlot)
             {
-                if (itemData.CurrentStackSize == 1)
+                if (ItemData.CurrentStackSize == 1)
                     stackSizeText.text = "";
                 else
-                    stackSizeText.text = itemData.CurrentStackSize.ToString();
+                    stackSizeText.text = ItemData.CurrentStackSize.ToString();
             }
             else if (mySlot is InventorySlot)
             {
                 InventorySlot myInventorySlot = mySlot as InventorySlot;
-                if (myInventorySlot.ParentSlot() == null || myInventorySlot.ParentSlot().InventoryItem.itemData == null)
+                if (myInventorySlot.ParentSlot() == null || myInventorySlot.ParentSlot().InventoryItem.ItemData == null)
                     return;
 
-                if (myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize == 1)
+                if (myInventorySlot.ParentSlot().InventoryItem.ItemData.CurrentStackSize == 1)
                     myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = "";
                 else
-                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.itemData.CurrentStackSize.ToString();
+                    myInventorySlot.ParentSlot().InventoryItem.stackSizeText.text = myInventorySlot.ParentSlot().InventoryItem.ItemData.CurrentStackSize.ToString();
             }
             
             SetupIconSprite(true);
@@ -182,28 +183,32 @@ namespace InventorySystem
                 ShowPlaceholderIcon();
 
             stackSizeText.enabled = false;
+            if (brokenIconImage != null)
+                brokenIconImage.enabled = false;
         }
 
         public void EnableIconImage()
         {
             iconImage.enabled = true;
             stackSizeText.enabled = true;
+            if (brokenIconImage != null && ItemData != null && ItemData.IsBroken)
+                brokenIconImage.enabled = true;
         }
 
         public Unit GetMyUnit()
         {
-            if (myInventory != null)
-                return myInventory.MyUnit;
-            else if (myUnitEquipment != null)
-                return myUnitEquipment.MyUnit;
+            if (MyInventory != null)
+                return MyInventory.MyUnit;
+            else if (MyUnitEquipment != null)
+                return MyUnitEquipment.MyUnit;
             return null;
         }
 
-        public void SetMyInventory(Inventory inv) => myInventory = inv;
+        public void SetMyInventory(Inventory inv) => MyInventory = inv;
 
-        public void SetMyUnitEquipment(UnitEquipment charEquipment) => myUnitEquipment = charEquipment;
+        public void SetMyUnitEquipment(UnitEquipment charEquipment) => MyUnitEquipment = charEquipment;
 
-        public void SetItemData(ItemData newItemData) => itemData = newItemData;
+        public void SetItemData(ItemData newItemData) => ItemData = newItemData;
 
         public RectTransform RectTransform => rectTransform;
 

@@ -410,7 +410,7 @@ namespace InventorySystem
 
                             // TODO: Less damage the further away from explosion
                             int damage = 30;
-                            targetUnit.HealthSystem.DamageAllBodyParts(damage, damage / 4, damage / 3, damage / 2, shooter);
+                            targetUnit.HealthSystem.DamageAllBodyParts(damage, shooter);
                         }
                     }
                 }

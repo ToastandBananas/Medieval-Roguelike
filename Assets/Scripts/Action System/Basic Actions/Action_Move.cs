@@ -277,11 +277,30 @@ namespace UnitSystem.ActionSystem.Actions
                     positionIndex++;
             }
 
+            DamageBoots();
+
             CompleteAction();
             TryQueueNextAction();
 
             // Check for newly visible Units
             Unit.Vision.FindVisibleUnitsAndObjects();
+        }
+
+        readonly float defaultBootsDurabilityDamage = 0.05f;
+        readonly int rockyTerrainTag = 4;
+        void DamageBoots()
+        {
+            if (Unit.UnitEquipment == null || !Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                return;
+
+            float damage;
+            GraphNode node = AstarPath.active.GetNearest(Unit.transform.position).node;
+            if (node.Tag == rockyTerrainTag) // Rocky terrain
+                damage = 0.1f;
+            else
+                damage = defaultBootsDurabilityDamage;
+            
+            Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DamageDurability(Unit, damage);
         }
 
         void TryQueueNextAction()

@@ -137,7 +137,7 @@ namespace GeneralUI
             if (slot.GetItemData().Item is Item_Equipment == false)
                 return;
 
-            if (slot is EquipmentSlot == false || slot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)
+            if (slot is EquipmentSlot == false || slot.InventoryItem.MyUnitEquipment != UnitManager.player.UnitEquipment)
             {
                 EquipSlot equipSlot = slot.GetItemData().Item.Equipment.EquipSlot;
                 if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))

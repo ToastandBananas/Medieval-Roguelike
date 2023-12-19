@@ -17,9 +17,12 @@ MonoBehaviour:
   description: Sturdy footwear reinforced with warm fur lining, providing insulation
     and durability for traversing rugged terrains and harsh climates.
   itemType: 110
-  thrownProjectileType: 20
-  mainMaterial: 23
   itemSize: 3
+  thrownProjectileType: 20
+  thrownAnimationType: 0
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 2
   weight: 2.8
@@ -35,3 +38,5 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f4a4b58dd16355e4b87c053d62595eb8, type: 2}
   equipSlot: 8
   actionTypes: []
+  defenseRange: {x: 2, y: 3}
+  durabilityRange: {x: 80, y: 96}

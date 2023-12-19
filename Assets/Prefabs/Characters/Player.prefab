@@ -1374,20 +1374,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 233595894712a4449a55eaff303583e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: -1
   minFallDamageDistance: 1
   bodyParts:
   - bodyPartIndex: 0
     bodyPartSide: 0
     bodyPartType: 0
     healthModifier: 2
-    hitChanceWeight: 1
+    hitChanceWeight: 1.5
   - bodyPartIndex: 0
     bodyPartSide: 0
     bodyPartType: 1
     healthModifier: 4
-    hitChanceWeight: 1
+    hitChanceWeight: 2.5
   - bodyPartIndex: 0
     bodyPartSide: 1
     bodyPartType: 2
@@ -1399,6 +1397,16 @@ MonoBehaviour:
     healthModifier: 2.5
     hitChanceWeight: 1
   - bodyPartIndex: 0
+    bodyPartSide: 2
+    bodyPartType: 4
+    healthModifier: 1.5
+    hitChanceWeight: 0.5
+  - bodyPartIndex: 0
+    bodyPartSide: 1
+    bodyPartType: 4
+    healthModifier: 1.5
+    hitChanceWeight: 0.5
+  - bodyPartIndex: 0
     bodyPartSide: 1
     bodyPartType: 3
     healthModifier: 3
@@ -1408,6 +1416,16 @@ MonoBehaviour:
     bodyPartType: 3
     healthModifier: 3
     hitChanceWeight: 1
+  - bodyPartIndex: 0
+    bodyPartSide: 1
+    bodyPartType: 5
+    healthModifier: 1.5
+    hitChanceWeight: 0.5
+  - bodyPartIndex: 0
+    bodyPartSide: 2
+    bodyPartType: 5
+    healthModifier: 1.5
+    hitChanceWeight: 0.5
 --- !u!114 &2894362986920051941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1481,7 +1499,7 @@ MonoBehaviour:
       m_Bits: 4294967295
     useGraphRaycasting: 0
   traversableTags: 2147483647
-  tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d00700004c040000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
+  tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d007000014050000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
     value: -1
 --- !u!114 &3489051163152912302

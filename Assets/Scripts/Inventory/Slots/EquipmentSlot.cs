@@ -15,13 +15,13 @@ namespace InventorySystem
 
         public override bool IsFull()
         {
-            if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null)
+            if (inventoryItem.ItemData != null && inventoryItem.ItemData.Item != null)
                 return true;
 
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
             {
                 EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (oppositeWeaponSlot.inventoryItem.ItemData != null && oppositeWeaponSlot.inventoryItem.ItemData.Item != null && oppositeWeaponSlot.inventoryItem.ItemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                     return true;
             }
 
@@ -38,13 +38,13 @@ namespace InventorySystem
 
             if (IsFull())
             {
-                if (inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.ItemData.Item is Item_Weapon && inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                     oppositeWeaponSlot.HideItemIcon();
                     oppositeWeaponSlot.SetEmptySlotSprite();
                 }
-                else if (inventoryItem.itemData.Item is Item_Quiver)
+                else if (inventoryItem.ItemData.Item is Item_Quiver)
                     inventoryItem.QuiverInventoryItem.HideQuiverSprites();
             }
 
@@ -74,21 +74,21 @@ namespace InventorySystem
 
         public override void ShowSlotImage()
         {
-            if (inventoryItem.itemData == null || inventoryItem.itemData.Item == null)
+            if (inventoryItem.ItemData == null || inventoryItem.ItemData.Item == null)
             {
                 Debug.LogWarning("There is no item in this slot...");
                 return;
             }
 
-            if (inventoryItem.itemData.Item.InventorySprite(inventoryItem.itemData) == null)
+            if (inventoryItem.ItemData.Item.InventorySprite(inventoryItem.ItemData) == null)
             {
-                Debug.LogError($"Sprite for {inventoryItem.itemData.Item.name} is not yet set in the item's ScriptableObject");
+                Debug.LogError($"Sprite for {inventoryItem.ItemData.Item.name} is not yet set in the item's ScriptableObject");
                 return;
             }
 
             if (IsHeldItemSlot())
             {
-                if (inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.ItemData.Item is Item_Weapon && inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
                     if (equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2)
@@ -120,9 +120,9 @@ namespace InventorySystem
         public override void HighlightSlots()
         {
             bool validSlot = false;
-            Item draggedItem = InventoryUI.DraggedItem.itemData.Item;
+            Item draggedItem = InventoryUI.DraggedItem.ItemData.Item;
 
-            if (InventoryUI.DraggedItem.itemData.IsBroken || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this)))
+            if (InventoryUI.DraggedItem.ItemData.IsBroken || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this)))
                 validSlot = false;
             else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
                 validSlot = true;
@@ -150,7 +150,7 @@ namespace InventorySystem
 
         public override void RemoveSlotHighlights()
         {
-            if (IsFull() && InventoryUI.DraggedItem.itemData != inventoryItem.itemData)
+            if (IsFull() && InventoryUI.DraggedItem.ItemData != inventoryItem.ItemData)
                 SetFullSlotSprite();
 
             image.color = Color.white;
@@ -161,12 +161,12 @@ namespace InventorySystem
             SetEmptySlotSprite();
             if (IsHeldItemSlot() && IsFull())
             {
-                if (inventoryItem.itemData != null && inventoryItem.itemData.Item != null && inventoryItem.itemData.Item is Item_Weapon && inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                if (inventoryItem.ItemData != null && inventoryItem.ItemData.Item != null && inventoryItem.ItemData.Item is Item_Weapon && inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                     GetOppositeWeaponSlot().SetEmptySlotSprite();
                 else
                 {
                     EquipmentSlot oppositeWeaponSlot = GetOppositeWeaponSlot();
-                    if (oppositeWeaponSlot.inventoryItem.itemData != null && oppositeWeaponSlot.inventoryItem.itemData.Item != null && oppositeWeaponSlot.inventoryItem.itemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.itemData.Item.Weapon.IsTwoHanded)
+                    if (oppositeWeaponSlot.inventoryItem.ItemData != null && oppositeWeaponSlot.inventoryItem.ItemData.Item != null && oppositeWeaponSlot.inventoryItem.ItemData.Item is Item_Weapon && oppositeWeaponSlot.inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                         oppositeWeaponSlot.SetEmptySlotSprite();
                 }
             }
@@ -176,7 +176,7 @@ namespace InventorySystem
 
         public ContainerEquipmentSlot ContainerEquipmentSlot => this as ContainerEquipmentSlot;
 
-        public override ItemData GetItemData() => inventoryItem.itemData;
+        public override ItemData GetItemData() => inventoryItem.ItemData;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
 

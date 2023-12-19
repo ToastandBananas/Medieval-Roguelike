@@ -3,7 +3,7 @@ using UnityEngine;
 namespace InventorySystem
 {
     [CreateAssetMenu(fileName = "New Boots", menuName = "Inventory/Boots")]
-    public class Item_Boots : Item_Wearable
+    public class Item_Boots : Item_Armor
     {
         void OnEnable()
         {

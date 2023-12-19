@@ -116,8 +116,8 @@ namespace UnitSystem.ActionSystem.Actions
             if (heldItemBlockedWith != null)
             {
                 attackBlocked = true;
-                int damage = Mathf.RoundToInt(GetBaseDamage(heldItemAttackingWith, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith));
-                heldItemBlockedWith.ItemData.DamageDurability(Unit, damage);
+                float damage = GetBaseDamage(heldItemAttackingWith, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith);
+                heldItemBlockedWith.ItemData.DamageDurability(targetUnit, damage);
                 if (targetUnit.UnitEquipment.ItemDataEquipped(heldItemBlockedWith.ItemData))
                 {
                     // Play the recoil animation & then lower the shield if not in Raise Shield Stance
@@ -155,9 +155,9 @@ namespace UnitSystem.ActionSystem.Actions
                     yield break;
 
                 if (heldItemBlockedWith is HeldShield)
-                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + (targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
                 else if (heldItemBlockedWith is HeldMeleeWeapon)
-                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + (targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
             }
             else if (itemHittingWith != null && itemHittingWith.MaxDurability > 0)
             {
@@ -165,9 +165,9 @@ namespace UnitSystem.ActionSystem.Actions
                     yield break;
 
                 if (heldItemBlockedWith is HeldShield)
-                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + (targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldShield) * attackDurabilityDamageRatio));
                 else if (heldItemBlockedWith is HeldMeleeWeapon)
-                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + (targetUnit.Stats.BlockPower(heldItemBlockedWith as HeldMeleeWeapon) * attackDurabilityDamageRatio));
             }
         }
 
@@ -181,7 +181,7 @@ namespace UnitSystem.ActionSystem.Actions
             // 1st layer of armor (e.g., Platemail)
             // Damage layer 1's durability (if there's any armor equipped in this layer) and calculate the ratio of damage done in case the armor breaks
             float durabilityDamage1 = damage * effectivenessAgainstArmor;                                                              //Debug.Log($"Durability Damage 1: {durabilityDamage1}");
-            DamageArmorDurability_LayerOne(targetUnit, bodyPartHit, durabilityDamage1, out int startingArmorDurability1);              //Debug.Log($"Armor 1 Starting Durability: {startingArmorDurability1}");
+            DamageArmorDurability_LayerOne(targetUnit, bodyPartHit, durabilityDamage1, out float startingArmorDurability1);            //Debug.Log($"Armor 1 Starting Durability: {startingArmorDurability1}");
             float durabilityDamageDoneRatio1 = Mathf.Min(1f, startingArmorDurability1 / durabilityDamage1);                            //Debug.Log($"Durability Damage Ratio 1: {durabilityDamageDoneRatio1}");
 
             // Reduce the damage from the 1st layer's "armor" value
@@ -199,7 +199,7 @@ namespace UnitSystem.ActionSystem.Actions
             // 2nd layer of armor (e.g., Chainmail)
             // Damage layer 2's durability (if there's any armor equipped in this layer) and calculate the ratio of damage done in case the armor breaks
             float durabilityDamage2 = remainingDamage * effectivenessAgainstArmor;                                                     //Debug.Log($"Durability Damage 2: {durabilityDamage2}");
-            DamageArmorDurability_LayerTwo(targetUnit, bodyPartHit, remainingDamage, out int startingArmorDurability2);                //Debug.Log($"Armor 2 Starting Durability: {startingArmorDurability2}");
+            DamageArmorDurability_LayerTwo(targetUnit, bodyPartHit, remainingDamage, out float startingArmorDurability2);              //Debug.Log($"Armor 2 Starting Durability: {startingArmorDurability2}");
             float durabilityDamageDoneRatio2 = Mathf.Min(1f, startingArmorDurability2 / durabilityDamage2);                            //Debug.Log($"Durability Damage Ratio 2: {durabilityDamageDoneRatio2}");
 
             // Reduce the damage from the 2nd layer's "armor" value
@@ -227,12 +227,12 @@ namespace UnitSystem.ActionSystem.Actions
             if (heldItemAttackingWith != null)
             {
                 if (heldItemAttackingWith.ItemData != null && heldItemAttackingWith.ItemData.Item != null)
-                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
+                    heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + (defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + (defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
             }
             else if (itemHittingWith != null)
             {
                 if (itemHittingWith.Item != null)
-                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + Mathf.RoundToInt(defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + Mathf.RoundToInt(defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
+                    itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + (defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + (defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
             }
         }
 
@@ -289,9 +289,17 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsArms)
                         return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Defense;
                     return 0;
+                case BodyPartType.Hand:
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].Defense;
+                    return 0;
                 case BodyPartType.Leg:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsLegs)
                         return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Defense;
+                    return 0;
+                case BodyPartType.Foot:
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Defense;
                     return 0;
                 default:
                     return 0;
@@ -322,7 +330,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
         }
 
-        void DamageArmorDurability_LayerOne(Unit targetUnit, BodyPart bodyPartHit, float durabilityDamage, out int startDurability)
+        void DamageArmorDurability_LayerOne(Unit targetUnit, BodyPart bodyPartHit, float durabilityDamage, out float startDurability)
         {
             startDurability = 0;
             if (targetUnit == null || bodyPartHit == null || targetUnit.UnitEquipment == null)
@@ -334,28 +342,42 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor)) 
                     { 
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Arm:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsArms) 
                     { 
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
+                    }
+                    break;
+                case BodyPartType.Hand:
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                    {
+                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Leg:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Legs))
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsLegs)
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
+                    }
+                    break;
+                case BodyPartType.Foot:
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                    {
+                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 default:
@@ -363,7 +385,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
         }
 
-        void DamageArmorDurability_LayerTwo(Unit targetUnit, BodyPart bodyPartHit, float durabilityDamage, out int startDurability)
+        void DamageArmorDurability_LayerTwo(Unit targetUnit, BodyPart bodyPartHit, float durabilityDamage, out float startDurability)
         {
             startDurability = 0;
             if (targetUnit == null || bodyPartHit == null || targetUnit.UnitEquipment == null)
@@ -375,14 +397,21 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Arm:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.ProtectsArms)
                     {
                         startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(Unit, Mathf.RoundToInt(durabilityDamage));
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(targetUnit, durabilityDamage);
+                    }
+                    break;
+                case BodyPartType.Leg:
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Legs))
+                    {
+                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 default:
@@ -390,7 +419,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
         }
 
-        protected virtual int WeaponDurabilityDamage() => 1;
+        protected virtual float WeaponDurabilityDamage() => 1f;
 
         protected virtual float EffectivenessAgainstArmorModifier() => 1f;
 

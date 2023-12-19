@@ -37,7 +37,12 @@ namespace GeneralUI
             stringBuilder.Clear();
 
             // Name
-            stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}</size></b></align>\n");
+            stringBuilder.Append($"<align=center><b><size=22>{StringUtilities.SplitTextIntoParagraphs(itemData.Name(), maxCharactersPerLine_Title)}");
+            if (itemData.IsBroken)
+                stringBuilder.Append(" (Broken)");
+            stringBuilder.Append("</size></b></align>\n");
+
+            // Subtitle
             if (itemData.Item is Item_Weapon)
             {
                 stringBuilder.Append("<align=center><i><size=18>");
@@ -77,7 +82,7 @@ namespace GeneralUI
                 stringBuilder.Append("</i></align></size>\n");
             }
 
-            // If Equipped
+            // Equipped?
             if (this == TooltipManager.WorldTooltips[1] || this == TooltipManager.WorldTooltips[2] || (slot is EquipmentSlot && UnitManager.player.UnitEquipment.Slots.Contains((EquipmentSlot)slot)))
                 stringBuilder.Append("<align=center><i><b><size=18>- Equipped -</size></b></i></align>\n\n");
             else
@@ -185,7 +190,7 @@ namespace GeneralUI
             // Durability, uses, or stack size
             if (itemData.MaxDurability != 0f)
             {
-                stringBuilder.Append($"\n<size=16>Durability: {itemData.CurrentDurability} / {itemData.MaxDurability}</size>");
+                stringBuilder.Append($"\n<size=16>Durability: {Mathf.CeilToInt(itemData.CurrentDurability)} / {itemData.MaxDurability}</size>");
                 if (itemData.CurrentDurability <= 0)
                     stringBuilder.Append(" <size=16>(Broken)</size>");
             }
@@ -243,6 +248,8 @@ namespace GeneralUI
             stringBuilder.Append($"<align=center><size=16><b>{looseItemData.Item.Name}");
             if (looseItemData.CurrentStackSize > 1)
                 stringBuilder.Append($" x {looseItemData.CurrentStackSize}");
+            else if (looseItemData.IsBroken)
+                stringBuilder.Append(" (Broken)");
             stringBuilder.Append("</b></size></align>");
 
             textMesh.text = stringBuilder.ToString();
@@ -335,7 +342,7 @@ namespace GeneralUI
                     int itemHeight = slot.GetItemData().Item.Height;
                     float slotHeight;
 
-                    InventorySlot inventorySlot = slot.InventoryItem.myInventory.GetSlotFromCoordinate(1, 1);
+                    InventorySlot inventorySlot = slot.InventoryItem.MyInventory.GetSlotFromCoordinate(1, 1);
                     slotWidth = inventorySlot.InventoryItem.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
                     slotHeight = inventorySlot.InventoryItem.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor;
 

@@ -32,19 +32,12 @@ namespace UnitSystem
                 IsDead = true;
         }
 
-        public void DamageAllBodyParts(int torsoDamage, int headDamage, int legDamage, int armDamage, Unit attacker)
+        public void DamageAllBodyParts(int damage, Unit attacker)
         {
+            // Damage each body part using the ratio of the body part's max health to the torso's max health (the torso will generally have the highest health of any body part)
+            float torsoMaxHealth = GetBodyPart(BodyPartType.Torso).MaxHealth.GetValue();
             for (int i = 0; i < bodyParts.Length; i++)
-            {
-                if (bodyParts[i].BodyPartType == BodyPartType.Leg)
-                    bodyParts[i].TakeDamage(legDamage, attacker);
-                else if (bodyParts[i].BodyPartType == BodyPartType.Arm)
-                    bodyParts[i].TakeDamage(armDamage, attacker);
-                else if (bodyParts[i].BodyPartType == BodyPartType.Head)
-                    bodyParts[i].TakeDamage(headDamage, attacker);
-                else
-                    bodyParts[i].TakeDamage(torsoDamage, attacker);
-            }
+                bodyParts[i].TakeDamage(Mathf.RoundToInt(damage * (bodyParts[i].MaxHealth.GetValue() / torsoMaxHealth)), attacker);
         }
 
         public void OnHitByMeleeAttack() => OnTakeDamageFromMeleeAttack?.Invoke();
@@ -52,12 +45,14 @@ namespace UnitSystem
         public void TakeFallDamage(float fallDistance)
         {
             int fallDamage = CalculateFallDamage(fallDistance);
-            GetBodyPart(BodyPartType.Torso).TakeDamage(fallDamage, null);
+            BodyPart torso = GetBodyPart(BodyPartType.Torso);
+            float torsoMaxHealth = torso.MaxHealth.GetValue();
 
+            torso.TakeDamage(fallDamage, null);
             for (int i = 0; i < bodyParts.Length; i++)
             {
-                if (bodyParts[i].BodyPartType == BodyPartType.Leg)
-                    bodyParts[i].TakeDamage(fallDamage, null);
+                if (bodyParts[i].BodyPartType == BodyPartType.Leg || bodyParts[i].BodyPartType == BodyPartType.Foot)
+                    bodyParts[i].TakeDamage(Mathf.RoundToInt(fallDamage * (bodyParts[i].MaxHealth.GetValue() / torsoMaxHealth)), null);
             }
         }
 
@@ -128,8 +123,9 @@ namespace UnitSystem
             LevelGrid.RemoveUnitAtGridPosition(unit.GridPosition);
 
             unit.UnblockCurrentPosition();
-            unit.UnitInteractable.enabled = true;
             unit.OpportunityAttackTrigger.gameObject.SetActive(false);
+            if (unit.UnitInteractable != null)
+                unit.UnitInteractable.enabled = true;
 
             unit.UnitActionHandler.ClearActionQueue(true, true);
 
@@ -172,6 +168,14 @@ namespace UnitSystem
             int count = 0;
             for (int i = 0; i < bodyParts.Length; i++)
                 if (bodyParts[i].BodyPartType == BodyPartType.Leg) count++;
+            return count;
+        }
+
+        public int FootCount()
+        {
+            int count = 0;
+            for (int i = 0; i < bodyParts.Length; i++)
+                if (bodyParts[i].BodyPartType == BodyPartType.Foot) count++;
             return count;
         }
 

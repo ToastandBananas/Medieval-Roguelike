@@ -16,9 +16,12 @@ MonoBehaviour:
   pluralName: 
   description: Durable hand protection crafted from robust leather.
   itemType: 120
-  thrownProjectileType: 20
-  mainMaterial: 23
   itemSize: 3
+  thrownProjectileType: 20
+  thrownAnimationType: 0
+  throwingSpeedMultiplier: 1
+  minThrowingDamageMultiplier: 0
+  maxThrowingDamageMultiplier: 0
   width: 2
   height: 2
   weight: 0.8
@@ -34,3 +37,5 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 92fbc85c7e168df4085ac16c12a2239a, type: 2}
   equipSlot: 7
   actionTypes: []
+  defenseRange: {x: 2, y: 3}
+  durabilityRange: {x: 80, y: 96}

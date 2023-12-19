@@ -194,31 +194,31 @@ namespace InventorySystem
 
         void SwapContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
         {
-            if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.myUnitEquipment != null)
+            if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.MyUnitEquipment != null)
             {
                 if (targetEquipSlot == EquipSlot.Quiver)
                 {
-                    ContainerEquipmentSlot quiverSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot quiverSlot = InventoryUI.DraggedItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
                     if (quiverSlot.GetItemData().Item is Item_Quiver)
                         myUnit.QuiverInventoryManager.SwapInventories(quiverSlot.containerInventoryManager);
                 }
                 else if (targetEquipSlot == EquipSlot.Back)
                 {
-                    ContainerEquipmentSlot backpackSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot backpackSlot = InventoryUI.DraggedItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
                     if (backpackSlot.GetItemData().Item is Item_Backpack)
                         myUnit.BackpackInventoryManager.SwapInventories(backpackSlot.containerInventoryManager);
                 }
                 else if (targetEquipSlot == EquipSlot.Belt)
                 {
-                    ContainerEquipmentSlot beltSlot = InventoryUI.DraggedItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot beltSlot = InventoryUI.DraggedItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
                     myUnit.BeltInventoryManager.SwapInventories(beltSlot.containerInventoryManager);
                 }
             }
-            else if (ContextMenu.TargetSlot != null && ContextMenu.TargetSlot is ContainerEquipmentSlot && ContextMenu.TargetSlot.InventoryItem.myUnitEquipment != this)
+            else if (ContextMenu.TargetSlot != null && ContextMenu.TargetSlot is ContainerEquipmentSlot && ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment != this)
             {
                 if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Quiver)
                 {
-                    ContainerEquipmentSlot quiverSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot quiverSlot = ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Quiver) as ContainerEquipmentSlot;
                     if (quiverSlot.GetItemData().Item is Item_Quiver)
                     {
                         if (quiverSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
@@ -229,7 +229,7 @@ namespace InventorySystem
                 }
                 else if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Back)
                 {
-                    ContainerEquipmentSlot backpackSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot backpackSlot = ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Back) as ContainerEquipmentSlot;
                     if (backpackSlot.GetItemData().Item is Item_Backpack)
                     {
                         if (backpackSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
@@ -240,7 +240,7 @@ namespace InventorySystem
                 }
                 else if (ContextMenu.TargetSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt)
                 {
-                    ContainerEquipmentSlot beltSlot = ContextMenu.TargetSlot.InventoryItem.myUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
+                    ContainerEquipmentSlot beltSlot = ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment.GetEquipmentSlot(EquipSlot.Belt) as ContainerEquipmentSlot;
                     if (beltSlot.containerInventoryManager.ParentInventory.SlotVisualsCreated)
                         InventoryUI.GetContainerUI(beltSlot.containerInventoryManager).CloseContainerInventory();
 
@@ -422,72 +422,72 @@ namespace InventorySystem
             // Remove the item from its original character equipment or inventory
             if (InventoryUI.isDraggingItem)
             {
-                if (InventoryUI.DraggedItem.myUnitEquipment != null && InventoryUI.DraggedItem.myUnitEquipment.ItemDataEquipped(itemDataToRemove))
+                if (InventoryUI.DraggedItem.MyUnitEquipment != null && InventoryUI.DraggedItem.MyUnitEquipment.ItemDataEquipped(itemDataToRemove))
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Item_Backpack)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.BackpackInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.BackpackInventoryManager;
                     else if (itemDataToRemove.Item is Item_Belt)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.BeltInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Item_Quiver)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.myUnitEquipment.myUnit.QuiverInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (InventoryUI.DraggedItem.myUnitEquipment.myUnit.HealthSystem.IsDead)
+                    if (InventoryUI.DraggedItem.MyUnitEquipment.myUnit.HealthSystem.IsDead)
                         myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        InventoryUI.DraggedItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        InventoryUI.DraggedItem.MyUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                    InventoryUI.DraggedItem.myUnitEquipment.RemoveEquipment(itemDataToRemove);
+                    InventoryUI.DraggedItem.MyUnitEquipment.RemoveEquipment(itemDataToRemove);
                 }
-                else if (InventoryUI.DraggedItem.myInventory != null && InventoryUI.DraggedItem.myInventory.ItemDatas.Contains(itemDataToRemove))
+                else if (InventoryUI.DraggedItem.MyInventory != null && InventoryUI.DraggedItem.MyInventory.ItemDatas.Contains(itemDataToRemove))
                 {
-                    if (InventoryUI.DraggedItem.myInventory.MyUnit != null)
+                    if (InventoryUI.DraggedItem.MyInventory.MyUnit != null)
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
-                        if (InventoryUI.DraggedItem.myInventory.MyUnit.HealthSystem.IsDead)
+                        if (InventoryUI.DraggedItem.MyInventory.MyUnit.HealthSystem.IsDead)
                             myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            InventoryUI.DraggedItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            InventoryUI.DraggedItem.MyInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
-                    InventoryUI.DraggedItem.myInventory.RemoveItem(itemDataToRemove, true);
+                    InventoryUI.DraggedItem.MyInventory.RemoveItem(itemDataToRemove, true);
                 }
             }
             else if (ContextMenu.TargetSlot != null)
             {
                 InventoryItem targetInventoryItem = ContextMenu.TargetSlot.InventoryItem;
 
-                if (targetInventoryItem.myUnitEquipment != null && targetInventoryItem.myUnitEquipment.ItemDataEquipped(itemDataToRemove))
+                if (targetInventoryItem.MyUnitEquipment != null && targetInventoryItem.MyUnitEquipment.ItemDataEquipped(itemDataToRemove))
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Item_Backpack)
-                        itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.BackpackInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.BackpackInventoryManager;
                     else if (itemDataToRemove.Item is Item_Belt)
-                        itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.BeltInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Item_Quiver)
-                        itemsContainerInventoryManager = targetInventoryItem.myUnitEquipment.myUnit.QuiverInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (targetInventoryItem.myUnitEquipment.myUnit.HealthSystem.IsDead)
+                    if (targetInventoryItem.MyUnitEquipment.myUnit.HealthSystem.IsDead)
                         myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        targetInventoryItem.myUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        targetInventoryItem.MyUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
-                    targetInventoryItem.myUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.itemData);
+                    targetInventoryItem.MyUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.ItemData);
                 }
-                else if (targetInventoryItem.myInventory != null && targetInventoryItem.myInventory.ItemDatas.Contains(itemDataToRemove))
+                else if (targetInventoryItem.MyInventory != null && targetInventoryItem.MyInventory.ItemDatas.Contains(itemDataToRemove))
                 {
-                    if (targetInventoryItem.myInventory.MyUnit != null)
+                    if (targetInventoryItem.MyInventory.MyUnit != null)
                     {
                         // If the Player is removing an Item from a dead Unit's inventory
-                        if (targetInventoryItem.myInventory.MyUnit.HealthSystem.IsDead)
+                        if (targetInventoryItem.MyInventory.MyUnit.HealthSystem.IsDead)
                             myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                         else // If the Player is removing an Item from a living Unit's inventory, the Unit can remove the item themselves
-                            targetInventoryItem.myInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
+                            targetInventoryItem.MyInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, null);
                     }
 
-                    targetInventoryItem.myInventory.RemoveItem(itemDataToRemove, true);
+                    targetInventoryItem.MyInventory.RemoveItem(itemDataToRemove, true);
                 }
             }
             else if (itemDataToRemove.InventorySlotCoordinate != null && itemDataToRemove.InventorySlotCoordinate.myInventory.ContainsItemData(itemDataToRemove))
@@ -507,7 +507,7 @@ namespace InventorySystem
 
         public void UnequipItem(EquipSlot equipSlot)
         {
-            if (EquipSlotHasItem(equipSlot) == false)
+            if (!EquipSlotHasItem(equipSlot))
                 return;
 
             Item_Equipment equipment = equippedItemDatas[(int)equipSlot].Item as Item_Equipment;
@@ -710,10 +710,9 @@ namespace InventorySystem
         {
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
-                Action_Base action = equipment.ActionTypes[i].GetAction(myUnit);
-                if (!myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]) || (action is Action_Melee && myUnit.Stats.CanFightUnarmed)) // Don't remove the basic MeleeAction if this Unit can fight unarmed
+                if (!myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
                     continue;
-
+                
                 if (IsHeldItemEquipSlot(equipSlot))
                 {
                     EquipSlot oppositeEquipSlot = GetOppositeWeaponEquipSlot(equipSlot);
@@ -820,7 +819,7 @@ namespace InventorySystem
             targetSlot.ShowSlotImage();
             targetSlot.InventoryItem.UpdateStackSizeVisuals();
 
-            if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem.itemData.Item is Item_Weapon && targetSlot.InventoryItem.itemData.Item.Weapon.IsTwoHanded)
+            if (targetSlot.IsHeldItemSlot() && targetSlot.InventoryItem.ItemData.Item is Item_Weapon && targetSlot.InventoryItem.ItemData.Item.Weapon.IsTwoHanded)
             {
                 EquipmentSlot oppositeWeaponSlot = targetSlot.GetOppositeWeaponSlot();
                 oppositeWeaponSlot.SetFullSlotSprite();

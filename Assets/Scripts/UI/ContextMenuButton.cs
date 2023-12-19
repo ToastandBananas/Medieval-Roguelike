@@ -203,7 +203,7 @@ namespace GeneralUI
 
                     SetupButton(stringBuilder.ToString(), UnequipItem);
                 }
-                else if (ContextMenu.TargetInteractable != null || (ContextMenu.TargetSlot != null && (ContextMenu.TargetSlot is EquipmentSlot == false || ContextMenu.TargetSlot.InventoryItem.myUnitEquipment != UnitManager.player.UnitEquipment)))
+                else if (ContextMenu.TargetInteractable != null || (ContextMenu.TargetSlot != null && (ContextMenu.TargetSlot is EquipmentSlot == false || ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment != UnitManager.player.UnitEquipment)))
                 {
                     if (itemData.Item is Item_Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver)
                     {
@@ -361,20 +361,20 @@ namespace GeneralUI
         {
             if (ContextMenu.TargetSlot != null)
             {
-                if (ContextMenu.TargetSlot.InventoryItem.myUnitEquipment != null)
+                if (ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment != null)
                 {
                     EquipmentSlot targetEquipmentSlot = ContextMenu.TargetSlot as EquipmentSlot;
 
                     // If the slot owner is dead, then it just means the Player is trying to drop a dead Unit's equipment
-                    if (targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.HealthSystem.IsDead)
+                    if (targetEquipmentSlot.InventoryItem.MyUnitEquipment.MyUnit.HealthSystem.IsDead)
                         UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(targetEquipmentSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
                     else
-                        targetEquipmentSlot.InventoryItem.myUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(ContextMenu.TargetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
+                        targetEquipmentSlot.InventoryItem.MyUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(ContextMenu.TargetSlot.GetItemData(), targetEquipmentSlot.GetItemData().CurrentStackSize, targetEquipmentSlot is ContainerEquipmentSlot ? targetEquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null, InventoryActionType.Unequip);
 
-                    DropItemManager.DropItem(targetEquipmentSlot.InventoryItem.myUnitEquipment, targetEquipmentSlot.EquipSlot);
+                    DropItemManager.DropItem(targetEquipmentSlot.InventoryItem.MyUnitEquipment, targetEquipmentSlot.EquipSlot);
                 }
-                else if (ContextMenu.TargetSlot.InventoryItem.myInventory != null)
-                    DropItemManager.DropItem(ContextMenu.TargetSlot.InventoryItem.myInventory, ContextMenu.TargetSlot.InventoryItem.GetMyUnit(), ContextMenu.TargetSlot.GetItemData());
+                else if (ContextMenu.TargetSlot.InventoryItem.MyInventory != null)
+                    DropItemManager.DropItem(ContextMenu.TargetSlot.InventoryItem.MyInventory, ContextMenu.TargetSlot.InventoryItem.GetMyUnit(), ContextMenu.TargetSlot.GetItemData());
             }
 
             ContextMenu.DisableContextMenu();

@@ -5,9 +5,9 @@ using Utilities;
 
 namespace UnitSystem
 {
-    public enum BodyPartIndex { Only, First, Second, Third, Fourth }
+    public enum BodyPartType { Head, Torso, Arm, Leg, Hand, Foot }
     public enum BodyPartSide { NotApplicable, Left, Right }
-    public enum BodyPartType { Head, Torso, Arm, Leg }
+    public enum BodyPartIndex { Only, First, Second, Third, Fourth }
 
     [System.Serializable]
     public class BodyPart
@@ -88,19 +88,16 @@ namespace UnitSystem
                     HealthSystem.Die(attacker);
                     break;
                 case BodyPartType.Arm:
-                    if (bodyPartSide == BodyPartSide.Left)
-                    {
-                        if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.leftHeldItem != null)
-                            DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.LeftHeldItemEquipSlot);
-                    }
-                    else // Right Arm
-                    {
-                        if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.rightHeldItem != null)
-                            DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.RightHeldItemEquipSlot);
-                    }
+                    DropHeldItem();
+                    break;
+                case BodyPartType.Hand:
+                    DropHeldItem();
                     break;
                 case BodyPartType.Leg:
-                    HealthSystem.AdjustMobilityPercent(-1f / HealthSystem.LegCount());
+                    HealthSystem.AdjustMobilityPercent(-1f / (HealthSystem.LegCount() + HealthSystem.FootCount()));
+                    break;
+                case BodyPartType.Foot:
+                    HealthSystem.AdjustMobilityPercent(-1f / (HealthSystem.LegCount() + HealthSystem.FootCount()));
                     break;
                 default:
                     break;
@@ -119,11 +116,35 @@ namespace UnitSystem
                     break;
                 case BodyPartType.Arm:
                     break;
+                case BodyPartType.Hand:
+                    break;
                 case BodyPartType.Leg:
-                    HealthSystem.AdjustMobilityPercent(1f / HealthSystem.LegCount());
+                    HealthSystem.AdjustMobilityPercent(1f / (HealthSystem.LegCount() + HealthSystem.FootCount()));
+                    break;
+                case BodyPartType.Foot:
+                    HealthSystem.AdjustMobilityPercent(1f / (HealthSystem.LegCount() + HealthSystem.FootCount()));
                     break;
                 default:
                     break;
+            }
+        }
+
+        void DropHeldItem()
+        {
+            if (bodyPartSide == BodyPartSide.Left) // Left Arm or Hand
+            {
+                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.leftHeldItem != null)
+                    DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.LeftHeldItemEquipSlot);
+            }
+            else // Right Arm or Hand
+            {
+                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.rightHeldItem != null)
+                {
+                    if (HealthSystem.Unit.UnitMeshManager.rightHeldItem.ItemData.Item is Item_Weapon && HealthSystem.Unit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.IsTwoHanded)
+                        DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.LeftHeldItemEquipSlot);
+                    else
+                        DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.RightHeldItemEquipSlot);
+                }
             }
         }
 

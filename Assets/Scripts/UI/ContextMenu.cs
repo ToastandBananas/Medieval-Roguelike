@@ -548,7 +548,7 @@ namespace GeneralUI
             if (TargetSlot is ContainerEquipmentSlot)
             {
                 ContainerEquipmentSlot containerSlot = TargetSlot as ContainerEquipmentSlot;
-                if (containerSlot.InventoryItem.myUnitEquipment.MyUnit == UnitManager.player && containerSlot.containerInventoryManager.ContainsAnyItems())
+                if (containerSlot.InventoryItem.MyUnitEquipment.MyUnit == UnitManager.player && containerSlot.containerInventoryManager.ContainsAnyItems())
                     return;
             }
 

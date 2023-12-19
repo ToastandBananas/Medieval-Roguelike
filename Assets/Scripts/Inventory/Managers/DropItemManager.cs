@@ -14,7 +14,7 @@ namespace InventorySystem
         {
             if (itemDataToDrop == null || itemDataToDrop.Item == null)
             {
-                Debug.LogWarning("Item you're trying to drop from inventory is null...");
+                Debug.LogWarning($"Item {unit.name} is trying to drop from their inventory is null...");
                 if (inventory != null && itemDataToDrop != null)
                     inventory.RemoveItem(itemDataToDrop, true);
                 return;
@@ -51,11 +51,10 @@ namespace InventorySystem
                     UnitManager.player.Vision.AddVisibleLooseItem(looseItem);
             }
 
-            if (inventory != null)
-                inventory.RemoveItem(itemDataToDrop, true);
+            inventory?.RemoveItem(itemDataToDrop, true);
             itemDataToDrop.SetInventorySlotCoordinate(null);
 
-            if (itemDataToDrop == InventoryUI.DraggedItem.itemData)
+            if (itemDataToDrop == InventoryUI.DraggedItem.ItemData)
                 InventoryUI.DisableDraggedItem();
 
             if (inventory.MyUnit != null)
@@ -78,7 +77,7 @@ namespace InventorySystem
 
         public static Interactable_LooseItem DropItem(UnitEquipment unitEquipment, EquipSlot equipSlot)
         {
-            if (unitEquipment.EquipSlotIsFull(equipSlot) == false)
+            if (!unitEquipment.EquipSlotIsFull(equipSlot))
                 return null;
 
             unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Item_Equipment, equipSlot);
@@ -94,7 +93,7 @@ namespace InventorySystem
             ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
-            if (unitEquipment.MyUnit.HealthSystem.IsDead == false && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Shield))
+            if (!unitEquipment.MyUnit.HealthSystem.IsDead && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Shield))
                 SetupHeldItemDrop(unitEquipment.MyUnit.UnitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
             else if (equipSlot == EquipSlot.Helm)
                 SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
@@ -132,13 +131,13 @@ namespace InventorySystem
 
             if (unitEquipment.MyUnit != UnitManager.player)
             {
-                if (UnitManager.player.Vision.IsVisible(unitEquipment.MyUnit) == false)
+                if (!UnitManager.player.Vision.IsVisible(unitEquipment.MyUnit))
                     looseItem.HideMeshRenderer();
                 else
                     UnitManager.player.Vision.AddVisibleLooseItem(looseItem);
             }
 
-            if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.itemData)
+            if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.ItemData)
             {
                 if (InventoryUI.parentSlotDraggedFrom != null)
                     InventoryUI.parentSlotDraggedFrom.ClearItem();
@@ -195,7 +194,7 @@ namespace InventorySystem
 
             if (unit != UnitManager.player)
             {
-                if (UnitManager.player.Vision.IsVisible(unit) == false)
+                if (!UnitManager.player.Vision.IsVisible(unit))
                     looseHelm.HideMeshRenderer();
                 else
                     UnitManager.player.Vision.AddVisibleLooseItem(looseHelm);
@@ -245,7 +244,7 @@ namespace InventorySystem
 
                     if (unit != UnitManager.player)
                     {
-                        if (UnitManager.player.Vision.IsVisible(unit) == false)
+                        if (!UnitManager.player.Vision.IsVisible(unit))
                             looseProjectile.HideMeshRenderer();
                         else
                             UnitManager.player.Vision.AddVisibleLooseItem(looseProjectile);
@@ -258,7 +257,7 @@ namespace InventorySystem
 
             if (unit != UnitManager.player)
             {
-                if (UnitManager.player.Vision.IsVisible(unit) == false)
+                if (!UnitManager.player.Vision.IsVisible(unit))
                     looseWeapon.HideMeshRenderer();
                 else
                     UnitManager.player.Vision.AddVisibleLooseItem(looseWeapon);
@@ -350,7 +349,7 @@ namespace InventorySystem
 
                 for (int i = heldItem.transform.childCount - 1; i > 0; i--)
                 {
-                    if (heldItem.transform.GetChild(i).CompareTag("Loose Item") == false)
+                    if (!heldItem.transform.GetChild(i).CompareTag("Loose Item"))
                         continue;
 
                     SetupStuckLooseProjectile(heldItem.transform.GetChild(i), looseItem, yOffset);
@@ -398,7 +397,7 @@ namespace InventorySystem
         {
             Vector3 forceDirection = unit.transform.forward; // In front of Unit
             float raycastDistance = 1.2f;
-            if (Physics.Raycast(unit.transform.position, forceDirection, out RaycastHit hit, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
+            if (Physics.Raycast(unit.transform.position, forceDirection, out _, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
             {
                 forceDirection = -unit.transform.forward; // Behind Unit
                 if (Physics.Raycast(unit.transform.position, forceDirection, raycastDistance, unit.UnitActionHandler.AttackObstacleMask))
