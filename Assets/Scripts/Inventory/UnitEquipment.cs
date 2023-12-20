@@ -785,8 +785,13 @@ namespace InventorySystem
             if (EquipSlotHasItem(equipSlot))
                 return true;
 
-            if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(GetOppositeHeldItemEquipSlot(equipSlot)) && equippedItemDatas[(int)GetOppositeHeldItemEquipSlot(equipSlot)].Item is Item_Weapon && equippedItemDatas[(int)GetOppositeHeldItemEquipSlot(equipSlot)].Item.Weapon.IsTwoHanded)
-                return true;
+            if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2)
+            {
+                EquipSlot oppositeEquipSlot = GetOppositeHeldItemEquipSlot(equipSlot);
+                if (EquipSlotHasItem(oppositeEquipSlot) && equippedItemDatas[(int)oppositeEquipSlot].Item is Item_Weapon && equippedItemDatas[(int)oppositeEquipSlot].Item.Weapon.IsTwoHanded)
+                    return true;
+            }
+
             return false;
         }
 

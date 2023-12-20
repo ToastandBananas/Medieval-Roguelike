@@ -35,6 +35,7 @@ namespace InventorySystem
 
             // Setup the empty slot sprite
             SetEmptySlotSprite();
+            SetupImageColor();
 
             if (IsFull())
             {
@@ -115,7 +116,13 @@ namespace InventorySystem
 
         public bool IsHeldItemSlot => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
-        //public bool IsRingSlot() => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
+        //public bool IsRingSlot => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
+
+        public override void EnableSlotImage()
+        {
+            base.EnableSlotImage();
+            SetupImageColor();
+        }
 
         public override void HighlightSlots()
         {
@@ -154,7 +161,16 @@ namespace InventorySystem
             if (IsFull() && InventoryUI.DraggedItem.ItemData != inventoryItem.ItemData)
                 SetFullSlotSprite();
 
-            image.color = Color.white;
+            SetupImageColor();
+        }
+
+        public void SetupImageColor()
+        {
+            if (((equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2) && !myUnitEquipment.MyUnit.HealthSystem.ArmCanHoldItem(UnitSystem.BodyPartSide.Left))
+                || ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && !myUnitEquipment.MyUnit.HealthSystem.ArmCanHoldItem(UnitSystem.BodyPartSide.Right)))
+                image.color = Color.red;
+            else
+                image.color = Color.white;
         }
 
         public override void SetupEmptySlotSprites()

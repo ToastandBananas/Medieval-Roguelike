@@ -72,7 +72,7 @@ MonoBehaviour:
     type: 2}
   projectileType: 0
   projectileAnimationType: 0
-  speedMultiplier: 1.2
-  arcMultiplier: 0.8
+  speedMultiplier: 1.5
+  arcMultiplier: 1
   armorPierce: 0.85
   armorEffectiveness: 1.25

@@ -92,11 +92,13 @@ namespace InventorySystem
             IsLoaded = false;
         }
 
+        public void SetLoadedProjectile(Projectile projectile) => LoadedProjectile = projectile;
+
         /// <summary> Used in keyframe animation.</summary>
         void ShootProjectile()
         {
             LoadedProjectile.ShootProjectileAtTarget(unit.UnitActionHandler.TargetEnemyUnit, this, attackActionUsed, attackActionUsed.TryHitTarget(unit.UnitActionHandler.TargetEnemyUnit.GridPosition), false);
-            LoadedProjectile = null;
+            // LoadedProjectile = null;
             attackActionUsed = null;
 
             TryFumbleHeldItem();

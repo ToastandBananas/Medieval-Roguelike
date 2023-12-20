@@ -103,18 +103,17 @@ namespace InventorySystem
 
         protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
         {
-            Debug.Log(targetUnit);
             if (targetUnit != null && !targetUnit.HealthSystem.IsDead)
                 targetUnit.UnitAnimator.StopBlocking();
         }
 
         public void TryFumbleHeldItem()
         {
+            if (unit == null || !unit.UnitEquipment.ItemDataEquipped(ItemData)) // Item was already dropped (likely due to it breaking)
+                return;
+
             if (Random.Range(0f, 1f) <= GetFumbleChance())
             {
-                if (!unit.UnitEquipment.ItemDataEquipped(ItemData))
-                    return;
-
                 unit.UnitActionHandler.SetIsAttacking(false);
 
                 if (unit.IsNPC && !unit.HealthSystem.IsDead) // NPCs will try to pick the item back up immediately

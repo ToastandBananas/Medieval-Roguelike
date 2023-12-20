@@ -162,16 +162,16 @@ namespace UnitSystem.ActionSystem.Actions
             TurnManager.Instance.StartNextUnitsTurn(Unit); // This must remain outside of CompleteAction in case we need to call CompleteAction early within MoveToTargetInstead
         }
 
-        protected override float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
+        protected override float GetBaseDamage(ItemData heldItemAttackingWith, ItemData itemHittingWith)
         {
             float damage;
-            if (itemDataHittingWith.Item is Item_MeleeWeapon)
-                damage = itemDataHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
+            if (itemHittingWith.Item is Item_MeleeWeapon)
+                damage = itemHittingWith.Damage * ((Unit.Stats.Strength.GetValue() * 0.015f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.015f)); // Weight * (1.5% of strength + 1.5% throwing skill) (100 in each skill will cause triple the weapon's damage)
             else
-                damage = itemDataHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
-            damage += damage * itemDataHittingWith.ThrowingDamageMultiplier;
+                damage = itemHittingWith.Item.Weight * ((Unit.Stats.Strength.GetValue() * 0.025f) + (Unit.Stats.ThrowingSkill.GetValue() * 0.025f)); // Weight * (2.5% of strength + 2.5% throwing skill) (100 in each skill will cause 5 times the item's weight in damage)
+            damage += damage * itemHittingWith.ThrowingDamageMultiplier;
 
-            if (itemDataHittingWith.IsBroken) damage *= brokenItemDamageModifier;
+            if (itemHittingWith.IsBroken) damage *= brokenItemDamageModifier;
             return damage;
         }
 

@@ -402,7 +402,7 @@ namespace InventorySystem
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
         }
 
-        public void DamageDurability(Unit targetUnit, float amount)
+        public void DamageDurability(Unit unit, float amount)
         {
             if (maxDurability <= 0f || amount == 0f)
                 return;
@@ -419,14 +419,14 @@ namespace InventorySystem
             if (currentDurability == 0f)
             {
                 Debug.Log(item.Name + " broke");
-                if (!targetUnit.UnitEquipment.ItemDataEquipped(this))
+                if (!unit.UnitEquipment.ItemDataEquipped(this))
                     return;
 
-                if ((targetUnit.UnitMeshManager.leftHeldItem != null && this == targetUnit.UnitMeshManager.leftHeldItem.ItemData) || (targetUnit.UnitMeshManager.rightHeldItem != null && this == targetUnit.UnitMeshManager.rightHeldItem.ItemData) 
-                    || (this == targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
-                    DropItemManager.DropItem(targetUnit.UnitEquipment, targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));
+                if ((unit.UnitMeshManager.leftHeldItem != null && this == unit.UnitMeshManager.leftHeldItem.ItemData) || (unit.UnitMeshManager.rightHeldItem != null && this == unit.UnitMeshManager.rightHeldItem.ItemData) 
+                    || (this == unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
+                    DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(this));
                 else
-                    targetUnit.UnitEquipment.UnequipItem(targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));
+                    unit.UnitEquipment.UnequipItem(unit.UnitEquipment.GetEquipSlotFromItemData(this));
             }
         }
 

@@ -105,6 +105,13 @@ namespace InventorySystem
             else
                 SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
 
+            if (looseItem.ItemData == null || looseItem.ItemData.Item == null)
+            {
+                Debug.LogWarning($"{looseItem.name}'s ItemData or Item is null...");
+                LooseItemPool.ReturnToPool(looseItem);
+                return null;
+            }
+
             // We queue each action twice to account for unequipping the item before dropping it
             if (unitEquipment.MyUnit.HealthSystem.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {

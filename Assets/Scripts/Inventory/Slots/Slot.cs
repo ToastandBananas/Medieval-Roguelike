@@ -32,7 +32,7 @@ namespace InventorySystem
             inventoryItem.SetupIconSprite(true);
         }
 
-        public void EnableSlotImage()
+        public virtual void EnableSlotImage()
         {
             image.enabled = true;
         }

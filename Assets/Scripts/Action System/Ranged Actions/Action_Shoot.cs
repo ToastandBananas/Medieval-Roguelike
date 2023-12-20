@@ -29,7 +29,6 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override void QueueAction(Unit targetEnemyUnit)
         {
-            Debug.Log(targetEnemyUnit);
             if (!RangedWeaponIsLoaded())
                 Unit.UnitActionHandler.GetAction<Action_Reload>().QueueAction();
             else
@@ -211,6 +210,8 @@ namespace UnitSystem.ActionSystem.Actions
             cost += Unit.UnitActionHandler.TurnAction.ActionPointsCost();
             return Mathf.RoundToInt(cost);
         }
+
+        public override float WeaponDurabilityDamage() => 2f;
 
         public override NPCAIAction GetNPCAIAction_Unit(Unit targetUnit)
         {

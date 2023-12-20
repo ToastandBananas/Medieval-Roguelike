@@ -17,7 +17,7 @@ namespace UnitSystem.ActionSystem.Actions
         protected List<GridPosition> nearestGridPositionsList = new();
 
         /// <summary>Durability damage to weapons will be multiplied by this amount.</summary>
-        readonly float attackDurabilityDamageRatio = 0.25f;
+        readonly float attackDurabilityDamageRatio = 0.2f;
 
         public virtual void QueueAction(Unit targetEnemyUnit)
         {
@@ -84,15 +84,15 @@ namespace UnitSystem.ActionSystem.Actions
 
         protected virtual BodyPart GetBodyPartHit(Unit targetUnit) => targetUnit.HealthSystem.GetRandomBodyPartToHit(this);
 
-        protected virtual float GetBaseDamage(HeldItem heldItemAttackingWith, ItemData itemDataHittingWith)
+        protected virtual float GetBaseDamage(ItemData heldItemAttackingWith, ItemData itemDataHittingWith)
         {
             float baseDamage;
             if (heldItemAttackingWith != null)
             {
-                baseDamage = heldItemAttackingWith.ItemData.Damage;
+                baseDamage = heldItemAttackingWith.Damage;
                 if (Unit.UnitEquipment.IsDualWielding)
                 {
-                    if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon())
+                    if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData)
                         baseDamage *= Item_Weapon.dualWieldPrimaryEfficiency;
                     else
                         baseDamage *= Item_Weapon.dualWieldSecondaryEfficiency;
@@ -100,7 +100,7 @@ namespace UnitSystem.ActionSystem.Actions
                 else if (Unit.UnitEquipment.InVersatileStance)
                     baseDamage *= Action_VersatileStance.damageModifier;
             }
-            else if (itemDataHittingWith != null)
+            else if (itemDataHittingWith != null && itemDataHittingWith.Item != null)
                 baseDamage = itemDataHittingWith.Damage;
             else
                 baseDamage = UnarmedAttackDamage();
@@ -110,13 +110,16 @@ namespace UnitSystem.ActionSystem.Actions
 
         int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith, out bool attackBlocked)
         {
+            ItemData heldItemAttackingWithItemData = null;
+            if (heldItemAttackingWith != null) heldItemAttackingWithItemData = heldItemAttackingWith.ItemData;
+
             float damageAfterArmor = 0f;
 
             // If the attack was blocked, damage the blocking item's durability, as well as the weapon attacking with
             if (heldItemBlockedWith != null)
             {
                 attackBlocked = true;
-                float damage = GetBaseDamage(heldItemAttackingWith, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith);
+                float damage = GetBaseDamage(heldItemAttackingWithItemData, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith);
                 heldItemBlockedWith.ItemData.DamageDurability(targetUnit, damage);
                 if (targetUnit.UnitEquipment.ItemDataEquipped(heldItemBlockedWith.ItemData))
                 {
@@ -133,7 +136,7 @@ namespace UnitSystem.ActionSystem.Actions
             else // If the attack hit the target, determine/apply the final damage to the hit body part, damage their armor's durability, and damage the item attacking with
             {
                 attackBlocked = false;
-                DamageArmorAndWeapon(targetUnit, bodyPartHit, heldItemAttackingWith, itemHittingWith, GetBaseDamage(heldItemAttackingWith, itemHittingWith), out damageAfterArmor);
+                DamageArmorAndWeapon(targetUnit, bodyPartHit, heldItemAttackingWith, itemHittingWith, GetBaseDamage(heldItemAttackingWithItemData, itemHittingWith), out damageAfterArmor);
                 if (damageAfterArmor < 0f) damageAfterArmor = 0f;
             }
 
@@ -226,12 +229,12 @@ namespace UnitSystem.ActionSystem.Actions
 
             if (heldItemAttackingWith != null)
             {
-                if (heldItemAttackingWith.ItemData != null && heldItemAttackingWith.ItemData.Item != null)
+                if (heldItemAttackingWith.ItemData != null && heldItemAttackingWith.ItemData.Item != null && heldItemAttackingWith.ItemData.Item is Item_MeleeWeapon)
                     heldItemAttackingWith.ItemData.DamageDurability(Unit, WeaponDurabilityDamage() + (defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + (defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
             }
             else if (itemHittingWith != null)
             {
-                if (itemHittingWith.Item != null)
+                if (itemHittingWith.Item != null && itemHittingWith.Item is Item_MeleeWeapon)
                     itemHittingWith.DamageDurability(Unit, WeaponDurabilityDamage() + (defenseLayer1 * attackDurabilityDamageRatio * durabilityDamageDoneRatio1) + (defenseLayer2 * attackDurabilityDamageRatio * durabilityDamageDoneRatio2));
             }
         }
@@ -419,7 +422,7 @@ namespace UnitSystem.ActionSystem.Actions
             }
         }
 
-        protected virtual float WeaponDurabilityDamage() => 1f;
+        public virtual float WeaponDurabilityDamage() => 1f;
 
         protected virtual float EffectivenessAgainstArmorModifier() => 1f;
 

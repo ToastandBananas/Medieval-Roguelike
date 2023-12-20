@@ -162,7 +162,13 @@ namespace InventorySystem
             SetTargetPosition(hitTarget);
             ReadyProjectile();
 
-            StartCoroutine(MoveTowardsTarget(hitTarget, beingThrown));
+            shooter.StartCoroutine(MoveTowardsTarget(hitTarget, beingThrown));
+
+            if (!beingThrown && heldRangedWeaponUsed != null)
+            {
+                heldRangedWeaponUsed.SetLoadedProjectile(null);
+                heldRangedWeaponUsed.ItemData.DamageDurability(shooter, attackActionUsed.WeaponDurabilityDamage());
+            }
         }
 
         void ReadyProjectile()

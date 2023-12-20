@@ -4,6 +4,7 @@ using UnitSystem.ActionSystem.UI;
 using EffectsSystem;
 using UnitSystem.ActionSystem.Actions;
 using UnityEditor.Timeline.Actions;
+using InventorySystem;
 
 namespace UnitSystem
 {
@@ -151,6 +152,21 @@ namespace UnitSystem
 
             unit.UpdateGridPosition();
             LevelGrid.AddUnitAtGridPosition(unit.GridPosition, unit);
+        }
+
+        public bool ArmCanHoldItem(BodyPartSide bodyPartSide)
+        {
+            if (bodyPartSide == BodyPartSide.Left)
+            {
+                if (GetBodyPart(BodyPartType.Arm, BodyPartSide.Left).IsDisabled || GetBodyPart(BodyPartType.Hand, BodyPartSide.Left).IsDisabled)
+                    return false;
+            }
+            else if (bodyPartSide == BodyPartSide.Right)
+            {
+                if (GetBodyPart(BodyPartType.Arm, BodyPartSide.Right).IsDisabled || GetBodyPart(BodyPartType.Hand, BodyPartSide.Right).IsDisabled)
+                    return false;
+            }
+            return true;
         }
 
         public BodyPart GetBodyPart(BodyPartType type, BodyPartSide side = BodyPartSide.NotApplicable, BodyPartIndex bodyPartIndex = BodyPartIndex.Only)
