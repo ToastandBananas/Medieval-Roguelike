@@ -135,7 +135,7 @@ namespace InventorySystem
                         SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
                 }
 
-                if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
+                if (unitAdding != null && originalInventory != this && InventoryUI.LastInventoryInteractedWith != this)
                     unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
                 if (myUnit != null)
@@ -153,7 +153,7 @@ namespace InventorySystem
         {
             if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
             {
-                if (InventoryUI.isDraggingItem)
+                if (InventoryUI.IsDraggingItem)
                     InventoryUI.ReplaceDraggedItem();
                 return false;
             }
@@ -163,7 +163,7 @@ namespace InventorySystem
             // Check if there's multiple items in the way or if the position is invalid
             if (overlappedItemCount >= 2)
             {
-                if (InventoryUI.isDraggingItem)
+                if (InventoryUI.IsDraggingItem)
                     InventoryUI.ReplaceDraggedItem();
                 return false;
             }
@@ -196,7 +196,7 @@ namespace InventorySystem
                             InventorySlot slot = originalInventory.GetSlotFromItemData(newItemData);
                             if (slot != null)
                             {
-                                if (InventoryUI.isDraggingItem && InventoryUI.DraggedItem.ItemData == slot.ParentSlot().GetItemData())
+                                if (InventoryUI.IsDraggingItem && InventoryUI.DraggedItem.ItemData == slot.ParentSlot().GetItemData())
                                     slot.HideItemIcon();
                                 else
                                     slot.InventoryItem.UpdateStackSizeVisuals();
@@ -204,7 +204,7 @@ namespace InventorySystem
                         }
                     }
 
-                    if (InventoryUI.isDraggingItem)
+                    if (InventoryUI.IsDraggingItem)
                     {
                         // If the dragged item has been depleted
                         if (newItemData.CurrentStackSize <= 0)
@@ -259,8 +259,8 @@ namespace InventorySystem
             else // If there's no items in the way
             {
                 // Clear out the dragged item's original slot
-                if (InventoryUI.parentSlotDraggedFrom != null)
-                    InventoryUI.parentSlotDraggedFrom.ClearItem();
+                if (InventoryUI.ParentSlotDraggedFrom != null)
+                    InventoryUI.ParentSlotDraggedFrom.ClearItem();
 
                 // If the slots are in different inventories
                 RemoveFromOrigin(targetSlotCoordinate, newItemData, unitAdding);
@@ -278,11 +278,11 @@ namespace InventorySystem
                     itemDatas.Add(newItemData);
 
                 // Hide the dragged item
-                if (InventoryUI.isDraggingItem)
+                if (InventoryUI.IsDraggingItem)
                     InventoryUI.DisableDraggedItem();
             }
 
-            if (unitAdding != null && originalInventory != this && InventoryUI.lastInventoryInteractedWith != this)
+            if (unitAdding != null && originalInventory != this && InventoryUI.LastInventoryInteractedWith != this)
                 unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
 
             if (myUnit != null)
@@ -326,59 +326,59 @@ namespace InventorySystem
         void RemoveFromOrigin(ItemData newItemData, Unit unitAdding)
         {
             // Clear out the parent slot the item was dragged from, if it exists
-            if (InventoryUI.parentSlotDraggedFrom != null)
+            if (InventoryUI.ParentSlotDraggedFrom != null)
             {
-                if (InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory != null)
+                if (InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory != null)
                 {
-                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit != null)
+                    if (InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit != null)
                     {
                         // If the unitAdding is taking from a dead Unit's inventory
-                        if (InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.HealthSystem.IsDead)
+                        if (InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.HealthSystem.IsDead)
                         {
                             if (unitAdding != null)
                                 unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                         }
-                        else if (InventoryUI.lastInventoryInteractedWith != this) // Otherwise, the Unit who has this item equipped can just remove it themselves
-                            InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
+                        else if (InventoryUI.LastInventoryInteractedWith != this) // Otherwise, the Unit who has this item equipped can just remove it themselves
+                            InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null);
                     }
 
-                    InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory.RemoveItem(newItemData, true);
+                    InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory.RemoveItem(newItemData, true);
                 }
-                else if (InventoryUI.parentSlotDraggedFrom.InventoryItem.MyUnitEquipment != null)
+                else if (InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyUnitEquipment != null)
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.InventoryItem.MyUnitEquipment.MyUnit.HealthSystem.IsDead)
+                    if (InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyUnitEquipment.MyUnit.HealthSystem.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
                     }
                     else // Otherwise, the Unit who has this item equipped can just remove it themselves
-                        InventoryUI.parentSlotDraggedFrom.InventoryItem.MyUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                        InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
 
-                    InventoryUI.parentSlotDraggedFrom.InventoryItem.MyUnitEquipment.RemoveEquipment(newItemData);
+                    InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyUnitEquipment.RemoveEquipment(newItemData);
                 }
             }
         }
 
         void RemoveFromOrigin(SlotCoordinate targetSlotCoordinate, ItemData newItemData, Unit unitAdding)
         {
-            if (InventoryUI.isDraggingItem && targetSlotCoordinate.myInventory != InventoryUI.DraggedItem.MyInventory)
+            if (InventoryUI.IsDraggingItem && targetSlotCoordinate.myInventory != InventoryUI.DraggedItem.MyInventory)
             {
                 // Remove the item from its original character equipment
-                if (InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is EquipmentSlot)
+                if (InventoryUI.ParentSlotDraggedFrom != null && InventoryUI.ParentSlotDraggedFrom is EquipmentSlot)
                 {
                     // Queue an InventoryAction to account for unequipping the item
                     // If the unitAdding is taking from a dead Unit's equipment
-                    if (InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.HealthSystem.IsDead)
+                    if (InventoryUI.ParentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.HealthSystem.IsDead)
                     {
                         if (unitAdding != null)
                             unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
                     }
                     else // Otherwise, the Unit who has this item equipped can just remove it themselves
-                        InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
+                        InventoryUI.ParentSlotDraggedFrom.EquipmentSlot.UnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, newItemData.CurrentStackSize, null, InventoryActionType.Unequip);
 
-                    InventoryUI.parentSlotDraggedFrom.EquipmentSlot.UnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.ItemData);
+                    InventoryUI.ParentSlotDraggedFrom.EquipmentSlot.UnitEquipment.RemoveEquipment(InventoryUI.DraggedItem.ItemData);
                 }
                 // Remove the item from its original inventory
                 else if (InventoryUI.DraggedItem.MyInventory != null)
@@ -655,12 +655,12 @@ namespace InventorySystem
             if (myUnit.IsPlayer)
             {
                 slotsParent = InventoryUI.PlayerPocketsParent;
-                slots = InventoryUI.playerPocketsSlots;
+                slots = InventoryUI.PlayerPocketsSlots;
             }
             else
             {
                 slotsParent = InventoryUI.NPCPocketsParent;
-                slots = InventoryUI.npcPocketsSlots;
+                slots = InventoryUI.NpcPocketsSlots;
             }
         }
 

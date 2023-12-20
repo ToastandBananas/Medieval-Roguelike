@@ -2,14 +2,13 @@ using System.Collections;
 using UnityEngine;
 using GridSystem;
 using UnitSystem;
-using UnitSystem.ActionSystem.Actions;
 
 namespace InventorySystem
 {
     public class HeldMeleeWeapon : HeldItem
     {
         readonly float defaultAttackTransitionTime = 0.1f;
-        readonly float defaultBlockTransitionTime = 0.1f;
+        readonly float blockTransitionTime = 0.1f;
 
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
@@ -98,13 +97,13 @@ namespace InventorySystem
 
             Anim.SetBool("spearWall", true);
             if (this == unit.UnitMeshManager.leftHeldItem)
-                Anim.CrossFadeInFixedTime("SpearWall_1H_L", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("SpearWall_1H_L", blockTransitionTime);
             else
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
-                    Anim.CrossFadeInFixedTime("SpearWall_2H", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("SpearWall_2H", blockTransitionTime);
                 else
-                    Anim.CrossFadeInFixedTime("SpearWall_1H_R", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("SpearWall_1H_R", blockTransitionTime);
             }
 
             CurrentHeldItemStance = HeldItemStance.SpearWall;
@@ -113,9 +112,9 @@ namespace InventorySystem
         public void LowerSpearWall()
         {
             Anim.SetBool("spearWall", false);
-            Anim.CrossFadeInFixedTime("Idle", defaultBlockTransitionTime);
+            Anim.CrossFadeInFixedTime("Idle", blockTransitionTime);
 
-            if (Anim.GetBool("versatileStance") == false)
+            if (!Anim.GetBool("versatileStance"))
                 CurrentHeldItemStance = HeldItemStance.Default;
             else
                 CurrentHeldItemStance = HeldItemStance.Versatile;
@@ -132,29 +131,29 @@ namespace InventorySystem
             if (unit.UnitMeshManager.rightHeldItem == this)
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
-                    Anim.CrossFadeInFixedTime("RaiseWeapon_2H", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("RaiseWeapon_2H", blockTransitionTime);
                 else
-                    Anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", defaultBlockTransitionTime);
+                    Anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", blockTransitionTime);
             }
             else if (unit.UnitMeshManager.leftHeldItem == this)
-                Anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", blockTransitionTime);
         }
 
         public void LowerWeapon()
         {
-            if (IsBlocking == false)
+            if (!IsBlocking)
                 return;
 
             IsBlocking = false;
             if (unit.UnitMeshManager.rightHeldItem == this)
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
-                    Anim.Play("LowerWeapon_2H");
+                    Anim.CrossFadeInFixedTime("LowerWeapon_2H", blockTransitionTime);
                 else
-                    Anim.Play("LowerWeapon_1H_R");
+                    Anim.CrossFadeInFixedTime("LowerWeapon_1H_R", blockTransitionTime);
             }
             else if (unit.UnitMeshManager.leftHeldItem == this)
-                Anim.Play("LowerWeapon_1H_L");
+                Anim.CrossFadeInFixedTime("LowerWeapon_1H_L", blockTransitionTime);
         }
 
         public override void Recoil()

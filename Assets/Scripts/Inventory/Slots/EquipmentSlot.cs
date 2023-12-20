@@ -86,7 +86,7 @@ namespace InventorySystem
                 return;
             }
 
-            if (IsHeldItemSlot())
+            if (IsHeldItemSlot)
             {
                 if (inventoryItem.ItemData.Item is Item_Weapon && inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                 {
@@ -113,7 +113,7 @@ namespace InventorySystem
             EnableSlotImage();
         }
 
-        public bool IsHeldItemSlot() => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
+        public bool IsHeldItemSlot => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
 
         //public bool IsRingSlot() => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
 
@@ -122,7 +122,8 @@ namespace InventorySystem
             bool validSlot = false;
             Item draggedItem = InventoryUI.DraggedItem.ItemData.Item;
 
-            if (InventoryUI.DraggedItem.ItemData.IsBroken || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom != this)))
+            if (InventoryUI.DraggedItem.ItemData.IsBroken || (IsHeldItemSlot && !myUnitEquipment.CapableOfEquippingHeldItem(InventoryUI.DraggedItem.ItemData, equipSlot, false)) 
+                || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.ParentSlotDraggedFrom == null || InventoryUI.ParentSlotDraggedFrom != this)))
                 validSlot = false;
             else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
                 validSlot = true;
@@ -132,7 +133,7 @@ namespace InventorySystem
             {
                 if (draggedItem.Equipment.EquipSlot == equipSlot)
                     validSlot = true;
-                else if ((draggedItem is Item_Weapon || draggedItem is Item_Shield) && IsHeldItemSlot())
+                else if ((draggedItem is Item_Weapon || draggedItem is Item_Shield) && IsHeldItemSlot)
                     validSlot = true;
                 //else if (draggedItem is Ring && IsRingSlot())
                     //validSlot = true;
@@ -159,7 +160,7 @@ namespace InventorySystem
         public override void SetupEmptySlotSprites()
         {
             SetEmptySlotSprite();
-            if (IsHeldItemSlot() && IsFull())
+            if (IsHeldItemSlot && IsFull())
             {
                 if (inventoryItem.ItemData != null && inventoryItem.ItemData.Item != null && inventoryItem.ItemData.Item is Item_Weapon && inventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                     GetOppositeWeaponSlot().SetEmptySlotSprite();

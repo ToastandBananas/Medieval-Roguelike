@@ -11,7 +11,7 @@ namespace InventorySystem
 
         bool shouldKeepBlocking;
 
-        readonly float defaultBlockTransitionTime = 0.2f;
+        readonly float blockTransitionTime = 0.2f;
 
         public override void SetupHeldItem(ItemData itemData, Unit unit, EquipSlot equipSlot)
         {
@@ -37,9 +37,9 @@ namespace InventorySystem
         {
             IsBlocking = true;
             if (unit.UnitMeshManager.leftHeldItem == this)
-                Anim.CrossFadeInFixedTime("RaiseShield_L", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("RaiseShield_L", blockTransitionTime);
             else if (unit.UnitMeshManager.rightHeldItem == this)
-                Anim.CrossFadeInFixedTime("RaiseShield_R", defaultBlockTransitionTime);
+                Anim.CrossFadeInFixedTime("RaiseShield_R", blockTransitionTime);
         }
 
         public void LowerShield()
@@ -50,9 +50,9 @@ namespace InventorySystem
 
             IsBlocking = false;
             if (unit.UnitMeshManager.leftHeldItem == this)
-                Anim.Play("LowerShield_L");
+                Anim.CrossFadeInFixedTime("LowerShield_L", blockTransitionTime);
             else if (unit.UnitMeshManager.rightHeldItem == this)
-                Anim.Play("LowerShield_R");
+                Anim.CrossFadeInFixedTime("LowerShield_R", blockTransitionTime);
         }
 
         public override void Recoil()

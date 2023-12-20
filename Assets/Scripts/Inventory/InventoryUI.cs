@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 using Controls;
 using ContextMenu = GeneralUI.ContextMenu;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using GeneralUI;
 using TMPro;
 using UnitSystem.ActionSystem.Actions;
@@ -29,14 +28,14 @@ namespace InventorySystem
         [Header("Pocket Inventory Parents")]
         [SerializeField] Transform playerPocketsParent;
         [SerializeField] Transform npcPocketsParent;
-        public static List<InventorySlot> playerPocketsSlots { get; private set; }
-        public static List<InventorySlot> npcPocketsSlots { get; private set; }
+        public static List<InventorySlot> PlayerPocketsSlots { get; private set; }
+        public static List<InventorySlot> NpcPocketsSlots { get; private set; }
 
         [Header("Equipment Parents")]
         [SerializeField] Transform playerEquipmentParent;
         [SerializeField] Transform npcEquipmentParent;
-        public static List<EquipmentSlot> playerEquipmentSlots { get; private set; }
-        public static List<EquipmentSlot> npcEquipmentSlots { get; private set; }
+        public static List<EquipmentSlot> PlayerEquipmentSlots { get; private set; }
+        public static List<EquipmentSlot> NpcEquipmentSlots { get; private set; }
 
         [Header("Container UI")]
         [SerializeField] ContainerUI[] containerUIs;
@@ -46,18 +45,18 @@ namespace InventorySystem
 
         public static Slot activeSlot { get; private set; }
 
-        public static bool isDraggingItem { get; private set; }
-        public static bool validDragPosition { get; private set; }
-        public static Slot parentSlotDraggedFrom { get; private set; }
+        public static bool IsDraggingItem { get; private set; }
+        public static bool ValidDragPosition { get; private set; }
+        public static Slot ParentSlotDraggedFrom { get; private set; }
 
-        public static bool playerInventoryActive { get; private set; }
-        public static bool npcInventoryActive { get; private set; }
+        public static bool PlayerInventoryActive { get; private set; }
+        public static bool NpcInventoryActive { get; private set; }
 
-        public static Inventory lastInventoryInteractedWith { get; private set; }
+        public static Inventory LastInventoryInteractedWith { get; private set; }
 
         RectTransform rectTransform;
 
-        static WaitForSeconds stopDraggingDelay = new WaitForSeconds(0.05f);
+        static readonly WaitForSeconds stopDraggingDelay = new(0.05f);
 
         void Awake()
         {
@@ -69,11 +68,11 @@ namespace InventorySystem
             }
             Instance = this;
 
-            playerPocketsSlots = new List<InventorySlot>();
-            npcPocketsSlots = new List<InventorySlot>();
+            PlayerPocketsSlots = new List<InventorySlot>();
+            NpcPocketsSlots = new List<InventorySlot>();
 
-            playerEquipmentSlots = playerEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
-            npcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
+            PlayerEquipmentSlots = playerEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
+            NpcEquipmentSlots = npcEquipmentParent.gameObject.GetComponentsInChildren<EquipmentSlot>().ToList();
 
             rectTransform = GetComponent<RectTransform>();
 
@@ -92,16 +91,16 @@ namespace InventorySystem
                 TogglePlayerInventory();
             
             // If we're not already dragging an item
-            if (isDraggingItem == false)
+            if (!IsDraggingItem)
             {
                 // Don't allow drag/drop inventory/equipment actions while an action is already queued
-                if (UnitManager.player.IsMyTurn == false || UnitManager.player.UnitActionHandler.QueuedActions.Count > 0)
+                if (!UnitManager.player.IsMyTurn || UnitManager.player.UnitActionHandler.QueuedActions.Count > 0)
                     return;
 
                 // If we select an item
                 if (GameControls.gamePlayActions.menuSelect.WasPressed)
                 {
-                    if (activeSlot == null || activeSlot.IsFull() == false)
+                    if (activeSlot == null || !activeSlot.IsFull())
                         return;
 
                     // "Pickup" the item by hiding the item's sprite and showing that same sprite on the draggedItem object
@@ -109,7 +108,7 @@ namespace InventorySystem
                     {
                         InventorySlot activeInventorySlot = activeSlot as InventorySlot;
                         SetupDraggedItem(activeInventorySlot.slotCoordinate.parentSlotCoordinate.itemData, activeInventorySlot.ParentSlot(), activeInventorySlot.myInventory);
-                        lastInventoryInteractedWith = activeInventorySlot.myInventory;
+                        LastInventoryInteractedWith = activeInventorySlot.myInventory;
                     }
                     else
                     {
@@ -133,7 +132,7 @@ namespace InventorySystem
                                 activeEquipmentSlot.GetOppositeWeaponSlot().InventoryItem.DisableIconImage();
                         }
 
-                        lastInventoryInteractedWith = null;
+                        LastInventoryInteractedWith = null;
                     }
 
                     activeSlot.ParentSlot().SetupEmptySlotSprites();
@@ -161,13 +160,13 @@ namespace InventorySystem
                 if (GameControls.gamePlayActions.menuSelect.WasPressed)
                 {
                     // Try placing the item
-                    if (activeSlot != null && validDragPosition && activeSlot != parentSlotDraggedFrom)
+                    if (activeSlot != null && ValidDragPosition && activeSlot != ParentSlotDraggedFrom)
                     {
                         if (activeSlot is InventorySlot)
                         {
                             InventorySlot activeInventorySlot = activeSlot as InventorySlot;
                             activeInventorySlot.myInventory.TryAddItemAt(activeInventorySlot.slotCoordinate, draggedItem.ItemData, UnitManager.player);
-                            lastInventoryInteractedWith = activeInventorySlot.myInventory;
+                            LastInventoryInteractedWith = activeInventorySlot.myInventory;
                         }
                         else if (activeSlot is EquipmentSlot)
                         {
@@ -195,16 +194,16 @@ namespace InventorySystem
                             else
                             {
                                 EquipmentSlot activeEquipmentSlot = activeSlot as EquipmentSlot;
-                                UnitManager.player.UnitActionHandler.GetAction<Action_Equip>().QueueAction(draggedItem.ItemData, activeEquipmentSlot.EquipSlot, parentSlotDraggedFrom != null && parentSlotDraggedFrom is ContainerEquipmentSlot ? parentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
-                                lastInventoryInteractedWith = null;
+                                UnitManager.player.UnitActionHandler.GetAction<Action_Equip>().QueueAction(draggedItem.ItemData, activeEquipmentSlot.EquipSlot, ParentSlotDraggedFrom != null && ParentSlotDraggedFrom is ContainerEquipmentSlot ? ParentSlotDraggedFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager : null);
+                                LastInventoryInteractedWith = null;
                             }
 
                             DisableDraggedItem();
                         }
                     }
-                    else if (EventSystem.current.IsPointerOverGameObject() == false)
+                    else if (!EventSystem.current.IsPointerOverGameObject())
                     {
-                        if (parentSlotDraggedFrom == null)
+                        if (ParentSlotDraggedFrom == null)
                         {
                             Unit unit = null;
                             if (draggedItem.MyInventory != null)
@@ -212,14 +211,14 @@ namespace InventorySystem
 
                             DropItemManager.DropItem(draggedItem.MyInventory, unit, draggedItem.ItemData);
                         }
-                        else if (parentSlotDraggedFrom is EquipmentSlot)
+                        else if (ParentSlotDraggedFrom is EquipmentSlot)
                         {
-                            EquipmentSlot equipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
+                            EquipmentSlot equipmentSlotDraggedFrom = ParentSlotDraggedFrom as EquipmentSlot;
                             DropItemManager.DropItem(equipmentSlotDraggedFrom.UnitEquipment, equipmentSlotDraggedFrom.EquipSlot);
                         }
                         else
                         {
-                            InventorySlot inventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
+                            InventorySlot inventorySlotDraggedFrom = ParentSlotDraggedFrom as InventorySlot;
                             DropItemManager.DropItem(inventorySlotDraggedFrom.myInventory, inventorySlotDraggedFrom.myInventory.MyUnit, draggedItem.ItemData);
                         }
                     }
@@ -234,7 +233,7 @@ namespace InventorySystem
             overlappedItemsParentSlotCoordinate = null;
             overlappedItemCount = 0;
 
-            if (focusedSlotCoordinate.myInventory.InventoryLayout.HasStandardSlotSize() == false)
+            if (!focusedSlotCoordinate.myInventory.InventoryLayout.HasStandardSlotSize())
             {
                 overlappedItemsParentSlotCoordinate = focusedSlotCoordinate.myInventory.GetSlotCoordinate(focusedSlotCoordinate.coordinate.x, focusedSlotCoordinate.coordinate.y);
                 if (overlappedItemsParentSlotCoordinate.isFull && overlappedItemsParentSlotCoordinate.itemData != itemData)
@@ -296,42 +295,42 @@ namespace InventorySystem
                 activeSlot.RemoveSlotHighlights();
 
             // If replacing a split stack
-            if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() != Instance.draggedItem.ItemData && Instance.draggedItem.ItemData.IsEqual(parentSlotDraggedFrom.GetItemData()))
+            if (ParentSlotDraggedFrom != null && ParentSlotDraggedFrom.GetItemData() != Instance.draggedItem.ItemData && Instance.draggedItem.ItemData.IsEqual(ParentSlotDraggedFrom.GetItemData()))
             {
-                if (parentSlotDraggedFrom is InventorySlot)
+                if (ParentSlotDraggedFrom is InventorySlot)
                 {
-                    if (parentSlotDraggedFrom.InventoryItem.MyInventory.TryAddItemAt(parentSlotDraggedFrom.InventoryItem.MyInventory.GetSlotCoordinateFromItemData(parentSlotDraggedFrom.GetItemData()), Instance.draggedItem.ItemData, UnitManager.player) == false)
+                    if (!ParentSlotDraggedFrom.InventoryItem.MyInventory.TryAddItemAt(ParentSlotDraggedFrom.InventoryItem.MyInventory.GetSlotCoordinateFromItemData(ParentSlotDraggedFrom.GetItemData()), Instance.draggedItem.ItemData, UnitManager.player))
                     {
-                        if (parentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData) == false)
+                        if (!ParentSlotDraggedFrom.InventoryItem.MyInventory.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData))
                             DropItemManager.DropItem(Instance.draggedItem.MyInventory, UnitManager.player, Instance.draggedItem.ItemData);
                     }
                 }
                 else
                 {
-                    EquipmentSlot equipmentSlot = parentSlotDraggedFrom as EquipmentSlot;
-                    if (equipmentSlot.UnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.ItemData) == false)
+                    EquipmentSlot equipmentSlot = ParentSlotDraggedFrom as EquipmentSlot;
+                    if (!equipmentSlot.UnitEquipment.TryAddItemAt(equipmentSlot.EquipSlot, Instance.draggedItem.ItemData))
                     {
-                        if (equipmentSlot.UnitEquipment.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData) == false)
+                        if (!equipmentSlot.UnitEquipment.MyUnit.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData))
                             DropItemManager.DropItem(Instance.draggedItem.MyInventory, UnitManager.player, Instance.draggedItem.ItemData);
                     }
                 }
             }
             // If replacing the item normally is possible
-            else if (parentSlotDraggedFrom != null && parentSlotDraggedFrom.GetItemData() == Instance.draggedItem.ItemData)
+            else if (ParentSlotDraggedFrom != null && ParentSlotDraggedFrom.GetItemData() == Instance.draggedItem.ItemData)
             {
-                parentSlotDraggedFrom.ShowSlotImage();
+                ParentSlotDraggedFrom.ShowSlotImage();
 
-                if (parentSlotDraggedFrom is InventorySlot)
+                if (ParentSlotDraggedFrom is InventorySlot)
                 {
-                    InventorySlot parentInventorySlotDraggedFrom = parentSlotDraggedFrom as InventorySlot;
+                    InventorySlot parentInventorySlotDraggedFrom = ParentSlotDraggedFrom as InventorySlot;
                     parentInventorySlotDraggedFrom.SetupFullSlotSprites();
                 }
                 else
                 {
-                    EquipmentSlot parentEquipmentSlotDraggedFrom = parentSlotDraggedFrom as EquipmentSlot;
+                    EquipmentSlot parentEquipmentSlotDraggedFrom = ParentSlotDraggedFrom as EquipmentSlot;
                     parentEquipmentSlotDraggedFrom.SetFullSlotSprite();
 
-                    if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot() && parentEquipmentSlotDraggedFrom.InventoryItem.ItemData.Item is Item_Weapon && parentEquipmentSlotDraggedFrom.InventoryItem.ItemData.Item.Weapon.IsTwoHanded)
+                    if (parentEquipmentSlotDraggedFrom.IsHeldItemSlot && parentEquipmentSlotDraggedFrom.InventoryItem.ItemData.Item is Item_Weapon && parentEquipmentSlotDraggedFrom.InventoryItem.ItemData.Item.Weapon.IsTwoHanded)
                     {
                         EquipmentSlot oppositeWeaponSlot = parentEquipmentSlotDraggedFrom.GetOppositeWeaponSlot();
                         oppositeWeaponSlot.SetFullSlotSprite();
@@ -340,11 +339,11 @@ namespace InventorySystem
                         parentEquipmentSlotDraggedFrom.InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
                 }
 
-                parentSlotDraggedFrom.InventoryItem.UpdateStackSizeVisuals();
+                ParentSlotDraggedFrom.InventoryItem.UpdateStackSizeVisuals();
             }
             else // Otherwise just try to add it to one of the Unit's inventories
             {
-                if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData) == false)
+                if (!UnitManager.player.UnitInventoryManager.TryAddItemToInventories(Instance.draggedItem.ItemData))
                     DropItemManager.DropItem(Instance.draggedItem.MyInventory, UnitManager.player, Instance.draggedItem.ItemData);
             }
 
@@ -358,9 +357,9 @@ namespace InventorySystem
             TooltipManager.ClearInventoryTooltips();
 
             Cursor.visible = false;
-            isDraggingItem = true;
+            IsDraggingItem = true;
 
-            parentSlotDraggedFrom = theParentSlotDraggedFrom;
+            ParentSlotDraggedFrom = theParentSlotDraggedFrom;
             if (theParentSlotDraggedFrom == null)
                 newItemData.SetInventorySlotCoordinate(null);
 
@@ -378,9 +377,9 @@ namespace InventorySystem
             TooltipManager.ClearInventoryTooltips();
 
             Cursor.visible = false;
-            isDraggingItem = true;
+            IsDraggingItem = true;
 
-            parentSlotDraggedFrom = theParentSlotDraggedFrom;
+            ParentSlotDraggedFrom = theParentSlotDraggedFrom;
 
             if (theParentSlotDraggedFrom is ContainerEquipmentSlot)
             {
@@ -401,15 +400,15 @@ namespace InventorySystem
 
         public static void DisableDraggedItem()
         {
-            if (isDraggingItem == false)
+            if (!IsDraggingItem)
                 return;
 
             if (activeSlot != null)
                 activeSlot.RemoveSlotHighlights();
 
             Cursor.visible = true;
-            isDraggingItem = false;
-            parentSlotDraggedFrom = null;
+            IsDraggingItem = false;
+            ParentSlotDraggedFrom = null;
             Instance.draggedItem.SetItemData(null);
             Instance.draggedItem.SetMyInventory(null);
 
@@ -426,39 +425,39 @@ namespace InventorySystem
 
         public static void TogglePlayerInventory()
         {
-            if (isDraggingItem)
+            if (IsDraggingItem)
                 ReplaceDraggedItem();
 
             Instance.playerInventoryUIParent.SetActive(!Instance.playerInventoryUIParent.activeSelf);
-            playerInventoryActive = Instance.playerInventoryUIParent.activeSelf;
+            PlayerInventoryActive = Instance.playerInventoryUIParent.activeSelf;
 
-            if (playerInventoryActive == false)
+            if (!PlayerInventoryActive)
             {
                 activeSlot = null;
-                lastInventoryInteractedWith = null;
+                LastInventoryInteractedWith = null;
                 ContextMenu.DisableContextMenu();
                 SplitStack.Instance.Close();
                 TooltipManager.ClearInventoryTooltips();
                 CloseAllContainerUI();
 
-                if (npcInventoryActive)
+                if (NpcInventoryActive)
                     ToggleNPCInventory();
             }
         }
 
         public static void ClearNPCInventorySlots()
         {
-            if (npcInventoryActive == false)
+            if (!NpcInventoryActive)
                 return;
 
-            if (isDraggingItem)
+            if (IsDraggingItem)
                 ReplaceDraggedItem(); 
             
-            if (npcEquipmentSlots.Count > 0)
-                npcEquipmentSlots[0].UnitEquipment.OnCloseNPCInventory();
+            if (NpcEquipmentSlots.Count > 0)
+                NpcEquipmentSlots[0].UnitEquipment.OnCloseNPCInventory();
 
-            if (npcPocketsSlots.Count > 0)
-                npcPocketsSlots[0].myInventory.OnCloseNPCInventory();
+            if (NpcPocketsSlots.Count > 0)
+                NpcPocketsSlots[0].myInventory.OnCloseNPCInventory();
         }
 
         public static void ToggleNPCInventory()
@@ -466,11 +465,11 @@ namespace InventorySystem
             ClearNPCInventorySlots();
 
             Instance.npcInventoryUIParent.SetActive(!Instance.npcInventoryUIParent.activeSelf);
-            npcInventoryActive = Instance.npcInventoryUIParent.activeSelf;
+            NpcInventoryActive = Instance.npcInventoryUIParent.activeSelf;
 
-            if (npcInventoryActive && playerInventoryActive == false)
+            if (NpcInventoryActive && !PlayerInventoryActive)
                 TogglePlayerInventory();
-            else if (npcInventoryActive == false)
+            else if (!NpcInventoryActive)
             {
                 activeSlot = null;
                 ContextMenu.DisableContextMenu();
@@ -488,7 +487,7 @@ namespace InventorySystem
                     return;
             }
 
-            if (playerInventoryActive == false)
+            if (!PlayerInventoryActive)
                 TogglePlayerInventory();
 
             GetNextAvailableContainerUI().ShowContainerInventory(containerInventoryManager.ParentInventory, containerItem);
@@ -496,7 +495,7 @@ namespace InventorySystem
 
         public static void CloseAllContainerUI()
         {
-            if (isDraggingItem)
+            if (IsDraggingItem)
                 ReplaceDraggedItem();
 
             for (int i = 0; i < Instance.containerUIs.Length; i++)
@@ -509,7 +508,7 @@ namespace InventorySystem
         {
             for (int i = 0; i < Instance.containerUIs.Length; i++)
             {
-                if (Instance.containerUIs[i].gameObject.activeSelf == false)
+                if (!Instance.containerUIs[i].gameObject.activeSelf)
                     return Instance.containerUIs[i];
             }
 
@@ -529,11 +528,11 @@ namespace InventorySystem
 
         public static void UpdatePlayerCarryWeightText() => Instance.weightText.text = $"{UnitManager.player.Stats.CurrentCarryWeight} / {UnitManager.player.Stats.MaxCarryWeight} lbs";
 
-        public static void SetValidDragPosition(bool valid) => validDragPosition = valid;
+        public static void SetValidDragPosition(bool valid) => ValidDragPosition = valid;
 
         public static void SetActiveSlot(Slot slot) => activeSlot = slot;
 
-        public static void SetLastInventoryInteractedWith(Inventory inventory) => lastInventoryInteractedWith = inventory;
+        public static void SetLastInventoryInteractedWith(Inventory inventory) => LastInventoryInteractedWith = inventory;
 
         public static InventoryItem DraggedItem => Instance.draggedItem;
         public static InventorySlot InventorySlotPrefab => Instance.inventorySlotPrefab;

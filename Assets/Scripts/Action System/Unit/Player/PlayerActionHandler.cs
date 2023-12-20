@@ -279,7 +279,7 @@ namespace UnitSystem.ActionSystem
 
         public void OnClick_ActionBarSlot(ActionType actionType)
         {
-            if (InventoryUI.isDraggingItem || onClickActionBarCooldown < onClickActionBarCooldownTime)
+            if (InventoryUI.IsDraggingItem || onClickActionBarCooldown < onClickActionBarCooldownTime)
                 return;
 
             onClickActionBarCooldown = 0f;

@@ -90,13 +90,13 @@ namespace InventorySystem
             {
                 TooltipManager.SetCurrentSlot(ParentSlot());
 
-                if (InventoryUI.isDraggingItem == false && GetItemData() != null)
+                if (InventoryUI.IsDraggingItem == false && GetItemData() != null)
                     TooltipManager.ShowInventoryTooltips(this);
 
                 TooltipManager.ClearUnitTooltips();
             }
 
-            if (InventoryUI.isDraggingItem)
+            if (InventoryUI.IsDraggingItem)
                 HighlightSlots();
         }
 
@@ -105,7 +105,7 @@ namespace InventorySystem
             if (InventoryUI.activeSlot == this)
                 InventoryUI.SetActiveSlot(null);
 
-            if (InventoryUI.isDraggingItem)
+            if (InventoryUI.IsDraggingItem)
                 RemoveSlotHighlights();
             else
                 TooltipManager.ClearInventoryTooltips();

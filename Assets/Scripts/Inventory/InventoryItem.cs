@@ -29,7 +29,7 @@ namespace InventorySystem
             if ((ItemData == null || ItemData.Item == null) && mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = mySlot as EquipmentSlot;
-                if (myEquipmentSlot.IsHeldItemSlot())
+                if (myEquipmentSlot.IsHeldItemSlot)
                 {
                     EquipmentSlot oppositeWeaponSlot = myEquipmentSlot.GetOppositeWeaponSlot();
                     spriteItemData = oppositeWeaponSlot.InventoryItem.ItemData;

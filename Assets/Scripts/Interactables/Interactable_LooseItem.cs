@@ -88,7 +88,7 @@ namespace InteractableObjects
         protected bool TryEquipOnPickup(Unit unitPickingUpItem)
         {
             bool equipped = false;
-            if (itemData.IsBroken)
+            if (itemData.IsBroken || unitPickingUpItem.UnitEquipment == null)
                 return false;
 
             if (itemData.Item is Item_Equipment)
@@ -105,7 +105,7 @@ namespace InteractableObjects
                     return false;
 
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
-                if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+                if (itemData.Item is Item_HeldEquipment)
                 {
                     if (unitPickingUpItem.UnitEquipment.CurrentWeaponSet == WeaponSet.Two)
                     {
@@ -115,17 +115,20 @@ namespace InteractableObjects
                             targetEquipSlot = EquipSlot.RightHeldItem2;
                     }
 
-                    if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot))
+                    if (!unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, targetEquipSlot, true))
+                        return false;
+
+                    if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) || !unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, targetEquipSlot, false))
                     {
-                        EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeWeaponEquipSlot(targetEquipSlot);
-                        if ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && !unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot))
+                        EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeHeldItemEquipSlot(targetEquipSlot);
+                        if ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && !unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot) && unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, oppositeEquipSlot, false))
                         {
                             equipped = true;
                             unitPickingUpItem.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemData, itemData.CurrentStackSize, null);
                             unitPickingUpItem.UnitActionHandler.GetAction<Action_Equip>().TakeActionImmediately(itemData, oppositeEquipSlot, null);
                         }
                     }
-                    else
+                    else if (unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, targetEquipSlot, false))
                     {
                         equipped = true;
                         unitPickingUpItem.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemData, itemData.CurrentStackSize, null);

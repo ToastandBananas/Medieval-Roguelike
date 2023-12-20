@@ -239,15 +239,10 @@ namespace UnitSystem
         public void StopBlocking()
         {
             if (unit.UnitMeshManager.leftHeldItem != null)
-            {
-                if (unit.UnitMeshManager.leftHeldItem.IsBlocking && unit.UnitMeshManager.leftHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
-                    unit.UnitMeshManager.leftHeldItem.StopBlocking();
-            }
-            else if (unit.UnitMeshManager.rightHeldItem != null)
-            {
-                if (unit.UnitMeshManager.rightHeldItem.IsBlocking && unit.UnitMeshManager.rightHeldItem.CurrentHeldItemStance != HeldItemStance.RaiseShield)
-                  unit.UnitMeshManager.rightHeldItem.StopBlocking();
-            }
+                unit.UnitMeshManager.leftHeldItem.StopBlocking();
+            
+            if (unit.UnitMeshManager.rightHeldItem != null)
+                unit.UnitMeshManager.rightHeldItem.StopBlocking();
         }
 
         public void Die(Transform attackerTransform)

@@ -61,7 +61,7 @@ namespace GeneralUI
                 contextMenuHoldTimer += Time.deltaTime;
 
             // Don't allow context menu actions while an action is already queued or when dragging items
-            if (UnitManager.player.UnitActionHandler.QueuedActions.Count > 0 || InventoryUI.isDraggingItem || ActionSystemUI.IsDraggingAction)
+            if (UnitManager.player.UnitActionHandler.QueuedActions.Count > 0 || InventoryUI.IsDraggingItem || ActionSystemUI.IsDraggingAction)
                 return;
             
             if (GameControls.gamePlayActions.menuContext.WasReleased)
@@ -75,7 +75,7 @@ namespace GeneralUI
 
         public static void BuildContextMenu()
         {
-            if (onCooldown || InventoryUI.isDraggingItem)
+            if (onCooldown || InventoryUI.IsDraggingItem)
                 return;
 
             SplitStack.Instance.Close();
@@ -107,7 +107,7 @@ namespace GeneralUI
                 {
                     EquipmentSlot equipmentSlot = TargetSlot as EquipmentSlot;
                     if (UnitEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
-                        TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeWeaponEquipSlot(equipmentSlot.EquipSlot));
+                        TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeHeldItemEquipSlot(equipmentSlot.EquipSlot));
                 }
             }
 
@@ -288,7 +288,7 @@ namespace GeneralUI
 
         static void CreateThrowItemButton()
         {
-            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && (!TargetSlot.EquipmentSlot.IsHeldItemSlot() || (TargetSlot.GetItemData().Item is Item_MeleeWeapon == false && TargetSlot.GetItemData().Item is Item_Shield == false))))
+            if (TargetSlot == null || !TargetSlot.IsFull() || TargetSlot.InventoryItem.GetMyUnit() != UnitManager.player || (TargetSlot is EquipmentSlot && (!TargetSlot.EquipmentSlot.IsHeldItemSlot || (TargetSlot.GetItemData().Item is Item_MeleeWeapon == false && TargetSlot.GetItemData().Item is Item_Shield == false))))
                 return;
 
             GetContextMenuButton().SetupThrowItemButton(TargetSlot.GetItemData());
@@ -484,6 +484,10 @@ namespace GeneralUI
             }
 
             if (itemData == null || itemData.Item == null || !itemData.Item.IsUsable || itemData.IsBroken)
+                return;
+
+            if (TargetSlot != null && TargetSlot is InventorySlot && itemData.Item is Item_HeldEquipment 
+                && (!UnitManager.player.UnitEquipment.CapableOfEquippingHeldItem(itemData, itemData.Item.Equipment.EquipSlot, true)))
                 return;
 
             if (itemData.Item is Item_Ammunition && UnitManager.player.QuiverInventoryManager.Contains(itemData))

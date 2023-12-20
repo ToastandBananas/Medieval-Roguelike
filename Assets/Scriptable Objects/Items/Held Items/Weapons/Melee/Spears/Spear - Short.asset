@@ -56,7 +56,7 @@ MonoBehaviour:
   isVersatile: 1
   canDualWield: 1
   attackRange: {x: 1, y: 1.7}
-  durabilityRange: {x: 40, y: 48}
+  durabilityRange: {x: 50, y: 58}
   minDamageRange: {x: 5, y: 6}
   maxDamageRange: {x: 7, y: 9}
   minArmorPierce: 0.35

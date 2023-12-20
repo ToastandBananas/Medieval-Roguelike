@@ -177,8 +177,8 @@ namespace GeneralUI
             }
             else if (UnitManager.player.UnitInventoryManager.TryAddItemToInventories(itemData))
             {
-                if (InventoryUI.npcEquipmentSlots[0].UnitEquipment != null && InventoryUI.npcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
-                    InventoryUI.npcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
+                if (InventoryUI.NpcEquipmentSlots[0].UnitEquipment != null && InventoryUI.NpcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
+                    InventoryUI.NpcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
                 else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
                     LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }

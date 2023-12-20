@@ -137,7 +137,7 @@ namespace UnitSystem.ActionSystem.UI
             {
                 TooltipManager.SetCurrentActionBarSlot(this);
 
-                if (InventoryUI.isDraggingItem == false && ActionSystemUI.IsDraggingAction == false && ActionType != null)
+                if (InventoryUI.IsDraggingItem == false && ActionSystemUI.IsDraggingAction == false && ActionType != null)
                     TooltipManager.ShowActionBarTooltip(this);
             }
         }
@@ -147,7 +147,7 @@ namespace UnitSystem.ActionSystem.UI
             if (ActionSystemUI.HighlightedActionSlot == this)
                 ActionSystemUI.SetHighlightedActionSlot(null);
 
-            if (InventoryUI.isDraggingItem == false)
+            if (InventoryUI.IsDraggingItem == false)
                 TooltipManager.ClearInventoryTooltips();
         }
     }

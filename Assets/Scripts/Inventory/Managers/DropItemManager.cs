@@ -108,7 +108,7 @@ namespace InventorySystem
             // We queue each action twice to account for unequipping the item before dropping it
             if (unitEquipment.MyUnit.HealthSystem.IsDead) // In this case, the player is dropping an item from a dead Unit's equipment
             {
-                if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
+                if (ContextMenu.TargetSlot == null || InventoryUI.IsDraggingItem)
                     UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                 UnitManager.player.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
@@ -116,7 +116,7 @@ namespace InventorySystem
             else
             {
                 // The context menu already accounts for unequipping AP cost by calling an UnequipAction
-                if (ContextMenu.TargetSlot == null || InventoryUI.isDraggingItem)
+                if (ContextMenu.TargetSlot == null || InventoryUI.IsDraggingItem)
                     unitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                 unitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(looseItem.ItemData, looseItem.ItemData.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Drop);
@@ -139,8 +139,8 @@ namespace InventorySystem
 
             if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.ItemData)
             {
-                if (InventoryUI.parentSlotDraggedFrom != null)
-                    InventoryUI.parentSlotDraggedFrom.ClearItem();
+                if (InventoryUI.ParentSlotDraggedFrom != null)
+                    InventoryUI.ParentSlotDraggedFrom.ClearItem();
 
                 InventoryUI.DisableDraggedItem();
             }
@@ -345,7 +345,7 @@ namespace InventorySystem
             if (heldItem.ItemData.Item is Item_Shield && heldItem.transform.childCount > 1)
             {
                 HeldShield heldShield = heldItem as HeldShield;
-                Vector3 yOffset = new Vector3(0f, FindMeshHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
+                Vector3 yOffset = new(0f, FindMeshHeightDifference(looseItem.MeshCollider, heldShield.MeshCollider), 0f);
 
                 for (int i = heldItem.transform.childCount - 1; i > 0; i--)
                 {
@@ -357,8 +357,7 @@ namespace InventorySystem
             }
 
             // Set the LooseItem's position to match the HeldItem before we add force
-            looseItem.transform.position = heldItem.transform.position;
-            looseItem.transform.rotation = heldItem.transform.rotation;
+            looseItem.transform.SetPositionAndRotation(heldItem.transform.position, heldItem.transform.rotation);
         }
 
         static void SetupHelmItemDrop(Interactable_LooseItem looseItem, ItemData itemData, Unit unit)
@@ -389,8 +388,7 @@ namespace InventorySystem
             Interactable_LooseItem looseProjectile = looseProjectileTransform.GetComponent<Interactable_LooseItem>();
             looseProjectile.MeshCollider.enabled = false;
             looseProjectileTransform.SetParent(looseItem.transform);
-            looseProjectileTransform.transform.localPosition = projectilePosition + yOffset;
-            looseProjectileTransform.transform.localRotation = projectileRotation;
+            looseProjectileTransform.transform.SetLocalPositionAndRotation(projectilePosition + yOffset, projectileRotation);
         }
 
         static Vector3 GetDropDirection(Unit unit)

@@ -24,7 +24,7 @@ namespace InteractableObjects
                 myUnit.UnitEquipment.CreateSlotVisuals();
                 myUnit.UnitInventoryManager.MainInventory.CreateSlotVisuals();
 
-                if (InventoryUI.npcInventoryActive == false)
+                if (InventoryUI.NpcInventoryActive == false)
                     InventoryUI.ToggleNPCInventory();
             }
         }

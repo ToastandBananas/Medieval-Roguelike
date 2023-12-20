@@ -103,6 +103,7 @@ namespace InventorySystem
 
         protected void Projectile_OnProjectileBehaviourComplete(Unit targetUnit)
         {
+            Debug.Log(targetUnit);
             if (targetUnit != null && !targetUnit.HealthSystem.IsDead)
                 targetUnit.UnitAnimator.StopBlocking();
         }

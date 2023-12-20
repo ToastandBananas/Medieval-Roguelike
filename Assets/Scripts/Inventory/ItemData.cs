@@ -422,7 +422,8 @@ namespace InventorySystem
                 if (!targetUnit.UnitEquipment.ItemDataEquipped(this))
                     return;
 
-                if (this == targetUnit.UnitMeshManager.leftHeldItem.ItemData || this == targetUnit.UnitMeshManager.rightHeldItem.ItemData || (this == targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
+                if ((targetUnit.UnitMeshManager.leftHeldItem != null && this == targetUnit.UnitMeshManager.leftHeldItem.ItemData) || (targetUnit.UnitMeshManager.rightHeldItem != null && this == targetUnit.UnitMeshManager.rightHeldItem.ItemData) 
+                    || (this == targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
                     DropItemManager.DropItem(targetUnit.UnitEquipment, targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));
                 else
                     targetUnit.UnitEquipment.UnequipItem(targetUnit.UnitEquipment.GetEquipSlotFromItemData(this));

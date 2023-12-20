@@ -69,7 +69,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (Unit.IsPlayer)
             {
                 InventoryUI.CloseAllContainerUI();
-                if (InventoryUI.npcInventoryActive)
+                if (InventoryUI.NpcInventoryActive)
                     InventoryUI.ToggleNPCInventory();
             }
         }

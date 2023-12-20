@@ -34,7 +34,10 @@ namespace InventorySystem
             }
 
             // Setup the delegate that gets the targetUnit to stop blocking once the projectile lands (if they were blocking)
-            Unit targetEnemyUnit = unit.UnitActionHandler.TargetEnemyUnit;
+            Unit targetEnemyUnit = attackActionUsed.TargetEnemyUnit;
+            if (targetEnemyUnit == null)
+                targetEnemyUnit = unit.UnitActionHandler.TargetEnemyUnit;
+
             this.attackActionUsed = attackActionUsed as Action_BaseRangedAttack;
             LoadedProjectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(targetEnemyUnit); });
 

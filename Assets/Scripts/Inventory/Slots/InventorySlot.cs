@@ -182,7 +182,7 @@ namespace InventorySystem
             if (validSlot)
             {
                 if (myInventory.MyUnit != null && myInventory.MyUnit.HealthSystem.IsDead
-                    && (InventoryUI.parentSlotDraggedFrom == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory == null || InventoryUI.parentSlotDraggedFrom.InventoryItem.MyInventory != myInventory))
+                    && (InventoryUI.ParentSlotDraggedFrom == null || InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory == null || InventoryUI.ParentSlotDraggedFrom.InventoryItem.MyInventory != myInventory))
                 {
                     validSlot = false;
                 }
@@ -197,9 +197,9 @@ namespace InventorySystem
                     validSlot = false;
             }
 
-            if (validSlot && InventoryUI.parentSlotDraggedFrom != null && InventoryUI.parentSlotDraggedFrom is ContainerEquipmentSlot)
+            if (validSlot && InventoryUI.ParentSlotDraggedFrom != null && InventoryUI.ParentSlotDraggedFrom is ContainerEquipmentSlot)
             {
-                ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.parentSlotDraggedFrom as ContainerEquipmentSlot;
+                ContainerEquipmentSlot containerEquipmentSlotDraggedFrom = InventoryUI.ParentSlotDraggedFrom as ContainerEquipmentSlot;
                 if (containerEquipmentSlotDraggedFrom.containerInventoryManager.ContainsAnyItems())
                     validSlot = false;
             }
