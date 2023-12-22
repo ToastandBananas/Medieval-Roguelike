@@ -79,6 +79,10 @@ namespace GeneralUI
                     stringBuilder.Append(" legs");
                 else if (itemData.Item is Item_Helm)
                     stringBuilder.Append(" head");
+                else if (itemData.Item is Item_Gloves)
+                    stringBuilder.Append(" hands");
+                else if (itemData.Item is Item_Boots)
+                    stringBuilder.Append(" feet");
                 stringBuilder.Append("</i></align></size>\n");
             }
 

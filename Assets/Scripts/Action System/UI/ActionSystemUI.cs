@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using GeneralUI;
 using InventorySystem;
 using UnitSystem.ActionSystem.Actions;
+using UnitSystem.UI;
 
 namespace UnitSystem.ActionSystem.UI
 {
@@ -39,8 +40,6 @@ namespace UnitSystem.ActionSystem.UI
 
         [Header("Stat Texts")]
         [SerializeField] TextMeshProUGUI actionPointsText;
-        [SerializeField] TextMeshProUGUI energyText;
-        [SerializeField] TextMeshProUGUI healthText;
 
         public static bool IsDraggingAction { get; private set; }
         static ActionBarSlot actionSlotDraggedFrom;
@@ -83,9 +82,6 @@ namespace UnitSystem.ActionSystem.UI
         void Start()
         {
             UpdateActionPointsText();
-            UpdateEnergyText();
-            UpdateHealthText();
-
             UpdateActionVisuals();
         }
 
@@ -390,11 +386,7 @@ namespace UnitSystem.ActionSystem.UI
             }
         }
 
-        public static void UpdateActionPointsText() => Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.Stats.LastUsedAP}";
-
-        public static void UpdateEnergyText() => Instance.energyText.text = $"Energy: {playerActionHandler.Unit.Stats.CurrentEnergy}";
-
-        public static void UpdateHealthText() => Instance.healthText.text = $"Health: {playerActionHandler.Unit.HealthSystem.GetBodyPart(BodyPartType.Torso).CurrentHealth}";
+        public static void UpdateActionPointsText() => Debug.Log($"Last Used AP: {playerActionHandler.Unit.Stats.LastUsedAP}");//Instance.actionPointsText.text = $"Last Used AP: {playerActionHandler.Unit.Stats.LastUsedAP}";
 
         public static RectTransform ActionButtonContainer => Instance.actionButtonContainer;
     }

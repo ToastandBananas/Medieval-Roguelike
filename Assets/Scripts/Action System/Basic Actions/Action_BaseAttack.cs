@@ -325,8 +325,8 @@ namespace UnitSystem.ActionSystem.Actions
                         return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Defense;
                     return 0;
                 case BodyPartType.Leg:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Legs))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].Defense;
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
+                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Defense;
                     return 0;
                 default:
                     return 0;
@@ -411,10 +411,10 @@ namespace UnitSystem.ActionSystem.Actions
                     }
                     break;
                 case BodyPartType.Leg:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Legs))
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Legs].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 default:

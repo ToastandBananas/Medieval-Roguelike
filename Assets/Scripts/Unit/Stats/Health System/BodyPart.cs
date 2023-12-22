@@ -1,5 +1,6 @@
 using InventorySystem;
 using UnitSystem.ActionSystem.UI;
+using UnitSystem.UI;
 using UnityEngine;
 using Utilities;
 
@@ -50,7 +51,7 @@ namespace UnitSystem
                 currentHealth = 0;
 
             if (HealthSystem.Unit.IsPlayer)
-                ActionSystemUI.UpdateHealthText();
+                PlayerStatBarManager.UpdateHealthBar(bodyPartType, bodyPartSide);
 
             // SpawnBlood(attackerTransform);
 

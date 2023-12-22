@@ -9,7 +9,7 @@ namespace InventorySystem
         {
             if (initialized == false)
             {
-                equipSlot = EquipSlot.Legs;
+                equipSlot = EquipSlot.LegArmor;
                 initialized = true;
             }
         }

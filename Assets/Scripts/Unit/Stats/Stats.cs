@@ -6,6 +6,7 @@ using Utilities;
 using GridSystem;
 using System.Collections.Generic;
 using UnitSystem.ActionSystem.Actions;
+using UnitSystem.UI;
 
 namespace UnitSystem
 {
@@ -70,8 +71,8 @@ namespace UnitSystem
         {
             EnergyUseActions = new List<Action_Base>();
 
-            APUntilTimeTick = MaxAP();
-            CurrentEnergy = MaxEnergy();
+            APUntilTimeTick = MaxAP;
+            CurrentEnergy = MaxEnergy;
         }
 
         void UpdateUnit()
@@ -112,7 +113,7 @@ namespace UnitSystem
             ActionSystemUI.UpdateActionPointsText();
         }
 
-        public int MaxAP() => Mathf.RoundToInt(speed.GetValue() * 3f);
+        public int MaxAP => Mathf.RoundToInt(speed.GetValue() * 3f);
 
         public void UseAP(int amount)
         {
@@ -127,7 +128,7 @@ namespace UnitSystem
                 for (int i = 0; i < UnitManager.livingNPCs.Count; i++)
                 {
                     // Every time the Player takes an action that costs AP, a correlating amount of AP is added to each NPCs AP pool (based off percentage of the Player's MaxAP used)
-                    UnitManager.livingNPCs[i].Stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].Stats.MaxAP()));
+                    UnitManager.livingNPCs[i].Stats.AddToAPPool(Mathf.RoundToInt((float)APUsedMultiplier(amount) * UnitManager.livingNPCs[i].Stats.MaxAP));
                     
                     // Each NPCs move speed is set, based on how many moves they could potentially make with their pooled AP (to prevent staggered movements, slowing down the flow of the game)
                     UnitManager.livingNPCs[i].UnitActionHandler.MoveAction.SetTravelDistanceSpeedMultiplier();
@@ -155,13 +156,13 @@ namespace UnitSystem
             else
             {
                 amountAPUsed -= APUntilTimeTick;
-                APUntilTimeTick = MaxAP();
+                APUntilTimeTick = MaxAP;
                 UpdateUnit();
                 UpdateAPUntilTimeTick(amountAPUsed);
             }
         }
 
-        public void ReplenishAP() => CurrentAP = MaxAP();
+        public void ReplenishAP() => CurrentAP = MaxAP;
 
         public void AddToCurrentAP(int amountToAdd) => CurrentAP += amountToAdd;
 
@@ -173,7 +174,7 @@ namespace UnitSystem
 
         public void GetAPFromPool()
         {
-            int APDifference = MaxAP() - CurrentAP;
+            int APDifference = MaxAP - CurrentAP;
             if (PooledAP > APDifference)
             {
                 PooledAP -= APDifference;
@@ -205,7 +206,7 @@ namespace UnitSystem
             return remainingAmount;
         }
 
-        public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP();
+        public float APUsedMultiplier(int amountAPUsed) => ((float)amountAPUsed) / MaxAP;
         #endregion
 
         #region Blocking
@@ -509,9 +510,9 @@ namespace UnitSystem
         #endregion
 
         #region Energy
-        public int MaxEnergy() => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 3f));
+        public int MaxEnergy => Mathf.RoundToInt(baseEnergy + (endurance.GetValue() * 3f));
 
-        public float CurrentEnergyNormalized => (float)CurrentEnergy / MaxEnergy();
+        public float CurrentEnergyNormalized => (float)CurrentEnergy / MaxEnergy;
 
         public void UseEnergy(int amount)
         {
@@ -523,25 +524,25 @@ namespace UnitSystem
                 CurrentEnergy = 0;
 
             if (unit.IsPlayer)
-                ActionSystemUI.UpdateEnergyText();
+                PlayerStatBarManager.UpdateEnergyBar();
         }
 
         public void ReplenishEnergy()
         {
-            CurrentEnergy = MaxEnergy();
+            CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                ActionSystemUI.UpdateEnergyText();
+                PlayerStatBarManager.UpdateEnergyBar();
         }
 
         public void AddToCurrentEnergy(int amountToAdd)
         {
             CurrentEnergy += amountToAdd;
-            if (CurrentEnergy > MaxEnergy())
-                CurrentEnergy = MaxEnergy();
+            if (CurrentEnergy > MaxEnergy)
+                CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                ActionSystemUI.UpdateEnergyText();
+                PlayerStatBarManager.UpdateEnergyBar();
         }
 
         void UpdateEnergy()

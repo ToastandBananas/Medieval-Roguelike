@@ -41,6 +41,8 @@ namespace InventorySystem
             else
             {
                 spriteItemData = ItemData;
+                if (spriteItemData.IsBroken)
+                    SetupBrokenIconImage();
 
                 if (mySlot is EquipmentSlot && spriteItemData.Item is Item_Quiver)
                     iconImage.sprite = spriteItemData.Item.Quiver.EquippedSprite;
@@ -119,6 +121,9 @@ namespace InventorySystem
             }
             else
                 iconImage.enabled = false;
+
+            if (brokenIconImage != null)
+                brokenIconImage.enabled = false;
         }
 
         public void SetupDraggedSprite()
@@ -191,6 +196,11 @@ namespace InventorySystem
         {
             iconImage.enabled = true;
             stackSizeText.enabled = true;
+            SetupBrokenIconImage();
+        }
+
+        public void SetupBrokenIconImage()
+        {
             if (brokenIconImage != null && ItemData != null && ItemData.IsBroken)
                 brokenIconImage.enabled = true;
         }

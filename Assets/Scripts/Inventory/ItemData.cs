@@ -1,4 +1,5 @@
 using UnitSystem;
+using UnitSystem.UI;
 using UnityEngine;
 
 namespace InventorySystem
@@ -416,6 +417,10 @@ namespace InventorySystem
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
             currentDurability -= amount;
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
+
+            if (unit.IsPlayer && item is Item_Armor)
+                PlayerStatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+
             if (currentDurability == 0f)
             {
                 Debug.Log(item.Name + " broke");
@@ -425,8 +430,8 @@ namespace InventorySystem
                 if ((unit.UnitMeshManager.leftHeldItem != null && this == unit.UnitMeshManager.leftHeldItem.ItemData) || (unit.UnitMeshManager.rightHeldItem != null && this == unit.UnitMeshManager.rightHeldItem.ItemData) 
                     || (this == unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
                     DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(this));
-                else
-                    unit.UnitEquipment.UnequipItem(unit.UnitEquipment.GetEquipSlotFromItemData(this));
+                else if (unit.IsPlayer && unit.UnitEquipment.SlotVisualsCreated)
+                    unit.UnitEquipment.GetEquipmentSlot(unit.UnitEquipment.GetEquipSlotFromItemData(this)).InventoryItem.SetupBrokenIconImage();
             }
         }
 
@@ -442,6 +447,7 @@ namespace InventorySystem
 
         public int MaxDurability => maxDurability;
         public float CurrentDurability => currentDurability;
+        public float CurrentDurabilityNormalized => maxDurability <= 0 ? 0 : currentDurability / MaxDurability;
         public bool IsBroken => maxDurability > 0f && currentDurability <= 0f;
 
         public int Damage => Random.Range(minDamage, maxDamage + 1);

@@ -11,7 +11,7 @@ using ContextMenu = GeneralUI.ContextMenu;
 
 namespace InventorySystem
 {
-    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, Legs }
+    public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, LegArmor }
     public enum WeaponSet { One = 1, Two = 2 }
 
     public class UnitEquipment : MonoBehaviour
