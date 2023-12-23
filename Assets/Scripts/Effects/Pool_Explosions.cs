@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace EffectsSystem
 {
-    public class ExplosionPool : MonoBehaviour
+    public class Pool_Explosions : MonoBehaviour
     {
-        public static ExplosionPool Instance;
+        public static Pool_Explosions Instance;
 
         [SerializeField] ParticleSystem explosionPrefab;
         [SerializeField] int amountToPool = 1;
 
-        List<ParticleSystem> explosions = new List<ParticleSystem>();
+        readonly List<ParticleSystem> explosions = new();
 
         void Awake()
         {

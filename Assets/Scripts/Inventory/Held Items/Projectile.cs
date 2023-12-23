@@ -173,7 +173,7 @@ namespace InventorySystem
 
         void ReadyProjectile()
         {
-            transform.parent = ProjectilePool.Instance.transform;
+            transform.parent = Pool_Projectiles.Instance.transform;
             projectileCollider.enabled = true;
             trailRenderer.enabled = true;
             meshRenderer.enabled = true;
@@ -422,7 +422,7 @@ namespace InventorySystem
                 }
 
                 // Explosion
-                ParticleSystem explosion = ExplosionPool.Instance.GetExplosionFromPool();
+                ParticleSystem explosion = Pool_Explosions.Instance.GetExplosionFromPool();
                 explosion.transform.localPosition = targetPosition + (Vector3.up * 0.5f);
                 explosion.gameObject.SetActive(true);
 
@@ -435,7 +435,7 @@ namespace InventorySystem
 
         public Interactable_LooseItem SetupNewLooseItem(Collider collisionCollider, ProjectileType projectileType, bool preventMovement)
         {
-            Interactable_LooseItem looseProjectile = LooseItemPool.Instance.GetLooseItemFromPool();
+            Interactable_LooseItem looseProjectile = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
             ItemData newItemData = new();
             newItemData.TransferData(itemData);
@@ -531,7 +531,7 @@ namespace InventorySystem
             projectileCollider.enabled = false;
             trailRenderer.enabled = false;
 
-            ProjectilePool.ReturnToPool(this);
+            Pool_Projectiles.ReturnToPool(this);
         }
 
         void OnTriggerEnter(Collider collider)

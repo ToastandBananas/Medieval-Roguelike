@@ -91,7 +91,7 @@ namespace InventorySystem
                 return;
             }
 
-            Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
+            Projectile projectile = Pool_Projectiles.Instance.GetProjectileFromPool();
             projectile.SetupThrownItem(throwAction.ItemDataToThrow, unit, transform);
             projectile.AddDelegate(delegate { Projectile_OnProjectileBehaviourComplete(throwAction.TargetEnemyUnit); });
 
@@ -325,7 +325,7 @@ namespace InventorySystem
         {
             unit = null;
             ItemData = null;
-            HeldItemBasePool.ReturnToPool(this);
+            Pool_HeldItemBase.ReturnToPool(this);
         }
 
         public HeldItem GetOppositeHeldItem()

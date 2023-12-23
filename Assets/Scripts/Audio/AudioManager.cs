@@ -229,7 +229,7 @@ namespace SoundSystem
             {
                 if (soundArray[i].soundName == soundName)
                 {
-                    AudioSource audioSource = SoundPool.Instance.GetSoundFromPool(soundArray[i]);
+                    AudioSource audioSource = Pool_Sounds.Instance.GetSoundFromPool(soundArray[i]);
                     audioSource.gameObject.SetActive(true);
                     soundArray[i].SetSource(audioSource);
                     soundArray[i].Play(soundPosition, unitMakingSound, shouldTriggerNPCInspectSound);

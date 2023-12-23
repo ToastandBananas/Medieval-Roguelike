@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public class ProjectilePool : MonoBehaviour
+    public class Pool_Projectiles : MonoBehaviour
     {
-        public static ProjectilePool Instance;
+        public static Pool_Projectiles Instance;
 
         [SerializeField] Projectile projectilePrefab;
         [SerializeField] int amountToPool = 40;

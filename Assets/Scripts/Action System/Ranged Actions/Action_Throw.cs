@@ -228,7 +228,7 @@ namespace UnitSystem.ActionSystem.Actions
         
         void SetupAndThrowItem(Transform heldItemParent)
         {
-            HeldMeleeWeapon heldMeleeWeapon = HeldItemBasePool.Instance.GetMeleeWeaponBaseFromPool();
+            HeldMeleeWeapon heldMeleeWeapon = Pool_HeldItemBase.Instance.GetMeleeWeaponBaseFromPool();
             heldMeleeWeapon.SetupItemToThrow(ItemDataToThrow, Unit, heldItemParent);
             thrownHeldItem = heldMeleeWeapon;
             heldMeleeWeapon.StartThrow();
@@ -256,7 +256,7 @@ namespace UnitSystem.ActionSystem.Actions
                 else
                     ItemDataToThrow.MyInventory.RemoveItem(ItemDataToThrow);
 
-                HeldItemBasePool.ReturnToPool(thrownHeldItem);
+                Pool_HeldItemBase.ReturnToPool(thrownHeldItem);
             }
 
             thrownHeldItem = null;

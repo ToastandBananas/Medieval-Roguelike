@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public class InventorySlotPool : MonoBehaviour
+    public class Pool_InventorySlots : MonoBehaviour
     {
-        public static InventorySlotPool Instance;
+        public static Pool_InventorySlots Instance;
 
         [SerializeField] InventorySlot inventorySlotPrefab;
         [SerializeField] int amountToPool = 80;

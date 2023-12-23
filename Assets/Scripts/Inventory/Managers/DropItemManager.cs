@@ -26,11 +26,11 @@ namespace InventorySystem
 
             Interactable_LooseItem looseItem;
             if (itemDataToDrop.Item is Item_Backpack)
-                looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseContainerItemFromPool();
             else if (itemDataToDrop.Item is Item_Quiver)
-                looseItem = LooseItemPool.Instance.GetLooseQuiverItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseQuiverItemFromPool();
             else
-                looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
             Vector3 dropDirection = GetDropDirection(unit);
 
@@ -84,11 +84,11 @@ namespace InventorySystem
 
             Interactable_LooseItem looseItem;
             if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Quiver)
-                looseItem = LooseItemPool.Instance.GetLooseQuiverItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseQuiverItemFromPool();
             else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_WearableContainer)
-                looseItem = LooseItemPool.Instance.GetLooseContainerItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseContainerItemFromPool();
             else
-                looseItem = LooseItemPool.Instance.GetLooseItemFromPool();
+                looseItem = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
             ContainerInventoryManager itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
@@ -108,7 +108,7 @@ namespace InventorySystem
             if (looseItem.ItemData == null || looseItem.ItemData.Item == null)
             {
                 Debug.LogWarning($"{looseItem.name}'s ItemData or Item is null...");
-                LooseItemPool.ReturnToPool(looseItem);
+                Pool_LooseItems.ReturnToPool(looseItem);
                 return null;
             }
 
@@ -170,7 +170,7 @@ namespace InventorySystem
 
         public static void DropHelmOnDeath(ItemData itemData, Unit unit, Transform attackerTransform, bool diedForward)
         {
-            Interactable_LooseItem looseHelm = LooseItemPool.Instance.GetLooseItemFromPool();
+            Interactable_LooseItem looseHelm = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
             float randomForceMagnitude = Random.Range(looseHelm.RigidBody.mass, looseHelm.RigidBody.mass * 6f);
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees
@@ -215,7 +215,7 @@ namespace InventorySystem
 
         public static void DropHeldItemOnDeath(HeldItem heldItem, Unit unit, Transform attackerTransform, bool diedForward)
         {
-            Interactable_LooseItem looseWeapon = LooseItemPool.Instance.GetLooseItemFromPool();
+            Interactable_LooseItem looseWeapon = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
             float randomForceMagnitude = Random.Range(looseWeapon.RigidBody.mass, looseWeapon.RigidBody.mass * 6f);
             float randomAngleRange = Random.Range(-25f, 25f); // Random angle range in degrees

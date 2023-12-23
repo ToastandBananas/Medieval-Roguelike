@@ -22,6 +22,6 @@ namespace UnitSystem.ActionSystem
         // Convert the stored string back to a Type
         public Type GetActionType() => Type.GetType(actionTypeNamespace + actionTypeName);
 
-        public Action_Base GetAction(Unit unit) => ActionsPool.GetAction(GetActionType(), this, unit);
+        public Action_Base GetAction(Unit unit) => Pool_Actions.GetAction(GetActionType(), this, unit);
     }
 }

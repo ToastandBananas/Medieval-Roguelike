@@ -4,6 +4,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public static Canvas Canvas { get; private set; }
+
     void Awake()
     {
         if (Instance != null)
@@ -16,6 +18,8 @@ public class GameManager : MonoBehaviour
         }
         else
             Instance = this;
+
+        Canvas = FindObjectOfType<Canvas>();
     }
 
     void Start()

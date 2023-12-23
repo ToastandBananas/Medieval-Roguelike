@@ -9,6 +9,10 @@ namespace UnitSystem.UI
         [SerializeField] protected Slider slider;
         [SerializeField] protected TextMeshProUGUI textMesh;
 
+        protected Unit unit;
+
+        public virtual void Initialize(Unit unit) => this.unit = unit;
+
         public abstract void UpdateValue();
     }
 }

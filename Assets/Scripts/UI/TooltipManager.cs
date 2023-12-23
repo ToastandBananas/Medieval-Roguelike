@@ -1,4 +1,3 @@
-using UnitSystem.ActionSystem;
 using Controls;
 using GridSystem;
 using InteractableObjects;
@@ -21,14 +20,12 @@ namespace GeneralUI
         [SerializeField] int unitTooltipsToPool = 3;
         [SerializeField] Tooltip[] inventoryTooltips;
 
-        static List<Tooltip> looseItemTooltips = new();
-        static List<Tooltip> unitTooltips = new();
+        static readonly List<Tooltip> looseItemTooltips = new();
+        static readonly List<Tooltip> unitTooltips = new();
 
         public static Slot CurrentSlot { get; private set; }
         public static ActionBarSlot CurrentActionBarSlot { get; private set; }
         public static int ActiveInventoryTooltips { get; private set; }
-
-        public static Canvas Canvas { get; private set; }
 
         static Vector3 playersLastPosition;
         static Direction playersLastDirection;
@@ -61,8 +58,6 @@ namespace GeneralUI
                 inventoryTooltips[i].Button.interactable = false;
                 inventoryTooltips[i].Image.raycastTarget = false;
             }
-
-            Canvas = GetComponentInParent<Canvas>();
         }
 
         void Update()

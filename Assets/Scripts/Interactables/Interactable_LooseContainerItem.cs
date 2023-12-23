@@ -30,7 +30,7 @@ namespace InteractableObjects
 
                 // If the item is Equipment and there's nothing equipped in its EquipSlot, equip it. Else try adding it to the Unit's inventory
                 if (TryEquipOnPickup(unitPickingUpItem) || unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(itemData))
-                    LooseItemPool.ReturnToPool(this);
+                    Pool_LooseItems.ReturnToPool(this);
                 else
                     JiggleItem();
             }

@@ -2,22 +2,24 @@ using UnityEngine;
 
 namespace UnitSystem.UI
 {
-    public class HealthBar : StatBar
+    public class StatBar_Health : StatBar
     {
         [SerializeField] BodyPartType bodyPartType;
         [SerializeField] BodyPartSide bodyPartSide;
         BodyPart bodyPart;
 
-        public void Initialize()
+        public override void Initialize(Unit unit)
         {
-            bodyPart = UnitManager.player.HealthSystem.GetBodyPart(bodyPartType, bodyPartSide);
+            base.Initialize(unit);
+            bodyPart = unit.HealthSystem.GetBodyPart(bodyPartType, bodyPartSide);
             UpdateValue();
         }
 
         public override void UpdateValue()
         {
             slider.value = bodyPart.CurrentHealthNormalized;
-            textMesh.text = $"{bodyPart.CurrentHealth}/{bodyPart.MaxHealth.GetValue()}";
+            if (textMesh != null)
+                textMesh.text = $"{bodyPart.CurrentHealth}/{bodyPart.MaxHealth.GetValue()}";
         }
 
         public BodyPartType BodyPartType => bodyPartType;

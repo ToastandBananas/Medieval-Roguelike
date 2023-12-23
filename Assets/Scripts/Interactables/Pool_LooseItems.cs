@@ -5,9 +5,9 @@ using GeneralUI;
 
 namespace InteractableObjects
 {
-    public class LooseItemPool : MonoBehaviour
+    public class Pool_LooseItems : MonoBehaviour
     {
-        public static LooseItemPool Instance;
+        public static Pool_LooseItems Instance;
 
         [Header("Default Loose Item")]
         [SerializeField] Transform looseItemParent;

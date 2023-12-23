@@ -60,7 +60,7 @@ namespace InteractableObjects
             {
                 TryTakeStuckProjectiles(unitPickingUpItem, looseProjectiles);
                 unitPickingUpItem.Vision.RemoveVisibleLooseItem(this);
-                LooseItemPool.ReturnToPool(this);
+                Pool_LooseItems.ReturnToPool(this);
             }
             else
                 JiggleItem();
@@ -73,10 +73,10 @@ namespace InteractableObjects
             for (int i = looseProjectiles.Count - 1; i > 0; i--)
             {
                 if (unitPickingUpItem.UnitInventoryManager.TryAddItemToInventories(looseProjectiles[i].itemData))
-                    LooseItemPool.ReturnToPool(looseProjectiles[i]);
+                    Pool_LooseItems.ReturnToPool(looseProjectiles[i]);
                 else
                 {
-                    looseProjectiles[i].transform.SetParent(LooseItemPool.Instance.LooseItemParent);
+                    looseProjectiles[i].transform.SetParent(Pool_LooseItems.Instance.LooseItemParent);
                     looseProjectiles[i].meshCollider.enabled = true;
                     looseProjectiles[i].rigidBody.useGravity = true;
                     looseProjectiles[i].rigidBody.isKinematic = false;

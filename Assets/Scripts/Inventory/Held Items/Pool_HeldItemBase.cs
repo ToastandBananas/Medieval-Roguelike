@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public class HeldItemBasePool : MonoBehaviour
+    public class Pool_HeldItemBase : MonoBehaviour
     {
-        public static HeldItemBasePool Instance;
+        public static Pool_HeldItemBase Instance;
 
         [Header("Parent Transforms")]
         [SerializeField] Transform meleeWeaponsParent;

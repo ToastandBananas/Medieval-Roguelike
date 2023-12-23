@@ -118,7 +118,7 @@ namespace GeneralUI
             if (UnitManager.player.BackpackInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
                 if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
-                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
+                    Pool_LooseItems.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
             else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
@@ -136,7 +136,7 @@ namespace GeneralUI
             if (UnitManager.player.BeltInventoryManager.TryAddItem(itemData, UnitManager.player))
             {
                 if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
-                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
+                    Pool_LooseItems.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
             else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {
@@ -180,7 +180,7 @@ namespace GeneralUI
                 if (InventoryUI.NpcEquipmentSlots[0].UnitEquipment != null && InventoryUI.NpcEquipmentSlots[0].UnitEquipment.ItemDataEquipped(itemData))
                     InventoryUI.NpcEquipmentSlots[0].UnitEquipment.RemoveEquipment(itemData);
                 else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
-                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
+                    Pool_LooseItems.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
 
             ContextMenu.DisableContextMenu();
@@ -292,7 +292,7 @@ namespace GeneralUI
             if (itemData.Item.Use(UnitManager.player, itemData, ContextMenu.TargetSlot != null ? ContextMenu.TargetSlot : null, ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseContainerItem ? ContextMenu.TargetInteractable as Interactable_LooseContainerItem : null, amountToUse))
             {
                 if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
-                    LooseItemPool.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
+                    Pool_LooseItems.ReturnToPool((Interactable_LooseItem)ContextMenu.TargetInteractable);
             }
             else if (ContextMenu.TargetInteractable != null && ContextMenu.TargetInteractable is Interactable_LooseItem)
             {

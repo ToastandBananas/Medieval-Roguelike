@@ -430,10 +430,10 @@ namespace InventorySystem
 
                     Interactable_LooseItem looseProjectile = heldShield.transform.GetChild(i).GetComponent<Interactable_LooseItem>();
                     if (myUnit.UnitInventoryManager.TryAddItemToInventories(looseProjectile.ItemData))
-                        LooseItemPool.ReturnToPool(looseProjectile);
+                        Pool_LooseItems.ReturnToPool(looseProjectile);
                     else
                     {
-                        looseProjectile.transform.SetParent(LooseItemPool.Instance.LooseItemParent);
+                        looseProjectile.transform.SetParent(Pool_LooseItems.Instance.LooseItemParent);
                         looseProjectile.MeshCollider.enabled = true;
                         looseProjectile.RigidBody.useGravity = true;
                         looseProjectile.RigidBody.isKinematic = false;
@@ -628,7 +628,7 @@ namespace InventorySystem
 
             for (int i = 0; i < inventoryLayout.AmountOfSlots; i++)
             {
-                InventorySlot newSlot = InventorySlotPool.Instance.GetSlotFromPool();
+                InventorySlot newSlot = Pool_InventorySlots.Instance.GetSlotFromPool();
                 newSlot.transform.SetParent(slotsParent);
 
                 newSlot.SetMyInventory(this);
@@ -670,7 +670,7 @@ namespace InventorySystem
             {
                 for (int i = 0; i < slots.Count; i++)
                 {
-                    InventorySlotPool.Instance.ReturnToPool(slots[i]);
+                    Pool_InventorySlots.Instance.ReturnToPool(slots[i]);
                 }
 
                 slots.Clear();

@@ -53,7 +53,7 @@ namespace InventorySystem
             if (IsLoaded || !unit.UnitEquipment.HasValidAmmunitionEquipped())
                 return;
 
-            Projectile projectile = ProjectilePool.Instance.GetProjectileFromPool();
+            Projectile projectile = Pool_Projectiles.Instance.GetProjectileFromPool();
             projectileItemData ??= unit.UnitEquipment.GetEquippedProjectile(ItemData.Item.RangedWeapon.ProjectileType);
             
             projectile.SetupAmmunition(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());

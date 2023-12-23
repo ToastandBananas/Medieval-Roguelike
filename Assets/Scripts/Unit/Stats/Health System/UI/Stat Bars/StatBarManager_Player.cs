@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 namespace UnitSystem.UI
 {
-    public class PlayerStatBarManager : MonoBehaviour
+    public class StatBarManager_Player : MonoBehaviour
     {
-        public static PlayerStatBarManager Instance;
+        public static StatBarManager_Player Instance;
 
         [SerializeField] RectTransform verticalLayoutGroupRectTransform;
         [SerializeField] RectTransform groupParent;
@@ -14,10 +14,10 @@ namespace UnitSystem.UI
         [SerializeField] RectTransform barsParent;
 
         [Header("Stat Bars")]
-        [SerializeField] EnergyBar energyBar;
-        [SerializeField] HealthBar[] healthBars;
+        [SerializeField] StatBar_Energy energyBar;
+        [SerializeField] StatBar_Health[] healthBars;
         [SerializeField] RectTransform[] healthParents;
-        [SerializeField] ArmorDurabilityBar[] armorBars;
+        [SerializeField] StatBar_Armor[] armorBars;
 
         readonly int expandedBarHeight = 140;
         readonly int contractedBarHeight = 60;
@@ -35,11 +35,12 @@ namespace UnitSystem.UI
 
         void Start()
         {
+            energyBar.Initialize(UnitManager.player);
             for (int i = 0; i < healthBars.Length; i++)
-                healthBars[i].Initialize();
+                healthBars[i].Initialize(UnitManager.player);
 
             for (int i = 0; i < armorBars.Length; i++)
-                armorBars[i].Initialize();
+                armorBars[i].Initialize(UnitManager.player);
         }
 
         public void ToggleExpand()

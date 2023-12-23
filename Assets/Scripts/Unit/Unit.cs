@@ -6,6 +6,7 @@ using GridSystem;
 using UnitSystem.ActionSystem;
 using InventorySystem;
 using UnitSystem.ActionSystem.Actions;
+using UnitSystem.UI;
 
 namespace UnitSystem
 {
@@ -34,9 +35,12 @@ namespace UnitSystem
         public Stats Stats { get; private set; }
         public UnitActionHandler UnitActionHandler { get; private set; }
         public UnitAnimator UnitAnimator { get; private set; }
-        public Interactable_Unit UnitInteractable { get; private set; }
         public UnitMeshManager UnitMeshManager { get; private set; }
         public Vision Vision { get; private set; }
+
+        // NPC only
+        public StatBarManager_Floating StatBarManager { get; private set; }
+        public Interactable_Unit UnitInteractable { get; private set; }
 
         public List<Unit> UnitsWhoCouldOpportunityAttackMe { get; private set; }
 
@@ -165,6 +169,8 @@ namespace UnitSystem
         public ContainerInventoryManager QuiverInventoryManager => unitInventoryManager.QuiverInventoryManager;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
+
+        public void SetStatBarManager(StatBarManager_Floating statBarManager) => StatBarManager = statBarManager;
 
         public GridPosition GridPosition => HealthSystem.IsDead ? LevelGrid.GetGridPosition(transform.position) : gridPosition;
 

@@ -8,6 +8,7 @@ using UnitSystem.ActionSystem.UI;
 using Controls;
 using GeneralUI;
 using ContextMenu = GeneralUI.ContextMenu;
+using UnitSystem.UI;
 
 namespace UnitSystem.ActionSystem
 {
@@ -407,7 +408,8 @@ namespace UnitSystem.ActionSystem
                             if (unitHit.transform.TryGetComponent(out Unit targetUnit))
                             {
                                 HighlightedUnit = targetUnit;
-                                //mouseGridPosition = targetUnit.GridPosition;
+                                mouseGridPosition = targetUnit.GridPosition;
+
                                 if (HighlightedUnit != player && !HighlightedUnit.HealthSystem.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                                 {
                                     if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
@@ -503,7 +505,19 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
+            ShowFloatingStatBars();
             lastMouseGridPosition = mouseGridPosition;
+        }
+
+        void ShowFloatingStatBars()
+        {
+            if (HighlightedUnit != null && HighlightedUnit != player)
+            {
+                if (HighlightedUnit.StatBarManager != null)
+                    HighlightedUnit.StatBarManager.Show(HighlightedUnit);
+                else
+                    Pool_FloatingStatBar.GetFloatingStatBarsFromPool().Show(HighlightedUnit);
+            }
         }
 
         void ClearHighlightedInteractable()

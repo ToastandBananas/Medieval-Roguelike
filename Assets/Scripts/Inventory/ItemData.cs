@@ -419,7 +419,7 @@ namespace InventorySystem
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
 
             if (unit.IsPlayer && item is Item_Armor)
-                PlayerStatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+                StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
 
             if (currentDurability == 0f)
             {

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace EffectsSystem
 {
-    public class ParticleEffectPool : MonoBehaviour
+    public class Pool_ParticleEffects : MonoBehaviour
     {
-        public static ParticleEffectPool Instance;
+        public static Pool_ParticleEffects Instance;
 
         [SerializeField] ParticleSystemData[] particleEffectData;
 

@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace SoundSystem
 {
-    public class SoundPool : MonoBehaviour
+    public class Pool_Sounds : MonoBehaviour
     {
-        public static SoundPool Instance;
+        public static Pool_Sounds Instance;
 
         [SerializeField] AudioSource soundPrefab;
         [SerializeField] int amountToPool = 10;

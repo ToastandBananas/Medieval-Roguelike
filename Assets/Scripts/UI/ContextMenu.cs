@@ -670,14 +670,14 @@ namespace GeneralUI
             Vector3 slotPosition = Input.mousePosition;
             if (ActionSystemUI.SelectedActionSlot != null)
             {
-                slotWidthAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
-                slotHeightAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
+                slotWidthAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.width * GameManager.Canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.SelectedActionSlot.RectTransform.rect.height * GameManager.Canvas.scaleFactor / 2f;
                 slotPosition = ActionSystemUI.SelectedActionSlot.transform.position;
             }
             else if (ActionSystemUI.HighlightedActionSlot != null)
             {
-                slotWidthAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.width * TooltipManager.Canvas.scaleFactor;
-                slotHeightAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
+                slotWidthAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.width * GameManager.Canvas.scaleFactor;
+                slotHeightAddOn = ActionSystemUI.HighlightedActionSlot.RectTransform.rect.height * GameManager.Canvas.scaleFactor / 2f;
                 slotPosition = ActionSystemUI.HighlightedActionSlot.transform.position;
             }
 
@@ -693,17 +693,17 @@ namespace GeneralUI
                     activeButtonCount++;
             }
 
-            xPosAddon = rectTransform.rect.width * TooltipManager.Canvas.scaleFactor / 2f;
-            yPosAddon = activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
+            xPosAddon = rectTransform.rect.width * GameManager.Canvas.scaleFactor / 2f;
+            yPosAddon = activeButtonCount * contextButtons[0].RectTransform.rect.height * GameManager.Canvas.scaleFactor / 2f;
 
             // Get the desired position:
             // If the mouse position is too close to the top of the screen
-            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor * 1.2f)))
-                yPosAddon = -activeButtonCount * contextButtons[0].RectTransform.rect.height * TooltipManager.Canvas.scaleFactor / 2f;
+            if (Input.mousePosition.y >= (Screen.height - (activeButtonCount * contextButtons[0].RectTransform.rect.height * GameManager.Canvas.scaleFactor * 1.2f)))
+                yPosAddon = -activeButtonCount * contextButtons[0].RectTransform.rect.height * GameManager.Canvas.scaleFactor / 2f;
 
             // If the mouse position is too far to the right of the screen
-            if (Input.mousePosition.x >= (Screen.width - (rectTransform.rect.width * TooltipManager.Canvas.scaleFactor * 1.2f)))
-                xPosAddon = -rectTransform.rect.width * TooltipManager.Canvas.scaleFactor / 2f;
+            if (Input.mousePosition.x >= (Screen.width - (rectTransform.rect.width * GameManager.Canvas.scaleFactor * 1.2f)))
+                xPosAddon = -rectTransform.rect.width * GameManager.Canvas.scaleFactor / 2f;
         }
     }
 }

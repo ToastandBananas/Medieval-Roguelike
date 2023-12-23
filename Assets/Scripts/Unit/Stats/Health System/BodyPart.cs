@@ -51,7 +51,7 @@ namespace UnitSystem
                 currentHealth = 0;
 
             if (HealthSystem.Unit.IsPlayer)
-                PlayerStatBarManager.UpdateHealthBar(bodyPartType, bodyPartSide);
+                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide);
 
             // SpawnBlood(attackerTransform);
 

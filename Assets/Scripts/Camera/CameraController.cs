@@ -26,8 +26,8 @@ namespace CameraSystem
         bool doingMouseDragMovement;
         bool doingMouseDragRotation;
 
-        const float MIN_FOLLOW_Y_OFFSET = 2f;
-        const float MAX_FOLLOW_Y_OFFSET = 12f;
+        public const float MIN_FOLLOW_Y_OFFSET = 2f;
+        public const float MAX_FOLLOW_Y_OFFSET = 12f;
         const float MIN_FOLLOW_Z_OFFSET = -12f;
         const float MAX_FOLLOW_Z_OFFSET = -2f;
 
@@ -323,6 +323,8 @@ namespace CameraSystem
             float zoomSpeed = 5f;
             cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, targetFollowOffset, Time.deltaTime * zoomSpeed);
         }
+
+        public static float CurrentZoom => Instance.cinemachineTransposer.m_FollowOffset.y;
 
         //void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) => StartCoroutine(MoveCameraToTarget(UnitActionSystem.Instance.SelectedUnit().transform, false));
 

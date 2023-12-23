@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace UnitSystem.ActionSystem
 {
-    public class ActionsPool : MonoBehaviour
+    public class Pool_Actions : MonoBehaviour
     {
-        public static ActionsPool Instance;
+        public static Pool_Actions Instance;
 
         static List<Action_Base> actions = new();
 

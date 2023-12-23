@@ -524,7 +524,7 @@ namespace UnitSystem
                 CurrentEnergy = 0;
 
             if (unit.IsPlayer)
-                PlayerStatBarManager.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar();
         }
 
         public void ReplenishEnergy()
@@ -532,7 +532,7 @@ namespace UnitSystem
             CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                PlayerStatBarManager.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar();
         }
 
         public void AddToCurrentEnergy(int amountToAdd)
@@ -542,7 +542,7 @@ namespace UnitSystem
                 CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                PlayerStatBarManager.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar();
         }
 
         void UpdateEnergy()

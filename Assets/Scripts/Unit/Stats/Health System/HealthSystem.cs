@@ -96,7 +96,7 @@ namespace UnitSystem
 
         void SpawnBlood(Transform attackerTransform)
         {
-            ParticleSystem blood = ParticleEffectPool.Instance.GetParticleEffectFromPool(ParticleSystemData.ParticleSystemType.BloodSpray);
+            ParticleSystem blood = Pool_ParticleEffects.Instance.GetParticleEffectFromPool(ParticleSystemData.ParticleSystemType.BloodSpray);
             blood.transform.position = unit.transform.position + new Vector3(0, unit.ShoulderHeight, 0);
 
             // Calculate the hit direction from the unit to the enemy.

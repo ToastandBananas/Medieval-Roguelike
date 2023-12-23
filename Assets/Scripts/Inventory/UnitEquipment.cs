@@ -772,7 +772,7 @@ namespace InventorySystem
                 if (myUnit.IsPlayer)
                     ActionSystemUI.RemoveButton(equipment.ActionTypes[i]);
 
-                ActionsPool.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
+                Pool_Actions.ReturnToPool(equipment.ActionTypes[i].GetAction(myUnit));
                 myUnit.UnitActionHandler.AvailableActionTypes.Remove(equipment.ActionTypes[i]);
             }
 
@@ -925,11 +925,11 @@ namespace InventorySystem
             {
                 HeldItem heldItem = null;
                 if (itemData.Item is Item_MeleeWeapon)
-                    heldItem = HeldItemBasePool.Instance.GetMeleeWeaponBaseFromPool();
+                    heldItem = Pool_HeldItemBase.Instance.GetMeleeWeaponBaseFromPool();
                 else if (itemData.Item is Item_RangedWeapon)
-                    heldItem = HeldItemBasePool.Instance.GetRangedWeaponBaseFromPool();
+                    heldItem = Pool_HeldItemBase.Instance.GetRangedWeaponBaseFromPool();
                 else if (itemData.Item is Item_Shield)
-                    heldItem = HeldItemBasePool.Instance.GetShieldBaseFromPool();
+                    heldItem = Pool_HeldItemBase.Instance.GetShieldBaseFromPool();
 
                 heldItem.SetupHeldItem(itemData, myUnit, equipSlot);
 
