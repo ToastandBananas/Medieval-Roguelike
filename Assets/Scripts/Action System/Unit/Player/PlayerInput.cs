@@ -505,19 +505,10 @@ namespace UnitSystem.ActionSystem
                 }
             }
 
-            ShowFloatingStatBars();
-            lastMouseGridPosition = mouseGridPosition;
-        }
+            if (HighlightedUnit != null)
+                HighlightedUnit.ShowFloatingStatBars();
 
-        void ShowFloatingStatBars()
-        {
-            if (HighlightedUnit != null && HighlightedUnit != player)
-            {
-                if (HighlightedUnit.StatBarManager != null)
-                    HighlightedUnit.StatBarManager.Show(HighlightedUnit);
-                else
-                    Pool_FloatingStatBar.GetFloatingStatBarsFromPool().Show(HighlightedUnit);
-            }
+            lastMouseGridPosition = mouseGridPosition;
         }
 
         void ClearHighlightedInteractable()

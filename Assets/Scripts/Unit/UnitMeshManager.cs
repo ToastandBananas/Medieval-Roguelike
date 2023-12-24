@@ -287,6 +287,6 @@ namespace UnitSystem
         public MeshRenderer BodyMeshRenderer => bodyMeshRenderer;
         public MeshRenderer HelmMeshRenderer => helmMeshRenderer;
 
-        public bool IsVisibleOnScreen => meshesHidden == false && bodyMeshRenderer.isVisible && UnitManager.player.Vision.IsKnown(myUnit);
+        public bool IsVisibleOnScreen => !meshesHidden && bodyMeshRenderer.isVisible && UnitManager.player.Vision.IsKnown(myUnit);
     }
 }

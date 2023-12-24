@@ -388,7 +388,7 @@ namespace InventorySystem
                 return item.Weight * currentStackSize;
         }
 
-        public void RepairDurability(float amount)
+        public void RepairDurability(Unit unit, float amount)
         {
             if (maxDurability <= 0f || amount == 0f)
                 return;
@@ -399,8 +399,19 @@ namespace InventorySystem
                 amount *= -1;
             }
 
+            if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen)
+                unit.ShowFloatingStatBars();
+
             currentDurability += amount;
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
+
+            if (item is Item_Armor)
+            {
+                if (unit.IsPlayer)
+                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
+                else if (unit.StatBarManager != null)
+                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+            }
         }
 
         public void DamageDurability(Unit unit, float amount)
@@ -414,12 +425,20 @@ namespace InventorySystem
                 amount *= -1f;
             }
 
+            if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen)
+                unit.ShowFloatingStatBars();
+
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
             currentDurability -= amount;
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
 
-            if (unit.IsPlayer && item is Item_Armor)
-                StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
+            if (item is Item_Armor)
+            {
+                if (unit.IsPlayer)
+                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
+                else if (unit.StatBarManager != null)
+                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+            }
 
             if (currentDurability == 0f)
             {

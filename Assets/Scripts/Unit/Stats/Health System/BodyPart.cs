@@ -44,6 +44,9 @@ namespace UnitSystem
                 return;
             }
 
+            if (HealthSystem.Unit.IsNPC && HealthSystem.Unit.UnitMeshManager.IsVisibleOnScreen)
+                HealthSystem.Unit.ShowFloatingStatBars();
+
             int startHealth = currentHealth;
             currentHealth -= damageAmount;
 
@@ -52,13 +55,19 @@ namespace UnitSystem
 
             if (HealthSystem.Unit.IsPlayer)
                 StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide);
+            else if (HealthSystem.Unit.StatBarManager != null)
+                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType);
 
             // SpawnBlood(attackerTransform);
 
             if (currentHealth == 0)
             {
                 if (startHealth > 0)
+                {
                     OnDisabled(attacker);
+                    if (HealthSystem.Unit.StatBarManager != null)
+                        HealthSystem.Unit.StatBarManager.Hide();
+                }
             }
             else if (attacker != null)
                 HealthSystem.Unit.UnitAnimator.DoSlightKnockback(attacker.transform);
@@ -69,10 +78,18 @@ namespace UnitSystem
             if (healAmount == 0)
                 return;
 
+            if (HealthSystem.Unit.IsNPC && HealthSystem.Unit.UnitMeshManager.IsVisibleOnScreen)
+                HealthSystem.Unit.ShowFloatingStatBars();
+
             int startHealth = currentHealth;
             currentHealth += healAmount;
             if (currentHealth > maxHealth.GetValue())
                 currentHealth = maxHealth.GetValue();
+
+            if (HealthSystem.Unit.IsPlayer)
+                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide);
+            else if (HealthSystem.Unit.StatBarManager != null)
+                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType);
 
             if (startHealth <= 0 && currentHealth > 0)
                 OnEnabled();

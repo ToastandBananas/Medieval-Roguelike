@@ -143,13 +143,24 @@ namespace UnitSystem
                 return Stats.UnarmedAttackRange;
         }
 
+        public void ShowFloatingStatBars()
+        {
+            if (IsPlayer)
+                return;
+
+            if (StatBarManager != null)
+                StatBarManager.Show(this);
+            else
+                Pool_FloatingStatBar.GetFloatingStatBarsFromPool().Show(this);
+        }
+
         public void BlockCurrentPosition() => SingleNodeBlocker.BlockAtCurrentPosition();
 
         public void BlockAtPosition(Vector3 position) => SingleNodeBlocker.BlockAt(position);
 
         public void UnblockCurrentPosition() => SingleNodeBlocker.Unblock();
 
-        public bool IsNPC => gameObject.CompareTag("Player") == false;
+        public bool IsNPC => !gameObject.CompareTag("Player");
 
         public bool IsPlayer => gameObject.CompareTag("Player");
 
