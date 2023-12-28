@@ -519,30 +519,33 @@ namespace UnitSystem
             if (amount <= 0)
                 return;
 
+            float currentNormalizedEnergy = CurrentEnergyNormalized;
             CurrentEnergy -= amount;
             if (CurrentEnergy < 0)
                 CurrentEnergy = 0;
 
             if (unit.IsPlayer)
-                StatBarManager_Player.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar(currentNormalizedEnergy);
         }
 
         public void ReplenishEnergy()
         {
+            float currentNormalizedEnergy = CurrentEnergyNormalized;
             CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                StatBarManager_Player.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar(currentNormalizedEnergy);
         }
 
         public void AddToCurrentEnergy(int amountToAdd)
         {
+            float currentNormalizedEnergy = CurrentEnergyNormalized;
             CurrentEnergy += amountToAdd;
             if (CurrentEnergy > MaxEnergy)
                 CurrentEnergy = MaxEnergy;
 
             if (unit.IsPlayer)
-                StatBarManager_Player.UpdateEnergyBar();
+                StatBarManager_Player.UpdateEnergyBar(currentNormalizedEnergy);
         }
 
         void UpdateEnergy()

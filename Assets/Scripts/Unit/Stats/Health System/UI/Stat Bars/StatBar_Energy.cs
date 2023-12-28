@@ -7,11 +7,12 @@ namespace UnitSystem.UI
         public override void Initialize(Unit unit)
         {
             base.Initialize(unit);
-            UpdateValue();
+            UpdateValue(unit.Stats.CurrentEnergyNormalized);
         }
 
-        public override void UpdateValue()
+        public override void UpdateValue(float startNormalizedEnergy)
         {
+            base.UpdateValue(startNormalizedEnergy);
             slider.value = unit.Stats.CurrentEnergyNormalized;
             if (textMesh != null)
                 textMesh.text = $"Energy: {unit.Stats.CurrentEnergy}/{unit.Stats.MaxEnergy}";

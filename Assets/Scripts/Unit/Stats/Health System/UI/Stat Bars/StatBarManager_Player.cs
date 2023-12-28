@@ -83,30 +83,30 @@ namespace UnitSystem.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(verticalLayoutGroupRectTransform);
         }
 
-        public static void UpdateHealthBar(BodyPartType bodyPartType, BodyPartSide bodyPartSide)
+        public static void UpdateHealthBar(BodyPartType bodyPartType, BodyPartSide bodyPartSide, float startNormalizedHealth)
         {
             for (int i = 0; i < Instance.healthBars.Length; i++)
             {
                 if (Instance.healthBars[i].BodyPartType == bodyPartType && Instance.healthBars[i].BodyPartSide == bodyPartSide)
                 {
-                    Instance.healthBars[i].UpdateValue();
+                    Instance.healthBars[i].UpdateValue(startNormalizedHealth);
                     break;
                 }
             }
         }
 
-        public static void UpdateArmorBar(EquipSlot equipSlot)
+        public static void UpdateArmorBar(EquipSlot equipSlot, float startNormalizedDurability)
         {
             for (int i = 0; i < Instance.armorBars.Length; i++)
             {
                 if (Instance.armorBars[i].EquipSlot == equipSlot)
                 {
-                    Instance.armorBars[i].UpdateValue();
+                    Instance.armorBars[i].UpdateValue(startNormalizedDurability);
                     break;
                 }
             }
         }
 
-        public static void UpdateEnergyBar() => Instance.energyBar.UpdateValue();
+        public static void UpdateEnergyBar(float startNormalizedEnergy) => Instance.energyBar.UpdateValue(startNormalizedEnergy);
     }
 }

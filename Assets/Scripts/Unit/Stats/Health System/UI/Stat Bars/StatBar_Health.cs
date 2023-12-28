@@ -12,11 +12,12 @@ namespace UnitSystem.UI
         {
             base.Initialize(unit);
             bodyPart = unit.HealthSystem.GetBodyPart(bodyPartType, bodyPartSide);
-            UpdateValue();
+            UpdateValue(bodyPart.CurrentHealthNormalized);
         }
 
-        public override void UpdateValue()
+        public override void UpdateValue(float startNormalizedHealth)
         {
+            base.UpdateValue(startNormalizedHealth);
             slider.value = bodyPart.CurrentHealthNormalized;
             if (textMesh != null)
                 textMesh.text = $"{bodyPart.CurrentHealth}/{bodyPart.MaxHealth.GetValue()}";
@@ -24,5 +25,6 @@ namespace UnitSystem.UI
 
         public BodyPartType BodyPartType => bodyPartType;
         public BodyPartSide BodyPartSide => bodyPartSide;
+        public BodyPart BodyPart => bodyPart;
     }
 }

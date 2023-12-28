@@ -135,20 +135,20 @@ namespace UnitSystem.UI
             }
         }
 
-        public void UpdateHealthBar(BodyPartType bodyPartType)
+        public void UpdateHealthBar(BodyPartType bodyPartType, float startNormalizedHealth)
         {
             if (bodyPartType == BodyPartType.Torso)
-                torsoHealthBar.UpdateValue();
+                torsoHealthBar.UpdateValue(startNormalizedHealth);
             else if (bodyPartType == BodyPartType.Head)
-                headHealthBar.UpdateValue();
+                headHealthBar.UpdateValue(startNormalizedHealth);
         }
 
-        public void UpdateArmorBar(EquipSlot equipSlot)
+        public void UpdateArmorBar(EquipSlot equipSlot, float startNormalizedDurability)
         {
             if (equipSlot == EquipSlot.BodyArmor)
-                bodyArmorBar.UpdateValue();
+                bodyArmorBar.UpdateValue(startNormalizedDurability);
             else if (equipSlot == EquipSlot.Helm)
-                helmArmorBar.UpdateValue();
+                helmArmorBar.UpdateValue(startNormalizedDurability);
         }
     }
 }

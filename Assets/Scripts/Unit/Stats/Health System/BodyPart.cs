@@ -48,15 +48,16 @@ namespace UnitSystem
                 HealthSystem.Unit.ShowFloatingStatBars();
 
             int startHealth = currentHealth;
+            float startNormalizedHealth = CurrentHealthNormalized;
             currentHealth -= damageAmount;
 
             if (currentHealth < 0)
                 currentHealth = 0;
 
             if (HealthSystem.Unit.IsPlayer)
-                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide);
+                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide, startNormalizedHealth);
             else if (HealthSystem.Unit.StatBarManager != null)
-                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType);
+                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType, startNormalizedHealth);
 
             // SpawnBlood(attackerTransform);
 
@@ -82,14 +83,15 @@ namespace UnitSystem
                 HealthSystem.Unit.ShowFloatingStatBars();
 
             int startHealth = currentHealth;
+            float startNormalizedHealth = CurrentHealthNormalized;
             currentHealth += healAmount;
             if (currentHealth > maxHealth.GetValue())
                 currentHealth = maxHealth.GetValue();
 
             if (HealthSystem.Unit.IsPlayer)
-                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide);
+                StatBarManager_Player.UpdateHealthBar(bodyPartType, bodyPartSide, startNormalizedHealth);
             else if (HealthSystem.Unit.StatBarManager != null)
-                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType);
+                HealthSystem.Unit.StatBarManager.UpdateHealthBar(bodyPartType, startNormalizedHealth);
 
             if (startHealth <= 0 && currentHealth > 0)
                 OnEnabled();

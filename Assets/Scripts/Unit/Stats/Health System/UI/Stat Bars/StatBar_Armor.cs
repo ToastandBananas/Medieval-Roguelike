@@ -10,11 +10,15 @@ namespace UnitSystem.UI
         public override void Initialize(Unit unit)
         {
             base.Initialize(unit);
-            UpdateValue();
+            if (unit.UnitEquipment.EquipSlotHasItem(equipSlot))
+                UpdateValue(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot].CurrentDurabilityNormalized);
+            else
+                UpdateValue(0);
         }
 
-        public override void UpdateValue()
+        public override void UpdateValue(float startNormalizedDurability)
         {
+            base.UpdateValue(startNormalizedDurability);
             if (unit.UnitEquipment.EquipSlotHasItem(equipSlot))
             {
                 ItemData equipmentItemData = unit.UnitEquipment.EquippedItemDatas[(int)equipSlot];

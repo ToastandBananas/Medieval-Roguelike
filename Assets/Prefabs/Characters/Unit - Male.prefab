@@ -236,42 +236,42 @@ MonoBehaviour:
     bodyPartSide: 1
     bodyPartType: 2
     healthModifier: 2.5
-    hitChanceWeight: 1
+    hitChanceWeight: 1.25
   - bodyPartIndex: 0
     bodyPartSide: 2
     bodyPartType: 2
     healthModifier: 2.5
-    hitChanceWeight: 1
+    hitChanceWeight: 1.25
   - bodyPartIndex: 0
     bodyPartSide: 2
     bodyPartType: 4
     healthModifier: 1.5
-    hitChanceWeight: 0.5
+    hitChanceWeight: 0.25
   - bodyPartIndex: 0
     bodyPartSide: 1
     bodyPartType: 4
     healthModifier: 1.5
-    hitChanceWeight: 0.5
+    hitChanceWeight: 0.25
   - bodyPartIndex: 0
     bodyPartSide: 1
     bodyPartType: 3
     healthModifier: 3
-    hitChanceWeight: 1
+    hitChanceWeight: 1.25
   - bodyPartIndex: 0
     bodyPartSide: 2
     bodyPartType: 3
     healthModifier: 3
-    hitChanceWeight: 1
+    hitChanceWeight: 1.25
   - bodyPartIndex: 0
     bodyPartSide: 1
     bodyPartType: 5
     healthModifier: 1.5
-    hitChanceWeight: 0.5
+    hitChanceWeight: 0.25
   - bodyPartIndex: 0
     bodyPartSide: 2
     bodyPartType: 5
     healthModifier: 1.5
-    hitChanceWeight: 0.5
+    hitChanceWeight: 0.25
 --- !u!114 &3566344150296233335
 MonoBehaviour:
   m_ObjectHideFlags: 0

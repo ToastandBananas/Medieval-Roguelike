@@ -402,15 +402,16 @@ namespace InventorySystem
             if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen)
                 unit.ShowFloatingStatBars();
 
+            float startNormalizedDurability = CurrentDurabilityNormalized;
             currentDurability += amount;
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
 
             if (item is Item_Armor)
             {
                 if (unit.IsPlayer)
-                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
+                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot, startNormalizedDurability);
                 else if (unit.StatBarManager != null)
-                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot, startNormalizedDurability);
             }
         }
 
@@ -429,15 +430,16 @@ namespace InventorySystem
                 unit.ShowFloatingStatBars();
 
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
+            float startNormalizedDurability = CurrentDurabilityNormalized;
             currentDurability -= amount;
             currentDurability = Mathf.Clamp(currentDurability, 0f, maxDurability);
 
             if (item is Item_Armor)
             {
                 if (unit.IsPlayer)
-                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot);
+                    StatBarManager_Player.UpdateArmorBar(item.Armor.EquipSlot, startNormalizedDurability);
                 else if (unit.StatBarManager != null)
-                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot);
+                    unit.StatBarManager.UpdateArmorBar(item.Armor.EquipSlot, startNormalizedDurability);
             }
 
             if (currentDurability == 0f)
