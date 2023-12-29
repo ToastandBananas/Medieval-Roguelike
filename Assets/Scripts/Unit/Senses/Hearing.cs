@@ -20,6 +20,6 @@ namespace UnitSystem
             hearingCollider.radius = radius;
         }
 
-        public float HearingRadius() => hearingRadius;
+        public float HearingRadius => hearingRadius;
     }
 }

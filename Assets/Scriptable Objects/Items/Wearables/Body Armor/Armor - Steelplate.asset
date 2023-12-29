@@ -48,5 +48,6 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 1067aeaeb0e120f489f78a2e50aac7c8, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 6cba61e335e127e428785c75e4c66940, type: 2}
+  moveNoiseModifier: 0.2
   protectsArms: 0
   protectsLegs: 0

@@ -44,8 +44,7 @@ namespace UnitSystem
                 return;
             }
 
-            if (HealthSystem.Unit.IsNPC && HealthSystem.Unit.UnitMeshManager.IsVisibleOnScreen)
-                HealthSystem.Unit.ShowFloatingStatBars();
+            HealthSystem.Unit.ShowFloatingStatBars();
 
             int startHealth = currentHealth;
             float startNormalizedHealth = CurrentHealthNormalized;
@@ -79,8 +78,7 @@ namespace UnitSystem
             if (healAmount == 0)
                 return;
 
-            if (HealthSystem.Unit.IsNPC && HealthSystem.Unit.UnitMeshManager.IsVisibleOnScreen)
-                HealthSystem.Unit.ShowFloatingStatBars();
+            HealthSystem.Unit.ShowFloatingStatBars();
 
             int startHealth = currentHealth;
             float startNormalizedHealth = CurrentHealthNormalized;

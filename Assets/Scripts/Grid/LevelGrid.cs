@@ -129,7 +129,7 @@ namespace GridSystem
 
         public static GridPosition GetGridPosition(float x, float y, float z) => new GridPosition(Mathf.RoundToInt(x), y, Mathf.RoundToInt(z));
 
-        public static Vector3 GetWorldPosition(GridPosition gridPosition) => new Vector3(gridPosition.x, gridPosition.y, gridPosition.z);
+        public static Vector3 GetWorldPosition(GridPosition gridPosition) => new(gridPosition.x, gridPosition.y, gridPosition.z);
 
         public static bool IsValidGridPosition(GridPosition gridPosition)
         {

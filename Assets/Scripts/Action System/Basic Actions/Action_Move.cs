@@ -8,6 +8,7 @@ using InventorySystem;
 using UnitSystem.ActionSystem.UI;
 using Utilities;
 using UnitSystem.ActionSystem.GOAP.GoalActions;
+using SoundSystem;
 
 namespace UnitSystem.ActionSystem.Actions
 {
@@ -177,6 +178,9 @@ namespace UnitSystem.ActionSystem.Actions
             // Set the Unit's new grid position before they move so that other Unit's use that grid position when checking attack ranges and such
             Unit.SetGridPosition(NextTargetGridPosition);
 
+            // Play a footstep sound, calculating how loud it should be based off of what boots the unit is wearing and their move mode
+            PlayFootstepSound();
+
             // Start the next Unit's action before moving, that way their actions play out at the same time as this Unit's
             TurnManager.Instance.StartNextUnitsTurn(Unit);
 
@@ -301,6 +305,37 @@ namespace UnitSystem.ActionSystem.Actions
                 damage = defaultBootsDurabilityDamage;
             
             Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DamageDurability(Unit, damage);
+        }
+
+        void PlayFootstepSound()
+        {
+            float soundRadius = MoveModeSoundRadius();
+            float baseSoundRadius = soundRadius;
+            if (baseSoundRadius > 0f && Unit.UnitEquipment != null)
+            {
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Item.Boots.MoveNoiseModifier;
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.MoveNoiseModifier;
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Item.LegArmor.MoveNoiseModifier;
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.MoveNoiseModifier;
+            }
+
+            AudioManager.PlayFootstepSound(Unit, soundRadius);
+        }
+
+        float MoveModeSoundRadius()
+        {
+            return currentMoveMode switch
+            {
+                MoveMode.Sneak => 0f,
+                MoveMode.Walk => 1f,
+                MoveMode.Run => 2.5f,
+                MoveMode.Sprint => 4f,
+                _ => 1f,
+            };
         }
 
         void TryQueueNextAction()

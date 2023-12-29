@@ -40,3 +40,4 @@ MonoBehaviour:
   actionTypes: []
   defenseRange: {x: 2, y: 3}
   durabilityRange: {x: 80, y: 96}
+  moveNoiseModifier: -0.15

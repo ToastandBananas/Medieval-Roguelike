@@ -137,6 +137,8 @@ namespace InventorySystem
 
         public Item_BodyArmor BodyArmor => this as Item_BodyArmor;
 
+        public Item_LegArmor LegArmor => this as Item_LegArmor;
+
         public Item_Boots Boots => this as Item_Boots;
 
         public Item_Shirt Shirt => this as Item_Shirt;

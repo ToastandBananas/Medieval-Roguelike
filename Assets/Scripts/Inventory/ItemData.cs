@@ -399,8 +399,7 @@ namespace InventorySystem
                 amount *= -1;
             }
 
-            if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen)
-                unit.ShowFloatingStatBars();
+            unit.ShowFloatingStatBars();
 
             float startNormalizedDurability = CurrentDurabilityNormalized;
             currentDurability += amount;
@@ -426,8 +425,7 @@ namespace InventorySystem
                 amount *= -1f;
             }
 
-            if (unit.IsNPC && unit.UnitMeshManager.IsVisibleOnScreen)
-                unit.ShowFloatingStatBars();
+            unit.ShowFloatingStatBars();
 
             // Debug.Log($"Damaging {item.Name} for {amount} durability");
             float startNormalizedDurability = CurrentDurabilityNormalized;

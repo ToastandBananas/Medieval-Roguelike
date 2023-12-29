@@ -199,7 +199,7 @@ namespace CameraSystem
                 // Movement
                 float moveSpeed = 10f;
                 Vector3 moveVector = transform.forward * moveDir.z + transform.right * moveDir.x;
-                transform.position += moveVector * moveSpeed * Time.deltaTime;
+                transform.position += moveSpeed * Time.deltaTime * moveVector;
                 doingEdgeMovement = true;
             }
         }
@@ -258,7 +258,7 @@ namespace CameraSystem
 
             float moveSpeed = 10f;
             Vector3 moveVector = transform.forward * inputMoveDir.z + transform.right * inputMoveDir.x;
-            transform.position += moveVector * moveSpeed * Time.deltaTime;
+            transform.position += moveSpeed * Time.deltaTime * moveVector;
         }
 
         void HandleMouseDragRotation()

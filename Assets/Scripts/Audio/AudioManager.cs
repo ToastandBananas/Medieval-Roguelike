@@ -21,14 +21,15 @@ namespace SoundSystem
         [SerializeField][Range(0f, 0.25f)] float randomVolumeAddOn = 0.25f;
         [SerializeField][Range(0f, 0.25f)] float randomPitchAddOn = 0.25f;
 
-        [SerializeField] float soundRadius = 10f;
-
+        [SerializeField] float soundRadius = 1f;
         [SerializeField] bool loop = false;
 
         AudioSource source;
-        Collider[] unitsInSoundRadius;
+        readonly Collider[] unitsInSoundRadius = new Collider[20];
+        readonly RaycastHit[] hits = new RaycastHit[10];
+        Ray ray = new();
 
-        readonly float muffleAmountPerObstacle = 3f;
+        readonly float muffleAmountPerObstacle = 2f;
 
         public void SetSource(AudioSource _source)
         {
@@ -37,66 +38,86 @@ namespace SoundSystem
             source.loop = loop;
         }
 
-        public void Play(Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
+        public void Play(Vector3 soundPosition, Unit unitMakingSound, bool npcsShouldReact, float adjustedSoundRadius = -1f)
         {
-            float distToPlayer = Vector3.Distance(soundPosition, UnitManager.player.transform.position);
-            if (distToPlayer <= soundRadius)
+            float distToPlayer = Vector3.Distance(soundPosition, UnitManager.player.WorldPosition);
+            float actualSoundRadius = soundRadius;
+            if (adjustedSoundRadius >= 0f)
+                actualSoundRadius = adjustedSoundRadius;
+
+            if (unitMakingSound.IsPlayer || distToPlayer - actualSoundRadius - UnitManager.player.Hearing.HearingRadius <= 0f)
             {
-                source.volume = volume * (1 + Random.Range(-randomVolumeAddOn, randomVolumeAddOn));
-                source.pitch = pitch * (1 + Random.Range(-randomPitchAddOn, randomPitchAddOn));
+                source.volume = volume * (1f + Random.Range(-randomVolumeAddOn, randomVolumeAddOn));
+                source.pitch = pitch * (1f + Random.Range(-randomPitchAddOn, randomPitchAddOn));
 
-                float volumePercent = 1 - (distToPlayer / soundRadius);
+                float volumePercent = 1f;
+                if (actualSoundRadius > 0f && distToPlayer - actualSoundRadius >= 0f)
+                    volumePercent = Mathf.Clamp01(1f - ((distToPlayer - actualSoundRadius) / UnitManager.player.Hearing.HearingRadius));
+
                 source.volume *= volumePercent;
-
+                // Debug.Log("Volume: " + volume + " | Volume percent: " + volumePercent);
                 source.Play();
             }
 
-            if (shouldTriggerNPCInspectSound)
+            // Should NPCs react to this sound? (Such as inspecting the sound or fleeing from the sound's origin)
+            if (!npcsShouldReact)
+                return;
+            
+            Physics.OverlapSphereNonAlloc(soundPosition, actualSoundRadius, unitsInSoundRadius, AudioManager.Instance.HearingMask);
+            for (int i = 0; i < unitsInSoundRadius.Length; i++)
             {
-                unitsInSoundRadius = Physics.OverlapSphere(soundPosition, soundRadius, AudioManager.Instance.HearingMask);
-                for (int i = 0; i < unitsInSoundRadius.Length; i++)
+                if (unitsInSoundRadius[i] == null)
+                    continue;
+
+                // Unit unit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
+                Unit unit = LevelGrid.GetUnitAtPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position);
+                if (unit == null || unit.IsPlayer)
+                    continue;
+
+                if (unitMakingSound != null)
+                { 
+                    if (unitMakingSound == unit)
+                        continue;
+
+                    // We don't need NPCs inspecting sounds made by friendly or neutral units
+                    if (!unit.Alliance.IsEnemy(unitMakingSound))
+                        continue;
+                }
+
+                if (unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction == null)
+                    continue;
+
+                if (unit.StateController.CurrentState == GoalState.Fight || unit.StateController.CurrentState == GoalState.Flee)
+                    continue;
+
+                if (unit.StateController.CurrentState == GoalState.InspectSound && unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                    continue;
+
+                bool soundHeard = true;
+                float distToUnit = Vector3.Distance(unit.WorldPosition, soundPosition);
+                ray.origin = soundPosition;
+                ray.direction = (unit.WorldPosition + (unit.ShoulderHeight * Vector3.up) - (soundPosition + (unit.ShoulderHeight * Vector3.up))).normalized;
+                int hitCount = Physics.RaycastNonAlloc(ray, hits, distToUnit, unit.UnitActionHandler.AttackObstacleMask);
+                
+                // Muffle the sound radius through obstacles
+                if (hitCount > 0)
                 {
-                    // Unit unit = LevelGrid.GetUnitAtGridPosition(LevelGrid.GetGridPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position));
-                    Unit unit = LevelGrid.GetUnitAtPosition(unitsInSoundRadius[i].transform.parent.parent.parent.parent.position);
-                    if (unit == null || unit.IsPlayer)
-                        continue;
-
-                    if (unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction == null)
-                        continue;
-
-                    if (unitMakingSound != null && unitMakingSound == unit)
-                        continue;
-
-                    if (unit.StateController.CurrentState == GoalState.Fight || unit.StateController.CurrentState == GoalState.Flee)
-                        continue;
-
-                    NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
-                    if (unit.StateController.CurrentState == GoalState.InspectSound && npcActionHandler.GoalPlanner.InspectSoundAction.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
-                        continue;
-
-                    bool soundHeard = true;
-                    Vector3 dir = unit.transform.position + (Vector3.up * unit.ShoulderHeight) - (soundPosition + (Vector3.up * unit.ShoulderHeight));
-                    float distToUnit = Vector3.Distance(unit.transform.position, soundPosition);
-                    RaycastHit[] hits = Physics.RaycastAll(soundPosition, dir, distToUnit, unit.UnitActionHandler.AttackObstacleMask);
-                    if (hits.Length > 0)
+                    float soundMuffle = hitCount * muffleAmountPerObstacle;
+                    float soundRadiusAfterMuffle = actualSoundRadius - soundMuffle;
+                    if (soundRadiusAfterMuffle <= 0f) // If the sound was muffled so much that the Unit's hearing radius after muffling is 0, the sound is not heard
+                        soundHeard = false;
+                    else if (distToUnit > soundRadiusAfterMuffle) // If the sound position is not within the Unit's hearing radius after muffling
                     {
-                        float soundMuffle = hits.Length * muffleAmountPerObstacle;
-                        float soundRadiusAfterMuffle = soundRadius - soundMuffle;
-                        if (soundRadiusAfterMuffle <= 0f) // If the sound was muffled so much that the Unit's hearing radius after muffling is 0, the sound is not heard
+                        if (distToUnit - soundRadiusAfterMuffle - unit.Hearing.HearingRadius > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
                             soundHeard = false;
-                        else if (distToUnit > soundRadiusAfterMuffle) // If the sound position is not within the Unit's hearing radius after muffling
-                        {
-                            if (distToUnit - soundRadiusAfterMuffle - unit.Hearing.HearingRadius() > 0f) // If the hearing radius after muffling and the sound radius no longer overlap, the sound is not heard
-                                soundHeard = false;
-                        }
                     }
+                }
 
-                    if (soundHeard)
-                    {
-                        Debug.Log(unit.name + " heard: " + soundName);
-                        npcActionHandler.GoalPlanner.InspectSoundAction.SetSoundGridPosition(soundPosition);
-                        unit.StateController.SetCurrentState(GoalState.InspectSound);
-                    }
+                if (soundHeard)
+                {
+                    Debug.Log(unit.name + " heard: " + soundName);
+                    unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction.SetSoundGridPosition(soundPosition);
+                    unit.StateController.SetCurrentState(GoalState.InspectSound);
                 }
             }
         }
@@ -223,16 +244,16 @@ namespace SoundSystem
             PlayAmbienceSound();
         }
 
-        public static void PlaySound(Sound[] soundArray, string soundName, Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
+        public static void PlaySound(Sound[] soundArray, string soundName, Vector3 soundPosition, Unit unitMakingSound, bool npcsShouldReact, float adjustedSoundRadius = -1f)
         {
             for (int i = 0; i < soundArray.Length; i++)
             {
                 if (soundArray[i].soundName == soundName)
                 {
-                    AudioSource audioSource = Pool_Sounds.Instance.GetSoundFromPool(soundArray[i]);
+                    AudioSource audioSource = Pool_Sounds.GetSoundFromPool(soundArray[i]);
                     audioSource.gameObject.SetActive(true);
                     soundArray[i].SetSource(audioSource);
-                    soundArray[i].Play(soundPosition, unitMakingSound, shouldTriggerNPCInspectSound);
+                    soundArray[i].Play(soundPosition, unitMakingSound, npcsShouldReact, adjustedSoundRadius);
 
                     Instance.StartCoroutine(DelayDeactivateSound(audioSource));
                     return;
@@ -256,14 +277,14 @@ namespace SoundSystem
             audioSource.gameObject.SetActive(false);
         }
 
-        public static void PlayRandomSound(Sound[] soundArray, Vector3 soundPosition, Unit unitMakingSound, bool shouldTriggerNPCInspectSound)
+        public static void PlayRandomSound(Sound[] soundArray, Vector3 soundPosition, Unit unitMakingSound, bool npcsShouldReact, float adjustedSoundRadius = -1f)
         {
             int randomIndex = Random.Range(0, soundArray.Length);
             for (int i = 0; i < soundArray.Length; i++)
             {
                 if (soundArray[randomIndex] == soundArray[i])
                 {
-                    PlaySound(soundArray, soundArray[i].soundName, soundPosition, unitMakingSound, shouldTriggerNPCInspectSound);
+                    PlaySound(soundArray, soundArray[i].soundName, soundPosition, unitMakingSound, npcsShouldReact, adjustedSoundRadius);
                     return;
                 }
             }
@@ -344,11 +365,13 @@ namespace SoundSystem
                 }
             }*/
 
-            if (soundFound == false)
-            {
+            if (!soundFound)
                 PlayRandomSound(defaultPickUpSounds, player.transform.position, null, false);
-                soundFound = true;
-            }
+        }
+
+        public static void PlayFootstepSound(Unit unit, float soundRadius)
+        {
+            PlayRandomSound(Instance.footstepsStandard, unit.WorldPosition, unit, true, soundRadius);
         }
 
         public void PlayPickUpGoldSound(int goldAmount)

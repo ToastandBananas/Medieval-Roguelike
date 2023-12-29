@@ -10,13 +10,13 @@ namespace SoundSystem
         [SerializeField] AudioSource soundPrefab;
         [SerializeField] int amountToPool = 10;
 
-        List<AudioSource> audioSources = new List<AudioSource>();
+        static readonly List<AudioSource> audioSources = new();
 
         void Awake()
         {
             if (Instance != null)
             {
-                Debug.LogError("There's more than one SoundPool! " + transform + " - " + Instance);
+                Debug.LogError($"There's more than one SoundPool! ({Instance.name})");
                 Destroy(gameObject);
                 return;
             }
@@ -32,14 +32,13 @@ namespace SoundSystem
             }
         }
 
-        public AudioSource GetSoundFromPool(Sound sound)
+        public static AudioSource GetSoundFromPool(Sound sound)
         {
             for (int i = 0; i < audioSources.Count; i++)
             {
-                if (audioSources[i].gameObject.activeSelf == false)
+                if (!audioSources[i].gameObject.activeSelf)
                 {
-                    if (sound != null)
-                        sound.SetSource(audioSources[i]);
+                    sound?.SetSource(audioSources[i]);
                     return audioSources[i];
                 }
             }
@@ -47,14 +46,12 @@ namespace SoundSystem
             return CreateNewAudioSource(sound);
         }
 
-        AudioSource CreateNewAudioSource(Sound sound)
+        static AudioSource CreateNewAudioSource(Sound sound)
         {
-            AudioSource newAudioSource = Instantiate(soundPrefab, transform).GetComponent<AudioSource>();
+            AudioSource newAudioSource = Instantiate(Instance.soundPrefab, Instance.transform).GetComponent<AudioSource>();
             newAudioSource.outputAudioMixerGroup = AudioManager.Instance.masterAudioMixerGroup;
 
-            if (sound != null)
-                sound.SetSource(newAudioSource);
-
+            sound?.SetSource(newAudioSource);
             audioSources.Add(newAudioSource);
             return newAudioSource;
         }

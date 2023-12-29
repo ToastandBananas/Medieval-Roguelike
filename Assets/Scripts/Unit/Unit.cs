@@ -145,7 +145,7 @@ namespace UnitSystem
 
         public void ShowFloatingStatBars()
         {
-            if (IsPlayer)
+            if (IsPlayer || !UnitMeshManager.IsVisibleOnScreen)
                 return;
 
             if (StatBarManager != null)

@@ -5,6 +5,9 @@ namespace InventorySystem
     [CreateAssetMenu(fileName = "New Boots", menuName = "Inventory/Boots")]
     public class Item_Boots : Item_Armor
     {
+        [Header("Boots Stats")]
+        [SerializeField, Range(-5f, 5f)] float moveNoiseModifier;
+
         void OnEnable()
         {
             if (initialized == false)
@@ -13,5 +16,7 @@ namespace InventorySystem
                 initialized = true;
             }
         }
+
+        public float MoveNoiseModifier => moveNoiseModifier;
     }
 }

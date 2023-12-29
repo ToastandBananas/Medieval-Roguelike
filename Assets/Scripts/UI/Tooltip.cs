@@ -152,6 +152,13 @@ namespace GeneralUI
             else if (itemData.Item is Item_Armor)
             {
                 stringBuilder.Append($"\n  Armor: {itemData.Defense}");
+
+                float moveNoiseModifier = itemData.Item.Armor.GetMoveNoiseModifier();
+                if (moveNoiseModifier > 0f)
+                    stringBuilder.Append($"\n  Move Noise: +{moveNoiseModifier * 100f}%");
+                else if (moveNoiseModifier < 0f)
+                    stringBuilder.Append($"\n  Move Noise: {moveNoiseModifier * 100f}%");
+
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Item_Ammunition)

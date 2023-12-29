@@ -419,7 +419,7 @@ PrefabInstance:
     - target: {fileID: 1166776781850707519, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: defaultState
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873611, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
@@ -439,7 +439,7 @@ PrefabInstance:
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.017
+      value: 1.983
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
@@ -449,7 +449,7 @@ PrefabInstance:
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.968
+      value: 1.002
       objectReference: {fileID: 0}
     - target: {fileID: 1841632322173873612, guid: ff4a3bcfd4479e548afb849e53fccd64,
         type: 3}
@@ -2411,7 +2411,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2802,7 +2802,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8174,12 +8174,92 @@ MonoBehaviour:
     clip: {fileID: 0}
     volume: 1
     pitch: 1
-    randomVolumeAddOn: 0
-    randomPitchAddOn: 0
+    randomVolumeAddOn: 0.15
+    randomPitchAddOn: 0.15
     soundRadius: 5
     loop: 0
   humanMaleDeathSounds: []
-  footstepsStandard: []
+  footstepsStandard:
+  - soundName: Standard Footstep 1
+    clip: {fileID: 8300000, guid: 86e6eed5431a1934eb9ddb961d39cbbf, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 2
+    clip: {fileID: 8300000, guid: 44c9ca0303e5c7140909bd28f6c740e2, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 3
+    clip: {fileID: 8300000, guid: 1dad7044178fbf340aa1646309a24cca, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 4
+    clip: {fileID: 8300000, guid: 7d7573c3a5778984f9b7f3b63b7fe729, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 5
+    clip: {fileID: 8300000, guid: 3039f513f56cef049ad121fd9cccf2d4, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 6
+    clip: {fileID: 8300000, guid: 3df9f28451a730f41b1c5fe2663d4788, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 7
+    clip: {fileID: 8300000, guid: f25374846a499574789d1cff4179584c, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 8
+    clip: {fileID: 8300000, guid: 425658abf5b37b943ba9159ee6a79722, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 9
+    clip: {fileID: 8300000, guid: 6ea7c48ca24c25d48b3c12246b9914ab, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 10
+    clip: {fileID: 8300000, guid: 21b49e0ba01483c4cae2bbced5f91403, type: 3}
+    volume: 0.03
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
   footstepsStone: []
   openDoorSounds: []
   closeDoorSounds: []
