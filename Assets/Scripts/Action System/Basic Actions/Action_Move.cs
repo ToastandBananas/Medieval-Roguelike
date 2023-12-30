@@ -331,9 +331,9 @@ namespace UnitSystem.ActionSystem.Actions
             return currentMoveMode switch
             {
                 MoveMode.Sneak => 0f,
-                MoveMode.Walk => 1f,
-                MoveMode.Run => 2.5f,
-                MoveMode.Sprint => 4f,
+                MoveMode.Walk => 2.5f,
+                MoveMode.Run => 5f,
+                MoveMode.Sprint => 8f,
                 _ => 1f,
             };
         }

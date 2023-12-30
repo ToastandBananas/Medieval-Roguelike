@@ -125,9 +125,9 @@ namespace GridSystem
             return null;
         }
 
-        public static GridPosition GetGridPosition(Vector3 worldPosition) => new GridPosition(worldPosition);
+        public static GridPosition GetGridPosition(Vector3 worldPosition) => new(worldPosition);
 
-        public static GridPosition GetGridPosition(float x, float y, float z) => new GridPosition(Mathf.RoundToInt(x), y, Mathf.RoundToInt(z));
+        public static GridPosition GetGridPosition(float x, float y, float z) => new(Mathf.RoundToInt(x), y, Mathf.RoundToInt(z));
 
         public static Vector3 GetWorldPosition(GridPosition gridPosition) => new(gridPosition.x, gridPosition.y, gridPosition.z);
 
@@ -238,27 +238,26 @@ namespace GridSystem
             return gridPositionsList[Random.Range(0, gridPositionsList.Count - 1)];
         }
 
-        public GridPosition GetRandomFleeGridPosition(Unit unit, Unit enemyUnit, int minFleeDistance, int maxFleeDistance)
+        public GridPosition GetRandomFleeGridPosition(Unit unit, Vector3 fleeFromPosition, int minFleeDistance, int maxFleeDistance)
         {
             Vector3 unitWorldPosition = unit.WorldPosition;
-            Vector3 enemyWorldPosition = enemyUnit.WorldPosition;
-            float boundsDimension = (maxFleeDistance * 2) + 0.1f;
+            float boundsDimension = (maxFleeDistance * 2f) + 0.1f;
 
             validGridPositionsList.Clear();
             List<GraphNode> nodes = ListPool<GraphNode>.Claim();
-            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(enemyWorldPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
+            nodes.AddRange(AstarPath.active.data.layerGridGraph.GetNodesInRegion(new Bounds(fleeFromPosition, new Vector3(boundsDimension, boundsDimension, boundsDimension))));
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                GridPosition nodeGridPosition = new GridPosition((Vector3)nodes[i].position);
+                GridPosition nodeGridPosition = new((Vector3)nodes[i].position);
 
-                Vector3 dirToNode = (nodeGridPosition.WorldPosition - enemyWorldPosition).normalized;
-                Vector3 dirToUnit = (unitWorldPosition - enemyWorldPosition).normalized;
+                Vector3 dirToNode = (nodeGridPosition.WorldPosition - fleeFromPosition).normalized;
+                Vector3 dirToUnit = (unitWorldPosition - fleeFromPosition).normalized;
 
                 if (Mathf.Abs(dirToNode.x - dirToUnit.x) > 0.25f || Mathf.Abs(dirToNode.z - dirToUnit.z) > 0.25f)
                     continue;
 
-                float distanceToEnemy = Vector3.Distance(enemyUnit.WorldPosition, nodeGridPosition.WorldPosition);
+                float distanceToEnemy = Vector3.Distance(fleeFromPosition, nodeGridPosition.WorldPosition);
                 if (distanceToEnemy > maxFleeDistance || distanceToEnemy < minFleeDistance)
                     continue;
 

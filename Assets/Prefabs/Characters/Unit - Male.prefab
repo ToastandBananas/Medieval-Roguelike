@@ -1559,7 +1559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca69cfe22cff1804bae3c9dddd8a0c99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hearingRadius: 10
+  hearingRadius: 0.5
 --- !u!135 &8492240010559672664
 SphereCollider:
   m_ObjectHideFlags: 0

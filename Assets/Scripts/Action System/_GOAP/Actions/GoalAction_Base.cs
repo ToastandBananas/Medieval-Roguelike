@@ -30,6 +30,6 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         public virtual void OnDeactivated() => LinkedGoal = null;
 
         /// <summary>This is where the logic for the action should go.</summary>
-        public abstract void OnTick();
+        public abstract void PerformAction();
     }
 }

@@ -28,7 +28,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override MoveMode PreferredMoveMode() => MoveMode.Run;
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             FindWeapon();
         }
@@ -105,7 +105,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
             // Failed to find a weapon, so just fight or skip turn
             if (fightAction != null)
-                fightAction.OnTick();
+                fightAction.PerformAction();
             else
                 TurnManager.Instance.FinishTurn(unit);
         }

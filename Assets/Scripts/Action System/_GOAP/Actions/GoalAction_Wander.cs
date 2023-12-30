@@ -14,7 +14,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         GridPosition wanderGridPosition;
         bool wanderPositionSet;
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             Wander();
         }

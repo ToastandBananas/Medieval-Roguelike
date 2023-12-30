@@ -14,7 +14,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         int patrolIterationCount;
         readonly int maxPatrolIterations = 5;
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             Patrol();
         }

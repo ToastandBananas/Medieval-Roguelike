@@ -2,7 +2,6 @@ using GridSystem;
 using System;
 using System.Collections.Generic;
 using UnitSystem.ActionSystem.Actions;
-using UnitSystem.ActionSystem.GOAP.Goals;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -18,7 +17,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override MoveMode PreferredMoveMode() => MoveMode.Run;
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             InspectSound();
         }

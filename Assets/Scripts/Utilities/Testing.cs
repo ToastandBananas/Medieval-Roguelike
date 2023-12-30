@@ -16,7 +16,7 @@ namespace Utilities
             if (Input.GetKeyDown(KeyCode.T))
             {
                 // DebugPause();
-                // PlayTestSound();
+                PlayTestSound();
                 // DamagePlayer(10, BodyPartType.Torso);
             }
 

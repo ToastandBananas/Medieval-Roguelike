@@ -13,7 +13,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
         public override MoveMode PreferredMoveMode() => leader != null ? leader.UnitActionHandler.MoveAction.CurrentMoveMode : MoveMode.Walk;
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             npcActionHandler.MoveAction.SetMoveMode(PreferredMoveMode());
             Follow();

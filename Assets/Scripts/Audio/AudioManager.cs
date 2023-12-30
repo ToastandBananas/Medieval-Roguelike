@@ -84,13 +84,11 @@ namespace SoundSystem
                         continue;
                 }
 
-                if (unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction == null)
+                if (unit.StateController.CurrentState == GoalState.Fight)
                     continue;
 
-                if (unit.StateController.CurrentState == GoalState.Fight || unit.StateController.CurrentState == GoalState.Flee)
-                    continue;
-
-                if (unit.StateController.CurrentState == GoalState.InspectSound && unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
+                NPCActionHandler npcActionHandler = unit.UnitActionHandler as NPCActionHandler;
+                if (unit.StateController.CurrentState == GoalState.InspectSound && npcActionHandler.GoalPlanner.InspectSoundAction.SoundGridPosition == LevelGrid.GetGridPosition(soundPosition))
                     continue;
 
                 bool soundHeard = true;
@@ -116,8 +114,17 @@ namespace SoundSystem
                 if (soundHeard)
                 {
                     Debug.Log(unit.name + " heard: " + soundName);
-                    unit.UnitActionHandler.NPCActionHandler.GoalPlanner.InspectSoundAction.SetSoundGridPosition(soundPosition);
-                    unit.StateController.SetCurrentState(GoalState.InspectSound);
+                    if (unitMakingSound != null && npcActionHandler.GoalPlanner.FleeAction != null && npcActionHandler.GoalPlanner.FleeAction.ShouldAlwaysFleeCombat)
+                    {
+                        // Is this sound closer than what the unit is already fleeing from (or are they not currently fleeing)?
+                        if (unit.StateController.CurrentState != GoalState.Flee || Vector3.Distance(unit.transform.position, soundPosition) < Vector3.Distance(unit.transform.position, npcActionHandler.GoalPlanner.FleeAction.FleeFromPosition))
+                            npcActionHandler.GoalPlanner.FleeAction.StartFlee(unitMakingSound, npcActionHandler.GoalPlanner.FleeAction.DefaultFleeDistance);
+                    }
+                    else if (npcActionHandler.GoalPlanner.InspectSoundAction != null)
+                    {
+                        npcActionHandler.GoalPlanner.InspectSoundAction.SetSoundGridPosition(soundPosition);
+                        unit.StateController.SetCurrentState(GoalState.InspectSound);
+                    }
                 }
             }
         }

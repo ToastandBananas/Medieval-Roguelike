@@ -33,7 +33,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             return 100f;
         }
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             SwitchStance();
         }
@@ -43,7 +43,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             if (chosenStanceAction != null)
                 chosenStanceAction.QueueAction();
             else if (fightAction != null)
-                fightAction.OnTick();
+                fightAction.PerformAction();
             else
                 TurnManager.Instance.FinishTurn(unit);
         }

@@ -111,7 +111,7 @@ namespace UnitSystem.ActionSystem.GOAP
             if (activeGoalAction != null)
             {
                 // Debug.Log($"{transform.parent.name}: {activeGoalAction.GetType().Name} | Priority: {activeGoalAction.LinkedGoal.CalculatePriority()} | Cost: {activeGoalAction.Cost()}");
-                activeGoalAction.OnTick();
+                activeGoalAction.PerformAction();
             }
         }
 

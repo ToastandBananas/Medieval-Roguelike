@@ -26,7 +26,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             return 100f;
         }
 
-        public override void OnTick()
+        public override void PerformAction()
         {
             SwapWeaponSet();
         }
