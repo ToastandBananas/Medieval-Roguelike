@@ -72,9 +72,9 @@ MonoBehaviour:
   maxArmorEffectiveness: 0.95
   minAccuracyModifier: 0.05
   maxAccuracyModifier: 0.1
-  minBlockChanceModifier: 0
-  maxBlockChanceModifier: 0
-  minKnockbackModifier: 0
-  maxKnockbackModifier: 0
+  minFumbleChanceModifier: 0.01
+  maxFumbleChanceModifier: 0.04
+  minKnockbackModifier: 0.02
+  maxKnockbackModifier: 0.05
   reloadActionPointCostMultiplier: 0.8
   projectileType: 0

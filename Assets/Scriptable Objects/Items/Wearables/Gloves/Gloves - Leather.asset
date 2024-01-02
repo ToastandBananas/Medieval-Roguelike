@@ -39,3 +39,11 @@ MonoBehaviour:
   actionTypes: []
   defenseRange: {x: 2, y: 3}
   durabilityRange: {x: 80, y: 96}
+  minProtection: 0
+  maxProtection: 0
+  minAccuracyModifier: 0.05
+  maxAccuracyModifier: 0.08
+  minFumbleChanceModifier: -0.12
+  maxFumbleChanceModifier: -0.08
+  minUnarmedDamageMultiplier: 0.01
+  maxUnarmedDamageMultiplier: 0.02

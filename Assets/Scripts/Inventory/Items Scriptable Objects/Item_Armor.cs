@@ -10,6 +10,17 @@ namespace InventorySystem
         [SerializeField, Range(-1f, 1f)] float minProtection;
         [SerializeField, Range(-1f, 1f)] float maxProtection;
 
+        public float GetMoveCostModifier()
+        {
+            if (this is Item_Boots)
+                return Boots.MoveCostModifier;
+            else if (this is Item_BodyArmor)
+                return BodyArmor.MoveCostModifier;
+            else if (this is Item_LegArmor)
+                return LegArmor.MoveCostModifier;
+            return 0f;
+        }
+
         public float GetMoveNoiseModifier()
         {
             if (this is Item_Boots)

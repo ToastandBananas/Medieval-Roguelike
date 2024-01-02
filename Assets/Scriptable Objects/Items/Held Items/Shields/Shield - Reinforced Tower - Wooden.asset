@@ -58,3 +58,7 @@ MonoBehaviour:
   maxDamageRange: {x: 14, y: 16}
   minBlockChanceModifier: 0.12
   maxBlockChanceModifier: 0.16
+  minFumbleChanceModifier: -0.14
+  maxFumbleChanceModifier: -0.1
+  minKnockbackChanceModifier: -0.2
+  maxKnockbackChanceModifier: -0.15

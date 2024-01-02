@@ -452,6 +452,7 @@ namespace UnitSystem.ActionSystem.Actions
         public override int ActionPointsCost()
         {
             float cost = defaultTileMoveCost;
+            float baseCost = cost;
 
             if (positionIndex >= positionList.Count)
                 positionIndex = positionList.Count - 1;
@@ -496,8 +497,18 @@ namespace UnitSystem.ActionSystem.Actions
             NextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
 
             float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
+            cost += baseCost * tileCostMultiplier;
 
-            cost += cost * tileCostMultiplier;
+            if (Unit.UnitEquipment != null)
+            {
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Item.Boots.MoveCostModifier;
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.MoveCostModifier;
+                if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Item.LegArmor.MoveCostModifier;
+            }
+
             if (LevelGrid.IsDiagonal(Unit.WorldPosition, nextTargetPosition))
                 cost *= 1.4f;
 

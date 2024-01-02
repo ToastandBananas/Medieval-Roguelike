@@ -7,6 +7,9 @@ namespace InventorySystem
     [CreateAssetMenu(fileName = "New Melee Weapon", menuName = "Inventory/Weapon - Melee")]
     public class Item_MeleeWeapon : Item_Weapon
     {
+        [SerializeField, Range(-1f, 1f)] float minBlockChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float maxBlockChanceModifier;
+
         [Header("Default Attack Type")]
         [SerializeField] MeleeAttackType defaultMeleeAttackType;
 
@@ -22,6 +25,9 @@ namespace InventorySystem
                 initialized = true;
             }
         }
+
+        public float MinBlockChanceModifier => minBlockChanceModifier;
+        public float MaxBlockChanceModifier => maxBlockChanceModifier;
 
         public MeleeAttackType DefaultMeleeAttackType => defaultMeleeAttackType;
     }

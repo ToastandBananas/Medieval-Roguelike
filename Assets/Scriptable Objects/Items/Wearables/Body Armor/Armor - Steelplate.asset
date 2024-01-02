@@ -40,6 +40,8 @@ MonoBehaviour:
   actionTypes: []
   defenseRange: {x: 12, y: 14}
   durabilityRange: {x: 230, y: 245}
+  minProtection: 0
+  maxProtection: 0
   meshes:
   - {fileID: -2432090755550338912, guid: be6f52c4d5f932741be1ae8d0c51e6e9, type: 3}
   meshRendererMaterials:
@@ -48,6 +50,11 @@ MonoBehaviour:
   - {fileID: -2432090755550338912, guid: 1067aeaeb0e120f489f78a2e50aac7c8, type: 3}
   meshRendererMaterials_Female:
   - {fileID: 2100000, guid: 6cba61e335e127e428785c75e4c66940, type: 2}
+  minDodgeChanceModifier: -0.15
+  maxDodgeChanceModifier: -0.1
+  minKnockbackChanceModifier: -0.2
+  maxKnockbackChanceModifier: -0.16
+  moveCostModifier: 0.04
   moveNoiseModifier: 0.2
   protectsArms: 0
   protectsLegs: 0

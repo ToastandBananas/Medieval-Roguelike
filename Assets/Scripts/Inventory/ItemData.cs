@@ -32,6 +32,7 @@ namespace InventorySystem
         [SerializeField] int blockPower;
         [SerializeField] float blockChanceModifier;
         [SerializeField] int defense;
+        [SerializeField] float dodgeChanceModifier;
         [SerializeField] float protection;
 
         [Header("Other")]
@@ -114,16 +115,19 @@ namespace InventorySystem
                             if (item is Item_BodyArmor)
                             {
                                 Item_BodyArmor bodyArmor = item as Item_BodyArmor;
+                                dodgeChanceModifier = Mathf.RoundToInt(Random.Range(bodyArmor.MinDodgeChanceModifier, bodyArmor.MaxDodgeChanceModifier) * 100f) / 100f;
                                 knockbackChanceModifier = Mathf.RoundToInt(Random.Range(bodyArmor.MinKnockbackChanceModifier, bodyArmor.MaxKnockbackChanceModifier) * 100f) / 100f;
                             }
                             else if (item is Item_LegArmor)
                             {
                                 Item_LegArmor legArmor = item as Item_LegArmor;
+                                dodgeChanceModifier = Mathf.RoundToInt(Random.Range(legArmor.MinDodgeChanceModifier, legArmor.MaxDodgeChanceModifier) * 100f) / 100f;
                                 knockbackChanceModifier = Mathf.RoundToInt(Random.Range(legArmor.MinKnockbackChanceModifier, legArmor.MaxKnockbackChanceModifier) * 100f) / 100f;
                             }
                             else if (item is Item_Boots)
                             {
                                 Item_Boots boots = item as Item_Boots;
+                                dodgeChanceModifier = Mathf.RoundToInt(Random.Range(boots.MinDodgeChanceModifier, boots.MaxDodgeChanceModifier) * 100f) / 100f;
                                 knockbackChanceModifier = Mathf.RoundToInt(Random.Range(boots.MinKnockbackChanceModifier, boots.MaxKnockbackChanceModifier) * 100f) / 100f;
                             }
                             else if (item is Item_Gloves)
@@ -151,12 +155,17 @@ namespace InventorySystem
                             accuracyModifier = Mathf.RoundToInt(Random.Range(weapon.MinAccuracyModifier, weapon.MaxAccuracyModifier) * 100f) / 100f;
                             effectivenessAgainstArmor = Mathf.RoundToInt(Random.Range(weapon.MinArmorEffectiveness, weapon.MaxArmorEffectiveness) * 100f) / 100f;
                             armorPierce = Mathf.RoundToInt(Random.Range(weapon.MinArmorPierce, weapon.MaxArmorPierce) * 100f) / 100f;
-                            blockChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinBlockChanceModifier, weapon.MaxBlockChanceModifier) * 100f) / 100f;
                             maxDurability = Random.Range(weapon.MinDurability, weapon.MaxDurability + 1);
                             minDamage = Random.Range(weapon.MinMinimumDamage, weapon.MaxMinimumDamage + 1);
                             maxDamage = Random.Range(weapon.MinMaximumDamage, weapon.MaxMaximumDamage + 1);
                             fumbleChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinFumbleChanceModifier, weapon.MaxFumbleChanceModifier) * 100f) / 100f;
                             attackKnockbackChanceModifier = Mathf.RoundToInt(Random.Range(weapon.MinKnockbackModifier, weapon.MaxKnockbackModifier) * 100f) / 100f;
+
+                            if (item is Item_MeleeWeapon)
+                            {
+                                Item_MeleeWeapon meleeWeapon = item as Item_MeleeWeapon;
+                                blockChanceModifier = Mathf.RoundToInt(Random.Range(meleeWeapon.MinBlockChanceModifier, meleeWeapon.MaxBlockChanceModifier) * 100f) / 100f;
+                            }
                         }
 
                         currentDurability = Random.Range(0.5f * maxDurability, maxDurability);
@@ -217,16 +226,19 @@ namespace InventorySystem
                     if (item is Item_BodyArmor)
                     {
                         Item_BodyArmor bodyArmor = item as Item_BodyArmor;
+                        currentPoints += (dodgeChanceModifier - bodyArmor.MinDodgeChanceModifier) * 50f;
                         currentPoints += (knockbackChanceModifier - bodyArmor.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_LegArmor)
                     {
                         Item_LegArmor legArmor = item as Item_LegArmor;
+                        currentPoints += (dodgeChanceModifier - legArmor.MinDodgeChanceModifier) * 50f;
                         currentPoints += (knockbackChanceModifier - legArmor.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_Boots)
                     {
                         Item_Boots boots = item as Item_Boots;
+                        currentPoints += (dodgeChanceModifier - boots.MinDodgeChanceModifier) * 50f;
                         currentPoints += (knockbackChanceModifier - boots.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_Gloves)
@@ -254,12 +266,17 @@ namespace InventorySystem
                     currentPoints += (accuracyModifier - weapon.MinAccuracyModifier) * 50f;
                     currentPoints += (effectivenessAgainstArmor = weapon.MinArmorEffectiveness) * 50f;
                     currentPoints += (armorPierce - weapon.MinArmorPierce) * 50f;
-                    currentPoints += (blockChanceModifier - weapon.MinBlockChanceModifier) * 50f;
                     currentPoints += (maxDurability - weapon.MinDurability) * 0.5f;
                     currentPoints += (minDamage - weapon.MinMinimumDamage) * 1.5f;
                     currentPoints += (maxDamage - weapon.MinMaximumDamage) * 1.5f;
                     currentPoints += (fumbleChanceModifier - weapon.MinFumbleChanceModifier) * 50f;
                     currentPoints += (attackKnockbackChanceModifier - weapon.MinKnockbackModifier) * 50f;
+
+                    if (item is Item_MeleeWeapon)
+                    {
+                        Item_MeleeWeapon meleeWeapon = item as Item_MeleeWeapon;
+                        currentPoints += (blockChanceModifier - meleeWeapon.MinBlockChanceModifier) * 50f;
+                    }
                 }
             }
             else if (item is Item_Consumable)
@@ -297,16 +314,19 @@ namespace InventorySystem
                     if (item is Item_BodyArmor)
                     {
                         Item_BodyArmor bodyArmor = item as Item_BodyArmor;
+                        totalPointsPossible += (bodyArmor.MaxDodgeChanceModifier - bodyArmor.MinDodgeChanceModifier) * 50f;
                         totalPointsPossible += (bodyArmor.MaxKnockbackChanceModifier - bodyArmor.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_LegArmor)
                     {
                         Item_LegArmor legArmor = item as Item_LegArmor;
+                        totalPointsPossible += (legArmor.MaxDodgeChanceModifier - legArmor.MinDodgeChanceModifier) * 50f;
                         totalPointsPossible += (legArmor.MaxKnockbackChanceModifier - legArmor.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_Boots)
                     {
                         Item_Boots boots = item as Item_Boots;
+                        totalPointsPossible += (boots.MaxDodgeChanceModifier - boots.MinDodgeChanceModifier) * 50f;
                         totalPointsPossible += (boots.MaxKnockbackChanceModifier - boots.MinKnockbackChanceModifier) * 50f;
                     }
                     else if (item is Item_Gloves)
@@ -334,12 +354,17 @@ namespace InventorySystem
                     totalPointsPossible += (weapon.MaxAccuracyModifier - weapon.MinAccuracyModifier) * 50f;
                     totalPointsPossible += (weapon.MaxArmorEffectiveness - weapon.MinArmorEffectiveness) * 50f;
                     totalPointsPossible += (weapon.MaxArmorPierce - weapon.MinArmorPierce) * 50f;
-                    totalPointsPossible += (weapon.MaxBlockChanceModifier - weapon.MinBlockChanceModifier) * 50f;
                     totalPointsPossible += (weapon.MaxDurability - weapon.MinDurability) *0.5f;
                     totalPointsPossible += (weapon.MaxMinimumDamage - weapon.MinMinimumDamage) * 1.5f;
                     totalPointsPossible += (weapon.MaxMaximumDamage - weapon.MinMaximumDamage) * 1.5f;
                     totalPointsPossible += (weapon.MaxFumbleChanceModifier - weapon.MinFumbleChanceModifier) * 50f;
                     totalPointsPossible += (weapon.MaxKnockbackModifier - weapon.MinKnockbackModifier) * 50f;
+
+                    if (item is Item_MeleeWeapon)
+                    {
+                        Item_MeleeWeapon meleeWeapon = item as Item_MeleeWeapon;
+                        totalPointsPossible += (meleeWeapon.MaxBlockChanceModifier - meleeWeapon.MinBlockChanceModifier) * 50f;
+                    }
                 }
             }
             else if (item is Item_Consumable)
@@ -396,6 +421,7 @@ namespace InventorySystem
                 && minDamage == otherItemData.minDamage
                 && maxDamage == otherItemData.maxDamage
                 && defense == otherItemData.defense
+                && dodgeChanceModifier == otherItemData.dodgeChanceModifier
                 && protection == otherItemData.protection
                 && attackKnockbackChanceModifier == otherItemData.attackKnockbackChanceModifier
                 && knockbackChanceModifier == otherItemData.knockbackChanceModifier
@@ -430,6 +456,7 @@ namespace InventorySystem
             blockPower = itemDataToCopy.blockPower;
             blockChanceModifier = itemDataToCopy.blockChanceModifier;
             defense = itemDataToCopy.defense;
+            dodgeChanceModifier = itemDataToCopy.dodgeChanceModifier;
             protection = itemDataToCopy.protection;
 
             value = itemDataToCopy.value;
@@ -579,6 +606,7 @@ namespace InventorySystem
         public int BlockPower => blockPower;
         public float BlockChanceModifier => blockChanceModifier;
         public int Defense => defense;
+        public float DodgeChanceModifier => dodgeChanceModifier;
         public float Protection => protection;
 
         public int Value => value;

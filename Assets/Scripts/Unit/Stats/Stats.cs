@@ -408,14 +408,21 @@ namespace UnitSystem
             // Dodge chance affected by height differences between this Unit and the attackingUnit
             dodgeChance += baseDodgeChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
+            if (unit.UnitEquipment != null)
+            {
+                if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DodgeChanceModifier;
+                if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DodgeChanceModifier;
+                if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].DodgeChanceModifier;
+            }
+
             // If attacker is directly beside the Unit
             if (attackerBesideUnit)
                 dodgeChance *= 0.5f;
 
-            if (dodgeChance < 0f) 
-                dodgeChance = 0f;
-            else if (dodgeChance > maxDodgeChance) 
-                dodgeChance = maxDodgeChance;
+            dodgeChance = Mathf.Clamp(dodgeChance, 0f, maxDodgeChance);
 
             // Debug.Log(unit.name + "'s Dodge Chance: " + dodgeChance);
             return dodgeChance;
@@ -588,10 +595,10 @@ namespace UnitSystem
         #endregion
 
         #region Knockback
-        public bool TryKnockback(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData weaponItemDataHittingWith, HeldItem heldItemBlockedWith)
+        public bool TryKnockback(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith)
         {
             float random = Random.Range(0f, 1f);
-            if (random <= unit.Stats.KnockbackChance(heldItemAttackingWith, weaponItemDataHittingWith, targetUnit, heldItemBlockedWith))
+            if (random <= unit.Stats.KnockbackChance(heldItemAttackingWith, itemHittingWith, targetUnit, heldItemBlockedWith))
             {
                 targetUnit.UnitAnimator.Knockback(unit);
                 OnKnockbackTarget?.Invoke();
@@ -606,13 +613,13 @@ namespace UnitSystem
             return false;
         }
 
-        public float KnockbackChance(HeldItem heldItem, ItemData weaponHitWith, Unit targetUnit, HeldItem heldItemBlockedWith)
+        public float KnockbackChance(HeldItem heldItem, ItemData itemHittingWith, Unit targetUnit, HeldItem heldItemBlockedWith)
         {
             Item_Weapon weapon = null;
             if (heldItem != null && heldItem.ItemData.Item is Item_Weapon)
                 weapon = heldItem.ItemData.Item as Item_Weapon;
-            else if (weaponHitWith != null && weaponHitWith.Item is Item_Weapon)
-                weapon = weaponHitWith.Item as Item_Weapon;
+            else if (itemHittingWith != null && itemHittingWith.Item is Item_Weapon)
+                weapon = itemHittingWith.Item as Item_Weapon;
 
             float knockbackChance = WeaponKnockbackChance(weapon);
             float baseKnockbackChance = knockbackChance;
@@ -638,8 +645,8 @@ namespace UnitSystem
 
             if (heldItem != null)
                 knockbackChance += baseKnockbackChance * heldItem.ItemData.AttackKnockbackChanceModifier;
-            else if (weaponHitWith != null)
-                knockbackChance += baseKnockbackChance * weaponHitWith.AttackKnockbackChanceModifier;
+            else if (itemHittingWith != null)
+                knockbackChance += baseKnockbackChance * itemHittingWith.AttackKnockbackChanceModifier;
 
             // Knockback effectiveness is reduced when dual wielding
             if (heldItem != null && unit.UnitEquipment.IsDualWielding)

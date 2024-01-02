@@ -128,6 +128,16 @@ namespace GeneralUI
                 else if (itemData.BlockChanceModifier > 0f)
                     stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
 
+                if (itemData.FumbleChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: +{itemData.FumbleChanceModifier * 100f}%");
+                else if (itemData.FumbleChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: {itemData.FumbleChanceModifier * 100f}%");
+
+                if (itemData.AttackKnockbackChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: +{itemData.AttackKnockbackChanceModifier * 100f}%");
+                else if (itemData.AttackKnockbackChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: {itemData.AttackKnockbackChanceModifier * 100f}%");
+
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Item_Shield)
@@ -136,6 +146,16 @@ namespace GeneralUI
                     stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
                 else if (itemData.BlockChanceModifier > 0f)
                     stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
+
+                if (itemData.FumbleChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: +{itemData.FumbleChanceModifier * 100f}%");
+                else if (itemData.FumbleChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: {itemData.FumbleChanceModifier * 100f}%");
+
+                if (itemData.KnockbackChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: +{itemData.KnockbackChanceModifier * 100f}%");
+                else if (itemData.KnockbackChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: {itemData.KnockbackChanceModifier * 100f}%");
 
                 stringBuilder.Append($"\n  Bash Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
                 stringBuilder.Append("\n");
@@ -149,6 +169,27 @@ namespace GeneralUI
                 else if (itemData.AccuracyModifier < 0f)
                     stringBuilder.Append($"\n  Accuracy: {itemData.AccuracyModifier * 100f}%");
 
+                if (itemData.DodgeChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Dodge Chance: +{itemData.DodgeChanceModifier * 100f}%");
+                else if (itemData.DodgeChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Dodge Chance: {itemData.DodgeChanceModifier * 100f}%");
+
+                if (itemData.FumbleChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: +{itemData.FumbleChanceModifier * 100f}%");
+                else if (itemData.FumbleChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Fumble Chance: {itemData.FumbleChanceModifier * 100f}%");
+
+                if (itemData.KnockbackChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: +{itemData.KnockbackChanceModifier * 100f}%");
+                else if (itemData.KnockbackChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Knockback Chance: {itemData.KnockbackChanceModifier * 100f}%");
+
+                float moveCostModifier = itemData.Item.Armor.GetMoveCostModifier();
+                if (moveCostModifier > 0f)
+                    stringBuilder.Append($"\n  Move AP Cost: +{moveCostModifier * 100f}%");
+                else if (moveCostModifier < 0f)
+                    stringBuilder.Append($"\n  Move AP Cost: {moveCostModifier * 100f}%");
+
                 float moveNoiseModifier = itemData.Item.Armor.GetMoveNoiseModifier();
                 if (moveNoiseModifier > 0f)
                     stringBuilder.Append($"\n  Move Noise: +{moveNoiseModifier * 100f}%");
@@ -159,6 +200,11 @@ namespace GeneralUI
                     stringBuilder.Append($"\n  Protection: +{itemData.Protection * 100f}%");
                 else if (itemData.Protection < 0f)
                     stringBuilder.Append($"\n  Protection: {itemData.Protection * 100f}%");
+
+                if (itemData.UnarmedDamageMultiplier > 0f)
+                    stringBuilder.Append($"\n  Unarmed Damage: +{itemData.UnarmedDamageMultiplier * 100f}%");
+                else if (itemData.UnarmedDamageMultiplier < 0f)
+                    stringBuilder.Append($"\n  Unarmed Damage: {itemData.UnarmedDamageMultiplier * 100f}%");
 
                 stringBuilder.Append("\n");
             }

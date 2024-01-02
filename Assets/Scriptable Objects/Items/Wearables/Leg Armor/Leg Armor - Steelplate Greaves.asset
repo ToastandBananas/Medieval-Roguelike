@@ -40,4 +40,11 @@ MonoBehaviour:
   actionTypes: []
   defenseRange: {x: 12, y: 14}
   durabilityRange: {x: 800, y: 870}
+  minProtection: 0
+  maxProtection: 0
+  minDodgeChanceModifier: -0.15
+  maxDodgeChanceModifier: -0.1
+  minKnockbackChanceModifier: -0.2
+  maxKnockbackChanceModifier: -0.16
+  moveCostModifier: 0.04
   moveNoiseModifier: 0.2

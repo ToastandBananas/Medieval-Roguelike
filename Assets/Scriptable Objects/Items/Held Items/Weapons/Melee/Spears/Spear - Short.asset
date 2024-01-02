@@ -59,14 +59,16 @@ MonoBehaviour:
   durabilityRange: {x: 125, y: 140}
   minDamageRange: {x: 5, y: 6}
   maxDamageRange: {x: 7, y: 9}
-  minArmorPierce: 0.35
-  maxArmorPierce: 0.4
+  minArmorPierce: 0.2
+  maxArmorPierce: 0.25
   minArmorEffectiveness: 0.9
   maxArmorEffectiveness: 0.95
   minAccuracyModifier: 0.11
   maxAccuracyModifier: 0.14
-  minBlockChanceModifier: -0.05
-  maxBlockChanceModifier: -0.02
+  minFumbleChanceModifier: 0
+  maxFumbleChanceModifier: 0
   minKnockbackModifier: 0
   maxKnockbackModifier: 0
+  minBlockChanceModifier: -0.05
+  maxBlockChanceModifier: -0.02
   defaultMeleeAttackType: 1
