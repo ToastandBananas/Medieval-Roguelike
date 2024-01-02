@@ -7,6 +7,8 @@ namespace InventorySystem
         [Header("Armor Stats")]
         [SerializeField] Vector2Int defenseRange = Vector2Int.one;
         [SerializeField] Vector2Int durabilityRange = Vector2Int.one;
+        [SerializeField, Range(-1f, 1f)] float minProtection;
+        [SerializeField, Range(-1f, 1f)] float maxProtection;
 
         public float GetMoveNoiseModifier()
         {
@@ -26,5 +28,8 @@ namespace InventorySystem
 
         public int MinDefense => defenseRange.x;
         public int MaxDefense => defenseRange.y;
+
+        public float MinProtection => minProtection;
+        public float MaxProtection => maxProtection;
     }
 }

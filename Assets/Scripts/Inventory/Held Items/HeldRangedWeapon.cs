@@ -161,7 +161,15 @@ namespace InventorySystem
             Item_RangedWeapon weapon = ItemData.Item as Item_RangedWeapon;
 
             float fumbleChance = (0.5f - (unit.Stats.WeaponSkill(weapon) / 100f)) * 0.4f; // Weapon skill modifier
+            float baseFumbleChange = fumbleChance;
             fumbleChance += weapon.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Weapon weight to strength ratio modifier
+
+            // Weapon fumble modifier
+            fumbleChance += baseFumbleChange * ItemData.FumbleChanceModifier;
+
+            // Gloves fumble modifier
+            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].FumbleChanceModifier;
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

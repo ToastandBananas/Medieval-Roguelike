@@ -91,7 +91,7 @@ namespace UnitSystem.ActionSystem.Actions
             else
             {
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                bool attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, heldWeaponAttackingWith, isUsingOffhandWeapon);
+                bool attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, heldWeaponAttackingWith, this, isUsingOffhandWeapon);
                 Unit.UnitActionHandler.TargetUnits.TryGetValue(TargetEnemyUnit, out HeldItem itemBlockedWith);
 
                 if (attackBlocked && itemBlockedWith != null)
@@ -210,7 +210,7 @@ namespace UnitSystem.ActionSystem.Actions
                     attackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, null, this, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, null, false);
+                        attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, null, this, false);
                         DamageTargets(null, null);
                     }
                 }
@@ -229,7 +229,7 @@ namespace UnitSystem.ActionSystem.Actions
                         mainAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, this, false);
                         if (mainAttackDodged == false)
                         {
-                            mainAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, false);
+                            mainAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, this, false);
                             DamageTargets(Unit.UnitMeshManager.rightHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.rightHeldItem.ItemData);
                         }
                     }
@@ -241,7 +241,7 @@ namespace UnitSystem.ActionSystem.Actions
                         offhandAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, this, true);
                         if (offhandAttackDodged == false)
                         {
-                            offhandAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, true);
+                            offhandAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, this, true);
                             DamageTargets(Unit.UnitMeshManager.leftHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.leftHeldItem.ItemData);
                         }
                     }
@@ -258,7 +258,7 @@ namespace UnitSystem.ActionSystem.Actions
                     attackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false);
                     if (attackDodged == false)
                     {
-                        attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
+                        attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, this, false);
                         if (primaryMeleeWeapon != null)
                             DamageTargets(primaryMeleeWeapon, primaryMeleeWeapon.ItemData); // Right hand weapon attack
                         else

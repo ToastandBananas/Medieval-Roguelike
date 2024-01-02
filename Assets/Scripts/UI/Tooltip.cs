@@ -118,33 +118,24 @@ namespace GeneralUI
                 stringBuilder.Append($"\n  Armor Pierce: {itemData.ArmorPierce * 100f}%");
                 stringBuilder.Append($"\n  Vs. Armor: {itemData.EffectivenessAgainstArmor * 100f}%");
 
-                if (itemData.AccuracyModifier != 0f)
-                {
-                    if (itemData.AccuracyModifier < 0f)
-                        stringBuilder.Append($"\n  Accuracy: {itemData.AccuracyModifier * 100f}%");
-                    else
-                        stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
-                }
+                if (itemData.AccuracyModifier < 0f)
+                    stringBuilder.Append($"\n  Accuracy: {itemData.AccuracyModifier * 100f}%");
+                else if (itemData.AccuracyModifier > 0f)
+                    stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
 
-                if (itemData.BlockChanceModifier != 0f)
-                {
-                    if (itemData.BlockChanceModifier < 0f)
-                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
-                    else
-                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
-                }
+                if (itemData.BlockChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
+                else if (itemData.BlockChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
 
                 stringBuilder.Append("\n");
             }
             else if (itemData.Item is Item_Shield)
             {
-                if (itemData.BlockChanceModifier != 0f)
-                {
-                    if (itemData.BlockChanceModifier < 0f)
-                        stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
-                    else
-                        stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
-                }
+                if (itemData.BlockChanceModifier < 0f)
+                    stringBuilder.Append($"\n  Block Chance: {itemData.BlockChanceModifier * 100f}%");
+                else if (itemData.BlockChanceModifier > 0f)
+                    stringBuilder.Append($"\n  Block Chance: +{itemData.BlockChanceModifier * 100f}%");
 
                 stringBuilder.Append($"\n  Bash Damage: {itemData.MinDamage} - {itemData.MaxDamage}");
                 stringBuilder.Append("\n");
@@ -153,11 +144,21 @@ namespace GeneralUI
             {
                 stringBuilder.Append($"\n  Armor: {itemData.Defense}");
 
+                if (itemData.AccuracyModifier > 0f)
+                    stringBuilder.Append($"\n  Accuracy: +{itemData.AccuracyModifier * 100f}%");
+                else if (itemData.AccuracyModifier < 0f)
+                    stringBuilder.Append($"\n  Accuracy: {itemData.AccuracyModifier * 100f}%");
+
                 float moveNoiseModifier = itemData.Item.Armor.GetMoveNoiseModifier();
                 if (moveNoiseModifier > 0f)
                     stringBuilder.Append($"\n  Move Noise: +{moveNoiseModifier * 100f}%");
                 else if (moveNoiseModifier < 0f)
                     stringBuilder.Append($"\n  Move Noise: {moveNoiseModifier * 100f}%");
+
+                if (itemData.Protection > 0f)
+                    stringBuilder.Append($"\n  Protection: +{itemData.Protection * 100f}%");
+                else if (itemData.Protection < 0f)
+                    stringBuilder.Append($"\n  Protection: {itemData.Protection * 100f}%");
 
                 stringBuilder.Append("\n");
             }

@@ -126,7 +126,7 @@ namespace UnitSystem.ActionSystem.Actions
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, heldRangedWeapon, false))
+                if (TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, heldRangedWeapon, this, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                     TargetEnemyUnit.UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, false);
@@ -141,7 +141,7 @@ namespace UnitSystem.ActionSystem.Actions
             else // If this is an NPC who's outside of the screen, instantly damage the target without an animation
             {
                 bool missedTarget = TryHitTarget(TargetEnemyUnit.GridPosition);
-                bool attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, heldRangedWeapon, false);
+                bool attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, heldRangedWeapon, this, false);
                 if (!missedTarget)
                     DamageTargets(heldRangedWeapon, heldRangedWeapon.LoadedProjectile.ItemData);
 

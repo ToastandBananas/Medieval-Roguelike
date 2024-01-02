@@ -17,6 +17,10 @@ namespace InventorySystem
         [Header("Modifiers")]
         [SerializeField, Range(-1f, 1f)] float minBlockChanceModifier;
         [SerializeField, Range(-1f, 1f)] float maxBlockChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float minFumbleChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float maxFumbleChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float minKnockbackChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float maxKnockbackChanceModifier;
 
         void OnEnable()
         {
@@ -40,5 +44,9 @@ namespace InventorySystem
 
         public float MinBlockChanceModifier => minBlockChanceModifier;
         public float MaxBlockChanceModifier => maxBlockChanceModifier;
+        public float MinFumbleChanceModifier => minFumbleChanceModifier;
+        public float MaxFumbleChanceModifier => maxFumbleChanceModifier;
+        public float MinKnockbackChanceModifier => minKnockbackChanceModifier;
+        public float MaxKnockbackChanceModifier => maxKnockbackChanceModifier;
     }
 }

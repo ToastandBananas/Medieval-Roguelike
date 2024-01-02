@@ -6,6 +6,8 @@ namespace InventorySystem
     public class Item_BodyArmor : Item_VisibleArmor
     {
         [Header("Body Armor Stats")]
+        [SerializeField, Range(-1f, 1f)] float minKnockbackChanceModifier;
+        [SerializeField, Range(-1f, 1f)] float maxKnockbackChanceModifier;
         [SerializeField, Range(-5f, 5f)] float moveNoiseModifier;
 
         [Header("Secondary Protection")]
@@ -21,6 +23,8 @@ namespace InventorySystem
             }
         }
 
+        public float MinKnockbackChanceModifier => minKnockbackChanceModifier;
+        public float MaxKnockbackChanceModifier => maxKnockbackChanceModifier;
         public float MoveNoiseModifier => moveNoiseModifier;
 
         public bool ProtectsArms => protectsArms;

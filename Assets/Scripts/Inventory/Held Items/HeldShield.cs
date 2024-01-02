@@ -71,7 +71,15 @@ namespace InventorySystem
             Item_Shield shield = ItemData.Item as Item_Shield;
 
             float fumbleChance = (0.5f - (unit.Stats.ShieldSkill.GetValue() / 100f)) * 0.4f; // Shield skill modifier
+            float baseFumbleChange = fumbleChance;
             fumbleChance += shield.Weight / unit.Stats.Strength.GetValue() / 100f * 15f; // Shield weight to strength ratio modifier
+
+            // Shield fumble modifier
+            fumbleChance += baseFumbleChange * ItemData.FumbleChanceModifier;
+
+            // Gloves fumble modifier
+            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].FumbleChanceModifier;
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

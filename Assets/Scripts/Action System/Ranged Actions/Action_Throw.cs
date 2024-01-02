@@ -121,7 +121,7 @@ namespace UnitSystem.ActionSystem.Actions
                 }
 
                 // The targetUnit tries to block and if they're successful, the weapon/shield they blocked with is added as a corresponding Value in the attacking Unit's targetUnits dictionary
-                if (TargetEnemyUnit != null && TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, false))
+                if (TargetEnemyUnit != null && TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, this, false))
                 {
                     // Target Unit rotates towards this Unit & does block animation, moving shield in path of Projectile
                     TargetEnemyUnit.UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, false);
@@ -143,7 +143,7 @@ namespace UnitSystem.ActionSystem.Actions
 
                 bool attackBlocked = false;
                 if (TargetEnemyUnit != null)
-                    attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, false);
+                    attackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockRangedAttack(Unit, null, this, false);
 
                 if (hitTarget)
                     DamageTargets(null, ItemDataToThrow);

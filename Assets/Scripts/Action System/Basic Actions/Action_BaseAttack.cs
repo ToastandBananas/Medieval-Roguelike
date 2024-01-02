@@ -71,11 +71,11 @@ namespace UnitSystem.ActionSystem.Actions
             if (targetUnit == null || bodyPart == null || targetUnit.HealthSystem.IsDead)
                 return;
 
-            int damageDone = DealDamageToTarget(targetUnit, bodyPart, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith, out bool attackBlocked);
+            int damageDone = DealDamageToTarget(targetUnit, bodyPart, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith);
             if (damageDone > 0)
                 targetUnit.UnitActionHandler.InterruptActions(); // Only interrupt actions if the attack did damage
 
-            TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemHittingWith, damageDone, attackBlocked);
+            TryKnockbackTargetUnit(targetUnit, heldItemAttackingWith, itemHittingWith, heldItemBlockedWith, damageDone);
         }
 
         public virtual BodyPartType[] AdjustedHitChance_BodyPartTypes => null;
@@ -108,7 +108,7 @@ namespace UnitSystem.ActionSystem.Actions
             return baseDamage;
         }
 
-        int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith, out bool attackBlocked)
+        int DealDamageToTarget(Unit targetUnit, BodyPart bodyPartHit, HeldItem heldItemAttackingWith, ItemData itemHittingWith, HeldItem heldItemBlockedWith)
         {
             ItemData heldItemAttackingWithItemData = null;
             if (heldItemAttackingWith != null) heldItemAttackingWithItemData = heldItemAttackingWith.ItemData;
@@ -118,7 +118,6 @@ namespace UnitSystem.ActionSystem.Actions
             // If the attack was blocked, damage the blocking item's durability, as well as the weapon attacking with
             if (heldItemBlockedWith != null)
             {
-                attackBlocked = true;
                 float damage = GetBaseDamage(heldItemAttackingWithItemData, itemHittingWith) * GetEffectivenessAgainstArmor(heldItemAttackingWith, itemHittingWith);
                 heldItemBlockedWith.ItemData.DamageDurability(targetUnit, damage);
                 if (targetUnit.UnitEquipment.ItemDataEquipped(heldItemBlockedWith.ItemData))
@@ -135,7 +134,6 @@ namespace UnitSystem.ActionSystem.Actions
             }
             else // If the attack hit the target, determine/apply the final damage to the hit body part, damage their armor's durability, and damage the item attacking with
             {
-                attackBlocked = false;
                 DamageArmorAndWeapon(targetUnit, bodyPartHit, heldItemAttackingWith, itemHittingWith, GetBaseDamage(heldItemAttackingWithItemData, itemHittingWith), out damageAfterArmor);
                 if (damageAfterArmor < 0f) damageAfterArmor = 0f;
             }
@@ -468,12 +466,12 @@ namespace UnitSystem.ActionSystem.Actions
             return blockAmount;
         }*/
 
-        protected void TryKnockbackTargetUnit(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, float damageAmount, bool attackBlocked)
+        protected void TryKnockbackTargetUnit(Unit targetUnit, HeldItem heldItemAttackingWith, ItemData itemDataHittingWith, HeldItem heldItemBlockedWith, float damageAmount)
         {
             // Don't try to knockback if the Unit died or they didn't take any damage due to armor absorbtion
-            if ((damageAmount > 0f || attackBlocked) && !targetUnit.HealthSystem.IsDead)
+            if ((damageAmount > 0f || heldItemBlockedWith != null) && !targetUnit.HealthSystem.IsDead)
             {
-                Unit.Stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, attackBlocked);
+                Unit.Stats.TryKnockback(targetUnit, heldItemAttackingWith, itemDataHittingWith, heldItemBlockedWith);
                 if (IsMeleeAttackAction())
                     targetUnit.HealthSystem.OnHitByMeleeAttack();
             }
@@ -504,7 +502,10 @@ namespace UnitSystem.ActionSystem.Actions
 
         public virtual int UnarmedAttackDamage()
         {
-            return Unit.Stats.BaseUnarmedDamage;
+            float damage = Unit.Stats.UnarmedDamage;
+            if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                damage *= Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].UnarmedDamageMultiplier;
+            return Mathf.RoundToInt(damage);
         }
 
         protected virtual IEnumerator DoAttack()
@@ -567,7 +568,7 @@ namespace UnitSystem.ActionSystem.Actions
                     else
                     {
                         // The targetUnit tries to block and if they're successful, the targetUnit and the weapon/shield they blocked with are added to the targetUnits dictionary
-                        bool attackBlocked = targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false);
+                        bool attackBlocked = targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, this, false);
                         Unit.UnitActionHandler.TargetUnits.TryGetValue(targetUnits[i], out HeldItem itemBlockedWith);
 
                         // If the target is successfully blocking the attack
@@ -593,7 +594,7 @@ namespace UnitSystem.ActionSystem.Actions
                     if (targetUnits[i].UnitActionHandler.TryDodgeAttack(Unit, primaryMeleeWeapon, this, false) == false)
                     {
                         // The targetUnit tries to block the attack and if they do, they face their attacker
-                        if (targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, false))
+                        if (targetUnits[i].UnitActionHandler.TryBlockMeleeAttack(Unit, primaryMeleeWeapon, this, false))
                             targetUnits[i].UnitActionHandler.TurnAction.RotateTowards_Unit(Unit, true);
 
                         // Damage this unit
