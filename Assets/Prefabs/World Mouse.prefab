@@ -47,7 +47,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mousePlaneLayerMask:
     serializedVersion: 2
-    m_Bits: 4067264
+    m_Bits: 4095936
+  defaultCursor: {fileID: 2800000, guid: 84ef7d5a093fda54e8fef076abb54aa2, type: 3}
+  meleeAttackCursor: {fileID: 2800000, guid: bcb58941626f0594e8328a2f7ea7b2dd, type: 3}
+  rangedAttackCursor: {fileID: 2800000, guid: 21de8153efdbee747a94f44265bb0836, type: 3}
+  useDoorCursor: {fileID: 2800000, guid: 9f8e4f5a6b5fe084c9c74409860c1482, type: 3}
+  pickupItemCursor: {fileID: 2800000, guid: c90ce9ecc00137f4eb83ef2f5e565681, type: 3}
+  lootBagCursor: {fileID: 2800000, guid: efb2d6fc651ed344596d9e66dcba351a, type: 3}
+  lootContainerCursor: {fileID: 2800000, guid: 5fa282fdbc103ff4795491216be82b5b, type: 3}
+  speakCursor: {fileID: 2800000, guid: 050d8cbef1e940343950c80ce5385a16, type: 3}
 --- !u!1 &6474021837918164898
 GameObject:
   m_ObjectHideFlags: 0

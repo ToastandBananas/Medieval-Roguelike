@@ -297,7 +297,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8337ed631ef1f4c40878308e7df5caf2, type: 2}
   attackObstacleMask:
     serializedVersion: 2
-    m_Bits: 2151550912
+    m_Bits: 2151579584
   moveObstacleMask:
     serializedVersion: 2
     m_Bits: 64
@@ -328,7 +328,7 @@ MonoBehaviour:
       m_Bits: 4294967295
     useGraphRaycasting: 0
   traversableTags: 2147483647
-  tagPenalties: 00000000c8000000f4010000f4010000e8030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d007000014050000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
+  tagPenalties: 00000000c8000000f4010000f4010000e80300000000000000000000c8000000000000000000000000000000000000000000000000000000000000000000000000000000b0040000d007000014050000dc050000b80b0000000000000000000000000000000000000000000000000000000000000000000000000000a0860100
   graphMask:
     value: 1
 --- !u!114 &5863758878478513190
@@ -459,7 +459,6 @@ MonoBehaviour:
     percentModifiers: []
   canFightUnarmed: 1
   unarmedAttackRange: 1.5
-  baseUnarmedDamage: 5
 --- !u!114 &4471245059765168945
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1118,13 +1117,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1135,13 +1139,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1152,13 +1161,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1169,13 +1183,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1186,13 +1205,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1203,13 +1227,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1220,13 +1249,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1237,13 +1271,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1254,13 +1293,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1271,13 +1315,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1288,13 +1337,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1305,13 +1359,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1322,13 +1381,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1339,13 +1403,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   - item: {fileID: 0}
@@ -1356,13 +1425,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   startingEquipment:
@@ -1627,10 +1701,10 @@ MonoBehaviour:
     m_Bits: 8
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 2151550912
+    m_Bits: 2151579584
   looseItemVisionObstacleMask:
     serializedVersion: 2
-    m_Bits: 4067264
+    m_Bits: 4095936
   interactableMask:
     serializedVersion: 2
     m_Bits: 3221225472

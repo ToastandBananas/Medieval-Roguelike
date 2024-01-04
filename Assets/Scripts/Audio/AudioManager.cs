@@ -6,6 +6,7 @@ using GridSystem;
 using UnitSystem.ActionSystem;
 using InventorySystem;
 using UnitSystem;
+using UnityEditor.Experimental.GraphView;
 
 namespace SoundSystem
 {
@@ -166,6 +167,14 @@ namespace SoundSystem
         [Header("Footsteps")]
         public Sound[] footstepsStandard;
         public Sound[] footstepsStone;
+        public Sound[] footstepsShortGrass;
+        public Sound[] footstepsTallGrass;
+        public Sound[] footstepsMud;
+        public Sound[] footstepsShallowWater;
+        public Sound[] footstepsDeepWater;
+        public Sound[] footstepsSand;
+        public Sound[] footstepsSnow;
+        public Sound[] footstepsWood;
 
         [Header("Door Sounds")]
         public Sound[] openDoorSounds;
@@ -225,6 +234,14 @@ namespace SoundSystem
             allSounds.Add(humanMaleDeathSounds);
             allSounds.Add(footstepsStandard);
             allSounds.Add(footstepsStone);
+            allSounds.Add(footstepsShortGrass);
+            allSounds.Add(footstepsTallGrass);
+            allSounds.Add(footstepsMud);
+            allSounds.Add(footstepsShallowWater);
+            allSounds.Add(footstepsDeepWater);
+            allSounds.Add(footstepsSand);
+            allSounds.Add(footstepsSnow);
+            allSounds.Add(footstepsWood);
             allSounds.Add(openDoorSounds);
             allSounds.Add(closeDoorSounds);
             allSounds.Add(chestSounds);
@@ -376,9 +393,44 @@ namespace SoundSystem
                 PlayRandomSound(defaultPickUpSounds, player.transform.position, null, false);
         }
 
-        public static void PlayFootstepSound(Unit unit, float soundRadius)
+        public static void PlayFootstepSound(Unit unit, float soundRadius, uint nodeTag)
         {
-            PlayRandomSound(Instance.footstepsStandard, unit.WorldPosition, unit, true, soundRadius);
+            switch (nodeTag)
+            {
+                case 2:
+                    PlayRandomSound(Instance.footstepsTallGrass, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 3:
+                    PlayRandomSound(Instance.footstepsSand, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 5:
+                    PlayRandomSound(Instance.footstepsStone, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 6:
+                    PlayRandomSound(Instance.footstepsWood, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 7:
+                    PlayRandomSound(Instance.footstepsShortGrass, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 17:
+                    PlayRandomSound(Instance.footstepsSnow, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 18:
+                    PlayRandomSound(Instance.footstepsSnow, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 19:
+                    PlayRandomSound(Instance.footstepsMud, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 20:
+                    PlayRandomSound(Instance.footstepsShallowWater, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                case 21:
+                    PlayRandomSound(Instance.footstepsDeepWater, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+                default:
+                    PlayRandomSound(Instance.footstepsStandard, unit.WorldPosition, unit, true, soundRadius);
+                    break;
+            }
         }
 
         public void PlayPickUpGoldSound(int goldAmount)

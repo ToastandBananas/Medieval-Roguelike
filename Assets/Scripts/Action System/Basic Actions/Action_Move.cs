@@ -323,7 +323,7 @@ namespace UnitSystem.ActionSystem.Actions
                     soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.MoveNoiseModifier;
             }
 
-            AudioManager.PlayFootstepSound(Unit, soundRadius);
+            AudioManager.PlayFootstepSound(Unit, soundRadius, AstarPath.active.GetNearest(nextTargetPosition).node.Tag);
         }
 
         float MoveModeSoundRadius()
@@ -496,8 +496,8 @@ namespace UnitSystem.ActionSystem.Actions
             nextTargetPosition = GetNextTargetPosition();
             NextTargetGridPosition = LevelGrid.GetGridPosition(nextTargetPosition);
 
-            float tileCostMultiplier = GetTileMoveCostMultiplier(nextTargetPosition);
-            cost += baseCost * tileCostMultiplier;
+            // Get the tile cost multiplier (based off of the type of tile, i.e. grass, snow, shallow water, etc.)
+            cost += baseCost * GetTileMoveCostMultiplier(nextTargetPosition);
 
             if (Unit.UnitEquipment != null)
             {
@@ -637,7 +637,7 @@ namespace UnitSystem.ActionSystem.Actions
                 }
             }
 
-            return 1f;
+            return 0f;
         }
 
         public override int EnergyCost()

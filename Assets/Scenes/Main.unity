@@ -1255,7 +1255,7 @@ GameObject:
   - component: {fileID: 203727234}
   - component: {fileID: 203727233}
   - component: {fileID: 203727232}
-  m_Layer: 7
+  m_Layer: 14
   m_Name: Medium Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1598,7 +1598,7 @@ GameObject:
   - component: {fileID: 280166547}
   - component: {fileID: 280166546}
   - component: {fileID: 280166545}
-  m_Layer: 7
+  m_Layer: 13
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1881,7 +1881,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 314315132}
-  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2272,7 +2272,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.35355335, y: 0.3535534, z: -0.1464466, w: 0.8535534}
+  m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535534}
   m_LocalPosition: {x: 6.7915726, y: 4, z: 0.03157258}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7652,85 +7652,1077 @@ MonoBehaviour:
   footstepsStandard:
   - soundName: Standard Footstep 1
     clip: {fileID: 8300000, guid: 86e6eed5431a1934eb9ddb961d39cbbf, type: 3}
-    volume: 0.03
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 2
-    clip: {fileID: 8300000, guid: 44c9ca0303e5c7140909bd28f6c740e2, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 1dad7044178fbf340aa1646309a24cca, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 3
-    clip: {fileID: 8300000, guid: 1dad7044178fbf340aa1646309a24cca, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 3039f513f56cef049ad121fd9cccf2d4, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 4
-    clip: {fileID: 8300000, guid: 7d7573c3a5778984f9b7f3b63b7fe729, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 3df9f28451a730f41b1c5fe2663d4788, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 5
-    clip: {fileID: 8300000, guid: 3039f513f56cef049ad121fd9cccf2d4, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: f25374846a499574789d1cff4179584c, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 6
-    clip: {fileID: 8300000, guid: 3df9f28451a730f41b1c5fe2663d4788, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 425658abf5b37b943ba9159ee6a79722, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 7
-    clip: {fileID: 8300000, guid: f25374846a499574789d1cff4179584c, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 6ea7c48ca24c25d48b3c12246b9914ab, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 8
-    clip: {fileID: 8300000, guid: 425658abf5b37b943ba9159ee6a79722, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: 21b49e0ba01483c4cae2bbced5f91403, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 9
-    clip: {fileID: 8300000, guid: 6ea7c48ca24c25d48b3c12246b9914ab, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: f95caa430057b5c4db68ae495310da1f, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
   - soundName: Standard Footstep 10
-    clip: {fileID: 8300000, guid: 21b49e0ba01483c4cae2bbced5f91403, type: 3}
-    volume: 0.03
+    clip: {fileID: 8300000, guid: ebb3483a37d749e4e90cb3534845a182, type: 3}
+    volume: 0.075
     pitch: 1
     randomVolumeAddOn: 0.1
     randomPitchAddOn: 0.25
     soundRadius: 1
     loop: 0
-  footstepsStone: []
+  - soundName: Standard Footstep 11
+    clip: {fileID: 8300000, guid: 34b3ea127a2e05a4cb5a3cc1df2d795c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 12
+    clip: {fileID: 8300000, guid: f683b27b8619c68418d02a1ea8047ad4, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 13
+    clip: {fileID: 8300000, guid: 3cc07c1fa497de7459bb636fab8bffde, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 14
+    clip: {fileID: 8300000, guid: 68304b4bd6215a447ae0e2305c66ef1e, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Standard Footstep 15
+    clip: {fileID: 8300000, guid: 1a801ecaa907ff243b4f567fc3302664, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsStone:
+  - soundName: Stone Footstep 1
+    clip: {fileID: 8300000, guid: 01e53c3f9df5af74e94030f336e5908d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 2
+    clip: {fileID: 8300000, guid: 47b43bcb8f276624aa937d7406945c4b, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 3
+    clip: {fileID: 8300000, guid: 7344d419bbeecb0468a15407736f264e, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 4
+    clip: {fileID: 8300000, guid: 4910d625f4c9c0243b9fdea92c00cc97, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 5
+    clip: {fileID: 8300000, guid: fc763e28bd97175428520c8bad8623b0, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 6
+    clip: {fileID: 8300000, guid: 734656bfa32c1e5418cd6af4acab8cd4, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 7
+    clip: {fileID: 8300000, guid: 9f0649b4454f99342b4c554e4eeffc05, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 8
+    clip: {fileID: 8300000, guid: 5d585be2cb666ab45b56445211f9efe3, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 9
+    clip: {fileID: 8300000, guid: a799926109b670146b0d95ca20089f7c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 10
+    clip: {fileID: 8300000, guid: 103a9630b7e1f5d4a90a8b6320d2d5fb, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 11
+    clip: {fileID: 8300000, guid: a40aa9c55590a0f428ffe74d858bf91c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 12
+    clip: {fileID: 8300000, guid: f406d6b1e9ea8b6439c85efd77004d9d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 13
+    clip: {fileID: 8300000, guid: 207ae9f25fc90f84e8ec3267d330c7db, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 14
+    clip: {fileID: 8300000, guid: 1ebbf2c0329a48440908d2d37a482caf, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Stone Footstep 15
+    clip: {fileID: 8300000, guid: 9e0932bee437ada42801f319a1501fdd, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsShortGrass:
+  - soundName: Footstep Short Grass 1
+    clip: {fileID: 8300000, guid: 5375e76405742b143a52b25378f9c903, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 2
+    clip: {fileID: 8300000, guid: 7a1ebdc359129984bb0c095062ffc6ca, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 3
+    clip: {fileID: 8300000, guid: ce678848ef49b8c4c99552612cd0e951, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 4
+    clip: {fileID: 8300000, guid: ef6204c231e258142b6cf27c9a294383, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 5
+    clip: {fileID: 8300000, guid: 6928763e8949b1340a1ad8b1e60a020c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 6
+    clip: {fileID: 8300000, guid: 114663d57a1e79c40be0686f3b2f5bf5, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 7
+    clip: {fileID: 8300000, guid: 6f4750db70f1bc24aaa267f9b44d418c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 8
+    clip: {fileID: 8300000, guid: 9af1ac8179d29ff43936b62394c41335, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 9
+    clip: {fileID: 8300000, guid: ec6f91c5836677548b223eab5a3a5566, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Short Grass 10
+    clip: {fileID: 8300000, guid: f0239bf04ab5ca04180ee54dada4c976, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsTallGrass:
+  - soundName: Footstep Tall Grass 1
+    clip: {fileID: 8300000, guid: 65ac77ff573d95c458b76c9177749513, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 2
+    clip: {fileID: 8300000, guid: 6033f7b51b2cdec4c9788026518da42c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 3
+    clip: {fileID: 8300000, guid: e0139f8334bdae84f8771de3dfd065a3, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 4
+    clip: {fileID: 8300000, guid: 580a6577fb121c5409d30e656b97ca74, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 5
+    clip: {fileID: 8300000, guid: f3858143870ca6c47af4b41100adb7e4, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 6
+    clip: {fileID: 8300000, guid: 9af9ab348f6ff4844b797dd3185d6da1, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 7
+    clip: {fileID: 8300000, guid: 65a0adb53cf59aa49a301a97d28eb41d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Tall Grass 8
+    clip: {fileID: 8300000, guid: 21b08ea78e9b29e419ca586bb3ab4042, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsMud:
+  - soundName: Footstep Mud 1
+    clip: {fileID: 8300000, guid: 27be43150f0641d42aa0ee3d89626825, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 2
+    clip: {fileID: 8300000, guid: d4e3ecca903ae0043a8543a056a6f1c3, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 3
+    clip: {fileID: 8300000, guid: 52e2b2292c1538d4db12ae4374d26f91, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 4
+    clip: {fileID: 8300000, guid: a5cb22aa1da86784982f0d52d8a10211, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 5
+    clip: {fileID: 8300000, guid: 9fd12279858a2c24b9364abc259bee7a, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 6
+    clip: {fileID: 8300000, guid: 6accf2998bee36c4abf1f4ecdf3f9a0b, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 7
+    clip: {fileID: 8300000, guid: bd07aeec140b7f5468507883c0ef7fd2, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 8
+    clip: {fileID: 8300000, guid: 8c37367364e16ee4e9f3bd1b67edcd34, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 9
+    clip: {fileID: 8300000, guid: 09e210e15d70d224c8d9165f2cf90aa1, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 10
+    clip: {fileID: 8300000, guid: 8077a62891d1ea4488426f1ba5a15f68, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 11
+    clip: {fileID: 8300000, guid: f03722c76dd1507429744317abe37bbc, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 12
+    clip: {fileID: 8300000, guid: eefe7d7601e63fd4f8ba093fb0eb9164, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 13
+    clip: {fileID: 8300000, guid: 14c64b06758340f4d9475013b71d4b22, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 14
+    clip: {fileID: 8300000, guid: 24ec47426f1a4cc4b9e1679acec63719, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 15
+    clip: {fileID: 8300000, guid: 50c88f2e42ea5d1429f7c25df38323fd, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 16
+    clip: {fileID: 8300000, guid: 7f69a08c39f0afc45ab86ec3105e6b98, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Mud 17
+    clip: {fileID: 8300000, guid: 0cf94f6b77db61a499883147b1c90642, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsShallowWater:
+  - soundName: Footstep Shallow Water 1
+    clip: {fileID: 8300000, guid: 3379e8ca6df354647a6b42db3247b8b9, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 2
+    clip: {fileID: 8300000, guid: e8ab6a7f225a6824c8cc4a22a0bcbf58, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 3
+    clip: {fileID: 8300000, guid: 7d3263ab37cb1994ca03f8fa90bc0a4f, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 4
+    clip: {fileID: 8300000, guid: 45e0907bd67f5c941bcd2bb01abe98a3, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 5
+    clip: {fileID: 8300000, guid: 73e2f37b1f0b5a4498821e8562345482, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 6
+    clip: {fileID: 8300000, guid: d4a6ed8a808fe85468a6b99677c94730, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 7
+    clip: {fileID: 8300000, guid: 1f05fa4958e6f3a4d965dfe6da0e4b55, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 8
+    clip: {fileID: 8300000, guid: 64b2faec49aab00468bb5bd7825978fa, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 9
+    clip: {fileID: 8300000, guid: 9bf621a096c1cdd42b13e9bba71800f2, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 10
+    clip: {fileID: 8300000, guid: 857df0fee2fe2f54bbd5de01a029f920, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 11
+    clip: {fileID: 8300000, guid: da999263476810647b40fbace56853de, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 12
+    clip: {fileID: 8300000, guid: 8385b8ab8e9a4ac4fac365d389890f69, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 13
+    clip: {fileID: 8300000, guid: 4e2e9197741acc540b103babf222663a, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 14
+    clip: {fileID: 8300000, guid: 2285a0e15ce687545a893109fa232a47, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Shallow Water 15
+    clip: {fileID: 8300000, guid: 812ee4bf92b686244b82653d958b4c31, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsDeepWater:
+  - soundName: Footstep Deep Water 1
+    clip: {fileID: 8300000, guid: 94220688d2c684e4b8d6f4a70a927ba1, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 2
+    clip: {fileID: 8300000, guid: d23ef843387b97d46abdc3c0b79feeec, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 3
+    clip: {fileID: 8300000, guid: 7685657d1b4c0a846a61567eee97f094, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 4
+    clip: {fileID: 8300000, guid: 6f9b2c794d4fa5141b885cd6e87aa4fe, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 5
+    clip: {fileID: 8300000, guid: 73e77f70193841c4981f777122883c4d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 6
+    clip: {fileID: 8300000, guid: 69477af64eb914d4484449a8e0e122a0, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 7
+    clip: {fileID: 8300000, guid: 2037feb43e047c444978f9665df95f9c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Deep Water 8
+    clip: {fileID: 8300000, guid: 30b33581b70d5704b8e1ffc3fa86a19b, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsSand:
+  - soundName: Footstep Sand 1
+    clip: {fileID: 8300000, guid: 5e89cb275c55ad746846ed7e9f1fa5fe, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 2
+    clip: {fileID: 8300000, guid: f1c266482b1a92348a9af5c88b989df3, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 3
+    clip: {fileID: 8300000, guid: bb2b5779e6103d54e9b75c9e90134e8e, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 4
+    clip: {fileID: 8300000, guid: fd7b2e59f3e08a044a5642bd55a3bcae, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 5
+    clip: {fileID: 8300000, guid: 95aa33c2376bb4f44ba4aa488c388654, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 6
+    clip: {fileID: 8300000, guid: 7f5c068d1ea89bd4fb9a5e8609871adc, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 7
+    clip: {fileID: 8300000, guid: 1b3d64f8e3295fa4f9fc1413223509d9, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 8
+    clip: {fileID: 8300000, guid: 191f638c45889504fae55ea6a8553886, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 9
+    clip: {fileID: 8300000, guid: 63a3234aaf28830498c8cf1db58ae39e, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 10
+    clip: {fileID: 8300000, guid: c0a619f5e7d980544b2e9d63b76218fa, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 11
+    clip: {fileID: 8300000, guid: af4f8240b27043145a2225c5d52c2748, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 12
+    clip: {fileID: 8300000, guid: a6a98b9edb253124ab805b0fbd4215e9, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 13
+    clip: {fileID: 8300000, guid: d08e588cb8b4f97439f5977736179620, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 14
+    clip: {fileID: 8300000, guid: 538e39d38cd95aa4fb3ecfb88499d826, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Sand 15
+    clip: {fileID: 8300000, guid: e53d0e30d63d5474ca71c34578e74a2e, type: 3}
+    volume: 0.1
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsSnow:
+  - soundName: Footstep Snow 1
+    clip: {fileID: 8300000, guid: 83c1070bafbfbb44aad11bdebe766d2f, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 2
+    clip: {fileID: 8300000, guid: f053c81bf3aa5a348b4e78523059d574, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 3
+    clip: {fileID: 8300000, guid: 03e3863b433bc9c47bb02acfcd290d4a, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 4
+    clip: {fileID: 8300000, guid: 4c836fe1500c645408427b955663f582, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 5
+    clip: {fileID: 8300000, guid: a497333ae885ea34ea926b1ffa405443, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 6
+    clip: {fileID: 8300000, guid: 67f175e295f9773498bf3a41dc87460d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 7
+    clip: {fileID: 8300000, guid: 4d49f0e88bdb4e44e86209b9ec2c8ab2, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 8
+    clip: {fileID: 8300000, guid: c4e55a16664e91544a450b4b96cd66ca, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 9
+    clip: {fileID: 8300000, guid: ec9f692aed86da34fb4674024c5e9f36, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 10
+    clip: {fileID: 8300000, guid: edd60ff70b58c4a4eb74651910629dbe, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 11
+    clip: {fileID: 8300000, guid: 0e28a7c89a7bdb9409469039a8c91f12, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 12
+    clip: {fileID: 8300000, guid: 4036e70bde9af924881697aa917456b4, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 13
+    clip: {fileID: 8300000, guid: 6c49f09c83947594bbd4065cca0f1833, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 14
+    clip: {fileID: 8300000, guid: 5aa8c25348da8be4dbb446f49de1d894, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  - soundName: Footstep Snow 15
+    clip: {fileID: 8300000, guid: 7a2bbcb3a30081b49976853c1354c75d, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 1
+    loop: 0
+  footstepsWood:
+  - soundName: Footstep Wood 1
+    clip: {fileID: 8300000, guid: fd8980915e47fb64896ae9465a77cf53, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 2
+    clip: {fileID: 8300000, guid: 9c62501e9a0352b4fa5a5b69fbd3ff71, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 3
+    clip: {fileID: 8300000, guid: db6adcf27989c1d48b78c3186173eb57, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 4
+    clip: {fileID: 8300000, guid: 679e97d78643ae04680711d85c6b8f40, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 5
+    clip: {fileID: 8300000, guid: 7a5dc7147df88204f83436eb8b97f688, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 6
+    clip: {fileID: 8300000, guid: 3da771cb5909fa44bb5ead0da1f10edc, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 7
+    clip: {fileID: 8300000, guid: c1b404421870ac94c9af423ab7ea46d5, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 8
+    clip: {fileID: 8300000, guid: 265c01e857985f4418ab554b82579b55, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 9
+    clip: {fileID: 8300000, guid: e26812f010e72524fb05f2b38d436c91, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 10
+    clip: {fileID: 8300000, guid: 1dd6b4e1bf172ae409fc6433144d7d0b, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 11
+    clip: {fileID: 8300000, guid: c87ae7dd06ae8234fa7cc6001e14acd3, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 12
+    clip: {fileID: 8300000, guid: 896405082f612174dbcc3cf3cca8f8e1, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 13
+    clip: {fileID: 8300000, guid: d8a17078d60cdcf45bc26ab77151b417, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 14
+    clip: {fileID: 8300000, guid: bd5d8edd1abe0064abc6d58e8f61f7c5, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
+  - soundName: Footstep Wood 15
+    clip: {fileID: 8300000, guid: 10d3cde3443ee5e4c8df9b76fc216e2c, type: 3}
+    volume: 0.075
+    pitch: 1
+    randomVolumeAddOn: 0.1
+    randomPitchAddOn: 0.25
+    soundRadius: 0
+    loop: 0
   openDoorSounds: []
   closeDoorSounds: []
   chestSounds: []
@@ -8741,7 +9733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1
   data:
-    dataString: UEsDBBQAAAgIAACAn+sGMeBmgwMAALMIAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVVtv2koQ/iuWnznI5pAEKkVqD0nTc0lihV4eDnlY7DHesuxaewmQiP/embXBNq1cgbCZ+WZ2vrntWyjYHvRMOWnDd8FoEIRpwTRLLehPwFcFSeNhdIEKLk0JqVX6TvPsXmWAqpDew7byE+zYSsk5f4Uj5hvPbEEg5jFPzHJFbsnMqA1YzdMPciUIHKHQSZ4rvbnNVjBTxhoU50wYQJVWlqwlit6CcFcb7OvnKz2DA5EAiQwa1EU0vDgDkshjnUwF25SQUcyNSRwdXeObB0rkU2Mo9lQJwU0dTGj3pSc7Y6VxSAUBGWdIzocRDScoKI4ZjYZRx8NjnhuoFBSmZvsbrjFVlfPwL1Xlb8PMugrwhQlHx42jy6vR5diHV3m//zWmppBrtWnq6hnagqfrJ7ZPmbGtTLfFNw2R2Cdsy8SaLQV8K0A+qDuN7ZOh0mpHps7A6Kbl6kRzVkC6bnBVwGdCV/5c27ip7cGnYTe3UJ73Zy3+YsDMhfLVqH2SppZMySdorOTfSMj3kqlPQikFifaf2arddLXiI9fGoqoOSNLxS+U0QcNbHwuRdXamtAQvrs8vQTJh9wm6sZ1q/6xrHXum+chovOrDa91xas5MvLjBR9GZKlHbUzE1NqvxHXx8+/8tfH/s5oTZIucy43I1fEJ9Avo/Whg42jznaZW/QfDBWKZb2ESr79i+g+Ar5gEh19jw9BkEMyes03AtwVnNxCBI3FLw9F/Yf1ZrkNfSCUFp9GvpqYnI/8dXGiN2Gow5+IJQu/q6RNgeDfaqFxt3sNNe7KiDjaNe8J9dcNwLHnfBvwn5qovuT0Y86aL7KcbTDnrUz3HUzfSon+Som+vL/vTFh2caOkkL5rhVDs+HarH84zZlori0c2A6LVq9bwq1vQdTPDoruGxNPykecOBnSspqp5pfmM2dzlnaMrOwo069YZb58WgCOpni8HsLalparn7ifMNi9uj7XN2neK7w4vBBSX81dJ6e28rxrLu3w+VkEl/EkyWLl/kYpvDH5XgULeNpnGcsyyO4Cv1O5xL3AxNJNeD1WsFtJxsuEvc3efSzC1lAtzb+sLII4l3s7yrNtnf8daNaa4vLXM1TDSAfK28n4qDxQLwJs9uMI2UsocWp94vwbREKla4hW5wcLXySb3c48IvGyyIs+YuyJFmEM39fL0ISn66LRMMLhy0dfnR2CA8/AFBLAwQUAAAICAAAgJ/rHGV0oHEAAAB9AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9YzNdRRUEovSizIKAaKgDmlmSkgdrRSkoWFoamhRVKiYVKaSaplqq6ZiZFBkqGlYVpKYkqaQaq5UixQfUllQapfYm4qRE9AYklGWmZeSmZeup5PYmVqkXtRZoo7yHyl2FoAUEsBAi0AFAAACAgAAICf6wYx4GaDAwAAswgAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAICf6xxldKBxAAAAfQAAAAkAJAAAAAAAAAAAAAAA0AMAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAACMBAAAAAA=
+    dataString: UEsDBBQAAAgIAACAn+tBaWmQmAMAADoJAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVm1v4kYQ/iuWP6fIdiBApUi9klyuL0lQuPY+lHxY7DHesuxa+xIgEf+9M2uDbe7kKig2M8/MzuuzfISCHUDPlJM2/DlIroIwLZhmqQX9Bfi6IGk8iEao4NKUkFqlHzTPHlUGqArpPWwrv8CerZVc8Hc4Yb7xzBYEYh7zwixX5JbMjNqC1Tz9JNeCwBEKneS50tv7bA0zZaxBcc6EAVRpZclaougjCPe1waF+vtMzOFISIDGDBjWKBqMLIIk81slUsG0JGcXcmMTRyTW+eaDEfGoMxZ4qIbipgwntofTJzlhpHKaCgIwzTM6HEQ0mKChOFY0GUcfDc54bqBQUpmaHO66xVJXz8FdV1W/LzKYK8I0JR8cNo+loen3jw6u8P/4QMxknHpNrtW366jO0BU83L+yQMmNblW6L75pEYl+wHRMbthLwrQD5pB40jk+GSqsdmToDyV3L1TnNWQHppsFVAV8IXfl9b+Omt0dfhv3CQnk5n7X4LwNmIZTvRu2TNLVkSj5BYyd/w4T8LJn6JJRSkGj/la3bQ1crPnNtLKrqgCQdv1JOEzS897FQss7OlJbgxfX5JUgm7GGObmyn29/rWsdeaD4zWq/68Fp32poLEy9u8FF0oZqr3bmZGofV+Ak+vf3zEf5ymuY5s0XOZcblevCC+jnoP4kwcLV5ztOqflfBJ2OZbmHnWv2L43sV/I11QMgtDjz9XQUzJ6zTcCvBWc3EVTB3K8HTP+DwVW1A3konBJXR09JLE5H/jq+0Ruy8GAvwDaFx9X2JcDwa7LgXG3ew015s0sHGUS/4uguOe8HDLvh/Qh530f3FiCdddH+K8bSDTvpzTLqVTvqTTLq1vukvXxccJ73oURd83Qu+6YKHveDx8ZV2XxLPncjt+Hqs+O13ty3niku7AKbTorWCplC7RzDFs7OCyxYJkeIJeWempKyo3fzAbOF0ztKWmYU9Lcwds8xvaRPQ2RQ5yFvQ7hDH+8X3e4NNpM9rda3jucKLwycl/Q3Vefrc1o5n3esjXE0m8SierFi8yocwhZ9uhkm0iqdxnrEsj2Ac+quFS6QpJuYVz9TshqQrm1wkXiPk0VMIZAH9eMB/rCyCeB/7K1Oz3QN/36oWe3KZq0WqAeRz5e2cOGg8EC/k7D7jmDJ20CL5eD7+WIZCpRvIlmdHS1/k+z3yzrLxsgxL/qYsSZbhzP9sWIYkPt9acw1vHHZ0+MnZMTz+B1BLAwQUAAAICAAAgJ/rHGV0oHEAAAB9AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9YzNdRRUEovSizIKAaKgDmlmSkgdrRSkoWFoamhRVKiYVKaSaplqq6ZiZFBkqGlYVpKYkqaQaq5UixQfUllQapfYm4qRE9AYklGWmZeSmZeup5PYmVqkXtRZoo7yHyl2FoAUEsBAi0AFAAACAgAAICf60FpaZCYAwAAOgkAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAICf6xxldKBxAAAAfQAAAAkAJAAAAAAAAAAAAAAA5QMAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAAChBAAAAAA=
     upgradeData: 
     file_cachedStartup: {fileID: 0}
     data_cachedStartup: 
@@ -8775,9 +9767,9 @@ MonoBehaviour:
   - Tall Grass
   - Sand
   - Rocky Ground
-  - 5
-  - 6
-  - 7
+  - Stone
+  - Wood
+  - Short Grass
   - 8
   - 9
   - 10
@@ -10091,7 +11083,7 @@ GameObject:
   - component: {fileID: 1367834504}
   - component: {fileID: 1367834503}
   - component: {fileID: 1367834502}
-  m_Layer: 7
+  m_Layer: 13
   m_Name: Medium Platform (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10742,7 +11734,7 @@ MonoBehaviour:
   blockManager: {fileID: 671623199}
   groundMask:
     serializedVersion: 2
-    m_Bits: 4067264
+    m_Bits: 4095936
 --- !u!1 &1453487297
 GameObject:
   m_ObjectHideFlags: 0
@@ -12182,57 +13174,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: World Mouse
       objectReference: {fileID: 0}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: speakCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: 050d8cbef1e940343950c80ce5385a16, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: defaultCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: 84ef7d5a093fda54e8fef076abb54aa2, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: lootBagCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: efb2d6fc651ed344596d9e66dcba351a, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: useDoorCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: 9f8e4f5a6b5fe084c9c74409860c1482, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: pickupItemCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: c90ce9ecc00137f4eb83ef2f5e565681, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: meleeAttackCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: bcb58941626f0594e8328a2f7ea7b2dd, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: rangedAttackCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: 21de8153efdbee747a94f44265bb0836, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: defaultCursorSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b19c8418caa484a41a0055b885813e27,
-        type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: lootContainerCursor
-      value: 
-      objectReference: {fileID: 2800000, guid: 5fa282fdbc103ff4795491216be82b5b, type: 3}
-    - target: {fileID: 6474021837775871208, guid: b49c80c211f15ff4285f87c5c8653d6b,
-        type: 3}
-      propertyPath: defaultCursorTexture
-      value: 
-      objectReference: {fileID: 2800000, guid: 84ef7d5a093fda54e8fef076abb54aa2, type: 3}
     - target: {fileID: 6474021837775871209, guid: b49c80c211f15ff4285f87c5c8653d6b,
         type: 3}
       propertyPath: m_RootOrder

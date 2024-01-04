@@ -21,7 +21,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 return 100f;
 
             if (unit.Stats.CanFightUnarmed)
-                return 45f + (unit.Stats.UnarmedSkill.GetValue() / 10f);
+                return 44f + (unit.Stats.UnarmedSkill.GetValue() / 10f);
 
             return 100f;
         }
