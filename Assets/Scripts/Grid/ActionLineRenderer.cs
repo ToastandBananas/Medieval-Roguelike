@@ -74,13 +74,13 @@ namespace GridSystem
             float arcMultiplier = 1f;
             if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Throw)
                 arcMultiplier = Projectile.defaultThrowArcMultiplier;
-            else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
             {
                 HeldRangedWeapon heldRangedWeapon = player.UnitMeshManager.GetHeldRangedWeapon();
                 if (heldRangedWeapon.LoadedProjectile != null)
                     arcMultiplier = heldRangedWeapon.LoadedProjectile.ItemData.Item.Ammunition.ArcMultiplier;
                 else
-                    arcMultiplier = player.UnitEquipment.GetEquippedProjectile(heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType).Item.Ammunition.ArcMultiplier;
+                    arcMultiplier = player.UnitEquipment.HumanoidEquipment.GetEquippedProjectile(heldRangedWeapon.ItemData.Item.RangedWeapon.ProjectileType).Item.Ammunition.ArcMultiplier;
             }
             return arcMultiplier;
         }
@@ -321,7 +321,7 @@ namespace GridSystem
         {
             if (player.UnitEquipment.RangedWeaponEquipped)
             {
-                if (player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
+                if (player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
                 {
                     if (player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack)
                         return player.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(player.GridPosition, targetUnit);

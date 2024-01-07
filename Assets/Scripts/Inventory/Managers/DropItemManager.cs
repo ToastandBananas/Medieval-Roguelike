@@ -159,7 +159,7 @@ namespace InventorySystem
             if (unitEquipment.MyUnit != null)
                 unitEquipment.MyUnit.Stats.UpdateCarryWeight();
 
-            if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
+            if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             ActionSystemUI.UpdateActionVisuals();
@@ -262,7 +262,7 @@ namespace InventorySystem
             // Get the Rigidbody component(s) and apply force
             looseWeapon.RigidBody.AddForce(forceDirection * randomForceMagnitude, ForceMode.Impulse);
 
-            if (unit != UnitManager.player)
+            if (unit.IsNPC)
             {
                 if (!UnitManager.player.Vision.IsVisible(unit))
                     looseWeapon.HideMeshRenderer();
@@ -274,7 +274,7 @@ namespace InventorySystem
             EquipSlot equipSlot;
             if (heldItem == unit.UnitMeshManager.rightHeldItem)
             {
-                if (unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
+                if (unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (heldItem.ItemData.Item is Item_Weapon && heldItem.ItemData.Item.Weapon.IsTwoHanded)
                         equipSlot = EquipSlot.LeftHeldItem1;
@@ -291,7 +291,7 @@ namespace InventorySystem
             }
             else
             {
-                if (unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
+                if (unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                     equipSlot = EquipSlot.LeftHeldItem1;
                 else
                     equipSlot = EquipSlot.LeftHeldItem2;

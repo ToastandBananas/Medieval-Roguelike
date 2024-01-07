@@ -13,12 +13,12 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             float distanceToTargetEnemy = Vector3.Distance(unit.WorldPosition, unit.UnitActionHandler.TargetEnemyUnit.WorldPosition);
             if (unit.UnitEquipment.RangedWeaponEquipped) 
             {
-                if (distanceToTargetEnemy <= npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat || !unit.UnitEquipment.HasValidAmmunitionEquipped())
+                if (distanceToTargetEnemy <= npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat || !unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     return 0f; // Swap to melee weapon
             }
             else // If melee weapon equipped or unarmed
             {
-                if (distanceToTargetEnemy > npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat && unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                if (distanceToTargetEnemy > npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat && unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     return 0f; // Swap to ranged weapon
             }
             

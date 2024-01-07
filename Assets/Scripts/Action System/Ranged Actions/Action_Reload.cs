@@ -31,7 +31,7 @@ namespace UnitSystem.ActionSystem.Actions
         public override void OnActionSelected()
         {
             // If trying to reload a ranged weapon and the Player has a quiver with more than one type of projectile, bring up a context menu option asking which projectile to load up (if the ranged weapon is unloaded)
-            if (Unit.UnitEquipment.QuiverEquipped() && Unit.UnitEquipment.RangedWeaponEquipped
+            if (Unit.UnitEquipment.HumanoidEquipment.QuiverEquipped && Unit.UnitEquipment.RangedWeaponEquipped
                 && Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded == false && Unit.QuiverInventoryManager.ParentInventory.ItemDatas.Count > 1)
             {
                 Unit.UnitActionHandler.PlayerActionHandler.SetDefaultSelectedAction();
@@ -73,7 +73,7 @@ namespace UnitSystem.ActionSystem.Actions
             return Mathf.RoundToInt(defaultActionPointCost * (float)Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon.ReloadActionPointCostMultiplier);
         }
 
-        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded || Unit.UnitEquipment.HasValidAmmunitionEquipped());
+        public override bool IsValidAction() => Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded || Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped());
 
         public override bool IsInterruptable() => false;
 

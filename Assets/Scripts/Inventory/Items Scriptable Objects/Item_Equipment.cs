@@ -21,7 +21,7 @@ namespace InventorySystem
                 || ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot)
                     && (unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].Item is Item_Weapon == false || !unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].Item.Weapon.IsTwoHanded))))
             {
-                EquipSlot oppositeEquipSlot = unit.UnitEquipment.GetOppositeHeldItemEquipSlot(equipSlot);
+                EquipSlot oppositeEquipSlot = unit.UnitEquipment.HumanoidEquipment.GetOppositeHeldItemEquipSlot(equipSlot);
                 if (unit.UnitEquipment.CapableOfEquippingHeldItem(itemData, oppositeEquipSlot, false))
                     targetEquipSlot = oppositeEquipSlot;
             }

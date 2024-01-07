@@ -297,7 +297,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override bool IsValidAction()
         {
-            if (Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+            if (Unit != null && Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                 return true;
             return false;
         }
@@ -314,7 +314,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public bool RangedWeaponIsLoaded() => Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded;
 
-        public override bool CanShowAttackRange() => Unit.UnitEquipment.HasValidAmmunitionEquipped();
+        public override bool CanShowAttackRange() => Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped();
 
         public override float AccuracyModifier() => 1f;
 

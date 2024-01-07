@@ -50,11 +50,11 @@ namespace InventorySystem
 
         public void LoadProjectile(ItemData projectileItemData)
         {
-            if (IsLoaded || !unit.UnitEquipment.HasValidAmmunitionEquipped())
+            if (IsLoaded || !unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                 return;
 
             Projectile projectile = Pool_Projectiles.Instance.GetProjectileFromPool();
-            projectileItemData ??= unit.UnitEquipment.GetEquippedProjectile(ItemData.Item.RangedWeapon.ProjectileType);
+            projectileItemData ??= unit.UnitEquipment.HumanoidEquipment.GetEquippedProjectile(ItemData.Item.RangedWeapon.ProjectileType);
             
             projectile.SetupAmmunition(projectileItemData, unit, bowLineRenderer.GetStringCenterTarget());
 
@@ -62,7 +62,7 @@ namespace InventorySystem
             if (projectileItemData.MyInventory != null)
                 projectileItemData.MyInventory.OnReloadProjectile(projectileItemData);
             else
-                unit.UnitEquipment.OnReloadProjectile(projectileItemData);
+                unit.UnitEquipment.HumanoidEquipment.OnReloadProjectile(projectileItemData);
 
             LoadedProjectile = projectile;
             IsLoaded = true;
@@ -70,7 +70,7 @@ namespace InventorySystem
 
         public void UnloadProjectile()
         {
-            if (!unit.UnitEquipment.TryAddToEquippedAmmunition(LoadedProjectile.ItemData))
+            if (!unit.UnitEquipment.HumanoidEquipment.TryAddToEquippedAmmunition(LoadedProjectile.ItemData))
             {
                 if (!unit.UnitInventoryManager.TryAddItemToInventories(LoadedProjectile.ItemData))
                     DropItemManager.DropItem(null, unit, LoadedProjectile.ItemData);

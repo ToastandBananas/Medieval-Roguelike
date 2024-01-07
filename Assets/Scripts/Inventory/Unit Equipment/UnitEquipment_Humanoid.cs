@@ -1,5 +1,4 @@
 using InteractableObjects;
-using System;
 using System.Collections.Generic;
 using UnitSystem;
 using UnitSystem.ActionSystem;
@@ -14,22 +13,12 @@ namespace InventorySystem
     public enum EquipSlot { LeftHeldItem1, RightHeldItem1, LeftHeldItem2, RightHeldItem2, Helm, BodyArmor, Shirt, Gloves, Boots, Back, Quiver, Belt, LegArmor }
     public enum WeaponSet { One = 1, Two = 2 }
 
-    public class UnitEquipment : MonoBehaviour
+    public class UnitEquipment_Humanoid : UnitEquipment
     {
-        [SerializeField] Unit myUnit;
-
-        [SerializeField] ItemData[] equippedItemDatas = new ItemData[Enum.GetValues(typeof(EquipSlot)).Length];
-
-        [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back", "Quiver", "Belt", "Amulet", "Ring 1", "Ring 2" })]
-        [SerializeField] Item_Equipment[] startingEquipment = new Item_Equipment[Enum.GetValues(typeof(EquipSlot)).Length];
-
-        public List<EquipmentSlot> Slots { get; private set; }
+        [NamedArray(new string[] { "Left Held Item 1", "Right Held Item 1", "Left Held Item 2", "Right Held Item 2", "Helm", "Body Armor", "Shirt", "Gloves", "Boots", "Back", "Quiver", "Belt", "Leg Armor" })]
+        [SerializeField] Item_Equipment[] startingEquipment = new Item_Equipment[13];
 
         public WeaponSet CurrentWeaponSet { get; private set; }
-
-        public bool SlotVisualsCreated { get; private set; }
-
-        public static readonly float equippedWeightFactor = 0.5f; // The weight reduction of an item when it's equipped or inside a bag that's equipped
 
         void Awake()
         {
@@ -39,19 +28,15 @@ namespace InventorySystem
 
             // Setup our starting equipment
             for (int i = 0; i < startingEquipment.Length; i++)
-                equippedItemDatas[i].SetItem(startingEquipment[i]);
-
+                equippedItemDatas[i].SetItem(startingEquipment[i]); 
+            
             if (myUnit.IsPlayer)
                 CreateSlotVisuals();
             else
                 SetupItems();
         }
 
-        public ItemData GetEquippedItemData(EquipSlot equipSlot) => equippedItemDatas[(int)equipSlot];
-
-        public bool CanEquipItem(ItemData newItemData) => CanEquipItemAt(newItemData, GetTargetEquipSlot(newItemData));
-
-        public bool CanEquipItemAt(ItemData newItemData, EquipSlot targetEquipSlot)
+        public override bool CanEquipItemAt(ItemData newItemData, EquipSlot targetEquipSlot)
         {
             if (newItemData.Item == null || newItemData.Item is Item_Equipment == false || newItemData.IsBroken)
                 return false;
@@ -69,7 +54,7 @@ namespace InventorySystem
             {
                 int availableSpace = 0;
                 ItemData quiverSlotItemData = equippedItemDatas[(int)EquipSlot.Quiver];
-                if (QuiverEquipped())
+                if (QuiverEquipped)
                 {
                     // In this case we'd just be replacing the quiver with the different type of ammo (i.e. replacing an arrow quiver with crossbow bolts), so return true
                     if (quiverSlotItemData.Item.Quiver.AllowedProjectileType != newItemData.Item.Ammunition.ProjectileType)
@@ -80,7 +65,7 @@ namespace InventorySystem
                         SlotCoordinate slotCoord = myUnit.QuiverInventoryManager.ParentInventory.GetSlotCoordinate(i + 1, 1).parentSlotCoordinate;
 
                         // If there's an empty slot, the ammo will fit
-                        if (!slotCoord.isFull) 
+                        if (!slotCoord.isFull)
                             return true;
                         else if (newItemData.IsEqual(slotCoord.itemData))
                             availableSpace += slotCoord.itemData.Item.MaxStackSize - slotCoord.itemData.CurrentStackSize;
@@ -106,7 +91,7 @@ namespace InventorySystem
             return true;
         }
 
-        public bool CapableOfEquippingHeldItem(ItemData itemData, EquipSlot targetHeldItemEquipSlot, bool checkOppositeHeldItemSlot)
+        public override bool CapableOfEquippingHeldItem(ItemData itemData, EquipSlot targetHeldItemEquipSlot, bool checkOppositeHeldItemSlot)
         {
             if (itemData == null || itemData.Item == null)
                 return false;
@@ -136,9 +121,7 @@ namespace InventorySystem
             return true;
         }
 
-        public bool TryEquipItem(ItemData newItemData) => TryAddItemAt(GetTargetEquipSlot(newItemData), newItemData);
-
-        public bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
+        public override bool TryAddItemAt(EquipSlot targetEquipSlot, ItemData newItemData)
         {
             // If the item is a two-handed weapon, assign the left held item equip slot
             if (newItemData.Item is Item_Weapon && newItemData.Item.Weapon.IsTwoHanded)
@@ -150,7 +133,7 @@ namespace InventorySystem
             }
 
             // If trying to place ammo on a Quiver slot that has a Quiver or the same type of arrows equipped
-            if (newItemData.Item is Item_Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver) 
+            if (newItemData.Item is Item_Ammunition && targetEquipSlot == EquipSlot.Quiver && EquipSlotHasItem(EquipSlot.Quiver)
                 && (newItemData.IsEqual(equippedItemDatas[(int)EquipSlot.Quiver]) || (equippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver && newItemData.Item.Ammunition.ProjectileType == equippedItemDatas[(int)EquipSlot.Quiver].Item.Quiver.AllowedProjectileType)))
                 TryAddToEquippedAmmunition(newItemData);
             else
@@ -159,21 +142,19 @@ namespace InventorySystem
             return true;
         }
 
-        void Equip(ItemData newItemData, EquipSlot targetEquipSlot)
+        protected override void Equip(ItemData newItemData, EquipSlot targetEquipSlot)
         {
-            if (IsHeldItemEquipSlot(targetEquipSlot))
-            {
-                EquipSlot oppositeWeaponSlot = GetOppositeHeldItemEquipSlot(targetEquipSlot);
+            base.Equip(newItemData, targetEquipSlot);
 
-                // If we're equipping a two-handed weapon and there's already a weapon/shield in the opposite weapon slot or if the opposite weapon slot has a two-handed weapon in it
-                if (EquipSlotHasItem(oppositeWeaponSlot) && ((newItemData.Item is Item_Weapon && newItemData.Item.Weapon.IsTwoHanded) || (equippedItemDatas[(int)oppositeWeaponSlot].Item is Item_Weapon && equippedItemDatas[(int)oppositeWeaponSlot].Item.Weapon.IsTwoHanded)))
-                {
-                    myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(equippedItemDatas[(int)oppositeWeaponSlot], equippedItemDatas[(int)oppositeWeaponSlot].CurrentStackSize, null, InventoryActionType.Unequip);
-                    UnequipItem(oppositeWeaponSlot);
-                }
-            }
+            if ((CurrentWeaponSet == WeaponSet.One && (targetEquipSlot == EquipSlot.LeftHeldItem2 || targetEquipSlot == EquipSlot.RightHeldItem2))
+                || (CurrentWeaponSet == WeaponSet.Two && (targetEquipSlot == EquipSlot.LeftHeldItem1 || targetEquipSlot == EquipSlot.RightHeldItem1)))
+                return;
 
-            // Unequip any item already in the target equip slot
+            AddActions(newItemData.Item as Item_Equipment);
+        }
+
+        protected override void UnequipFromTargetEquipSlot(EquipSlot targetEquipSlot)
+        {
             if (EquipSlotHasItem(targetEquipSlot))
             {
                 ItemData itemDataUnequipping = equippedItemDatas[(int)targetEquipSlot];
@@ -188,45 +169,9 @@ namespace InventorySystem
                 myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataUnequipping, itemDataUnequipping.CurrentStackSize, unequippedContainerInventoryManager, InventoryActionType.Unequip);
                 UnequipItem(targetEquipSlot);
             }
-            
-            // If the new item is coming from an NPC's Container Equipment Slot or a Loose Container Item, transfer the inventories
-            if (IsWearableContainerEquipSlot(targetEquipSlot))
-                SwapContainerInventories(targetEquipSlot, newItemData);
-
-            // Clear out the item from it's original slot
-            RemoveItemFromOrigin(newItemData);
-            newItemData.SetInventorySlotCoordinate(null);
-
-            // Assign the data
-            equippedItemDatas[(int)targetEquipSlot] = newItemData;
-
-            if (targetEquipSlot == EquipSlot.RightHeldItem1 && newItemData.Item is Item_Weapon && newItemData.Item.Weapon.IsTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem1] = null;
-            else if (targetEquipSlot == EquipSlot.RightHeldItem2 && newItemData.Item is Item_Weapon && newItemData.Item.Weapon.IsTwoHanded)
-                equippedItemDatas[(int)EquipSlot.RightHeldItem2] = null;
-
-            if (IsWearableContainerEquipSlot(targetEquipSlot))
-                InitializeInventories(targetEquipSlot, newItemData);
-
-            // Setup the target slot's item data/sprites and mesh if necessary
-            SetupNewItemIcon(GetEquipmentSlot(targetEquipSlot), newItemData);
-            SetupEquipmentMesh(targetEquipSlot, newItemData);
-
-            // Set the size of the opportunity attack trigger
-            if (IsHeldItemEquipSlot(targetEquipSlot))
-                myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
-
-            if (myUnit != null)
-                myUnit.Stats.UpdateCarryWeight();
-
-            if ((CurrentWeaponSet == WeaponSet.One && (targetEquipSlot == EquipSlot.LeftHeldItem2 || targetEquipSlot == EquipSlot.RightHeldItem2))
-                || (CurrentWeaponSet == WeaponSet.Two && (targetEquipSlot == EquipSlot.LeftHeldItem1 || targetEquipSlot == EquipSlot.RightHeldItem1)))
-                return;
-
-            AddActions(newItemData.Item as Item_Equipment);
         }
 
-        void SwapContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
+        protected override void SwapContainerInventories(EquipSlot targetEquipSlot, ItemData newItemData)
         {
             if (InventoryUI.IsDraggingItem && InventoryUI.DraggedItem.MyUnitEquipment != null)
             {
@@ -379,7 +324,7 @@ namespace InventorySystem
             return false;
         }
 
-        EquipSlot GetTargetEquipSlot(ItemData newItemData)
+        protected override EquipSlot GetTargetEquipSlot(ItemData newItemData)
         {
             EquipSlot targetEquipSlot = newItemData.Item.Equipment.EquipSlot;
             if (CurrentWeaponSet == WeaponSet.Two)
@@ -409,39 +354,7 @@ namespace InventorySystem
             return targetEquipSlot;
         }
 
-        public void RemoveEquipment(ItemData itemData)
-        {
-            int targetEquipSlotIndex = -1;
-            for (int i = 0; i < equippedItemDatas.Length; i++)
-            {
-                if (equippedItemDatas[i] == itemData)
-                {
-                    targetEquipSlotIndex = i;
-                    break;
-                }
-            }
-
-            if (targetEquipSlotIndex != -1)
-            {
-                if (SlotVisualsCreated)
-                    GetEquipmentSlotFromIndex(targetEquipSlotIndex).ClearItem();
-
-                RemoveActions(itemData.Item.Equipment, (EquipSlot)targetEquipSlotIndex);
-                RemoveEquipmentMesh((EquipSlot)targetEquipSlotIndex);
-                equippedItemDatas[targetEquipSlotIndex] = null;
-
-                if (myUnit != null)
-                    myUnit.Stats.UpdateCarryWeight();
-
-                // Set the size of the opportunity attack trigger
-                if (IsHeldItemEquipSlot((EquipSlot)targetEquipSlotIndex))
-                    myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
-
-                ActionSystemUI.UpdateActionVisuals();
-            }
-        }
-
-        void InitializeInventories(EquipSlot targetEquipSlot, ItemData newItemData)
+        protected override void InitializeInventories(EquipSlot targetEquipSlot, ItemData newItemData)
         {
             if (targetEquipSlot == EquipSlot.Back && newItemData.Item is Item_Backpack)
                 myUnit.BackpackInventoryManager.Initialize();
@@ -451,7 +364,7 @@ namespace InventorySystem
                 myUnit.QuiverInventoryManager.Initialize();
         }
 
-        void RemoveItemFromOrigin(ItemData itemDataToRemove)
+        protected override void RemoveItemFromOrigin(ItemData itemDataToRemove)
         {
             // Remove the item from its original character equipment or inventory
             if (InventoryUI.IsDraggingItem)
@@ -460,17 +373,17 @@ namespace InventorySystem
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Item_Backpack)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.BackpackInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.MyUnit.BackpackInventoryManager;
                     else if (itemDataToRemove.Item is Item_Belt)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.BeltInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.MyUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Item_Quiver)
-                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.myUnit.QuiverInventoryManager;
+                        itemsContainerInventoryManager = InventoryUI.DraggedItem.MyUnitEquipment.MyUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (InventoryUI.DraggedItem.MyUnitEquipment.myUnit.HealthSystem.IsDead)
+                    if (InventoryUI.DraggedItem.MyUnitEquipment.MyUnit.HealthSystem.IsDead)
                         myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        InventoryUI.DraggedItem.MyUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        InventoryUI.DraggedItem.MyUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     InventoryUI.DraggedItem.MyUnitEquipment.RemoveEquipment(itemDataToRemove);
                 }
@@ -496,17 +409,17 @@ namespace InventorySystem
                 {
                     ContainerInventoryManager itemsContainerInventoryManager = null;
                     if (itemDataToRemove.Item is Item_Backpack)
-                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.BackpackInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.MyUnit.BackpackInventoryManager;
                     else if (itemDataToRemove.Item is Item_Belt)
-                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.BeltInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.MyUnit.BeltInventoryManager;
                     else if (itemDataToRemove.Item is Item_Quiver)
-                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.myUnit.QuiverInventoryManager;
+                        itemsContainerInventoryManager = targetInventoryItem.MyUnitEquipment.MyUnit.QuiverInventoryManager;
 
                     // If the Player is removing an Item from a dead Unit's equipment
-                    if (targetInventoryItem.MyUnitEquipment.myUnit.HealthSystem.IsDead)
+                    if (targetInventoryItem.MyUnitEquipment.MyUnit.HealthSystem.IsDead)
                         myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
                     else // If the Player is removing an Item from a living Unit's equipment, the Unit can remove the item themselves
-                        targetInventoryItem.MyUnitEquipment.myUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
+                        targetInventoryItem.MyUnitEquipment.MyUnit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(itemDataToRemove, itemDataToRemove.CurrentStackSize, itemsContainerInventoryManager, InventoryActionType.Unequip);
 
                     targetInventoryItem.MyUnitEquipment.RemoveEquipment(ContextMenu.TargetSlot.InventoryItem.ItemData);
                 }
@@ -539,7 +452,7 @@ namespace InventorySystem
             }
         }
 
-        public void UnequipItem(EquipSlot equipSlot)
+        public override void UnequipItem(EquipSlot equipSlot)
         {
             if (!EquipSlotHasItem(equipSlot))
                 return;
@@ -591,15 +504,14 @@ namespace InventorySystem
 
             equippedItemDatas[(int)equipSlot] = null;
 
-            if (myUnit != null)
-                myUnit.Stats.UpdateCarryWeight();
+            myUnit.Stats.UpdateCarryWeight();
 
             // Set the size of the opportunity attack trigger
             if (IsHeldItemEquipSlot(equipSlot))
                 myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
         }
 
-        public void CreateSlotVisuals()
+        public override void CreateSlotVisuals()
         {
             if (SlotVisualsCreated)
             {
@@ -675,7 +587,7 @@ namespace InventorySystem
             SetupItems();
         }
 
-        void SetupItems()
+        protected override void SetupItems()
         {
             for (int i = 0; i < equippedItemDatas.Length; i++)
             {
@@ -719,34 +631,13 @@ namespace InventorySystem
             myUnit.OpportunityAttackTrigger.UpdateColliderRadius();
         }
 
-        void AddActions(Item_Equipment equipment)
-        {
-            if (equipment.ActionTypes.Length == 0)
-                return;
-
-            for (int i = 0; i < equipment.ActionTypes.Length; i++)
-            {
-                if (myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
-                    continue;
-
-                myUnit.UnitActionHandler.AvailableActionTypes.Add(equipment.ActionTypes[i]);
-                equipment.ActionTypes[i].GetAction(myUnit);
-
-                if (myUnit.IsPlayer)
-                    ActionSystemUI.AddButton(equipment.ActionTypes[i]);
-            }
-
-            if (myUnit.IsPlayer)
-                ActionSystemUI.UpdateActionVisuals();
-        }
-
-        public void RemoveActions(Item_Equipment equipment, EquipSlot equipSlot)
+        public override void RemoveActions(Item_Equipment equipment, EquipSlot equipSlot)
         {
             for (int i = 0; i < equipment.ActionTypes.Length; i++)
             {
                 if (!myUnit.UnitActionHandler.AvailableActionTypes.Contains(equipment.ActionTypes[i]))
                     continue;
-                
+
                 if (IsHeldItemEquipSlot(equipSlot))
                 {
                     EquipSlot oppositeEquipSlot = GetOppositeHeldItemEquipSlot(equipSlot);
@@ -780,7 +671,7 @@ namespace InventorySystem
                 ActionSystemUI.UpdateActionVisuals();
         }
 
-        public bool EquipSlotIsFull(EquipSlot equipSlot)
+        public override bool EquipSlotIsFull(EquipSlot equipSlot)
         {
             if (EquipSlotHasItem(equipSlot))
                 return true;
@@ -794,15 +685,6 @@ namespace InventorySystem
 
             return false;
         }
-
-        public bool EquipSlotHasItem(int equipSlotIndex)
-        {
-            if (equippedItemDatas[equipSlotIndex] != null && equippedItemDatas[equipSlotIndex].Item != null)
-                return true;
-            return false;
-        }
-
-        public bool EquipSlotHasItem(EquipSlot equipSlot) => EquipSlotHasItem((int)equipSlot);
 
         public EquipSlot GetOppositeHeldItemEquipSlot(EquipSlot weaponEquipSlot)
         {
@@ -836,21 +718,12 @@ namespace InventorySystem
                 return EquipSlot.Ring1;
         }*/
 
-        EquipmentSlot GetEquipmentSlotFromIndex(int index)
+        protected override void SetupNewItemIcon(EquipmentSlot targetSlot, ItemData newItemData)
         {
-            for (int i = 0; i < Slots.Count; i++)
-            {
-                if (index == (int)Slots[i].EquipSlot)
-                    return Slots[i];
-            }
-            return null;
-        }
-
-        /// <summary>Setup the target slot's item data and sprites.</summary>
-        void SetupNewItemIcon(EquipmentSlot targetSlot, ItemData newItemData)
-        {
-            if (SlotVisualsCreated == false)
+            if (!SlotVisualsCreated)
                 return;
+
+            base.SetupNewItemIcon(targetSlot, newItemData);
 
             newItemData.SetInventorySlotCoordinate(null);
             targetSlot.InventoryItem.SetItemData(newItemData);
@@ -905,7 +778,7 @@ namespace InventorySystem
             }
         }
 
-        void SetupEquipmentMesh(EquipSlot equipSlot, ItemData itemData)
+        protected override void SetupEquipmentMesh(EquipSlot equipSlot, ItemData itemData)
         {
             if (myUnit.HealthSystem.IsDead)
                 return;
@@ -940,19 +813,19 @@ namespace InventorySystem
                 myUnit.UnitMeshManager.SetupWearableMesh(equipSlot, (Item_VisibleArmor)itemData.Item);
         }
 
-        public void RemoveEquipmentMesh(EquipSlot equipSlot)
+        public override void RemoveEquipmentMesh(EquipSlot equipSlot)
         {
-            if (EquipSlotIsFull(equipSlot) == false)
+            if (!EquipSlotIsFull(equipSlot))
                 return;
 
             // We only show meshes for these types of equipment:
-            if (IsHeldItemEquipSlot(equipSlot) == false && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor && equipSlot != EquipSlot.Shirt)
+            if (!IsHeldItemEquipSlot(equipSlot) && equipSlot != EquipSlot.Helm && equipSlot != EquipSlot.BodyArmor && equipSlot != EquipSlot.Shirt)
                 return;
 
             if (IsHeldItemEquipSlot(equipSlot))
             {
                 // If the right held item equipSlot was passed in and it's empty, check if the left held item slot has a two hander. If so, that's the item we need to drop.
-                if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && EquipSlotHasItem(equipSlot) == false)
+                if ((equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2) && !EquipSlotHasItem(equipSlot))
                 {
                     EquipSlot oppositeEquipSlot = GetOppositeHeldItemEquipSlot(equipSlot);
                     if (EquipSlotHasItem(oppositeEquipSlot) == false)
@@ -1108,8 +981,6 @@ namespace InventorySystem
             ActionSystemUI.UpdateActionVisuals();
         }
 
-        public bool InVersatileStance => myUnit.UnitEquipment.MeleeWeaponEquipped && myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().CurrentHeldItemStance == HeldItemStance.Versatile;
-
         public ItemData GetRangedWeaponFromOtherWeaponSet()
         {
             if (CurrentWeaponSet == WeaponSet.One)
@@ -1220,40 +1091,26 @@ namespace InventorySystem
             secondaryWeapon = null;
         }
 
-        public EquipSlot GetEquipSlotFromItemData(ItemData itemData)
-        {
-            for (int i = 0; i < equippedItemDatas.Length; i++)
-            {
-                if (itemData == equippedItemDatas[i])
-                    return (EquipSlot)i;
-            }
-            return EquipSlot.LeftHeldItem1;
-        }
+        public bool InVersatileStance => MeleeWeaponEquipped && myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().CurrentHeldItemStance == HeldItemStance.Versatile;
 
-        public bool IsDualWielding => myUnit.UnitMeshManager.GetLeftHeldMeleeWeapon() != null && myUnit.UnitMeshManager.GetRightHeldMeleeWeapon() != null;
+        public override bool IsDualWielding => myUnit.UnitMeshManager.GetLeftHeldMeleeWeapon() != null && myUnit.UnitMeshManager.GetRightHeldMeleeWeapon() != null;
 
-        public bool MeleeWeaponEquipped => myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon() != null;
+        public override bool MeleeWeaponEquipped => myUnit.UnitMeshManager.GetPrimaryHeldMeleeWeapon() != null;
 
-        public bool RangedWeaponEquipped => myUnit.UnitMeshManager.GetHeldRangedWeapon() != null;
+        public override bool RangedWeaponEquipped => myUnit.UnitMeshManager.GetHeldRangedWeapon() != null;
 
-        public bool ShieldEquipped => myUnit.UnitMeshManager.GetHeldShield() != null;
+        public override bool ShieldEquipped => myUnit.UnitMeshManager.GetHeldShield() != null;
 
-        public bool IsUnarmed => !MeleeWeaponEquipped && (!RangedWeaponEquipped || !HasValidAmmunitionEquipped());
+        public override bool IsUnarmed => !MeleeWeaponEquipped && (!RangedWeaponEquipped || !HasValidAmmunitionEquipped());
 
         public EquipSlot LeftHeldItemEquipSlot => CurrentWeaponSet == WeaponSet.One ? EquipSlot.LeftHeldItem1 : EquipSlot.LeftHeldItem2;
         public EquipSlot RightHeldItemEquipSlot => CurrentWeaponSet == WeaponSet.One ? EquipSlot.RightHeldItem1 : EquipSlot.RightHeldItem2;
 
-        public static bool IsHeldItemEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.LeftHeldItem1 || equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.LeftHeldItem2 || equipSlot == EquipSlot.RightHeldItem2;
+        public bool BackpackEquipped => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Item_Backpack;
 
-        public static bool IsWearableContainerEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Back || equipSlot == EquipSlot.Belt || equipSlot == EquipSlot.Quiver;
+        public bool BeltBagEquipped => EquipSlotHasItem(EquipSlot.Belt) && equippedItemDatas[(int)EquipSlot.Belt].Item.Belt.HasAnInventory();
 
-        //public static bool IsRingEquipSlot(EquipSlot equipSlot) => equipSlot == EquipSlot.Ring1 || equipSlot == EquipSlot.Ring2;
-
-        public bool BackpackEquipped() => EquipSlotHasItem(EquipSlot.Back) && equippedItemDatas[(int)EquipSlot.Back].Item is Item_Backpack;
-
-        public bool BeltBagEquipped() => EquipSlotHasItem(EquipSlot.Belt) && equippedItemDatas[(int)EquipSlot.Belt].Item.Belt.HasAnInventory();
-
-        public bool QuiverEquipped() => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver;
+        public bool QuiverEquipped => EquipSlotHasItem(EquipSlot.Quiver) && equippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver;
 
         public bool HasValidAmmunitionEquipped() => HasValidAmmunitionEquipped(RangedWeaponEquipped ? myUnit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.RangedWeapon : null);
 
@@ -1265,7 +1122,7 @@ namespace InventorySystem
             if (RangedWeaponEquipped && myUnit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 return true;
 
-            if (QuiverEquipped())
+            if (QuiverEquipped)
             {
                 for (int i = 0; i < myUnit.QuiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
@@ -1284,7 +1141,7 @@ namespace InventorySystem
 
         public ItemData GetEquippedProjectile(ProjectileType projectileType)
         {
-            if (QuiverEquipped())
+            if (QuiverEquipped)
             {
                 for (int i = 0; i < myUnit.QuiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
@@ -1308,7 +1165,7 @@ namespace InventorySystem
             if (itemData.CurrentStackSize > 0)
             {
                 // Update stack size visuals
-                if (QuiverEquipped() && myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
+                if (QuiverEquipped && myUnit.QuiverInventoryManager.ParentInventory.SlotVisualsCreated)
                     myUnit.QuiverInventoryManager.ParentInventory.GetSlotFromItemData(itemData).InventoryItem.UpdateStackSizeVisuals();
                 else if (EquipSlotHasItem(EquipSlot.Quiver) && SlotVisualsCreated)
                     GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.UpdateStackSizeVisuals();
@@ -1316,66 +1173,10 @@ namespace InventorySystem
             }
 
             // If there's now zero in the stack
-            if (QuiverEquipped())
+            if (QuiverEquipped)
                 myUnit.QuiverInventoryManager.ParentInventory.RemoveItem(itemData, true);
             else if (EquipSlotHasItem(EquipSlot.Quiver))
                 RemoveEquipment(itemData);
-        }
-
-        public float GetTotalEquipmentWeight()
-        {
-            float weight = 0f;
-            for (int i = 0; i < equippedItemDatas.Length; i++)
-            {
-                if (EquipSlotHasItem(i))
-                    weight += equippedItemDatas[i].Weight();
-            }
-
-            return weight * equippedWeightFactor;
-        }
-
-        public EquipmentSlot GetEquipmentSlot(EquipSlot equipSlot)
-        {
-            for (int i = 0; i < Slots.Count; i++)
-            {
-                if (Slots[i].EquipSlot == equipSlot)
-                    return Slots[i];
-            }
-            return null;
-        }
-
-        public bool ItemDataEquipped(ItemData itemData)
-        {
-            if (itemData == null || itemData.Item == null)
-                return false;
-
-            for (int i = 0; i < equippedItemDatas.Length; i++)
-            {
-                if (equippedItemDatas[i] == itemData)
-                    return true;
-            }
-            return false;
-        }
-
-        public ItemData[] EquippedItemDatas => equippedItemDatas;
-
-        public Unit MyUnit => myUnit;
-
-        public void OnCloseNPCInventory()
-        {
-            SlotVisualsCreated = false;
-
-            if (Slots.Count > 0)
-            {
-                // Clear out any slots already in the list, so we can start from scratch
-                for (int i = 0; i < Slots.Count; i++)
-                {
-                    Slots[i].RemoveSlotHighlights();
-                    Slots[i].ClearItem();
-                    Slots[i].SetMyCharacterEquipment(null);
-                    Slots[i].InventoryItem.SetMyUnitEquipment(null);
-                }
-            }
         }
     }
 }

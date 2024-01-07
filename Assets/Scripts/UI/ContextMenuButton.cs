@@ -102,7 +102,7 @@ namespace GeneralUI
             else
             {
                 // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                if (UnitManager.player.UnitEquipment.RangedWeaponEquipped && UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped())
+                if (UnitManager.player.UnitEquipment.RangedWeaponEquipped && UnitManager.player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     UnitManager.player.UnitActionHandler.MoveAction.QueueAction(UnitManager.player.UnitActionHandler.GetAction<Action_Shoot>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));
                 else // If the player has a melee weapon equipped or is unarmed, find the nearest possible Melee Action attack position
                     UnitManager.player.UnitActionHandler.MoveAction.QueueAction(UnitManager.player.UnitActionHandler.GetAction<Action_Melee>().GetNearestAttackPosition(UnitManager.player.GridPosition, ContextMenu.TargetUnit));

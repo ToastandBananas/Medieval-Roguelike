@@ -96,7 +96,7 @@ namespace UnitSystem.ActionSystem
                         }
 
                         // Handle default ranged attack
-                        if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+                        if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                         {
                             // If the target enemy is too close, cancel the Player's current action
                             if (Vector3.Distance(Unit.WorldPosition, TargetEnemyUnit.WorldPosition) < Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange)
@@ -208,7 +208,7 @@ namespace UnitSystem.ActionSystem
 
                 selectedAction.BaseAttackAction.QueueAction(TargetEnemyUnit);
             }
-            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
             {
                 if (Unit.UnitMeshManager.GetHeldRangedWeapon().IsLoaded)
                 {

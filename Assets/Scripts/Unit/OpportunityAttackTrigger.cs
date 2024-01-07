@@ -17,16 +17,19 @@ public class OpportunityAttackTrigger : MonoBehaviour
     public void UpdateColliderRadius()
     {
         float maxAttackRange = myUnit.Stats.UnarmedAttackRange;
-        if (myUnit.UnitEquipment.MeleeWeaponEquipped)
+        if (myUnit.UnitEquipment is UnitEquipment_Humanoid)
         {
-            if (myUnit.UnitMeshManager.leftHeldItem != null && myUnit.UnitMeshManager.leftHeldItem is HeldMeleeWeapon)
-                maxAttackRange = myUnit.UnitMeshManager.leftHeldItem.ItemData.Item.Weapon.MaxRange;
+            if (myUnit.UnitEquipment.MeleeWeaponEquipped)
+            {
+                if (myUnit.UnitMeshManager.leftHeldItem != null && myUnit.UnitMeshManager.leftHeldItem is HeldMeleeWeapon)
+                    maxAttackRange = myUnit.UnitMeshManager.leftHeldItem.ItemData.Item.Weapon.MaxRange;
 
-            if (myUnit.UnitMeshManager.rightHeldItem != null && myUnit.UnitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
-                maxAttackRange = myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange;
+                if (myUnit.UnitMeshManager.rightHeldItem != null && myUnit.UnitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
+                    maxAttackRange = myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange;
+            }
+            else if (myUnit.UnitEquipment.RangedWeaponEquipped)
+                maxAttackRange = 0.1f;
         }
-        else if (myUnit.UnitEquipment.RangedWeaponEquipped)
-            maxAttackRange = 0.1f;
 
         sphereCollider.radius = maxAttackRange;
     }

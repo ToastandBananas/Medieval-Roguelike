@@ -133,9 +133,9 @@ namespace InventorySystem
                 || (IsHeldItemSlot && !myUnitEquipment.CapableOfEquippingHeldItem(InventoryUI.DraggedItem.ItemData, equipSlot, false)) 
                 || (myUnitEquipment.MyUnit.HealthSystem.IsDead && (InventoryUI.ParentSlotDraggedFrom == null || InventoryUI.ParentSlotDraggedFrom != this)))
                 validSlot = false;
-            else if (equipSlot == EquipSlot.Back && myUnitEquipment.BackpackEquipped())
+            else if (equipSlot == EquipSlot.Back && myUnitEquipment.HumanoidEquipment.BackpackEquipped)
                 validSlot = true;
-            else if (equipSlot == EquipSlot.Belt && myUnitEquipment.BeltBagEquipped())
+            else if (equipSlot == EquipSlot.Belt && myUnitEquipment.HumanoidEquipment.BeltBagEquipped)
                 validSlot = true;
             else if (draggedItem is Item_Equipment)
             {

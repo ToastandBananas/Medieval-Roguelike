@@ -43,7 +43,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (rightMeleeWeapon != null)
                 Throwables.Add(rightMeleeWeapon.ItemData);
 
-            if (Unit.UnitEquipment.BeltBagEquipped())
+            if (Unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 ContainerInventoryManager beltInventoryManager = Unit.BeltInventoryManager;
                 if (beltInventoryManager.ParentInventory.AllowedItemTypeContains(throwingWeaponItemTypes))
@@ -248,7 +248,7 @@ namespace UnitSystem.ActionSystem.Actions
             else if (ItemDataToThrow.MyInventory != null)
             {
                 // If this item is not coming from a belt bag with special throwing item slots, queue an Inventory Action (for removing the item from the inventory before throwing it)
-                if (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.ContainsItemData(ItemDataToThrow) || !Unit.BeltInventoryManager.ParentInventory.AllowedItemTypeContains(throwingWeaponItemTypes))
+                if (!Unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped || !Unit.BeltInventoryManager.ContainsItemData(ItemDataToThrow) || !Unit.BeltInventoryManager.ParentInventory.AllowedItemTypeContains(throwingWeaponItemTypes))
                     Unit.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(ItemDataToThrow, 1, ItemDataToThrow.MyInventory is ContainerInventory ? ItemDataToThrow.MyInventory.ContainerInventory.containerInventoryManager : null);
 
                 if (ItemDataToThrow.CurrentStackSize > 1)
@@ -289,7 +289,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override string ActionName()
         {
-            if (Unit.UnitEquipment.MeleeWeaponEquipped && !Unit.UnitEquipment.IsDualWielding && (!Unit.UnitEquipment.BeltBagEquipped() || !Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) || !Unit.BeltInventoryManager.ContainsAnyItems()))
+            if (Unit.UnitEquipment.MeleeWeaponEquipped && !Unit.UnitEquipment.IsDualWielding && (!Unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped || !Unit.BeltInventoryManager.AllowedItemTypeContains(throwingWeaponItemTypes) || !Unit.BeltInventoryManager.ContainsAnyItems()))
                 return $"Throw {Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}";
             return "Throw Item";
         }

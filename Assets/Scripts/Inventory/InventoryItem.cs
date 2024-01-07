@@ -86,9 +86,9 @@ namespace InventorySystem
             if (mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = (EquipmentSlot)mySlot;
-                if (UnitEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
-                    && ((myEquipmentSlot.UnitEquipment.CurrentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
-                    || (myEquipmentSlot.UnitEquipment.CurrentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2)))
+                if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
+                    && ((myEquipmentSlot.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
+                    || (myEquipmentSlot.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2)))
                 {
                     DisableIconImage();
                 }

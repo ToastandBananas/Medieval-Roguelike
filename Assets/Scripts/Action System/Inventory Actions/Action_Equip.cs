@@ -53,9 +53,9 @@ namespace UnitSystem.ActionSystem.Actions
         {
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault();
             EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
-            if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
+            if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(targetEquipSlot))
             {
-                if (Unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
+                if (Unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (targetEquipSlot == EquipSlot.LeftHeldItem2)
                         targetEquipSlot = EquipSlot.LeftHeldItem1;
@@ -88,7 +88,7 @@ namespace UnitSystem.ActionSystem.Actions
             float costMultiplier = 1f;
             if (itemData.Item is Item_Equipment)
             {
-                if (UnitEquipment.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
+                if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
                 {
                     if (itemData.Item is Item_Weapon)
                         costMultiplier = 0.4f;

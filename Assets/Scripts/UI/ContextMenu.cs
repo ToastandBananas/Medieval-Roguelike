@@ -106,8 +106,8 @@ namespace GeneralUI
                 if (TargetSlot is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlot = TargetSlot as EquipmentSlot;
-                    if (UnitEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot) == false)
-                        TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.GetOppositeHeldItemEquipSlot(equipmentSlot.EquipSlot));
+                    if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && !equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot))
+                        TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.HumanoidEquipment.GetOppositeHeldItemEquipSlot(equipmentSlot.EquipSlot));
                 }
             }
 
@@ -185,7 +185,7 @@ namespace GeneralUI
         static void CreateReloadButtons(out int buttonCount)
         {
             buttonCount = 0;
-            if (UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false || UnitManager.player.UnitEquipment.QuiverEquipped() == false)
+            if (!UnitManager.player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped() || !UnitManager.player.UnitEquipment.HumanoidEquipment.QuiverEquipped)
                 return;
 
             List<ItemData> uniqueProjectileTypes = ListPool<ItemData>.Claim();
@@ -302,7 +302,7 @@ namespace GeneralUI
             else
                 targetGridPosition = WorldMouse.CurrentGridPosition();
 
-            if (LevelGrid.IsValidGridPosition(targetGridPosition) == false)
+            if (!LevelGrid.IsValidGridPosition(targetGridPosition))
                 return;
 
             GetContextMenuButton().SetupMoveToButton(targetGridPosition);
@@ -310,12 +310,12 @@ namespace GeneralUI
 
         static void CreateAttackButton()
         {
-            if (TargetUnit == null || TargetUnit.HealthSystem.IsDead || UnitManager.player.Vision.IsVisible(TargetUnit) == false
-                || (UnitManager.player.UnitEquipment.MeleeWeaponEquipped == false && (UnitManager.player.UnitEquipment.RangedWeaponEquipped == false || UnitManager.player.UnitEquipment.HasValidAmmunitionEquipped() == false) && UnitManager.player.Stats.CanFightUnarmed == false))
+            if (TargetUnit == null || TargetUnit.HealthSystem.IsDead || !UnitManager.player.Vision.IsVisible(TargetUnit)
+                || (!UnitManager.player.UnitEquipment.MeleeWeaponEquipped && (!UnitManager.player.UnitEquipment.RangedWeaponEquipped || !UnitManager.player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped()) && !UnitManager.player.Stats.CanFightUnarmed))
                 return;
 
             Action_Base selectedAction = UnitManager.player.SelectedAction;
-            if ((selectedAction is Action_Move == false && selectedAction.IsDefaultAttackAction == false) || (TargetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
+            if ((selectedAction is Action_Move == false && !selectedAction.IsDefaultAttackAction) || (TargetUnit.IsCompletelySurrounded(UnitManager.player.GetAttackRange()) && UnitManager.player.GetAttackRange() < 2f))
                 return;
 
             GetContextMenuButton().SetupAttackButton();
@@ -354,18 +354,18 @@ namespace GeneralUI
             {
                 // Skip if this is the backpack itself
                 ContainerInventory containerInventory = itemData.MyInventory as ContainerInventory;
-                if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.BackpackEquipped())
+                if (containerInventory.containerInventoryManager != UnitManager.player.BackpackInventoryManager && UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.HumanoidEquipment.BackpackEquipped)
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
 
-                if (containerInventory.containerInventoryManager != UnitManager.player.BeltInventoryManager && UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                if (containerInventory.containerInventoryManager != UnitManager.player.BeltInventoryManager && UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
                     GetContextMenuButton().SetupAddToBeltBagButton(itemData);
             }
             else
             {
-                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.BackpackEquipped())
+                if (UnitManager.player.BackpackInventoryManager != null && UnitManager.player.UnitEquipment.HumanoidEquipment.BackpackEquipped)
                     GetContextMenuButton().SetupAddToBackpackButton(itemData);
 
-                if (UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                if (UnitManager.player.BeltInventoryManager != null && UnitManager.player.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
                     GetContextMenuButton().SetupAddToBeltBagButton(itemData);
             }
         }

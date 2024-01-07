@@ -282,21 +282,24 @@ namespace UnitSystem
             float torqueMagnitude = Random.Range(100, 500); // Adjust this value as needed
             unit.RigidBody.AddTorque(torqueDirection * torqueMagnitude, ForceMode.Impulse);
 
-            if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
+            if (unit.UnitEquipment != null && unit.UnitEquipment is UnitEquipment_Humanoid)
             {
-                Item_Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Item_Helm;
-                if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 1f) <= helm.FallOffOnDeathChance)
-                    DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
+                if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
+                {
+                    Item_Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Item_Helm;
+                    if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 1f) <= helm.FallOffOnDeathChance)
+                        DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
+                }
+
+                if (unit.UnitMeshManager.leftHeldItem != null)
+                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
+
+                if (unit.UnitMeshManager.rightHeldItem != null)
+                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
+
+                // Swap to the other weapon set so that when we go to loot this Unit's body, it will show the items in their equipment
+                unit.UnitEquipment.HumanoidEquipment.SwapWeaponSet();
             }
-
-            if (unit.UnitMeshManager.leftHeldItem != null)
-                DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
-
-            if (unit.UnitMeshManager.rightHeldItem != null)
-                DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
-
-            // Swap to the other weapon set so that when we go to loot this Unit's body, it will show the items in their equipment
-            unit.UnitEquipment.SwapWeaponSet();
         }
 
         IEnumerator Die_RotateHead(bool diedForward)

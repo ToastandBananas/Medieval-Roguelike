@@ -1,6 +1,5 @@
 using InteractableObjects;
 using UnitSystem;
-using UnitSystem.ActionSystem;
 using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ namespace InventorySystem
             if (itemData == null || itemData.Item == null)
                 return false;
 
-            if (itemData.Item is Item_Ammunition && quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped() && quiverInventoryManager.TryAddItem(itemData, unit))
+            if (itemData.Item is Item_Ammunition && quiverInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.QuiverEquipped && quiverInventoryManager.TryAddItem(itemData, unit))
             {
                 if (unit.UnitEquipment.SlotVisualsCreated)
                     unit.UnitEquipment.GetEquipmentSlot(EquipSlot.Quiver).InventoryItem.QuiverInventoryItem.UpdateQuiverSprites();
@@ -37,7 +36,7 @@ namespace InventorySystem
                 return true;
             }
                 
-            if (Action_Throw.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            if (Action_Throw.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 // We need to check each belt bag inventory's allowed item types separately, to ensure that they are specifically throwing weapon inventories, before trying to add the throwing weapon
                 if (beltInventoryManager.ParentInventory != null && beltInventoryManager.ParentInventory.AllowedItemTypeContains(Action_Throw.throwingWeaponItemTypes) && beltInventoryManager.ParentInventory.ItemTypeAllowed(itemData.Item.ItemType) && beltInventoryManager.ParentInventory.TryAddItem(itemData, unit))
@@ -54,10 +53,10 @@ namespace InventorySystem
                 return true;
             
             // Try putting the item in belt bags first so that smaller items favor belt bags
-            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
+            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
                     return true;
 
-            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped() && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
+            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
                     return true;
 
             return false;
@@ -68,7 +67,7 @@ namespace InventorySystem
             if (mainInventory.ItemDatas.Contains(itemData))
                 return true;
 
-            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped())
+            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
             {
                 if (backpackInventoryManager.ParentInventory.ItemDatas.Contains(itemData))
                     return true;
@@ -80,7 +79,7 @@ namespace InventorySystem
                 }
             }
 
-            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 if (beltInventoryManager.ParentInventory.ItemDatas.Contains(itemData))
                     return true;
@@ -92,7 +91,7 @@ namespace InventorySystem
                 }
             }
 
-            if (quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped())
+            if (quiverInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
             {
                 if (quiverInventoryManager.ParentInventory.ItemDatas.Contains(itemData))
                     return true;
@@ -119,7 +118,7 @@ namespace InventorySystem
                 }
             }
 
-            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped())
+            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
             {
                 for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
@@ -143,7 +142,7 @@ namespace InventorySystem
                 }
             }
 
-            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
                 {
@@ -180,7 +179,7 @@ namespace InventorySystem
                 weight += mainInventory.ItemDatas[i].Weight();
             }
 
-            if (backpackInventoryManager != null && unit.UnitEquipment.BackpackEquipped())
+            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
             {
                 float backpackItemsWeight = 0f;
                 for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
@@ -200,7 +199,7 @@ namespace InventorySystem
                 weight += backpackItemsWeight;
             }
 
-            if (beltInventoryManager != null && unit.UnitEquipment.BeltBagEquipped())
+            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 float beltItemsWeight = 0f;
                 for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
@@ -220,7 +219,7 @@ namespace InventorySystem
                 weight += beltItemsWeight;
             }
 
-            if (quiverInventoryManager != null && unit.UnitEquipment.QuiverEquipped())
+            if (quiverInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
             {
                 float quiverItemsWeight = 0f;
                 for (int i = 0; i < quiverInventoryManager.ParentInventory.ItemDatas.Count; i++)

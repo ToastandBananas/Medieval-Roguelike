@@ -54,10 +54,10 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 float minShootRange = unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
 
                 // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces or switch to a melee weapon
-                if ((closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance) || !unit.UnitEquipment.HasValidAmmunitionEquipped())
+                if ((closestEnemy != null && Vector3.Distance(unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance) || !unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                 {
                     // If the Unit has a melee weapon, switch to it
-                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    if (unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsMelee())
                     {
                         npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         return;
@@ -243,7 +243,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 else
                 {
                     npcAIActions.Clear();
-                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (unit.UnitEquipment.RangedWeaponEquipped && unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     {
                         Action_Shoot shootAction = npcActionHandler.GetAction<Action_Shoot>();
                         for (int i = 0; i < unit.Vision.knownEnemies.Count; i++)

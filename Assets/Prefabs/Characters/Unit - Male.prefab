@@ -1104,7 +1104,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5035960481434889620}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b2ff79b5fcdc604e96940b3d3c4f9bc, type: 3}
+  m_Script: {fileID: 11500000, guid: 3e00d5c8bdc610845b8cfcac0039bb1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   myUnit: {fileID: 4471245059765168945}
@@ -1395,53 +1395,7 @@ MonoBehaviour:
     protection: 0
     value: 0
     hasBeenRandomized: 0
-  - item: {fileID: 0}
-    currentStackSize: 1
-    remainingUses: 1
-    maxDurability: 0
-    currentDurability: 0
-    minDamage: 0
-    maxDamage: 0
-    throwingDamageMultiplier: 0
-    unarmedDamageMultiplier: 0
-    effectivenessAgainstArmor: 0
-    armorPierce: 0
-    accuracyModifier: 0
-    fumbleChanceModifier: 0
-    attackKnockbackChanceModifier: 0
-    knockbackChanceModifier: 0
-    blockPower: 0
-    blockChanceModifier: 0
-    defense: 0
-    dodgeChanceModifier: 0
-    protection: 0
-    value: 0
-    hasBeenRandomized: 0
-  - item: {fileID: 0}
-    currentStackSize: 1
-    remainingUses: 1
-    maxDurability: 0
-    currentDurability: 0
-    minDamage: 0
-    maxDamage: 0
-    throwingDamageMultiplier: 0
-    unarmedDamageMultiplier: 0
-    effectivenessAgainstArmor: 0
-    armorPierce: 0
-    accuracyModifier: 0
-    fumbleChanceModifier: 0
-    attackKnockbackChanceModifier: 0
-    knockbackChanceModifier: 0
-    blockPower: 0
-    blockChanceModifier: 0
-    defense: 0
-    dodgeChanceModifier: 0
-    protection: 0
-    value: 0
-    hasBeenRandomized: 0
   startingEquipment:
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

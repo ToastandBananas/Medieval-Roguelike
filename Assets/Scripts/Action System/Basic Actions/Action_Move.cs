@@ -386,7 +386,7 @@ namespace UnitSystem.ActionSystem.Actions
 
             if (Unit.IsPlayer && Unit.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_BaseAttack)
                 Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.PlayerActionHandler.SelectedAction.BaseAttackAction.GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));
-            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+            else if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                 Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.GetAction<Action_Shoot>().GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));
             else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
                 Unit.UnitActionHandler.MoveAction.QueueAction(Unit.UnitActionHandler.GetAction<Action_Melee>().GetNearestAttackPosition(Unit.GridPosition, Unit.UnitActionHandler.TargetEnemyUnit));

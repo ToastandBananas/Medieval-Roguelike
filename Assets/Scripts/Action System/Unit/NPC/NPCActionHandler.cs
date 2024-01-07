@@ -135,7 +135,7 @@ namespace UnitSystem.ActionSystem
                         return;
                     }
 
-                    if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HasValidAmmunitionEquipped())
+                    if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     {
                         Unit closestEnemy = Unit.Vision.GetClosestEnemy(true);
                         float minShootRange = Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
@@ -143,7 +143,7 @@ namespace UnitSystem.ActionSystem
                         // If the closest enemy is too close and this Unit doesn't have a melee weapon, retreat back a few spaces
                         if (Vector3.Distance(Unit.WorldPosition, closestEnemy.WorldPosition) < minShootRange + LevelGrid.diaganolDistance)
                         {
-                            if (Unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                            if (Unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsMelee())
                             {
                                 GetAction<Action_SwapWeaponSet>().QueueAction();
                                 return;

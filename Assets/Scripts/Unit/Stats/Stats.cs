@@ -334,15 +334,15 @@ namespace UnitSystem
                 modifier -= baseModifier * attackActionUsed.AccuracyModifier();
                 if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
                     modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
-            }
 
-            // Weapon skill effectiveness is reduced when dual wielding
-            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
-            {
-                if (attackerUsingOffhand)
-                    modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
-                else
-                    modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
+                // Weapon skill effectiveness is reduced when dual wielding
+                if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
+                {
+                    if (attackerUsingOffhand)
+                        modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
+                    else
+                        modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
+                }
             }
 
             if (modifier < 0f)
@@ -408,7 +408,7 @@ namespace UnitSystem
             // Dodge chance affected by height differences between this Unit and the attackingUnit
             dodgeChance += baseDodgeChance * accuracyModifierPerHeightDifference * TacticsUtilities.CalculateHeightDifferenceToTarget(unit.GridPosition, attackingUnit.GridPosition);
 
-            if (unit.UnitEquipment != null)
+            if (unit.UnitEquipment != null && unit.UnitEquipment is UnitEquipment_Humanoid)
             {
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
                     dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DodgeChanceModifier;
@@ -461,17 +461,17 @@ namespace UnitSystem
             {
                 modifier -= baseModifier * weaponAttackingWith.ItemData.AccuracyModifier;
                 modifier -= baseModifier * attackActionUsed.AccuracyModifier();
-                if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
+                if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment is UnitEquipment_Humanoid && attackingUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
                     modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
-            }
 
-            // Weapon skill effectiveness is reduced when dual wielding
-            if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
-            {
-                if (attackerUsingOffhand)
-                    modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
-                else
-                    modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
+                // Weapon skill effectiveness is reduced when dual wielding
+                if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
+                {
+                    if (attackerUsingOffhand)
+                        modifier += baseModifier * (1f - Item_Weapon.dualWieldSecondaryEfficiency);
+                    else
+                        modifier += baseModifier * (1f - Item_Weapon.dualWieldPrimaryEfficiency);
+                }
             }
 
             if (modifier < 0f)
@@ -487,7 +487,7 @@ namespace UnitSystem
             float hitChance = 0f;
             if (actionToUse.IsMeleeAttackAction())
             {
-                if (unit.UnitEquipment != null)
+                if (unit.UnitEquipment != null && unit.UnitEquipment is UnitEquipment_Humanoid)
                 {
                     if (unit.UnitEquipment.IsDualWielding)
                     {
@@ -628,7 +628,7 @@ namespace UnitSystem
             knockbackChance += strength.GetValue() / 100f * 0.25f;
             knockbackChance -= targetUnit.Stats.strength.GetValue() / 100f * 0.25f;
 
-            if (targetUnit.UnitEquipment != null)
+            if (targetUnit.UnitEquipment != null && targetUnit.UnitEquipment is UnitEquipment_Humanoid)
             {
                 if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
                     knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].KnockbackChanceModifier;

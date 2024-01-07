@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             }
 
             // If no weapons whatsoever are equipped
-            if (!unit.UnitEquipment.OtherWeaponSet_IsEmpty() && !unit.UnitEquipment.OtherWeaponSet_IsRanged())
+            if (!unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsEmpty() && !unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsRanged())
             {
                 // Equip any weapon from their inventory if they have one
                 if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
@@ -69,7 +69,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                 // Swap to their melee weapon set if they have one
                 if (distanceToTargetEnemy <= npcActionHandler.GoalPlanner.FightAction.DistanceToPreferMeleeCombat)
                 {
-                    if (unit.UnitEquipment.OtherWeaponSet_IsMelee())
+                    if (unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsMelee())
                     {
                         npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         return;
@@ -86,7 +86,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     }
                 }
                 // Else, swap to their ranged weapon set if they have ammo
-                else if (unit.UnitEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.GetRangedWeaponFromOtherWeaponSet().Item as Item_RangedWeapon))
+                else if (unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsRanged() && unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped(unit.UnitEquipment.HumanoidEquipment.GetRangedWeaponFromOtherWeaponSet().Item as Item_RangedWeapon))
                 {
                     npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                     return;
@@ -122,7 +122,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
 
             if (closestLooseWeapon.ItemData.Item is Item_RangedWeapon)
             {
-                if (unit.UnitEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon))
+                if (unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped(closestLooseWeapon.ItemData.Item.RangedWeapon))
                 {
                     foundLooseWeapon = closestLooseWeapon;
                     distanceToWeapon = distanceToClosestWeapon;

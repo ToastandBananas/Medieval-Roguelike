@@ -18,14 +18,14 @@ namespace UnitSystem.ActionSystem.Actions
 
         public override void TakeAction()
         {
-            Unit.UnitEquipment.SwapWeaponSet();
+            Unit.UnitEquipment.HumanoidEquipment.SwapWeaponSet();
             CompleteAction();
         }
 
         public override int ActionPointsCost()
         {
             int cost = 0;
-            if (Unit.UnitEquipment.CurrentWeaponSet == WeaponSet.One) // Weapon Set 1 --> Weapon Set 2
+            if (Unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One) // Weapon Set 1 --> Weapon Set 2
             {
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                     cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1], 1, null);

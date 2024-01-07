@@ -20,9 +20,9 @@ namespace UnitSystem.ActionSystem.Actions
         public override int ActionPointsCost()
         {
             float cost;
-            if (Unit.UnitEquipment != null)
+            if (Unit.UnitEquipment != null && Unit.UnitEquipment is UnitEquipment_Humanoid)
             {
-                Unit.UnitEquipment.GetEquippedWeapons(out Item_Weapon primaryWeapon, out Item_Weapon secondaryWeapon);
+                Unit.UnitEquipment.HumanoidEquipment.GetEquippedWeapons(out Item_Weapon primaryWeapon, out Item_Weapon secondaryWeapon);
                 if (primaryWeapon != null)
                 {
                     if (secondaryWeapon != null)
@@ -36,7 +36,7 @@ namespace UnitSystem.ActionSystem.Actions
                 else
                     cost = baseAPCost * ActionPointCostModifier_WeaponType(null);
 
-                if (Unit.UnitEquipment.InVersatileStance)
+                if (Unit.UnitEquipment.HumanoidEquipment.InVersatileStance)
                     cost *= Action_VersatileStance.APCostModifier;
             }
             else

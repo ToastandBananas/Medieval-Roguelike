@@ -221,7 +221,7 @@ namespace UnitSystem.ActionSystem
                             }
                         }
                         // If the player has a ranged weapon equipped and the target enemy is within attack range
-                        else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+                        else if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                         {
                             // Do nothing if the target unit is dead
                             if (unitAtGridPosition.HealthSystem.IsDead)
@@ -274,7 +274,7 @@ namespace UnitSystem.ActionSystem
                         if (selectedAction.IsDefaultAttackAction || selectedAction is Action_Move)
                         {
                             // If the player has a ranged weapon equipped, find the nearest possible Shoot Action attack position
-                            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && selectedAction is Action_Melee == false)
+                            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped() && selectedAction is Action_Melee == false)
                             {
                                 if (player.UnitActionHandler.MoveAction.CanMove)
                                     player.UnitActionHandler.MoveAction.QueueAction(player.UnitActionHandler.GetAction<Action_Shoot>().GetNearestAttackPosition(player.GridPosition, unitAtGridPosition));
@@ -412,7 +412,7 @@ namespace UnitSystem.ActionSystem
 
                                 if (HighlightedUnit != player && !HighlightedUnit.HealthSystem.IsDead && player.Alliance.IsEnemy(HighlightedUnit) && player.Vision.IsVisible(HighlightedUnit))
                                 {
-                                    if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+                                    if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
                                     else
                                         TooltipManager.ShowUnitHitChanceTooltips(targetUnit.GridPosition, player.UnitActionHandler.GetAction<Action_Melee>());
@@ -443,7 +443,7 @@ namespace UnitSystem.ActionSystem
                             
                             if (unitAtGridPosition != player && HighlightedUnit != unitAtGridPosition && !unitAtGridPosition.HealthSystem.IsDead && player.Vision.IsVisible(unitAtGridPosition))
                             {
-                                if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped())
+                                if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Shoot>());
                                 else
                                     TooltipManager.ShowUnitHitChanceTooltips(unitAtGridPosition.GridPosition, player.UnitActionHandler.GetAction<Action_Melee>());
@@ -523,7 +523,7 @@ namespace UnitSystem.ActionSystem
 
         void SetAttackCursor()
         {
-            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
+            if (player.UnitEquipment.RangedWeaponEquipped && player.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped() && player.UnitActionHandler.PlayerActionHandler.SelectedAction is Action_Melee == false)
                 WorldMouse.ChangeCursor(CursorState.RangedAttack);
             else if (player.UnitEquipment.MeleeWeaponEquipped || player.Stats.CanFightUnarmed)
                 WorldMouse.ChangeCursor(CursorState.MeleeAttack);

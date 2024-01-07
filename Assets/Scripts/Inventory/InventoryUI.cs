@@ -171,7 +171,7 @@ namespace InventorySystem
                         else if (activeSlot is EquipmentSlot)
                         {
                             // If drag/dropping an item onto an equipped backpack
-                            if ((draggedItem.ItemData.Item is Item_Equipment == false || draggedItem.ItemData.Item.Equipment.EquipSlot != EquipSlot.Back) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Back && UnitManager.player.UnitEquipment.BackpackEquipped())
+                            if ((draggedItem.ItemData.Item is Item_Equipment == false || draggedItem.ItemData.Item.Equipment.EquipSlot != EquipSlot.Back) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Back && UnitManager.player.UnitEquipment.HumanoidEquipment.BackpackEquipped)
                             {
                                 if (UnitManager.player.BackpackInventoryManager.TryAddItem(draggedItem.ItemData, UnitManager.player))
                                 {
@@ -181,7 +181,7 @@ namespace InventorySystem
                                 else
                                     ReplaceDraggedItem();
                             }
-                            else if ((draggedItem.ItemData.Item is Item_Equipment == false || draggedItem.ItemData.Item.Equipment.EquipSlot != EquipSlot.Belt) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt && UnitManager.player.UnitEquipment.BeltBagEquipped())
+                            else if ((draggedItem.ItemData.Item is Item_Equipment == false || draggedItem.ItemData.Item.Equipment.EquipSlot != EquipSlot.Belt) && activeSlot.EquipmentSlot.EquipSlot == EquipSlot.Belt && UnitManager.player.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
                             {
                                 if (UnitManager.player.BeltInventoryManager.TryAddItem(draggedItem.ItemData, UnitManager.player))
                                 {

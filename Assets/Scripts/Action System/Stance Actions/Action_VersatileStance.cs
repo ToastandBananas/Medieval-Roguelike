@@ -36,7 +36,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         public void SwitchVersatileStance()
         {
-            if (Unit.UnitEquipment.IsDualWielding || Unit.UnitEquipment.MeleeWeaponEquipped == false)
+            if (Unit.UnitEquipment.IsDualWielding || !Unit.UnitEquipment.MeleeWeaponEquipped)
                 return;
 
             HeldMeleeWeapon primaryHeldMeleeWeapon = Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon();

@@ -21,7 +21,7 @@ namespace InventorySystem
         {
             HideQuiverSprites();
 
-            if (MyUnitEquipment == null || MyUnitEquipment.MyUnit.UnitEquipment.QuiverEquipped() == false)
+            if (MyUnitEquipment == null || !MyUnitEquipment.MyUnit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
                 return;
 
             int spriteCount = 0;

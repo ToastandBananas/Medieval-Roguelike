@@ -90,15 +90,18 @@ namespace UnitSystem.ActionSystem.Actions
             if (heldItemAttackingWith != null)
             {
                 baseDamage = heldItemAttackingWith.Damage;
-                if (Unit.UnitEquipment.IsDualWielding)
+                if (Unit.UnitEquipment is UnitEquipment_Humanoid)
                 {
-                    if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData)
-                        baseDamage *= Item_Weapon.dualWieldPrimaryEfficiency;
-                    else
-                        baseDamage *= Item_Weapon.dualWieldSecondaryEfficiency;
+                    if (Unit.UnitEquipment.IsDualWielding)
+                    {
+                        if (heldItemAttackingWith == Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData)
+                            baseDamage *= Item_Weapon.dualWieldPrimaryEfficiency;
+                        else
+                            baseDamage *= Item_Weapon.dualWieldSecondaryEfficiency;
+                    }
+                    else if (Unit.UnitEquipment.HumanoidEquipment.InVersatileStance)
+                        baseDamage *= Action_VersatileStance.damageModifier;
                 }
-                else if (Unit.UnitEquipment.InVersatileStance)
-                    baseDamage *= Action_VersatileStance.damageModifier;
             }
             else if (itemDataHittingWith != null && itemDataHittingWith.Item != null)
                 baseDamage = itemDataHittingWith.Damage;

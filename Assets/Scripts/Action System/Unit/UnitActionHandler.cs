@@ -255,7 +255,8 @@ namespace UnitSystem.ActionSystem
                 if (Unit.UnitEquipment.RangedWeaponEquipped && GetAction<Action_Shoot>().IsValidAction() && Unit.SelectedAction is Action_Melee == false && GetAction<Action_Shoot>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
 
-                if ((Unit.SelectedAction is Action_Melee || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.Stats.CanFightUnarmed && (Unit.UnitEquipment.RangedWeaponEquipped == false || Unit.UnitEquipment.HasValidAmmunitionEquipped() == false))) && GetAction<Action_Melee>().IsValidAction() && GetAction<Action_Melee>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
+                if ((Unit.SelectedAction is Action_Melee || Unit.UnitEquipment.MeleeWeaponEquipped || (Unit.Stats.CanFightUnarmed && (!Unit.UnitEquipment.RangedWeaponEquipped || !Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped()))) 
+                    && GetAction<Action_Melee>().IsValidAction() && GetAction<Action_Melee>().IsInAttackRange(targetUnit, Unit.GridPosition, targetUnit.GridPosition))
                     return true;
             }
             else

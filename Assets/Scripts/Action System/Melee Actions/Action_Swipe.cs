@@ -24,7 +24,7 @@ namespace UnitSystem.ActionSystem.Actions
             {
                 cost = baseAPCost * ActionPointCostModifier_WeaponType(Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Weapon);
 
-                if (Unit.UnitEquipment.InVersatileStance)
+                if (Unit.UnitEquipment.HumanoidEquipment.InVersatileStance)
                     cost *= 1.35f;
             }
             else

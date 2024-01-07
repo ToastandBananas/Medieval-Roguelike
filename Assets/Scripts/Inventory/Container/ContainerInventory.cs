@@ -27,12 +27,19 @@ namespace InventorySystem
                 SetupInventoryLayoutFromItem(looseItem.ItemData.Item);
             else if (myUnit != null) 
             {
-                if (containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.BackpackEquipped())
-                    SetupInventoryLayoutFromItem((Item_Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
-                else if (containerInventoryManager == myUnit.BeltInventoryManager && myUnit.UnitEquipment.BeltBagEquipped())
-                    SetupInventoryLayoutFromItem((Item_Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
-                else if (containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.QuiverEquipped())
-                    SetupInventoryLayoutFromItem((Item_Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+                if (myUnit.UnitEquipment is UnitEquipment_Humanoid)
+                {
+                    if (containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
+                        SetupInventoryLayoutFromItem((Item_Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+                    else if (containerInventoryManager == myUnit.BeltInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
+                        SetupInventoryLayoutFromItem((Item_Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
+                    else if (containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
+                        SetupInventoryLayoutFromItem((Item_Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+                }
+                else
+                {
+                    Debug.LogWarning("Code not created for " + myUnit.UnitEquipment.GetType().Name);
+                }
             }
 
             if (slotCoordinates == null)

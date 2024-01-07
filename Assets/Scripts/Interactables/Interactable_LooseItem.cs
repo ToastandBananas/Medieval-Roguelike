@@ -101,13 +101,13 @@ namespace InteractableObjects
                     return false;
 
                 // Don't equip a second weapon or a shield if the character is in Versatile Stance
-                if (unitPickingUpItem.UnitEquipment.InVersatileStance)
+                if (unitPickingUpItem.UnitEquipment.HumanoidEquipment.InVersatileStance)
                     return false;
 
                 EquipSlot targetEquipSlot = itemData.Item.Equipment.EquipSlot;
                 if (itemData.Item is Item_HeldEquipment)
                 {
-                    if (unitPickingUpItem.UnitEquipment.CurrentWeaponSet == WeaponSet.Two)
+                    if (unitPickingUpItem.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.Two)
                     {
                         if (targetEquipSlot == EquipSlot.LeftHeldItem1)
                             targetEquipSlot = EquipSlot.LeftHeldItem2;
@@ -120,7 +120,7 @@ namespace InteractableObjects
 
                     if (unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) || !unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, targetEquipSlot, false))
                     {
-                        EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.GetOppositeHeldItemEquipSlot(targetEquipSlot);
+                        EquipSlot oppositeEquipSlot = unitPickingUpItem.UnitEquipment.HumanoidEquipment.GetOppositeHeldItemEquipSlot(targetEquipSlot);
                         if ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && !unitPickingUpItem.UnitEquipment.EquipSlotIsFull(oppositeEquipSlot) && unitPickingUpItem.UnitEquipment.CapableOfEquippingHeldItem(itemData, oppositeEquipSlot, false))
                         {
                             equipped = true;

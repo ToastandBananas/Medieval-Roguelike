@@ -432,7 +432,7 @@ namespace GeneralUI
                 EquipmentSlot equipmentSlot = null;
                 if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 {
-                    if (UnitManager.player.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
+                    if (UnitManager.player.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                     {
                         if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
                             equipmentSlot = UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.LeftHeldItem1);
@@ -469,7 +469,7 @@ namespace GeneralUI
             else // Second weapon tooltip (always right hand weapon)
             {
                 EquipmentSlot equipmentSlot = null;
-                if (UnitManager.player.UnitEquipment.CurrentWeaponSet == WeaponSet.One)
+                if (UnitManager.player.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
                     if (UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
                         equipmentSlot = UnitManager.player.UnitEquipment.GetEquipmentSlot(EquipSlot.RightHeldItem1);

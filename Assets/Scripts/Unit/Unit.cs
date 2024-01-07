@@ -129,7 +129,10 @@ namespace UnitSystem
 
         public float GetAttackRange()
         {
-            if (myUnitEquipment.RangedWeaponEquipped && myUnitEquipment.HasValidAmmunitionEquipped())
+            if (myUnitEquipment is UnitEquipment_Humanoid == false)
+                return Stats.UnarmedAttackRange;
+
+            if (myUnitEquipment.RangedWeaponEquipped && myUnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                 return UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MaxRange;
             else if (myUnitEquipment.IsDualWielding)
             {
