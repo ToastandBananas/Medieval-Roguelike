@@ -22,7 +22,7 @@ namespace InventorySystem
         [SerializeField] RectTransform middleSectionRectTransform;
         [SerializeField] RectTransform rightSectionRectTransform;
 
-        public ContainerInventoryManager containerInventoryManager { get; private set; }
+        public InventoryManager_Container containerInventoryManager { get; private set; }
 
         readonly int minWidth = 260;
 

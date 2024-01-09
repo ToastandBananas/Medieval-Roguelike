@@ -205,9 +205,9 @@ namespace GeneralUI
                 }
                 else if (ContextMenu.TargetInteractable != null || (ContextMenu.TargetSlot != null && (ContextMenu.TargetSlot is EquipmentSlot == false || ContextMenu.TargetSlot.InventoryItem.MyUnitEquipment != UnitManager.player.UnitEquipment)))
                 {
-                    if (itemData.Item is Item_Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item is Item_Quiver)
+                    if (itemData.Item is Item_Ammunition && UnitManager.player.UnitEquipment.EquipSlotHasItem(EquipSlot.Quiver) && UnitManager.player.UnitEquipment.EquippedItemData(EquipSlot.Quiver).Item is Item_Quiver)
                     {
-                        Item_Quiver quiver = UnitManager.player.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item as Item_Quiver;
+                        Item_Quiver quiver = UnitManager.player.UnitEquipment.EquippedItemData(EquipSlot.Quiver).Item as Item_Quiver;
                         if (quiver.AllowedProjectileType == itemData.Item.Ammunition.ProjectileType)
                             SetupButton("Add to Quiver", delegate { UseItem(itemData); });
                         else

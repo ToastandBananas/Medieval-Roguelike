@@ -19,7 +19,7 @@ namespace InventorySystem
             EquipSlot targetEquipSlot = equipSlot;
             if (itemData.Item is Item_HeldEquipment && (!unit.UnitEquipment.CapableOfEquippingHeldItem(itemData, equipSlot, false)
                 || ((itemData.Item is Item_Weapon == false || !itemData.Item.Weapon.IsTwoHanded) && unit.UnitEquipment.EquipSlotHasItem(targetEquipSlot)
-                    && (unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].Item is Item_Weapon == false || !unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlot].Item.Weapon.IsTwoHanded))))
+                    && (unit.UnitEquipment.EquippedItemData(targetEquipSlot).Item is Item_Weapon == false || !unit.UnitEquipment.EquippedItemData(targetEquipSlot).Item.Weapon.IsTwoHanded))))
             {
                 EquipSlot oppositeEquipSlot = unit.UnitEquipment.HumanoidEquipment.GetOppositeHeldItemEquipSlot(equipSlot);
                 if (unit.UnitEquipment.CapableOfEquippingHeldItem(itemData, oppositeEquipSlot, false))
@@ -29,7 +29,7 @@ namespace InventorySystem
             bool canEquipItem = unit.UnitEquipment.CanEquipItemAt(itemData, targetEquipSlot);
             if (canEquipItem)
             {
-                ContainerInventoryManager itemsContainerInventoryManager = null;
+                InventoryManager_Container itemsContainerInventoryManager = null;
                 if (slotUsingFrom != null && slotUsingFrom is ContainerEquipmentSlot)
                     itemsContainerInventoryManager = slotUsingFrom.EquipmentSlot.ContainerEquipmentSlot.containerInventoryManager;
                 else if (looseItemUsing != null && looseItemUsing is Interactable_LooseContainerItem)

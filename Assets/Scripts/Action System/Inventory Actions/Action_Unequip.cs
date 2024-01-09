@@ -7,11 +7,11 @@ namespace UnitSystem.ActionSystem.Actions
     public class Action_Unequip : Action_BaseInventory
     {
         readonly List<EquipSlot> targetEquipSlots = new();
-        ContainerInventoryManager itemsContainerInventoryManager;
+        InventoryManager_Container itemsContainerInventoryManager;
 
         static readonly float unequipAPCostMultiplier = 0.75f;
 
-        public void QueueAction(EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
+        public void QueueAction(EquipSlot targetEquipSlot, InventoryManager_Container itemsContainerInventoryManager)
         {
             this.itemsContainerInventoryManager = itemsContainerInventoryManager;
 
@@ -34,7 +34,7 @@ namespace UnitSystem.ActionSystem.Actions
             targetEquipSlots.RemoveAt(0);
         }
 
-        public static int GetItemsUnequipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
+        public static int GetItemsUnequipActionPointCost(ItemData itemData, int stackSize, InventoryManager_Container itemsContainerInventoryManager)
         {
             // Debug.Log($"Unequip Cost of {itemData.Item.Name}: {Mathf.RoundToInt(EquipAction.GetItemsEquipActionPointCost(itemData, stackSize) * unequipActionPointCostMultiplier)}");
             return Mathf.RoundToInt(Action_Equip.GetItemsEquipActionPointCost(itemData, stackSize, itemsContainerInventoryManager) * unequipAPCostMultiplier);
@@ -44,7 +44,7 @@ namespace UnitSystem.ActionSystem.Actions
         {
             int cost = 0;
             if (Unit.UnitEquipment.EquipSlotIsFull(targetEquipSlots[targetEquipSlots.Count - 1]))
-                cost += GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]], Unit.UnitEquipment.EquippedItemDatas[(int)targetEquipSlots[targetEquipSlots.Count - 1]].CurrentStackSize, itemsContainerInventoryManager);
+                cost += GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemData(targetEquipSlots[targetEquipSlots.Count - 1]), Unit.UnitEquipment.EquippedItemData(targetEquipSlots[targetEquipSlots.Count - 1]).CurrentStackSize, itemsContainerInventoryManager);
             else
                 Debug.LogWarning($"{targetEquipSlots[targetEquipSlots.Count - 1]} is not full, yet {Unit.name} is trying to unequip from it...");
 

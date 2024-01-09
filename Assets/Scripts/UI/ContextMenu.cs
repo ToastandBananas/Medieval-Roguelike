@@ -106,7 +106,7 @@ namespace GeneralUI
                 if (TargetSlot is EquipmentSlot)
                 {
                     EquipmentSlot equipmentSlot = TargetSlot as EquipmentSlot;
-                    if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && !equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot))
+                    if (UnitEquipment.IsHeldItemEquipSlot(equipmentSlot.EquipSlot) && equipmentSlot.IsFull() && !equipmentSlot.UnitEquipment.EquipSlotHasItem(equipmentSlot.EquipSlot))
                         TargetSlot = equipmentSlot.UnitEquipment.GetEquipmentSlot(equipmentSlot.UnitEquipment.HumanoidEquipment.GetOppositeHeldItemEquipSlot(equipmentSlot.EquipSlot));
                 }
             }

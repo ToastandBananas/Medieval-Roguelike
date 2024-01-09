@@ -43,15 +43,15 @@ namespace UnitSystem.ActionSystem.Actions
                         SlotCoordinate itemsSlotCoordinate = itemToConsume.MyInventory.GetSlotCoordinateFromItemData(itemToConsume);
                         if (newThreshold.NewItem == currentItemChangeThreshold.NewItem)
                         {
-                            if (itemsSlotCoordinate.myInventory.SlotVisualsCreated)
-                                itemsSlotCoordinate.myInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
+                            if (itemsSlotCoordinate.MyInventory.SlotVisualsCreated)
+                                itemsSlotCoordinate.MyInventory.GetSlotFromCoordinate(itemsSlotCoordinate).InventoryItem.SetupIconSprite(true);
                         }
                         else
                         {
                             Item oldItem = itemToConsume.Item;
                             itemToConsume.MyInventory.RemoveItem(itemToConsume, false);
                             itemToConsume.SetItem(newThreshold.NewItem);
-                            itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, Unit);
+                            itemToConsume.MyInventory.TryAddItemAt(itemToConsume.MyInventory.GetSlotCoordinate(itemsSlotCoordinate.Coordinate.x + itemToConsume.Item.Width - oldItem.Width, itemsSlotCoordinate.Coordinate.y + itemToConsume.Item.Height - oldItem.Height), itemToConsume, Unit);
                         }
 
                         if (ActionSystemUI.ItemActionBarAlreadyHasItem(itemToConsume))

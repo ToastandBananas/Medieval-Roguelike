@@ -107,7 +107,7 @@ namespace InventorySystem
                     if (activeSlot is InventorySlot)
                     {
                         InventorySlot activeInventorySlot = activeSlot as InventorySlot;
-                        SetupDraggedItem(activeInventorySlot.slotCoordinate.parentSlotCoordinate.itemData, activeInventorySlot.ParentSlot(), activeInventorySlot.myInventory);
+                        SetupDraggedItem(activeInventorySlot.slotCoordinate.ParentSlotCoordinate.ItemData, activeInventorySlot.ParentSlot(), activeInventorySlot.myInventory);
                         LastInventoryInteractedWith = activeInventorySlot.myInventory;
                     }
                     else
@@ -233,10 +233,10 @@ namespace InventorySystem
             overlappedItemsParentSlotCoordinate = null;
             overlappedItemCount = 0;
 
-            if (!focusedSlotCoordinate.myInventory.InventoryLayout.HasStandardSlotSize())
+            if (!focusedSlotCoordinate.MyInventory.InventoryLayout.HasStandardSlotSize)
             {
-                overlappedItemsParentSlotCoordinate = focusedSlotCoordinate.myInventory.GetSlotCoordinate(focusedSlotCoordinate.coordinate.x, focusedSlotCoordinate.coordinate.y);
-                if (overlappedItemsParentSlotCoordinate.isFull && overlappedItemsParentSlotCoordinate.itemData != itemData)
+                overlappedItemsParentSlotCoordinate = focusedSlotCoordinate.MyInventory.GetSlotCoordinate(focusedSlotCoordinate.Coordinate.x, focusedSlotCoordinate.Coordinate.y);
+                if (overlappedItemsParentSlotCoordinate.IsFull && overlappedItemsParentSlotCoordinate.ItemData != itemData)
                     overlappedItemCount++;
                 return false;
             }
@@ -247,9 +247,9 @@ namespace InventorySystem
                 for (int y = 0; y < itemData.Item.Height; y++)
                 {
                     SlotCoordinate slotCoordinateToCheck;
-                    if (focusedSlotCoordinate.myInventory != null)
+                    if (focusedSlotCoordinate.MyInventory != null)
                     {
-                        slotCoordinateToCheck = focusedSlotCoordinate.myInventory.GetSlotCoordinate(focusedSlotCoordinate.coordinate.x - x, focusedSlotCoordinate.coordinate.y - y);
+                        slotCoordinateToCheck = focusedSlotCoordinate.MyInventory.GetSlotCoordinate(focusedSlotCoordinate.Coordinate.x - x, focusedSlotCoordinate.Coordinate.y - y);
                     }
                     else
                         slotCoordinateToCheck = focusedSlotCoordinate;
@@ -257,17 +257,17 @@ namespace InventorySystem
                     if (slotCoordinateToCheck == null)
                         continue;
 
-                    if (slotCoordinateToCheck.isFull)
+                    if (slotCoordinateToCheck.IsFull)
                     {
-                        if (slotCoordinateToCheck.parentSlotCoordinate.itemData == itemData)
+                        if (slotCoordinateToCheck.ParentSlotCoordinate.ItemData == itemData)
                             continue;
 
                         if (overlappedItemData == null)
                         {
-                            if (slotCoordinateToCheck.myInventory != null)
+                            if (slotCoordinateToCheck.MyInventory != null)
                             {
-                                overlappedItemsParentSlotCoordinate = slotCoordinateToCheck.parentSlotCoordinate;
-                                overlappedItemData = slotCoordinateToCheck.parentSlotCoordinate.itemData;
+                                overlappedItemsParentSlotCoordinate = slotCoordinateToCheck.ParentSlotCoordinate;
+                                overlappedItemData = slotCoordinateToCheck.ParentSlotCoordinate.ItemData;
                                 overlappedItemCount++;
                             }
                             else
@@ -277,7 +277,7 @@ namespace InventorySystem
                                 return false;
                             }
                         }
-                        else if (overlappedItemData != slotCoordinateToCheck.parentSlotCoordinate.itemData)
+                        else if (overlappedItemData != slotCoordinateToCheck.ParentSlotCoordinate.ItemData)
                         {
                             overlappedItemCount++;
                             return true;
@@ -479,7 +479,7 @@ namespace InventorySystem
             }
         }
 
-        public static void ShowContainerUI(ContainerInventoryManager containerInventoryManager, Item containerItem)
+        public static void ShowContainerUI(InventoryManager_Container containerInventoryManager, Item containerItem)
         {
             for (int i = 0; i < Instance.containerUIs.Length; i++)
             {
@@ -516,7 +516,7 @@ namespace InventorySystem
             return Instance.containerUIs[1];
         }
 
-        public static ContainerUI GetContainerUI(ContainerInventoryManager containerInventoryManager)
+        public static ContainerUI GetContainerUI(InventoryManager_Container containerInventoryManager)
         {
             for (int i = 0; i < Instance.containerUIs.Length; i++)
             {

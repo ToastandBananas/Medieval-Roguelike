@@ -48,7 +48,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
         #region Fight
         void Fight()
         {
-            if (unit.UnitEquipment.RangedWeaponEquipped)
+            if (unit.UnitEquipment != null && unit.UnitEquipment.RangedWeaponEquipped)
             {
                 Unit closestEnemy = unit.Vision.GetClosestEnemy(true);
                 float minShootRange = unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
@@ -62,7 +62,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                         npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         return;
                     }
-                    else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    else if (unit.UnitInventoryManager.HumanoidInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
                         npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);

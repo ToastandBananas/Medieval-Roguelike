@@ -299,10 +299,10 @@ namespace InventorySystem
                     targetPosition = targetUnit.transform.position;
                     targetUnit.UnitAnimator.DoDodge(shooter, null, this);
                 }
-                else if (targetUnit.UnitMeshManager.leftHeldItem != null && targetUnit.UnitMeshManager.leftHeldItem.IsBlocking)
-                    targetPosition = targetUnit.UnitMeshManager.leftHeldItem.transform.position;
-                else if (targetUnit.UnitMeshManager.rightHeldItem != null && targetUnit.UnitMeshManager.rightHeldItem.IsBlocking)
-                    targetPosition = targetUnit.UnitMeshManager.rightHeldItem.transform.position;
+                else if (targetUnit.UnitMeshManager.LeftHeldItem != null && targetUnit.UnitMeshManager.LeftHeldItem.IsBlocking)
+                    targetPosition = targetUnit.UnitMeshManager.LeftHeldItem.transform.position;
+                else if (targetUnit.UnitMeshManager.RightHeldItem != null && targetUnit.UnitMeshManager.RightHeldItem.IsBlocking)
+                    targetPosition = targetUnit.UnitMeshManager.RightHeldItem.transform.position;
                 else
                     targetPosition = targetUnit.WorldPosition;
 
@@ -562,7 +562,7 @@ namespace InventorySystem
                 else if (collider.CompareTag("Shield"))
                 {
                     HeldShield heldShield = collider.GetComponent<HeldShield>();
-                    if (heldShield == shooter.UnitMeshManager.leftHeldItem || heldShield == shooter.UnitMeshManager.rightHeldItem)
+                    if (heldShield == shooter.UnitMeshManager.LeftHeldItem || heldShield == shooter.UnitMeshManager.RightHeldItem)
                         return;
 
                     // This won't actually do any damage since the attack was blocked, but it will still have a chance to knockback the targetUnit

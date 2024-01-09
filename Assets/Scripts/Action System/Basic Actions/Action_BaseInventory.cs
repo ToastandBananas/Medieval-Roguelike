@@ -10,7 +10,7 @@ namespace UnitSystem.ActionSystem.Actions
         readonly static int minimumAPCost = 50;
         readonly static float insideBagAPCostMultiplier = 0.2f;
 
-        public static int GetItemsActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
+        public static int GetItemsActionPointCost(ItemData itemData, int stackSize, InventoryManager_Container itemsContainerInventoryManager)
         {
             float cost = CalculateItemsCost(itemData.Weight(), stackSize);
 

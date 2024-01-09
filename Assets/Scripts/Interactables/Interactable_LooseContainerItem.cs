@@ -7,7 +7,7 @@ namespace InteractableObjects
     public class Interactable_LooseContainerItem : Interactable_LooseItem
     {
         [Header("Container Info")]
-        [SerializeField] ContainerInventoryManager containerInventoryManager;
+        [SerializeField] InventoryManager_Container containerInventoryManager;
 
         public override void Awake()
         {
@@ -36,6 +36,6 @@ namespace InteractableObjects
             }
         }
 
-        public ContainerInventoryManager ContainerInventoryManager => containerInventoryManager;
+        public InventoryManager_Container ContainerInventoryManager => containerInventoryManager;
     }
 }

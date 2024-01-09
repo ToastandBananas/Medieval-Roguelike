@@ -47,7 +47,7 @@ namespace InventorySystem
             if (newItemData == null || newItemData.Item == null)
                 return false;
 
-            if (ItemTypeAllowed(newItemData.Item.ItemType) == false)
+            if (!ItemTypeAllowed(newItemData.Item.ItemType))
                 return false;
 
             if (newItemData.ShouldRandomize)
@@ -59,7 +59,7 @@ namespace InventorySystem
         protected bool AddItem(ItemData newItemData, Unit unitAdding, bool tryAddToExistingStacks = true)
         {
             Inventory originalInventory = newItemData.MyInventory;
-
+            
             // If the new Item is a Shield, remove any projectiles and try to add them to the Unit's Inventories
             TryTakeStuckProjectiles(newItemData);
 
@@ -72,7 +72,7 @@ namespace InventorySystem
                     if (newItemData.CurrentStackSize <= 0)
                         break;
 
-                    if (itemDatas[i] == newItemData || newItemData.IsEqual(itemDatas[i]) == false)
+                    if (itemDatas[i] == newItemData || !newItemData.IsEqual(itemDatas[i]))
                         continue;
 
                     CombineStacks(newItemData, itemDatas[i]);
@@ -103,10 +103,10 @@ namespace InventorySystem
                         unitAdding.UnitActionHandler.GetAction<Action_Inventory>().QueueAction(newItemData, startingStackSize - newItemData.CurrentStackSize, null);
                 }
             }
-
+            
             // If the item data hasn't been assigned a slot coordinate, do so now
             SlotCoordinate targetSlotCoordinate;
-            if (newItemData.InventorySlotCoordinate == null || newItemData.InventorySlotCoordinate.myInventory != this)
+            if (newItemData.InventorySlotCoordinate == null || newItemData.InventorySlotCoordinate.MyInventory != this)
             {
                 targetSlotCoordinate = GetNextAvailableSlotCoordinate(newItemData);
                 if (targetSlotCoordinate != null)
@@ -124,13 +124,13 @@ namespace InventorySystem
                     originalInventory.RemoveItem(newItemData, false);
 
                 // Only add the item data if it hasn't been added yet
-                if (itemDatas.Contains(newItemData) == false)
+                if (!itemDatas.Contains(newItemData))
                     itemDatas.Add(newItemData);
 
                 // Show the item's icon in the inventory UI
                 if (SlotVisualsCreated)
                 {
-                    InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.coordinate.x, targetSlotCoordinate.coordinate.y);
+                    InventorySlot targetSlot = GetSlotFromCoordinate(targetSlotCoordinate.Coordinate.x, targetSlotCoordinate.Coordinate.y);
                     if (targetSlot != null)
                         SetupNewItem(targetSlot, newItemData); // Setup the slot's item data and sprites
                 }
@@ -174,7 +174,7 @@ namespace InventorySystem
             if (overlappedItemCount == 1)
             {
                 // Get a reference to the overlapped item's data and parent slot before we clear it out
-                ItemData overlappedItemsData = overlappedItemsParentSlotCoordinate.itemData;
+                ItemData overlappedItemsData = overlappedItemsParentSlotCoordinate.ItemData;
 
                 // Remove the highlighting
                 if (SlotVisualsCreated)
@@ -233,8 +233,7 @@ namespace InventorySystem
                 {
                     // Clear out the overlapped item
                     Slot overlappedParentSlot = GetSlotFromCoordinate(overlappedItemsParentSlotCoordinate);
-                    if (overlappedParentSlot.InventoryItem.MyInventory != null)
-                        overlappedParentSlot.InventoryItem.MyInventory.RemoveItem(overlappedItemsData, true);
+                    overlappedParentSlot.InventoryItem.MyInventory?.RemoveItem(overlappedItemsData, true);
 
                     // If the slots are in different inventories
                     RemoveFromOrigin(newItemData, unitAdding);
@@ -363,7 +362,7 @@ namespace InventorySystem
 
         void RemoveFromOrigin(SlotCoordinate targetSlotCoordinate, ItemData newItemData, Unit unitAdding)
         {
-            if (InventoryUI.IsDraggingItem && targetSlotCoordinate.myInventory != InventoryUI.DraggedItem.MyInventory)
+            if (InventoryUI.IsDraggingItem && targetSlotCoordinate.MyInventory != InventoryUI.DraggedItem.MyInventory)
             {
                 // Remove the item from its original character equipment
                 if (InventoryUI.ParentSlotDraggedFrom != null && InventoryUI.ParentSlotDraggedFrom is EquipmentSlot)
@@ -416,10 +415,10 @@ namespace InventorySystem
 
             // If we're unequipping a shield get any projectiles stuck in the shield and add them to our inventory or drop them
             HeldShield heldShield = null;
-            if (myUnit.UnitMeshManager.leftHeldItem != null && myUnit.UnitMeshManager.leftHeldItem.ItemData == newItemData)
-                heldShield = myUnit.UnitMeshManager.leftHeldItem as HeldShield;
-            else if (myUnit.UnitMeshManager.rightHeldItem != null && myUnit.UnitMeshManager.rightHeldItem.ItemData == newItemData)
-                heldShield = myUnit.UnitMeshManager.rightHeldItem as HeldShield;
+            if (myUnit.UnitMeshManager.LeftHeldItem != null && myUnit.UnitMeshManager.LeftHeldItem.ItemData == newItemData)
+                heldShield = myUnit.UnitMeshManager.LeftHeldItem as HeldShield;
+            else if (myUnit.UnitMeshManager.RightHeldItem != null && myUnit.UnitMeshManager.RightHeldItem.ItemData == newItemData)
+                heldShield = myUnit.UnitMeshManager.RightHeldItem as HeldShield;
 
             if (heldShield != null && heldShield.transform.childCount > 1)
             {
@@ -491,19 +490,19 @@ namespace InventorySystem
             // Loop through every slot coordinate and check if it will work as the parent slot for the new Item
             for (int i = 0; i < slotCoordinates.Count; i++)
             {
-                if (slotCoordinates[i].isFull || slotCoordinates[i].parentSlotCoordinate.isFull)
+                if (slotCoordinates[i].IsFull || slotCoordinates[i].ParentSlotCoordinate.IsFull)
                     continue;
 
                 bool isAvailable = true;
-                if (inventoryLayout.HasStandardSlotSize())
+                if (inventoryLayout.HasStandardSlotSize)
                 {
                     // Check for empty slots within the item's dimensions
                     for (int y = 0; y < height; y++)
                     {
                         for (int x = 0; x < width; x++)
                         {
-                            SlotCoordinate slotCoordinateToCheck = GetSlotCoordinate(slotCoordinates[i].coordinate.x - x, slotCoordinates[i].coordinate.y - y);
-                            if (slotCoordinateToCheck == null || slotCoordinateToCheck.isFull || slotCoordinateToCheck.parentSlotCoordinate.isFull)
+                            SlotCoordinate slotCoordinateToCheck = GetSlotCoordinate(slotCoordinates[i].Coordinate.x - x, slotCoordinates[i].Coordinate.y - y);
+                            if (slotCoordinateToCheck == null || slotCoordinateToCheck.IsFull || slotCoordinateToCheck.ParentSlotCoordinate.IsFull)
                             {
                                 isAvailable = false;
                                 break;
@@ -530,8 +529,8 @@ namespace InventorySystem
         {
             for (int i = 0; i < slotCoordinates.Count; i++)
             {
-                if (slotCoordinates[i].parentSlotCoordinate.itemData == itemData)
-                    return slotCoordinates[i].parentSlotCoordinate;
+                if (slotCoordinates[i].ParentSlotCoordinate.ItemData == itemData)
+                    return slotCoordinates[i].ParentSlotCoordinate;
             }
             return null;
         }
@@ -540,7 +539,7 @@ namespace InventorySystem
         {
             for (int i = 0; i < slotCoordinates.Count; i++)
             {
-                if (slotCoordinates[i].coordinate.x == xCoord && slotCoordinates[i].coordinate.y == yCoord)
+                if (slotCoordinates[i].Coordinate.x == xCoord && slotCoordinates[i].Coordinate.y == yCoord)
                     return slotCoordinates[i];
             }
             return null;
@@ -553,7 +552,7 @@ namespace InventorySystem
 
             for (int i = 0; i < slots.Count; i++)
             {
-                if (slots[i].slotCoordinate.coordinate.x == xCoord && slots[i].slotCoordinate.coordinate.y == yCoord)
+                if (slots[i].slotCoordinate.Coordinate.x == xCoord && slots[i].slotCoordinate.Coordinate.y == yCoord)
                     return slots[i];
             }
 
@@ -590,6 +589,9 @@ namespace InventorySystem
 
         protected void CreateSlotCoordinates()
         {
+            if (slotCoordinates.Count > 0)
+                return;
+
             slotCoordinates.Clear();
             maxSlotsPerColumn = Mathf.CeilToInt((float)inventoryLayout.AmountOfSlots / inventoryLayout.MaxSlotsPerRow);
 
@@ -614,7 +616,7 @@ namespace InventorySystem
 
             CreateSlotCoordinates();
 
-            if (slots.Count > 0 && SlotVisualsCreated == false)
+            if (slots.Count > 0 && !SlotVisualsCreated)
                 CreateSlotVisuals();
         }
 
@@ -635,14 +637,13 @@ namespace InventorySystem
                 newSlot.InventoryItem.SetMyInventory(this);
 
                 newSlot.SetSlotCoordinate(GetSlotCoordinate((i % inventoryLayout.MaxSlotsPerRow) + 1, Mathf.FloorToInt((float)i / inventoryLayout.MaxSlotsPerRow) + 1));
-                newSlot.name = $"Slot - {newSlot.slotCoordinate.name}";
+                newSlot.name = $"Slot - {newSlot.slotCoordinate.Name}";
                 slots.Add(newSlot);
 
-                if (InventoryLayout.HasStandardSlotSize() == false)
+                if (!InventoryLayout.HasStandardSlotSize)
                     newSlot.InventoryItem.EnableIconImage(); // Shows the placeholder image
 
                 newSlot.HideItemIcon();
-
                 newSlot.gameObject.SetActive(true);
             }
 
@@ -669,9 +670,7 @@ namespace InventorySystem
             if (slots != null)
             {
                 for (int i = 0; i < slots.Count; i++)
-                {
                     Pool_InventorySlots.Instance.ReturnToPool(slots[i]);
-                }
 
                 slots.Clear();
             }

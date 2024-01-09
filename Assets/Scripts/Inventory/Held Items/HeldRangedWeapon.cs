@@ -169,7 +169,7 @@ namespace InventorySystem
 
             // Gloves fumble modifier
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].FumbleChanceModifier;
+                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).FumbleChanceModifier;
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

@@ -152,7 +152,7 @@ namespace InteractableObjects
                         unitPickingUpItem.unitActionHandler.GetAction<EquipAction>().QueueAction(itemData, targetEquipSlot, null);
                     }
                 }*/
-                else if (!unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) || (itemData.Item is Item_Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver])))
+                else if (!unitPickingUpItem.UnitEquipment.EquipSlotIsFull(targetEquipSlot) || (itemData.Item is Item_Ammunition && itemData.IsEqual(unitPickingUpItem.UnitEquipment.EquippedItemData(EquipSlot.Quiver))))
                 {
                     equipped = unitPickingUpItem.UnitEquipment.CanEquipItem(itemData);
                     if (equipped)

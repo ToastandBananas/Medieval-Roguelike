@@ -14,7 +14,7 @@ namespace InventorySystem
         {
             base.SetupHeldItem(itemData, unit, equipSlot);
 
-            if (this == unit.UnitMeshManager.leftHeldItem)
+            if (this == unit.UnitMeshManager.LeftHeldItem)
                 Anim.SetBool("leftHandItem", true);
             else
             {
@@ -39,7 +39,7 @@ namespace InventorySystem
         public override void DoDefaultAttack(GridPosition targetGridPosition)
         {
             // Determine attack animation based on melee weapon type
-            if (this == unit.UnitMeshManager.rightHeldItem)
+            if (this == unit.UnitMeshManager.RightHeldItem)
             {
                 if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
                 {
@@ -60,7 +60,7 @@ namespace InventorySystem
                 if (oppositeHeldItem != null && oppositeHeldItem.ItemData.Item is Item_Shield)
                     oppositeHeldItem.Anim.CrossFadeInFixedTime("MeleeAttack_OtherHand_L", defaultAttackTransitionTime);
             }
-            else if (this == unit.UnitMeshManager.leftHeldItem)
+            else if (this == unit.UnitMeshManager.LeftHeldItem)
             {
                 if (ItemData.Item.MeleeWeapon.DefaultMeleeAttackType == MeleeAttackType.Overhead)
                     Anim.CrossFadeInFixedTime("DefaultAttack_1H_L", defaultAttackTransitionTime);
@@ -96,7 +96,7 @@ namespace InventorySystem
             unit.UnitAnimator.StopMovingForward();
 
             Anim.SetBool("spearWall", true);
-            if (this == unit.UnitMeshManager.leftHeldItem)
+            if (this == unit.UnitMeshManager.LeftHeldItem)
                 Anim.CrossFadeInFixedTime("SpearWall_1H_L", blockTransitionTime);
             else
             {
@@ -128,14 +128,14 @@ namespace InventorySystem
                 return;
 
             IsBlocking = true;
-            if (unit.UnitMeshManager.rightHeldItem == this)
+            if (unit.UnitMeshManager.RightHeldItem == this)
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
                     Anim.CrossFadeInFixedTime("RaiseWeapon_2H", blockTransitionTime);
                 else
                     Anim.CrossFadeInFixedTime("RaiseWeapon_1H_R", blockTransitionTime);
             }
-            else if (unit.UnitMeshManager.leftHeldItem == this)
+            else if (unit.UnitMeshManager.LeftHeldItem == this)
                 Anim.CrossFadeInFixedTime("RaiseWeapon_1H_L", blockTransitionTime);
         }
 
@@ -145,27 +145,27 @@ namespace InventorySystem
                 return;
 
             IsBlocking = false;
-            if (unit.UnitMeshManager.rightHeldItem == this)
+            if (unit.UnitMeshManager.RightHeldItem == this)
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
                     Anim.CrossFadeInFixedTime("LowerWeapon_2H", blockTransitionTime);
                 else
                     Anim.CrossFadeInFixedTime("LowerWeapon_1H_R", blockTransitionTime);
             }
-            else if (unit.UnitMeshManager.leftHeldItem == this)
+            else if (unit.UnitMeshManager.LeftHeldItem == this)
                 Anim.CrossFadeInFixedTime("LowerWeapon_1H_L", blockTransitionTime);
         }
 
         public override void Recoil()
         {
-            if (unit.UnitMeshManager.rightHeldItem == this)
+            if (unit.UnitMeshManager.RightHeldItem == this)
             {
                 if (ItemData.Item.Weapon.IsTwoHanded)
                     Anim.Play("BlockRecoil_2H");
                 else
                     Anim.Play("BlockRecoil_1H_R");
             }
-            else if (unit.UnitMeshManager.leftHeldItem == this)
+            else if (unit.UnitMeshManager.LeftHeldItem == this)
                 Anim.Play("BlockRecoil_1H_L");
         }
 
@@ -202,7 +202,7 @@ namespace InventorySystem
 
             // Gloves fumble modifier
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].FumbleChanceModifier;
+                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).FumbleChanceModifier;
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

@@ -28,30 +28,30 @@ namespace UnitSystem.ActionSystem.Actions
             if (Unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One) // Weapon Set 1 --> Weapon Set 2
             {
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
-                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1], 1, null);
+                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.LeftHeldItem1), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
-                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1], 1, null);
+                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.RightHeldItem1), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem2))
-                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2], 1, null);
+                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.LeftHeldItem2), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem2))
-                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2], 1, null);
+                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.RightHeldItem2), 1, null);
             }
             else // Weapon Set 2 --> Weapon Set 1
             {
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem2))
-                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem2], 1, null);
+                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.LeftHeldItem2), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem2))
-                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem2], 1, null);
+                    cost += Action_Unequip.GetItemsUnequipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.RightHeldItem2), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LeftHeldItem1))
-                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LeftHeldItem1], 1, null);
+                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.LeftHeldItem1), 1, null);
 
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.RightHeldItem1))
-                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.RightHeldItem1], 1, null);
+                    cost += Action_Equip.GetItemsEquipActionPointCost(Unit.UnitEquipment.EquippedItemData(EquipSlot.RightHeldItem1), 1, null);
             }
 
             // Swapping a weapon set shouldn't cost as much as actually equipping and unequipping the items

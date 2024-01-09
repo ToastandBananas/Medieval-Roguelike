@@ -64,7 +64,7 @@ namespace UnitSystem
             if (knownUnits.ContainsKey(unitToCheck) == false)
                 return false;
 
-            if (unitToCheck.UnitMeshManager.meshesHidden)
+            if (unitToCheck.UnitMeshManager.MeshesHidden)
                 return false;
 
             if (IsInLineOfSight_Raycast(unitToCheck) == false)
@@ -78,7 +78,7 @@ namespace UnitSystem
             if (knownUnits.ContainsKey(unitToCheck) == false)
                 return false;
 
-            if (unitToCheck.UnitMeshManager.meshesHidden)
+            if (unitToCheck.UnitMeshManager.MeshesHidden)
                 return false;
 
             return true;

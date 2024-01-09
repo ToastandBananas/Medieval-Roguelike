@@ -283,27 +283,27 @@ namespace UnitSystem.ActionSystem.Actions
             {
                 case BodyPartType.Head:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Helm).Defense;
                     return 0;
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Defense;
                     return 0;
                 case BodyPartType.Arm:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsArms)
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Defense;
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.ProtectsArms)
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Defense;
                     return 0;
                 case BodyPartType.Hand:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).Defense;
                     return 0;
                 case BodyPartType.Leg:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsLegs)
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Defense;
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.ProtectsLegs)
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Defense;
                     return 0;
                 case BodyPartType.Foot:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Boots).Defense;
                     return 0;
                 default:
                     return 0;
@@ -319,15 +319,15 @@ namespace UnitSystem.ActionSystem.Actions
             {
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).Defense;
                     return 0;
                 case BodyPartType.Arm:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.ProtectsArms)
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Defense;
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).Item.Shirt.ProtectsArms)
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).Defense;
                     return 0;
                 case BodyPartType.Leg:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
-                        return targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Defense;
+                        return targetUnit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).Defense;
                     return 0;
                 default:
                     return 0;
@@ -345,43 +345,43 @@ namespace UnitSystem.ActionSystem.Actions
                 case BodyPartType.Head:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Helm).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Helm).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor)) 
                     { 
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Arm:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsArms) 
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.ProtectsArms) 
                     { 
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Hand:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Leg:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.ProtectsLegs)
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.ProtectsLegs)
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Foot:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Boots).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Boots).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 default:
@@ -400,22 +400,22 @@ namespace UnitSystem.ActionSystem.Actions
                 case BodyPartType.Torso:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Arm:
-                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.ProtectsArms)
+                    if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt) && targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).Item.Shirt.ProtectsArms)
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 case BodyPartType.Leg:
                     if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
                     {
-                        startDurability = targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].CurrentDurability;
-                        targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].DamageDurability(targetUnit, durabilityDamage);
+                        startDurability = targetUnit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).CurrentDurability;
+                        targetUnit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).DamageDurability(targetUnit, durabilityDamage);
                     }
                     break;
                 default:
@@ -507,7 +507,7 @@ namespace UnitSystem.ActionSystem.Actions
         {
             float damage = Unit.Stats.UnarmedDamage;
             if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                damage *= Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].UnarmedDamageMultiplier;
+                damage *= Unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).UnarmedDamageMultiplier;
             return Mathf.RoundToInt(damage);
         }
 

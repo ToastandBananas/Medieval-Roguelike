@@ -587,14 +587,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1714767048958128504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 0
-      maxSlotsPerRow: 0
+      maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}
@@ -809,7 +809,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3478007186590843071}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d195bec6912fcce40b6ae090e27cc030, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f66d02a33bd9604b87d6b975f901589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 6440773195933579921}
@@ -1319,7 +1319,7 @@ GameObject:
   - component: {fileID: 3489051163152912302}
   - component: {fileID: 3713523194178401732}
   - component: {fileID: 6440773195933579921}
-  - component: {fileID: 942902502714962659}
+  - component: {fileID: 4497151754161142216}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1661,7 +1661,7 @@ MonoBehaviour:
   shoulderHeight: 0.25
   unitInventoryManager: {fileID: 7995056210117479334}
   myUnitEquipment: {fileID: 4966063475579553678}
---- !u!114 &942902502714962659
+--- !u!114 &4497151754161142216
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1670,28 +1670,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 8220662913183796567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dce4697d6e07ca4d976c94f8f9ce16b, type: 3}
+  m_Script: {fileID: 11500000, guid: c36cba5b7f779d74799c816ec3d7ff7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   myUnit: {fileID: 6440773195933579921}
-  leftHeldItemParent: {fileID: 6486341831773549153}
-  rightHeldItemParent: {fileID: 3302223880752615606}
+  baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
+    type: 3}
   baseMeshRenderer: {fileID: 6782232349530032348}
   bodyMeshRenderer: {fileID: 7032048945693533318}
   headMeshRenderer: {fileID: 1355169749607201287}
+  baseMeshFilter: {fileID: 2615831470345035244}
+  bodyMeshFilter: {fileID: 4190166550476188983}
+  headMeshFilter: {fileID: 8428149901202910843}
   hairMeshRenderer: {fileID: 487088377322257086}
   helmMeshRenderer: {fileID: 7622081336976406461}
   shirtMeshRenderer: {fileID: 4844891633756179713}
   bodyArmorMeshRenderer: {fileID: 626653059070622638}
-  baseMeshFilter: {fileID: 2615831470345035244}
-  bodyMeshFilter: {fileID: 4190166550476188983}
-  headMeshFilter: {fileID: 8428149901202910843}
   hairMeshFilter: {fileID: 6301170399108387200}
   helmMeshFilter: {fileID: 8934689093820446542}
   shirtMeshFilter: {fileID: 280487915635489071}
   bodyArmorMeshFilter: {fileID: 8038866530934077296}
-  baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
-    type: 3}
+  leftHeldItemParent: {fileID: 6486341831773549153}
+  rightHeldItemParent: {fileID: 3302223880752615606}
 --- !u!1 &8220662913851074348
 GameObject:
   m_ObjectHideFlags: 0
@@ -1766,14 +1766,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8296843384026591742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 0
-      maxSlotsPerRow: 0
+      maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}
@@ -1905,14 +1905,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 9107039446166605776}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 6440773195933579921}
     inventoryLayout:
       amountOfSlots: 0
-      maxSlotsPerRow: 0
+      maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}

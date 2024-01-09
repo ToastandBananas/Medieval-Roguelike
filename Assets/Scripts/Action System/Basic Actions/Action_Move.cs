@@ -304,7 +304,7 @@ namespace UnitSystem.ActionSystem.Actions
             else
                 damage = defaultBootsDurabilityDamage;
             
-            Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DamageDurability(Unit, damage);
+            Unit.UnitEquipment.EquippedItemData(EquipSlot.Boots).DamageDurability(Unit, damage);
         }
 
         void PlayFootstepSound()
@@ -314,13 +314,13 @@ namespace UnitSystem.ActionSystem.Actions
             if (baseSoundRadius > 0f && Unit.UnitEquipment != null)
             {
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
-                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Item.Boots.MoveNoiseModifier;
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemData(EquipSlot.Boots).Item.Boots.MoveNoiseModifier;
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
-                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.MoveNoiseModifier;
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.MoveNoiseModifier;
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
-                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Item.LegArmor.MoveNoiseModifier;
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).Item.LegArmor.MoveNoiseModifier;
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Shirt))
-                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Shirt].Item.Shirt.MoveNoiseModifier;
+                    soundRadius += baseSoundRadius * Unit.UnitEquipment.EquippedItemData(EquipSlot.Shirt).Item.Shirt.MoveNoiseModifier;
             }
 
             AudioManager.PlayFootstepSound(Unit, soundRadius, AstarPath.active.GetNearest(nextTargetPosition).node.Tag);
@@ -502,11 +502,11 @@ namespace UnitSystem.ActionSystem.Actions
             if (Unit.UnitEquipment != null)
             {
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
-                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].Item.Boots.MoveCostModifier;
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemData(EquipSlot.Boots).Item.Boots.MoveCostModifier;
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
-                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].Item.BodyArmor.MoveCostModifier;
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).Item.BodyArmor.MoveCostModifier;
                 if (Unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
-                    cost += baseCost * Unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].Item.LegArmor.MoveCostModifier;
+                    cost += baseCost * Unit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).Item.LegArmor.MoveCostModifier;
             }
 
             if (LevelGrid.IsDiagonal(Unit.WorldPosition, nextTargetPosition))

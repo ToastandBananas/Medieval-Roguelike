@@ -226,11 +226,11 @@ namespace UnitSystem.ActionSystem.Actions
                     bool mainAttackBlocked = false;
                     if (primaryWeaponInRange)
                     {
-                        mainAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, this, false);
+                        mainAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.RightHeldItem, this, false);
                         if (mainAttackDodged == false)
                         {
-                            mainAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.rightHeldItem, this, false);
-                            DamageTargets(Unit.UnitMeshManager.rightHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.rightHeldItem.ItemData);
+                            mainAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.RightHeldItem, this, false);
+                            DamageTargets(Unit.UnitMeshManager.RightHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.RightHeldItem.ItemData);
                         }
                     }
 
@@ -238,11 +238,11 @@ namespace UnitSystem.ActionSystem.Actions
                     bool offhandAttackBlocked = false;
                     if (secondaryWeaponInRange)
                     {
-                        offhandAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, this, true);
+                        offhandAttackDodged = TargetEnemyUnit.UnitActionHandler.TryDodgeAttack(Unit, Unit.UnitMeshManager.LeftHeldItem, this, true);
                         if (offhandAttackDodged == false)
                         {
-                            offhandAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.leftHeldItem, this, true);
-                            DamageTargets(Unit.UnitMeshManager.leftHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.leftHeldItem.ItemData);
+                            offhandAttackBlocked = TargetEnemyUnit.UnitActionHandler.TryBlockMeleeAttack(Unit, Unit.UnitMeshManager.LeftHeldItem, this, true);
+                            DamageTargets(Unit.UnitMeshManager.LeftHeldItem as HeldMeleeWeapon, Unit.UnitMeshManager.LeftHeldItem.ItemData);
                         }
                     }
 
@@ -391,7 +391,7 @@ namespace UnitSystem.ActionSystem.Actions
             if (Unit.UnitEquipment.IsUnarmed || Unit.UnitEquipment.RangedWeaponEquipped)
                 return "Engage in <b>hand-to-hand</b> combat, delivering a swift and powerful strike to your target.";
             else if (Unit.UnitEquipment.IsDualWielding)
-                return $"Deliver coordinated strikes with your <b>{Unit.UnitMeshManager.rightHeldItem.ItemData.Item.Name}</b> and <b>{Unit.UnitMeshManager.leftHeldItem.ItemData.Item.Name}</b>.";
+                return $"Deliver coordinated strikes with your <b>{Unit.UnitMeshManager.RightHeldItem.ItemData.Item.Name}</b> and <b>{Unit.UnitMeshManager.LeftHeldItem.ItemData.Item.Name}</b>.";
             else
                 return $"Deliver a decisive strike to your target using your <b>{Unit.UnitMeshManager.GetPrimaryHeldMeleeWeapon().ItemData.Item.Name}</b>.";
         }

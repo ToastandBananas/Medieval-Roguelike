@@ -333,7 +333,7 @@ namespace UnitSystem
                 modifier -= baseModifier * weaponAttackingWith.ItemData.AccuracyModifier;
                 modifier -= baseModifier * attackActionUsed.AccuracyModifier();
                 if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                    modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
+                    modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).AccuracyModifier;
 
                 // Weapon skill effectiveness is reduced when dual wielding
                 if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
@@ -411,11 +411,11 @@ namespace UnitSystem
             if (unit.UnitEquipment != null && unit.UnitEquipment is UnitEquipment_Humanoid)
             {
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
-                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].DodgeChanceModifier;
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemData(EquipSlot.Boots).DodgeChanceModifier;
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
-                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].DodgeChanceModifier;
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).DodgeChanceModifier;
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
-                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].DodgeChanceModifier;
+                    dodgeChance += baseDodgeChance * unit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).DodgeChanceModifier;
             }
 
             // If attacker is directly beside the Unit
@@ -462,7 +462,7 @@ namespace UnitSystem
                 modifier -= baseModifier * weaponAttackingWith.ItemData.AccuracyModifier;
                 modifier -= baseModifier * attackActionUsed.AccuracyModifier();
                 if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment is UnitEquipment_Humanoid && attackingUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                    modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
+                    modifier -= baseModifier * attackingUnit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).AccuracyModifier;
 
                 // Weapon skill effectiveness is reduced when dual wielding
                 if (attackingUnit.UnitEquipment != null && attackingUnit.UnitEquipment.IsDualWielding)
@@ -631,13 +631,13 @@ namespace UnitSystem
             if (targetUnit.UnitEquipment != null && targetUnit.UnitEquipment is UnitEquipment_Humanoid)
             {
                 if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.Boots))
-                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Boots].KnockbackChanceModifier;
+                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemData(EquipSlot.Boots).KnockbackChanceModifier;
 
                 if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.BodyArmor))
-                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.BodyArmor].KnockbackChanceModifier;
+                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemData(EquipSlot.BodyArmor).KnockbackChanceModifier;
 
                 if (targetUnit.UnitEquipment.EquipSlotHasItem(EquipSlot.LegArmor))
-                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.LegArmor].KnockbackChanceModifier;
+                    knockbackChance += baseKnockbackChance * targetUnit.UnitEquipment.EquippedItemData(EquipSlot.LegArmor).KnockbackChanceModifier;
             }
 
             if (heldItemBlockedWith != null && heldItemBlockedWith is HeldShield)
@@ -705,7 +705,7 @@ namespace UnitSystem
             accuracy += baseAccuracy * rangedWeapon.ItemData.AccuracyModifier;
             accuracy += baseAccuracy * attackAction.AccuracyModifier();
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                accuracy += baseAccuracy * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
+                accuracy += baseAccuracy * unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).AccuracyModifier;
 
             // Accuracy affected by distance to target (but only over a certain value)
             float minDistanceBeforeAccuracyLoss = 3.5f;
@@ -736,7 +736,7 @@ namespace UnitSystem
             // Accuracy affected by the action's and equipped gloves accuracy modifier
             accuracy += baseAccuracy * attackAction.AccuracyModifier();
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                accuracy += baseAccuracy * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].AccuracyModifier;
+                accuracy += baseAccuracy * unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).AccuracyModifier;
 
             // Accuracy affected by distance to target (but only over a certain value)
             float minDistanceBeforeAccuracyLoss = 2.5f;

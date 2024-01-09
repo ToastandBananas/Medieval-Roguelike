@@ -45,7 +45,7 @@ namespace UnitSystem.ActionSystem.Actions
 
             if (Unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
-                ContainerInventoryManager beltInventoryManager = Unit.BeltInventoryManager;
+                InventoryManager_Container beltInventoryManager = Unit.BeltInventoryManager;
                 if (beltInventoryManager.ParentInventory.AllowedItemTypeContains(throwingWeaponItemTypes))
                     Throwables.AddRange(beltInventoryManager.ParentInventory.ItemDatas);
 
@@ -102,6 +102,9 @@ namespace UnitSystem.ActionSystem.Actions
                     yield break;
                 }
             }
+
+            // The unit being attacked becomes aware of this unit
+            Unit.Vision.BecomeVisibleUnitOfTarget(TargetEnemyUnit, true);
 
             if (Unit.IsPlayer || TargetEnemyUnit.IsPlayer || Unit.UnitMeshManager.IsVisibleOnScreen || TargetEnemyUnit.UnitMeshManager.IsVisibleOnScreen)
             {
@@ -204,23 +207,23 @@ namespace UnitSystem.ActionSystem.Actions
         public override void PlayAttackAnimation()
         {
             Unit.UnitActionHandler.TurnAction.RotateTowardsAttackPosition(TargetEnemyUnit.WorldPosition);
-            if (Unit.UnitMeshManager.rightHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.rightHeldItem.ItemData)
-                Unit.UnitMeshManager.rightHeldItem.StartThrow();
-            else if (Unit.UnitMeshManager.leftHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.leftHeldItem.ItemData)
-                Unit.UnitMeshManager.leftHeldItem.StartThrow();
+            if (Unit.UnitMeshManager.RightHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.RightHeldItem.ItemData)
+                Unit.UnitMeshManager.RightHeldItem.StartThrow();
+            else if (Unit.UnitMeshManager.LeftHeldItem != null && ItemDataToThrow == Unit.UnitMeshManager.LeftHeldItem.ItemData)
+                Unit.UnitMeshManager.LeftHeldItem.StartThrow();
             else if (ItemDataToThrow.MyInventory != null) // If throwing an item from an inventory
             {
-                if (Unit.UnitMeshManager.leftHeldItem != null && Unit.UnitMeshManager.rightHeldItem != null)
+                if (Unit.UnitMeshManager.LeftHeldItem != null && Unit.UnitMeshManager.RightHeldItem != null)
                 {
-                    Unit.UnitMeshManager.rightHeldItem.HideMeshes();
-                    hiddenHeldItem = Unit.UnitMeshManager.rightHeldItem;
+                    Unit.UnitMeshManager.RightHeldItem.HideMeshes();
+                    hiddenHeldItem = Unit.UnitMeshManager.RightHeldItem;
 
-                    SetupAndThrowItem(Unit.UnitMeshManager.RightHeldItemParent);
+                    SetupAndThrowItem(Unit.UnitMeshManager.HumanoidMeshManager.RightHeldItemParent);
                 }
-                else if (Unit.UnitMeshManager.leftHeldItem == null)
-                    SetupAndThrowItem(Unit.UnitMeshManager.LeftHeldItemParent);
+                else if (Unit.UnitMeshManager.LeftHeldItem == null)
+                    SetupAndThrowItem(Unit.UnitMeshManager.HumanoidMeshManager.LeftHeldItemParent);
                 else
-                    SetupAndThrowItem(Unit.UnitMeshManager.RightHeldItemParent);
+                    SetupAndThrowItem(Unit.UnitMeshManager.HumanoidMeshManager.RightHeldItemParent);
             }
             else
                 Debug.LogWarning($"The Item {Unit.name} is trying to throw isn't a held item, nor is it inside an inventory...");

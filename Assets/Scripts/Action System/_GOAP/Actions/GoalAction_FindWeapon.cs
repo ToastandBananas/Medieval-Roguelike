@@ -48,7 +48,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
             if (!unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsEmpty() && !unit.UnitEquipment.HumanoidEquipment.OtherWeaponSet_IsRanged())
             {
                 // Equip any weapon from their inventory if they have one
-                if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                if (unit.UnitInventoryManager.HumanoidInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                 {
                     npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                     return;
@@ -74,7 +74,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                         npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                         return;
                     }
-                    else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                    else if (unit.UnitInventoryManager.HumanoidInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                     {
                         npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                         return;
@@ -91,7 +91,7 @@ namespace UnitSystem.ActionSystem.GOAP.GoalActions
                     npcActionHandler.GetAction<Action_SwapWeaponSet>().QueueAction();
                     return;
                 }
-                else if (unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                else if (unit.UnitInventoryManager.HumanoidInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                 {
                     npcActionHandler.GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
                     return;

@@ -4,84 +4,81 @@ namespace InventorySystem
 {
     public class SlotCoordinate
     {
-        public string name { get; private set; }
+        public string Name { get; private set; }
 
-        public Vector2Int coordinate { get; private set; }
-        public SlotCoordinate parentSlotCoordinate { get; private set; }
-        public Inventory myInventory { get; private set; }
-        public ItemData itemData { get; private set; }
-        public bool isFull { get; private set; }
-
-        public void SetIsFull(bool isFull) => this.isFull = isFull;
+        public Vector2Int Coordinate { get; private set; }
+        public SlotCoordinate ParentSlotCoordinate { get; private set; }
+        public Inventory MyInventory { get; private set; }
+        public ItemData ItemData { get; private set; }
+        public bool IsFull { get; private set; }
 
         public void SetSlotCoordinate(int xCoord, int yCoord)
         {
-            coordinate = new Vector2Int(xCoord, yCoord);
-            name = $"({xCoord}, {yCoord})";
+            Coordinate = new Vector2Int(xCoord, yCoord);
+            Name = $"({xCoord}, {yCoord})";
         }
 
         public void SetupNewItem(ItemData newItemData)
         {
-            itemData = newItemData;
-            itemData.SetInventorySlotCoordinate(this);
-
-            if (myInventory.InventoryLayout.HasStandardSlotSize())
+            ItemData = newItemData;
+            ItemData.SetInventorySlotCoordinate(this);
+            
+            if (MyInventory.InventoryLayout.HasStandardSlotSize)
             {
-                int width = itemData.Item.Width;
-                int height = itemData.Item.Height;
+                int width = ItemData.Item.Width;
+                int height = ItemData.Item.Height;
                 for (int x = 0; x < width; x++)
                 {
                     for (int y = 0; y < height; y++)
                     {
-                        SlotCoordinate slotCoordinateToSetup = myInventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
+                        SlotCoordinate slotCoordinateToSetup = MyInventory.GetSlotCoordinate(Coordinate.x - x, Coordinate.y - y);
                         slotCoordinateToSetup.SetParentSlotCoordinate(this);
-                        slotCoordinateToSetup.isFull = true;
+                        slotCoordinateToSetup.IsFull = true;
                     }
                 }
             }
             else
             {
                 SetParentSlotCoordinate(this);
-                isFull = true;
+                IsFull = true;
             }
         }
 
         public void ClearItem()
         {
-            Inventory inventory = myInventory;
-
-            if (myInventory.InventoryLayout.HasStandardSlotSize())
+            Inventory inventory = MyInventory;
+            if (MyInventory.InventoryLayout.HasStandardSlotSize)
             {
-                int width = parentSlotCoordinate.itemData.Item.Width;
-                int height = parentSlotCoordinate.itemData.Item.Height;
+                int width = ParentSlotCoordinate.ItemData.Item.Width;
+                int height = ParentSlotCoordinate.ItemData.Item.Height;
                 for (int x = 0; x < width; x++)
                 {
                     for (int y = 0; y < height; y++)
                     {
-                        SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(coordinate.x - x, coordinate.y - y);
+                        SlotCoordinate slotCoordinateToSetup = inventory.GetSlotCoordinate(Coordinate.x - x, Coordinate.y - y);
                         slotCoordinateToSetup.SetParentSlotCoordinate(slotCoordinateToSetup);
-                        slotCoordinateToSetup.itemData = null;
-                        slotCoordinateToSetup.isFull = false;
+                        slotCoordinateToSetup.ItemData = null;
+                        slotCoordinateToSetup.IsFull = false;
                     }
                 }
             }
             else
             {
                 SetParentSlotCoordinate(this);
-                itemData = null;
-                isFull = false;
+                ItemData = null;
+                IsFull = false;
             }
         }
 
-        public void SetParentSlotCoordinate(SlotCoordinate parentSlotCoordinate) => this.parentSlotCoordinate = parentSlotCoordinate;
+        public void SetParentSlotCoordinate(SlotCoordinate parentSlotCoordinate) => ParentSlotCoordinate = parentSlotCoordinate;
 
-        public void SetItemData(ItemData itemData) => this.itemData = itemData;
+        public void SetItemData(ItemData itemData) => ItemData = itemData;
 
         public SlotCoordinate(int xCoord, int yCoord, Inventory inventory)
         {
             SetSlotCoordinate(xCoord, yCoord);
-            myInventory = inventory;
-            parentSlotCoordinate = this;
+            MyInventory = inventory;
+            ParentSlotCoordinate = this;
         }
     }
 }

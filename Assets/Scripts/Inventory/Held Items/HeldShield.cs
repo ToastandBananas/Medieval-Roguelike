@@ -36,9 +36,9 @@ namespace InventorySystem
         public void RaiseShield()
         {
             IsBlocking = true;
-            if (unit.UnitMeshManager.leftHeldItem == this)
+            if (unit.UnitMeshManager.LeftHeldItem == this)
                 Anim.CrossFadeInFixedTime("RaiseShield_L", blockTransitionTime);
-            else if (unit.UnitMeshManager.rightHeldItem == this)
+            else if (unit.UnitMeshManager.RightHeldItem == this)
                 Anim.CrossFadeInFixedTime("RaiseShield_R", blockTransitionTime);
         }
 
@@ -49,9 +49,9 @@ namespace InventorySystem
                 return;
 
             IsBlocking = false;
-            if (unit.UnitMeshManager.leftHeldItem == this)
+            if (unit.UnitMeshManager.LeftHeldItem == this)
                 Anim.CrossFadeInFixedTime("LowerShield_L", blockTransitionTime);
-            else if (unit.UnitMeshManager.rightHeldItem == this)
+            else if (unit.UnitMeshManager.RightHeldItem == this)
                 Anim.CrossFadeInFixedTime("LowerShield_R", blockTransitionTime);
         }
 
@@ -59,9 +59,9 @@ namespace InventorySystem
         {
             if (IsBlocking)
             {
-                if (unit.UnitMeshManager.leftHeldItem == this)
+                if (unit.UnitMeshManager.LeftHeldItem == this)
                     Anim.Play("BlockRecoil_L");
-                else if (unit.UnitMeshManager.rightHeldItem == this)
+                else if (unit.UnitMeshManager.RightHeldItem == this)
                     Anim.Play("BlockRecoil_R");
             }
         }
@@ -79,7 +79,7 @@ namespace InventorySystem
 
             // Gloves fumble modifier
             if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Gloves))
-                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Gloves].FumbleChanceModifier;
+                fumbleChance += baseFumbleChange * unit.UnitEquipment.EquippedItemData(EquipSlot.Gloves).FumbleChanceModifier;
 
             if (fumbleChance < 0f)
                 fumbleChance = 0f;

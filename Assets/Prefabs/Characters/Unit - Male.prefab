@@ -135,8 +135,8 @@ GameObject:
   - component: {fileID: 1918958863613582635}
   - component: {fileID: 1716772551159210589}
   - component: {fileID: 4471245059765168945}
-  - component: {fileID: 8017101318156772015}
   - component: {fileID: 5879531810297379322}
+  - component: {fileID: 3113437879856298959}
   m_Layer: 3
   m_Name: Unit - Male
   m_TagString: Unit
@@ -475,37 +475,6 @@ MonoBehaviour:
   shoulderHeight: 0.25
   unitInventoryManager: {fileID: 2873528818137102224}
   myUnitEquipment: {fileID: 504428574042382846}
---- !u!114 &8017101318156772015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1377663264827766495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9dce4697d6e07ca4d976c94f8f9ce16b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  myUnit: {fileID: 4471245059765168945}
-  leftHeldItemParent: {fileID: 4255837507901180393}
-  rightHeldItemParent: {fileID: 5537179256271399742}
-  baseMeshRenderer: {fileID: 4545412193767863124}
-  bodyMeshRenderer: {fileID: 44195350337855246}
-  headMeshRenderer: {fileID: 8342178995123814799}
-  hairMeshRenderer: {fileID: 7478689395129057590}
-  helmMeshRenderer: {fileID: 634104549060725813}
-  shirtMeshRenderer: {fileID: 2465539824919590537}
-  bodyArmorMeshRenderer: {fileID: 7618271491711647782}
-  baseMeshFilter: {fileID: 4991840999938565732}
-  bodyMeshFilter: {fileID: 6570099206264903359}
-  headMeshFilter: {fileID: 1584446299113313779}
-  hairMeshFilter: {fileID: 3925337025333062152}
-  helmMeshFilter: {fileID: 1942665837762366662}
-  shirtMeshFilter: {fileID: 7129099700918780583}
-  bodyArmorMeshFilter: {fileID: 1045981531652197624}
-  baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
-    type: 3}
 --- !u!114 &5879531810297379322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -518,6 +487,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3adc24834c6fd8b4ea9432743e8846ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3113437879856298959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1377663264827766495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c36cba5b7f779d74799c816ec3d7ff7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  myUnit: {fileID: 4471245059765168945}
+  baseMesh: {fileID: -4124819855025885896, guid: 8b96bc86fd33d2f4593b67c7d7f375a6,
+    type: 3}
+  baseMeshRenderer: {fileID: 4545412193767863124}
+  bodyMeshRenderer: {fileID: 44195350337855246}
+  headMeshRenderer: {fileID: 8342178995123814799}
+  baseMeshFilter: {fileID: 4991840999938565732}
+  bodyMeshFilter: {fileID: 6570099206264903359}
+  headMeshFilter: {fileID: 1584446299113313779}
+  hairMeshRenderer: {fileID: 7478689395129057590}
+  helmMeshRenderer: {fileID: 634104549060725813}
+  shirtMeshRenderer: {fileID: 2465539824919590537}
+  bodyArmorMeshRenderer: {fileID: 7618271491711647782}
+  hairMeshFilter: {fileID: 3925337025333062152}
+  helmMeshFilter: {fileID: 1942665837762366662}
+  shirtMeshFilter: {fileID: 7129099700918780583}
+  bodyArmorMeshFilter: {fileID: 1045981531652197624}
+  leftHeldItemParent: {fileID: 4255837507901180393}
+  rightHeldItemParent: {fileID: 5537179256271399742}
 --- !u!1 &1486526473944499246
 GameObject:
   m_ObjectHideFlags: 0
@@ -813,13 +813,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2508303573224170723}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
-      amountOfSlots: 50
+      amountOfSlots: 0
       maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
@@ -905,13 +905,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3527360981528888809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
-      amountOfSlots: 50
+      amountOfSlots: 0
       maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
@@ -1902,14 +1902,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 7723108989472263454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
     myUnit: {fileID: 4471245059765168945}
     inventoryLayout:
-      amountOfSlots: 2
-      maxSlotsPerRow: 5
+      amountOfSlots: 0
+      maxSlotsPerRow: 10
       slotWidth: 1
       slotHeight: 1
       placeholderSprite: {fileID: 0}
@@ -2200,7 +2200,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9181293001617359986}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d195bec6912fcce40b6ae090e27cc030, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f66d02a33bd9604b87d6b975f901589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   unit: {fileID: 4471245059765168945}

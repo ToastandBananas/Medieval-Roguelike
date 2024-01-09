@@ -10,12 +10,12 @@ namespace UnitSystem.ActionSystem.Actions
     {
         ItemData targetItemData;
         int itemCount;
-        ContainerInventoryManager itemsContainerInventoryManager;
+        InventoryManager_Container itemsContainerInventoryManager;
         InventoryActionType inventoryActionType;
 
         readonly float dropActionPointCostMultiplier = 0.2f;
 
-        public void QueueAction(ItemData targetItemData, int itemCount, ContainerInventoryManager itemsContainerInventoryManager, InventoryActionType inventoryActionType = InventoryActionType.Default)
+        public void QueueAction(ItemData targetItemData, int itemCount, InventoryManager_Container itemsContainerInventoryManager, InventoryActionType inventoryActionType = InventoryActionType.Default)
         {
             this.targetItemData = targetItemData;
             this.itemCount = itemCount;

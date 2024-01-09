@@ -10,9 +10,9 @@ namespace InventorySystem
     {
         [SerializeField] Interactable_LooseItem looseItem;
 
-        public ContainerInventoryManager containerInventoryManager { get; private set; }
+        public InventoryManager_Container containerInventoryManager { get; private set; }
 
-        public ContainerInventory(Unit myUnit, Interactable_LooseItem looseItem, ContainerInventoryManager containerInventoryManager)
+        public ContainerInventory(Unit myUnit, Interactable_LooseItem looseItem, InventoryManager_Container containerInventoryManager)
         {
             this.myUnit = myUnit;
             this.looseItem = looseItem;
@@ -30,11 +30,11 @@ namespace InventorySystem
                 if (myUnit.UnitEquipment is UnitEquipment_Humanoid)
                 {
                     if (containerInventoryManager == myUnit.BackpackInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
-                        SetupInventoryLayoutFromItem((Item_Backpack)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back].Item);
+                        SetupInventoryLayoutFromItem((Item_Backpack)myUnit.UnitEquipment.EquippedItemData(EquipSlot.Back).Item);
                     else if (containerInventoryManager == myUnit.BeltInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
-                        SetupInventoryLayoutFromItem((Item_Belt)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt].Item);
+                        SetupInventoryLayoutFromItem((Item_Belt)myUnit.UnitEquipment.EquippedItemData(EquipSlot.Belt).Item);
                     else if (containerInventoryManager == myUnit.QuiverInventoryManager && myUnit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
-                        SetupInventoryLayoutFromItem((Item_Quiver)myUnit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Quiver].Item);
+                        SetupInventoryLayoutFromItem((Item_Quiver)myUnit.UnitEquipment.EquippedItemData(EquipSlot.Quiver).Item);
                 }
                 else
                 {
@@ -42,8 +42,7 @@ namespace InventorySystem
                 }
             }
 
-            if (slotCoordinates == null)
-                slotCoordinates = new List<SlotCoordinate>();
+            slotCoordinates ??= new List<SlotCoordinate>();
 
             CreateSlotCoordinates();
             SetupItems();
@@ -156,6 +155,6 @@ namespace InventorySystem
 
         public void SetLooseItem(Interactable_LooseItem newLooseItem) => looseItem = newLooseItem;
 
-        public void SetContainerInventoryManager(ContainerInventoryManager manager) => containerInventoryManager = manager;
+        public void SetContainerInventoryManager(InventoryManager_Container manager) => containerInventoryManager = manager;
     }
 }

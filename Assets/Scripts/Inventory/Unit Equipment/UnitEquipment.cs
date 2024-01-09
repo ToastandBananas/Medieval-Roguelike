@@ -165,9 +165,7 @@ namespace InventorySystem
 
         public virtual bool EquipSlotIsFull(EquipSlot equipSlot) => EquipSlotHasItem(equipSlot);
 
-        public bool EquipSlotHasItem(int equipSlotIndex) => equippedItemDatas[equipSlotIndex] != null && equippedItemDatas[equipSlotIndex].Item != null;
-
-        public bool EquipSlotHasItem(EquipSlot equipSlot) => EquipSlotHasItem((int)equipSlot);
+        public bool EquipSlotHasItem(EquipSlot equipSlot) => EquippedItemData(equipSlot) != null && EquippedItemData(equipSlot).Item != null;
 
         EquipmentSlot GetEquipmentSlotFromIndex(int index)
         {
@@ -223,7 +221,7 @@ namespace InventorySystem
             float weight = 0f;
             for (int i = 0; i < equippedItemDatas.Length; i++)
             {
-                if (EquipSlotHasItem(i))
+                if (equippedItemDatas[i] != null && equippedItemDatas[i].Item != null)
                     weight += equippedItemDatas[i].Weight();
             }
 
@@ -253,7 +251,7 @@ namespace InventorySystem
             return false;
         }
 
-        public ItemData[] EquippedItemDatas => equippedItemDatas;
+        public abstract ItemData EquippedItemData(EquipSlot equipSlot);
 
         public Unit MyUnit => myUnit;
 

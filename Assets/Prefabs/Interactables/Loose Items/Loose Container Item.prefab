@@ -126,7 +126,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4678453034286018384}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 693f7024c9a5a63468148c0fa160544a, type: 3}
+  m_Script: {fileID: 11500000, guid: e6416b84b15986146881bc53c471a4de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentInventory:
@@ -139,7 +139,7 @@ MonoBehaviour:
       placeholderSprite: {fileID: 0}
       allowedItemTypes: 
     itemDatas: []
-    looseItem: {fileID: 5532644622659377026}
+    looseItem: {fileID: 0}
   subInventories: []
 --- !u!114 &5532644622659377026
 MonoBehaviour:
@@ -166,13 +166,18 @@ MonoBehaviour:
     minDamage: 0
     maxDamage: 0
     throwingDamageMultiplier: 0
+    unarmedDamageMultiplier: 0
     effectivenessAgainstArmor: 0
     armorPierce: 0
     accuracyModifier: 0
+    fumbleChanceModifier: 0
+    attackKnockbackChanceModifier: 0
     knockbackChanceModifier: 0
     blockPower: 0
     blockChanceModifier: 0
     defense: 0
+    dodgeChanceModifier: 0
+    protection: 0
     value: 0
     hasBeenRandomized: 0
   containerInventoryManager: {fileID: 2181754334124122026}

@@ -20,7 +20,7 @@ namespace UnitSystem
         [SerializeField] float shoulderHeight = 0.25f;
 
         [Header("Inventories")]
-        [SerializeField] UnitInventoryManager unitInventoryManager;
+        [SerializeField] InventoryManager_Unit unitInventoryManager;
         [SerializeField] UnitEquipment myUnitEquipment;
 
         public SingleNodeBlocker SingleNodeBlocker { get; private set; }
@@ -177,10 +177,10 @@ namespace UnitSystem
 
         public Action_Base SelectedAction => UnitActionHandler.PlayerActionHandler.SelectedActionType.GetAction(this);
 
-        public UnitInventoryManager UnitInventoryManager => unitInventoryManager;
-        public ContainerInventoryManager BackpackInventoryManager => unitInventoryManager.BackpackInventoryManager;
-        public ContainerInventoryManager BeltInventoryManager => unitInventoryManager.BeltInventoryManager;
-        public ContainerInventoryManager QuiverInventoryManager => unitInventoryManager.QuiverInventoryManager;
+        public InventoryManager_Unit UnitInventoryManager => unitInventoryManager;
+        public InventoryManager_Container BackpackInventoryManager => unitInventoryManager.HumanoidInventoryManager.BackpackInventoryManager;
+        public InventoryManager_Container BeltInventoryManager => unitInventoryManager.HumanoidInventoryManager.BeltInventoryManager;
+        public InventoryManager_Container QuiverInventoryManager => unitInventoryManager.HumanoidInventoryManager.QuiverInventoryManager;
 
         public UnitEquipment UnitEquipment => myUnitEquipment;
 

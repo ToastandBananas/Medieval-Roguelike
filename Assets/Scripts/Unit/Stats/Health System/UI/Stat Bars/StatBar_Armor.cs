@@ -11,7 +11,7 @@ namespace UnitSystem.UI
         {
             base.Initialize(unit);
             if (unit.UnitEquipment.EquipSlotHasItem(equipSlot))
-                UpdateValue(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot].CurrentDurabilityNormalized);
+                UpdateValue(unit.UnitEquipment.EquippedItemData(equipSlot).CurrentDurabilityNormalized);
             else
                 UpdateValue(0);
         }
@@ -21,7 +21,7 @@ namespace UnitSystem.UI
             base.UpdateValue(startNormalizedDurability);
             if (unit.UnitEquipment.EquipSlotHasItem(equipSlot))
             {
-                ItemData equipmentItemData = unit.UnitEquipment.EquippedItemDatas[(int)equipSlot];
+                ItemData equipmentItemData = unit.UnitEquipment.EquippedItemData(equipSlot);
                 slider.value = equipmentItemData.CurrentDurabilityNormalized;
                 if (textMesh != null)
                     textMesh.text = $"{Mathf.CeilToInt(equipmentItemData.CurrentDurability)}/{equipmentItemData.MaxDurability}";

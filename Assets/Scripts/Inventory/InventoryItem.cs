@@ -53,7 +53,7 @@ namespace InventorySystem
             // Setup icon size
             if (mySlot is InventorySlot)
             {
-                if (MyInventory.InventoryLayout.HasStandardSlotSize())
+                if (MyInventory.InventoryLayout.HasStandardSlotSize)
                 {
                     rectTransform.offsetMin = new Vector2(-slotSize * (spriteItemData.Item.Width - 1), 0);
                     rectTransform.offsetMax = new Vector2(0, slotSize * (spriteItemData.Item.Height - 1));
@@ -86,7 +86,7 @@ namespace InventorySystem
             if (mySlot is EquipmentSlot)
             {
                 EquipmentSlot myEquipmentSlot = (EquipmentSlot)mySlot;
-                if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
+                if (UnitEquipment.IsHeldItemEquipSlot(myEquipmentSlot.EquipSlot)
                     && ((myEquipmentSlot.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem1 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem1)
                     || (myEquipmentSlot.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.Two && myEquipmentSlot.EquipSlot != EquipSlot.LeftHeldItem2 && myEquipmentSlot.EquipSlot != EquipSlot.RightHeldItem2)))
                 {

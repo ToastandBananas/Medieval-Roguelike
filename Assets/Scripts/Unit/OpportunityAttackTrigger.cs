@@ -21,11 +21,11 @@ public class OpportunityAttackTrigger : MonoBehaviour
         {
             if (myUnit.UnitEquipment.MeleeWeaponEquipped)
             {
-                if (myUnit.UnitMeshManager.leftHeldItem != null && myUnit.UnitMeshManager.leftHeldItem is HeldMeleeWeapon)
-                    maxAttackRange = myUnit.UnitMeshManager.leftHeldItem.ItemData.Item.Weapon.MaxRange;
+                if (myUnit.UnitMeshManager.LeftHeldItem != null && myUnit.UnitMeshManager.LeftHeldItem is HeldMeleeWeapon)
+                    maxAttackRange = myUnit.UnitMeshManager.LeftHeldItem.ItemData.Item.Weapon.MaxRange;
 
-                if (myUnit.UnitMeshManager.rightHeldItem != null && myUnit.UnitMeshManager.rightHeldItem is HeldMeleeWeapon && myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
-                    maxAttackRange = myUnit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.MaxRange;
+                if (myUnit.UnitMeshManager.RightHeldItem != null && myUnit.UnitMeshManager.RightHeldItem is HeldMeleeWeapon && myUnit.UnitMeshManager.RightHeldItem.ItemData.Item.Weapon.MaxRange > maxAttackRange)
+                    maxAttackRange = myUnit.UnitMeshManager.RightHeldItem.ItemData.Item.Weapon.MaxRange;
             }
             else if (myUnit.UnitEquipment.RangedWeaponEquipped)
                 maxAttackRange = 0.1f;

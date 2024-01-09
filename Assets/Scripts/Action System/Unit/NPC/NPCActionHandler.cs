@@ -135,7 +135,7 @@ namespace UnitSystem.ActionSystem
                         return;
                     }
 
-                    if (Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
+                    if (Unit.UnitEquipment != null && Unit.UnitEquipment.RangedWeaponEquipped && Unit.UnitEquipment.HumanoidEquipment.HasValidAmmunitionEquipped())
                     {
                         Unit closestEnemy = Unit.Vision.GetClosestEnemy(true);
                         float minShootRange = Unit.UnitMeshManager.GetHeldRangedWeapon().ItemData.Item.Weapon.MinRange;
@@ -148,7 +148,7 @@ namespace UnitSystem.ActionSystem
                                 GetAction<Action_SwapWeaponSet>().QueueAction();
                                 return;
                             }
-                            else if (Unit.UnitInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
+                            else if (Unit.UnitInventoryManager.HumanoidInventoryManager.ContainsMeleeWeaponInAnyInventory(out ItemData weaponItemData))
                             {
                                 GetAction<Action_SwapWeaponSet>().QueueAction();
                                 GetAction<Action_Equip>().QueueAction(weaponItemData, weaponItemData.Item.Equipment.EquipSlot, null);
@@ -183,7 +183,7 @@ namespace UnitSystem.ActionSystem
                             return;
                         }
                     }
-                    else if (Unit.UnitEquipment.MeleeWeaponEquipped || Unit.Stats.CanFightUnarmed)
+                    else if ((Unit.UnitEquipment != null && Unit.UnitEquipment.MeleeWeaponEquipped) || Unit.Stats.CanFightUnarmed)
                     {
                         // Melee attack the target enemy
                         if (GetAction<Action_Melee>().IsInAttackRange(TargetEnemyUnit, Unit.GridPosition, TargetEnemyUnit.GridPosition))

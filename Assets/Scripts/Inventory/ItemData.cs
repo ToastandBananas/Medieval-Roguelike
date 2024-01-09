@@ -566,8 +566,8 @@ namespace InventorySystem
                 if (!unit.UnitEquipment.ItemDataEquipped(this))
                     return;
 
-                if ((unit.UnitMeshManager.leftHeldItem != null && this == unit.UnitMeshManager.leftHeldItem.ItemData) || (unit.UnitMeshManager.rightHeldItem != null && this == unit.UnitMeshManager.rightHeldItem.ItemData) 
-                    || (this == unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm] && item.Helm.FallOffOnDeathChance > 0f))
+                if ((unit.UnitMeshManager.LeftHeldItem != null && this == unit.UnitMeshManager.LeftHeldItem.ItemData) || (unit.UnitMeshManager.RightHeldItem != null && this == unit.UnitMeshManager.RightHeldItem.ItemData) 
+                    || (this == unit.UnitEquipment.EquippedItemData(EquipSlot.Helm) && item.Helm.FallOffOnDeathChance > 0f))
                     DropItemManager.DropItem(unit.UnitEquipment, unit.UnitEquipment.GetEquipSlotFromItemData(this));
                 else if (unit.IsPlayer && unit.UnitEquipment.SlotVisualsCreated)
                     unit.UnitEquipment.GetEquipmentSlot(unit.UnitEquipment.GetEquipSlotFromItemData(this)).InventoryItem.SetupBrokenIconImage();
@@ -612,7 +612,7 @@ namespace InventorySystem
         public int Value => value;
         public bool ShouldRandomize => !hasBeenRandomized;
 
-        public Inventory MyInventory => inventorySlotCoordinate != null && inventorySlotCoordinate.myInventory != null ? inventorySlotCoordinate.myInventory : null;
+        public Inventory MyInventory => inventorySlotCoordinate != null && inventorySlotCoordinate.MyInventory != null ? inventorySlotCoordinate.MyInventory : null;
         public SlotCoordinate InventorySlotCoordinate => inventorySlotCoordinate;
         public void SetInventorySlotCoordinate(SlotCoordinate slotCoordinate) => inventorySlotCoordinate = slotCoordinate;
 

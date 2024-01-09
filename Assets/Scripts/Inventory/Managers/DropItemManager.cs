@@ -80,30 +80,30 @@ namespace InventorySystem
             if (!unitEquipment.EquipSlotIsFull(equipSlot))
                 return null;
 
-            unitEquipment.RemoveActions(unitEquipment.EquippedItemDatas[(int)equipSlot].Item as Item_Equipment, equipSlot);
+            unitEquipment.RemoveActions(unitEquipment.EquippedItemData(equipSlot).Item as Item_Equipment, equipSlot);
 
             Interactable_LooseItem looseItem;
-            if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Quiver)
+            if (unitEquipment.EquippedItemData(equipSlot).Item is Item_Quiver)
                 looseItem = Pool_LooseItems.Instance.GetLooseQuiverItemFromPool();
-            else if (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_WearableContainer)
+            else if (unitEquipment.EquippedItemData(equipSlot).Item is Item_WearableContainer)
                 looseItem = Pool_LooseItems.Instance.GetLooseContainerItemFromPool();
             else
                 looseItem = Pool_LooseItems.Instance.GetLooseItemFromPool();
 
-            ContainerInventoryManager itemsContainerInventoryManager = null;
+            InventoryManager_Container itemsContainerInventoryManager = null;
             Vector3 dropDirection = GetDropDirection(unitEquipment.MyUnit);
 
-            if (!unitEquipment.MyUnit.HealthSystem.IsDead && (unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Weapon || unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Shield))
-                SetupHeldItemDrop(unitEquipment.MyUnit.UnitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemDatas[(int)equipSlot]), looseItem);
+            if (!unitEquipment.MyUnit.HealthSystem.IsDead && (unitEquipment.EquippedItemData(equipSlot).Item is Item_Weapon || unitEquipment.EquippedItemData(equipSlot).Item is Item_Shield))
+                SetupHeldItemDrop(unitEquipment.MyUnit.UnitMeshManager.GetHeldItemFromItemData(unitEquipment.EquippedItemData(equipSlot)), looseItem);
             else if (equipSlot == EquipSlot.Helm)
-                SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit);
-            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemDatas[(int)equipSlot].Item is Item_Quiver) || (equipSlot == EquipSlot.Belt))
+                SetupHelmItemDrop(looseItem, unitEquipment.EquippedItemData(equipSlot), unitEquipment.MyUnit);
+            else if ((equipSlot == EquipSlot.Back && unitEquipment.EquippedItemData(equipSlot).Item is Item_Backpack) || (equipSlot == EquipSlot.Quiver && unitEquipment.EquippedItemData(equipSlot).Item is Item_Quiver) || (equipSlot == EquipSlot.Belt))
             {
-                SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
+                SetupContainerItemDrop(unitEquipment, equipSlot, looseItem, unitEquipment.EquippedItemData(equipSlot), unitEquipment.MyUnit, dropDirection);
                 itemsContainerInventoryManager = looseItem.LooseContainerItem.ContainerInventoryManager;
             }
             else
-                SetupItemDrop(looseItem, unitEquipment.EquippedItemDatas[(int)equipSlot], unitEquipment.MyUnit, dropDirection);
+                SetupItemDrop(looseItem, unitEquipment.EquippedItemData(equipSlot), unitEquipment.MyUnit, dropDirection);
 
             if (looseItem.ItemData == null || looseItem.ItemData.Item == null)
             {
@@ -144,7 +144,7 @@ namespace InventorySystem
                     UnitManager.player.Vision.AddVisibleLooseItem(looseItem);
             }
 
-            if (unitEquipment.EquippedItemDatas[(int)equipSlot] == InventoryUI.DraggedItem.ItemData)
+            if (unitEquipment.EquippedItemData(equipSlot) == InventoryUI.DraggedItem.ItemData)
             {
                 if (InventoryUI.ParentSlotDraggedFrom != null)
                     InventoryUI.ParentSlotDraggedFrom.ClearItem();
@@ -154,12 +154,12 @@ namespace InventorySystem
             else if (unitEquipment.SlotVisualsCreated)
                 unitEquipment.GetEquipmentSlot(equipSlot).ClearItem();
 
-            unitEquipment.RemoveEquipment(unitEquipment.EquippedItemDatas[(int)equipSlot]);
+            unitEquipment.RemoveEquipment(unitEquipment.EquippedItemData(equipSlot));
 
             if (unitEquipment.MyUnit != null)
                 unitEquipment.MyUnit.Stats.UpdateCarryWeight();
 
-            if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(equipSlot))
+            if (UnitEquipment.IsHeldItemEquipSlot(equipSlot))
                 unitEquipment.MyUnit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             ActionSystemUI.UpdateActionVisuals();
@@ -207,7 +207,7 @@ namespace InventorySystem
                     UnitManager.player.Vision.AddVisibleLooseItem(looseHelm);
             }
 
-            unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm]);
+            unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemData(EquipSlot.Helm));
 
             if (unit.IsNPC)
                 TooltipManager.UpdateLooseItemTooltips();
@@ -272,7 +272,7 @@ namespace InventorySystem
 
             // Get rid of the HeldItem
             EquipSlot equipSlot;
-            if (heldItem == unit.UnitMeshManager.rightHeldItem)
+            if (heldItem == unit.UnitMeshManager.RightHeldItem)
             {
                 if (unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
@@ -297,7 +297,7 @@ namespace InventorySystem
                     equipSlot = EquipSlot.LeftHeldItem2;
             }
 
-            unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemDatas[(int)equipSlot]);
+            unit.UnitEquipment.RemoveEquipment(unit.UnitEquipment.EquippedItemData(equipSlot));
             unit.OpportunityAttackTrigger.UpdateColliderRadius();
 
             if (unit.IsNPC)
@@ -373,8 +373,8 @@ namespace InventorySystem
 
             // Set the LooseItem's position to match the worn Helm before we add force
             looseItem.transform.SetPositionAndRotation(
-                unit.UnitMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, unit.UnitMeshManager.HelmMeshRenderer.bounds.center.y + itemData.Item.PickupMesh.bounds.center.y, 0f), 
-                unit.UnitMeshManager.HelmMeshRenderer.transform.rotation);
+                unit.UnitMeshManager.HumanoidMeshManager.HelmMeshRenderer.transform.position + new Vector3(0f, unit.UnitMeshManager.HumanoidMeshManager.HelmMeshRenderer.bounds.center.y + itemData.Item.PickupMesh.bounds.center.y, 0f), 
+                unit.UnitMeshManager.HumanoidMeshManager.HelmMeshRenderer.transform.rotation);
         }
 
         static float FindMeshHeightDifference(MeshCollider meshCollider1, MeshCollider meshCollider2) => Mathf.Abs(meshCollider1.bounds.center.y - meshCollider2.bounds.center.y) * 2f;

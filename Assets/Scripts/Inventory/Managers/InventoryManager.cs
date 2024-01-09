@@ -4,12 +4,14 @@ namespace InventorySystem
 {
     public abstract class InventoryManager : MonoBehaviour
     {
-        public UnitInventoryManager UnitInventoryManager => this as UnitInventoryManager;
+        public InventoryManager_Unit UnitInventoryManager => this as InventoryManager_Unit;
 
         public abstract bool ContainsItemData(ItemData itemData);
 
         public abstract bool AllowedItemTypeContains(ItemType[] itemTypes);
 
-        public ContainerInventoryManager ContainerInventoryManager => this as ContainerInventoryManager;
+        public abstract float GetTotalInventoryWeight();
+
+        public InventoryManager_Container ContainerInventoryManager => this as InventoryManager_Container;
     }
 }

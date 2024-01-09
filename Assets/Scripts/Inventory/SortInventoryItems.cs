@@ -17,11 +17,11 @@ namespace InventorySystem
 
         public void SortItems()
         {
-            if (inventoryManager is UnitInventoryManager)
+            if (inventoryManager is InventoryManager_Unit)
             {
                 Sort(inventoryManager.UnitInventoryManager.MainInventory);
             }
-            else if (inventoryManager is ContainerInventoryManager)
+            else if (inventoryManager is InventoryManager_Container)
             {
                 Sort(inventoryManager.ContainerInventoryManager.ParentInventory);
 

@@ -71,7 +71,7 @@ namespace UnitSystem
                 dodgeDirection = Random.Range(0, 2) == 0 ? -unit.transform.right : unit.transform.right;
             else
             {
-                if (heldItemToDodge == attackingUnit.UnitMeshManager.leftHeldItem)
+                if (heldItemToDodge == attackingUnit.UnitMeshManager.LeftHeldItem)
                     dodgeDirection = -unit.transform.right;
                 else
                     dodgeDirection = unit.transform.right;
@@ -238,11 +238,11 @@ namespace UnitSystem
 
         public void StopBlocking()
         {
-            if (unit.UnitMeshManager.leftHeldItem != null)
-                unit.UnitMeshManager.leftHeldItem.StopBlocking();
+            if (unit.UnitMeshManager.LeftHeldItem != null)
+                unit.UnitMeshManager.LeftHeldItem.StopBlocking();
             
-            if (unit.UnitMeshManager.rightHeldItem != null)
-                unit.UnitMeshManager.rightHeldItem.StopBlocking();
+            if (unit.UnitMeshManager.RightHeldItem != null)
+                unit.UnitMeshManager.RightHeldItem.StopBlocking();
         }
 
         public void Die(Transform attackerTransform)
@@ -286,16 +286,16 @@ namespace UnitSystem
             {
                 if (unit.UnitEquipment.EquipSlotHasItem(EquipSlot.Helm))
                 {
-                    Item_Helm helm = unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm].Item as Item_Helm;
+                    Item_Helm helm = unit.UnitEquipment.EquippedItemData(EquipSlot.Helm).Item as Item_Helm;
                     if (helm.FallOffOnDeathChance > 0f && Random.Range(0f, 1f) <= helm.FallOffOnDeathChance)
-                        DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Helm], unit, attackerTransform, diedForward);
+                        DropItemManager.DropHelmOnDeath(unit.UnitEquipment.EquippedItemData(EquipSlot.Helm), unit, attackerTransform, diedForward);
                 }
 
-                if (unit.UnitMeshManager.leftHeldItem != null)
-                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.leftHeldItem, unit, attackerTransform, diedForward);
+                if (unit.UnitMeshManager.LeftHeldItem != null)
+                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.LeftHeldItem, unit, attackerTransform, diedForward);
 
-                if (unit.UnitMeshManager.rightHeldItem != null)
-                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.rightHeldItem, unit, attackerTransform, diedForward);
+                if (unit.UnitMeshManager.RightHeldItem != null)
+                    DropItemManager.DropHeldItemOnDeath(unit.UnitMeshManager.RightHeldItem, unit, attackerTransform, diedForward);
 
                 // Swap to the other weapon set so that when we go to loot this Unit's body, it will show the items in their equipment
                 unit.UnitEquipment.HumanoidEquipment.SwapWeaponSet();

@@ -35,7 +35,7 @@ namespace InventorySystem
 
         public void SetupFullSlotSprites()
         {
-            if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+            if (myInventory.InventoryLayout.HasStandardSlotSize == false)
             {
                 myInventory.GetSlotFromCoordinate(slotCoordinate).SetFullSlotSprite(fullSlotSprite);
                 return;
@@ -47,7 +47,7 @@ namespace InventorySystem
             {
                 for (int y = 0; y < height; y++)
                 {
-                    InventorySlot slotToSetup = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
+                    InventorySlot slotToSetup = myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x - x, slotCoordinate.Coordinate.y - y);
                     if (width == 1 && height == 1) // Single slot item
                         slotToSetup.SetFullSlotSprite(fullSlotSprite);
                     else if (x == 0 & y == 0) // Bottom Right
@@ -125,9 +125,9 @@ namespace InventorySystem
             if (inventoryItem.ItemData == null || inventoryItem.ItemData.Item == null)
                 return;
 
-            if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+            if (myInventory.InventoryLayout.HasStandardSlotSize == false)
             {
-                myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y).SetEmptySlotSprite();
+                myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x, slotCoordinate.Coordinate.y).SetEmptySlotSprite();
                 return;
             }
 
@@ -135,14 +135,14 @@ namespace InventorySystem
             {
                 for (int y = 0; y < inventoryItem.ItemData.Item.Height; y++)
                 {
-                    myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y).SetEmptySlotSprite();
+                    myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x - x, slotCoordinate.Coordinate.y - y).SetEmptySlotSprite();
                 }
             }
         }
 
         public override void ClearSlotVisuals()
         {
-            InventorySlot parentSlot = myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate.coordinate.x, slotCoordinate.parentSlotCoordinate.coordinate.y);
+            InventorySlot parentSlot = myInventory.GetSlotFromCoordinate(slotCoordinate.ParentSlotCoordinate.Coordinate.x, slotCoordinate.ParentSlotCoordinate.Coordinate.y);
 
             // Hide the item's sprite
             parentSlot.HideItemIcon();
@@ -162,14 +162,14 @@ namespace InventorySystem
             ClearSlotVisuals();
 
             // Clear the slot coordinates
-            myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate).slotCoordinate.ClearItem();
+            myInventory.GetSlotFromCoordinate(slotCoordinate.ParentSlotCoordinate).slotCoordinate.ClearItem();
         }
 
         public override bool IsFull()
         {
-            // Debug.Log(slotCoordinate.coordinate + " | parent: " + slotCoordinate.parentSlotCoordinate.coordinate + " | itemData: " + slotCoordinate.parentSlotCoordinate.itemData);
-            
-            return slotCoordinate.parentSlotCoordinate != null && slotCoordinate.parentSlotCoordinate.itemData != null && slotCoordinate.parentSlotCoordinate.itemData.Item != null;
+            //if (slotCoordinate.ParentSlotCoordinate.ItemData != null) Debug.Log(slotCoordinate.Coordinate + " | parent: " + slotCoordinate.ParentSlotCoordinate.Coordinate + " | itemData: " + slotCoordinate.ParentSlotCoordinate.ItemData.Item);
+            //else Debug.Log("No item at " + slotCoordinate.Coordinate);
+            return slotCoordinate.ParentSlotCoordinate != null && slotCoordinate.ParentSlotCoordinate.ItemData != null && slotCoordinate.ParentSlotCoordinate.ItemData.Item != null;
         }
 
         public override void HighlightSlots()
@@ -188,9 +188,9 @@ namespace InventorySystem
                 }
                 else if (myInventory.ItemTypeAllowed(InventoryUI.DraggedItem.ItemData.Item.ItemType))
                 {
-                    if (myInventory.InventoryLayout.HasStandardSlotSize() == false) // Non-standard slot size
+                    if (myInventory.InventoryLayout.HasStandardSlotSize == false) // Non-standard slot size
                         validSlot = myInventory.ItemFitsInSingleSlot(InventoryUI.DraggedItem.ItemData.Item);
-                    else if (slotCoordinate.coordinate.x - width < 0 || slotCoordinate.coordinate.y - height < 0) // Standard slot size
+                    else if (slotCoordinate.Coordinate.x - width < 0 || slotCoordinate.Coordinate.y - height < 0) // Standard slot size
                         validSlot = false;
                 }
                 else
@@ -206,9 +206,9 @@ namespace InventorySystem
 
             InventoryUI.SetValidDragPosition(validSlot);
 
-            if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+            if (myInventory.InventoryLayout.HasStandardSlotSize == false)
             {
-                InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y);
+                InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x, slotCoordinate.Coordinate.y);
 
                 if (validSlot)
                     slotToHighlight.image.color = Color.green;
@@ -222,7 +222,7 @@ namespace InventorySystem
             {
                 for (int y = 0; y < height; y++)
                 {
-                    InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
+                    InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x - x, slotCoordinate.Coordinate.y - y);
                     if (slotToHighlight == null)
                         continue;
 
@@ -236,9 +236,9 @@ namespace InventorySystem
 
         public override void RemoveSlotHighlights()
         {
-            if (myInventory.InventoryLayout.HasStandardSlotSize() == false)
+            if (myInventory.InventoryLayout.HasStandardSlotSize == false)
             {
-                myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x, slotCoordinate.coordinate.y).image.color = Color.white;
+                myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x, slotCoordinate.Coordinate.y).image.color = Color.white;
                 return;
             }
 
@@ -246,7 +246,7 @@ namespace InventorySystem
             {
                 for (int y = 0; y < InventoryUI.DraggedItem.ItemData.Item.Height; y++)
                 {
-                    InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.coordinate.x - x, slotCoordinate.coordinate.y - y);
+                    InventorySlot slotToHighlight = myInventory.GetSlotFromCoordinate(slotCoordinate.Coordinate.x - x, slotCoordinate.Coordinate.y - y);
                     if (slotToHighlight == null)
                         continue;
 
@@ -257,18 +257,18 @@ namespace InventorySystem
 
         public override ItemData GetItemData()
         {
-            if (slotCoordinate.parentSlotCoordinate == null)
-                return slotCoordinate.itemData;
+            if (slotCoordinate.ParentSlotCoordinate == null)
+                return slotCoordinate.ItemData;
             else
-                return slotCoordinate.parentSlotCoordinate.itemData;
+                return slotCoordinate.ParentSlotCoordinate.ItemData;
         }
 
         public override Slot ParentSlot()
         {
-            if (slotCoordinate == null || slotCoordinate.parentSlotCoordinate == null || myInventory == null)
+            if (slotCoordinate == null || slotCoordinate.ParentSlotCoordinate == null || myInventory == null)
                 return this;
 
-            return myInventory.GetSlotFromCoordinate(slotCoordinate.parentSlotCoordinate);
+            return myInventory.GetSlotFromCoordinate(slotCoordinate.ParentSlotCoordinate);
         }
 
         public void SetMyInventory(Inventory inv) => myInventory = inv;

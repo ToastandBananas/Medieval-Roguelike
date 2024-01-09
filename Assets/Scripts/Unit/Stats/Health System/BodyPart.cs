@@ -151,14 +151,14 @@ namespace UnitSystem
         {
             if (bodyPartSide == BodyPartSide.Left) // Left Arm or Hand
             {
-                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.leftHeldItem != null)
+                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.LeftHeldItem != null)
                     DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.HumanoidEquipment.LeftHeldItemEquipSlot);
             }
             else // Right Arm or Hand
             {
-                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.rightHeldItem != null)
+                if (HealthSystem.Unit.UnitEquipment != null && HealthSystem.Unit.UnitMeshManager.RightHeldItem != null)
                 {
-                    if (HealthSystem.Unit.UnitMeshManager.rightHeldItem.ItemData.Item is Item_Weapon && HealthSystem.Unit.UnitMeshManager.rightHeldItem.ItemData.Item.Weapon.IsTwoHanded)
+                    if (HealthSystem.Unit.UnitMeshManager.RightHeldItem.ItemData.Item is Item_Weapon && HealthSystem.Unit.UnitMeshManager.RightHeldItem.ItemData.Item.Weapon.IsTwoHanded)
                         DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.HumanoidEquipment.LeftHeldItemEquipSlot);
                     else
                         DropItemManager.DropItem(HealthSystem.Unit.UnitEquipment, HealthSystem.Unit.UnitEquipment.HumanoidEquipment.RightHeldItemEquipSlot);

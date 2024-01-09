@@ -39,7 +39,7 @@ namespace InventorySystem
         public virtual IEnumerator ResetToIdleRotation()
         {
             Quaternion defaultRotation;
-            if (this == unit.UnitMeshManager.leftHeldItem)
+            if (this == unit.UnitMeshManager.LeftHeldItem)
                 defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_LeftHand);
             else
                 defaultRotation = Quaternion.Euler(ItemData.Item.HeldEquipment.IdleRotation_RightHand);
@@ -138,13 +138,13 @@ namespace InventorySystem
 
             if (equipSlot == EquipSlot.RightHeldItem1 || equipSlot == EquipSlot.RightHeldItem2 || (itemData.Item is Item_Weapon && itemData.Item.Weapon.IsTwoHanded))
             {
-                SetupTransform(itemData, unit.UnitMeshManager.RightHeldItemParent);
-                unit.UnitMeshManager.SetRightHeldItem(this);
+                SetupTransform(itemData, unit.UnitMeshManager.HumanoidMeshManager.RightHeldItemParent);
+                unit.UnitMeshManager.HumanoidMeshManager.SetRightHeldItem(this);
             }
             else
             {
-                SetupTransform(itemData, unit.UnitMeshManager.LeftHeldItemParent);
-                unit.UnitMeshManager.SetLeftHeldItem(this);
+                SetupTransform(itemData, unit.UnitMeshManager.HumanoidMeshManager.LeftHeldItemParent);
+                unit.UnitMeshManager.HumanoidMeshManager.SetLeftHeldItem(this);
             }
 
             HeldItem oppositeHeldItem = GetOppositeHeldItem();
@@ -175,9 +175,9 @@ namespace InventorySystem
 
         void SetupTransform(ItemData itemData, Transform heldItemParent)
         {
-            if (heldItemParent == unit.UnitMeshManager.RightHeldItemParent)
+            if (heldItemParent == unit.UnitMeshManager.HumanoidMeshManager.RightHeldItemParent)
             {
-                transform.SetParent(unit.UnitMeshManager.RightHeldItemParent);
+                transform.SetParent(unit.UnitMeshManager.HumanoidMeshManager.RightHeldItemParent);
                 if (itemData.Item is Item_HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_RightHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_RightHand));
                 else
@@ -187,9 +187,9 @@ namespace InventorySystem
                     transform.parent.localPosition += femaleHeldItemOffset;
 
             }
-            else if (heldItemParent == unit.UnitMeshManager.LeftHeldItemParent)
+            else if (heldItemParent == unit.UnitMeshManager.HumanoidMeshManager.LeftHeldItemParent)
             {
-                transform.SetParent(unit.UnitMeshManager.LeftHeldItemParent);
+                transform.SetParent(unit.UnitMeshManager.HumanoidMeshManager.LeftHeldItemParent);
                 if (itemData.Item is Item_HeldEquipment)
                     transform.parent.SetLocalPositionAndRotation(itemData.Item.HeldEquipment.IdlePosition_LeftHand, Quaternion.Euler(itemData.Item.HeldEquipment.IdleRotation_LeftHand));
                 else
@@ -336,10 +336,10 @@ namespace InventorySystem
                 return null;
             }
 
-            if (this == unit.UnitMeshManager.leftHeldItem)
-                return unit.UnitMeshManager.rightHeldItem;
-            else if (this == unit.UnitMeshManager.rightHeldItem)
-                return unit.UnitMeshManager.leftHeldItem;
+            if (this == unit.UnitMeshManager.LeftHeldItem)
+                return unit.UnitMeshManager.RightHeldItem;
+            else if (this == unit.UnitMeshManager.RightHeldItem)
+                return unit.UnitMeshManager.LeftHeldItem;
             else
                 return null;
         }

@@ -9,9 +9,9 @@ namespace UnitSystem.ActionSystem.Actions
     public class Action_Equip : Action_BaseInventory
     {
         readonly OrderedDictionary itemDatasToEquip = new();
-        ContainerInventoryManager itemsContainerInventoryManager;
+        InventoryManager_Container itemsContainerInventoryManager;
 
-        public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
+        public void QueueAction(ItemData itemDataToEquip, EquipSlot targetEquipSlot, InventoryManager_Container itemsContainerInventoryManager)
         {
             if (itemDataToEquip.Item is Item_Equipment == false)
             {
@@ -31,7 +31,7 @@ namespace UnitSystem.ActionSystem.Actions
 
         /// <summary>For when it's too risky to queue an EquipAction, such as when equipping on pickup, there would be a chance that the action gets cancelled and the item disappears after picking it up, but before equipping it.
         /// In such a case, we should queue an InventoryAction instead of type Equip and then call this method.</summary>
-        public void TakeActionImmediately(ItemData itemDataToEquip, EquipSlot targetEquipSlot, ContainerInventoryManager itemsContainerInventoryManager)
+        public void TakeActionImmediately(ItemData itemDataToEquip, EquipSlot targetEquipSlot, InventoryManager_Container itemsContainerInventoryManager)
         {
             if (itemDataToEquip.Item is Item_Equipment == false)
             {
@@ -53,7 +53,7 @@ namespace UnitSystem.ActionSystem.Actions
         {
             DictionaryEntry dictionaryEntry = itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault();
             EquipSlot targetEquipSlot = (EquipSlot)dictionaryEntry.Value;
-            if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(targetEquipSlot))
+            if (UnitEquipment.IsHeldItemEquipSlot(targetEquipSlot))
             {
                 if (Unit.UnitEquipment.HumanoidEquipment.CurrentWeaponSet == WeaponSet.One)
                 {
@@ -83,12 +83,12 @@ namespace UnitSystem.ActionSystem.Actions
                 itemDatasToEquip.Remove((ItemData)itemDatasToEquip.Cast<DictionaryEntry>().FirstOrDefault().Key);
         }
 
-        public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize, ContainerInventoryManager itemsContainerInventoryManager)
+        public static int GetItemsEquipActionPointCost(ItemData itemData, int stackSize, InventoryManager_Container itemsContainerInventoryManager)
         {
             float costMultiplier = 1f;
             if (itemData.Item is Item_Equipment)
             {
-                if (UnitEquipment_Humanoid.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
+                if (UnitEquipment.IsHeldItemEquipSlot(itemData.Item.Equipment.EquipSlot))
                 {
                     if (itemData.Item is Item_Weapon)
                         costMultiplier = 0.4f;

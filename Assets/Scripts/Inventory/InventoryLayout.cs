@@ -54,6 +54,6 @@ namespace InventorySystem
             placeholderSprite = inventoryLayout.placeholderSprite;
         }
 
-        public bool HasStandardSlotSize() => slotWidth == 1 && slotHeight == 1;
+        public bool HasStandardSlotSize => slotWidth == 1 && slotHeight == 1;
     }
 }

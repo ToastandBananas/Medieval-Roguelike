@@ -1,26 +1,16 @@
 using InteractableObjects;
-using UnitSystem;
 using UnitSystem.ActionSystem.Actions;
 using UnityEngine;
 
 namespace InventorySystem
 {
-    public class UnitInventoryManager : InventoryManager
+    public class InventoryManager_Humanoid : InventoryManager_Unit
     {
-        [SerializeField] Unit unit;
-        [SerializeField] Inventory mainInventory;
-        [SerializeField] ContainerInventoryManager backpackInventoryManager;
-        [SerializeField] ContainerInventoryManager beltInventoryManager;
-        [SerializeField] ContainerInventoryManager quiverInventoryManager;
+        [SerializeField] InventoryManager_Container backpackInventoryManager;
+        [SerializeField] InventoryManager_Container beltInventoryManager;
+        [SerializeField] InventoryManager_Container quiverInventoryManager;
 
-        void Awake()
-        {
-            mainInventory.Initialize();
-        }
-
-        public Inventory MainInventory => mainInventory;
-
-        public bool TryAddItemToInventories(ItemData itemData)
+        public override bool TryAddItemToInventories(ItemData itemData)
         {
             if (itemData == null || itemData.Item == null)
                 return false;
@@ -35,7 +25,7 @@ namespace InventorySystem
 
                 return true;
             }
-                
+
             if (Action_Throw.IsThrowingWeapon(itemData.Item.ItemType) && beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
             {
                 // We need to check each belt bag inventory's allowed item types separately, to ensure that they are specifically throwing weapon inventories, before trying to add the throwing weapon
@@ -51,18 +41,18 @@ namespace InventorySystem
 
             if (mainInventory.TryAddItem(itemData, unit))
                 return true;
-            
-            // Try putting the item in belt bags first so that smaller items favor belt bags
-            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Belt] != itemData && beltInventoryManager.TryAddItem(itemData, unit))
-                    return true;
 
-            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped && unit.UnitEquipment.EquippedItemDatas[(int)EquipSlot.Back] != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
-                    return true;
+            // Try putting the item in belt bags first so that smaller items favor belt bags
+            if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped && unit.UnitEquipment.EquippedItemData(EquipSlot.Belt) != itemData && beltInventoryManager.TryAddItem(itemData, unit))
+                return true;
+
+            if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped && unit.UnitEquipment.EquippedItemData(EquipSlot.Back) != itemData && backpackInventoryManager.TryAddItem(itemData, unit))
+                return true;
 
             return false;
         }
 
-        public bool ContainsItemDataInAnyInventory(ItemData itemData)
+        public override bool ContainsItemDataInAnyInventory(ItemData itemData)
         {
             if (mainInventory.ItemDatas.Contains(itemData))
                 return true;
@@ -171,78 +161,24 @@ namespace InventorySystem
             return false;
         }
 
-        public float GetTotalInventoryWeight()
+        public override float GetTotalInventoryWeight()
         {
             float weight = 0f;
             for (int i = 0; i < mainInventory.ItemDatas.Count; i++)
-            {
                 weight += mainInventory.ItemDatas[i].Weight();
-            }
 
             if (backpackInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BackpackEquipped)
-            {
-                float backpackItemsWeight = 0f;
-                for (int i = 0; i < backpackInventoryManager.ParentInventory.ItemDatas.Count; i++)
-                {
-                    backpackItemsWeight += backpackInventoryManager.ParentInventory.ItemDatas[i].Weight();
-                }
-
-                for (int subInvIndex = 0; subInvIndex < backpackInventoryManager.SubInventories.Length; subInvIndex++)
-                {
-                    for (int i = 0; i < backpackInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
-                    {
-                        backpackItemsWeight += backpackInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
-                    }
-                }
-
-                backpackItemsWeight *= UnitEquipment.equippedWeightFactor;
-                weight += backpackItemsWeight;
-            }
+                weight += backpackInventoryManager.GetTotalInventoryWeight() * UnitEquipment.equippedWeightFactor;
 
             if (beltInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.BeltBagEquipped)
-            {
-                float beltItemsWeight = 0f;
-                for (int i = 0; i < beltInventoryManager.ParentInventory.ItemDatas.Count; i++)
-                {
-                    beltItemsWeight += beltInventoryManager.ParentInventory.ItemDatas[i].Weight();
-                }
-
-                for (int subInvIndex = 0; subInvIndex < beltInventoryManager.SubInventories.Length; subInvIndex++)
-                {
-                    for (int i = 0; i < beltInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
-                    {
-                        beltItemsWeight += beltInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
-                    }
-                }
-
-                beltItemsWeight *= UnitEquipment.equippedWeightFactor;
-                weight += beltItemsWeight;
-            }
+                weight += beltInventoryManager.GetTotalInventoryWeight() * UnitEquipment.equippedWeightFactor;
 
             if (quiverInventoryManager != null && unit.UnitEquipment.HumanoidEquipment.QuiverEquipped)
-            {
-                float quiverItemsWeight = 0f;
-                for (int i = 0; i < quiverInventoryManager.ParentInventory.ItemDatas.Count; i++)
-                {
-                    quiverItemsWeight += quiverInventoryManager.ParentInventory.ItemDatas[i].Weight();
-                }
-
-                for (int subInvIndex = 0; subInvIndex < quiverInventoryManager.SubInventories.Length; subInvIndex++)
-                {
-                    for (int i = 0; i < quiverInventoryManager.SubInventories[subInvIndex].ItemDatas.Count; i++)
-                    {
-                        quiverItemsWeight += quiverInventoryManager.SubInventories[subInvIndex].ItemDatas[i].Weight();
-                    }
-                }
-
-                quiverItemsWeight *= UnitEquipment.equippedWeightFactor;
-                weight += quiverItemsWeight;
-            }
-
+                weight += quiverInventoryManager.GetTotalInventoryWeight() * UnitEquipment.equippedWeightFactor;
             return weight;
         }
 
-        public ContainerInventoryManager GetContainerInventoryManager(EquipSlot equipSlot)
+        public override InventoryManager_Container GetContainerInventoryManager(EquipSlot equipSlot)
         {
             if (equipSlot == EquipSlot.Back)
                 return backpackInventoryManager;
@@ -254,15 +190,11 @@ namespace InventorySystem
             {
                 Debug.LogWarning($"{equipSlot} is not a wearable container equip slot");
                 return null;
-            }    
+            }
         }
 
-        public override bool ContainsItemData(ItemData itemData) => mainInventory.ContainsItemData(itemData);
-
-        public override bool AllowedItemTypeContains(ItemType[] itemTypes) => mainInventory.AllowedItemTypeContains(itemTypes);
-
-        public ContainerInventoryManager BackpackInventoryManager => backpackInventoryManager;
-        public ContainerInventoryManager BeltInventoryManager => beltInventoryManager;
-        public ContainerInventoryManager QuiverInventoryManager => quiverInventoryManager;
+        public InventoryManager_Container BackpackInventoryManager => backpackInventoryManager;
+        public InventoryManager_Container BeltInventoryManager => beltInventoryManager;
+        public InventoryManager_Container QuiverInventoryManager => quiverInventoryManager;
     }
 }
